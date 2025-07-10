@@ -1,0 +1,93 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_app_settings_object
+  fields:
+    - name: id
+      type: string!
+      description: Unique identifier for application setting
+    - name: permissions
+      type: json
+      description: JSON structure containing application permission configurations
+  graphql:
+    typeName: insert_app_settings_object
+    inputTypeName: insert_app_settings_object_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_app_settings_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_app_settings_object
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - id
+          - permissions
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_app_settings_response
+  description: Responses from the 'insert_app_settings' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[app_settings!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: insert_app_settings_response
+    inputTypeName: insert_app_settings_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_app_settings_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_app_settings_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: insert_app_settings
+  outputType: insert_app_settings_response!
+  arguments:
+    - name: objects
+      type: "[insert_app_settings_object!]!"
+    - name: post_check
+      type: app_settings_bool_exp
+      description: Insert permission predicate over the 'app_settings' collection
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: insert_app_settings
+  graphql:
+    rootFieldName: insert_app_settings
+    rootFieldKind: Mutation
+  description: Insert into the app_settings table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: insert_app_settings
+  permissions:
+    - role: admin
+      allowExecution: true
+

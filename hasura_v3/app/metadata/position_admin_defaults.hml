@@ -1,0 +1,153 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: position_admin_defaults
+  fields:
+    - name: default_admin_percentage
+      type: bigdecimal!
+    - name: description
+      type: string
+    - name: position
+      type: enum!
+    - name: updated_at
+      type: timestamptz
+    - name: updated_by
+      type: uuid
+  graphql:
+    typeName: position_admin_defaults
+    inputTypeName: position_admin_defaults_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: position_admin_defaults
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: position_admin_defaults
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - default_admin_percentage
+          - description
+          - position
+          - updated_at
+          - updated_by
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: position_admin_defaults_bool_exp
+  operand:
+    object:
+      type: position_admin_defaults
+      comparableFields:
+        - fieldName: default_admin_percentage
+          booleanExpressionType: numeric_bool_exp
+        - fieldName: description
+          booleanExpressionType: text_bool_exp
+        - fieldName: position
+          booleanExpressionType: user_position_bool_exp
+        - fieldName: updated_at
+          booleanExpressionType: timestamptz_bool_exp
+        - fieldName: updated_by
+          booleanExpressionType: uuid_bool_exp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: position_admin_defaults_bool_exp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: position_admin_defaults_agg_exp
+  operand:
+    object:
+      aggregatedType: position_admin_defaults
+      aggregatableFields:
+        - fieldName: default_admin_percentage
+          aggregateExpression: numeric_agg_exp
+        - fieldName: description
+          aggregateExpression: text_agg_exp
+        - fieldName: position
+          aggregateExpression: user_position_agg_exp
+        - fieldName: updated_at
+          aggregateExpression: timestamptz_agg_exp
+        - fieldName: updated_by
+          aggregateExpression: uuid_agg_exp
+  count:
+    enable: true
+    returnType: int_64
+  graphql:
+    selectTypeName: position_admin_defaults_agg_exp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: position_admin_defaults_order_by_exp
+  operand:
+    object:
+      orderedType: position_admin_defaults
+      orderableFields:
+        - fieldName: default_admin_percentage
+          orderByExpression: bigdecimal_order_by_exp
+        - fieldName: description
+          orderByExpression: string_order_by_exp
+        - fieldName: position
+          orderByExpression: enum_order_by_exp
+        - fieldName: updated_at
+          orderByExpression: timestamptz_order_by_exp
+        - fieldName: updated_by
+          orderByExpression: uuid_order_by_exp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: position_admin_defaults_order_by_exp
+
+---
+kind: Model
+version: v2
+definition:
+  name: position_admin_defaults
+  objectType: position_admin_defaults
+  source:
+    dataConnectorName: payroll
+    collection: position_admin_defaults
+  filterExpressionType: position_admin_defaults_bool_exp
+  aggregateExpression: position_admin_defaults_agg_exp
+  orderByExpression: position_admin_defaults_order_by_exp
+  graphql:
+    selectMany:
+      queryRootField: position_admin_defaults
+      subscription:
+        rootField: position_admin_defaults
+    selectUniques:
+      - queryRootField: position_admin_defaults_by_position
+        uniqueIdentifier:
+          - position
+        subscription:
+          rootField: position_admin_defaults_by_position
+    filterInputTypeName: position_admin_defaults_filter_input
+    aggregate:
+      queryRootField: position_admin_defaults_aggregate
+      subscription:
+        rootField: position_admin_defaults_aggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: position_admin_defaults
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

@@ -1,0 +1,121 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_payroll_dashboard_stats_object
+  fields:
+    - name: backup_consultant_user_id
+      type: uuid
+    - name: client_name
+      type: string
+    - name: cycle_name
+      type: enum
+    - name: future_dates
+      type: int_64
+    - name: id
+      type: uuid
+    - name: manager_user_id
+      type: uuid
+    - name: name
+      type: string
+    - name: next_eft_date
+      type: date
+    - name: past_dates
+      type: int_64
+    - name: primary_consultant_user_id
+      type: uuid
+    - name: status
+      type: enum
+    - name: total_dates
+      type: int_64
+  graphql:
+    typeName: insert_payroll_dashboard_stats_object
+    inputTypeName: insert_payroll_dashboard_stats_object_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_payroll_dashboard_stats_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_payroll_dashboard_stats_object
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - backup_consultant_user_id
+          - client_name
+          - cycle_name
+          - future_dates
+          - id
+          - manager_user_id
+          - name
+          - next_eft_date
+          - past_dates
+          - primary_consultant_user_id
+          - status
+          - total_dates
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_payroll_dashboard_stats_response
+  description: Responses from the 'insert_payroll_dashboard_stats' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[payroll_dashboard_stats!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: insert_payroll_dashboard_stats_response
+    inputTypeName: insert_payroll_dashboard_stats_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_payroll_dashboard_stats_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_payroll_dashboard_stats_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: insert_payroll_dashboard_stats
+  outputType: insert_payroll_dashboard_stats_response!
+  arguments:
+    - name: objects
+      type: "[insert_payroll_dashboard_stats_object!]!"
+    - name: post_check
+      type: payroll_dashboard_stats_bool_exp
+      description: Insert permission predicate over the 'payroll_dashboard_stats' collection
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: insert_payroll_dashboard_stats
+  graphql:
+    rootFieldName: insert_payroll_dashboard_stats
+    rootFieldKind: Mutation
+  description: Insert into the payroll_dashboard_stats table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: insert_payroll_dashboard_stats
+  permissions:
+    - role: admin
+      allowExecution: true
+

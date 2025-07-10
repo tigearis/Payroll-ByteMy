@@ -1,26 +1,20 @@
 // app/(dashboard)/settings/account/page.tsx
 "use client";
 
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { useUser } from "@clerk/nextjs";
 import {
-  User,
-  Mail,
-  Building2,
-  Camera,
-  Save,
-  RefreshCw,
   Lock,
   Eye,
   Monitor,
   Sidebar,
   Layout,
+  RefreshCw,
 } from "lucide-react";
-import { useState, useEffect, useCallback } from "react";
-import { toast } from "sonner";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ByteMyLoadingIcon } from "@/components/ui/bytemy-loading-icon";
 import {
   Card,
   CardContent,
@@ -29,7 +23,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -41,246 +34,40 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
-import { 
+import {
   GetUserProfileSettingsDocument,
-  UpdateUserProfileDocument
 } from "@/domains/users";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { useUserRole } from "@/hooks/use-user-role";
 import { useLayoutPreferences } from "@/lib/preferences/layout-preferences";
 
-interface ProfileForm {
-  firstName: string;
-  lastName: string;
-  username: string;
-  image: string;
-  bio: string;
-  phone: string;
-  location: string;
-  company: string;
-  website: string;
-}
 
 export default function AccountSettings() {
   const { user: clerkUser, isLoaded } = useUser();
   const { currentUserId } = useCurrentUser();
-  const { userRole } = useUserRole();
   const { layoutType, setLayoutType } = useLayoutPreferences();
 
-  // Form state
-  const [profileForm, setProfileForm] = useState<ProfileForm>({
-    firstName: "",
-    lastName: "",
-    username: "",
-    image: "",
-    bio: "",
-    phone: "",
-    location: "",
-    company: "",
-    website: "",
-  });
-
-  const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState("profile");
-  const [showPassword, setShowPassword] = useState(false);
-  const [imageUploading, setImageUploading] = useState(false);
+  const [activeTab, setActiveTab] = useState("account");
   const [passwordLoading, setPasswordLoading] = useState(false);
 
   // GraphQL operations
   const {
     data: userData,
     loading: userLoading,
-    refetch,
   } = useQuery(GetUserProfileSettingsDocument, {
     variables: { id: currentUserId! },
     skip: !currentUserId,
     fetchPolicy: "cache-and-network",
   });
 
-  const [updateUserProfile] = useMutation(UpdateUserProfileDocument);
-
-  // Helper function to get the correct avatar image
-  const getAvatarImage = useCallback(() => {
-    if (!clerkUser) {
-      return "";
-    }
-
-    // If user has uploaded a custom image, use that
-    if (clerkUser.hasImage && clerkUser.imageUrl) {
-      return clerkUser.imageUrl;
-    }
-
-    // If user has external accounts (like Google) with avatar, use that
-    if (clerkUser.externalAccounts && clerkUser.externalAccounts.length > 0) {
-      const externalAccount = clerkUser.externalAccounts[0];
-      if (externalAccount.imageUrl) {
-        return externalAccount.imageUrl;
-      }
-    }
-
-    // Fallback to empty string for default avatar
-    return "";
-  }, [clerkUser]);
-
-  // Load user data when component mounts
-  useEffect(() => {
-    if (isLoaded && clerkUser && userData?.userById) {
-      const dbUser = userData.userById;
-      setProfileForm({
-        firstName: clerkUser.firstName || "",
-        lastName: clerkUser.lastName || "",
-        username: "", // username not available in current schema
-        image: getAvatarImage(),
-        bio: (clerkUser.unsafeMetadata?.bio as string) || "",
-        phone: clerkUser.phoneNumbers?.[0]?.phoneNumber || "",
-        location: (clerkUser.unsafeMetadata?.location as string) || "",
-        company: (clerkUser.unsafeMetadata?.company as string) || "",
-        website: (clerkUser.unsafeMetadata?.website as string) || "",
-      });
-    }
-  }, [isLoaded, clerkUser, userData, getAvatarImage]);
-
-  const handleInputChange = (field: keyof ProfileForm, value: string) => {
-    setProfileForm(prev => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const handleImageUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = event.target.files?.[0];
-    if (!file) {
-      return;
-    }
-
-    setImageUploading(true);
-    try {
-      // Upload to Clerk
-      await clerkUser?.setProfileImage({ file });
-
-      // Update local state with new image URL
-      const updatedUser = await clerkUser?.reload();
-      if (updatedUser?.imageUrl) {
-        setProfileForm(prev => ({
-          ...prev,
-          image: updatedUser.imageUrl,
-        }));
-
-        // Also update in our database
-        if (currentUserId) {
-          await updateUserProfile({
-            variables: {
-              id: currentUserId,
-              name: `${profileForm.firstName} ${profileForm.lastName}`,
-              image: updatedUser.imageUrl,
-            },
-          });
-        }
-      }
-
-      toast.success("Profile image updated successfully");
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      toast.error("Failed to upload image");
-    } finally {
-      setImageUploading(false);
-    }
-  };
-
-  const syncUserWithDatabase = async (profileData: ProfileForm) => {
-    if (!currentUserId) {
-      throw new Error("User ID not available");
-    }
-
-    try {
-      const fullName =
-        `${profileData.firstName} ${profileData.lastName}`.trim();
-
-      const { data } = await updateUserProfile({
-        variables: {
-          id: currentUserId,
-          name: fullName,
-          image: profileData.image,
-        },
-      });
-
-      return data;
-    } catch (error) {
-      console.error("Error syncing with database:", error);
-      throw error;
-    }
-  };
-
-  const handleUpdateProfile = async () => {
-    try {
-      setLoading(true);
-
-      // Use our new API endpoint that handles Clerk Backend API calls
-      const response = await fetch("/api/users/update-profile", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          firstName: profileForm.firstName,
-          lastName: profileForm.lastName,
-          username: profileForm.username,
-          unsafeMetadata: {
-            bio: profileForm.bio,
-            location: profileForm.location,
-            company: profileForm.company,
-            website: profileForm.website,
-            phone: profileForm.phone,
-          },
-        }),
-      });
-
-      let result;
-      try {
-        result = await response.json();
-      } catch (parseError) {
-        console.error("Failed to parse response as JSON:", parseError);
-        const textResponse = await response.text();
-        console.error("Raw response:", textResponse);
-        throw new Error(
-          `Server returned invalid response: ${textResponse.substring(0, 100)}`
-        );
-      }
-
-      if (!response.ok) {
-        throw new Error(result.error || "Failed to update profile");
-      }
-
-      // Also sync with database
-      await syncUserWithDatabase(profileForm);
-
-      toast.success(result.message || "Profile updated successfully");
-      refetch(); // Refresh the user data
-
-      // Reload the Clerk user to get the latest data
-      await clerkUser?.reload();
-    } catch (error: any) {
-      console.error("Error updating profile:", error);
-      toast.error(error.message || "Failed to update profile");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handlePasswordReset = async () => {
     try {
       setPasswordLoading(true);
       // For now, we'll show a message directing users to use email reset
-      // In a production app, you'd integrate with Clerk's password reset flow
-      toast.info(
-        "Please use the 'Forgot Password' link on the login page to reset your password"
-      );
+      alert("Please use the 'Forgot Password' link on the login page to reset your password");
     } catch (error) {
       console.error("Error with password reset:", error);
-      toast.error("Failed to initiate password reset");
+      alert("Failed to initiate password reset");
     } finally {
       setPasswordLoading(false);
     }
@@ -289,10 +76,7 @@ export default function AccountSettings() {
   if (!isLoaded || userLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="text-gray-500">Loading settings...</p>
-        </div>
+        <ByteMyLoadingIcon title="Loading settings..." size="default" />
       </div>
     );
   }
@@ -300,7 +84,7 @@ export default function AccountSettings() {
   const dbUser = userData?.userById;
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto py-6 space-y-6">
       <div>
         <h2 className="text-3xl font-bold tracking-tight">Account Settings</h2>
         <p className="text-muted-foreground">
@@ -309,245 +93,12 @@ export default function AccountSettings() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="profile">Profile</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="account">Account</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
           <TabsTrigger value="preferences">Preferences</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="profile" className="space-y-6">
-          {/* Profile Image */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Camera className="w-5 h-5" />
-                Profile Picture
-              </CardTitle>
-              <CardDescription>Update your profile picture</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center space-x-6">
-                <Avatar className="w-24 h-24">
-                  <AvatarImage src={getAvatarImage()} alt="Profile" />
-                  <AvatarFallback className="text-2xl">
-                    {profileForm.firstName[0]}
-                    {profileForm.lastName[0]}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="space-y-2">
-                  <Label htmlFor="image-upload" className="cursor-pointer">
-                    <Button variant="outline" disabled={imageUploading} asChild>
-                      <span>
-                        {imageUploading ? (
-                          <>
-                            <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                            Uploading...
-                          </>
-                        ) : (
-                          <>
-                            <Camera className="w-4 h-4 mr-2" />
-                            Change Picture
-                          </>
-                        )}
-                      </span>
-                    </Button>
-                  </Label>
-                  <input
-                    id="image-upload"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    JPG, PNG or GIF. Max size 5MB.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Basic Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="w-5 h-5" />
-                Basic Information
-              </CardTitle>
-              <CardDescription>
-                Update your personal information
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Input
-                    id="firstName"
-                    value={profileForm.firstName}
-                    onChange={e =>
-                      handleInputChange("firstName", e.target.value)
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name</Label>
-                  <Input
-                    id="lastName"
-                    value={profileForm.lastName}
-                    onChange={e =>
-                      handleInputChange("lastName", e.target.value)
-                    }
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
-                <Input
-                  id="username"
-                  value={profileForm.username}
-                  onChange={e => handleInputChange("username", e.target.value)}
-                  placeholder="Enter a unique username (optional)"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Username is optional and can be left empty
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="bio">Bio</Label>
-                <Textarea
-                  id="bio"
-                  value={profileForm.bio}
-                  onChange={e => handleInputChange("bio", e.target.value)}
-                  placeholder="Tell us about yourself..."
-                  rows={3}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Contact Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Mail className="w-5 h-5" />
-                Contact Information
-              </CardTitle>
-              <CardDescription>Your contact details</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  value={clerkUser?.primaryEmailAddress?.emailAddress || ""}
-                  disabled
-                />
-                <p className="text-xs text-muted-foreground">
-                  Email cannot be changed here. Use the security tab to manage
-                  email addresses.
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
-                <Input
-                  id="phone"
-                  value={profileForm.phone}
-                  onChange={e => handleInputChange("phone", e.target.value)}
-                  placeholder="+1 (555) 123-4567"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="location">Location</Label>
-                <Input
-                  id="location"
-                  value={profileForm.location}
-                  onChange={e => handleInputChange("location", e.target.value)}
-                  placeholder="City, Country"
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Professional Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Building2 className="w-5 h-5" />
-                Professional Information
-              </CardTitle>
-              <CardDescription>Your work-related details</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="company">Company</Label>
-                <Input
-                  id="company"
-                  value={profileForm.company}
-                  onChange={e => handleInputChange("company", e.target.value)}
-                  placeholder="Your company name"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="website">Website</Label>
-                <Input
-                  id="website"
-                  value={profileForm.website}
-                  onChange={e => handleInputChange("website", e.target.value)}
-                  placeholder="https://yourwebsite.com"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Role</Label>
-                <div className="flex items-center space-x-2">
-                  <Badge variant="outline">
-                    {dbUser?.role === "developer"
-                      ? "Developer"
-                      : dbUser?.role === "org_admin"
-                        ? "Admin"
-                        : dbUser?.role === "manager"
-                          ? "Manager"
-                          : dbUser?.role === "consultant"
-                            ? "Consultant"
-                            : "Viewer"}
-                  </Badge>
-                  <Badge variant={dbUser?.isStaff ? "default" : "secondary"}>
-                    {dbUser?.isStaff ? "Staff Member" : "External User"}
-                  </Badge>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Role changes must be made by an administrator.
-                </p>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button
-                onClick={handleUpdateProfile}
-                disabled={loading}
-                className="w-full"
-              >
-                {loading ? (
-                  <>
-                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  <>
-                    <Save className="w-4 h-4 mr-2" />
-                    Save Changes
-                  </>
-                )}
-              </Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
 
         <TabsContent value="account" className="space-y-6">
           <Card>
@@ -571,15 +122,11 @@ export default function AccountSettings() {
                 </div>
                 <div>
                   <Label className="text-sm font-medium">Member Since</Label>
-                  <p className="text-sm text-muted-foreground">
-                    {"N/A"}
-                  </p>
+                  <p className="text-sm text-muted-foreground">{"N/A"}</p>
                 </div>
                 <div>
                   <Label className="text-sm font-medium">Last Updated</Label>
-                  <p className="text-sm text-muted-foreground">
-                    {"N/A"}
-                  </p>
+                  <p className="text-sm text-muted-foreground">{"N/A"}</p>
                 </div>
               </div>
             </CardContent>

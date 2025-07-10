@@ -1,0 +1,147 @@
+table:
+  name: email_send_logs
+  schema: public
+object_relationships:
+  - name: emailTemplate
+    using:
+      foreign_key_constraint_on: template_id
+  - name: senderUser
+    using:
+      foreign_key_constraint_on: sender_user_id
+insert_permissions:
+  - role: consultant
+    permission:
+      check:
+        sender_user_id:
+          _eq: X-Hasura-User-Id
+      columns:
+        - template_id
+        - recipient_emails
+        - subject
+        - html_content
+        - text_content
+        - business_context
+        - scheduled_for
+  - role: manager
+    permission:
+      check: {}
+      columns:
+        - template_id
+        - resend_email_id
+        - recipient_emails
+        - sender_user_id
+        - subject
+        - html_content
+        - text_content
+        - business_context
+        - send_status
+        - resend_response
+        - error_message
+        - scheduled_for
+        - sent_at
+        - delivered_at
+        - opened_at
+        - clicked_at
+  - role: org_admin
+    permission:
+      check: {}
+      columns:
+        - template_id
+        - resend_email_id
+        - recipient_emails
+        - sender_user_id
+        - subject
+        - html_content
+        - text_content
+        - business_context
+        - send_status
+        - resend_response
+        - error_message
+        - scheduled_for
+        - sent_at
+        - delivered_at
+        - opened_at
+        - clicked_at
+select_permissions:
+  - role: consultant
+    permission:
+      columns:
+        - id
+        - template_id
+        - recipient_emails
+        - subject
+        - send_status
+        - sent_at
+        - delivered_at
+        - created_at
+      filter:
+        sender_user_id:
+          _eq: X-Hasura-User-Id
+      allow_aggregations: true
+  - role: manager
+    permission:
+      columns:
+        - id
+        - template_id
+        - resend_email_id
+        - recipient_emails
+        - sender_user_id
+        - subject
+        - business_context
+        - send_status
+        - scheduled_for
+        - sent_at
+        - delivered_at
+        - opened_at
+        - clicked_at
+        - created_at
+      filter: {}
+      allow_aggregations: true
+  - role: org_admin
+    permission:
+      columns:
+        - id
+        - template_id
+        - resend_email_id
+        - recipient_emails
+        - sender_user_id
+        - subject
+        - html_content
+        - text_content
+        - business_context
+        - send_status
+        - resend_response
+        - error_message
+        - scheduled_for
+        - sent_at
+        - delivered_at
+        - opened_at
+        - clicked_at
+        - created_at
+      filter: {}
+      allow_aggregations: true
+update_permissions:
+  - role: manager
+    permission:
+      columns:
+        - send_status
+        - resend_response
+        - error_message
+        - sent_at
+        - delivered_at
+        - opened_at
+        - clicked_at
+      filter: {}
+      check: {}
+  - role: org_admin
+    permission:
+      columns:
+        - send_status
+        - resend_response
+        - error_message
+        - sent_at
+        - delivered_at
+        - opened_at
+        - clicked_at
+      filter: {}
+      check: {}

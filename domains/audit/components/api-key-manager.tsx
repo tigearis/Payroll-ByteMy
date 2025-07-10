@@ -170,11 +170,12 @@ function APIKeyManagerInner() {
   };
 
   const togglePermission = (permission: string) => {
-    setSelectedPermissions(prev =>
-      prev.includes(permission)
+    setSelectedPermissions(prev => {
+      const isSelected = prev.indexOf(permission) !== -1;
+      return isSelected
         ? prev.filter(p => p !== permission)
-        : [...prev, permission]
-    );
+        : [...prev, permission];
+    });
   };
 
   if (!hasAdminAccess) {
@@ -392,7 +393,7 @@ function APIKeyManagerInner() {
             <div>
               <Label>Permissions</Label>
               <div className="grid grid-cols-2 gap-2 mt-2">
-                {AVAILABLE_PERMISSIONS.map(permission => (
+                {AVAILABLEPERMISSIONS.map(permission => (
                   <div key={permission} className="flex items-center space-x-2">
                     <input
                       type="checkbox"

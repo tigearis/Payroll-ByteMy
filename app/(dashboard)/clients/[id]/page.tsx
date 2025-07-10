@@ -44,6 +44,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ByteMyLoadingIcon } from "@/components/ui/bytemy-loading-icon";
 import {
   Card,
   CardContent,
@@ -69,7 +70,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { PayrollsTabLoading } from "@/components/ui/loading-states";
 import { Switch } from "@/components/ui/switch";
 import {
   Table,
@@ -85,14 +85,17 @@ import {
   UpdateClientDocument,
   UpdateClientStatusDocument,
   ArchiveClientDocument,
+  type GetClientByIdQuery,
 } from "@/domains/clients/graphql/generated/graphql";
+import { ClientServiceAgreements } from "@/domains/billing/components/service-catalog/client-service-agreements";
+import { QuickEmailDialog } from "@/domains/email/components/quick-email-dialog";
 import { NotesListWithAdd } from "@/domains/notes/components/notes-list";
 import { type PayrollListItemFragment } from "@/domains/payrolls/graphql/generated/graphql";
 import { useSmartPolling } from "@/hooks/use-polling";
 import { safeFormatDate } from "@/lib/utils/date-utils";
 
 // Helper function to format payroll cycle information
-const formatPayrollCycle = (payroll: any) => {
+const formatPayrollCycle = (payroll: PayrollListItemFragment) => {
   const cycleName = payroll.payrollCycle?.name;
 
   if (!cycleName) {
@@ -206,6 +209,7 @@ export default function ClientDetailPage() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [selectedPayrolls, setSelectedPayrolls] = useState<string[]>([]);
+  const [showEmailDialog, setShowEmailDialog] = useState(false);
 
   // Edit form state
   const [editFormData, setEditFormData] = useState({
@@ -256,7 +260,9 @@ export default function ClientDetailPage() {
   );
 
   if (loading) {
-    return <PayrollsTabLoading />;
+    return (
+      <ByteMyLoadingIcon title="Loading client details..." size="default" />
+    );
   }
 
   if (error) {
@@ -276,6 +282,9 @@ export default function ClientDetailPage() {
   }
 
   const client = data?.client;
+  
+  // Type for client data - extract from query result
+  type ClientData = NonNullable<GetClientByIdQuery['client']>;
 
   // Debug: Log client data to see what we're getting
   console.log("Client details data:", {
@@ -351,7 +360,7 @@ export default function ClientDetailPage() {
       const totalEmployees =
         payrollDatesTotal > 0
           ? payrollDatesTotal
-          : (payroll as any).employeeCount || 0;
+          : payroll.employeeCount || 0;
 
       return {
         ...payroll,
@@ -359,14 +368,14 @@ export default function ClientDetailPage() {
         payrollSchedule: formatPayrollCycle(payroll),
         priority:
           totalEmployees > 50 ? "high" : totalEmployees > 20 ? "medium" : "low",
-        progress: getStatusConfig((payroll as any).status || "Implementation")
+        progress: getStatusConfig(payroll.status || "Implementation")
           .progress,
         lastUpdated: new Date(
           payroll.updatedAt || payroll.createdAt || new Date()
         ),
         // Store backup consultant name for easy access in UI
         backupConsultantName:
-          (payroll as any).backupConsultant?.name || "Unassigned",
+          payroll.backupConsultant?.name || "Unassigned",
       };
     });
   };
@@ -377,7 +386,7 @@ export default function ClientDetailPage() {
     payrolls: PayrollListItemFragment[]
   ) => {
     if (checked) {
-      setSelectedPayrolls(payrolls.map(p => (p as any).id));
+      setSelectedPayrolls(payrolls.map(p => p.id));
     } else {
       setSelectedPayrolls([]);
     }
@@ -404,11 +413,11 @@ export default function ClientDetailPage() {
     if (!client) return;
 
     setEditFormData({
-      name: (client as any).name || "",
-      contactPerson: (client as any).contactPerson || "",
-      contactEmail: (client as any).contactEmail || "",
-      contactPhone: (client as any).contactPhone || "",
-      active: (client as any).active ?? true,
+      name: client.name || "",
+      contactPerson: client.contactPerson || "",
+      contactEmail: client.contactEmail || "",
+      contactPhone: client.contactPhone || "",
+      active: client.active ?? true,
     });
     setShowEditDialog(true);
   };
@@ -453,7 +462,7 @@ export default function ClientDetailPage() {
       });
 
       // Update client status if it changed
-      if ((client as any)?.active !== editFormData.active) {
+      if (client?.active !== editFormData.active) {
         await updateClientStatus({
           variables: {
             id,
@@ -474,11 +483,11 @@ export default function ClientDetailPage() {
 
   // Calculate client statistics
   const activePayrolls =
-    (client as any)?.payrollHistory?.filter((p: any) => !p.supersededDate)?.length ||
-    0;
-  const totalPayrolls = (client as any)?.payrollHistory?.length || 0;
+    client?.payrollHistory?.filter((p) => !p.supersededDate)
+      ?.length || 0;
+  const totalPayrolls = client?.payrollHistory?.length || 0;
   const totalEmployees =
-    (client as any)?.payrollHistory?.reduce((sum: number, p: any) => {
+    client?.payrollHistory?.reduce((sum: number, p) => {
       // PayrollDates don't have employeeCount - use payroll's employeeCount directly
       const employeeCount = p.employeeCount || 0;
       return sum + employeeCount;
@@ -487,7 +496,7 @@ export default function ClientDetailPage() {
   const estimatedMonthlyValue = 0;
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto py-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
@@ -499,7 +508,7 @@ export default function ClientDetailPage() {
           </Link>
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              {(client as any)?.name}
+              {client?.name}
             </h1>
             <p className="text-gray-500">Client Details & Management</p>
           </div>
@@ -517,6 +526,11 @@ export default function ClientDetailPage() {
               <DropdownMenuItem onClick={handleEditClient}>
                 <Edit className="w-4 h-4 mr-2" />
                 Edit Client
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => setShowEmailDialog(true)}>
+                <Mail className="w-4 h-4 mr-2" />
+                Send Email
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
@@ -545,15 +559,15 @@ export default function ClientDetailPage() {
                 <p className="text-sm font-medium text-gray-600">Status</p>
                 <Badge
                   className={getStatusColor(
-                    (client as any)?.active ? "active" : "inactive"
+                    client?.active ? "active" : "inactive"
                   )}
                 >
-                  {(client as any)?.active ? "Active" : "Inactive"}
+                  {client?.active ? "Active" : "Inactive"}
                 </Badge>
               </div>
               <CheckCircle
                 className={`w-8 h-8 ${
-                  (client as any)?.active ? "text-green-600" : "text-gray-400"
+                  client?.active ? "text-green-600" : "text-gray-400"
                 }`}
               />
             </div>
@@ -615,7 +629,7 @@ export default function ClientDetailPage() {
         onValueChange={setActiveTab}
         className="space-y-4"
       >
-        <TabsList className="grid w-full grid-cols-3 bg-indigo-100 shadow-md rounded-lg">
+        <TabsList className="grid w-full grid-cols-4 bg-indigo-100 shadow-md rounded-lg">
           <TabsTrigger
             value="overview"
             className="data-[state=active]:bg-white data-[state=active]:text-gray-900 hover:bg-indigo-300 transition-all text-gray-900"
@@ -627,6 +641,12 @@ export default function ClientDetailPage() {
             className="data-[state=active]:bg-white data-[state=active]:text-gray-900 hover:bg-indigo-300 transition-all text-gray-900"
           >
             Payrolls ({totalPayrolls})
+          </TabsTrigger>
+          <TabsTrigger
+            value="billing"
+            className="data-[state=active]:bg-white data-[state=active]:text-gray-900 hover:bg-indigo-300 transition-all text-gray-900"
+          >
+            Billing & Services
           </TabsTrigger>
           <TabsTrigger
             value="notes"
@@ -660,7 +680,7 @@ export default function ClientDetailPage() {
                         Contact Person
                       </p>
                       <p className="text-sm text-gray-900">
-                        {(client as any).contactPerson || "Not specified"}
+                        {client.contactPerson || "Not specified"}
                       </p>
                     </div>
                   </div>
@@ -674,7 +694,7 @@ export default function ClientDetailPage() {
                     <div>
                       <p className="text-sm font-medium text-gray-500">Email</p>
                       <p className="text-sm text-gray-900">
-                        {(client as any).contactEmail || "Not specified"}
+                        {client.contactEmail || "Not specified"}
                       </p>
                     </div>
                   </div>
@@ -688,7 +708,7 @@ export default function ClientDetailPage() {
                     <div>
                       <p className="text-sm font-medium text-gray-500">Phone</p>
                       <p className="text-sm text-gray-900">
-                        {(client as any).contactPhone || "Not specified"}
+                        {client.contactPhone || "Not specified"}
                       </p>
                     </div>
                   </div>
@@ -706,13 +726,13 @@ export default function ClientDetailPage() {
                   <div>
                     <p className="font-medium text-gray-500">Created</p>
                     <p className="text-gray-900">
-                      {safeFormatDate((client as any).createdAt)}
+                      {safeFormatDate(client.createdAt)}
                     </p>
                   </div>
                   <div>
                     <p className="font-medium text-gray-500">Last Updated</p>
                     <p className="text-gray-900">
-                      {safeFormatDate((client as any).updatedAt)}
+                      {safeFormatDate(client.updatedAt)}
                     </p>
                   </div>
                   <div>
@@ -737,7 +757,7 @@ export default function ClientDetailPage() {
                 <div>
                   <CardTitle>Client Payrolls</CardTitle>
                   <CardDescription>
-                    Manage payrolls associated with {(client as any)?.name}
+                    Manage payrolls associated with {client?.name}
                   </CardDescription>
                 </div>
                 <Link href={`/payrolls/new?client=${id}`}>
@@ -751,7 +771,7 @@ export default function ClientDetailPage() {
             <CardContent>
               {(() => {
                 const transformedPayrolls = transformPayrollData(
-                  (client as any)?.payrollHistory || []
+                  client?.payrollHistory || []
                 );
 
                 return (
@@ -820,7 +840,7 @@ export default function ClientDetailPage() {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {transformedPayrolls.map((payroll: any) => {
+                          {transformedPayrolls.map((payroll) => {
                             const statusConfig = getStatusConfig(
                               payroll.status || "Implementation"
                             );
@@ -935,9 +955,11 @@ export default function ClientDetailPage() {
                                           View Details
                                         </Link>
                                       </DropdownMenuItem>
-                                      <DropdownMenuItem>
-                                        <Edit className="w-4 h-4 mr-2" />
-                                        Edit Payroll
+                                      <DropdownMenuItem asChild>
+                                        <Link href={`/payrolls/${payroll.id}/edit?returnTo=/clients/${id}%23payrolls`}>
+                                          <Edit className="w-4 h-4 mr-2" />
+                                          Edit Payroll
+                                        </Link>
                                       </DropdownMenuItem>
                                       <DropdownMenuItem>
                                         <Copy className="w-4 h-4 mr-2" />
@@ -983,6 +1005,30 @@ export default function ClientDetailPage() {
           </Card>
         </TabsContent>
 
+        {/* Billing Tab */}
+        <TabsContent value="billing">
+          <div className="space-y-6">
+            {/* Client Billing Overview */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <DollarSign className="w-5 h-5 mr-2" />
+                  Billing & Services Overview
+                </CardTitle>
+                <CardDescription>
+                  Manage billing configuration and service agreements for {client?.name}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ClientServiceAgreements 
+                  clientId={id} 
+                  clientName={client?.name || ""} 
+                />
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
         {/* Notes Tab */}
         <TabsContent value="notes">
           <Card>
@@ -992,7 +1038,7 @@ export default function ClientDetailPage() {
                 Client Notes
               </CardTitle>
               <CardDescription>
-                Notes and comments about {(client as any)?.name}
+                Notes and comments about {client?.name}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -1118,13 +1164,29 @@ export default function ClientDetailPage() {
         </DialogContent>
       </Dialog>
 
+      {/* Quick Email Dialog */}
+      {client && (
+        <QuickEmailDialog
+          open={showEmailDialog}
+          onOpenChange={setShowEmailDialog}
+          businessContext={{
+            category: 'client',
+            clientId: id,
+            recipientEmails: [client.contactEmail].filter(Boolean)
+          }}
+          suggestedSubject={`Regarding: ${client.name}`}
+          title="Send Client Email"
+          description="Send an email to this client regarding their account or payroll services"
+        />
+      )}
+
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Client</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete &quot;{(client as any)?.name}
+              Are you sure you want to delete &quot;{client?.name}
               &quot;? This action cannot be undone and will also remove all
               associated payrolls and data.
             </AlertDialogDescription>

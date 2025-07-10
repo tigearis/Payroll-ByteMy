@@ -11,8 +11,8 @@ import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 
-const _filename = fileURLToPath(import.meta.url);
-const _dirname = path.dirname(_filename);
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
 
 class CodebaseFixer {
   constructor(options = {}) {

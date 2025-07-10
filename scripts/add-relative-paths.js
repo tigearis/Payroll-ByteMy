@@ -3,11 +3,11 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 // Convert `import.meta.url` to __dirname equivalent
-const _filename = fileURLToPath(import.meta.url);
-const _dirname = path.dirname(_filename);
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
 
 // Root directory (entire project)
-const ROOT_DIR = path.resolve(_dirname);
+const ROOT_DIR = path.resolve(dirname);
 
 // Directories to exclude
 const EXCLUDED_DIRS = new Set(["node_modules", ".next", ".vercel"]);

@@ -4,10 +4,13 @@
 import { ApolloProvider } from "@apollo/client";
 import { ClerkProvider, useAuth } from "@clerk/nextjs";
 import { StrictDatabaseGuard } from "@/components/auth/strict-database-guard";
-import { TokenRefreshBoundary } from "@/components/auth/token-refresh-boundary";
+// import { TokenRefreshBoundary } from "@/components/auth/token-refresh-boundary";
 import { ErrorBoundary } from "@/components/error-boundary";
+import { LoadingProvider } from "@/components/providers/loading-provider";
+import { ByteMyLoadingIcon } from "@/components/ui/bytemy-loading-icon";
 import { clientApolloClient } from "@/lib/apollo/unified-client";
 // Auth provider removed - using simplified Clerk-only auth
+import { FeatureFlagProvider } from "@/lib/feature-flags";
 import { LayoutPreferencesProvider } from "@/lib/preferences/layout-preferences";
 
 // ================================
@@ -31,11 +34,23 @@ function AuthenticatedApolloProvider({
 
   // Wait for Clerk to finish loading before providing Apollo client
   if (!isLoaded) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <ByteMyLoadingIcon 
+          title="Initializing..."
+          description="Setting up your secure connection"
+          size="lg"
+        />
+      </div>
+    );
   }
 
   return (
-    <ApolloProvider client={clientApolloClient}>{children}</ApolloProvider>
+    <ApolloProvider client={clientApolloClient}>
+      <FeatureFlagProvider>
+        {children}
+      </FeatureFlagProvider>
+    </ApolloProvider>
   );
 }
 
@@ -48,11 +63,11 @@ export function Providers({ children }: ProvidersProps) {
     <ErrorBoundary>
       <ClerkProvider>
         <AuthenticatedApolloProvider>
-          <TokenRefreshBoundary>
+          <LoadingProvider>
             <LayoutPreferencesProvider>
               <StrictDatabaseGuard>{children}</StrictDatabaseGuard>
             </LayoutPreferencesProvider>
-          </TokenRefreshBoundary>
+          </LoadingProvider>
         </AuthenticatedApolloProvider>
       </ClerkProvider>
     </ErrorBoundary>

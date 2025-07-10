@@ -52,7 +52,7 @@ async function inspectSchema() {
     }
 
     console.log('\n📋 Available Mutations:');
-    const mutations = data.data.__schema.mutationType.fields;
+    const mutations = data.data.schema.mutationType.fields;
     
     // Filter for insert operations
     const insertMutations = mutations
@@ -64,7 +64,7 @@ async function inspectSchema() {
     });
 
     console.log('\n📋 Available Queries:');
-    const queries = data.data.__schema.queryType.fields;
+    const queries = data.data.schema.queryType.fields;
     
     // Filter for table queries (usually plural nouns)
     const tableQueries = queries

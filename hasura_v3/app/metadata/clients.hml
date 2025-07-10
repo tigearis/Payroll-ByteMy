@@ -1,0 +1,349 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: clients
+  fields:
+    - name: active
+      type: boolean
+      description: Whether the client is currently active
+    - name: contact_email
+      type: string
+      description: Email address for the client contact
+    - name: contact_person
+      type: string
+      description: Primary contact person at the client
+    - name: contact_phone
+      type: string
+      description: Phone number for the client contact
+    - name: created_at
+      type: timestamptz
+      description: Timestamp when the client was created
+    - name: id
+      type: uuid!
+      description: Unique identifier for the client
+    - name: name
+      type: string!
+      description: Client company name
+    - name: updated_at
+      type: timestamptz
+      description: Timestamp when the client was last updated
+  graphql:
+    typeName: clients
+    inputTypeName: clients_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: clients
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: clients
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - active
+          - contact_email
+          - contact_person
+          - contact_phone
+          - created_at
+          - id
+          - name
+          - updated_at
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: clients_bool_exp
+  operand:
+    object:
+      type: clients
+      comparableFields:
+        - fieldName: active
+          booleanExpressionType: bool_bool_exp
+        - fieldName: contact_email
+          booleanExpressionType: varchar_bool_exp
+        - fieldName: contact_person
+          booleanExpressionType: varchar_bool_exp
+        - fieldName: contact_phone
+          booleanExpressionType: varchar_bool_exp
+        - fieldName: created_at
+          booleanExpressionType: timestamptz_bool_exp
+        - fieldName: id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: name
+          booleanExpressionType: varchar_bool_exp
+        - fieldName: updated_at
+          booleanExpressionType: timestamptz_bool_exp
+      comparableRelationships:
+        - relationshipName: billing_invoices
+        - relationshipName: billing_items
+        - relationshipName: billing_periods
+        - relationshipName: client_billing_assignments
+        - relationshipName: client_external_systems
+        - relationshipName: payrolls
+        - relationshipName: time_entries
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: clients_bool_exp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: clients_agg_exp
+  operand:
+    object:
+      aggregatedType: clients
+      aggregatableFields:
+        - fieldName: active
+          aggregateExpression: bool_agg_exp
+        - fieldName: contact_email
+          aggregateExpression: varchar_agg_exp
+        - fieldName: contact_person
+          aggregateExpression: varchar_agg_exp
+        - fieldName: contact_phone
+          aggregateExpression: varchar_agg_exp
+        - fieldName: created_at
+          aggregateExpression: timestamptz_agg_exp
+        - fieldName: id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: name
+          aggregateExpression: varchar_agg_exp
+        - fieldName: updated_at
+          aggregateExpression: timestamptz_agg_exp
+  count:
+    enable: true
+    returnType: int_64
+  graphql:
+    selectTypeName: clients_agg_exp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: clients_order_by_exp
+  operand:
+    object:
+      orderedType: clients
+      orderableFields:
+        - fieldName: active
+          orderByExpression: boolean_order_by_exp
+        - fieldName: contact_email
+          orderByExpression: string_order_by_exp
+        - fieldName: contact_person
+          orderByExpression: string_order_by_exp
+        - fieldName: contact_phone
+          orderByExpression: string_order_by_exp
+        - fieldName: created_at
+          orderByExpression: timestamptz_order_by_exp
+        - fieldName: id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: name
+          orderByExpression: string_order_by_exp
+        - fieldName: updated_at
+          orderByExpression: timestamptz_order_by_exp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: clients_order_by_exp
+
+---
+kind: Model
+version: v2
+definition:
+  name: clients
+  objectType: clients
+  source:
+    dataConnectorName: payroll
+    collection: clients
+  filterExpressionType: clients_bool_exp
+  aggregateExpression: clients_agg_exp
+  orderByExpression: clients_order_by_exp
+  graphql:
+    selectMany:
+      queryRootField: clients
+      subscription:
+        rootField: clients
+    selectUniques:
+      - queryRootField: clients_by_id
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: clients_by_id
+    filterInputTypeName: clients_filter_input
+    aggregate:
+      queryRootField: clients_aggregate
+      subscription:
+        rootField: clients_aggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: clients
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: billing_invoices
+  sourceType: clients
+  target:
+    model:
+      name: billing_invoice
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: billing_invoice_agg_exp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: client_id
+  graphql:
+    aggregateFieldName: billing_invoices_aggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: billing_items
+  sourceType: clients
+  target:
+    model:
+      name: billing_items
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: billing_items_agg_exp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: client_id
+  graphql:
+    aggregateFieldName: billing_items_aggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: billing_periods
+  sourceType: clients
+  target:
+    model:
+      name: billing_periods
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: billing_periods_agg_exp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: client_id
+  graphql:
+    aggregateFieldName: billing_periods_aggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: client_billing_assignments
+  sourceType: clients
+  target:
+    model:
+      name: client_billing_assignment
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: client_billing_assignment_agg_exp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: client_id
+  graphql:
+    aggregateFieldName: client_billing_assignments_aggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: client_external_systems
+  sourceType: clients
+  target:
+    model:
+      name: client_external_systems
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: client_external_systems_agg_exp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: client_id
+  graphql:
+    aggregateFieldName: client_external_systems_aggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payrolls
+  sourceType: clients
+  target:
+    model:
+      name: payrolls
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: payrolls_agg_exp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: client_id
+  graphql:
+    aggregateFieldName: payrolls_aggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: time_entries
+  sourceType: clients
+  target:
+    model:
+      name: time_entries
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: time_entries_agg_exp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: client_id
+  graphql:
+    aggregateFieldName: time_entries_aggregate
+

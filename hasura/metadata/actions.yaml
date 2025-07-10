@@ -1,57 +1,233 @@
 actions:
-  - name: checkSuspiciousActivity
+  - name: approve_leave_request
     definition:
       kind: synchronous
-      handler: '{{HASURA_ACTION_BASE_URL}}/api/audit/check-suspicious'
+      handler: '{{ACTION_BASE_ENDPOINT}}/api/leave/approve'
       forward_client_headers: true
       headers:
-        - name: Content-Type
-          value: application/json
-    permissions:
-      - role: system
-      - role: developer
-    comment: Check for suspicious activity patterns
-  - name: commitPayrollAssignments
-    definition:
-      kind: synchronous
-      handler: '{{HASURA_ACTION_BASE_URL}}/api/commit-payroll-assignments'
-      forward_client_headers: true
-      headers:
-        - name: Content-Type
-          value: application/json
-    permissions:
-      - role: user
-  - name: generateComplianceReport
-    definition:
-      kind: synchronous
-      handler: '{{HASURA_ACTION_BASE_URL}}/api/audit/compliance-report'
-      forward_client_headers: true
-      headers:
-        - name: Content-Type
-          value: application/json
+        - name: Authorization
+          value: Bearer {{$session_variables.x-hasura-user-id}}
+        - name: X-Hasura-User-Id
+          value: '{{$session_variables.x-hasura-user-id}}'
+        - name: X-Hasura-Role
+          value: '{{$session_variables.x-hasura-role}}'
     permissions:
       - role: developer
       - role: org_admin
-    comment: Generate SOC2 compliance reports
-  - name: logAuditEvent
+      - role: manager
+  - name: audit_event
     definition:
       kind: synchronous
-      handler: '{{HASURA_ACTION_BASE_URL}}/api/audit/log'
+      handler: '{{ACTION_BASE_ENDPOINT}}/api/audit/event'
       forward_client_headers: true
       headers:
-        - name: Content-Type
-          value: application/json
+        - name: Authorization
+          value: Bearer {{$session_variables.x-hasura-user-id}}
+        - name: X-Hasura-User-Id
+          value: '{{$session_variables.x-hasura-user-id}}'
+        - name: X-Hasura-Role
+          value: '{{$session_variables.x-hasura-role}}'
     permissions:
-      - role: system
       - role: developer
       - role: org_admin
-    comment: Log audit events for SOC2 compliance
+      - role: manager
+      - role: consultant
+      - role: viewer
+  - name: calculate_utilization_stats
+    definition:
+      kind: ""
+      handler: '{{ACTION_BASE_ENDPOINT}}/api/workload/stats'
+      forward_client_headers: true
+      headers:
+        - name: Authorization
+          value: Bearer {{$session_variables.x-hasura-user-id}}
+        - name: X-Hasura-User-Id
+          value: '{{$session_variables.x-hasura-user-id}}'
+        - name: X-Hasura-Role
+          value: '{{$session_variables.x-hasura-role}}'
+    permissions:
+      - role: developer
+      - role: org_admin
+      - role: manager
+      - role: consultant
+      - role: viewer
+  - name: create_leave_request
+    definition:
+      kind: synchronous
+      handler: '{{ACTION_BASE_ENDPOINT}}/api/leave'
+      forward_client_headers: true
+      headers:
+        - name: Authorization
+          value: Bearer {{$session_variables.x-hasura-user-id}}
+        - name: X-Hasura-User-Id
+          value: '{{$session_variables.x-hasura-user-id}}'
+        - name: X-Hasura-Role
+          value: '{{$session_variables.x-hasura-role}}'
+    permissions:
+      - role: developer
+      - role: org_admin
+      - role: manager
+      - role: consultant
+      - role: viewer
+  - name: create_payroll
+    definition:
+      kind: synchronous
+      handler: '{{ACTION_BASE_ENDPOINT}}/api/payrolls'
+      forward_client_headers: true
+      headers:
+        - name: Authorization
+          value: Bearer {{$session_variables.x-hasura-user-id}}
+        - name: X-Hasura-User-Id
+          value: '{{$session_variables.x-hasura-user-id}}'
+        - name: X-Hasura-Role
+          value: '{{$session_variables.x-hasura-role}}'
+    permissions:
+      - role: developer
+      - role: org_admin
+      - role: manager
+      - role: consultant
+  - name: create_staff_member
+    definition:
+      kind: synchronous
+      handler: '{{ACTION_BASE_ENDPOINT}}/api/staff'
+      forward_client_headers: true
+      headers:
+        - name: Authorization
+          value: Bearer {{$session_variables.x-hasura-user-id}}
+        - name: X-Hasura-User-Id
+          value: '{{$session_variables.x-hasura-user-id}}'
+        - name: X-Hasura-Role
+          value: '{{$session_variables.x-hasura-role}}'
+    permissions:
+      - role: developer
+      - role: org_admin
+      - role: manager
+  - name: generate_payroll_schedule
+    definition:
+      kind: synchronous
+      handler: '{{ACTION_BASE_ENDPOINT}}/api/payrolls/schedule'
+      forward_client_headers: true
+      headers:
+        - name: Authorization
+          value: Bearer {{$session_variables.x-hasura-user-id}}
+        - name: X-Hasura-User-Id
+          value: '{{$session_variables.x-hasura-user-id}}'
+        - name: X-Hasura-Role
+          value: '{{$session_variables.x-hasura-role}}'
+    permissions:
+      - role: developer
+      - role: org_admin
+      - role: manager
+      - role: consultant
+  - name: get_assignment_calendar
+    definition:
+      kind: ""
+      handler: '{{ACTION_BASE_ENDPOINT}}/api/workload/calendar'
+      forward_client_headers: true
+      headers:
+        - name: Authorization
+          value: Bearer {{$session_variables.x-hasura-user-id}}
+        - name: X-Hasura-User-Id
+          value: '{{$session_variables.x-hasura-user-id}}'
+        - name: X-Hasura-Role
+          value: '{{$session_variables.x-hasura-role}}'
+    permissions:
+      - role: developer
+      - role: org_admin
+      - role: manager
+      - role: consultant
+      - role: viewer
+  - name: get_team_capacity_overview
+    definition:
+      kind: ""
+      handler: '{{ACTION_BASE_ENDPOINT}}/api/workload/team-capacity'
+      forward_client_headers: true
+      headers:
+        - name: Authorization
+          value: Bearer {{$session_variables.x-hasura-user-id}}
+        - name: X-Hasura-User-Id
+          value: '{{$session_variables.x-hasura-user-id}}'
+        - name: X-Hasura-Role
+          value: '{{$session_variables.x-hasura-role}}'
+    permissions:
+      - role: developer
+      - role: org_admin
+      - role: manager
+      - role: consultant
+  - name: get_workload_metrics
+    definition:
+      kind: ""
+      handler: '{{ACTION_BASE_ENDPOINT}}/api/workload/metrics'
+      forward_client_headers: true
+      headers:
+        - name: Authorization
+          value: Bearer {{$session_variables.x-hasura-user-id}}
+        - name: X-Hasura-User-Id
+          value: '{{$session_variables.x-hasura-user-id}}'
+        - name: X-Hasura-Role
+          value: '{{$session_variables.x-hasura-role}}'
+    permissions:
+      - role: developer
+      - role: org_admin
+      - role: manager
+      - role: consultant
+      - role: viewer
+  - name: update_payroll
+    definition:
+      kind: synchronous
+      handler: '{{ACTION_BASE_ENDPOINT}}/api/payrolls'
+      forward_client_headers: true
+      headers:
+        - name: Authorization
+          value: Bearer {{$session_variables.x-hasura-user-id}}
+        - name: X-Hasura-User-Id
+          value: '{{$session_variables.x-hasura-user-id}}'
+        - name: X-Hasura-Role
+          value: '{{$session_variables.x-hasura-role}}'
+    permissions:
+      - role: developer
+      - role: org_admin
+      - role: manager
+  - name: update_staff_member
+    definition:
+      kind: synchronous
+      handler: '{{ACTION_BASE_ENDPOINT}}/api/staff/update'
+      forward_client_headers: true
+      headers:
+        - name: Authorization
+          value: Bearer {{$session_variables.x-hasura-user-id}}
+        - name: X-Hasura-User-Id
+          value: '{{$session_variables.x-hasura-user-id}}'
+        - name: X-Hasura-Role
+          value: '{{$session_variables.x-hasura-role}}'
+    permissions:
+      - role: developer
+      - role: org_admin
+      - role: manager
+  - name: update_user_role
+    definition:
+      kind: synchronous
+      handler: '{{ACTION_BASE_ENDPOINT}}/api/update-user-role'
+      forward_client_headers: true
+      headers:
+        - name: Authorization
+          value: Bearer {{$session_variables.x-hasura-user-id}}
+        - name: X-Hasura-User-Id
+          value: '{{$session_variables.x-hasura-user-id}}'
+        - name: X-Hasura-Role
+          value: '{{$session_variables.x-hasura-role}}'
+    permissions:
+      - role: developer
 custom_types:
   enums: []
   input_objects:
     - name: PayrollAssignmentInput
     - name: AuditEventInput
     - name: ComplianceReportInput
+    - name: WorkloadMetricsInput
+    - name: TeamCapacityInput
+    - name: AssignmentCalendarInput
+    - name: UtilizationStatsInput
   objects:
     - name: AffectedAssignment
     - name: CommitPayrollAssignmentsOutput
@@ -59,4 +235,17 @@ custom_types:
     - name: ComplianceReportResponse
     - name: SuspiciousActivityResponse
     - name: SuspiciousEvent
+    - name: PayrollResponse
+    - name: ScheduleResponse
+    - name: LeaveResponse
+    - name: UserRoleResponse
+    - name: StaffResponse
+    - name: WorkloadMetricsResponse
+    - name: TeamCapacityResponse
+    - name: AssignmentCalendarResponse
+    - name: UtilizationStatsResponse
+    - name: WorkloadPeriodData
+    - name: CapacitySummary
+    - name: AssignmentDetails
+    - name: CalendarDay
   scalars: []

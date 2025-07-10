@@ -1,0 +1,148 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_user_invitations_object
+  fields:
+    - name: accepted_at
+      type: timestamptz
+    - name: accepted_by
+      type: uuid
+    - name: clerk_invitation_id
+      type: string
+    - name: clerk_ticket
+      type: string
+    - name: created_at
+      type: timestamptz
+    - name: email
+      type: string!
+    - name: expires_at
+      type: timestamptz!
+    - name: first_name
+      type: string!
+    - name: id
+      type: uuid
+    - name: invitation_metadata
+      type: json
+    - name: invitation_status
+      type: enum
+    - name: invited_at
+      type: timestamptz
+    - name: invited_by
+      type: uuid!
+    - name: invited_role
+      type: string!
+    - name: last_name
+      type: string!
+    - name: manager_id
+      type: uuid
+    - name: revoke_reason
+      type: string
+    - name: revoked_at
+      type: timestamptz
+    - name: revoked_by
+      type: uuid
+    - name: status
+      type: string
+    - name: updated_at
+      type: timestamptz
+  graphql:
+    typeName: insert_user_invitations_object
+    inputTypeName: insert_user_invitations_object_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_user_invitations_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_user_invitations_object
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - accepted_at
+          - accepted_by
+          - clerk_invitation_id
+          - clerk_ticket
+          - created_at
+          - email
+          - expires_at
+          - first_name
+          - id
+          - invitation_metadata
+          - invitation_status
+          - invited_at
+          - invited_by
+          - invited_role
+          - last_name
+          - manager_id
+          - revoke_reason
+          - revoked_at
+          - revoked_by
+          - status
+          - updated_at
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_user_invitations_response
+  description: Responses from the 'insert_user_invitations' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[user_invitations!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: insert_user_invitations_response
+    inputTypeName: insert_user_invitations_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_user_invitations_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_user_invitations_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: insert_user_invitations
+  outputType: insert_user_invitations_response!
+  arguments:
+    - name: objects
+      type: "[insert_user_invitations_object!]!"
+    - name: post_check
+      type: user_invitations_bool_exp
+      description: Insert permission predicate over the 'user_invitations' collection
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: insert_user_invitations
+  graphql:
+    rootFieldName: insert_user_invitations
+    rootFieldKind: Mutation
+  description: Insert into the user_invitations table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: insert_user_invitations
+  permissions:
+    - role: admin
+      allowExecution: true
+

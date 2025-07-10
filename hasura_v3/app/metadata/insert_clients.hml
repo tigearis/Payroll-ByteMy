@@ -1,0 +1,117 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_clients_object
+  fields:
+    - name: active
+      type: boolean
+      description: Whether the client is currently active
+    - name: contact_email
+      type: string
+      description: Email address for the client contact
+    - name: contact_person
+      type: string
+      description: Primary contact person at the client
+    - name: contact_phone
+      type: string
+      description: Phone number for the client contact
+    - name: created_at
+      type: timestamptz
+      description: Timestamp when the client was created
+    - name: id
+      type: uuid
+      description: Unique identifier for the client
+    - name: name
+      type: string!
+      description: Client company name
+    - name: updated_at
+      type: timestamptz
+      description: Timestamp when the client was last updated
+  graphql:
+    typeName: insert_clients_object
+    inputTypeName: insert_clients_object_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_clients_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_clients_object
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - active
+          - contact_email
+          - contact_person
+          - contact_phone
+          - created_at
+          - id
+          - name
+          - updated_at
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_clients_response
+  description: Responses from the 'insert_clients' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[clients!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: insert_clients_response
+    inputTypeName: insert_clients_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_clients_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_clients_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: insert_clients
+  outputType: insert_clients_response!
+  arguments:
+    - name: objects
+      type: "[insert_clients_object!]!"
+    - name: post_check
+      type: clients_bool_exp
+      description: Insert permission predicate over the 'clients' collection
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: insert_clients
+  graphql:
+    rootFieldName: insert_clients
+    rootFieldKind: Mutation
+  description: Insert into the clients table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: insert_clients
+  permissions:
+    - role: admin
+      allowExecution: true
+

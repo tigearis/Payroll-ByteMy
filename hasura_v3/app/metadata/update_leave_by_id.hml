@@ -1,0 +1,416 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_leave_created_at
+  description: Update the 'created_at' column in the 'leave' collection
+  fields:
+    - name: set
+      type: timestamptz
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_leave_created_at
+    inputTypeName: update_column_leave_created_at_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_leave_created_at
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_leave_created_at
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_leave_end_date
+  description: Update the 'end_date' column in the 'leave' collection
+  fields:
+    - name: set
+      type: date!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_leave_end_date
+    inputTypeName: update_column_leave_end_date_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_leave_end_date
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_leave_end_date
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_leave_id
+  description: Update the 'id' column in the 'leave' collection
+  fields:
+    - name: set
+      type: uuid!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_leave_id
+    inputTypeName: update_column_leave_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_leave_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_leave_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_leave_leave_type
+  description: Update the 'leave_type' column in the 'leave' collection
+  fields:
+    - name: set
+      type: string!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_leave_leave_type
+    inputTypeName: update_column_leave_leave_type_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_leave_leave_type
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_leave_leave_type
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_leave_reason
+  description: Update the 'reason' column in the 'leave' collection
+  fields:
+    - name: set
+      type: string
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_leave_reason
+    inputTypeName: update_column_leave_reason_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_leave_reason
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_leave_reason
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_leave_start_date
+  description: Update the 'start_date' column in the 'leave' collection
+  fields:
+    - name: set
+      type: date!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_leave_start_date
+    inputTypeName: update_column_leave_start_date_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_leave_start_date
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_leave_start_date
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_leave_status
+  description: Update the 'status' column in the 'leave' collection
+  fields:
+    - name: set
+      type: enum
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_leave_status
+    inputTypeName: update_column_leave_status_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_leave_status
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_leave_status
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_leave_updated_at
+  description: Update the 'updated_at' column in the 'leave' collection
+  fields:
+    - name: set
+      type: timestamptz
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_leave_updated_at
+    inputTypeName: update_column_leave_updated_at_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_leave_updated_at
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_leave_updated_at
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_leave_user_id
+  description: Update the 'user_id' column in the 'leave' collection
+  fields:
+    - name: set
+      type: uuid!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_leave_user_id
+    inputTypeName: update_column_leave_user_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_leave_user_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_leave_user_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_leave_by_id_update_columns
+  description: Update the columns of the 'leave' collection
+  fields:
+    - name: created_at
+      type: update_column_leave_created_at
+      description: Update the 'created_at' column in the 'leave' collection.
+    - name: end_date
+      type: update_column_leave_end_date
+      description: Update the 'end_date' column in the 'leave' collection.
+    - name: id
+      type: update_column_leave_id
+      description: Update the 'id' column in the 'leave' collection.
+    - name: leave_type
+      type: update_column_leave_leave_type
+      description: Update the 'leave_type' column in the 'leave' collection.
+    - name: reason
+      type: update_column_leave_reason
+      description: Update the 'reason' column in the 'leave' collection.
+    - name: start_date
+      type: update_column_leave_start_date
+      description: Update the 'start_date' column in the 'leave' collection.
+    - name: status
+      type: update_column_leave_status
+      description: Update the 'status' column in the 'leave' collection.
+    - name: updated_at
+      type: update_column_leave_updated_at
+      description: Update the 'updated_at' column in the 'leave' collection.
+    - name: user_id
+      type: update_column_leave_user_id
+      description: Update the 'user_id' column in the 'leave' collection.
+  graphql:
+    typeName: update_leave_by_id_update_columns
+    inputTypeName: update_leave_by_id_update_columns_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_leave_by_id_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_leave_by_id_update_columns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - created_at
+          - end_date
+          - id
+          - leave_type
+          - reason
+          - start_date
+          - status
+          - updated_at
+          - user_id
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_leave_by_id_response
+  description: Responses from the 'update_leave_by_id' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[leave!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: update_leave_by_id_response
+    inputTypeName: update_leave_by_id_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_leave_by_id_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_leave_by_id_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: update_leave_by_id
+  outputType: update_leave_by_id_response!
+  arguments:
+    - name: key_id
+      type: uuid!
+      description: Unique identifier for the leave record
+    - name: post_check
+      type: leave_bool_exp
+      description: Update permission post-condition predicate over the 'leave' collection
+    - name: pre_check
+      type: leave_bool_exp
+      description: Update permission pre-condition predicate over the 'leave' collection
+    - name: update_columns
+      type: update_leave_by_id_update_columns!
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: update_leave_by_id
+  graphql:
+    rootFieldName: update_leave_by_id
+    rootFieldKind: Mutation
+  description: Update any row on the 'leave' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: update_leave_by_id
+  permissions:
+    - role: admin
+      allowExecution: true
+

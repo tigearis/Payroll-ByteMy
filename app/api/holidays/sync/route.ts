@@ -1,7 +1,7 @@
 // app/api/holidays/sync/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { withAuth } from "@/lib/auth/api-auth";
 import { syncAustralianHolidays } from "@/domains/external-systems/services/holiday-sync-service";
+import { withAuth } from "@/lib/auth/api-auth";
 
 export const POST = withAuth(
   async (req: NextRequest, session) => {
@@ -52,9 +52,6 @@ export const POST = withAuth(
         { status: 500 }
       );
     }
-  },
-  {
-    allowedRoles: ["developer", "org_admin"], // Only developers and admins can manually sync holidays
   }
 );
 

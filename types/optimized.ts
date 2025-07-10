@@ -52,7 +52,12 @@ export type {
 
 export type {
   Role,
-  CustomPermission,
+} from './enums';
+
+export type {
+  // Permission types - using string for CustomPermission as defined in interfaces
+  PermissionOverride,
+} from './interfaces';
 
 // ===========================
 // Re-exports for Backward Compatibility

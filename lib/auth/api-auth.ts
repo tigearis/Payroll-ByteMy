@@ -1,46 +1,131 @@
 /**
  * Clean API Authentication
- * 
+ *
  * Simple authentication wrapper - only checks if user is logged in.
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export interface AuthSession {
-  userId: string;
+  userId: string; // Clerk user ID
+  databaseId?: string | undefined; // Database user ID from JWT claims
   email?: string;
+  clerkId?: string | undefined; // Clerk ID from JWT claims
+  managerId?: string | undefined; // Manager ID from JWT claims
+  isStaff?: boolean | undefined; // Staff status from JWT claims
+  organizationId?: string | undefined; // Organization ID from JWT claims
+  permissions?: string[] | undefined; // User permissions from JWT claims
+  role?: string | undefined; // User role from JWT claims  
+  defaultRole?: string | undefined; // Default role from JWT claims (fallback)
+  allowedRoles?: string[] | undefined; // Allowed roles from JWT claims
+  permissionHash?: string | undefined; // Permission hash from JWT claims
+  permissionVersion?: string | undefined; // Permission version from JWT claims
+}
+
+export interface AuthResult {
+  success: boolean;
+  session?: AuthSession;
+  error?: string;
 }
 
 /**
  * Simple API authentication wrapper
  */
-export function withAuth<T = any>(
-  handler: (request: NextRequest, session: AuthSession) => Promise<NextResponse<T>>
+export function withAuth(
+  handler: (
+    request: NextRequest,
+    session: AuthSession
+  ) => Promise<NextResponse<any>>
 ) {
-  return async (request: NextRequest): Promise<NextResponse<T>> => {
+  return async (request: NextRequest): Promise<NextResponse<any>> => {
     try {
-      const { userId, sessionClaims } = await auth();
-      
+      const { userId, sessionClaims, getToken } = await auth();
+
       if (!userId) {
-        return NextResponse.json(
-          { error: "Unauthorized" },
-          { status: 401 }
-        ) as NextResponse<T>;
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
+
+      // Extract all JWT claims as specified in the template
+      let databaseId: string | undefined;
+      let clerkId: string | undefined;
+      let managerId: string | undefined;
+      let isStaff: boolean | undefined;
+      let organizationId: string | undefined;
+      let permissions: string[] | undefined;
+      let role: string | undefined;
+      let defaultRole: string | undefined;
+      let allowedRoles: string[] | undefined;
+      let permissionHash: string | undefined;
+      let permissionVersion: string | undefined;
       
+      try {
+        const token = await getToken({ template: "hasura" });
+        if (token) {
+          // Decode JWT to get Hasura claims
+          const base64Payload = token.split(".")[1];
+          const decodedPayload = JSON.parse(atob(base64Payload));
+          const hasuraClaims = decodedPayload["https://hasura.io/jwt/claims"];
+          
+          // Extract all claims as per JWT template
+          databaseId = hasuraClaims?.["x-hasura-user-id"];
+          clerkId = hasuraClaims?.["x-hasura-clerk-id"];
+          managerId = hasuraClaims?.["x-hasura-manager-id"];
+          isStaff = hasuraClaims?.["x-hasura-is-staff"] === "true" || hasuraClaims?.["x-hasura-is-staff"] === true;
+          organizationId = hasuraClaims?.["x-hasura-org-id"];
+          permissions = hasuraClaims?.["x-hasura-permissions"];
+          role = hasuraClaims?.["x-hasura-role"];
+          defaultRole = hasuraClaims?.["x-hasura-default-role"];
+          allowedRoles = hasuraClaims?.["x-hasura-allowed-roles"];
+          permissionHash = hasuraClaims?.["x-hasura-permission-hash"];
+          permissionVersion = hasuraClaims?.["x-hasura-permission-version"];
+
+          // Debug logging
+          console.log("JWT Hasura claims:", hasuraClaims);
+          console.log("Extracted JWT data:", {
+            databaseId,
+            clerkId,
+            managerId,
+            isStaff,
+            organizationId,
+            role,
+            defaultRole,
+            allowedRoles,
+            permissionsCount: permissions?.length || 0,
+            permissionHash,
+            permissionVersion
+          });
+        }
+      } catch (tokenError) {
+        console.warn(
+          "Could not extract JWT claims from token:",
+          tokenError
+        );
+      }
+
       const session: AuthSession = {
         userId,
+        databaseId,
         email: sessionClaims?.email as string,
+        clerkId,
+        managerId,
+        isStaff,
+        organizationId,
+        permissions,
+        role,
+        defaultRole,
+        allowedRoles,
+        permissionHash,
+        permissionVersion,
       };
-      
+
       return await handler(request, session);
     } catch (error) {
       console.error("Auth error:", error);
       return NextResponse.json(
         { error: "Authentication failed" },
         { status: 401 }
-      ) as NextResponse<T>;
+      );
     }
   };
 }
@@ -48,45 +133,167 @@ export function withAuth<T = any>(
 /**
  * API auth with params (for dynamic routes)
  */
-export function withAuthParams<T = any>(
+export function withAuthParams(
   handler: (
-    request: NextRequest, 
-    context: { params: Promise<any> }, 
+    request: NextRequest,
+    context: { params: Promise<any> },
     session: AuthSession
-  ) => Promise<NextResponse<T>>
+  ) => Promise<NextResponse<any>>
 ) {
   return async (
-    request: NextRequest, 
+    request: NextRequest,
     context: { params: Promise<any> }
-  ): Promise<NextResponse<T>> => {
+  ): Promise<NextResponse<any>> => {
     try {
-      const { userId, sessionClaims } = await auth();
-      
+      const { userId, sessionClaims, getToken } = await auth();
+
       if (!userId) {
-        return NextResponse.json(
-          { error: "Unauthorized" },
-          { status: 401 }
-        ) as NextResponse<T>;
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
+
+      // Extract all JWT claims as specified in the template
+      let databaseId: string | undefined;
+      let clerkId: string | undefined;
+      let managerId: string | undefined;
+      let isStaff: boolean | undefined;
+      let organizationId: string | undefined;
+      let permissions: string[] | undefined;
+      let role: string | undefined;
+      let defaultRole: string | undefined;
+      let allowedRoles: string[] | undefined;
+      let permissionHash: string | undefined;
+      let permissionVersion: string | undefined;
       
+      try {
+        const token = await getToken({ template: "hasura" });
+        if (token) {
+          const base64Payload = token.split(".")[1];
+          const decodedPayload = JSON.parse(atob(base64Payload));
+          const hasuraClaims = decodedPayload["https://hasura.io/jwt/claims"];
+          
+          // Extract all claims as per JWT template
+          databaseId = hasuraClaims?.["x-hasura-user-id"];
+          clerkId = hasuraClaims?.["x-hasura-clerk-id"];
+          managerId = hasuraClaims?.["x-hasura-manager-id"];
+          isStaff = hasuraClaims?.["x-hasura-is-staff"] === "true" || hasuraClaims?.["x-hasura-is-staff"] === true;
+          organizationId = hasuraClaims?.["x-hasura-org-id"];
+          permissions = hasuraClaims?.["x-hasura-permissions"];
+          role = hasuraClaims?.["x-hasura-role"];
+          defaultRole = hasuraClaims?.["x-hasura-default-role"];
+          allowedRoles = hasuraClaims?.["x-hasura-allowed-roles"];
+          permissionHash = hasuraClaims?.["x-hasura-permission-hash"];
+          permissionVersion = hasuraClaims?.["x-hasura-permission-version"];
+        }
+      } catch (tokenError) {
+        console.warn("Could not extract JWT claims from token:", tokenError);
+      }
+
       const session: AuthSession = {
         userId,
+        databaseId,
         email: sessionClaims?.email as string,
+        clerkId,
+        managerId,
+        isStaff,
+        organizationId,
+        permissions,
+        role,
+        defaultRole,
+        allowedRoles,
+        permissionHash,
+        permissionVersion,
       };
-      
+
       return await handler(request, context, session);
     } catch (error) {
       console.error("Auth error:", error);
       return NextResponse.json(
         { error: "Authentication failed" },
         { status: 401 }
-      ) as NextResponse<T>;
+      );
     }
   };
 }
 
+/**
+ * Simple authentication check function
+ */
+export async function authenticateApiRequest(_request: NextRequest): Promise<AuthResult> {
+  try {
+    const { userId, sessionClaims, getToken } = await auth();
+
+    if (!userId) {
+      return {
+        success: false,
+        error: "Unauthorized"
+      };
+    }
+
+    // Extract all JWT claims as specified in the template
+    let databaseId: string | undefined;
+    let clerkId: string | undefined;
+    let managerId: string | undefined;
+    let isStaff: boolean | undefined;
+    let organizationId: string | undefined;
+    let permissions: string[] | undefined;
+    let defaultRole: string | undefined;
+    let allowedRoles: string[] | undefined;
+    let permissionHash: string | undefined;
+    let permissionVersion: string | undefined;
+    
+    try {
+      const token = await getToken({ template: "hasura" });
+      if (token) {
+        const base64Payload = token.split(".")[1];
+        const decodedPayload = JSON.parse(atob(base64Payload));
+        const hasuraClaims = decodedPayload["https://hasura.io/jwt/claims"];
+        
+        // Extract all claims as per JWT template
+        databaseId = hasuraClaims?.["x-hasura-user-id"];
+        clerkId = hasuraClaims?.["x-hasura-clerk-id"];
+        managerId = hasuraClaims?.["x-hasura-manager-id"];
+        isStaff = hasuraClaims?.["x-hasura-is-staff"] === "true" || hasuraClaims?.["x-hasura-is-staff"] === true;
+        organizationId = hasuraClaims?.["x-hasura-org-id"];
+        permissions = hasuraClaims?.["x-hasura-permissions"];
+        defaultRole = hasuraClaims?.["x-hasura-default-role"];
+        allowedRoles = hasuraClaims?.["x-hasura-allowed-roles"];
+        permissionHash = hasuraClaims?.["x-hasura-permission-hash"];
+        permissionVersion = hasuraClaims?.["x-hasura-permission-version"];
+      }
+    } catch (tokenError) {
+      console.warn("Could not extract JWT claims from token:", tokenError);
+    }
+
+    const session: AuthSession = {
+      userId,
+      databaseId,
+      email: sessionClaims?.email as string,
+      clerkId,
+      managerId,
+      isStaff,
+      organizationId,
+      permissions,
+      defaultRole,
+      allowedRoles,
+      permissionHash,
+      permissionVersion,
+    };
+
+    return {
+      success: true,
+      session
+    };
+  } catch (error) {
+    console.error("Auth error:", error);
+    return {
+      success: false,
+      error: "Authentication failed"
+    };
+  }
+}
+
 // Simple rate limiting for backward compatibility
-export function checkRateLimit(userId: string, options: any): boolean {
+export function checkRateLimit(_userId: string, _options: any): boolean {
   return true; // Allow all requests in simplified system
 }
 

@@ -1,0 +1,178 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: neon_auth_users_sync
+  fields:
+    - name: created_at
+      type: timestamptz
+      description: Timestamp when the user was created in the auth system
+    - name: deleted_at
+      type: timestamptz
+      description: Timestamp when the user was deleted in the auth system
+    - name: email
+      type: string
+      description: User's email address from authentication provider
+    - name: id
+      type: string!
+      description: Unique identifier from the authentication provider
+    - name: name
+      type: string
+      description: User's full name from authentication provider
+    - name: raw_json
+      type: json!
+      description: Complete JSON data from the authentication provider
+    - name: updated_at
+      type: timestamptz
+      description: Timestamp when the user was last updated in the auth system
+  graphql:
+    typeName: neon_auth_users_sync
+    inputTypeName: neon_auth_users_sync_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: neon_auth_users_sync
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: neon_auth_users_sync
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - created_at
+          - deleted_at
+          - email
+          - id
+          - name
+          - raw_json
+          - updated_at
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: neon_auth_users_sync_bool_exp
+  operand:
+    object:
+      type: neon_auth_users_sync
+      comparableFields:
+        - fieldName: created_at
+          booleanExpressionType: timestamptz_bool_exp
+        - fieldName: deleted_at
+          booleanExpressionType: timestamptz_bool_exp
+        - fieldName: email
+          booleanExpressionType: text_bool_exp
+        - fieldName: id
+          booleanExpressionType: text_bool_exp
+        - fieldName: name
+          booleanExpressionType: text_bool_exp
+        - fieldName: raw_json
+          booleanExpressionType: jsonb_bool_exp
+        - fieldName: updated_at
+          booleanExpressionType: timestamptz_bool_exp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: neon_auth_users_sync_bool_exp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: neon_auth_users_sync_agg_exp
+  operand:
+    object:
+      aggregatedType: neon_auth_users_sync
+      aggregatableFields:
+        - fieldName: created_at
+          aggregateExpression: timestamptz_agg_exp
+        - fieldName: deleted_at
+          aggregateExpression: timestamptz_agg_exp
+        - fieldName: email
+          aggregateExpression: text_agg_exp
+        - fieldName: id
+          aggregateExpression: text_agg_exp
+        - fieldName: name
+          aggregateExpression: text_agg_exp
+        - fieldName: raw_json
+          aggregateExpression: jsonb_agg_exp
+        - fieldName: updated_at
+          aggregateExpression: timestamptz_agg_exp
+  count:
+    enable: true
+    returnType: int_64
+  graphql:
+    selectTypeName: neon_auth_users_sync_agg_exp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: neon_auth_users_sync_order_by_exp
+  operand:
+    object:
+      orderedType: neon_auth_users_sync
+      orderableFields:
+        - fieldName: created_at
+          orderByExpression: timestamptz_order_by_exp
+        - fieldName: deleted_at
+          orderByExpression: timestamptz_order_by_exp
+        - fieldName: email
+          orderByExpression: string_order_by_exp
+        - fieldName: id
+          orderByExpression: string_order_by_exp
+        - fieldName: name
+          orderByExpression: string_order_by_exp
+        - fieldName: raw_json
+          orderByExpression: json_order_by_exp
+        - fieldName: updated_at
+          orderByExpression: timestamptz_order_by_exp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: neon_auth_users_sync_order_by_exp
+
+---
+kind: Model
+version: v2
+definition:
+  name: neon_auth_users_sync
+  objectType: neon_auth_users_sync
+  source:
+    dataConnectorName: payroll
+    collection: neon_auth_users_sync
+  filterExpressionType: neon_auth_users_sync_bool_exp
+  aggregateExpression: neon_auth_users_sync_agg_exp
+  orderByExpression: neon_auth_users_sync_order_by_exp
+  graphql:
+    selectMany:
+      queryRootField: neon_auth_users_sync
+      subscription:
+        rootField: neon_auth_users_sync
+    selectUniques:
+      - queryRootField: neon_auth_users_sync_by_id
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: neon_auth_users_sync_by_id
+    filterInputTypeName: neon_auth_users_sync_filter_input
+    aggregate:
+      queryRootField: neon_auth_users_sync_aggregate
+      subscription:
+        rootField: neon_auth_users_sync_aggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: neon_auth_users_sync
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

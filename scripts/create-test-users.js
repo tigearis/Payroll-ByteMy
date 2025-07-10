@@ -130,7 +130,7 @@ async function createTestUsers() {
   console.log('🚀 Starting test user creation...');
   console.log(`Using Clerk Secret Key: ${process.env.CLERK_SECRET_KEY?.substring(0, 20)}...`);
   
-  if (!process.env.CLERK_SECRET_KEY || !process.env.CLERK_SECRET_KEY.startsWith('sk_test_')) {
+  if (!process.env.CLERK_SECRET_KEY || !process.env.CLERKSECRETKEY.startsWith('sk_test_')) {
     console.error('❌ Error: CLERK_SECRET_KEY must be a test environment key (starts with sk_test_)');
     process.exit(1);
   }

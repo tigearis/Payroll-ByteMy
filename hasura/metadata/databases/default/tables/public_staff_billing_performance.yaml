@@ -1,0 +1,3 @@
+table:
+  name: staff_billing_performance
+  schema: public

@@ -1,0 +1,192 @@
+# Email Domain Mutations
+# Security Classification: HIGH - Email communication operations
+
+# Create email template
+mutation CreateEmailTemplate($input: EmailTemplatesInsertInput!) {
+  insertEmailTemplatesOne(object: $input) {
+    ...EmailTemplateWithRelations
+  }
+}
+
+# Update email template
+mutation UpdateEmailTemplate($templateId: uuid!, $updates: EmailTemplatesSetInput!) {
+  updateEmailTemplatesByPk(
+    pkColumns: { id: $templateId }
+    _set: $updates
+  ) {
+    ...EmailTemplateWithRelations
+  }
+}
+
+# Delete email template
+mutation DeleteEmailTemplate($templateId: uuid!) {
+  deleteEmailTemplatesByPk(id: $templateId) {
+    id
+    name
+  }
+}
+
+# Approve email template
+mutation ApproveEmailTemplate($templateId: uuid!, $approverId: uuid!) {
+  updateEmailTemplatesByPk(
+    pkColumns: { id: $templateId }
+    _set: {
+      approvedByUserId: $approverId
+      approvedAt: "now()"
+    }
+  ) {
+    ...EmailTemplateWithRelations
+  }
+}
+
+# Log email send
+mutation LogEmailSend($input: EmailSendLogsInsertInput!) {
+  insertEmailSendLogsOne(object: $input) {
+    ...EmailSendLogBase
+  }
+}
+
+# Update email send status
+mutation UpdateEmailSendStatus(
+  $logId: uuid!
+  $status: String!
+  $resendResponse: jsonb
+  $errorMessage: String
+  $sentAt: timestamptz
+  $deliveredAt: timestamptz
+  $openedAt: timestamptz
+  $clickedAt: timestamptz
+) {
+  updateEmailSendLogsByPk(
+    pkColumns: { id: $logId }
+    _set: {
+      sendStatus: $status
+      resendResponse: $resendResponse
+      errorMessage: $errorMessage
+      sentAt: $sentAt
+      deliveredAt: $deliveredAt
+      openedAt: $openedAt
+      clickedAt: $clickedAt
+    }
+  ) {
+    ...EmailSendLogBase
+  }
+}
+
+# Create email draft
+mutation CreateEmailDraft($input: EmailDraftsInsertInput!) {
+  insertEmailDraftsOne(object: $input) {
+    ...EmailDraftWithRelations
+  }
+}
+
+# Update email draft
+mutation UpdateEmailDraft($draftId: uuid!, $updates: EmailDraftsSetInput!) {
+  updateEmailDraftsByPk(
+    pkColumns: { id: $draftId }
+    _set: $updates
+  ) {
+    ...EmailDraftWithRelations
+  }
+}
+
+# Delete email draft
+mutation DeleteEmailDraft($draftId: uuid!) {
+  deleteEmailDraftsByPk(id: $draftId) {
+    id
+  }
+}
+
+# Add template to favorites
+mutation AddTemplateFavorite($userId: uuid!, $templateId: uuid!) {
+  insertUserEmailTemplateFavoritesOne(
+    object: {
+      userId: $userId
+      templateId: $templateId
+    }
+    onConflict: {
+      constraint: user_email_template_favorites_user_id_template_id_key
+      updateColumns: []
+    }
+  ) {
+    ...UserEmailTemplateFavorite
+  }
+}
+
+# Remove template from favorites
+mutation RemoveTemplateFavorite($userId: uuid!, $templateId: uuid!) {
+  deleteUserEmailTemplateFavorites(
+    where: {
+      userId: { _eq: $userId }
+      templateId: { _eq: $templateId }
+    }
+  ) {
+    affectedRows
+  }
+}
+
+# Bulk create email templates
+mutation BulkCreateEmailTemplates($templates: [EmailTemplatesInsertInput!]!) {
+  insertEmailTemplates(objects: $templates) {
+    affectedRows
+    returning {
+      id
+      name
+      category
+    }
+  }
+}
+
+# Duplicate email template
+mutation DuplicateEmailTemplate(
+  $sourceTemplateId: uuid!
+  $newName: String!
+  $userId: uuid!
+) {
+  insertEmailTemplatesOne(
+    object: {
+      name: $newName
+      description: "Copy of template"
+      category: "system"
+      subjectTemplate: ""
+      htmlContent: ""
+      availableVariables: "[]"
+      isActive: true
+      isSystemTemplate: false
+      createdByUserId: $userId
+    }
+  ) {
+    id
+  }
+}
+
+# Bulk update email send statuses (for webhook processing)
+mutation BulkUpdateEmailSendStatuses($updates: [EmailSendLogsUpdates!]!) {
+  updateEmailSendLogsMany(updates: $updates) {
+    affectedRows
+  }
+}
+
+# Archive old email logs (for cleanup)
+mutation ArchiveOldEmailLogs($beforeDate: timestamptz!) {
+  deleteEmailSendLogs(
+    where: {
+      createdAt: { _lt: $beforeDate }
+      sendStatus: { _in: ["delivered", "failed", "bounced"] }
+    }
+  ) {
+    affectedRows
+  }
+}
+
+# Activate/deactivate email template
+mutation ToggleEmailTemplateStatus($templateId: uuid!, $isActive: Boolean!) {
+  updateEmailTemplatesByPk(
+    pkColumns: { id: $templateId }
+    _set: { isActive: $isActive }
+  ) {
+    id
+    name
+    isActive
+  }
+}

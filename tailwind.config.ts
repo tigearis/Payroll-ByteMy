@@ -84,6 +84,10 @@ const config = {
           "0%, 80%, 100%": { transform: "scale(0)" },
           "40%": { transform: "scale(1)" },
         },
+        fadePulse: {
+          "0%, 100%": { opacity: "0.4" },
+          "50%": { opacity: "1" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -91,6 +95,7 @@ const config = {
         "caret-blink": "caret-blink 1.25s ease-out infinite",
         "pulse-slow": "pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
         "bounce-dot": "bounce-dot 1.4s ease-in-out infinite both",
+        fadePulse: "fadePulse 1.2s ease-in-out infinite",
       },
       animationDelay: {
         "75": "75ms",

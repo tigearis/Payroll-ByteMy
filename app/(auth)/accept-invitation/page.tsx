@@ -1,10 +1,12 @@
 "use client";
 
-import { useSignUp, useUser } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
+import { CheckCircle, XCircle, Clock, AlertCircle } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
-import * as React from "react";
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { ByteMySpinner } from "@/components/ui/bytemy-loading-icon";
 import {
   Card,
   CardContent,
@@ -12,252 +14,203 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useInvitationAcceptance } from "@/domains/auth/hooks/use-invitation-acceptance";
-import { decodeJWTToken } from "@/lib/auth/client-token-utils";
 
-interface InvitationData {
-  email?: string;
-  firstName?: string;
-  lastName?: string;
-  role?: string;
-  organizationId?: string;
-  [key: string]: unknown;
-}
+type InvitationStatus = "loading" | "ready" | "accepting" | "success" | "error" | "invalid";
 
 function AcceptInvitationContent() {
-  const { user } = useUser();
-  const router = useRouter();
-  const { isLoaded: _isLoaded, signUp: _signUp, setActive: _setActive } = useSignUp();
-  const [firstName, setFirstName] = React.useState("");
-  const [lastName, setLastName] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [isLoading, _setIsLoading] = React.useState(false);
-  const [, setInvitationData] = React.useState<InvitationData | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [invitation, setInvitation] = useState<{ id: string; invitedRole: string } | null>(null);
-  const [acceptanceStep, setAcceptanceStep] = useState<
-    "loading" | "form" | "accepting" | "success"
-  >("loading");
-
-  const { acceptInvitation, getInvitationByTicket } = useInvitationAcceptance();
-
-  // Handle signed-in users visiting this page
-  React.useEffect(() => {
-    if (user?.id) {
-      router.push("/dashboard");
-    }
-  }, [user, router]);
-
-  // Get parameters from the URL
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const { user, isLoaded: userLoaded } = useUser();
+  
   const ticket = searchParams.get("ticket");
-  const prefilledFirstName = searchParams.get("firstName");
-  const prefilledLastName = searchParams.get("lastName");
+  const [status, setStatus] = useState<InvitationStatus>("loading");
+  const [error, setError] = useState<string | null>(null);
+  const [_invitation, setInvitation] = useState<unknown>(null);
 
-  // Initialize form fields with prefilled values
-  React.useEffect(() => {
-    if (prefilledFirstName) {
-      setFirstName(prefilledFirstName);
-    }
-    if (prefilledLastName) {
-      setLastName(prefilledLastName);
-    }
-  }, [prefilledFirstName, prefilledLastName]);
-
-  // Get invitation details by ticket
-  const {
-    data: invitationData,
-    loading: _invitationLoading,
-    error: invitationError,
-  } = getInvitationByTicket(ticket || "");
-
+  // Check invitation validity when component loads
   useEffect(() => {
-    if (invitationData?.userInvitations?.[0]) {
-      setInvitation(invitationData.userInvitations[0]);
-      setAcceptanceStep("form");
-    } else if (invitationError) {
-      setError("Invalid or expired invitation");
-      setAcceptanceStep("form");
+    if (!ticket) {
+      setStatus("invalid");
+      setError("No invitation ticket provided");
+      return;
     }
-  }, [invitationData, invitationError]);
 
-  // Extract invitation metadata from JWT token
-  React.useEffect(() => {
-    if (ticket) {
-      // Log invitation acceptance page visit for debugging
-      console.log("Invitation acceptance attempt", {
-        eventType: "signup_attempt",
-        authMethod: "invitation_ticket",
-        page: "accept_invitation",
-        hasInvitationToken: true,
-      });
-
-      try {
-        // Validate that the token has the expected JWT format (3 parts separated by dots)
-        const tokenParts = ticket.split(".");
-        if (tokenParts.length !== 3) {
-          console.error(
-            "Invalid JWT token format - expected 3 parts, got:",
-            tokenParts.length
-          );
-          return;
-        }
-
-        // Use centralized JWT decoding utility
-        const decodeResult = decodeJWTToken(ticket);
-        
-        if (decodeResult.error) {
-          console.error("Error decoding invitation token:", decodeResult.error);
-        } else {
-          console.log("Decoded invitation data:", {
-            role: decodeResult.role,
-            userId: decodeResult.userId,
-            hasCompleteData: decodeResult.hasCompleteData
-          });
-          
-          // Set the invitation data for potential future use
-          setInvitationData({
-            role: decodeResult.role,
-            userId: decodeResult.userId,
-            ...decodeResult.claims
-          });
-        }
-
-        // For now, we'll need to fetch the actual invitation details from Clerk
-        // since the JWT might not contain the metadata directly
-      } catch (error) {
-        console.error("Error decoding invitation token:", error);
-        console.error("Token value:", ticket);
-        // Don't block the user flow if token decoding fails
-        // The actual invitation processing will happen in Clerk
+    if (userLoaded) {
+      if (user) {
+        setStatus("ready");
+      } else {
+        // Redirect to sign-in with return URL
+        window.location.href = `/sign-in?redirect_url=${encodeURIComponent(window.location.href)}`;
       }
     }
-  }, [ticket]);
+  }, [ticket, user, userLoaded]);
 
-  // If there is no invitation token, restrict access to this page
-  if (!ticket) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle>Invalid Invitation</CardTitle>
-            <CardDescription>
-              No invitation token found. Please use a valid invitation link.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
-    );
-  }
+  const acceptInvitation = async () => {
+    if (!user || !ticket) return;
 
-  const handleAcceptInvitation = async () => {
-    if (!user || !invitation) return;
-
-    setAcceptanceStep("accepting");
-    setError(null);
-
+    setStatus("accepting");
+    
     try {
-      const result = await acceptInvitation({
-        invitationId: invitation.id,
-        clerkUserId: user.id,
-        userEmail: user.emailAddresses[0]?.emailAddress || "",
-        userName: user.fullName || user.firstName || "User",
-        roleId: invitation.invitedRole, // This might need to be mapped to role ID
+      const response = await fetch("/api/invitations/accept", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          clerkTicket: ticket,
+          clerkUserId: user.id,
+          userEmail: user.emailAddresses[0]?.emailAddress,
+          userName: user.fullName || `${user.firstName} ${user.lastName}`,
+        }),
       });
+
+      const result = await response.json();
 
       if (result.success) {
-        setAcceptanceStep("success");
-        // Redirect to dashboard after success
+        setStatus("success");
+        setInvitation(result.invitation);
+        toast.success("Welcome to the team!", {
+          description: result.message,
+        });
+        
+        // Redirect to dashboard after a short delay
         setTimeout(() => {
-          window.location.href = "/dashboard";
+          router.push("/dashboard");
         }, 2000);
       } else {
-        setError("Failed to accept invitation. Please try again.");
-        setAcceptanceStep("form");
+        setStatus("error");
+        setError(result.error || "Failed to accept invitation");
+        toast.error("Failed to accept invitation", {
+          description: result.error,
+        });
       }
-    } catch (error) {
-      console.error("Accept invitation error:", error);
-      setError("An error occurred while accepting the invitation.");
-      setAcceptanceStep("form");
+    } catch (_err: unknown) {
+      setStatus("error");
+      setError("An unexpected error occurred");
+      toast.error("An unexpected error occurred", {
+        description: "Please try again or contact support",
+      });
     }
   };
+
+  const getStatusIcon = () => {
+    switch (status) {
+      case "loading":
+        return <ByteMySpinner size="default" />;
+      case "ready":
+        return <Clock className="h-8 w-8 text-blue-500" />;
+      case "accepting":
+        return <ByteMySpinner size="default" />;
+      case "success":
+        return <CheckCircle className="h-8 w-8 text-green-500" />;
+      case "error":
+        return <XCircle className="h-8 w-8 text-red-500" />;
+      case "invalid":
+        return <AlertCircle className="h-8 w-8 text-orange-500" />;
+      default:
+        return null;
+    }
+  };
+
+  const getStatusMessage = () => {
+    switch (status) {
+      case "loading":
+        return {
+          title: "Loading...",
+          description: "Validating your invitation",
+        };
+      case "ready":
+        return {
+          title: "Accept Invitation",
+          description: "You've been invited to join the team. Click below to accept your invitation and create your account.",
+        };
+      case "accepting":
+        return {
+          title: "Accepting Invitation...",
+          description: "Setting up your account and assigning permissions",
+        };
+      case "success":
+        return {
+          title: "Welcome to the Team!",
+          description: "Your invitation has been accepted successfully. You'll be redirected to the dashboard shortly.",
+        };
+      case "error":
+        return {
+          title: "Invitation Error",
+          description: error || "There was a problem accepting your invitation",
+        };
+      case "invalid":
+        return {
+          title: "Invalid Invitation",
+          description: error || "This invitation link is not valid",
+        };
+      default:
+        return {
+          title: "Unknown Status",
+          description: "Please refresh the page and try again",
+        };
+    }
+  };
+
+  const { title, description } = getStatusMessage();
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
       <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Complete Your Registration</CardTitle>
-          <CardDescription>
-            You&apos;ve been invited to join. Please complete your account
-            setup.
-          </CardDescription>
+        <CardHeader className="text-center">
+          <div className="flex justify-center mb-4">
+            {getStatusIcon()}
+          </div>
+          <CardTitle>{title}</CardTitle>
+          <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent>
-          {acceptanceStep === "loading" && (
-            <div>Loading invitation details...</div>
-          )}
-          {acceptanceStep === "form" && (
-            <form onSubmit={handleAcceptInvitation} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
-                <Input
-                  id="firstName"
-                  type="text"
-                  value={firstName}
-                  onChange={e => setFirstName(e.target.value)}
-                  required
-                  disabled={!!prefilledFirstName}
-                  placeholder={
-                    prefilledFirstName ? "" : "Enter your first name"
-                  }
-                  className={
-                    prefilledFirstName ? "bg-gray-100 text-gray-700" : ""
-                  }
-                />
+          <div className="space-y-4">
+            {ticket && (
+              <div className="text-xs text-gray-500 text-center">
+                Invitation ID: {ticket.substring(0, 8)}...
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
-                <Input
-                  id="lastName"
-                  type="text"
-                  value={lastName}
-                  onChange={e => setLastName(e.target.value)}
-                  required
-                  disabled={!!prefilledLastName}
-                  placeholder={prefilledLastName ? "" : "Enter your last name"}
-                  className={
-                    prefilledLastName ? "bg-gray-100 text-gray-700" : ""
-                  }
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  required
-                  placeholder="Create a secure password"
-                />
-              </div>
-
-              <div id="clerk-captcha" />
-
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Accepting Invitation..." : "Accept Invitation"}
+            )}
+            
+            {status === "ready" && (
+              <Button 
+                onClick={acceptInvitation} 
+                className="w-full"
+                size="lg"
+              >
+                Accept Invitation
               </Button>
-            </form>
-          )}
-          {acceptanceStep === "accepting" && <div>Accepting invitation...</div>}
-          {acceptanceStep === "success" && (
-            <div>Invitation accepted successfully!</div>
-          )}
-          {error && <div className="text-red-500">{error}</div>}
+            )}
+            
+            {status === "error" && (
+              <div className="space-y-2">
+                <Button 
+                  onClick={() => window.location.reload()} 
+                  variant="outline" 
+                  className="w-full"
+                >
+                  Try Again
+                </Button>
+                <Button 
+                  onClick={() => router.push("/")} 
+                  variant="ghost" 
+                  className="w-full"
+                >
+                  Go Home
+                </Button>
+              </div>
+            )}
+            
+            {status === "invalid" && (
+              <Button 
+                onClick={() => router.push("/")} 
+                variant="outline" 
+                className="w-full"
+              >
+                Go Home
+              </Button>
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>

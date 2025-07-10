@@ -20,7 +20,7 @@
  * - Split from HTTP chain using operation type detection
  * - Only subscriptions use WebSocket transport
  * - Avoids retry/error handling complexity for persistent connections
- * - Direct connection to Hasura subscriptions endpoint
+ * - Direct connection to Hasura Cloud subscriptions endpoint
  * 
  * CRITICAL: Only enabled in client context with window object
  */
@@ -63,27 +63,14 @@ export function createWebSocketLink(
               template: "hasura",
             });
             
-            // Validate token structure for security
+            // Trust Clerk's token validation - do not parse JWT client-side
+            // JWT signature verification should only be done server-side
             if (token) {
-              try {
-                const payload = JSON.parse(atob(token.split('.')[1]));
-                const hasuraClaims = payload["https://hasura.io/jwt/claims"];
-                
-                if (!hasuraClaims || !hasuraClaims["x-hasura-user-id"]) {
-                  console.error("Invalid WebSocket token: missing required Hasura claims");
-                  return {};
-                }
-                
-                // Log connection for audit purposes
-                console.log("WebSocket connection authenticated", {
-                  userId: hasuraClaims["x-hasura-user-id"],
-                  role: hasuraClaims["x-hasura-default-role"],
-                  timestamp: new Date().toISOString()
-                });
-              } catch (tokenError) {
-                console.error("WebSocket token validation failed:", tokenError);
-                return {};
-              }
+              // Log connection for audit purposes (without exposing token contents)
+              console.log("WebSocket connection authenticated", {
+                hasToken: true,
+                timestamp: new Date().toISOString()
+              });
             }
             
             return {

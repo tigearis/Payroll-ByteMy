@@ -4,6 +4,7 @@ import { useQuery } from "@apollo/client";
 import { useAuth } from "@clerk/nextjs";
 import { useState } from "react";
 import { toast } from "sonner";
+import { DeveloperOnly } from "@/components/auth/developer-only";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -27,7 +28,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { GetUsersWithFilteringDocument } from "@/domains/users/graphql/generated/graphql";
 import { useActorTokens } from "@/hooks/use-actor-tokens";
 import { clientApolloClient } from "@/lib/apollo/unified-client";
-import { DeveloperOnly } from "@/components/auth/developer-only";
 
 interface User {
   id: string;
@@ -371,7 +371,7 @@ Content-Type: application/json
 {
   "targetUserId": "user_2a...",
   "expiresInSeconds": 600,
-  "purpose": "ai_testing_consultant_role"
+  "purpose": "ai_testing_consultantrole"
 }`}
               </pre>
             </div>

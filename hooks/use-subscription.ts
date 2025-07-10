@@ -5,7 +5,7 @@ import {
   SubscriptionHookOptions,
   DocumentNode,
 } from "@apollo/client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { toast } from "sonner";
 
 interface UseRealTimeSubscriptionOptions {
@@ -30,6 +30,9 @@ export function useRealTimeSubscription({
   const [isConnected, setIsConnected] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
 
+  // Memoize refetchQueries array to prevent infinite loops
+  const stableRefetchQueries = useMemo(() => refetchQueries, [refetchQueries]);
+
   // Subscription options
   const options: SubscriptionHookOptions = {
     variables: variables || {},
@@ -47,9 +50,9 @@ export function useRealTimeSubscription({
       }
 
       // Refresh relevant queries
-      if (refetchQueries && refetchQueries.length > 0) {
+      if (stableRefetchQueries && stableRefetchQueries.length > 0) {
         await client.refetchQueries({
-          include: refetchQueries,
+          include: stableRefetchQueries,
         });
       }
     },
@@ -73,9 +76,9 @@ export function useRealTimeSubscription({
       const timeout = setTimeout(
         () => {
           // Force refetch on reconnection attempt
-          if (refetchQueries && refetchQueries.length > 0) {
+          if (stableRefetchQueries && stableRefetchQueries.length > 0) {
             client.refetchQueries({
-              include: refetchQueries,
+              include: stableRefetchQueries,
             });
           }
         },
@@ -91,7 +94,7 @@ export function useRealTimeSubscription({
     }
 
     return undefined;
-  }, [retryCount, isConnected, client, refetchQueries, shouldToast]);
+  }, [retryCount, isConnected, client, stableRefetchQueries, shouldToast]);
 
   // Reset retry count when connection is successful
   useEffect(() => {

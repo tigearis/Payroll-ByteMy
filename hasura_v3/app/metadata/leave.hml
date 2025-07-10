@@ -1,0 +1,218 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: leave
+  fields:
+    - name: created_at
+      type: timestamptz
+      description: Timestamp when the leave request was created
+    - name: end_date
+      type: date!
+      description: Last day of the leave period
+    - name: id
+      type: uuid!
+      description: Unique identifier for the leave record
+    - name: leave_type
+      type: string!
+      description: Type of leave (vacation, sick, personal, etc.)
+    - name: reason
+      type: string
+      description: Reason provided for the leave request
+    - name: start_date
+      type: date!
+      description: First day of the leave period
+    - name: status
+      type: enum
+      description: Current status of the leave request (Pending, Approved, Denied)
+    - name: updated_at
+      type: timestamptz
+      description: Timestamp when the leave request was last updated
+    - name: user_id
+      type: uuid!
+      description: Reference to the user taking leave
+  graphql:
+    typeName: leave
+    inputTypeName: leave_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: leave
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: leave
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - created_at
+          - end_date
+          - id
+          - leave_type
+          - reason
+          - start_date
+          - status
+          - updated_at
+          - user_id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: leave_bool_exp
+  operand:
+    object:
+      type: leave
+      comparableFields:
+        - fieldName: created_at
+          booleanExpressionType: timestamptz_bool_exp
+        - fieldName: end_date
+          booleanExpressionType: date_bool_exp
+        - fieldName: id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: leave_type
+          booleanExpressionType: varchar_bool_exp
+        - fieldName: reason
+          booleanExpressionType: text_bool_exp
+        - fieldName: start_date
+          booleanExpressionType: date_bool_exp
+        - fieldName: status
+          booleanExpressionType: leave_status_enum_bool_exp
+        - fieldName: updated_at
+          booleanExpressionType: timestamptz_bool_exp
+        - fieldName: user_id
+          booleanExpressionType: uuid_bool_exp
+      comparableRelationships:
+        - relationshipName: user
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: leave_bool_exp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: leave_agg_exp
+  operand:
+    object:
+      aggregatedType: leave
+      aggregatableFields:
+        - fieldName: created_at
+          aggregateExpression: timestamptz_agg_exp
+        - fieldName: end_date
+          aggregateExpression: date_agg_exp
+        - fieldName: id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: leave_type
+          aggregateExpression: varchar_agg_exp
+        - fieldName: reason
+          aggregateExpression: text_agg_exp
+        - fieldName: start_date
+          aggregateExpression: date_agg_exp
+        - fieldName: status
+          aggregateExpression: leave_status_enum_agg_exp
+        - fieldName: updated_at
+          aggregateExpression: timestamptz_agg_exp
+        - fieldName: user_id
+          aggregateExpression: uuid_agg_exp
+  count:
+    enable: true
+    returnType: int_64
+  graphql:
+    selectTypeName: leave_agg_exp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: leave_order_by_exp
+  operand:
+    object:
+      orderedType: leave
+      orderableFields:
+        - fieldName: created_at
+          orderByExpression: timestamptz_order_by_exp
+        - fieldName: end_date
+          orderByExpression: date_order_by_exp
+        - fieldName: id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: leave_type
+          orderByExpression: string_order_by_exp
+        - fieldName: reason
+          orderByExpression: string_order_by_exp
+        - fieldName: start_date
+          orderByExpression: date_order_by_exp
+        - fieldName: status
+          orderByExpression: enum_order_by_exp
+        - fieldName: updated_at
+          orderByExpression: timestamptz_order_by_exp
+        - fieldName: user_id
+          orderByExpression: uuid_order_by_exp
+      orderableRelationships:
+        - relationshipName: user
+  graphql:
+    expressionTypeName: leave_order_by_exp
+
+---
+kind: Model
+version: v2
+definition:
+  name: leave
+  objectType: leave
+  source:
+    dataConnectorName: payroll
+    collection: leave
+  filterExpressionType: leave_bool_exp
+  aggregateExpression: leave_agg_exp
+  orderByExpression: leave_order_by_exp
+  graphql:
+    selectMany:
+      queryRootField: leave
+      subscription:
+        rootField: leave
+    selectUniques:
+      - queryRootField: leave_by_id
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: leave_by_id
+    filterInputTypeName: leave_filter_input
+    aggregate:
+      queryRootField: leave_aggregate
+      subscription:
+        rootField: leave_aggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: leave
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: user
+  sourceType: leave
+  target:
+    model:
+      name: users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: user_id
+      target:
+        modelField:
+          - fieldName: id
+

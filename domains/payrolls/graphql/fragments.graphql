@@ -46,12 +46,29 @@ fragment PayrollForAssignment on payrolls {
   name
   status
   clientId
+  employeeCount
+  processingTime
+  processingDaysBeforeEft
   client {
     ...ClientMinimal
   }
   primaryConsultantUserId
   backupConsultantUserId
   managerUserId
+  payrollRequiredSkills {
+    skillName
+    requiredLevel
+  }
+  payrollDates(
+    where: { adjustedEftDate: { _gte: "today()" } }
+    orderBy: { adjustedEftDate: ASC }
+    limit: 3
+  ) {
+    id
+    originalEftDate
+    adjustedEftDate
+    processingDate
+  }
 }
 
 # Payroll basic info
@@ -93,8 +110,8 @@ fragment PayrollTableRow on payrolls {
   
   # Next EFT date - get the next upcoming payroll date
   nextPayrollDate: payrollDates(
-    where: { originalEftDate: { _gte: "now()" } }
-    orderBy: { originalEftDate: ASC }
+    where: { adjustedEftDate: { _gte: "today()" } }
+    orderBy: { adjustedEftDate: ASC }
     limit: 1
   ) {
     originalEftDate
@@ -130,9 +147,13 @@ fragment PayrollDate on payrollDates {
   }
 }
 
-# Payroll detailed
+# Payroll detailed  
 fragment PayrollDetailed on payrolls {
   ...PayrollFullDetail
+  payrollRequiredSkills {
+    skillName
+    requiredLevel
+  }
 }
 
 # Payroll summary
@@ -165,6 +186,7 @@ fragment PayrollWorkload on payrolls {
   processingDaysBeforeEft
   primaryConsultantUserId
   backupConsultantUserId
+  managerUserId
   client {
     ...ClientMinimal
   }

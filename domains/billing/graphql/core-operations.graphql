@@ -1,0 +1,73 @@
+# Core Billing Operations - Corrected for Enhanced Semi-Automated System
+# These are the essential operations needed for the billing system to work
+
+# Note: GetServiceCatalog query moved to queries.graphql to avoid duplication
+
+mutation CreateService($input: billingPlansInsertInput!) {
+  insertBillingPlan(object: $input) {
+    id
+    name
+    description
+    standardRate
+    billingUnit
+    category
+    isActive
+    currency
+    createdAt
+    updatedAt
+  }
+}
+
+# Core Billing Items Operations - Removed duplicates (operations exist in other files)
+
+# Core Time Entries Operations
+query GetTimeEntriesByPayroll($payrollId: uuid!) {
+  timeEntries(
+    where: { payrollId: { _eq: $payrollId } }
+    orderBy: { workDate: ASC }
+  ) {
+    id
+    staffUserId
+    clientId
+    payrollId
+    billingItemId
+    workDate
+    hoursSpent
+    description
+    createdAt
+    updatedAt
+  }
+}
+
+mutation CreateTimeEntry($input: timeEntriesInsertInput!) {
+  insertTimeEntryOne(object: $input) {
+    id
+    staffUserId
+    clientId
+    payrollId
+    billingItemId
+    workDate
+    hoursSpent
+    description
+    createdAt
+    updatedAt
+  }
+}
+
+# Note: GetClientServiceAgreements query moved to queries.graphql to avoid duplication
+
+# Core Payroll Billing Operations - Removed duplicate (operation exists in queries.graphql)
+
+mutation UpdatePayrollBillingStatus($payrollId: uuid!, $updates: payrollsSetInput!) {
+  updatePayrollById(
+    pkColumns: { id: $payrollId }
+    _set: $updates
+  ) {
+    id
+    billingStatus
+    estimatedRevenue
+    actualRevenue
+    profitMargin
+    updatedAt
+  }
+}

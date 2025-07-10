@@ -1,0 +1,142 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_current_payrolls_object
+  fields:
+    - name: backup_consultant_user_id
+      type: uuid
+    - name: client_id
+      type: uuid
+    - name: client_name
+      type: string
+    - name: created_at
+      type: timestamptz
+    - name: cycle_id
+      type: uuid
+    - name: date_type_id
+      type: uuid
+    - name: date_value
+      type: int_32
+    - name: go_live_date
+      type: date
+    - name: id
+      type: uuid
+    - name: manager_user_id
+      type: uuid
+    - name: name
+      type: string
+    - name: parent_payroll_id
+      type: uuid
+    - name: payroll_cycle_name
+      type: enum
+    - name: payroll_date_type_name
+      type: enum
+    - name: primary_consultant_user_id
+      type: uuid
+    - name: superseded_date
+      type: date
+    - name: updated_at
+      type: timestamptz
+    - name: version_number
+      type: int_32
+    - name: version_reason
+      type: string
+  graphql:
+    typeName: insert_current_payrolls_object
+    inputTypeName: insert_current_payrolls_object_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_current_payrolls_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_current_payrolls_object
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - backup_consultant_user_id
+          - client_id
+          - client_name
+          - created_at
+          - cycle_id
+          - date_type_id
+          - date_value
+          - go_live_date
+          - id
+          - manager_user_id
+          - name
+          - parent_payroll_id
+          - payroll_cycle_name
+          - payroll_date_type_name
+          - primary_consultant_user_id
+          - superseded_date
+          - updated_at
+          - version_number
+          - version_reason
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_current_payrolls_response
+  description: Responses from the 'insert_current_payrolls' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[current_payrolls!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: insert_current_payrolls_response
+    inputTypeName: insert_current_payrolls_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_current_payrolls_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_current_payrolls_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: insert_current_payrolls
+  outputType: insert_current_payrolls_response!
+  arguments:
+    - name: objects
+      type: "[insert_current_payrolls_object!]!"
+    - name: post_check
+      type: current_payrolls_bool_exp
+      description: Insert permission predicate over the 'current_payrolls' collection
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: insert_current_payrolls
+  graphql:
+    rootFieldName: insert_current_payrolls
+    rootFieldKind: Mutation
+  description: Insert into the current_payrolls table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: insert_current_payrolls
+  permissions:
+    - role: admin
+      allowExecution: true
+

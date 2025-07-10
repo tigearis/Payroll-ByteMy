@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { ByteMyLoadingIcon } from "@/components/ui/bytemy-loading-icon";
 
 interface ModalFormProps {
   isOpen: boolean;
@@ -20,25 +21,26 @@ const ModalForm: React.FC<ModalFormProps> = ({
   const [formData, setFormData] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
+  // Memoize the fetch function to prevent infinite loops
+  const memoizedFetchData = useCallback(async () => {
     if (!isOpen) {
       return;
     }
 
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const data = await fetchEntityData(entityId);
-        setFormData(data);
-      } catch (error) {
-        console.error("Error fetching entity data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+    setLoading(true);
+    try {
+      const data = await fetchEntityData(entityId);
+      setFormData(data);
+    } catch (error) {
+      console.error("Error fetching entity data:", error);
+    } finally {
+      setLoading(false);
+    }
   }, [isOpen, entityId, fetchEntityData]);
+
+  useEffect(() => {
+    memoizedFetchData();
+  }, [memoizedFetchData]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -67,7 +69,13 @@ const ModalForm: React.FC<ModalFormProps> = ({
           </button>
         </div>
         {loading ? (
-          <p>Loading...</p>
+          <div className="p-6">
+            <ByteMyLoadingIcon 
+              title="Loading form data..."
+              description="Please wait while we fetch the information"
+              size="sm"
+            />
+          </div>
         ) : (
           <form onSubmit={handleSubmit} className="modal-body space-y-4">
             {/* Dynamically render fields */}

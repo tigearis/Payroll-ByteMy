@@ -5,13 +5,13 @@ import { useLazyQuery, gql } from "@apollo/client";
 import { format, addMonths } from "date-fns";
 import { useState } from "react";
 import { toast } from "sonner";
+import { PermissionGuard } from "@/components/auth/permission-guard";
 import { Button } from "@/components/ui/button";
 import {
   GeneratePayrollDatesQueryDocument,
   GetPayrollsMissingDatesDocument,
   GetPayrollsDocument,
 } from '@/domains/payrolls/graphql/generated/graphql';
-import { PermissionGuard } from "@/components/auth/permission-guard";
 
 interface GenerateMissingDatesButtonProps {
   payrollIds: string[];
@@ -104,7 +104,7 @@ function GenerateMissingDatesButtonInner({
 
       // Final refetch to ensure everything is up to date
       await client.refetchQueries({
-        include: [GetPayrollsMissingDatesDocument, GetPayrollsDocument],
+        include: ["GetPayrollsMissingDates", "GetPayrolls"],
       });
 
       // Show appropriate message based on results

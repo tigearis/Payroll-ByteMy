@@ -1,0 +1,105 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_feature_flags_object
+  fields:
+    - name: allowed_roles
+      type: json
+      description: JSON array of roles that can access this feature
+    - name: feature_name
+      type: string!
+      description: Name of the feature controlled by this flag
+    - name: id
+      type: uuid
+      description: Unique identifier for the feature flag
+    - name: is_enabled
+      type: boolean
+      description: Whether the feature is currently enabled
+    - name: updated_at
+      type: timestamptz
+      description: Timestamp when the feature flag was last updated
+  graphql:
+    typeName: insert_feature_flags_object
+    inputTypeName: insert_feature_flags_object_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_feature_flags_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_feature_flags_object
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - allowed_roles
+          - feature_name
+          - id
+          - is_enabled
+          - updated_at
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_feature_flags_response
+  description: Responses from the 'insert_feature_flags' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[feature_flags!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: insert_feature_flags_response
+    inputTypeName: insert_feature_flags_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_feature_flags_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_feature_flags_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: insert_feature_flags
+  outputType: insert_feature_flags_response!
+  arguments:
+    - name: objects
+      type: "[insert_feature_flags_object!]!"
+    - name: post_check
+      type: feature_flags_bool_exp
+      description: Insert permission predicate over the 'feature_flags' collection
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: insert_feature_flags
+  graphql:
+    rootFieldName: insert_feature_flags
+    rootFieldKind: Mutation
+  description: Insert into the feature_flags table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: insert_feature_flags
+  permissions:
+    - role: admin
+      allowExecution: true
+

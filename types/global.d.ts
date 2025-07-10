@@ -101,11 +101,11 @@ declare global {
    * This is what gets embedded in the JWT token
    */
   interface HasuraJWTClaims {
-    "x-hasura-user-id": string; // {{user.public_metadata.databaseId}}
-    "x-hasura-default-role": string; // {{user.public_metadata.role || 'viewer'}}
-    "x-hasura-allowed-roles": string; // {{user.public_metadata.allowedRoles || 'viewer'}}
+    "x-hasura-user-id": string; // {{user.publicmetadata.databaseId}}
+    "x-hasura-default-role": string; // {{user.publicmetadata.role || 'viewer'}}
+    "x-hasura-allowed-roles": string; // {{user.publicmetadata.allowedRoles || 'viewer'}}
     "x-hasura-clerk-user-id": string; // {{user.id}}
-    "x-hasura-permission-overrides": string; // {{user.public_metadata.permissionOverrides}} as JSON string
+    "x-hasura-permission-overrides": string; // {{user.publicmetadata.permissionOverrides}} as JSON string
   }
 
   /**
@@ -133,7 +133,7 @@ declare global {
    */
   interface TokenResult {
     token: string | null;
-    userId: string | null; // Database ID (from public_metadata.databaseId)
+    userId: string | null; // Database ID (from publicmetadata.databaseId)
     clerkUserId: string | null; // Clerk user ID
     error?: string;
   }

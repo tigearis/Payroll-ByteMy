@@ -1,8 +1,6 @@
 // components/user-role-management.tsx
 "use client";
 
-import { PermissionGuard } from "@/components/auth/permission-guard";
-import { useEnhancedPermissions } from "@/lib/auth";
 import {
   Edit,
   MoreHorizontal,
@@ -114,12 +112,6 @@ const roles = [
 ];
 
 export function UserRoleManagement() {
-  const { hasPermission } = useEnhancedPermissions();
-  
-  if (!hasPermission('staff:write')) {
-    return null;
-  }
-
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
   const [isAddRoleOpen, setIsAddRoleOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"users" | "roles">("users");
@@ -264,7 +256,7 @@ export function UserRoleManagement() {
               <TableHead>Email</TableHead>
               <TableHead>Role</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead className="w-[100px]">Actions</TableHead>
+              <TableHead className="w-24">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -307,7 +299,7 @@ export function UserRoleManagement() {
               <TableHead>Name</TableHead>
               <TableHead>Description</TableHead>
               <TableHead>Permissions</TableHead>
-              <TableHead className="w-[100px]">Actions</TableHead>
+              <TableHead className="w-24">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

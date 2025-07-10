@@ -1,0 +1,208 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: notes
+  fields:
+    - name: content
+      type: string!
+      description: Content of the note
+    - name: created_at
+      type: timestamp
+      description: Timestamp when the note was created
+    - name: entity_id
+      type: uuid!
+      description: Identifier of the entity this note is attached to
+    - name: entity_type
+      type: string!
+      description: Type of entity this note is attached to (client, payroll, etc.)
+    - name: id
+      type: uuid!
+      description: Unique identifier for the note
+    - name: is_important
+      type: boolean
+      description: Whether the note is flagged as important
+    - name: updated_at
+      type: timestamp
+      description: Timestamp when the note was last updated
+    - name: user_id
+      type: uuid
+      description: User who created the note
+  graphql:
+    typeName: notes
+    inputTypeName: notes_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: notes
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: notes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - content
+          - created_at
+          - entity_id
+          - entity_type
+          - id
+          - is_important
+          - updated_at
+          - user_id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: notes_bool_exp
+  operand:
+    object:
+      type: notes
+      comparableFields:
+        - fieldName: content
+          booleanExpressionType: text_bool_exp
+        - fieldName: created_at
+          booleanExpressionType: timestamp_bool_exp
+        - fieldName: entity_id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: entity_type
+          booleanExpressionType: text_bool_exp
+        - fieldName: id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: is_important
+          booleanExpressionType: bool_bool_exp
+        - fieldName: updated_at
+          booleanExpressionType: timestamp_bool_exp
+        - fieldName: user_id
+          booleanExpressionType: uuid_bool_exp
+      comparableRelationships:
+        - relationshipName: user
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: notes_bool_exp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: notes_agg_exp
+  operand:
+    object:
+      aggregatedType: notes
+      aggregatableFields:
+        - fieldName: content
+          aggregateExpression: text_agg_exp
+        - fieldName: created_at
+          aggregateExpression: timestamp_agg_exp
+        - fieldName: entity_id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: entity_type
+          aggregateExpression: text_agg_exp
+        - fieldName: id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: is_important
+          aggregateExpression: bool_agg_exp
+        - fieldName: updated_at
+          aggregateExpression: timestamp_agg_exp
+        - fieldName: user_id
+          aggregateExpression: uuid_agg_exp
+  count:
+    enable: true
+    returnType: int_64
+  graphql:
+    selectTypeName: notes_agg_exp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: notes_order_by_exp
+  operand:
+    object:
+      orderedType: notes
+      orderableFields:
+        - fieldName: content
+          orderByExpression: string_order_by_exp
+        - fieldName: created_at
+          orderByExpression: timestamp_order_by_exp
+        - fieldName: entity_id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: entity_type
+          orderByExpression: string_order_by_exp
+        - fieldName: id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: is_important
+          orderByExpression: boolean_order_by_exp
+        - fieldName: updated_at
+          orderByExpression: timestamp_order_by_exp
+        - fieldName: user_id
+          orderByExpression: uuid_order_by_exp
+      orderableRelationships:
+        - relationshipName: user
+  graphql:
+    expressionTypeName: notes_order_by_exp
+
+---
+kind: Model
+version: v2
+definition:
+  name: notes
+  objectType: notes
+  source:
+    dataConnectorName: payroll
+    collection: notes
+  filterExpressionType: notes_bool_exp
+  aggregateExpression: notes_agg_exp
+  orderByExpression: notes_order_by_exp
+  graphql:
+    selectMany:
+      queryRootField: notes
+      subscription:
+        rootField: notes
+    selectUniques:
+      - queryRootField: notes_by_id
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: notes_by_id
+    filterInputTypeName: notes_filter_input
+    aggregate:
+      queryRootField: notes_aggregate
+      subscription:
+        rootField: notes_aggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: notes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: user
+  sourceType: notes
+  target:
+    model:
+      name: users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: user_id
+      target:
+        modelField:
+          - fieldName: id
+

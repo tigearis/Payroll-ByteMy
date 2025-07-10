@@ -1,0 +1,202 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_payrolls_object
+  fields:
+    - name: actual_hours
+      type: bigdecimal
+    - name: actual_revenue
+      type: bigdecimal
+    - name: backup_consultant_user_id
+      type: uuid
+      description: Backup consultant for this payroll
+    - name: billing_status
+      type: string
+      description: "Billing status: pending, items_added, ready_to_bill, billed"
+    - name: client_id
+      type: uuid!
+      description: Reference to the client this payroll belongs to
+    - name: created_at
+      type: timestamptz
+      description: Timestamp when the payroll was created
+    - name: created_by_user_id
+      type: uuid
+    - name: cycle_id
+      type: uuid!
+      description: Reference to the payroll cycle
+    - name: date_type_id
+      type: uuid!
+      description: Reference to the payroll date type
+    - name: date_value
+      type: int_32
+      description: Specific value for date calculation (e.g., day of month)
+    - name: employee_count
+      type: int_32
+      description: Number of employees in this payroll
+    - name: estimated_hours
+      type: bigdecimal
+    - name: estimated_revenue
+      type: bigdecimal
+    - name: go_live_date
+      type: date
+      description: The date when the payroll went live in the system
+    - name: id
+      type: uuid
+      description: Unique identifier for the payroll
+    - name: last_billed_date
+      type: timestamptz
+    - name: manager_user_id
+      type: uuid
+      description: Manager overseeing this payroll
+    - name: name
+      type: string!
+      description: Name of the payroll
+    - name: new_employees
+      type: int_32
+      description: Number of new employees processed
+    - name: parent_payroll_id
+      type: uuid
+    - name: payroll_system
+      type: string
+      description: External payroll system used for this client
+    - name: payslip_count
+      type: int_32
+      description: Number of payslips processed in this payroll run
+    - name: primary_consultant_user_id
+      type: uuid
+      description: Primary consultant responsible for this payroll
+    - name: processing_days_before_eft
+      type: int_32
+      description: Number of days before EFT that processing must complete
+    - name: processing_time
+      type: int_32
+      description: Number of hours required to process this payroll
+    - name: profit_margin
+      type: bigdecimal
+    - name: status
+      type: enum
+      description: Current status of the payroll (Implementation, Active, Inactive)
+    - name: superseded_date
+      type: date
+    - name: terminated_employees
+      type: int_32
+      description: Number of terminated employees processed
+    - name: updated_at
+      type: timestamptz
+      description: Timestamp when the payroll was last updated
+    - name: version_number
+      type: int_32
+    - name: version_reason
+      type: string
+  graphql:
+    typeName: insert_payrolls_object
+    inputTypeName: insert_payrolls_object_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_payrolls_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_payrolls_object
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - actual_hours
+          - actual_revenue
+          - backup_consultant_user_id
+          - billing_status
+          - client_id
+          - created_at
+          - created_by_user_id
+          - cycle_id
+          - date_type_id
+          - date_value
+          - employee_count
+          - estimated_hours
+          - estimated_revenue
+          - go_live_date
+          - id
+          - last_billed_date
+          - manager_user_id
+          - name
+          - new_employees
+          - parent_payroll_id
+          - payroll_system
+          - payslip_count
+          - primary_consultant_user_id
+          - processing_days_before_eft
+          - processing_time
+          - profit_margin
+          - status
+          - superseded_date
+          - terminated_employees
+          - updated_at
+          - version_number
+          - version_reason
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_payrolls_response
+  description: Responses from the 'insert_payrolls' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[payrolls!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: insert_payrolls_response
+    inputTypeName: insert_payrolls_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_payrolls_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_payrolls_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: insert_payrolls
+  outputType: insert_payrolls_response!
+  arguments:
+    - name: objects
+      type: "[insert_payrolls_object!]!"
+    - name: post_check
+      type: payrolls_bool_exp
+      description: Insert permission predicate over the 'payrolls' collection
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: insert_payrolls
+  graphql:
+    rootFieldName: insert_payrolls
+    rootFieldKind: Mutation
+  description: Insert into the payrolls table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: insert_payrolls
+  permissions:
+    - role: admin
+      allowExecution: true
+

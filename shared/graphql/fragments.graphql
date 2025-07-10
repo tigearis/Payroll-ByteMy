@@ -32,25 +32,18 @@ fragment UserBase on users {
   ...UserBasic
 }
 
-# Extended user info with role relationships (9-12 fields)
+# Extended user info with role relationships (9-12 fields) - SIMPLIFIED
 fragment UserWithRole on users {
   ...UserBasic
-  assignedRoles {
-    assignedRole {
-      id
-      name
-      displayName
-    }
-  }
+  username
+  isStaff
 }
 
-# Comprehensive user profile (13+ fields)
+# Comprehensive user profile (13+ fields) - SIMPLIFIED
 fragment UserProfile on users {
   ...UserWithRole
-  username
   clerkUserId
   image
-  isStaff
   managerId
   deactivatedAt
   deactivatedBy

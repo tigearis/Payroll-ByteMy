@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: delete_billing_periods_by_client_id_and_period_end_and_period_start_response
+  description: Responses from the
+    'delete_billing_periods_by_client_id_and_period_end_and_period_start'
+    procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[billing_periods!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: delete_billing_periods_by_client_id_and_period_end_and_period_start_response
+    inputTypeName: delete_billing_periods_by_client_id_and_period_end_and_period_start_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: delete_billing_periods_by_client_id_and_period_end_and_period_start_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: delete_billing_periods_by_client_id_and_period_end_and_period_start_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: delete_billing_periods_by_client_id_and_period_end_and_period_start
+  outputType: delete_billing_periods_by_client_id_and_period_end_and_period_start_response!
+  arguments:
+    - name: key_client_id
+      type: uuid!
+      description: Client this billing period is for
+    - name: key_period_end
+      type: date!
+      description: End date of billing period
+    - name: key_period_start
+      type: date!
+      description: Start date of billing period
+    - name: pre_check
+      type: billing_periods_bool_exp
+      description: Delete permission predicate over the 'billing_periods' collection
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: delete_billing_periods_by_client_id_and_period_end_and_period_start
+  graphql:
+    rootFieldName: delete_billing_periods_by_client_id_and_period_end_and_period_start
+    rootFieldKind: Mutation
+  description: Delete any row on the 'billing_periods' collection using the
+    'client_id', 'period_end' and 'period_start' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: delete_billing_periods_by_client_id_and_period_end_and_period_start
+  permissions:
+    - role: admin
+      allowExecution: true
+

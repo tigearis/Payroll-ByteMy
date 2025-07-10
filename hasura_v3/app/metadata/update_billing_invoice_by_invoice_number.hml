@@ -1,0 +1,162 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_billing_invoice_by_invoice_number_update_columns
+  description: Update the columns of the 'billing_invoice' collection
+  fields:
+    - name: billing_period_end
+      type: update_column_billing_invoice_billing_period_end
+      description: Update the 'billing_period_end' column in the 'billing_invoice'
+        collection.
+    - name: billing_period_id
+      type: update_column_billing_invoice_billing_period_id
+      description: Update the 'billing_period_id' column in the 'billing_invoice'
+        collection.
+    - name: billing_period_start
+      type: update_column_billing_invoice_billing_period_start
+      description: Update the 'billing_period_start' column in the 'billing_invoice'
+        collection.
+    - name: client_id
+      type: update_column_billing_invoice_client_id
+      description: Update the 'client_id' column in the 'billing_invoice' collection.
+    - name: created_at
+      type: update_column_billing_invoice_created_at
+      description: Update the 'created_at' column in the 'billing_invoice' collection.
+    - name: currency
+      type: update_column_billing_invoice_currency
+      description: Update the 'currency' column in the 'billing_invoice' collection.
+    - name: due_date
+      type: update_column_billing_invoice_due_date
+      description: Update the 'due_date' column in the 'billing_invoice' collection.
+    - name: id
+      type: update_column_billing_invoice_id
+      description: Update the 'id' column in the 'billing_invoice' collection.
+    - name: invoice_number
+      type: update_column_billing_invoice_invoice_number
+      description: Update the 'invoice_number' column in the 'billing_invoice' collection.
+    - name: issued_date
+      type: update_column_billing_invoice_issued_date
+      description: Update the 'issued_date' column in the 'billing_invoice' collection.
+    - name: notes
+      type: update_column_billing_invoice_notes
+      description: Update the 'notes' column in the 'billing_invoice' collection.
+    - name: payroll_count
+      type: update_column_billing_invoice_payroll_count
+      description: Update the 'payroll_count' column in the 'billing_invoice' collection.
+    - name: status
+      type: update_column_billing_invoice_status
+      description: Update the 'status' column in the 'billing_invoice' collection.
+    - name: total_amount
+      type: update_column_billing_invoice_total_amount
+      description: Update the 'total_amount' column in the 'billing_invoice' collection.
+    - name: total_hours
+      type: update_column_billing_invoice_total_hours
+      description: Update the 'total_hours' column in the 'billing_invoice' collection.
+    - name: updated_at
+      type: update_column_billing_invoice_updated_at
+      description: Update the 'updated_at' column in the 'billing_invoice' collection.
+  graphql:
+    typeName: update_billing_invoice_by_invoice_number_update_columns
+    inputTypeName: update_billing_invoice_by_invoice_number_update_columns_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_billing_invoice_by_invoice_number_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_billing_invoice_by_invoice_number_update_columns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - billing_period_end
+          - billing_period_id
+          - billing_period_start
+          - client_id
+          - created_at
+          - currency
+          - due_date
+          - id
+          - invoice_number
+          - issued_date
+          - notes
+          - payroll_count
+          - status
+          - total_amount
+          - total_hours
+          - updated_at
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_billing_invoice_by_invoice_number_response
+  description: Responses from the 'update_billing_invoice_by_invoice_number' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[billing_invoice!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: update_billing_invoice_by_invoice_number_response
+    inputTypeName: update_billing_invoice_by_invoice_number_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_billing_invoice_by_invoice_number_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_billing_invoice_by_invoice_number_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: update_billing_invoice_by_invoice_number
+  outputType: update_billing_invoice_by_invoice_number_response!
+  arguments:
+    - name: key_invoice_number
+      type: string
+      description: Unique invoice number for client reference
+    - name: post_check
+      type: billing_invoice_bool_exp
+      description: Update permission post-condition predicate over the
+        'billing_invoice' collection
+    - name: pre_check
+      type: billing_invoice_bool_exp
+      description: Update permission pre-condition predicate over the
+        'billing_invoice' collection
+    - name: update_columns
+      type: update_billing_invoice_by_invoice_number_update_columns!
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: update_billing_invoice_by_invoice_number
+  graphql:
+    rootFieldName: update_billing_invoice_by_invoice_number
+    rootFieldKind: Mutation
+  description: Update any row on the 'billing_invoice' collection using the
+    'invoice_number' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: update_billing_invoice_by_invoice_number
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,30 +1,50 @@
 "use client";
 
-import { useQuery } from "@apollo/client";
-import { format } from "date-fns";
+import { useQuery, useMutation } from "@apollo/client";
+import { useUser } from "@clerk/nextjs";
+import { format, addDays, startOfWeek } from "date-fns";
 import {
   User,
-  Users,
   Calendar,
-  FileText,
-  Edit,
-  Briefcase,
-  Clock,
-  Building,
-  CheckCircle,
-  XCircle,
+  Settings,
+  Save,
   AlertCircle,
+  Building,
+  Briefcase,
+  Users,
+  Clock,
+  FileText,
 } from "lucide-react";
-import Link from "next/link";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AvatarUpload } from "@/components/ui/avatar-upload";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ByteMySpinner } from "@/components/ui/bytemy-loading-icon";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { GetUserProfileCompleteDocument } from "@/domains/users/graphql/generated/graphql";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  GetUserProfileCompleteDocument,
+  type GetUserProfileCompleteQuery,
+  UpdateUserProfileDocument,
+  type UpdateUserProfileMutation,
+} from "@/domains/users/graphql/generated/graphql";
+import PayrollWorkloadVisualization from "@/domains/work-schedule/components/payroll-workload-visualization";
+import { usePayrollWorkload } from "@/domains/work-schedule/hooks/use-payroll-workload";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { useUserRole } from "@/hooks/use-user-role";
+import { safeProfileAccess } from "@/lib/apollo/cache/profile-cache-fix";
+
+interface ProfileFormData {
+  name: string;
+  email: string;
+  phone?: string;
+  address?: string;
+  bio?: string;
+}
 
 // Role mapping for display
 const roleMapping = {
@@ -55,111 +75,301 @@ const roleMapping = {
   },
 };
 
-// Status mapping
-const statusMapping = {
-  active: {
-    label: "Active",
-    color: "bg-green-100 text-green-800",
-    icon: <CheckCircle className="w-4 h-4" />,
-  },
-  inactive: {
-    label: "Inactive",
-    color: "bg-red-100 text-red-800",
-    icon: <XCircle className="w-4 h-4" />,
-  },
-  pending: {
-    label: "Pending",
-    color: "bg-yellow-100 text-yellow-800",
-    icon: <AlertCircle className="w-4 h-4" />,
-  },
-};
-
 export default function ProfilePage() {
+  const { user: clerkUser, isLoaded: clerkLoaded } = useUser();
   const { currentUser, currentUserId, loading: userLoading } = useCurrentUser();
-  // Role checking removed
-  const [activeTab, setActiveTab] = useState("overview");
-
-  const { data, loading, error } = useQuery(GetUserProfileCompleteDocument, {
-    variables: { id: currentUserId! },
-    skip: !currentUserId,
-    fetchPolicy: "cache-and-network",
+  const [isEditing, setIsEditing] = useState(false);
+  const [activeTab, setActiveTab] = useState("payrolls");
+  const [formData, setFormData] = useState<ProfileFormData>({
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    bio: "",
   });
 
-  if (userLoading || loading) {
+  // Get workload data for the workload tab
+  const {
+    user: workloadUser,
+    workSchedule,
+    loading: workloadLoading,
+    error: workloadError,
+  } = usePayrollWorkload({
+    userId: currentUserId || "",
+    enabled: !!currentUserId && activeTab === "workload",
+  });
+
+  /**
+   * Determines the best avatar image to display for the user
+   * Priority: Custom uploaded image > External account image > fallback
+   * Same logic as UserNav component for consistency
+   * Uses Clerk's user object for avatar data
+   */
+  const getAvatarImage = () => {
+    if (!clerkUser) {
+      return "";
+    }
+
+    // If user has uploaded a custom image, use that
+    if (clerkUser.hasImage && clerkUser.imageUrl) {
+      return clerkUser.imageUrl;
+    }
+
+    // If user has external accounts (like Google) with avatar, use that
+    if (clerkUser.externalAccounts && clerkUser.externalAccounts.length > 0) {
+      const externalAccount = clerkUser.externalAccounts[0];
+      if (externalAccount.imageUrl) {
+        return externalAccount.imageUrl;
+      }
+    }
+
+    // Fallback to empty string for default avatar
+    return "";
+  };
+
+  // Get current user profile data
+  const { data, loading, error, refetch } =
+    useQuery<GetUserProfileCompleteQuery>(GetUserProfileCompleteDocument, {
+      variables: { id: currentUserId! },
+      skip: !currentUserId,
+      fetchPolicy: "cache-first",
+      errorPolicy: "all",
+      notifyOnNetworkStatusChange: true,
+      onCompleted: data => {
+        const user = data.userById;
+        if (user) {
+          setFormData({
+            name: user.name || "",
+            email: user.email || "",
+            phone: user.phone || "",
+            address: user.address || "",
+            bio: user.bio || "",
+          });
+        }
+      },
+      onError: (error) => {
+        console.error("Profile query error:", error);
+        // Still allow partial data to be displayed
+      },
+    });
+
+  const [updateProfile, { loading: updating }] =
+    useMutation<UpdateUserProfileMutation>(UpdateUserProfileDocument, {
+      onCompleted: () => {
+        toast.success("Profile updated successfully");
+        setIsEditing(false);
+        refetch();
+      },
+      onError: error => {
+        toast.error("Failed to update profile", {
+          description: error.message,
+        });
+      },
+    });
+
+  const user = data?.userById;
+  
+  // If we have partial data but an error, still show what we can
+  const hasPartialData = user && user.id && user.name;
+
+  const handleSaveProfile = async () => {
+    if (!user) return;
+
+    try {
+      await updateProfile({
+        variables: {
+          id: user.id,
+          input: {
+            name: formData.name,
+            phone: formData.phone || null,
+            address: formData.address || null,
+            bio: formData.bio || null,
+          },
+        },
+      });
+
+      // Update Clerk user if name changed
+      if (clerkUser && formData.name !== user.name) {
+        await clerkUser.update({
+          firstName: formData.name.split(" ")[0],
+          lastName: formData.name.split(" ").slice(1).join(" "),
+        });
+      }
+    } catch (error: any) {
+      console.error("Failed to update profile:", error);
+      toast.error("Failed to update profile");
+    }
+  };
+
+  const handleCancel = () => {
+    if (user) {
+      setFormData({
+        name: user.name || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        address: user.address || "",
+        bio: user.bio || "",
+      });
+    }
+    setIsEditing(false);
+  };
+
+  const getRoleColor = (role: string) => {
+    switch (role) {
+      case "developer":
+        return "bg-purple-100 text-purple-800";
+      case "org_admin":
+        return "bg-red-100 text-red-800";
+      case "manager":
+        return "bg-blue-100 text-blue-800";
+      case "consultant":
+        return "bg-green-100 text-green-800";
+      case "viewer":
+        return "bg-gray-100 text-gray-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  if (!clerkLoaded || userLoading || loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="text-gray-500">Loading profile...</p>
-        </div>
+      <div className="flex items-center justify-center h-96">
+        <ByteMySpinner size="lg" />
       </div>
     );
   }
 
-  if (error || !data?.userById) {
+  if (error && !hasPartialData) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center space-y-4">
-          <p className="text-red-500">Error loading profile</p>
-          <Button onClick={() => window.location.reload()}>Try Again</Button>
-        </div>
+      <div className="flex items-center justify-center h-96">
+        <Card className="w-full max-w-md">
+          <CardContent className="flex flex-col items-center space-y-4 p-6">
+            <AlertCircle className="h-12 w-12 text-red-500" />
+            <div className="text-center">
+              <h3 className="text-lg font-semibold">Failed to load profile</h3>
+              <p className="text-sm text-gray-600 mt-1">{error.message}</p>
+              <Button onClick={() => refetch()} className="mt-4">
+                Try Again
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
-  const user = data.userById as any; // Fragment masking requires type assertion
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <Card className="w-full max-w-md">
+          <CardContent className="flex flex-col items-center space-y-4 p-6">
+            <User className="h-12 w-12 text-gray-400" />
+            <div className="text-center">
+              <h3 className="text-lg font-semibold">Profile not found</h3>
+              <p className="text-sm text-gray-600 mt-1">
+                Your user profile could not be found in the system.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   const roleInfo =
     roleMapping[user.role as keyof typeof roleMapping] || roleMapping.viewer;
 
-  // Calculate statistics
+  // Calculate statistics with safe access
   const stats = {
     totalPayrolls:
-      (user.primaryConsultantPayrolls?.length || 0) +
-      (user.backupConsultantPayrolls?.length || 0) +
-      (user.managedPayrolls?.length || 0),
-    primaryPayrolls: user.primaryConsultantPayrolls?.length || 0,
-    managedStaff: user.directReports?.length || 0,
-    notesWritten: user.notesWritten?.length || 0,
-    totalEmployees: user.primaryConsultantPayrolls?.reduce(
-      (sum: number, p: any) => sum + (p.employeeCount || 0),
-      0
-    ) || 0,
+      safeProfileAccess(user, 'primaryConsultantPayrolls.length', 0) +
+      safeProfileAccess(user, 'backupConsultantPayrolls.length', 0) +
+      safeProfileAccess(user, 'managedPayrolls.length', 0),
+    primaryPayrolls: safeProfileAccess(user, 'primaryConsultantPayrolls.length', 0),
+    managedStaff: safeProfileAccess(user, 'managedUsers.length', 0),
+    totalEmployees:
+      user?.primaryConsultantPayrolls?.reduce(
+        (sum: number, p: any) => sum + (safeProfileAccess(p, 'employeeCount', 0)),
+        0
+      ) || 0,
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+    <div className="container mx-auto py-6 space-y-6">
+      {/* Error banner for partial data */}
+      {error && hasPartialData && (
+        <Card className="border-orange-200 bg-orange-50">
+          <CardContent className="flex items-center space-x-3 p-4">
+            <AlertCircle className="h-5 w-5 text-orange-500" />
+            <div>
+              <p className="text-sm font-medium text-orange-800">
+                Some profile data couldn't be loaded
+              </p>
+              <p className="text-xs text-orange-600">
+                {error.message}
+              </p>
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => refetch()}
+              className="ml-auto"
+            >
+              Retry
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+      
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
-          <p className="text-gray-500">
-            View and manage your profile information
+          <h1 className="text-3xl font-bold tracking-tight">My Profile</h1>
+          <p className="text-gray-600">
+            Manage your account settings and personal information
           </p>
         </div>
-        <Link href="/settings/account">
-          <Button>
-            <Edit className="w-4 h-4 mr-2" />
-            Edit Profile
-          </Button>
-        </Link>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:space-x-2">
+          {isEditing ? (
+            <>
+              <Button variant="outline" onClick={handleCancel} className="w-full sm:w-auto">
+                Cancel
+              </Button>
+              <Button onClick={handleSaveProfile} disabled={updating} className="w-full sm:w-auto">
+                {updating ? (
+                  <ByteMySpinner size="sm" />
+                ) : (
+                  <Save className="w-4 h-4 mr-2" />
+                )}
+                Save Changes
+              </Button>
+            </>
+          ) : (
+            <Button onClick={() => setIsEditing(true)} className="w-full sm:w-auto">
+              <Settings className="w-4 h-4 mr-2" />
+              Edit Profile
+            </Button>
+          )}
+        </div>
       </div>
 
-      {/* Profile Header Card */}
+      {/* Enhanced Profile Overview Header Card */}
       <Card>
         <CardContent className="p-6">
           <div className="flex items-start space-x-6">
-            <Avatar className="w-24 h-24">
-              {user.image && <AvatarImage src={user.image} alt={user.name} />}
-              <AvatarFallback className="text-2xl">
-                {user.name
-                  .split(" ")
-                  .map((n: string) => n?.[0] || "")
-                  .join("")
-                  .toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
+            {/* Avatar Section with Upload Capability */}
+            <div className="flex-shrink-0">
+              <AvatarUpload
+                currentImageUrl={getAvatarImage()}
+                userName={user?.name || "User"}
+                isEditing={isEditing}
+                onImageUpdate={newImageUrl => {
+                  console.log("Avatar updated:", newImageUrl);
+                }}
+              />
+            </div>
 
-            <div className="flex-1 space-y-4">
+            <div className="flex-1 space-y-6">
+              {/* Basic Information */}
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">
                   {user.name}
@@ -170,7 +380,8 @@ export default function ProfilePage() {
                 )}
               </div>
 
-              <div className="flex items-center space-x-4">
+              {/* Status Badges */}
+              <div className="flex items-center space-x-4 flex-wrap">
                 <Badge className={roleInfo.color}>
                   {roleInfo.icon}
                   <span className="ml-1">{roleInfo.label}</span>
@@ -183,32 +394,134 @@ export default function ProfilePage() {
                 <Badge variant={user.isActive ? "default" : "destructive"}>
                   {user.isActive ? "Active" : "Inactive"}
                 </Badge>
+
+                <Badge variant="outline">
+                  Member Since{" "}
+                  {user.createdAt
+                    ? format(new Date(user.createdAt), "MMM yyyy")
+                    : "N/A"}
+                </Badge>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">
-                    {stats.totalPayrolls}
+              {/* Personal Details in Edit Mode */}
+              {isEditing && (
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="header-name">Full Name</Label>
+                        <Input
+                          id="header-name"
+                          value={formData.name}
+                          onChange={e =>
+                            setFormData({ ...formData, name: e.target.value })
+                          }
+                          placeholder="Enter your full name"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="header-phone">Phone Number</Label>
+                        <Input
+                          id="header-phone"
+                          type="tel"
+                          placeholder="e.g., +61 400 000 000"
+                          value={formData.phone}
+                          onChange={e =>
+                            setFormData({ ...formData, phone: e.target.value })
+                          }
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="header-address">Address</Label>
+                        <Input
+                          id="header-address"
+                          placeholder="e.g., Sydney, NSW, Australia"
+                          value={formData.address}
+                          onChange={e =>
+                            setFormData({ ...formData, address: e.target.value })
+                          }
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="header-email">Email Address</Label>
+                        <Input
+                          id="header-email"
+                          type="email"
+                          value={formData.email}
+                          disabled={true}
+                          className="bg-gray-100"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="header-bio">Bio</Label>
+                      <Textarea
+                        id="header-bio"
+                        placeholder="Tell us a bit about yourself..."
+                        rows={3}
+                        value={formData.bio}
+                        onChange={e =>
+                          setFormData({ ...formData, bio: e.target.value })
+                        }
+                      />
+                    </div>
                   </div>
-                  <div className="text-sm text-gray-500">Total Payrolls</div>
                 </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600">
-                    {stats.totalEmployees}
+              )}
+
+              {/* Display Personal Details in View Mode */}
+              {!isEditing && (user.phone || user.address || user.bio) && (
+                <div className="space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:gap-6 gap-3">
+                    {user.phone && (
+                      <div>
+                        <span className="text-sm text-gray-500">Phone:</span>
+                        <p className="font-medium">{user.phone}</p>
+                      </div>
+                    )}
+                    {user.address && (
+                      <div>
+                        <span className="text-sm text-gray-500">Address:</span>
+                        <p className="font-medium">{user.address}</p>
+                      </div>
+                    )}
                   </div>
-                  <div className="text-sm text-gray-500">Employees Managed</div>
+                  {user.bio && (
+                    <div>
+                      <span className="text-sm text-gray-500">Bio:</span>
+                      <p className="font-medium">{user.bio}</p>
+                    </div>
+                  )}
                 </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-purple-600">
-                    {stats.managedStaff}
+              )}
+
+              {/* Statistics Grid */}
+              <div className="pt-4 border-t">
+                <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                  <div className="text-center p-2 sm:p-3 bg-blue-50 rounded-lg">
+                    <div className="text-lg sm:text-2xl font-bold text-blue-600">
+                      {stats.totalPayrolls}
+                    </div>
+                    <div className="text-xs sm:text-sm text-blue-600">Total Payrolls</div>
                   </div>
-                  <div className="text-sm text-gray-500">Direct Reports</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-orange-600">
-                    {stats.notesWritten}
+                  <div className="text-center p-2 sm:p-3 bg-green-50 rounded-lg">
+                    <div className="text-lg sm:text-2xl font-bold text-green-600">
+                      {stats.totalEmployees}
+                    </div>
+                    <div className="text-xs sm:text-sm text-green-600">Employees Managed</div>
                   </div>
-                  <div className="text-sm text-gray-500">Notes Written</div>
+                  <div className="text-center p-2 sm:p-3 bg-purple-50 rounded-lg">
+                    <div className="text-lg sm:text-2xl font-bold text-purple-600">
+                      {stats.managedStaff}
+                    </div>
+                    <div className="text-xs sm:text-sm text-purple-600">Direct Reports</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -216,60 +529,22 @@ export default function ProfilePage() {
         </CardContent>
       </Card>
 
-      {/* Detailed Information Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="space-y-6"
+      >
+        <TabsList>
           <TabsTrigger value="payrolls">Payrolls</TabsTrigger>
+          <TabsTrigger value="workload">Workload</TabsTrigger>
           <TabsTrigger value="team">Team</TabsTrigger>
           <TabsTrigger value="activity">Activity</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="space-y-6">
+        <TabsContent value="payrolls" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Basic Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <User className="w-5 h-5" />
-                  Basic Information
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Full Name:</span>
-                  <span className="font-medium">{user.name}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Email:</span>
-                  <span className="font-medium">{user.email}</span>
-                </div>
-                {user.username && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Username:</span>
-                    <span className="font-medium">@{user.username}</span>
-                  </div>
-                )}
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Role:</span>
-                  <Badge className={roleInfo.color}>
-                    {roleInfo.icon}
-                    <span className="ml-1">{roleInfo.label}</span>
-                  </Badge>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Member Since:</span>
-                  <span className="font-medium">
-                    {user.createdAt
-                      ? format(new Date(user.createdAt), "MMM dd, yyyy")
-                      : "N/A"}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-
             {/* Manager Information */}
-            {user.manager && (
+            {user.managerUser && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -281,11 +556,11 @@ export default function ProfilePage() {
                   <div className="flex items-center space-x-3">
                     <Avatar className="w-10 h-10">
                       <AvatarImage
-                        src={user.manager.image || undefined}
-                        alt={user.manager.name}
+                        src={user.managerUser.image || undefined}
+                        alt={user.managerUser.name}
                       />
                       <AvatarFallback>
-                        {user.manager.name
+                        {user.managerUser.name
                           .split(" ")
                           .map((n: string) => n?.[0] || "")
                           .join("")
@@ -293,9 +568,9 @@ export default function ProfilePage() {
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-medium">{user.manager.name}</p>
+                      <p className="font-medium">{user.managerUser.name}</p>
                       <p className="text-sm text-gray-500">
-                        {user.manager.email}
+                        {user.managerUser.email}
                       </p>
                       <p className="text-xs text-gray-400">Manager</p>
                     </div>
@@ -305,7 +580,7 @@ export default function ProfilePage() {
             )}
 
             {/* Work Schedule */}
-            {user.workSchedules?.length > 0 && (
+            {data?.userById?.userWorkSchedules && data.userById.userWorkSchedules.length > 0 && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -315,7 +590,7 @@ export default function ProfilePage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    {user.workSchedules.map((schedule: any) => (
+                    {data.userById.userWorkSchedules.map((schedule: any) => (
                       <div
                         key={schedule.id}
                         className="flex justify-between items-center py-2 border-b last:border-b-0"
@@ -332,7 +607,7 @@ export default function ProfilePage() {
             )}
 
             {/* Recent Leave */}
-            {user.leaves?.length > 0 && (
+            {data?.userLeaves?.length > 0 && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -342,28 +617,30 @@ export default function ProfilePage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {user.leaves?.slice(0, 3).map((leave: any) => (
-                      <div key={leave.id} className="flex justify-between">
-                        <div>
-                          <p className="font-medium">{leave.leaveType}</p>
-                          <p className="text-sm text-gray-500">
-                            {format(new Date(leave.startDate), "MMM dd")} -{" "}
-                            {format(new Date(leave.endDate), "MMM dd, yyyy")}
-                          </p>
+                    {data.userLeaves
+                      ?.slice(0, 3)
+                      .map((leave: any, index: number) => (
+                        <div key={index} className="flex justify-between">
+                          <div>
+                            <p className="font-medium">{leave.leaveType}</p>
+                            <p className="text-sm text-gray-500">
+                              {format(new Date(leave.startDate), "MMM dd")} -{" "}
+                              {format(new Date(leave.endDate), "MMM dd, yyyy")}
+                            </p>
+                          </div>
+                          <Badge
+                            variant={
+                              leave.status === "approved"
+                                ? "default"
+                                : leave.status === "pending"
+                                  ? "secondary"
+                                  : "destructive"
+                            }
+                          >
+                            {leave.status || "Pending"}
+                          </Badge>
                         </div>
-                        <Badge
-                          variant={
-                            leave.status === "approved"
-                              ? "default"
-                              : leave.status === "pending"
-                                ? "secondary"
-                                : "destructive"
-                          }
-                        >
-                          {leave.status || "Pending"}
-                        </Badge>
-                      </div>
-                    ))}
+                      ))}
                   </div>
                 </CardContent>
               </Card>
@@ -379,7 +656,8 @@ export default function ProfilePage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Briefcase className="w-5 h-5" />
-                    Primary Consultant ({user.primaryConsultantPayrolls?.length || 0})
+                    Primary Consultant (
+                    {user.primaryConsultantPayrolls?.length || 0})
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -392,7 +670,7 @@ export default function ProfilePage() {
                         <div>
                           <p className="font-medium">{payroll.name}</p>
                           <p className="text-sm text-gray-500">
-                            {payroll.client.name}
+                            {payroll.client?.name || "Unknown Client"}
                           </p>
                           {payroll.employeeCount && (
                             <p className="text-xs text-gray-400">
@@ -424,7 +702,8 @@ export default function ProfilePage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Users className="w-5 h-5" />
-                    Backup Consultant ({user.backupConsultantPayrolls?.length || 0})
+                    Backup Consultant (
+                    {user.backupConsultantPayrolls?.length || 0})
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -437,7 +716,7 @@ export default function ProfilePage() {
                         <div>
                           <p className="font-medium">{payroll.name}</p>
                           <p className="text-sm text-gray-500">
-                            {payroll.client.name}
+                            {payroll.client?.name || "Unknown Client"}
                           </p>
                         </div>
                         <Badge
@@ -477,7 +756,7 @@ export default function ProfilePage() {
                         <div>
                           <p className="font-medium">{payroll.name}</p>
                           <p className="text-sm text-gray-500">
-                            {payroll.client.name}
+                            {payroll.client?.name || "Unknown Client"}
                           </p>
                         </div>
                         <Badge
@@ -500,19 +779,53 @@ export default function ProfilePage() {
           </div>
         </TabsContent>
 
+        <TabsContent value="workload" className="space-y-6">
+          {/* Payroll Workload Visualization */}
+          {workloadLoading ? (
+            <Card>
+              <CardContent className="flex items-center justify-center p-8">
+                <ByteMySpinner size="lg" />
+                <span className="ml-4">Loading workload data...</span>
+              </CardContent>
+            </Card>
+          ) : workloadError ? (
+            <Card>
+              <CardContent className="flex flex-col items-center space-y-4 p-8">
+                <AlertCircle className="h-12 w-12 text-red-500" />
+                <div className="text-center">
+                  <h3 className="text-lg font-semibold">Failed to load workload data</h3>
+                  <p className="text-sm text-gray-600 mt-1">{workloadError.message}</p>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <PayrollWorkloadVisualization
+              userId={user.id}
+              userName={user.name}
+              userRole={user.role}
+              workSchedule={workSchedule}
+              viewMode="consultant"
+              showCapacityComparison={true}
+              onAssignmentClick={(assignment) => {
+                console.log("Assignment clicked:", assignment);
+              }}
+            />
+          )}
+        </TabsContent>
+
         <TabsContent value="team" className="space-y-6">
           {/* Direct Reports */}
-          {user.directReports?.length > 0 && (
+          {user.managedUsers?.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Users className="w-5 h-5" />
-                  Direct Reports ({user.directReports?.length || 0})
+                  Direct Reports ({user.managedUsers?.length || 0})
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {user.directReports?.map((report: any) => (
+                  {user.managedUsers?.map((report: any) => (
                     <div
                       key={report.id}
                       className="flex items-center space-x-3 p-3 border rounded-lg"
@@ -552,44 +865,18 @@ export default function ProfilePage() {
         </TabsContent>
 
         <TabsContent value="activity" className="space-y-6">
-          {/* Recent Notes */}
-          {user.notesWritten?.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="w-5 h-5" />
-                  Recent Notes ({user.notesWritten?.length || 0})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {user.notesWritten?.map((note: any) => (
-                    <div
-                      key={note.id}
-                      className="border-l-4 border-blue-200 pl-4 py-2"
-                    >
-                      <div className="flex justify-between items-start mb-2">
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline">{note.entity_type}</Badge>
-                          {note.is_important && (
-                            <Badge variant="destructive">Important</Badge>
-                          )}
-                        </div>
-                        <span className="text-xs text-gray-500">
-                          {note.created_at
-                            ? format(new Date(note.created_at), "MMM dd, yyyy")
-                            : ""}
-                        </span>
-                      </div>
-                      <p className="text-sm text-gray-700 line-clamp-2">
-                        {note.content}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          {/* Activity Placeholder */}
+          <Card>
+            <CardContent className="flex flex-col items-center space-y-4 p-8">
+              <FileText className="h-12 w-12 text-gray-400" />
+              <div className="text-center">
+                <h3 className="text-lg font-semibold">Activity Coming Soon</h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  Activity tracking will be available in a future update.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>

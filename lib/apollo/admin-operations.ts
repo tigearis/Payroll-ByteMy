@@ -51,7 +51,7 @@ export class AdminOperationsService {
 
       const userRole = sessionClaims?.metadata?.role as string;
 
-      if (!userRole || !ADMIN_ROLES.includes(userRole)) {
+      if (!userRole || !ADMINROLES.includes(userRole)) {
         console.warn(`Access denied for user ${userId} with role ${userRole}`);
         return { isValid: false, userId, role: userRole };
       }
@@ -215,7 +215,7 @@ export class AdminOperationsService {
     }
 
     return {
-      deletedDates: data.deletepayroll_dates.affected_rows,
+      deletedDates: data.deletepayrolldates.affected_rows,
       deletedVersions: data.deletepayrolls.affected_rows,
       resetPayrolls: data.updatepayrolls.affected_rows,
     };

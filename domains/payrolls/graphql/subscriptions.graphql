@@ -99,7 +99,7 @@ subscription PayrollSystemHealthUpdates {
   payrolls(
     where: {
       supersededDate: { _isNull: true }
-      status: { _in: ["Pending Review", "Issue", "Processing"] }
+      status: { _in: ["pending_approval", "processing", "draft"] }
     }
     orderBy: { updatedAt: ASC }
   ) {

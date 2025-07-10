@@ -1,0 +1,674 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_email_templates_approved_at
+  description: Update the 'approved_at' column in the 'email_templates' collection
+  fields:
+    - name: set
+      type: timestamptz
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_email_templates_approved_at
+    inputTypeName: update_column_email_templates_approved_at_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_email_templates_approved_at
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_email_templates_approved_at
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_email_templates_approved_by_user_id
+  description: Update the 'approved_by_user_id' column in the 'email_templates' collection
+  fields:
+    - name: set
+      type: uuid
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_email_templates_approved_by_user_id
+    inputTypeName: update_column_email_templates_approved_by_user_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_email_templates_approved_by_user_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_email_templates_approved_by_user_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_email_templates_available_variables
+  description: Update the 'available_variables' column in the 'email_templates' collection
+  fields:
+    - name: set
+      type: json!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_email_templates_available_variables
+    inputTypeName: update_column_email_templates_available_variables_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_email_templates_available_variables
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_email_templates_available_variables
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_email_templates_category
+  description: Update the 'category' column in the 'email_templates' collection
+  fields:
+    - name: set
+      type: string!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_email_templates_category
+    inputTypeName: update_column_email_templates_category_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_email_templates_category
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_email_templates_category
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_email_templates_created_at
+  description: Update the 'created_at' column in the 'email_templates' collection
+  fields:
+    - name: set
+      type: timestamptz
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_email_templates_created_at
+    inputTypeName: update_column_email_templates_created_at_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_email_templates_created_at
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_email_templates_created_at
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_email_templates_created_by_user_id
+  description: Update the 'created_by_user_id' column in the 'email_templates' collection
+  fields:
+    - name: set
+      type: uuid!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_email_templates_created_by_user_id
+    inputTypeName: update_column_email_templates_created_by_user_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_email_templates_created_by_user_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_email_templates_created_by_user_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_email_templates_description
+  description: Update the 'description' column in the 'email_templates' collection
+  fields:
+    - name: set
+      type: string
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_email_templates_description
+    inputTypeName: update_column_email_templates_description_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_email_templates_description
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_email_templates_description
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_email_templates_html_content
+  description: Update the 'html_content' column in the 'email_templates' collection
+  fields:
+    - name: set
+      type: string!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_email_templates_html_content
+    inputTypeName: update_column_email_templates_html_content_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_email_templates_html_content
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_email_templates_html_content
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_email_templates_id
+  description: Update the 'id' column in the 'email_templates' collection
+  fields:
+    - name: set
+      type: uuid!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_email_templates_id
+    inputTypeName: update_column_email_templates_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_email_templates_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_email_templates_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_email_templates_is_active
+  description: Update the 'is_active' column in the 'email_templates' collection
+  fields:
+    - name: set
+      type: boolean
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_email_templates_is_active
+    inputTypeName: update_column_email_templates_is_active_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_email_templates_is_active
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_email_templates_is_active
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_email_templates_is_system_template
+  description: Update the 'is_system_template' column in the 'email_templates' collection
+  fields:
+    - name: set
+      type: boolean
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_email_templates_is_system_template
+    inputTypeName: update_column_email_templates_is_system_template_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_email_templates_is_system_template
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_email_templates_is_system_template
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_email_templates_name
+  description: Update the 'name' column in the 'email_templates' collection
+  fields:
+    - name: set
+      type: string!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_email_templates_name
+    inputTypeName: update_column_email_templates_name_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_email_templates_name
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_email_templates_name
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_email_templates_requires_approval
+  description: Update the 'requires_approval' column in the 'email_templates' collection
+  fields:
+    - name: set
+      type: boolean
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_email_templates_requires_approval
+    inputTypeName: update_column_email_templates_requires_approval_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_email_templates_requires_approval
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_email_templates_requires_approval
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_email_templates_subject_template
+  description: Update the 'subject_template' column in the 'email_templates' collection
+  fields:
+    - name: set
+      type: string!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_email_templates_subject_template
+    inputTypeName: update_column_email_templates_subject_template_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_email_templates_subject_template
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_email_templates_subject_template
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_email_templates_text_content
+  description: Update the 'text_content' column in the 'email_templates' collection
+  fields:
+    - name: set
+      type: string
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_email_templates_text_content
+    inputTypeName: update_column_email_templates_text_content_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_email_templates_text_content
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_email_templates_text_content
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_email_templates_updated_at
+  description: Update the 'updated_at' column in the 'email_templates' collection
+  fields:
+    - name: set
+      type: timestamptz
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_email_templates_updated_at
+    inputTypeName: update_column_email_templates_updated_at_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_email_templates_updated_at
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_email_templates_updated_at
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_email_templates_by_id_update_columns
+  description: Update the columns of the 'email_templates' collection
+  fields:
+    - name: approved_at
+      type: update_column_email_templates_approved_at
+      description: Update the 'approved_at' column in the 'email_templates' collection.
+    - name: approved_by_user_id
+      type: update_column_email_templates_approved_by_user_id
+      description: Update the 'approved_by_user_id' column in the 'email_templates'
+        collection.
+    - name: available_variables
+      type: update_column_email_templates_available_variables
+      description: Update the 'available_variables' column in the 'email_templates'
+        collection.
+    - name: category
+      type: update_column_email_templates_category
+      description: Update the 'category' column in the 'email_templates' collection.
+    - name: created_at
+      type: update_column_email_templates_created_at
+      description: Update the 'created_at' column in the 'email_templates' collection.
+    - name: created_by_user_id
+      type: update_column_email_templates_created_by_user_id
+      description: Update the 'created_by_user_id' column in the 'email_templates'
+        collection.
+    - name: description
+      type: update_column_email_templates_description
+      description: Update the 'description' column in the 'email_templates' collection.
+    - name: html_content
+      type: update_column_email_templates_html_content
+      description: Update the 'html_content' column in the 'email_templates' collection.
+    - name: id
+      type: update_column_email_templates_id
+      description: Update the 'id' column in the 'email_templates' collection.
+    - name: is_active
+      type: update_column_email_templates_is_active
+      description: Update the 'is_active' column in the 'email_templates' collection.
+    - name: is_system_template
+      type: update_column_email_templates_is_system_template
+      description: Update the 'is_system_template' column in the 'email_templates'
+        collection.
+    - name: name
+      type: update_column_email_templates_name
+      description: Update the 'name' column in the 'email_templates' collection.
+    - name: requires_approval
+      type: update_column_email_templates_requires_approval
+      description: Update the 'requires_approval' column in the 'email_templates'
+        collection.
+    - name: subject_template
+      type: update_column_email_templates_subject_template
+      description: Update the 'subject_template' column in the 'email_templates' collection.
+    - name: text_content
+      type: update_column_email_templates_text_content
+      description: Update the 'text_content' column in the 'email_templates' collection.
+    - name: updated_at
+      type: update_column_email_templates_updated_at
+      description: Update the 'updated_at' column in the 'email_templates' collection.
+  graphql:
+    typeName: update_email_templates_by_id_update_columns
+    inputTypeName: update_email_templates_by_id_update_columns_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_email_templates_by_id_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_email_templates_by_id_update_columns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - approved_at
+          - approved_by_user_id
+          - available_variables
+          - category
+          - created_at
+          - created_by_user_id
+          - description
+          - html_content
+          - id
+          - is_active
+          - is_system_template
+          - name
+          - requires_approval
+          - subject_template
+          - text_content
+          - updated_at
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_email_templates_by_id_response
+  description: Responses from the 'update_email_templates_by_id' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[email_templates!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: update_email_templates_by_id_response
+    inputTypeName: update_email_templates_by_id_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_email_templates_by_id_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_email_templates_by_id_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: update_email_templates_by_id
+  outputType: update_email_templates_by_id_response!
+  arguments:
+    - name: key_id
+      type: uuid!
+    - name: post_check
+      type: email_templates_bool_exp
+      description: Update permission post-condition predicate over the
+        'email_templates' collection
+    - name: pre_check
+      type: email_templates_bool_exp
+      description: Update permission pre-condition predicate over the
+        'email_templates' collection
+    - name: update_columns
+      type: update_email_templates_by_id_update_columns!
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: update_email_templates_by_id
+  graphql:
+    rootFieldName: update_email_templates_by_id
+    rootFieldKind: Mutation
+  description: Update any row on the 'email_templates' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: update_email_templates_by_id
+  permissions:
+    - role: admin
+      allowExecution: true
+

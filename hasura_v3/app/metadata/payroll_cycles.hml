@@ -1,0 +1,209 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: payroll_cycles
+  fields:
+    - name: created_at
+      type: timestamptz
+      description: Timestamp when the cycle was created
+    - name: description
+      type: string
+      description: Detailed description of the payroll cycle
+    - name: id
+      type: uuid!
+      description: Unique identifier for the payroll cycle
+    - name: name
+      type: enum!
+      description: Name of the payroll cycle (Weekly, Biweekly, Monthly, etc.)
+    - name: updated_at
+      type: timestamptz
+      description: Timestamp when the cycle was last updated
+  graphql:
+    typeName: payroll_cycles
+    inputTypeName: payroll_cycles_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: payroll_cycles
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: payroll_cycles
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - created_at
+          - description
+          - id
+          - name
+          - updated_at
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: payroll_cycles_bool_exp
+  operand:
+    object:
+      type: payroll_cycles
+      comparableFields:
+        - fieldName: created_at
+          booleanExpressionType: timestamptz_bool_exp
+        - fieldName: description
+          booleanExpressionType: text_bool_exp
+        - fieldName: id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: name
+          booleanExpressionType: payroll_cycle_type_bool_exp
+        - fieldName: updated_at
+          booleanExpressionType: timestamptz_bool_exp
+      comparableRelationships:
+        - relationshipName: adjustment_rules
+        - relationshipName: payrolls
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: payroll_cycles_bool_exp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: payroll_cycles_agg_exp
+  operand:
+    object:
+      aggregatedType: payroll_cycles
+      aggregatableFields:
+        - fieldName: created_at
+          aggregateExpression: timestamptz_agg_exp
+        - fieldName: description
+          aggregateExpression: text_agg_exp
+        - fieldName: id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: name
+          aggregateExpression: payroll_cycle_type_agg_exp
+        - fieldName: updated_at
+          aggregateExpression: timestamptz_agg_exp
+  count:
+    enable: true
+    returnType: int_64
+  graphql:
+    selectTypeName: payroll_cycles_agg_exp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: payroll_cycles_order_by_exp
+  operand:
+    object:
+      orderedType: payroll_cycles
+      orderableFields:
+        - fieldName: created_at
+          orderByExpression: timestamptz_order_by_exp
+        - fieldName: description
+          orderByExpression: string_order_by_exp
+        - fieldName: id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: name
+          orderByExpression: enum_order_by_exp
+        - fieldName: updated_at
+          orderByExpression: timestamptz_order_by_exp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: payroll_cycles_order_by_exp
+
+---
+kind: Model
+version: v2
+definition:
+  name: payroll_cycles
+  objectType: payroll_cycles
+  source:
+    dataConnectorName: payroll
+    collection: payroll_cycles
+  filterExpressionType: payroll_cycles_bool_exp
+  aggregateExpression: payroll_cycles_agg_exp
+  orderByExpression: payroll_cycles_order_by_exp
+  graphql:
+    selectMany:
+      queryRootField: payroll_cycles
+      subscription:
+        rootField: payroll_cycles
+    selectUniques:
+      - queryRootField: payroll_cycles_by_name
+        uniqueIdentifier:
+          - name
+        subscription:
+          rootField: payroll_cycles_by_name
+      - queryRootField: payroll_cycles_by_id
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: payroll_cycles_by_id
+    filterInputTypeName: payroll_cycles_filter_input
+    aggregate:
+      queryRootField: payroll_cycles_aggregate
+      subscription:
+        rootField: payroll_cycles_aggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: payroll_cycles
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: adjustment_rules
+  sourceType: payroll_cycles
+  target:
+    model:
+      name: adjustment_rules
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: adjustment_rules_agg_exp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: cycle_id
+  graphql:
+    aggregateFieldName: adjustment_rules_aggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payrolls
+  sourceType: payroll_cycles
+  target:
+    model:
+      name: payrolls
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: payrolls_agg_exp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: cycle_id
+  graphql:
+    aggregateFieldName: payrolls_aggregate
+

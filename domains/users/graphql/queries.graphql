@@ -2,12 +2,136 @@
 # Security Classification: CRITICAL - Employee PII and authentication data
 # SOC2 Compliance: Strict access controls with audit logging
 
+# OPTIMIZED: Original query with N+1 problems fixed
 query GetUsers($limit: Int = 50, $offset: Int = 0, $where: usersBoolExp) {
   users(limit: $limit, offset: $offset, where: $where, orderBy: { name: ASC }) {
     ...UserBase
     username
     image
     managerId
+    # ✅ Fetch manager data to avoid N+1
+    managerUser {
+      id
+      name
+      email
+      role
+    }
+  }
+}
+
+# OPTIMIZED: Staff management query - fixes critical N+1 issues
+# Performance: Reduces from 51 queries to 1 query (98% reduction)
+# Eliminates: Separate manager lookups for each staff member
+# Security: CRITICAL - Employee PII with SOC2 compliance
+query GetStaffWithRelationsOptimized(
+  $limit: Int = 50, 
+  $offset: Int = 0, 
+  $where: usersBoolExp = { isStaff: { _eq: true }, isActive: { _eq: true } }
+  $orderBy: [usersOrderBy!] = [{ name: ASC }]
+) {
+  users(
+    limit: $limit
+    offset: $offset
+    where: $where
+    orderBy: $orderBy
+  ) {
+    id
+    name
+    email
+    role
+    username
+    image
+    isActive
+    isStaff
+    managerId
+    clerkUserId
+    createdAt
+    updatedAt
+    
+    # ✅ Manager data fetched in same query (eliminates N+1)
+    managerUser {
+      id
+      name
+      email
+      role
+      isActive
+    }
+    
+    # ✅ Direct reports fetched in same query (eliminates N+1)
+    managedUsers(where: { isActive: { _eq: true } }) {
+      id
+      name
+      email
+      role
+      isActive
+    }
+    
+    # ✅ Key payroll assignments fetched efficiently (eliminates N+1)
+    primaryConsultantPayrolls(
+      where: { supersededDate: { _isNull: true } }
+      limit: 5
+      orderBy: { updatedAt: DESC }
+    ) {
+      id
+      name
+      status
+      client { 
+        id 
+        name 
+      }
+      nextPayrollDate: payrollDates(
+        where: { adjustedEftDate: { _gte: "now()" } }
+        orderBy: { adjustedEftDate: ASC }
+        limit: 1
+      ) {
+        adjustedEftDate
+      }
+    }
+    
+    # ✅ Backup assignments
+    backupConsultantPayrolls(
+      where: { supersededDate: { _isNull: true } }
+      limit: 3
+      orderBy: { updatedAt: DESC }
+    ) {
+      id
+      name
+      status
+      client { 
+        id 
+        name 
+      }
+    }
+    
+    # ✅ Work schedule data for capacity planning
+    userWorkSchedules(orderBy: { workDay: ASC }) {
+      id
+      workDay
+      workHours
+      adminTimeHours
+      payrollCapacityHours
+    }
+  }
+  
+  # ✅ Aggregate counts in same query
+  usersAggregate(where: $where) {
+    aggregate { count }
+  }
+  
+  # ✅ Additional stats
+  activeStaff: usersAggregate(
+    where: { isStaff: { _eq: true }, isActive: { _eq: true } }
+  ) {
+    aggregate { count }
+  }
+  
+  managersCount: usersAggregate(
+    where: { 
+      role: { _in: ["manager", "org_admin", "developer"] }, 
+      isActive: { _eq: true } 
+    }
+  ) {
+    aggregate { count }
   }
 }
 
@@ -110,6 +234,12 @@ query GetStaffDetailComplete($id: uuid!) {
       email
       role
       isActive
+    }
+
+    # User skills
+    userSkills {
+      skillName
+      proficiencyLevel
     }
   }
 
@@ -477,6 +607,9 @@ query GetUserProfileComplete($id: uuid!) {
     email
     username
     image
+    phone
+    address
+    bio
     role
     isStaff
     isActive
@@ -489,12 +622,21 @@ query GetUserProfileComplete($id: uuid!) {
       email
       image
     }
-    # directReports removed - relationship not available
+    # Direct reports (users this person manages)
+    managedUsers {
+      id
+      name
+      email
+      role
+      image
+      isActive
+    }
     primaryConsultantPayrolls {
       id
       name
       status
       client {
+        id
         name
       }
       employeeCount
@@ -504,6 +646,7 @@ query GetUserProfileComplete($id: uuid!) {
       name
       status
       client {
+        id
         name
       }
     }
@@ -512,11 +655,32 @@ query GetUserProfileComplete($id: uuid!) {
       name
       status
       client {
+        id
         name
       }
     }
-    # leaves removed - relationship not available
-    # userWorkSchedules needed instead of workSchedules
+    # Work schedules for this user
+    userWorkSchedules {
+      id
+      workDay
+      workHours
+      createdAt
+      updatedAt
+    }
+  }
+
+  # Leave records for this user (separate query to avoid relationship issues)
+  userLeaves: leave(
+    where: { userId: { _eq: $id } }
+    orderBy: { startDate: DESC }
+    limit: 10
+  ) {
+    id
+    startDate
+    endDate
+    leaveType
+    status
+    reason
   }
 }
 
@@ -633,6 +797,7 @@ query GetStaffPaginated(
     orderBy: { name: ASC }
   ) {
     ...UserListItem
+    createdAt
     managerUser {
       ...UserMinimal
     }
@@ -676,6 +841,10 @@ query SearchUsersPaginated(
     offset: $offset
   ) {
     ...UserListItem
+    createdAt
+    managerUser {
+      ...UserMinimal
+    }
   }
 
   searchAggregate: usersAggregate(
@@ -751,6 +920,7 @@ query GetUserClerkId($id: uuid!) {
     email
     role
     clerkUserId
+    managerId
   }
 }
 
@@ -995,9 +1165,7 @@ query GetUsersByStatus(
     deactivatedAt
     createdAt
   }
-  usersAggregate(
-    where: { status: { _in: $statuses } }
-  ) {
+  usersAggregate(where: { status: { _in: $statuses } }) {
     aggregate {
       count
     }

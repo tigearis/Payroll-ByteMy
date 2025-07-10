@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation, useQuery } from "@apollo/client";
+import { useAuth } from "@clerk/nextjs";
 import {
   ArrowLeft,
   Edit,
@@ -32,6 +33,7 @@ import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { PermissionGuard } from "@/components/auth/permission-guard";
+import { SkillsEditModal } from "@/components/skills-edit-modal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -109,11 +111,13 @@ const getUserStatusConfig = (user: any) => {
 export default function StaffDetailsPage() {
   const params = useParams();
   const id = params.id as string;
+  const { userId } = useAuth(); // Get current user's Clerk ID
   // Permissions removed
 
   // State management
   const [isEditing, setIsEditing] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   const [editedUser, setEditedUser] = useState<any>({});
   const [showPermissionDialog, setShowPermissionDialog] = useState(false);
@@ -122,12 +126,18 @@ export default function StaffDetailsPage() {
   const [permissionReason, setPermissionReason] = useState("");
   const [permissionExpiration, setPermissionExpiration] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [showSkillsModal, setShowSkillsModal] = useState(false);
 
   // Permission checks (simplified - always allow if authenticated)
   const canRead = true;
   const canEdit = true;
 
-  // GraphQL queries
+  // Helper function to check if user is viewing their own profile
+  const isCurrentUser = (user: any): boolean => {
+    return user?.clerkUserId === userId;
+  };
+
+  // GraphQL queries with hierarchical permission guards
   const { data, loading, error, refetch } = useQuery(GetStaffDetailCompleteDocument, {
     variables: { id },
     skip: !id || !canRead,
@@ -224,6 +234,43 @@ export default function StaffDetailsPage() {
     }
   };
 
+  // Handle delete user
+  const handleDeleteUser = async () => {
+    const user = data?.userById;
+    if (!user) return;
+
+    // Security check: Prevent users from deleting themselves
+    if (isCurrentUser(user)) {
+      toast.error("You cannot delete your own account. Please contact an administrator if you need to deactivate your account.");
+      setShowDeleteDialog(false);
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/staff/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast.success(`User "${user.name}" has been deleted successfully`);
+        // Redirect to staff page after successful deletion
+        window.location.href = '/staff';
+      } else {
+        toast.error(result.error || 'Failed to delete user');
+      }
+    } catch (error: any) {
+      console.error('Error deleting user:', error);
+      toast.error('Failed to delete user. Please try again.');
+    } finally {
+      setShowDeleteDialog(false);
+    }
+  };
+
   // Permission management functions
   const resetPermissionForm = () => {
     setSelectedPermission("");
@@ -238,34 +285,15 @@ export default function StaffDetailsPage() {
       return;
     }
 
-    const [resource, operation] = selectedPermission.split(":");
-    const variables = {
-      userId: id,
-      resource,
-      operation,
-      reason: permissionReason,
-      expiresAt: permissionExpiration ? new Date(permissionExpiration).toISOString() : null,
-    };
-
-    try {
-      if (permissionAction === "grant") {
-        await grantPermission({ variables });
-      } else {
-        await restrictPermission({ variables });
-      }
-    } catch (error) {
-      console.error("Error handling permission:", error);
-    }
+    // Permission management simplified - using role-based system
+    toast.info("Permission management has been simplified to role-based access control");
+    setShowPermissionDialog(false);
+    resetPermissionForm();
   };
 
   const handleRemoveOverride = async (overrideId: string) => {
-    try {
-      await removePermissionOverride({
-        variables: { id: overrideId },
-      });
-    } catch (error) {
-      console.error("Error removing override:", error);
-    }
+    // Permission overrides simplified - using role-based system
+    toast.info("Permission management has been simplified to role-based access control");
   };
 
   // Get user's role-based permissions
@@ -274,47 +302,19 @@ export default function StaffDetailsPage() {
     return [`${userRole}:access`];
   };
 
-  // Check if user has permission (including overrides)
+  // Check if user has permission (simplified role-based)
   const userHasPermission = (permission: string) => {
     const rolePermissions = getUserRolePermissions(user?.role || "");
-    const overrides = permissionOverridesData?.permissionOverrides || [];
-    
-    // Check for explicit restrictions first
-    const restriction = overrides.find(
-      (override: any) => 
-        `${override.resource}:${override.operation}` === permission && 
-        override.granted === false
-    );
-    if (restriction) return false;
-    
-    // Check for explicit grants
-    const grant = overrides.find(
-      (override: any) => 
-        `${override.resource}:${override.operation}` === permission && 
-        override.granted === true
-    );
-    if (grant) return true;
-    
-    // Check role permissions
     return rolePermissions.includes(permission as any);
   };
 
-  // Get permission status for display
-  const getPermissionStatus = (permission: string) => {
+  // Get permission status for display (simplified)
+  const getPermissionStatus = (permission: string): {
+    hasPermission: boolean;
+    source: string;
+    override: { id: string } | null;
+  } => {
     const rolePermissions = getUserRolePermissions(user?.role || "");
-    const overrides = permissionOverridesData?.permissionOverrides || [];
-    
-    const override = overrides.find(
-      (o: any) => `${o.resource}:${o.operation}` === permission
-    );
-    
-    if (override) {
-      return {
-        hasPermission: override.granted,
-        source: override.granted ? "granted" : "restricted",
-        override,
-      };
-    }
     
     return {
       hasPermission: rolePermissions.includes(permission as any),
@@ -324,7 +324,7 @@ export default function StaffDetailsPage() {
   };
 
   // Filter permissions based on search
-  const filteredPermissions = [].filter(permission =>
+  const filteredPermissions: string[] = [].filter((permission: string) =>
     permission.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -407,8 +407,9 @@ export default function StaffDetailsPage() {
   ) || [];
 
   return (
-    <PermissionGuard >
-      <div className="space-y-6">
+    <div className="container mx-auto py-6 space-y-6">
+      <PermissionGuard >
+        <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
@@ -449,6 +450,19 @@ export default function StaffDetailsPage() {
                     <RefreshCw className="w-4 h-4 mr-2" />
                     Refresh Data
                   </DropdownMenuItem>
+                  {/* Only show delete option if user is not viewing their own profile */}
+                  {!isCurrentUser(user) && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem 
+                        className="text-destructive focus:text-destructive"
+                        onClick={() => setShowDeleteDialog(true)}
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Delete User
+                      </DropdownMenuItem>
+                    </>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -516,12 +530,18 @@ export default function StaffDetailsPage() {
 
         {/* Enhanced Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList className="grid w-full grid-cols-3 bg-indigo-100 shadow-md rounded-lg">
+          <TabsList className="grid w-full grid-cols-4 bg-indigo-100 shadow-md rounded-lg">
             <TabsTrigger
               value="overview"
               className="data-[state=active]:bg-white data-[state=active]:text-gray-900 hover:bg-indigo-300 transition-all text-gray-900"
             >
               Overview
+            </TabsTrigger>
+            <TabsTrigger
+              value="skills"
+              className="data-[state=active]:bg-white data-[state=active]:text-gray-900 hover:bg-indigo-300 transition-all text-gray-900"
+            >
+              Skills
             </TabsTrigger>
             <TabsTrigger
               value="permissions"
@@ -618,25 +638,9 @@ export default function StaffDetailsPage() {
                     </div>
                     <div className="flex-1">
                       <p className="text-sm font-medium text-gray-500">Current Role</p>
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm text-gray-900 capitalize">
-                          {user.role?.replace('_', ' ')}
-                        </p>
-                        <PermissionGuard  fallback={null}>
-                          <Select value={user.role} onValueChange={handleRoleChange}>
-                            <SelectTrigger className="w-32 h-7 text-xs">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {ROLE_OPTIONS.map((role) => (
-                                <SelectItem key={role.value} value={role.value}>
-                                  {role.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </PermissionGuard>
-                      </div>
+                      <p className="text-sm text-gray-900 capitalize">
+                        {user.role?.replace('_', ' ')}
+                      </p>
                     </div>
                   </div>
 
@@ -686,6 +690,81 @@ export default function StaffDetailsPage() {
             </div>
           </TabsContent>
 
+          {/* Skills Tab */}
+          <TabsContent value="skills" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center">
+                    <Calculator className="w-5 h-5 mr-2" />
+                    User Skills
+                  </CardTitle>
+                  <PermissionGuard fallback={null}>
+                    <Button 
+                      onClick={() => setShowSkillsModal(true)}
+                      size="sm"
+                    >
+                      <Edit className="w-4 h-4 mr-2" />
+                      Edit Skills
+                    </Button>
+                  </PermissionGuard>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {user.userSkills && user.userSkills.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {user.userSkills.map((skill: any, index: number) => (
+                        <div
+                          key={`${skill.skillName}-${index}`}
+                          className="p-4 border rounded-lg hover:shadow-md transition-shadow"
+                        >
+                          <div className="space-y-2">
+                            <h4 className="font-medium text-gray-900">
+                              {skill.skillName}
+                            </h4>
+                            <Badge 
+                              className={
+                                skill.proficiencyLevel === "Expert" 
+                                  ? "bg-purple-100 text-purple-700" 
+                                  : skill.proficiencyLevel === "Advanced"
+                                  ? "bg-green-100 text-green-700"
+                                  : skill.proficiencyLevel === "Intermediate"
+                                  ? "bg-blue-100 text-blue-700"
+                                  : "bg-gray-100 text-gray-700"
+                              }
+                            >
+                              {skill.proficiencyLevel}
+                            </Badge>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <Calculator className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">
+                        No Skills Assigned
+                      </h3>
+                      <p className="text-gray-500 mb-4">
+                        This user hasn't been assigned any skills yet.
+                      </p>
+                      <PermissionGuard fallback={null}>
+                        <Button 
+                          onClick={() => setShowSkillsModal(true)}
+                          variant="outline"
+                        >
+                          <Edit className="w-4 h-4 mr-2" />
+                          Add Skills
+                        </Button>
+                      </PermissionGuard>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           {/* Permissions Tab */}
           <TabsContent value="permissions" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -718,8 +797,8 @@ export default function StaffDetailsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {Object.entries({}).map(([category, permissions]) => {
-                      const categoryPermissions = permissions.filter(p => 
+                    {Object.entries({} as Record<string, string[]>).map(([category, permissions]) => {
+                      const categoryPermissions = permissions.filter((p: string) => 
                         filteredPermissions.includes(p)
                       );
                       
@@ -731,7 +810,7 @@ export default function StaffDetailsPage() {
                             {category.toLowerCase()} Permissions
                           </h4>
                           <div className="grid grid-cols-1 gap-2">
-                            {categoryPermissions.map((permission) => {
+                            {categoryPermissions.map((permission: string) => {
                               const status = getPermissionStatus(permission);
                               return (
                                 <div
@@ -740,7 +819,7 @@ export default function StaffDetailsPage() {
                                 >
                                   <div className="flex items-center space-x-3">
                                     <div className={`w-3 h-3 rounded-full ${
-                                      statustrue ? 'bg-green-500' : 'bg-red-500'
+                                      status.hasPermission ? 'bg-green-500' : 'bg-red-500'
                                     }`} />
                                     <div>
                                       <p className="text-sm font-medium text-gray-900">
@@ -753,15 +832,19 @@ export default function StaffDetailsPage() {
                                     </div>
                                   </div>
                                   <div className="flex items-center space-x-2">
-                                    <Badge variant={statustrue ? "default" : "destructive"}>
-                                      {statustrue ? "Allowed" : "Denied"}
+                                    <Badge variant={status.hasPermission ? "default" : "destructive"}>
+                                      {status.hasPermission ? "Allowed" : "Denied"}
                                     </Badge>
                                     {status.override && (
                                       <PermissionGuard  fallback={null}>
                                         <Button
                                           variant="ghost"
                                           size="sm"
-                                          onClick={() => handleRemoveOverride(status.override.id)}
+                                          onClick={() => {
+                                            if (status.override?.id) {
+                                              handleRemoveOverride(status.override.id);
+                                            }
+                                          }}
                                           className="h-7 w-7 p-0"
                                         >
                                           <X className="w-3 h-3" />
@@ -790,8 +873,8 @@ export default function StaffDetailsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {permissionOverridesData?.permissionOverrides?.length ? (
-                      permissionOverridesData.permissionOverrides.map((override: any) => (
+                    {false ? (
+                      [].map((override: any) => (
                         <div
                           key={override.id}
                           className="p-3 border rounded-lg space-y-2"
@@ -910,14 +993,14 @@ export default function StaffDetailsPage() {
               <div>
                 <Label htmlFor="manager">Manager</Label>
                 <Select 
-                  value={editedUser.managerId || ""} 
-                  onValueChange={(value) => handleInputChange("managerId", value)}
+                  value={editedUser.managerId || "none"} 
+                  onValueChange={(value) => handleInputChange("managerId", value === "none" ? null : value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select manager..." />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">No manager</SelectItem>
+                    <SelectItem value="none">No manager</SelectItem>
                     {managerOptions.map((manager: any) => (
                       <SelectItem key={manager.id} value={manager.id}>
                         {manager.name}
@@ -996,12 +1079,12 @@ export default function StaffDetailsPage() {
                     <SelectValue placeholder="Select permission..." />
                   </SelectTrigger>
                   <SelectContent>
-                    {Object.entries({}).map(([category, permissions]) => (
+                    {Object.entries({} as Record<string, string[]>).map(([category, permissions]) => (
                       <div key={category}>
                         <div className="px-2 py-1 text-xs font-medium text-gray-500 uppercase">
                           {category}
                         </div>
-                        {permissions.map((permission) => (
+                        {permissions.map((permission: string) => (
                           <SelectItem key={permission} value={permission}>
                             {permission}
                           </SelectItem>
@@ -1066,7 +1149,97 @@ export default function StaffDetailsPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Delete User Confirmation Dialog */}
+        <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center text-destructive">
+                <AlertTriangle className="w-5 h-5 mr-2" />
+                Delete User Account
+              </DialogTitle>
+              <DialogDescription>
+                This action cannot be undone. The user account will be permanently deactivated and removed from the system.
+              </DialogDescription>
+            </DialogHeader>
+            
+            {user && (
+              <div className="space-y-4">
+                <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="flex-shrink-0">
+                      <div className="w-10 h-10 bg-destructive/20 rounded-lg flex items-center justify-center">
+                        <User className="w-5 h-5 text-destructive" />
+                      </div>
+                    </div>
+                    <div>
+                      <p className="font-medium text-destructive">
+                        {user.name}
+                      </p>
+                      <p className="text-sm text-destructive/80">
+                        {user.email}
+                      </p>
+                      <p className="text-xs text-destructive/60 capitalize">
+                        {user.role?.replace('_', ' ')} • {user.isStaff ? 'Staff Member' : 'User'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-sm text-gray-600">
+                  <p className="font-medium mb-2">This will:</p>
+                  <ul className="list-disc list-inside space-y-1 text-sm">
+                    <li>Deactivate the user account immediately</li>
+                    <li>Remove access to all system features</li>
+                    <li>Ban the user from authentication system</li>
+                    <li>Mark all associated records as inactive</li>
+                  </ul>
+                </div>
+
+                {/* Security notice for self-deletion attempt */}
+                {isCurrentUser(user) && (
+                  <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <AlertTriangle className="w-4 h-4 text-yellow-600" />
+                      <span className="text-sm font-medium text-yellow-800">
+                        You cannot delete your own account
+                      </span>
+                    </div>
+                    <p className="text-xs text-yellow-700 mt-1">
+                      Contact an administrator if you need to deactivate your account.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+            
+            <DialogFooter className="flex gap-2">
+              <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
+                <X className="w-4 h-4 mr-2" />
+                Cancel
+              </Button>
+              <Button 
+                variant="destructive" 
+                onClick={handleDeleteUser}
+                disabled={isCurrentUser(user)}
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                {isCurrentUser(user) ? "Cannot Delete Self" : "Delete User"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Skills Edit Modal */}
+        <SkillsEditModal
+          isOpen={showSkillsModal}
+          onClose={() => setShowSkillsModal(false)}
+          type="user"
+          entityId={id}
+          entityName={user.name || ""}
+        />
       </div>
-    </PermissionGuard>
+      </PermissionGuard>
+    </div>
   );
 }

@@ -1,0 +1,121 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_payroll_profitability_object
+  fields:
+    - name: billing_items_count
+      type: int_64
+    - name: billing_status
+      type: string
+    - name: client_id
+      type: uuid
+    - name: client_name
+      type: string
+    - name: employee_count
+      type: int_32
+    - name: payroll_id
+      type: uuid
+    - name: payroll_name
+      type: string
+    - name: payslip_count
+      type: int_32
+    - name: revenue_per_hour
+      type: bigdecimal
+    - name: time_entries_count
+      type: int_64
+    - name: total_hours
+      type: bigdecimal
+    - name: total_revenue
+      type: bigdecimal
+  graphql:
+    typeName: insert_payroll_profitability_object
+    inputTypeName: insert_payroll_profitability_object_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_payroll_profitability_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_payroll_profitability_object
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - billing_items_count
+          - billing_status
+          - client_id
+          - client_name
+          - employee_count
+          - payroll_id
+          - payroll_name
+          - payslip_count
+          - revenue_per_hour
+          - time_entries_count
+          - total_hours
+          - total_revenue
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_payroll_profitability_response
+  description: Responses from the 'insert_payroll_profitability' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[payroll_profitability!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: insert_payroll_profitability_response
+    inputTypeName: insert_payroll_profitability_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_payroll_profitability_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_payroll_profitability_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: insert_payroll_profitability
+  outputType: insert_payroll_profitability_response!
+  arguments:
+    - name: objects
+      type: "[insert_payroll_profitability_object!]!"
+    - name: post_check
+      type: payroll_profitability_bool_exp
+      description: Insert permission predicate over the 'payroll_profitability' collection
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: insert_payroll_profitability
+  graphql:
+    rootFieldName: insert_payroll_profitability
+    rootFieldKind: Mutation
+  description: Insert into the payroll_profitability table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: insert_payroll_profitability
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -2,13 +2,12 @@
  * Users Domain Types
  * Security Classification: CRITICAL - Employee PII and authentication data
  * SOC2 Compliance: Strict access controls with audit logging
- * 
+ *
  * Only contains domain-specific types, not core entities
  */
 
 // Re-export core types from main types for domain convenience
 export type { User, Role } from "@/types";
-export type { CustomPermission as Permission } from "@/types/permissions";
 
 // ===========================
 // Domain-Specific Filter & Search Types

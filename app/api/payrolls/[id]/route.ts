@@ -1,12 +1,16 @@
 // app/api/payrolls/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { GetPayrollByIdDocument as GET_PAYROLL_BY_ID, type GetPayrollByIdQuery } from "@/domains/payrolls";
+import { GetPayrollByIdDocument, type GetPayrollByIdQuery } from "@/domains/payrolls/graphql/generated/graphql";
 import { executeTypedQuery } from "@/lib/apollo/query-helpers";
 import { withAuthParams } from "@/lib/auth/api-auth";
 
-export const GET = withAuthParams(
+type PayrollResponse = 
+  | { error: string }
+  | NonNullable<GetPayrollByIdQuery['payrollById']>;
+
+export const GET = withAuthParams<PayrollResponse>(
   async (
-    req: NextRequest,
+    _req: NextRequest,
     { params }: { params: Promise<{ id: string }> },
     session
   ) => {
@@ -19,7 +23,7 @@ export const GET = withAuthParams(
 
       // Execute authenticated GraphQL query with full type safety
       const data = await executeTypedQuery<GetPayrollByIdQuery>(
-        GET_PAYROLL_BY_ID,
+        GetPayrollByIdDocument,
         { id }
       );
 
@@ -35,8 +39,5 @@ export const GET = withAuthParams(
         { status: 500 }
       );
     }
-  },
-  {
-    requiredRole: "viewer",
   }
 );

@@ -16,3 +16,4 @@ export { PayrollsTable } from "./payrolls-table";
 export { PayrollsTableUnified } from "./payrolls-table-unified";
 export { RegenerateDates } from "./regenerate-dates";
 export { UpcomingPayrolls } from "./upcoming-payrolls";
+export { NotesListModal } from "./notes-list-modal";

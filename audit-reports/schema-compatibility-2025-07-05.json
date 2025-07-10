@@ -1,0 +1,41 @@
+{
+  "summary": {
+    "totalOperations": 7,
+    "validOperations": 5,
+    "invalidOperations": 2,
+    "warnings": 1
+  },
+  "domains": {},
+  "schemaIssues": [
+    {
+      "operation": "Billing Items (Corrected)",
+      "error": "field 'category' not found in type: 'billingItems'",
+      "severity": "ERROR"
+    },
+    {
+      "operation": "Real-time Subscription Test",
+      "error": "subscriptions are not supported over HTTP, use websockets instead",
+      "severity": "ERROR"
+    },
+    {
+      "operation": "Fragment: BillingItem Fragment (New)",
+      "error": "field 'category' not found in type: 'billingItems'",
+      "severity": "ERROR"
+    },
+    {
+      "operation": "Edge Case: Complex Filtering",
+      "error": "field '_is_null' not found in type: 'DateComparisonExp'",
+      "severity": "WARNING"
+    }
+  ],
+  "recommendations": [
+    {
+      "type": "Schema Updates",
+      "message": "2 operations failed. Review GraphQL operations for schema compatibility."
+    },
+    {
+      "type": "Edge Case Handling",
+      "message": "1 edge cases need attention. Implement proper error handling."
+    }
+  ]
+}

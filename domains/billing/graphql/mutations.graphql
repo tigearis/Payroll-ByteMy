@@ -1,10 +1,223 @@
-# Billing Domain Mutations - TEMPORARILY DISABLED FOR SCHEMA FIXES
-# Security Classification: HIGH - Financial and billing data
-# SOC2 Compliance: All mutations logged with comprehensive audit trail
+# Core Billing Mutations - Enhanced Semi-Automated System
 
-# Placeholder mutation to keep file valid during schema fixes
-mutation PlaceholderBillingMutation($id: uuid!) {
-  deleteBillingInvoiceById(id: $id) {
+# Time Entry Mutations - Using notes as placeholder 
+mutation CreateMultipleTimeEntries($timeEntries: [notesInsertInput!]!) {
+  bulkInsertNotes(objects: $timeEntries) {
+    returning {
+      id
+      content
+      entityId
+      entityType
+      createdAt
+    }
+    affectedRows
+  }
+}
+
+# Time Entry Mutations - Placeholder (time_entries table not yet implemented)
+# mutation CreateMultipleTimeEntries($timeEntries: [timeEntriesInsertInput!]!) {
+#   insertTimeEntry(objects: $timeEntries) {
+#     returning {
+#       id
+#       date
+#       hours
+#       description
+#       billableHours
+#       rate
+#       amount
+#       payrollId
+#       userId
+#     }
+#     affectedRows
+#   }
+# }
+
+# Payroll Billing Generation
+mutation GeneratePayrollBilling($billingItem: billingItemsInsertInput!) {
+  insertBillingItem(object: $billingItem) {
     id
+    payrollId
+    clientId
+    totalAmount
+    isApproved
+    createdAt
+  }
+}
+
+# Batch Payroll Billing Generation  
+mutation CreatePayrollBilling(
+  $payrollId: uuid!
+  $billingItems: [billingItemsInsertInput!]!
+) {
+  # Insert billing items
+  billingItems: bulkInsertBillingItems(objects: $billingItems) {
+    returning {
+      id
+      payrollId
+      clientId
+      description
+      quantity
+      amount
+      isApproved
+      createdAt
+    }
+    affectedRows
+  }
+}
+
+# Service Catalog Management
+mutation CreateService($input: billingPlansInsertInput!) {
+  insertBillingPlan(object: $input) {
+    id
+    name
+    description
+    standardRate
+    billingUnit
+    category
+    isActive
+    currency
+    createdAt
+    updatedAt
+  }
+}
+
+mutation UpdateService($id: uuid!, $updates: billingPlansSetInput!) {
+  updateBillingPlanById(pkColumns: { id: $id }, _set: $updates) {
+    id
+    name
+    description
+    standardRate
+    billingUnit
+    category
+    isActive
+    currency
+    createdAt
+    updatedAt
+  }
+}
+
+# Billing Items Management
+mutation CreateBillingItem($input: billingItemsInsertInput!) {
+  insertBillingItem(object: $input) {
+    id
+    invoiceId
+    description
+    quantity
+    amount
+    payrollId
+    billingPlanId
+    clientId
+    staffUserId
+    serviceName
+    hourlyRate
+    isApproved
+    approvalDate
+    approvedBy
+    createdAt
+  }
+}
+
+mutation UpdateBillingItem($id: uuid!, $updates: billingItemsSetInput!) {
+  updateBillingItemById(pkColumns: { id: $id }, _set: $updates) {
+    id
+    invoiceId
+    description
+    quantity
+    amount
+    payrollId
+    billingPlanId
+    clientId
+    staffUserId
+    serviceName
+    hourlyRate
+    isApproved
+    approvalDate
+    approvedBy
+    createdAt
+  }
+}
+
+# Time Entries Management
+mutation CreateTimeEntry($input: timeEntriesInsertInput!) {
+  insertTimeEntryOne(object: $input) {
+    id
+    staffUserId
+    clientId
+    payrollId
+    billingItemId
+    workDate
+    hoursSpent
+    description
+    createdAt
+    updatedAt
+  }
+}
+
+mutation UpdateTimeEntry($id: uuid!, $updates: timeEntriesSetInput!) {
+  updateTimeEntry(pkColumns: { id: $id }, _set: $updates) {
+    id
+    staffUserId
+    clientId
+    payrollId
+    billingItemId
+    workDate
+    hoursSpent
+    description
+    createdAt
+    updatedAt
+  }
+}
+
+# Client Service Agreements Management
+mutation BulkUpdateClientServiceAgreements($clientId: uuid!, $agreements: [clientBillingAssignmentsInsertInput!]!) {
+  # First delete existing active agreements for this client
+  bulkDeleteClientBillingAssignments(
+    where: { 
+      clientId: { _eq: $clientId }
+      isActive: { _eq: true }
+    }
+  ) {
+    affectedRows
+  }
+  
+  # Then insert new agreements
+  bulkInsertClientBillingAssignments(objects: $agreements) {
+    returning {
+      id
+      clientId
+      billingPlanId
+      customRate
+      billingFrequency
+      effectiveDate
+      isEnabled
+      isActive
+      startDate
+      endDate
+      createdAt
+      assignedBillingPlan {
+        id
+        name
+        description
+        standardRate
+        billingUnit
+        category
+      }
+    }
+    affectedRows
+  }
+}
+
+# Payroll Billing Status
+mutation UpdatePayrollBillingStatus($payrollId: uuid!, $updates: payrollsSetInput!) {
+  updatePayrollById(
+    pkColumns: { id: $payrollId }
+    _set: $updates
+  ) {
+    id
+    billingStatus
+    estimatedRevenue
+    actualRevenue
+    profitMargin
+    updatedAt
   }
 }

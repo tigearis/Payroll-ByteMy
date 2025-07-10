@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
+import { ByteMyLoadingIcon } from "@/components/ui/bytemy-loading-icon";
 import {
   Card,
   CardContent,
@@ -179,7 +180,10 @@ export default function SignUpPage() {
                             <Clerk.Loading>
                               {(isLoading: boolean) => {
                                 return isLoading ? (
-                                  <Icons.spinner className="size-4 animate-spin" />
+                                  <ByteMyLoadingIcon
+                                    title="Loading sign up..."
+                                    size="default"
+                                  />
                                 ) : (
                                   "Create Account"
                                 );

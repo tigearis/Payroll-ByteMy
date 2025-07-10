@@ -1,8 +1,10 @@
 "use client";
 
 import { cva, type VariantProps } from "class-variance-authority";
-import { Loader2, RefreshCcw, AlertTriangle, Users } from "lucide-react";
+import { RefreshCcw, AlertTriangle, Users } from "lucide-react";
+import React from "react";
 import { Button } from "@/components/ui/button";
+import { ByteMyLoadingIcon, ByteMySpinner } from "@/components/ui/bytemy-loading-icon";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
@@ -50,16 +52,11 @@ export function PageLoading({
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-      <div className="text-center">
-        <Loader2
-          className={cn(
-            "animate-spin text-primary mx-auto mb-4",
-            iconSizes[size]
-          )}
-        />
-        <h3 className="text-lg font-medium text-gray-900">{title}</h3>
-        <p className="text-sm text-muted-foreground">{description}</p>
-      </div>
+      <ByteMyLoadingIcon
+        title={title}
+        description={description}
+        size={size === "sm" ? "sm" : size === "lg" ? "lg" : "default"}
+      />
     </div>
   );
 }
@@ -131,7 +128,7 @@ export function TableLoading({
             .fill(0)
             .map((_, i) => (
               <div key={i} className="flex-1 px-2">
-                <Skeleton className="h-4 w-full max-w-[120px]" />
+                <Skeleton className="h-4 w-full max-w-30" />
               </div>
             ))}
         </div>
@@ -148,7 +145,7 @@ export function TableLoading({
                   .fill(0)
                   .map((_, j) => (
                     <div key={j} className="flex-1 px-2">
-                      <Skeleton className="h-4 w-full max-w-[140px]" />
+                      <Skeleton className="h-4 w-full max-w-36" />
                     </div>
                   ))}
               </div>
@@ -202,7 +199,7 @@ export function InlineLoading({
 
   return (
     <div className="flex items-center space-x-2">
-      <Loader2 className={cn("animate-spin", iconSizes[size])} />
+      <ByteMySpinner size={size === "xs" || size === "sm" ? "sm" : "default"} />
       <span className="text-sm text-muted-foreground">{text}</span>
     </div>
   );
@@ -223,7 +220,7 @@ export function LoadingWithRetry({
     <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
       <div className="text-center">
         {loading ? (
-          <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
+          <ByteMySpinner size="default" className="mx-auto mb-4" />
         ) : (
           <AlertTriangle className="h-12 w-12 text-amber-500 mx-auto mb-4" />
         )}
@@ -238,7 +235,7 @@ export function LoadingWithRetry({
           >
             {loading ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                <ByteMySpinner size="sm" className="mr-2" />
                 Retrying...
               </>
             ) : (
@@ -269,7 +266,7 @@ export function LoadingOverlay({
       )}
     >
       <div className="text-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-2" />
+        <ByteMySpinner size="default" className="mx-auto mb-2" />
         <p className="text-sm font-medium text-gray-700">{message}</p>
       </div>
     </div>
@@ -343,7 +340,7 @@ export function PermissionCheckLoading() {
       <div className="text-center">
         <div className="relative">
           <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <Loader2 className="h-6 w-6 animate-spin text-primary absolute -top-1 -right-1" />
+          <ByteMySpinner size="sm" className="absolute -top-1 -right-1" />
         </div>
         <h3 className="text-lg font-medium text-gray-900">
           Checking Permissions
@@ -636,7 +633,7 @@ function GradientSpinner() {
 }
 
 function MinimalSpinner() {
-  return <Loader2 className="w-8 h-8 animate-spin text-primary" />;
+  return <ByteMySpinner size="default" />;
 }
 
 function InlineSpinner() {
@@ -705,12 +702,13 @@ export function PayrollsTabLoading() {
 
 export function PayrollDetailsLoading() {
   return (
-    <ModernLoading
-      variant="pulse"
-      size="md"
-      title="Loading Payroll Details"
-      description="Getting comprehensive payroll information..."
-    />
+    <div className="min-h-[400px] flex items-center justify-center">
+      <ByteMyLoadingIcon
+        title="Loading Payroll Details"
+        description="Getting comprehensive payroll information..."
+        size="default"
+      />
+    </div>
   );
 }
 
@@ -721,17 +719,45 @@ export function QuickLoading({ text }: { text?: string }) {
 }
 
 // Button loading state
-export function ButtonLoading({ children, isLoading, ...props }: any) {
+export function ButtonLoading({
+  children,
+  isLoading,
+  variant = "default",
+  size = "default",
+  className = "",
+  loadingText = "Loading...",
+  ...props
+}: {
+  children: React.ReactNode;
+  isLoading?: boolean;
+  variant?:
+    | "default"
+    | "destructive"
+    | "outline"
+    | "secondary"
+    | "ghost"
+    | "link";
+  size?: "default" | "sm" | "lg" | "icon";
+  className?: string;
+  loadingText?: string;
+  [key: string]: any;
+}) {
   return (
-    <button {...props} disabled={isLoading || props.disabled}>
+    <Button
+      {...props}
+      variant={variant}
+      size={size}
+      className={className}
+      disabled={isLoading || props.disabled}
+    >
       {isLoading ? (
         <div className="flex items-center space-x-2">
-          <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin" />
-          <span>Loading...</span>
+          <ByteMySpinner size="sm" />
+          <span>{loadingText}</span>
         </div>
       ) : (
         children
       )}
-    </button>
+    </Button>
   );
 }

@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { QuickLoading } from "@/components/ui/smart-loading";
 import {
   Table,
   TableBody,
@@ -32,9 +33,6 @@ import {
 import { GetPayrollsDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { useSmartPolling } from "@/hooks/use-polling";
 import { useCachedQuery } from "@/hooks/use-strategic-query";
-import { PermissionGuard } from "@/components/auth/permission-guard";
-import { useEnhancedPermissions } from "@/lib/auth";
-
 
 interface PayrollListCardProps {
   searchQuery: string;
@@ -45,11 +43,6 @@ export function PayrollListCard({
   searchQuery,
   onSearchChange,
 }: PayrollListCardProps) {
-  const { hasPermission } = useEnhancedPermissions();
-  
-  if (!hasPermission('payroll:read')) {
-    return null;
-  }
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
   const [selectedClient, setSelectedClient] = useState("all");
   const [selectedPayroll, setSelectedPayroll] = useState("all");
@@ -84,7 +77,14 @@ export function PayrollListCard({
   );
 
   if (loading) {
-    return <div>Loading payrolls...</div>;
+    return (
+      <div className="flex items-center justify-center py-8">
+        <QuickLoading.Page 
+          title="Loading payrolls..." 
+          size="default"
+        />
+      </div>
+    );
   }
   if (error && !data) {
     console.error("PayrollListCard Error:", error.message);
@@ -340,7 +340,7 @@ export function PayrollListCard({
                 }
               }}
             >
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full sm:w-44">
                 <SelectValue placeholder="Filter by Client" />
               </SelectTrigger>
               <SelectContent>
@@ -354,7 +354,7 @@ export function PayrollListCard({
             </Select>
 
             <Select value={selectedPayroll} onValueChange={setSelectedPayroll}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full sm:w-44">
                 <SelectValue placeholder="Filter by Payroll" />
               </SelectTrigger>
               <SelectContent>
@@ -384,7 +384,7 @@ export function PayrollListCard({
                 }
               }}
             >
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full sm:w-44">
                 <SelectValue placeholder="Filter by Consultant" />
               </SelectTrigger>
               <SelectContent>

@@ -1,9 +1,143 @@
-# Billing Domain Fragments - TEMPORARILY DISABLED FOR SCHEMA FIXES
+# Billing Domain Fragments - Enhanced Semi-Automated Billing System
 # Security Classification: HIGH - Financial and billing data
 # SOC2 Compliance: Financial data with strict audit requirements
 
-# Placeholder fragment to keep file valid during schema fixes
-fragment TempBillingPlaceholder on billingInvoice {
+# Service Catalog Fragment
+fragment ServiceCatalogFragment on billingPlans {
   id
+  name
+  description
+  standardRate
+  billingUnit
+  category
+  isActive
+  currency
   createdAt
+  updatedAt
+}
+
+# Client Service Agreement Fragment
+fragment ClientServiceAgreementFragment on clientBillingAssignments {
+  id
+  clientId
+  billingPlanId
+  customRate
+  billingFrequency
+  effectiveDate
+  isEnabled
+  isActive
+  startDate
+  endDate
+  createdAt
+  updatedAt
+  assignedBillingPlan {
+    ...ServiceCatalogFragment
+  }
+}
+
+# Billing Item Fragment
+fragment BillingItemFragment on billingItems {
+  id
+  invoiceId
+  description
+  quantity
+  amount
+  payrollId
+  billingPlanId
+  clientId
+  staffUserId
+  serviceName
+  hourlyRate
+  isApproved
+  approvalDate
+  approvedBy
+  createdAt
+}
+
+# Time Entry Fragment
+fragment TimeEntryFragment on timeEntries {
+  id
+  staffUserId
+  clientId
+  payrollId
+  billingItemId
+  workDate
+  hoursSpent
+  description
+  createdAt
+  updatedAt
+}
+
+# Billing Period Fragment
+fragment BillingPeriodFragment on billingPeriods {
+  id
+  clientId
+  periodStart
+  periodEnd
+  status
+  createdAt
+  updatedAt
+}
+
+# Enhanced Invoice Fragment
+fragment BillingInvoiceFragment on billingInvoice {
+  id
+  clientId
+  billingPeriodStart
+  billingPeriodEnd
+  billingPeriodId
+  issuedDate
+  dueDate
+  status
+  totalAmount
+  createdAt
+  updatedAt
+  client {
+    id
+    name
+    contactPerson
+    contactEmail
+  }
+  # billingPeriod relationship removed - using direct fields
+  # billingPeriodStart, billingPeriodEnd, billingPeriodId already included above
+}
+
+# Invoice Item Fragment
+fragment BillingInvoiceItemFragment on billingInvoiceItem {
+  id
+  invoiceId
+  descriptionOverride
+  quantityHours
+  hourlyRate
+  netAmount
+  totalAmount
+  createdAt
+}
+
+# Payroll Billing Fragment
+fragment PayrollBillingFragment on payrolls {
+  id
+  name
+  clientId
+  employeeCount
+  billingStatus
+  estimatedRevenue
+  actualRevenue
+  estimatedHours
+  actualHours
+  profitMargin
+  lastBilledDate
+  processingTime
+  createdAt
+  updatedAt
+  client {
+    id
+    name
+  }
+  billingItems {
+    ...BillingItemFragment
+  }
+  timeEntries {
+    ...TimeEntryFragment
+  }
 }

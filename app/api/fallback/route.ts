@@ -1,5 +1,5 @@
-import { withAuth } from "@/lib/auth/api-auth";
 import { NextResponse } from "next/server";
+import { withAuth } from "@/lib/auth/api-auth";
 
 // This is a fallback route used during the build process
 // to prevent API routes from failing when service account tokens are not available

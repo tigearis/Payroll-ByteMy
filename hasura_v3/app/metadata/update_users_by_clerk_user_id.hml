@@ -1,0 +1,921 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_users_address
+  description: Update the 'address' column in the 'users' collection
+  fields:
+    - name: set
+      type: string
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_users_address
+    inputTypeName: update_column_users_address_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_users_address
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_users_address
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_users_bio
+  description: Update the 'bio' column in the 'users' collection
+  fields:
+    - name: set
+      type: string
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_users_bio
+    inputTypeName: update_column_users_bio_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_users_bio
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_users_bio
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_users_clerk_user_id
+  description: Update the 'clerk_user_id' column in the 'users' collection
+  fields:
+    - name: set
+      type: string
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_users_clerk_user_id
+    inputTypeName: update_column_users_clerk_user_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_users_clerk_user_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_users_clerk_user_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_users_created_at
+  description: Update the 'created_at' column in the 'users' collection
+  fields:
+    - name: set
+      type: timestamptz
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_users_created_at
+    inputTypeName: update_column_users_created_at_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_users_created_at
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_users_created_at
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_users_deactivated_at
+  description: Update the 'deactivated_at' column in the 'users' collection
+  fields:
+    - name: set
+      type: timestamptz
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_users_deactivated_at
+    inputTypeName: update_column_users_deactivated_at_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_users_deactivated_at
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_users_deactivated_at
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_users_deactivated_by
+  description: Update the 'deactivated_by' column in the 'users' collection
+  fields:
+    - name: set
+      type: string
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_users_deactivated_by
+    inputTypeName: update_column_users_deactivated_by_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_users_deactivated_by
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_users_deactivated_by
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_users_default_admin_time_percentage
+  description: Update the 'default_admin_time_percentage' column in the 'users' collection
+  fields:
+    - name: set
+      type: bigdecimal
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_users_default_admin_time_percentage
+    inputTypeName: update_column_users_default_admin_time_percentage_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_users_default_admin_time_percentage
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_users_default_admin_time_percentage
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_users_email
+  description: Update the 'email' column in the 'users' collection
+  fields:
+    - name: set
+      type: string!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_users_email
+    inputTypeName: update_column_users_email_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_users_email
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_users_email
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_users_id
+  description: Update the 'id' column in the 'users' collection
+  fields:
+    - name: set
+      type: uuid!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_users_id
+    inputTypeName: update_column_users_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_users_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_users_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_users_image
+  description: Update the 'image' column in the 'users' collection
+  fields:
+    - name: set
+      type: string
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_users_image
+    inputTypeName: update_column_users_image_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_users_image
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_users_image
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_users_is_active
+  description: Update the 'is_active' column in the 'users' collection
+  fields:
+    - name: set
+      type: boolean
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_users_is_active
+    inputTypeName: update_column_users_is_active_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_users_is_active
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_users_is_active
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_users_is_staff
+  description: Update the 'is_staff' column in the 'users' collection
+  fields:
+    - name: set
+      type: boolean
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_users_is_staff
+    inputTypeName: update_column_users_is_staff_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_users_is_staff
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_users_is_staff
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_users_manager_id
+  description: Update the 'manager_id' column in the 'users' collection
+  fields:
+    - name: set
+      type: uuid
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_users_manager_id
+    inputTypeName: update_column_users_manager_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_users_manager_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_users_manager_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_users_name
+  description: Update the 'name' column in the 'users' collection
+  fields:
+    - name: set
+      type: string!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_users_name
+    inputTypeName: update_column_users_name_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_users_name
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_users_name
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_users_phone
+  description: Update the 'phone' column in the 'users' collection
+  fields:
+    - name: set
+      type: string
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_users_phone
+    inputTypeName: update_column_users_phone_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_users_phone
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_users_phone
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_users_position
+  description: Update the 'position' column in the 'users' collection
+  fields:
+    - name: set
+      type: enum
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_users_position
+    inputTypeName: update_column_users_position_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_users_position
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_users_position
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_users_role
+  description: Update the 'role' column in the 'users' collection
+  fields:
+    - name: set
+      type: enum!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_users_role
+    inputTypeName: update_column_users_role_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_users_role
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_users_role
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_users_status
+  description: Update the 'status' column in the 'users' collection
+  fields:
+    - name: set
+      type: enum!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_users_status
+    inputTypeName: update_column_users_status_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_users_status
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_users_status
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_users_status_change_reason
+  description: Update the 'status_change_reason' column in the 'users' collection
+  fields:
+    - name: set
+      type: string
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_users_status_change_reason
+    inputTypeName: update_column_users_status_change_reason_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_users_status_change_reason
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_users_status_change_reason
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_users_status_changed_at
+  description: Update the 'status_changed_at' column in the 'users' collection
+  fields:
+    - name: set
+      type: timestamptz
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_users_status_changed_at
+    inputTypeName: update_column_users_status_changed_at_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_users_status_changed_at
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_users_status_changed_at
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_users_status_changed_by
+  description: Update the 'status_changed_by' column in the 'users' collection
+  fields:
+    - name: set
+      type: uuid
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_users_status_changed_by
+    inputTypeName: update_column_users_status_changed_by_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_users_status_changed_by
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_users_status_changed_by
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_users_updated_at
+  description: Update the 'updated_at' column in the 'users' collection
+  fields:
+    - name: set
+      type: timestamptz
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_users_updated_at
+    inputTypeName: update_column_users_updated_at_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_users_updated_at
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_users_updated_at
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_users_username
+  description: Update the 'username' column in the 'users' collection
+  fields:
+    - name: set
+      type: string
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_users_username
+    inputTypeName: update_column_users_username_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_users_username
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_users_username
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_users_by_clerk_user_id_update_columns
+  description: Update the columns of the 'users' collection
+  fields:
+    - name: address
+      type: update_column_users_address
+      description: Update the 'address' column in the 'users' collection.
+    - name: bio
+      type: update_column_users_bio
+      description: Update the 'bio' column in the 'users' collection.
+    - name: clerk_user_id
+      type: update_column_users_clerk_user_id
+      description: Update the 'clerk_user_id' column in the 'users' collection.
+    - name: created_at
+      type: update_column_users_created_at
+      description: Update the 'created_at' column in the 'users' collection.
+    - name: deactivated_at
+      type: update_column_users_deactivated_at
+      description: Update the 'deactivated_at' column in the 'users' collection.
+    - name: deactivated_by
+      type: update_column_users_deactivated_by
+      description: Update the 'deactivated_by' column in the 'users' collection.
+    - name: default_admin_time_percentage
+      type: update_column_users_default_admin_time_percentage
+      description: Update the 'default_admin_time_percentage' column in the 'users'
+        collection.
+    - name: email
+      type: update_column_users_email
+      description: Update the 'email' column in the 'users' collection.
+    - name: id
+      type: update_column_users_id
+      description: Update the 'id' column in the 'users' collection.
+    - name: image
+      type: update_column_users_image
+      description: Update the 'image' column in the 'users' collection.
+    - name: is_active
+      type: update_column_users_is_active
+      description: Update the 'is_active' column in the 'users' collection.
+    - name: is_staff
+      type: update_column_users_is_staff
+      description: Update the 'is_staff' column in the 'users' collection.
+    - name: manager_id
+      type: update_column_users_manager_id
+      description: Update the 'manager_id' column in the 'users' collection.
+    - name: name
+      type: update_column_users_name
+      description: Update the 'name' column in the 'users' collection.
+    - name: phone
+      type: update_column_users_phone
+      description: Update the 'phone' column in the 'users' collection.
+    - name: position
+      type: update_column_users_position
+      description: Update the 'position' column in the 'users' collection.
+    - name: role
+      type: update_column_users_role
+      description: Update the 'role' column in the 'users' collection.
+    - name: status
+      type: update_column_users_status
+      description: Update the 'status' column in the 'users' collection.
+    - name: status_change_reason
+      type: update_column_users_status_change_reason
+      description: Update the 'status_change_reason' column in the 'users' collection.
+    - name: status_changed_at
+      type: update_column_users_status_changed_at
+      description: Update the 'status_changed_at' column in the 'users' collection.
+    - name: status_changed_by
+      type: update_column_users_status_changed_by
+      description: Update the 'status_changed_by' column in the 'users' collection.
+    - name: updated_at
+      type: update_column_users_updated_at
+      description: Update the 'updated_at' column in the 'users' collection.
+    - name: username
+      type: update_column_users_username
+      description: Update the 'username' column in the 'users' collection.
+  graphql:
+    typeName: update_users_by_clerk_user_id_update_columns
+    inputTypeName: update_users_by_clerk_user_id_update_columns_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_users_by_clerk_user_id_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_users_by_clerk_user_id_update_columns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - address
+          - bio
+          - clerk_user_id
+          - created_at
+          - deactivated_at
+          - deactivated_by
+          - default_admin_time_percentage
+          - email
+          - id
+          - image
+          - is_active
+          - is_staff
+          - manager_id
+          - name
+          - phone
+          - position
+          - role
+          - status
+          - status_change_reason
+          - status_changed_at
+          - status_changed_by
+          - updated_at
+          - username
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_users_by_clerk_user_id_response
+  description: Responses from the 'update_users_by_clerk_user_id' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[users!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: update_users_by_clerk_user_id_response
+    inputTypeName: update_users_by_clerk_user_id_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_users_by_clerk_user_id_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_users_by_clerk_user_id_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: update_users_by_clerk_user_id
+  outputType: update_users_by_clerk_user_id_response!
+  arguments:
+    - name: key_clerk_user_id
+      type: string
+      description: External identifier from Clerk authentication service
+    - name: post_check
+      type: users_bool_exp
+      description: Update permission post-condition predicate over the 'users' collection
+    - name: pre_check
+      type: users_bool_exp
+      description: Update permission pre-condition predicate over the 'users' collection
+    - name: update_columns
+      type: update_users_by_clerk_user_id_update_columns!
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: update_users_by_clerk_user_id
+  graphql:
+    rootFieldName: update_users_by_clerk_user_id
+    rootFieldKind: Mutation
+  description: Update any row on the 'users' collection using the 'clerk_user_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: update_users_by_clerk_user_id
+  permissions:
+    - role: admin
+      allowExecution: true
+

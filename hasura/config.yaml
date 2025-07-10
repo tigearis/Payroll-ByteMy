@@ -1,7 +1,13 @@
+# Hasura Configuration
+# This file defines environment-specific configurations for Hasura
+
 version: 3
-endpoint: https://bytemy.hasura.app
-metadata_directory: metadata
-actions:
-  kind: synchronous
-  handler_webhook_baseurl: https://bytemy.hasura.app
+endpoint: https://hasura.bytemy.com.au
 admin_secret: 3w+sHTuq8wQwddK4xyWO5LDeRH+anvJoFVyOMvtq8Lo=
+metadata_directory: metadata
+migrations_directory: migrations
+seeds_directory: seeds
+actions:
+  # Environment variables for action URLs
+  # These will be replaced with actual values based on the environment
+  ACTION_BASE_ENDPOINT: ${ACTION_BASE_ENDPOINT}

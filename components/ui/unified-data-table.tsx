@@ -7,7 +7,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import Link from "next/link";
-import React, { useMemo } from "react";
+import React, { useMemo, memo, useCallback } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -175,7 +175,7 @@ export const createCellRenderers = <T,>(
   ),
 });
 
-export function UnifiedDataTable<T>({
+function UnifiedDataTableComponent<T>({
   data,
   columns,
   loading = false,
@@ -470,6 +470,18 @@ export function UnifiedDataTable<T>({
     </Card>
   );
 }
+
+// ============================================================================
+// PERFORMANCE OPTIMIZED EXPORT WITH REACT.MEMO
+// ============================================================================
+
+/**
+ * Memoized Unified Data Table Component
+ * Prevents unnecessary re-renders of expensive table operations
+ */
+export const UnifiedDataTable = memo(UnifiedDataTableComponent) as <T>(
+  props: UnifiedTableProps<T>
+) => React.ReactElement;
 
 // Export default for easier imports
 export default UnifiedDataTable;

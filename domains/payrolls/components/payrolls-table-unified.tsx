@@ -1,7 +1,5 @@
 "use client";
 
-import { PermissionGuard } from "@/components/auth/permission-guard";
-import { useEnhancedPermissions } from "@/lib/auth";
 import {
   Clock,
   CheckCircle,
@@ -14,6 +12,7 @@ import {
   CalendarDays,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   UnifiedDataTable,
   DataTableColumn,
@@ -49,7 +48,7 @@ interface Payroll {
 }
 
 interface PayrollsTableProps {
-  payrolls: Payroll[];
+  payrolls: any[]; // More flexible to handle GraphQL data
   loading?: boolean;
   onRefresh?: () => void;
   selectedPayrolls?: string[];
@@ -125,16 +124,12 @@ export function PayrollsTableUnified({
   sortDirection,
   onSort,
 }: PayrollsTableProps) {
-  const { hasPermission } = useEnhancedPermissions();
-  
-  if (!hasPermission('payroll:read')) {
-    return null;
-  }
+  const router = useRouter();
   // Create cell renderers with status config
-  const cellRenderers = createCellRenderers<Payroll>(payrollStatusConfig);
+  const cellRenderers = createCellRenderers<any>(payrollStatusConfig);
 
   // Column definitions
-  const columns: DataTableColumn<Payroll>[] = [
+  const columns: DataTableColumn<any>[] = [
     {
       key: "name",
       label: "Payroll Name",
@@ -236,7 +231,7 @@ export function PayrollsTableUnified({
       label: "View Details",
       icon: Eye,
       onClick: payroll => {
-        window.location.href = `/payrolls/${payroll.id}`;
+        router.push(`/payrolls/${payroll.id}`);
       },
     },
     {
@@ -251,7 +246,7 @@ export function PayrollsTableUnified({
       label: "View Dates",
       icon: CalendarDays,
       onClick: payroll => {
-        window.location.href = `/payroll-dates/${payroll.id}`;
+        router.push(`/payroll-dates/${payroll.id}`);
       },
     },
     {
@@ -292,7 +287,6 @@ export function PayrollsTableUnified({
       title="Payrolls"
       onRefresh={onRefresh || (() => {})}
       getRowId={payroll => payroll.id}
-      getRowLink={payroll => `/payrolls/${payroll.id}`}
     />
   );
 }

@@ -2,6 +2,7 @@
 "use client";
 
 import type React from "react";
+import { AIAssistantFloat } from "@/components/ai-assistant-float";
 import { DashboardShell } from "@/components/dashboard-shell";
 import { Sidebar } from "@/components/sidebar";
 import { ClientWrapper } from "@/domains/clients/components/client-wrapper";
@@ -19,6 +20,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     return (
       <DashboardShell>
         <ClientWrapper>{children}</ClientWrapper>
+        <AIAssistantFloat />
       </DashboardShell>
     );
   }
@@ -37,6 +39,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           <ClientWrapper>{children}</ClientWrapper>
         </main>
       </div>
+      <AIAssistantFloat />
     </div>
   );
 }

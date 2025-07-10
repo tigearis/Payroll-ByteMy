@@ -171,7 +171,7 @@ export async function commitPayrollAssignments(
           ]
         );
 
-        affected_assignments.push({
+        affectedassignments.push({
           id: assignmentId,
           payroll_date_id: change.payrollDateId,
           original_consultant_id: change.fromConsultantId,
@@ -188,7 +188,7 @@ export async function commitPayrollAssignments(
       }
     }
 
-    if (errors.length > 0 && affected_assignments.length === 0) {
+    if (errors.length > 0 && affectedassignments.length === 0) {
       // All changes failed
       await client.query("ROLLBACK");
       res.json({
@@ -201,7 +201,7 @@ export async function commitPayrollAssignments(
       await client.query("COMMIT");
       res.json({
         success: true,
-        message: `${affected_assignments.length} changes processed successfully, ${errors.length} failed`,
+        message: `${affectedassignments.length} changes processed successfully, ${errors.length} failed`,
         errors,
         affected_assignments,
       });
@@ -210,7 +210,7 @@ export async function commitPayrollAssignments(
       await client.query("COMMIT");
       res.json({
         success: true,
-        message: `Successfully processed ${affected_assignments.length} changes`,
+        message: `Successfully processed ${affectedassignments.length} changes`,
         affected_assignments,
       });
     }
@@ -350,7 +350,7 @@ export const hasuraActionHandler = {
           throw new Error("Consultant not found");
         }
 
-        if (validation.data.usersby_pk.leaves.length > 0) {
+        if (validation.data.usersbypk.leaves.length > 0) {
           throw new Error("Consultant is on leave");
         }
 

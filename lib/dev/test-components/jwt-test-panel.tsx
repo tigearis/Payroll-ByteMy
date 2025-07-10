@@ -52,6 +52,7 @@ interface JWTTestResult {
     userIdMappingCorrect: boolean;
     metadataSyncComplete: boolean;
     expectedToWork: boolean;
+    allJwtFieldsPresent: boolean;
   };
   issues: string[];
   recommendations: string[];
@@ -245,6 +246,10 @@ export function JWTTestPanel() {
                     testResult.systemAnalysis.metadataSyncComplete,
                     "Metadata Sync"
                   )}
+                  {getStatusBadge(
+                    testResult.systemAnalysis.allJwtFieldsPresent,
+                    "All JWT Fields"
+                  )}
                 </div>
               </div>
 
@@ -300,6 +305,15 @@ export function JWTTestPanel() {
                       {testResult.jwt.analysis.userIdType || "N/A"}
                     </p>
                     <p>Role: {testResult.jwt.analysis.roleValue || "N/A"}</p>
+                    <p>Clerk ID: {testResult.jwt.analysis.clerkIdValue || "N/A"}</p>
+                    <p>Permissions: {testResult.jwt.analysis.permissionsCount || 0}</p>
+                    <p>Allowed Roles: {testResult.jwt.analysis.allowedRolesCount || 0}</p>
+                    <p>
+                      Permission Hash: {testResult.jwt.analysis.hasPermissionHash ? "✅ Yes" : "❌ No"}
+                    </p>
+                    <p>
+                      Permission Version: {testResult.jwt.analysis.hasPermissionVersion ? "✅ Yes" : "❌ No"}
+                    </p>
                   </div>
                 </div>
 

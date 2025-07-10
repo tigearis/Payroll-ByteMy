@@ -1,12 +1,15 @@
+- role_name: ai_assistant
+  role_set:
+    - viewer
 - role_name: consultant
   role_set:
     - viewer
 - role_name: manager
   role_set:
-    - viewer
     - consultant
+    - viewer
 - role_name: org_admin
   role_set:
-    - viewer
     - consultant
+    - viewer
     - manager

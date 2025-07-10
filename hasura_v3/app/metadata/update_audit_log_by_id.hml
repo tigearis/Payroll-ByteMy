@@ -1,0 +1,452 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_audit_log_action
+  description: Update the 'action' column in the 'audit_log' collection
+  fields:
+    - name: set
+      type: string!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_audit_log_action
+    inputTypeName: update_column_audit_log_action_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_audit_log_action
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_audit_log_action
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_audit_log_created_at
+  description: Update the 'created_at' column in the 'audit_log' collection
+  fields:
+    - name: set
+      type: timestamptz
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_audit_log_created_at
+    inputTypeName: update_column_audit_log_created_at_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_audit_log_created_at
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_audit_log_created_at
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_audit_log_entity_id
+  description: Update the 'entity_id' column in the 'audit_log' collection
+  fields:
+    - name: set
+      type: string!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_audit_log_entity_id
+    inputTypeName: update_column_audit_log_entity_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_audit_log_entity_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_audit_log_entity_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_audit_log_entity_type
+  description: Update the 'entity_type' column in the 'audit_log' collection
+  fields:
+    - name: set
+      type: string!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_audit_log_entity_type
+    inputTypeName: update_column_audit_log_entity_type_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_audit_log_entity_type
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_audit_log_entity_type
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_audit_log_id
+  description: Update the 'id' column in the 'audit_log' collection
+  fields:
+    - name: set
+      type: uuid!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_audit_log_id
+    inputTypeName: update_column_audit_log_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_audit_log_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_audit_log_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_audit_log_ip_address
+  description: Update the 'ip_address' column in the 'audit_log' collection
+  fields:
+    - name: set
+      type: json
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_audit_log_ip_address
+    inputTypeName: update_column_audit_log_ip_address_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_audit_log_ip_address
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_audit_log_ip_address
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_audit_log_new_values
+  description: Update the 'new_values' column in the 'audit_log' collection
+  fields:
+    - name: set
+      type: json
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_audit_log_new_values
+    inputTypeName: update_column_audit_log_new_values_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_audit_log_new_values
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_audit_log_new_values
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_audit_log_old_values
+  description: Update the 'old_values' column in the 'audit_log' collection
+  fields:
+    - name: set
+      type: json
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_audit_log_old_values
+    inputTypeName: update_column_audit_log_old_values_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_audit_log_old_values
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_audit_log_old_values
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_audit_log_user_agent
+  description: Update the 'user_agent' column in the 'audit_log' collection
+  fields:
+    - name: set
+      type: string
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_audit_log_user_agent
+    inputTypeName: update_column_audit_log_user_agent_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_audit_log_user_agent
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_audit_log_user_agent
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_audit_log_user_id
+  description: Update the 'user_id' column in the 'audit_log' collection
+  fields:
+    - name: set
+      type: uuid
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_audit_log_user_id
+    inputTypeName: update_column_audit_log_user_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_audit_log_user_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_audit_log_user_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_audit_log_by_id_update_columns
+  description: Update the columns of the 'audit_log' collection
+  fields:
+    - name: action
+      type: update_column_audit_log_action
+      description: Update the 'action' column in the 'audit_log' collection.
+    - name: created_at
+      type: update_column_audit_log_created_at
+      description: Update the 'created_at' column in the 'audit_log' collection.
+    - name: entity_id
+      type: update_column_audit_log_entity_id
+      description: Update the 'entity_id' column in the 'audit_log' collection.
+    - name: entity_type
+      type: update_column_audit_log_entity_type
+      description: Update the 'entity_type' column in the 'audit_log' collection.
+    - name: id
+      type: update_column_audit_log_id
+      description: Update the 'id' column in the 'audit_log' collection.
+    - name: ip_address
+      type: update_column_audit_log_ip_address
+      description: Update the 'ip_address' column in the 'audit_log' collection.
+    - name: new_values
+      type: update_column_audit_log_new_values
+      description: Update the 'new_values' column in the 'audit_log' collection.
+    - name: old_values
+      type: update_column_audit_log_old_values
+      description: Update the 'old_values' column in the 'audit_log' collection.
+    - name: user_agent
+      type: update_column_audit_log_user_agent
+      description: Update the 'user_agent' column in the 'audit_log' collection.
+    - name: user_id
+      type: update_column_audit_log_user_id
+      description: Update the 'user_id' column in the 'audit_log' collection.
+  graphql:
+    typeName: update_audit_log_by_id_update_columns
+    inputTypeName: update_audit_log_by_id_update_columns_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_audit_log_by_id_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_audit_log_by_id_update_columns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - action
+          - created_at
+          - entity_id
+          - entity_type
+          - id
+          - ip_address
+          - new_values
+          - old_values
+          - user_agent
+          - user_id
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_audit_log_by_id_response
+  description: Responses from the 'update_audit_log_by_id' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[audit_log!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: update_audit_log_by_id_response
+    inputTypeName: update_audit_log_by_id_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_audit_log_by_id_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_audit_log_by_id_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: update_audit_log_by_id
+  outputType: update_audit_log_by_id_response!
+  arguments:
+    - name: key_id
+      type: uuid!
+    - name: post_check
+      type: audit_log_bool_exp
+      description: Update permission post-condition predicate over the 'audit_log'
+        collection
+    - name: pre_check
+      type: audit_log_bool_exp
+      description: Update permission pre-condition predicate over the 'audit_log' collection
+    - name: update_columns
+      type: update_audit_log_by_id_update_columns!
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: update_audit_log_by_id
+  graphql:
+    rootFieldName: update_audit_log_by_id
+    rootFieldKind: Mutation
+  description: Update any row on the 'audit_log' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: update_audit_log_by_id
+  permissions:
+    - role: admin
+      allowExecution: true
+

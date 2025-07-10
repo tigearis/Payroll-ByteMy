@@ -1,0 +1,104 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_team_capacity_by_position_object
+  fields:
+    - name: avg_admin_percentage
+      type: bigdecimal
+    - name: consultant_count
+      type: int_64
+    - name: position
+      type: enum
+    - name: total_admin_hours
+      type: bigdecimal
+    - name: total_payroll_capacity
+      type: bigdecimal
+    - name: total_work_hours
+      type: bigdecimal
+  graphql:
+    typeName: insert_team_capacity_by_position_object
+    inputTypeName: insert_team_capacity_by_position_object_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_team_capacity_by_position_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_team_capacity_by_position_object
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - avg_admin_percentage
+          - consultant_count
+          - position
+          - total_admin_hours
+          - total_payroll_capacity
+          - total_work_hours
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_team_capacity_by_position_response
+  description: Responses from the 'insert_team_capacity_by_position' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[team_capacity_by_position!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: insert_team_capacity_by_position_response
+    inputTypeName: insert_team_capacity_by_position_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_team_capacity_by_position_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_team_capacity_by_position_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: insert_team_capacity_by_position
+  outputType: insert_team_capacity_by_position_response!
+  arguments:
+    - name: objects
+      type: "[insert_team_capacity_by_position_object!]!"
+    - name: post_check
+      type: team_capacity_by_position_bool_exp
+      description: Insert permission predicate over the 'team_capacity_by_position'
+        collection
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: insert_team_capacity_by_position
+  graphql:
+    rootFieldName: insert_team_capacity_by_position
+    rootFieldKind: Mutation
+  description: Insert into the team_capacity_by_position table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: insert_team_capacity_by_position
+  permissions:
+    - role: admin
+      allowExecution: true
+

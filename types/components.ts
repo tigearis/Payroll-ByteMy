@@ -414,7 +414,7 @@ export interface ToastNotification {
 export interface AppNotification {
   id: UUID;
   userId: UUID;
-  type: "payroll_due" | "leave_request" | "assignment_change" | "system";
+  type: "payroll_due" | "leaverequest" | "assignment_change" | "system";
   title: string;
   message: string;
   read: boolean;

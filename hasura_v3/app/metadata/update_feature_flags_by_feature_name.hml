@@ -1,0 +1,274 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_feature_flags_allowed_roles
+  description: Update the 'allowed_roles' column in the 'feature_flags' collection
+  fields:
+    - name: set
+      type: json!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_feature_flags_allowed_roles
+    inputTypeName: update_column_feature_flags_allowed_roles_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_feature_flags_allowed_roles
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_feature_flags_allowed_roles
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_feature_flags_feature_name
+  description: Update the 'feature_name' column in the 'feature_flags' collection
+  fields:
+    - name: set
+      type: string!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_feature_flags_feature_name
+    inputTypeName: update_column_feature_flags_feature_name_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_feature_flags_feature_name
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_feature_flags_feature_name
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_feature_flags_id
+  description: Update the 'id' column in the 'feature_flags' collection
+  fields:
+    - name: set
+      type: uuid!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_feature_flags_id
+    inputTypeName: update_column_feature_flags_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_feature_flags_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_feature_flags_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_feature_flags_is_enabled
+  description: Update the 'is_enabled' column in the 'feature_flags' collection
+  fields:
+    - name: set
+      type: boolean
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_feature_flags_is_enabled
+    inputTypeName: update_column_feature_flags_is_enabled_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_feature_flags_is_enabled
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_feature_flags_is_enabled
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_feature_flags_updated_at
+  description: Update the 'updated_at' column in the 'feature_flags' collection
+  fields:
+    - name: set
+      type: timestamptz
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_feature_flags_updated_at
+    inputTypeName: update_column_feature_flags_updated_at_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_feature_flags_updated_at
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_feature_flags_updated_at
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_feature_flags_by_feature_name_update_columns
+  description: Update the columns of the 'feature_flags' collection
+  fields:
+    - name: allowed_roles
+      type: update_column_feature_flags_allowed_roles
+      description: Update the 'allowed_roles' column in the 'feature_flags' collection.
+    - name: feature_name
+      type: update_column_feature_flags_feature_name
+      description: Update the 'feature_name' column in the 'feature_flags' collection.
+    - name: id
+      type: update_column_feature_flags_id
+      description: Update the 'id' column in the 'feature_flags' collection.
+    - name: is_enabled
+      type: update_column_feature_flags_is_enabled
+      description: Update the 'is_enabled' column in the 'feature_flags' collection.
+    - name: updated_at
+      type: update_column_feature_flags_updated_at
+      description: Update the 'updated_at' column in the 'feature_flags' collection.
+  graphql:
+    typeName: update_feature_flags_by_feature_name_update_columns
+    inputTypeName: update_feature_flags_by_feature_name_update_columns_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_feature_flags_by_feature_name_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_feature_flags_by_feature_name_update_columns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - allowed_roles
+          - feature_name
+          - id
+          - is_enabled
+          - updated_at
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_feature_flags_by_feature_name_response
+  description: Responses from the 'update_feature_flags_by_feature_name' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[feature_flags!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: update_feature_flags_by_feature_name_response
+    inputTypeName: update_feature_flags_by_feature_name_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_feature_flags_by_feature_name_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_feature_flags_by_feature_name_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: update_feature_flags_by_feature_name
+  outputType: update_feature_flags_by_feature_name_response!
+  arguments:
+    - name: key_feature_name
+      type: string!
+      description: Name of the feature controlled by this flag
+    - name: post_check
+      type: feature_flags_bool_exp
+      description: Update permission post-condition predicate over the 'feature_flags'
+        collection
+    - name: pre_check
+      type: feature_flags_bool_exp
+      description: Update permission pre-condition predicate over the 'feature_flags'
+        collection
+    - name: update_columns
+      type: update_feature_flags_by_feature_name_update_columns!
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: update_feature_flags_by_feature_name
+  graphql:
+    rootFieldName: update_feature_flags_by_feature_name
+    rootFieldKind: Mutation
+  description: Update any row on the 'feature_flags' collection using the 'feature_name' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: update_feature_flags_by_feature_name
+  permissions:
+    - role: admin
+      allowExecution: true
+

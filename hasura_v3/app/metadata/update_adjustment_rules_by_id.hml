@@ -1,0 +1,123 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_adjustment_rules_by_id_update_columns
+  description: Update the columns of the 'adjustment_rules' collection
+  fields:
+    - name: created_at
+      type: update_column_adjustment_rules_created_at
+      description: Update the 'created_at' column in the 'adjustment_rules' collection.
+    - name: cycle_id
+      type: update_column_adjustment_rules_cycle_id
+      description: Update the 'cycle_id' column in the 'adjustment_rules' collection.
+    - name: date_type_id
+      type: update_column_adjustment_rules_date_type_id
+      description: Update the 'date_type_id' column in the 'adjustment_rules' collection.
+    - name: id
+      type: update_column_adjustment_rules_id
+      description: Update the 'id' column in the 'adjustment_rules' collection.
+    - name: rule_code
+      type: update_column_adjustment_rules_rule_code
+      description: Update the 'rule_code' column in the 'adjustment_rules' collection.
+    - name: rule_description
+      type: update_column_adjustment_rules_rule_description
+      description: Update the 'rule_description' column in the 'adjustment_rules'
+        collection.
+    - name: updated_at
+      type: update_column_adjustment_rules_updated_at
+      description: Update the 'updated_at' column in the 'adjustment_rules' collection.
+  graphql:
+    typeName: update_adjustment_rules_by_id_update_columns
+    inputTypeName: update_adjustment_rules_by_id_update_columns_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_adjustment_rules_by_id_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_adjustment_rules_by_id_update_columns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - created_at
+          - cycle_id
+          - date_type_id
+          - id
+          - rule_code
+          - rule_description
+          - updated_at
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_adjustment_rules_by_id_response
+  description: Responses from the 'update_adjustment_rules_by_id' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[adjustment_rules!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: update_adjustment_rules_by_id_response
+    inputTypeName: update_adjustment_rules_by_id_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_adjustment_rules_by_id_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_adjustment_rules_by_id_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: update_adjustment_rules_by_id
+  outputType: update_adjustment_rules_by_id_response!
+  arguments:
+    - name: key_id
+      type: uuid!
+      description: Unique identifier for the adjustment rule
+    - name: post_check
+      type: adjustment_rules_bool_exp
+      description: Update permission post-condition predicate over the
+        'adjustment_rules' collection
+    - name: pre_check
+      type: adjustment_rules_bool_exp
+      description: Update permission pre-condition predicate over the
+        'adjustment_rules' collection
+    - name: update_columns
+      type: update_adjustment_rules_by_id_update_columns!
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: update_adjustment_rules_by_id
+  graphql:
+    rootFieldName: update_adjustment_rules_by_id
+    rootFieldKind: Mutation
+  description: Update any row on the 'adjustment_rules' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: update_adjustment_rules_by_id
+  permissions:
+    - role: admin
+      allowExecution: true
+

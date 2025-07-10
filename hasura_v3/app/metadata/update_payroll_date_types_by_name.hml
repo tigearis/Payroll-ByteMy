@@ -1,0 +1,114 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_payroll_date_types_by_name_update_columns
+  description: Update the columns of the 'payroll_date_types' collection
+  fields:
+    - name: created_at
+      type: update_column_payroll_date_types_created_at
+      description: Update the 'created_at' column in the 'payroll_date_types' collection.
+    - name: description
+      type: update_column_payroll_date_types_description
+      description: Update the 'description' column in the 'payroll_date_types' collection.
+    - name: id
+      type: update_column_payroll_date_types_id
+      description: Update the 'id' column in the 'payroll_date_types' collection.
+    - name: name
+      type: update_column_payroll_date_types_name
+      description: Update the 'name' column in the 'payroll_date_types' collection.
+    - name: updated_at
+      type: update_column_payroll_date_types_updated_at
+      description: Update the 'updated_at' column in the 'payroll_date_types' collection.
+  graphql:
+    typeName: update_payroll_date_types_by_name_update_columns
+    inputTypeName: update_payroll_date_types_by_name_update_columns_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_payroll_date_types_by_name_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_payroll_date_types_by_name_update_columns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - created_at
+          - description
+          - id
+          - name
+          - updated_at
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_payroll_date_types_by_name_response
+  description: Responses from the 'update_payroll_date_types_by_name' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[payroll_date_types!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: update_payroll_date_types_by_name_response
+    inputTypeName: update_payroll_date_types_by_name_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_payroll_date_types_by_name_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_payroll_date_types_by_name_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: update_payroll_date_types_by_name
+  outputType: update_payroll_date_types_by_name_response!
+  arguments:
+    - name: key_name
+      type: enum!
+      description: Name of the date type (Fixed, Last Working Day, etc.)
+    - name: post_check
+      type: payroll_date_types_bool_exp
+      description: Update permission post-condition predicate over the
+        'payroll_date_types' collection
+    - name: pre_check
+      type: payroll_date_types_bool_exp
+      description: Update permission pre-condition predicate over the
+        'payroll_date_types' collection
+    - name: update_columns
+      type: update_payroll_date_types_by_name_update_columns!
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: update_payroll_date_types_by_name
+  graphql:
+    rootFieldName: update_payroll_date_types_by_name
+    rootFieldKind: Mutation
+  description: Update any row on the 'payroll_date_types' collection using the 'name' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: update_payroll_date_types_by_name
+  permissions:
+    - role: admin
+      allowExecution: true
+

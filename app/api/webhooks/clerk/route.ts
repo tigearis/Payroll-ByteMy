@@ -18,45 +18,6 @@ const clerkClient = createClerkClient({
   secretKey: process.env.CLERK_SECRET_KEY!,
 });
 
-// Verify webhook signature for security
-async function verifyWebhook(
-  request: NextRequest
-): Promise<WebhookEvent | null> {
-  const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
-
-  if (!WEBHOOK_SECRET) {
-    console.error("CLERK_WEBHOOK_SECRET is not set");
-    return null;
-  }
-
-  const headersList = await headers();
-  const svixId = headersList.get("svix-id");
-  const svixTimestamp = headersList.get("svix-timestamp");
-  const svixSignature = headersList.get("svix-signature");
-
-  if (!svixId || !svixTimestamp || !svixSignature) {
-    console.error("Missing svix headers");
-    return null;
-  }
-
-  const payload = await request.text();
-  const body = payload;
-
-  const wh = new Webhook(WEBHOOK_SECRET);
-
-  try {
-    const evt = wh.verify(body, {
-      "svix-id": svixId,
-      "svix-timestamp": svixTimestamp,
-      "svix-signature": svixSignature,
-    }) as WebhookEvent;
-
-    return evt;
-  } catch (err) {
-    console.error("Webhook verification failed:", err);
-    return null;
-  }
-}
 
 const webhookSecret = process.env.CLERK_WEBHOOK_SECRET;
 
@@ -97,6 +58,7 @@ export async function POST(req: NextRequest) {
     throw new Error("Missing CLERK_WEBHOOK_SECRET");
   }
 
+  // Get headers once and reuse
   const headerPayload = await headers();
   const svixId = headerPayload.get("svix-id");
   const svixTimestamp = headerPayload.get("svix-timestamp");

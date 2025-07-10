@@ -1,0 +1,383 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_audit_slow_queries_application_name
+  description: Update the 'application_name' column in the 'audit_slow_queries' collection
+  fields:
+    - name: set
+      type: string
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_audit_slow_queries_application_name
+    inputTypeName: update_column_audit_slow_queries_application_name_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_audit_slow_queries_application_name
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_audit_slow_queries_application_name
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_audit_slow_queries_client_addr
+  description: Update the 'client_addr' column in the 'audit_slow_queries' collection
+  fields:
+    - name: set
+      type: json
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_audit_slow_queries_client_addr
+    inputTypeName: update_column_audit_slow_queries_client_addr_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_audit_slow_queries_client_addr
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_audit_slow_queries_client_addr
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_audit_slow_queries_created_at
+  description: Update the 'created_at' column in the 'audit_slow_queries' collection
+  fields:
+    - name: set
+      type: timestamptz
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_audit_slow_queries_created_at
+    inputTypeName: update_column_audit_slow_queries_created_at_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_audit_slow_queries_created_at
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_audit_slow_queries_created_at
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_audit_slow_queries_id
+  description: Update the 'id' column in the 'audit_slow_queries' collection
+  fields:
+    - name: set
+      type: uuid!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_audit_slow_queries_id
+    inputTypeName: update_column_audit_slow_queries_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_audit_slow_queries_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_audit_slow_queries_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_audit_slow_queries_query
+  description: Update the 'query' column in the 'audit_slow_queries' collection
+  fields:
+    - name: set
+      type: string!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_audit_slow_queries_query
+    inputTypeName: update_column_audit_slow_queries_query_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_audit_slow_queries_query
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_audit_slow_queries_query
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_audit_slow_queries_query_duration
+  description: Update the 'query_duration' column in the 'audit_slow_queries' collection
+  fields:
+    - name: set
+      type: json!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_audit_slow_queries_query_duration
+    inputTypeName: update_column_audit_slow_queries_query_duration_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_audit_slow_queries_query_duration
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_audit_slow_queries_query_duration
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_audit_slow_queries_query_start
+  description: Update the 'query_start' column in the 'audit_slow_queries' collection
+  fields:
+    - name: set
+      type: timestamptz!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_audit_slow_queries_query_start
+    inputTypeName: update_column_audit_slow_queries_query_start_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_audit_slow_queries_query_start
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_audit_slow_queries_query_start
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_audit_slow_queries_user_id
+  description: Update the 'user_id' column in the 'audit_slow_queries' collection
+  fields:
+    - name: set
+      type: uuid
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_audit_slow_queries_user_id
+    inputTypeName: update_column_audit_slow_queries_user_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_audit_slow_queries_user_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_audit_slow_queries_user_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_audit_slow_queries_by_id_update_columns
+  description: Update the columns of the 'audit_slow_queries' collection
+  fields:
+    - name: application_name
+      type: update_column_audit_slow_queries_application_name
+      description: Update the 'application_name' column in the 'audit_slow_queries'
+        collection.
+    - name: client_addr
+      type: update_column_audit_slow_queries_client_addr
+      description: Update the 'client_addr' column in the 'audit_slow_queries' collection.
+    - name: created_at
+      type: update_column_audit_slow_queries_created_at
+      description: Update the 'created_at' column in the 'audit_slow_queries' collection.
+    - name: id
+      type: update_column_audit_slow_queries_id
+      description: Update the 'id' column in the 'audit_slow_queries' collection.
+    - name: query
+      type: update_column_audit_slow_queries_query
+      description: Update the 'query' column in the 'audit_slow_queries' collection.
+    - name: query_duration
+      type: update_column_audit_slow_queries_query_duration
+      description: Update the 'query_duration' column in the 'audit_slow_queries'
+        collection.
+    - name: query_start
+      type: update_column_audit_slow_queries_query_start
+      description: Update the 'query_start' column in the 'audit_slow_queries' collection.
+    - name: user_id
+      type: update_column_audit_slow_queries_user_id
+      description: Update the 'user_id' column in the 'audit_slow_queries' collection.
+  graphql:
+    typeName: update_audit_slow_queries_by_id_update_columns
+    inputTypeName: update_audit_slow_queries_by_id_update_columns_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_audit_slow_queries_by_id_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_audit_slow_queries_by_id_update_columns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - application_name
+          - client_addr
+          - created_at
+          - id
+          - query
+          - query_duration
+          - query_start
+          - user_id
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_audit_slow_queries_by_id_response
+  description: Responses from the 'update_audit_slow_queries_by_id' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[audit_slow_queries!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: update_audit_slow_queries_by_id_response
+    inputTypeName: update_audit_slow_queries_by_id_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_audit_slow_queries_by_id_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_audit_slow_queries_by_id_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: update_audit_slow_queries_by_id
+  outputType: update_audit_slow_queries_by_id_response!
+  arguments:
+    - name: key_id
+      type: uuid!
+    - name: post_check
+      type: audit_slow_queries_bool_exp
+      description: Update permission post-condition predicate over the
+        'audit_slow_queries' collection
+    - name: pre_check
+      type: audit_slow_queries_bool_exp
+      description: Update permission pre-condition predicate over the
+        'audit_slow_queries' collection
+    - name: update_columns
+      type: update_audit_slow_queries_by_id_update_columns!
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: update_audit_slow_queries_by_id
+  graphql:
+    rootFieldName: update_audit_slow_queries_by_id
+    rootFieldKind: Mutation
+  description: Update any row on the 'audit_slow_queries' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: update_audit_slow_queries_by_id
+  permissions:
+    - role: admin
+      allowExecution: true
+

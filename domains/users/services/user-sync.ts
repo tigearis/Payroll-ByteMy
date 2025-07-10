@@ -2,7 +2,11 @@
 import { gql } from "@apollo/client";
 import { clerkClient } from "@clerk/nextjs/server";
 import { adminApolloClient } from "@/lib/apollo/unified-client";
-import { getPermissionsForRole, getAllowedRoles } from "@/lib/auth/simple-permissions";
+import { 
+  type UserRole,
+  getHierarchicalPermissionsFromDatabase,
+  syncUserRoleAssignmentsHierarchical
+} from "@/lib/permissions/hierarchical-permissions";
 
 // Define user role hierarchy for permission checking
 // These must match the Hasura database enum values exactly
@@ -15,6 +19,19 @@ export const USER_ROLES = {
 } as const;
 
 export type UserRole = keyof typeof USER_ROLES;
+
+
+// Utility function to convert arrays to comma-separated strings for Hasura compatibility
+// Hasura v2.0+ supports arrays for x-hasura-allowed-roles but not for other claims
+function arrayToString(arr: string[]): string {
+  return arr.join(',');
+}
+
+// Utility function to convert boolean to string for Hasura compatibility
+// Hasura expects string values for all claims except x-hasura-allowed-roles
+function booleanToString(value: boolean | null | undefined): string {
+  return String(Boolean(value));
+}
 
 // Query to find a user by email
 const GET_USER_BY_EMAIL = gql`
@@ -70,12 +87,12 @@ const UPSERT_USER = gql`
     $clerkId: String!
     $name: String!
     $email: String!
-    $role: userrole = viewer
+    $role: userrole = "viewer"
     $isStaff: Boolean = false
     $managerId: uuid
     $image: String
   ) {
-insertUsersOne(
+    insertUser(
       object: {
         clerkUserId: $clerkId
         name: $name
@@ -112,7 +129,7 @@ const UPDATE_USER_ROLE = gql`
     $managerId: uuid
     $isStaff: Boolean
   ) {
-    updateUsersByPk(
+    updateUserById(
       pkColumns: { id: $id }
       _set: {
         role: $role
@@ -140,7 +157,7 @@ const UPDATE_USER_ROLE = gql`
 // Update user with Clerk ID
 const UPDATE_USER_CLERK_ID = gql`
   mutation UpdateUserClerkId($id: uuid!, $clerkId: String!) {
-    updateUsersByPk(
+    updateUserById(
       pkColumns: { id: $id }
       _set: { clerkUserId: $clerkId, updatedAt: "now()" }
     ) {
@@ -159,7 +176,7 @@ const UPDATE_USER_CLERK_ID = gql`
 // Update user image mutation
 const UPDATE_USER_IMAGE = gql`
   mutation UpdateUserImage($id: uuid!, $image: String!) {
-    updateUsersByPk(
+    updateUserById(
       pkColumns: { id: $id }
       _set: { image: $image, updatedAt: "now()" }
     ) {
@@ -183,7 +200,8 @@ export async function syncUserWithDatabase(
   email: string,
   role: UserRole = "viewer",
   managerId?: string,
-  imageUrl?: string
+  imageUrl?: string,
+  isStaff: boolean = false
 ) {
   try {
     console.log(`🔄 Syncing user with database: ${clerkId} (${email})`);
@@ -258,7 +276,7 @@ export async function syncUserWithDatabase(
           );
         }
 
-        databaseUser = updateData?.updateUsersByPk;
+        databaseUser = updateData?.updateUserById;
         console.log("✅ Updated existing user with Clerk ID:", databaseUser);
       }
     }
@@ -277,7 +295,7 @@ export async function syncUserWithDatabase(
             name,
             email,
             role,
-            isStaff: role === "org_admin" || role === "manager",
+            isStaff,
             managerId: managerId || null,
             image: clerkImageUrl || null,
           },
@@ -293,7 +311,7 @@ export async function syncUserWithDatabase(
         );
       }
 
-      databaseUser = newUserData?.insertUsersOne;
+      databaseUser = newUserData?.insertUser;
       console.log("✅ Created new user in database:", databaseUser);
     } else if (
       databaseUser &&
@@ -316,7 +334,7 @@ export async function syncUserWithDatabase(
       if (updateImageErrors) {
         console.warn("Image update errors:", updateImageErrors);
       } else {
-        databaseUser = updateImageData?.updateUsersByPk || databaseUser;
+        databaseUser = updateImageData?.updateUserById || databaseUser;
         console.log("✅ Updated user image in database");
       }
     } else if (databaseUser) {
@@ -333,27 +351,38 @@ export async function syncUserWithDatabase(
         // Get current metadata to preserve other fields
         const currentUser = await client.users.getUser(clerkId);
 
-        // ✅ ENSURE databaseId is ALWAYS set correctly
-        const userPermissions = getPermissionsForRole(databaseUser.role);
-        const allowedRoles = getAllowedRoles(databaseUser.role);
-        const updatedMetadata = {
+        // ✅ Sync user role assignments to userroles table
+        await syncUserRoleAssignmentsHierarchical(databaseUser.id, databaseUser.role);
+
+        // ✅ Get hierarchical permissions from database (role + exclusions)
+        const permissionData = await getHierarchicalPermissionsFromDatabase(databaseUser.id);
+        
+        // ✅ CRITICAL: Structure metadata for hierarchical JWT template 
+        const updatedPublicMetadata = {
           ...currentUser.publicMetadata,
           role: databaseUser.role,
-          databaseId: databaseUser.id, // ✅ CRITICAL: Database UUID for JWT
-          isStaff: databaseUser.is_staff,
-          managerId: databaseUser.manager_id,
-          permissions: userPermissions, // ✅ CRITICAL: Permissions for JWT custom claims
-          allowedRoles: allowedRoles, // ✅ NEW: Dynamic allowed roles for JWT
+          databaseId: databaseUser.id, // ✅ CRITICAL: Database UUID for JWT x-hasura-user-id
+          isStaff: booleanToString(databaseUser.isStaff), // ✅ Convert boolean to string for Hasura
+          managerId: databaseUser.managerId,
+          allowedRoles: permissionData.allowedRoles, // ✅ For x-hasura-allowed-roles (hierarchical) - keep as array
+          excludedPermissions: arrayToString(permissionData.excludedPermissions), // ✅ Convert to string for Hasura compatibility
+          permissionHash: permissionData.permissionHash, // ✅ For x-hasura-permission-hash (role + exclusions)
+          permissionVersion: permissionData.permissionVersion, // ✅ For x-hasura-permission-version
+          organizationId: null, // ✅ For x-hasura-org-id (future multi-tenancy)
           lastSyncAt: new Date().toISOString(),
         };
 
+        // ✅ CRITICAL: Keep private metadata minimal (sensitive data only)
+        const updatedPrivateMetadata = {
+          ...currentUser.privateMetadata,
+          lastSyncAt: new Date().toISOString(),
+          syncVersion: Date.now(), // Version for debugging
+          syncSource: "database", // Track sync source
+        };
+
         await client.users.updateUser(clerkId, {
-          publicMetadata: updatedMetadata,
-          privateMetadata: {
-            ...currentUser.privateMetadata,
-            lastSyncAt: new Date().toISOString(),
-            syncVersion: Date.now(), // Version for debugging
-          },
+          publicMetadata: updatedPublicMetadata,
+          privateMetadata: updatedPrivateMetadata,
         });
 
         // ✅ VERIFY the update worked
@@ -371,7 +400,7 @@ export async function syncUserWithDatabase(
           `✅ Verified Clerk metadata sync: databaseId = ${savedDatabaseId}`
         );
         console.log(
-          `✅ Updated Clerk metadata with role: ${databaseUser.role}`
+          `✅ Updated Clerk metadata with role: ${databaseUser.role}, ${permissionData.excludedPermissions.length} exclusions, allowedRoles: ${permissionData.allowedRoles.join(', ')}`
         );
       } catch (clerkError) {
         console.error(
@@ -399,7 +428,8 @@ export async function updateUserRole(
   userId: string,
   newRole: UserRole,
   updatedById: string,
-  managerId?: string
+  managerId?: string,
+  isStaff?: boolean
 ) {
   try {
     console.log(`🔄 Updating user role: ${userId} to ${newRole}`);
@@ -423,7 +453,7 @@ export async function updateUserRole(
         id: databaseUser.id,
         role: newRole,
         managerId: managerId || null,
-        isStaff: newRole === "org_admin" || newRole === "manager",
+        isStaff: isStaff !== undefined ? isStaff : databaseUser.isStaff,
       },
       errorPolicy: "all",
     });
@@ -435,31 +465,45 @@ export async function updateUserRole(
       );
     }
 
-    const updatedUser = updateData?.updateUsersByPk;
+    const updatedUser = updateData?.updateUserById;
 
-    // Update Clerk metadata
+    // Update Clerk metadata using consistent structure
     if (updatedUser) {
       const client = await clerkClient();
-      const userPermissions = getPermissionsForRole(updatedUser.role);
-      const allowedRoles = getAllowedRoles(updatedUser.role);
+
+      // ✅ Sync user role assignments to userroles table
+      await syncUserRoleAssignmentsHierarchical(updatedUser.id, updatedUser.role);
+
+      // ✅ Get hierarchical permissions from database (role + exclusions)
+      const permissionData = await getHierarchicalPermissionsFromDatabase(updatedUser.id);
+
+      // Get current user to preserve existing metadata
+      const currentUser = await client.users.getUser(userId);
+      
       await client.users.updateUser(userId, {
         publicMetadata: {
+          ...currentUser.publicMetadata,
           role: updatedUser.role,
           databaseId: updatedUser.id,
-          isStaff: updatedUser.is_staff,
-          managerId: updatedUser.manager_id,
-          permissions: userPermissions,
-          allowedRoles: allowedRoles, // ✅ NEW: Dynamic allowed roles for JWT
+          isStaff: booleanToString(updatedUser.isStaff), // ✅ Convert boolean to string for Hasura
+          managerId: updatedUser.managerId,
+          allowedRoles: permissionData.allowedRoles, // ✅ For x-hasura-allowed-roles (hierarchical) - keep as array
+          excludedPermissions: arrayToString(permissionData.excludedPermissions), // ✅ Convert to string for Hasura compatibility
+          permissionHash: permissionData.permissionHash, // ✅ For x-hasura-permission-hash (role + exclusions)
+          permissionVersion: permissionData.permissionVersion, // ✅ For x-hasura-permission-version
+          organizationId: null, // ✅ For x-hasura-org-id
+          lastRoleUpdateAt: new Date().toISOString(),
         },
         privateMetadata: {
-          hasuraRole: updatedUser.role,
+          ...currentUser.privateMetadata,
           lastRoleUpdateAt: new Date().toISOString(),
           lastUpdatedBy: updatedById,
+          syncSource: "role_update",
         },
       });
 
       console.log(
-        `✅ Updated user role to ${newRole} in both database and Clerk`
+        `✅ Updated user role to ${newRole} in both database and Clerk, ${permissionData.excludedPermissions.length} exclusions, allowedRoles: ${permissionData.allowedRoles.join(', ')}`
       );
     }
 

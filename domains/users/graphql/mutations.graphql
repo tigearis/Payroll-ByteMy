@@ -94,8 +94,8 @@ mutation CreateUserByEmail(
   }
 }
 
-mutation UpdateUserProfile($id: uuid!, $name: String, $image: String) {
-  updateUserById(pkColumns: { id: $id }, _set: { name: $name, image: $image }) {
+mutation UpdateUserProfile($id: uuid!, $input: usersSetInput!) {
+  updateUserById(pkColumns: { id: $id }, _set: $input) {
     ...UserWithProfile
   }
 }
@@ -131,6 +131,7 @@ mutation HardDeleteUser($id: uuid!) {
 mutation UpdateStaffRole($id: uuid!, $role: user_role!) {
   updateUserById(pkColumns: { id: $id }, _set: { role: $role }) {
     ...UserBase
+    managerId
   }
 }
 

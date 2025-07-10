@@ -11,10 +11,8 @@ configuration:
       custom_name: clientId
     created_at:
       custom_name: createdAt
-    due_date:
-      custom_name: dueDate
-    issued_date:
-      custom_name: issuedDate
+    invoice_number:
+      custom_name: invoiceNumber
     total_amount:
       custom_name: totalAmount
     updated_at:
@@ -24,8 +22,7 @@ configuration:
     billing_period_start: billingPeriodStart
     client_id: clientId
     created_at: createdAt
-    due_date: dueDate
-    issued_date: issuedDate
+    invoice_number: invoiceNumber
     total_amount: totalAmount
     updated_at: updatedAt
   custom_name: billingInvoice
@@ -44,13 +41,6 @@ object_relationships:
     using:
       foreign_key_constraint_on: client_id
 array_relationships:
-  - name: billingEventLogs
-    using:
-      foreign_key_constraint_on:
-        column: invoice_id
-        table:
-          name: billing_event_log
-          schema: public
   - name: billingInvoiceItems
     using:
       foreign_key_constraint_on:
@@ -58,6 +48,12 @@ array_relationships:
         table:
           name: billing_invoice_item
           schema: public
+insert_permissions:
+  - role: developer
+    permission:
+      check: {}
+      columns: '*'
+    comment: Developer role has full insert access
 select_permissions:
   - role: consultant
     permission:
@@ -66,19 +62,19 @@ select_permissions:
         - billing_period_start
         - client_id
         - created_at
-        - due_date
         - id
-        - issued_date
+        - invoice_number
+        - status
         - total_amount
         - updated_at
       filter: {}
-    comment: Consultants can view relevant data
+    comment: Consultants can view billing data for their assigned payrolls
   - role: developer
     permission:
       columns: '*'
       filter: {}
       allow_aggregations: true
-    comment: Developer role has full system access
+    comment: Developer role has full select access
   - role: manager
     permission:
       columns:
@@ -86,14 +82,14 @@ select_permissions:
         - billing_period_start
         - client_id
         - created_at
-        - due_date
         - id
-        - issued_date
+        - invoice_number
+        - status
         - total_amount
         - updated_at
       filter: {}
       allow_aggregations: true
-    comment: Managers can view all data
+    comment: Managers can view all billing data
   - role: org_admin
     permission:
       columns:
@@ -101,14 +97,14 @@ select_permissions:
         - billing_period_start
         - client_id
         - created_at
-        - due_date
         - id
-        - issued_date
+        - invoice_number
+        - status
         - total_amount
         - updated_at
       filter: {}
       allow_aggregations: true
-    comment: Org admins can view all data
+    comment: Org admins can view all billing data
   - role: viewer
     permission:
       columns:
@@ -116,12 +112,24 @@ select_permissions:
         - billing_period_start
         - client_id
         - created_at
-        - due_date
         - id
-        - issued_date
+        - invoice_number
+        - status
         - total_amount
         - updated_at
       filter: {}
-    comment: Viewers can see basic information
+    comment: Viewers can see basic billing information
+update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
+delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access
 apollo_federation_config:
   enable: v1

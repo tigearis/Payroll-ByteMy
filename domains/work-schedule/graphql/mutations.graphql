@@ -1,15 +1,14 @@
-# Work Schedule Domain Mutations
+# Work Schedule Domain Mutations with Capacity Planning
 # Security Classification: MEDIUM - Employee scheduling and time management
-# SOC2 Compliance: All mutations logged with audit trail
 
-# Core CRUD operations
-mutation CreateWorkSchedule($object: workSchedulesInsertInput!) {
+# Core CRUD operations with capacity fields
+mutation CreateWorkSchedule($object: workScheduleInsertInput!) {
   insertWorkSchedule(object: $object) {
     ...WorkScheduleComplete
   }
 }
 
-mutation UpdateWorkSchedule($id: uuid!, $set: workSchedulesSetInput!) {
+mutation UpdateWorkSchedule($id: uuid!, $set: workScheduleSetInput!) {
   updateWorkScheduleById(pkColumns: { id: $id }, _set: $set) {
     ...WorkScheduleComplete
   }
@@ -21,314 +20,237 @@ mutation DeleteWorkSchedule($id: uuid!) {
     userId
     workDay
     workHours
+    adminTimeHours
+    payrollCapacityHours
   }
 }
 
-# Schedule creation operations
-mutation CreateDailySchedule(
+# Schedule updates with capacity calculation
+mutation UpdateWorkScheduleHours(
   $userId: uuid!
   $workDay: String!
   $workHours: numeric!
+  $adminTimeHours: numeric
+  $payrollCapacityHours: numeric
+  $usesDefaultAdminTime: Boolean
 ) {
-  insertWorkSchedule(
-    object: { userId: $userId, workDay: $workDay, workHours: $workHours }
-  ) {
-    ...WorkScheduleWithUser
-  }
-}
-
-mutation CreateWeeklySchedule(
-  $userId: uuid!
-  $schedules: [workSchedulesInsertInput!]!
-) {
-  bulkInsertWorkSchedules(objects: $schedules) {
-    returning {
-      ...WorkScheduleBasic
-    }
-    affectedRows
-  }
-}
-
-# Recurring schedule creation would require a custom Hasura function
-# which is not currently implemented in the database schema
-
-# Schedule updates
-mutation UpdateDailySchedule(
-  $userId: uuid!
-  $workDay: String!
-  $workHours: numeric!
-) {
-  bulkUpdateWorkSchedules(
+  bulkUpdateWorkSchedule(
     where: { userId: { _eq: $userId }, workDay: { _eq: $workDay } }
-    _set: { workHours: $workHours, updatedAt: "now()" }
+    _set: {
+      workHours: $workHours
+      adminTimeHours: $adminTimeHours
+      payrollCapacityHours: $payrollCapacityHours
+      usesDefaultAdminTime: $usesDefaultAdminTime
+      updatedAt: "now()"
+    }
   ) {
     returning {
-      ...WorkScheduleBasic
+      ...WorkScheduleComplete
     }
     affectedRows
   }
 }
 
-mutation UpdateUserScheduleHours(
-  $userId: uuid!
-  $workDay: String!
-  $newHours: numeric!
-) {
-  bulkUpdateWorkSchedules(
-    where: { userId: { _eq: $userId }, workDay: { _eq: $workDay } }
-    _set: { workHours: $newHours, updatedAt: "now()" }
-  ) {
+# Bulk operations with capacity
+mutation BulkCreateWorkSchedule($schedules: [workScheduleInsertInput!]!) {
+  bulkInsertWorkSchedule(objects: $schedules) {
     returning {
-      ...WorkScheduleBasic
+      ...WorkScheduleComplete
     }
     affectedRows
   }
 }
 
-mutation AdjustScheduleHours($id: uuid!, $adjustment: numeric!) {
-  updateWorkScheduleById(
-    pkColumns: { id: $id }
-    _inc: { workHours: $adjustment }
-    _set: { updatedAt: "now()" }
-  ) {
-    ...WorkScheduleBasic
-  }
-}
-
-mutation UpdateScheduleDateRange(
-  $userId: uuid!
-  $startDate: String!
-  $endDate: String!
-  $newHours: numeric!
-) {
-  bulkUpdateWorkSchedules(
-    where: {
-      userId: { _eq: $userId }
-      workDay: { _gte: $startDate, _lte: $endDate }
-    }
-    _set: { workHours: $newHours, updatedAt: "now()" }
-  ) {
-    returning {
-      ...WorkScheduleBasic
-    }
-    affectedRows
-  }
-}
-
-# Schedule cancellation and modifications
-mutation CancelSchedule($id: uuid!) {
-  updateWorkScheduleById(
-    pkColumns: { id: $id }
-    _set: { workHours: 0, updatedAt: "now()" }
-  ) {
-    ...WorkScheduleBasic
-  }
-}
-
-mutation CancelDailySchedule($userId: uuid!, $workDay: String!) {
-  bulkUpdateWorkSchedules(
-    where: { userId: { _eq: $userId }, workDay: { _eq: $workDay } }
-    _set: { workHours: 0, updatedAt: "now()" }
-  ) {
-    returning {
-      ...WorkScheduleBasic
-    }
-    affectedRows
-  }
-}
-
-mutation RemoveSchedule($id: uuid!) {
-  deleteWorkScheduleById(id: $id) {
-    id
-    userId
-    workDay
-    workHours
-  }
-}
-
-mutation RemoveDailySchedule($userId: uuid!, $workDay: String!) {
-  bulkDeleteWorkSchedules(
-    where: { userId: { _eq: $userId }, workDay: { _eq: $workDay } }
-  ) {
-    affectedRows
-  }
-}
-
-# Weekly schedule operations
-mutation UpdateWeeklySchedule(
-  $userId: uuid!
-  $startDate: String!
-  $endDate: String!
-  $schedules: [workSchedulesInsertInput!]!
-) {
-  # First remove existing schedules for the week
-  bulkDeleteWorkSchedules(
-    where: {
-      userId: { _eq: $userId }
-      workDay: { _gte: $startDate, _lte: $endDate }
-    }
-  ) {
-    affectedRows
-  }
-
-  # Then insert new schedules
-  bulkInsertWorkSchedules(objects: $schedules) {
-    returning {
-      ...WorkScheduleBasic
-    }
-    affectedRows
-  }
-}
-
-# Copy and template operations would require custom Hasura functions
-# which are not currently implemented in the database schema
-
-# Bulk operations
-mutation BulkUpdateScheduleHours(
+mutation BulkUpdateWorkScheduleCapacity(
   $userIds: [uuid!]!
   $workDay: String!
   $workHours: numeric!
+  $adminTimeHours: numeric!
+  $payrollCapacityHours: numeric!
 ) {
-  bulkUpdateWorkSchedules(
+  bulkUpdateWorkSchedule(
     where: { userId: { _in: $userIds }, workDay: { _eq: $workDay } }
-    _set: { workHours: $workHours, updatedAt: "now()" }
+    _set: {
+      workHours: $workHours
+      adminTimeHours: $adminTimeHours
+      payrollCapacityHours: $payrollCapacityHours
+      updatedAt: "now()"
+    }
   ) {
     returning {
-      ...WorkScheduleBasic
+      ...WorkScheduleComplete
     }
     affectedRows
   }
 }
 
-mutation BulkCreateSchedules($schedules: [workSchedulesInsertInput!]!) {
-  bulkInsertWorkSchedules(objects: $schedules) {
-    returning {
-      ...WorkScheduleBasic
-    }
-    affectedRows
-  }
-}
-
-mutation BulkDeleteSchedules($scheduleIds: [uuid!]!) {
-  bulkDeleteWorkSchedules(where: { id: { _in: $scheduleIds } }) {
-    affectedRows
-  }
-}
-
-mutation BulkCancelSchedules($scheduleIds: [uuid!]!) {
-  bulkUpdateWorkSchedules(
-    where: { id: { _in: $scheduleIds } }
-    _set: { workHours: 0, updatedAt: "now()" }
-  ) {
-    returning {
-      ...WorkScheduleBasic
-    }
-    affectedRows
-  }
-}
-
-# Team management operations
-mutation UpdateTeamSchedule(
-  $managerUserId: uuid!
+# Admin time management mutations
+mutation UpdateAdminTime(
+  $userId: uuid!
   $workDay: String!
-  $defaultHours: numeric!
+  $adminTimeHours: numeric!
+  $usesDefaultAdminTime: Boolean!
 ) {
-  bulkUpdateWorkSchedules(
-    where: {
-      scheduleOwner: { managerId: { _eq: $managerUserId } }
-      workDay: { _eq: $workDay }
+  bulkUpdateWorkSchedule(
+    where: { userId: { _eq: $userId }, workDay: { _eq: $workDay } }
+    _set: {
+      adminTimeHours: $adminTimeHours
+      usesDefaultAdminTime: $usesDefaultAdminTime
+      updatedAt: "now()"
     }
-    _set: { workHours: $defaultHours, updatedAt: "now()" }
   ) {
     returning {
-      ...TeamWorkSchedule
+      ...WorkScheduleCapacity
     }
     affectedRows
   }
 }
 
-# Team schedule creation functions would require custom Hasura functions
-# which are not currently implemented in the database schema
-
-# Schedule adjustment operations
-mutation AdjustScheduleForOvertime(
-  $id: uuid!
-  $overtimeHours: numeric!
-) {
-  updateWorkScheduleById(
-    pkColumns: { id: $id }
-    _inc: { workHours: $overtimeHours }
-    _set: { updatedAt: "now()" }
-  ) {
-    ...WorkScheduleBasic
-  }
-}
-
-mutation ReduceScheduleHours($id: uuid!, $reduction: numeric!) {
-  updateWorkScheduleById(
-    pkColumns: { id: $id }
-    _inc: { workHours: $reduction }
-    _set: { updatedAt: "now()" }
-  ) {
-    ...WorkScheduleBasic
-  }
-}
-
-# Schedule swapping would require a custom Hasura function
-# which is not currently implemented in the database schema
-
-# Schedule pattern and adjustment operations would require custom Hasura functions
-# which are not currently implemented in the database schema
-
-# Administrative operations
-mutation TransferSchedules($oldUserId: uuid!, $newUserId: uuid!) {
-  bulkUpdateWorkSchedules(
-    where: { userId: { _eq: $oldUserId } }
-    _set: { userId: $newUserId, updatedAt: "now()" }
-  ) {
-    returning {
-      ...WorkScheduleBasic
-    }
-    affectedRows
-  }
-}
-
-# Schedule archiving would require a custom Hasura function
-# which is not currently implemented in the database schema
-
-mutation PurgeOldSchedules($beforeDate: String!) {
-  bulkDeleteWorkSchedules(where: { workDay: { _lt: $beforeDate } }) {
-    affectedRows
-  }
-}
-
-mutation CleanupCancelledSchedules {
-  bulkDeleteWorkSchedules(
-    where: { workHours: { _eq: 0 }, workDay: { _lt: "now()::date" } }
-  ) {
-    affectedRows
-  }
-}
-
-# Integration and import operations would require custom Hasura functions
-# which are not currently implemented in the database schema
-
-# Emergency and exception handling
-mutation CreateEmergencySchedule(
+# Upsert work schedule - creates if doesn't exist, updates if exists
+mutation UpsertWorkSchedule(
   $userId: uuid!
   $workDay: String!
   $workHours: numeric!
+  $adminTimeHours: numeric!
+  $payrollCapacityHours: numeric!
+  $usesDefaultAdminTime: Boolean!
 ) {
   insertWorkSchedule(
     object: {
       userId: $userId
       workDay: $workDay
       workHours: $workHours
+      adminTimeHours: $adminTimeHours
+      payrollCapacityHours: $payrollCapacityHours
+      usesDefaultAdminTime: $usesDefaultAdminTime
+    }
+    onConflict: {
+      constraint: unique_user_work_day
+      updateColumns: [
+        workHours
+        adminTimeHours
+        payrollCapacityHours
+        usesDefaultAdminTime
+      ]
     }
   ) {
-    ...WorkScheduleWithUser
+    ...WorkScheduleComplete
   }
 }
 
-# Schedule conflict resolution, validation, and user preference operations 
-# would require custom Hasura functions which are not currently implemented
+# User admin time percentage updates
+mutation UpdateUserDefaultAdminTime(
+  $userId: uuid!
+  $defaultAdminTimePercentage: numeric!
+) {
+  updateUserById(
+    pkColumns: { id: $userId }
+    _set: {
+      defaultAdminTimePercentage: $defaultAdminTimePercentage
+      updatedAt: "now()"
+    }
+  ) {
+    id
+    name
+    defaultAdminTimePercentage
+    updatedAt
+  }
+}
+
+# Payroll assignment mutations
+mutation AssignPayrollToConsultant(
+  $payrollId: uuid!
+  $primaryConsultantUserId: uuid
+  $backupConsultantUserId: uuid
+  $managerUserId: uuid
+) {
+  updatePayrollById(
+    pkColumns: { id: $payrollId }
+    _set: {
+      primaryConsultantUserId: $primaryConsultantUserId
+      backupConsultantUserId: $backupConsultantUserId
+      managerUserId: $managerUserId
+      updatedAt: "now()"
+    }
+  ) {
+    id
+    name
+    primaryConsultantUserId
+    backupConsultantUserId
+    managerUserId
+    primaryConsultant {
+      id
+      name
+    }
+    backupConsultant {
+      id
+      name
+    }
+    manager {
+      id
+      name
+    }
+    updatedAt
+  }
+}
+
+mutation BulkAssignPayrolls(
+  $payrollIds: [uuid!]!
+  $primaryConsultantUserId: uuid
+  $backupConsultantUserId: uuid
+  $managerUserId: uuid
+) {
+  bulkUpdatePayrolls(
+    where: { id: { _in: $payrollIds } }
+    _set: {
+      primaryConsultantUserId: $primaryConsultantUserId
+      backupConsultantUserId: $backupConsultantUserId
+      managerUserId: $managerUserId
+      updatedAt: "now()"
+    }
+  ) {
+    returning {
+      id
+      name
+      primaryConsultantUserId
+      backupConsultantUserId
+      managerUserId
+      primaryConsultant {
+        id
+        name
+      }
+      backupConsultant {
+        id
+        name
+      }
+      manager {
+        id
+        name
+      }
+      updatedAt
+    }
+    affectedRows
+  }
+}
+
+mutation UnassignPayrollConsultant(
+  $payrollId: uuid!
+  $removeRole: String! # "primary", "backup", or "manager"
+) {
+  updatePayrollById(
+    pkColumns: { id: $payrollId }
+    _set: {
+      primaryConsultantUserId: null
+      backupConsultantUserId: null
+      managerUserId: null
+      updatedAt: "now()"
+    }
+  ) {
+    id
+    name
+    primaryConsultantUserId
+    backupConsultantUserId
+    managerUserId
+    updatedAt
+  }
+}

@@ -1,0 +1,220 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: permissions
+  fields:
+    - name: action
+      type: enum!
+    - name: created_at
+      type: timestamptz!
+    - name: description
+      type: string
+    - name: id
+      type: uuid!
+    - name: legacy_permission_name
+      type: string
+    - name: resource_id
+      type: uuid!
+    - name: updated_at
+      type: timestamptz!
+  graphql:
+    typeName: permissions
+    inputTypeName: permissions_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: permissions
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: permissions
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - action
+          - created_at
+          - description
+          - id
+          - legacy_permission_name
+          - resource_id
+          - updated_at
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: permissions_bool_exp
+  operand:
+    object:
+      type: permissions
+      comparableFields:
+        - fieldName: action
+          booleanExpressionType: permission_action_bool_exp
+        - fieldName: created_at
+          booleanExpressionType: timestamptz_bool_exp
+        - fieldName: description
+          booleanExpressionType: text_bool_exp
+        - fieldName: id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: legacy_permission_name
+          booleanExpressionType: varchar_bool_exp
+        - fieldName: resource_id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: updated_at
+          booleanExpressionType: timestamptz_bool_exp
+      comparableRelationships:
+        - relationshipName: resource
+        - relationshipName: role_permissions
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: permissions_bool_exp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: permissions_agg_exp
+  operand:
+    object:
+      aggregatedType: permissions
+      aggregatableFields:
+        - fieldName: action
+          aggregateExpression: permission_action_agg_exp
+        - fieldName: created_at
+          aggregateExpression: timestamptz_agg_exp
+        - fieldName: description
+          aggregateExpression: text_agg_exp
+        - fieldName: id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: legacy_permission_name
+          aggregateExpression: varchar_agg_exp
+        - fieldName: resource_id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: updated_at
+          aggregateExpression: timestamptz_agg_exp
+  count:
+    enable: true
+    returnType: int_64
+  graphql:
+    selectTypeName: permissions_agg_exp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: permissions_order_by_exp
+  operand:
+    object:
+      orderedType: permissions
+      orderableFields:
+        - fieldName: action
+          orderByExpression: enum_order_by_exp
+        - fieldName: created_at
+          orderByExpression: timestamptz_order_by_exp
+        - fieldName: description
+          orderByExpression: string_order_by_exp
+        - fieldName: id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: legacy_permission_name
+          orderByExpression: string_order_by_exp
+        - fieldName: resource_id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: updated_at
+          orderByExpression: timestamptz_order_by_exp
+      orderableRelationships:
+        - relationshipName: resource
+  graphql:
+    expressionTypeName: permissions_order_by_exp
+
+---
+kind: Model
+version: v2
+definition:
+  name: permissions
+  objectType: permissions
+  source:
+    dataConnectorName: payroll
+    collection: permissions
+  filterExpressionType: permissions_bool_exp
+  aggregateExpression: permissions_agg_exp
+  orderByExpression: permissions_order_by_exp
+  graphql:
+    selectMany:
+      queryRootField: permissions
+      subscription:
+        rootField: permissions
+    selectUniques:
+      - queryRootField: permissions_by_id
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: permissions_by_id
+      - queryRootField: permissions_by_permissions_resource_id_action_key
+        uniqueIdentifier:
+          - action
+          - resource_id
+        subscription:
+          rootField: permissions_by_permissions_resource_id_action_key
+    filterInputTypeName: permissions_filter_input
+    aggregate:
+      queryRootField: permissions_aggregate
+      subscription:
+        rootField: permissions_aggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: permissions
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: resource
+  sourceType: permissions
+  target:
+    model:
+      name: resources
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: resource_id
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: role_permissions
+  sourceType: permissions
+  target:
+    model:
+      name: role_permissions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: role_permissions_agg_exp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: permission_id
+  graphql:
+    aggregateFieldName: role_permissions_aggregate
+

@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { QuickLoading } from "@/components/ui/smart-loading";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
 interface DatabaseUserGuardProps {
@@ -38,10 +39,7 @@ export function DatabaseUserGuard({
   if (!clerkLoaded) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading authentication...</p>
-        </div>
+        <QuickLoading.Page title="Loading user..." />
       </div>
     );
   }
@@ -55,10 +53,7 @@ export function DatabaseUserGuard({
   if (dbUserLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Verifying user access...</p>
-        </div>
+        <QuickLoading.Page title="Verifying user..." />
       </div>
     );
   }
@@ -119,17 +114,18 @@ function UserNotInDatabaseFallback({ clerkUser }: { clerkUser: any }) {
     const attemptAutoSync = async () => {
       // Only auto-sync once per session and if user looks like OAuth user
       if (autoSyncAttempted) return;
-      
+
       // Check if this looks like an OAuth flow (has OAuth provider data)
       const hasOAuthData = clerkUser?.externalAccounts?.length > 0;
-      const isRecentLogin = clerkUser?.lastSignInAt && 
-        (Date.now() - new Date(clerkUser.lastSignInAt).getTime()) < 60000; // Within last minute
-      
+      const isRecentLogin =
+        clerkUser?.lastSignInAt &&
+        Date.now() - new Date(clerkUser.lastSignInAt).getTime() < 60000; // Within last minute
+
       if (hasOAuthData && isRecentLogin) {
         console.log("🔄 Attempting automatic sync for OAuth user");
         setAutoSyncAttempted(true);
         setIsSyncing(true);
-        
+
         try {
           const response = await fetch("/api/sync-current-user", {
             method: "POST",
@@ -146,7 +142,7 @@ function UserNotInDatabaseFallback({ clerkUser }: { clerkUser: any }) {
         } catch (error) {
           console.log("Auto-sync failed, user will need to sync manually");
         }
-        
+
         setIsSyncing(false);
       } else {
         setAutoSyncAttempted(true);
@@ -182,7 +178,8 @@ function UserNotInDatabaseFallback({ clerkUser }: { clerkUser: any }) {
     } catch (error) {
       console.error("Failed to sync user:", error);
       toast.error("Failed to sync user", {
-        description: "Please try again or contact support if this issue persists.",
+        description:
+          "Please try again or contact support if this issue persists.",
       });
     } finally {
       setIsSyncing(false);
@@ -211,10 +208,9 @@ function UserNotInDatabaseFallback({ clerkUser }: { clerkUser: any }) {
           <Alert variant={isSyncing ? "default" : "destructive"}>
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              {isSyncing 
+              {isSyncing
                 ? "Setting up your account automatically..."
-                : "Your account is not properly set up in our system. This is a security measure to protect unauthorized access."
-              }
+                : "Your account is not properly set up in our system. This is a security measure to protect unauthorized access."}
             </AlertDescription>
           </Alert>
 

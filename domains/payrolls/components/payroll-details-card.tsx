@@ -3,14 +3,12 @@
 
 import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { PermissionGuard } from "@/components/auth/permission-guard";
-import { useEnhancedPermissions } from "@/lib/auth";
-
 
 interface PayrollDetailsCardProps {
   payroll: {
     status: string;
     processing_days_before_eft: number;
+    processing_time?: number;
     payroll_system?: string;
   };
   className?: string; // Allow custom styles
@@ -20,12 +18,6 @@ export const PayrollDetailsCard: React.FC<PayrollDetailsCardProps> = ({
   payroll,
   className,
 }) => {
-  const { hasPermission } = useEnhancedPermissions();
-  
-  if (!hasPermission('payroll:read')) {
-    return null;
-  }
-
   return (
     <Card className={`p-4 ${className} shadow-md rounded-lg`}>
       <CardHeader>
@@ -39,6 +31,12 @@ export const PayrollDetailsCard: React.FC<PayrollDetailsCardProps> = ({
           <strong>Processing Days Before EFT:</strong>{" "}
           {payroll.processing_days_before_eft} days
         </p>
+        {payroll.processing_time && (
+          <p>
+            <strong>Max Processing Time:</strong>{" "}
+            {payroll.processing_time} {payroll.processing_time === 1 ? 'hour' : 'hours'}
+          </p>
+        )}
         {payroll.payroll_system && (
           <p>
             <strong>System:</strong> {payroll.payroll_system}

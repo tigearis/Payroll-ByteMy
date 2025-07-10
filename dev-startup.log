@@ -1,0 +1,29 @@
+
+> payroll-bytemy@0.1.0 dev /Users/nathanharris/Payroll/Payroll-ByteMy
+> next dev
+
+   ▲ Next.js 15.3.4
+   - Local:        http://localhost:3000
+   - Network:      http://10.2.4.129:3000
+   - Environments: .env.development.local, .env.local
+
+ ✓ Starting...
+   Using tsconfig file: ./tsconfig.json
+ ✓ Ready in 1625ms
+ ○ Compiling /middleware ...
+ ✓ Compiled /middleware in 892ms (255 modules)
+Error: Route "/" used `...headers()` or similar iteration. `headers()` should be awaited before using its value. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis {
+  
+}
+ ○ Compiling / ...
+ ✓ Compiled / in 9.5s (1907 modules)
+ GET / 200 in 9838ms
+ ✓ Compiled in 403ms (836 modules)
+ ⨯ Error [ReferenceError]: exports is not defined
+    at <unknown> (.next/server/clerk.js:10)
+    at <unknown> (.next/server/clerk.js:10:1)
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 926ms (2301 modules)
+ GET /dashboard 404 in 1ms
+ ✓ Compiled /_not-found in 391ms (2305 modules)
+[?25h

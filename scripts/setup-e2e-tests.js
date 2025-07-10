@@ -125,7 +125,7 @@ async function main() {
   }
   
   console.log('\n📚 For detailed setup info, see:');
-  console.log('   docs/TEST_DATA_GUIDE.md');
+  console.log('   docs/TESTDATAGUIDE.md');
 }
 
 main().catch(console.error);

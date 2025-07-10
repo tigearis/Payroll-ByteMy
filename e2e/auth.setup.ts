@@ -129,26 +129,26 @@ async function authenticateUser(email: string, password: string, page: any) {
 }
 
 setup('authenticate as developer', async ({ page }) => {
-  await authenticateUser(TEST_USERS.developer.email, TEST_USERS.developer.password, page);
+  await authenticateUser(TESTUSERS.developer.email, TESTUSERS.developer.password, page);
   await page.context().storageState({ path: STORAGE_STATE_DEVELOPER });
 });
 
 setup('authenticate as org_admin', async ({ page }) => {
-  await authenticateUser(TEST_USERS.org_admin.email, TEST_USERS.org_admin.password, page);
+  await authenticateUser(TESTUSERS.orgadmin.email, TESTUSERS.orgadmin.password, page);
   await page.context().storageState({ path: STORAGE_STATE_ORG_ADMIN });
 });
 
 setup('authenticate as manager', async ({ page }) => {
-  await authenticateUser(TEST_USERS.manager.email, TEST_USERS.manager.password, page);
+  await authenticateUser(TESTUSERS.manager.email, TESTUSERS.manager.password, page);
   await page.context().storageState({ path: STORAGE_STATE_MANAGER });
 });
 
 setup('authenticate as consultant', async ({ page }) => {
-  await authenticateUser(TEST_USERS.consultant.email, TEST_USERS.consultant.password, page);
+  await authenticateUser(TESTUSERS.consultant.email, TESTUSERS.consultant.password, page);
   await page.context().storageState({ path: STORAGE_STATE_CONSULTANT });
 });
 
 setup('authenticate as viewer', async ({ page }) => {
-  await authenticateUser(TEST_USERS.viewer.email, TEST_USERS.viewer.password, page);
+  await authenticateUser(TESTUSERS.viewer.email, TESTUSERS.viewer.password, page);
   await page.context().storageState({ path: STORAGE_STATE_VIEWER });
 });

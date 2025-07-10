@@ -1,0 +1,123 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_client_external_systems_by_id_update_columns
+  description: Update the columns of the 'client_external_systems' collection
+  fields:
+    - name: client_id
+      type: update_column_client_external_systems_client_id
+      description: Update the 'client_id' column in the 'client_external_systems'
+        collection.
+    - name: created_at
+      type: update_column_client_external_systems_created_at
+      description: Update the 'created_at' column in the 'client_external_systems'
+        collection.
+    - name: id
+      type: update_column_client_external_systems_id
+      description: Update the 'id' column in the 'client_external_systems' collection.
+    - name: system_client_id
+      type: update_column_client_external_systems_system_client_id
+      description: Update the 'system_client_id' column in the
+        'client_external_systems' collection.
+    - name: system_id
+      type: update_column_client_external_systems_system_id
+      description: Update the 'system_id' column in the 'client_external_systems'
+        collection.
+    - name: updated_at
+      type: update_column_client_external_systems_updated_at
+      description: Update the 'updated_at' column in the 'client_external_systems'
+        collection.
+  graphql:
+    typeName: update_client_external_systems_by_id_update_columns
+    inputTypeName: update_client_external_systems_by_id_update_columns_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_client_external_systems_by_id_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_client_external_systems_by_id_update_columns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - client_id
+          - created_at
+          - id
+          - system_client_id
+          - system_id
+          - updated_at
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_client_external_systems_by_id_response
+  description: Responses from the 'update_client_external_systems_by_id' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[client_external_systems!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: update_client_external_systems_by_id_response
+    inputTypeName: update_client_external_systems_by_id_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_client_external_systems_by_id_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_client_external_systems_by_id_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: update_client_external_systems_by_id
+  outputType: update_client_external_systems_by_id_response!
+  arguments:
+    - name: key_id
+      type: uuid!
+      description: Unique identifier for the client-system mapping
+    - name: post_check
+      type: client_external_systems_bool_exp
+      description: Update permission post-condition predicate over the
+        'client_external_systems' collection
+    - name: pre_check
+      type: client_external_systems_bool_exp
+      description: Update permission pre-condition predicate over the
+        'client_external_systems' collection
+    - name: update_columns
+      type: update_client_external_systems_by_id_update_columns!
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: update_client_external_systems_by_id
+  graphql:
+    rootFieldName: update_client_external_systems_by_id
+    rootFieldKind: Mutation
+  description: Update any row on the 'client_external_systems' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: update_client_external_systems_by_id
+  permissions:
+    - role: admin
+      allowExecution: true
+

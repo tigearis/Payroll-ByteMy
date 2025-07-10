@@ -38,12 +38,26 @@ array_relationships:
         table:
           name: client_billing_assignment
           schema: public
-  - name: billing_invoices
+  - name: billingInvoices
     using:
       foreign_key_constraint_on:
         column: client_id
         table:
           name: billing_invoice
+          schema: public
+  - name: billingItems
+    using:
+      foreign_key_constraint_on:
+        column: client_id
+        table:
+          name: billing_items
+          schema: public
+  - name: billingPeriods
+    using:
+      foreign_key_constraint_on:
+        column: client_id
+        table:
+          name: billing_periods
           schema: public
   - name: externalSystems
     using:
@@ -58,6 +72,13 @@ array_relationships:
         column: client_id
         table:
           name: payrolls
+          schema: public
+  - name: timeEntries
+    using:
+      foreign_key_constraint_on:
+        column: client_id
+        table:
+          name: time_entries
           schema: public
 insert_permissions:
   - role: developer
@@ -86,6 +107,20 @@ insert_permissions:
         - active
     comment: Org admins can create clients
 select_permissions:
+  - role: ai_assistant
+    permission:
+      columns:
+        - id
+        - name
+        - contact_person
+        - contact_email
+        - contact_phone
+        - active
+        - created_at
+        - updated_at
+      filter: {}
+      allow_aggregations: true
+    comment: AI Assistant can view client data for analysis and reporting (read-only)
   - role: consultant
     permission:
       columns:

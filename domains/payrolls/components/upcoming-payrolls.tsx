@@ -1,8 +1,6 @@
 // components/upcoming-payrolls.tsx
 "use client";
 
-import { PermissionGuard } from "@/components/auth/permission-guard";
-import { useEnhancedPermissions } from "@/lib/auth";
 import { useQuery } from "@apollo/client";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
@@ -15,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { GetUserUpcomingPayrollsDocument } from '@/domains/payrolls/graphql/generated/graphql';
+import { GetUserUpcomingPayrollsDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import {
   UserUpcomingPayroll as UpcomingPayroll,
@@ -65,12 +63,6 @@ function getUserRole(payroll: UpcomingPayroll, currentUserId: string): string {
 }
 
 export function UpcomingPayrolls() {
-  const { hasPermission } = useEnhancedPermissions();
-  
-  if (!hasPermission('payroll:read')) {
-    return null;
-  }
-
   const { currentUserId, loading: userLoading } = useCurrentUser();
   const today = new Date().toISOString().split("T")[0];
 

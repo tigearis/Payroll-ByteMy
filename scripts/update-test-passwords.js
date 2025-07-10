@@ -41,7 +41,7 @@ const passwordUpdates = [
 async function updateUserPasswords() {
   console.log('🔐 Updating test user passwords...');
   
-  if (!process.env.CLERK_SECRET_KEY || !process.env.CLERK_SECRET_KEY.startsWith('sk_test_')) {
+  if (!process.env.CLERK_SECRET_KEY || !process.env.CLERKSECRETKEY.startsWith('sk_test_')) {
     console.error('❌ Error: CLERK_SECRET_KEY must be a test environment key (starts with sk_test_)');
     process.exit(1);
   }

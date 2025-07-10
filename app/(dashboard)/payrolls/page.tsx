@@ -23,14 +23,26 @@ import {
   Grid3X3,
   TableIcon,
   List,
+  Building2,
+  CalendarDays,
+  Edit,
+  Download,
+  MoreHorizontal,
 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { PayrollUpdatesListener } from "@/components/real-time-updates";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
   Popover,
@@ -44,11 +56,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { PayrollsTable } from "@/domains/payrolls/components/payrolls-table";
+import { PayrollsTableUnified } from "@/domains/payrolls/components/payrolls-table-unified";
 import {
-  GetPayrollsPaginatedDocument,
+  GetPayrollsTableEnhancedDocument,
   GetPayrollDashboardStatsDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
+import { useDynamicLoading } from "@/lib/hooks/use-dynamic-loading";
 
 type ViewMode = "cards" | "table" | "list";
 
@@ -229,6 +242,23 @@ const formatPayrollCycle = (payroll: any) => {
   return readableCycle;
 };
 
+// Helper function for consistent badge colors
+const getStatusColor = (status: string) => {
+  const config = getStatusConfig(status);
+  switch (config.variant) {
+    case "default":
+      return "bg-green-100 text-green-800 border-green-200";
+    case "secondary":
+      return "bg-blue-100 text-blue-800 border-blue-200";
+    case "destructive":
+      return "bg-red-100 text-red-800 border-red-200";
+    case "outline":
+      return "bg-gray-100 text-gray-800 border-gray-200";
+    default:
+      return "bg-gray-100 text-gray-800 border-gray-200";
+  }
+};
+
 // Custom MultiSelect Component
 interface MultiSelectProps {
   options: Array<{ value: string; label: string }>;
@@ -270,7 +300,6 @@ function MultiSelect({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          
           aria-expanded={open}
           className="w-full justify-between"
         >
@@ -288,7 +317,7 @@ function MultiSelect({
             >
               <Checkbox
                 checked={selected.includes(option.value)}
-                onChange={() => handleToggle(option.value)}
+                onCheckedChange={() => handleToggle(option.value)}
               />
               <span className="text-sm">{option.label}</span>
             </div>
@@ -319,11 +348,8 @@ export default function PayrollsPage() {
   const [sortField, setSortField] = useState<string>("updatedAt");
   const [sortDirection, setSortDirection] = useState<"ASC" | "DESC">("DESC");
   const [visibleColumns, setVisibleColumns] = useState<string[]>(
-    COLUMN_DEFINITIONS.filter(col => col.defaultVisible).map(col => col.key)
+    COLUMNDEFINITIONS.filter(col => col.defaultVisible).map(col => col.key)
   );
-
-  // Custom hooks
-  const { isLoading: roleLoading } = useAuthContext();
 
   // All remaining hooks BEFORE any conditional logic
   const whereConditions = useMemo(() => {
@@ -369,22 +395,22 @@ export default function PayrollsPage() {
   ]);
 
   const orderByConditions = useMemo(() => {
-    const sortMap: Record<string, string> = {
-      name: "name",
-      client: "client.name",
-      consultant: "primaryConsultant.name",
-      employees: "employeeCount",
-      lastUpdated: "updatedAt",
-      status: "status",
+    const sortMap: Record<string, any> = {
+      name: { name: sortDirection },
+      client: { client: { name: sortDirection } },
+      consultant: { primaryConsultant: { name: sortDirection } },
+      employees: { employeeCount: sortDirection },
+      lastUpdated: { updatedAt: sortDirection },
+      status: { status: sortDirection },
+      payrollCycle: { payrollCycle: { name: sortDirection } },
     };
-    const field = sortMap[sortField] || "updatedAt";
-    return [{ [field]: sortDirection }];
+    return sortMap[sortField] ? [sortMap[sortField]] : [{ updatedAt: sortDirection }];
   }, [sortField, sortDirection]);
 
   const offset = (currentPage - 1) * pageSize;
 
   const { data, loading, error, refetch } = useQuery(
-    GetPayrollsPaginatedDocument,
+    GetPayrollsTableEnhancedDocument,
     {
       variables: {
         limit: pageSize,
@@ -411,26 +437,8 @@ export default function PayrollsPage() {
   const totalCount = data?.payrollsAggregate?.aggregate?.count || 0;
   const totalPages = Math.ceil(totalCount / pageSize);
 
-  const displayPayrolls = useMemo(() => {
-    const getNextEftDate = (payrollDates: any[]) => {
-      if (!payrollDates || payrollDates.length === 0) return null;
-      const today = new Date();
-      const futureDates = payrollDates
-        .filter(date => {
-          // Use adjustedEftDate if available, otherwise fall back to originalEftDate
-          const eftDate = date.adjustedEftDate || date.originalEftDate;
-          return eftDate && new Date(eftDate) >= today;
-        })
-        .sort((a, b) => {
-          const dateA = a.adjustedEftDate || a.originalEftDate;
-          const dateB = b.adjustedEftDate || b.originalEftDate;
-          return new Date(dateA).getTime() - new Date(dateB).getTime();
-        });
-      return futureDates.length > 0
-        ? futureDates[0].adjustedEftDate || futureDates[0].originalEftDate
-        : null;
-    };
 
+  const displayPayrolls = useMemo(() => {
     return payrolls.map((payroll: any) => {
       const employeeCount = payroll.employeeCount || 0;
       return {
@@ -440,7 +448,6 @@ export default function PayrollsPage() {
         priority:
           employeeCount > 50 ? "high" : employeeCount > 20 ? "medium" : "low",
         progress: getStatusConfig(payroll.status || "Implementation").progress,
-        nextEftDate: getNextEftDate(payroll.payrollDates),
         lastUpdated: new Date(payroll.updatedAt || payroll.createdAt),
         lastUpdatedBy: payroll.backupConsultant?.name || "System",
       };
@@ -556,27 +563,7 @@ export default function PayrollsPage() {
     setDateTypeFilter([]);
   }, []);
 
-  // Computed values
-  const hasAdminAccess = true;
-  const canManagePayrolls = true;
-  const canCreatePayrolls = true; // Allow all authenticated users
-  const canViewAdvanced = true;
 
-  // Debug logging for developer role issue
-  console.log("🔍 Payrolls Page Debug:", {
-    roleLoading,
-    hasAdminAccess,
-    canManagePayrolls,
-    canCreatePayrolls,
-    canViewAdvanced,
-    buttonShouldShow: hasAdminAccess || canManagePayrolls || canCreatePayrolls || canViewAdvanced,
-    permissionChecks: {
-      adminManage: true,
-      payrollWrite: true,
-      payrollAssign: true,
-      adminManageEnhanced: true,
-    }
-  });
   const hasActiveFilters =
     searchTerm ||
     statusFilter.length > 0 ||
@@ -589,26 +576,13 @@ export default function PayrollsPage() {
   // EARLY RETURNS AFTER ALL HOOKS
   // ==========================================
 
-  if (roleLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="text-gray-500">Checking permissions...</p>
-        </div>
-      </div>
-    );
-  }
+  // Use dynamic loading system
+  const { Loading } = useDynamicLoading({
+    queryName: 'GetPayrollsTableEnhanced'
+  });
 
   if (loading && !payrolls.length) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="text-gray-500">Loading payrolls...</p>
-        </div>
-      </div>
-    );
+    return <Loading />;
   }
 
   if ((error && !payrolls.length) || statsError) {
@@ -632,27 +606,24 @@ export default function PayrollsPage() {
   return (
     <>
       <PayrollUpdatesListener showToasts={true} />
-      <div className="p-4 md:p-6 lg:p-8 space-y-6">
-        <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="container mx-auto py-6 space-y-6">
+        <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="space-y-1">
             <h1 className="text-3xl font-bold text-gray-900">Payrolls</h1>
             <p className="text-gray-500">Manage payrolls for your clients</p>
           </div>
           <div className="flex items-center space-x-2">
-            {/* Temporarily force show button for developer role debugging */}
-            {(userRole === "developer" || hasAdminAccess || canManagePayrolls || canCreatePayrolls || canViewAdvanced) && (
-              <Link href="/payrolls/new">
-                <Button>
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  Add Payroll
-                </Button>
-              </Link>
-            )}
+            <Link href="/payrolls/new">
+              <Button>
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Add Payroll
+              </Button>
+            </Link>
           </div>
         </header>
 
         {/* Summary cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -714,7 +685,7 @@ export default function PayrollsPage() {
                     placeholder="Search payrolls, clients, consultants..."
                     value={searchTerm}
                     onChange={e => setSearchTerm(e.target.value)}
-                    className="pl-10 w-[300px]"
+                    className="pl-10 w-full max-w-sm"
                   />
                 </div>
 
@@ -752,26 +723,31 @@ export default function PayrollsPage() {
                 {/* Sort Dropdown */}
                 <Select
                   value={`${sortField}-${sortDirection}`}
-                  onValueChange={value => {
-                    const [field, direction] = value.split("-");
+                  onValueChange={(value) => {
+                    const [field, direction] = value.split('-');
                     setSortField(field);
-                    setSortDirection(direction as "ASC" | "DESC");
+                    setSortDirection(direction as 'ASC' | 'DESC');
+                    setCurrentPage(1);
                   }}
                 >
-                  <SelectTrigger className="w-[200px]">
+                  <SelectTrigger className="w-full sm:w-48">
                     <SelectValue placeholder="Sort by..." />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="name-ASC">Name A-Z</SelectItem>
-                    <SelectItem value="name-DESC">Name Z-A</SelectItem>
-                    <SelectItem value="client-ASC">Client A-Z</SelectItem>
-                    <SelectItem value="client-DESC">Client Z-A</SelectItem>
-                    <SelectItem value="status-ASC">Status A-Z</SelectItem>
-                    <SelectItem value="status-DESC">Status Z-A</SelectItem>
-                    <SelectItem value="employees-ASC">Employees ↑</SelectItem>
-                    <SelectItem value="employees-DESC">Employees ↓</SelectItem>
-                    <SelectItem value="lastUpdated-ASC">Updated ↑</SelectItem>
-                    <SelectItem value="lastUpdated-DESC">Updated ↓</SelectItem>
+                    <SelectItem value="name-ASC">Name (A-Z)</SelectItem>
+                    <SelectItem value="name-DESC">Name (Z-A)</SelectItem>
+                    <SelectItem value="client-ASC">Client (A-Z)</SelectItem>
+                    <SelectItem value="client-DESC">Client (Z-A)</SelectItem>
+                    <SelectItem value="status-ASC">Status (A-Z)</SelectItem>
+                    <SelectItem value="status-DESC">Status (Z-A)</SelectItem>
+                    <SelectItem value="consultant-ASC">Consultant (A-Z)</SelectItem>
+                    <SelectItem value="consultant-DESC">Consultant (Z-A)</SelectItem>
+                    <SelectItem value="employees-ASC">Employees (Low-High)</SelectItem>
+                    <SelectItem value="employees-DESC">Employees (High-Low)</SelectItem>
+                    <SelectItem value="lastUpdated-ASC">Updated (Oldest)</SelectItem>
+                    <SelectItem value="lastUpdated-DESC">Updated (Newest)</SelectItem>
+                    <SelectItem value="payrollCycle-ASC">Schedule (A-Z)</SelectItem>
+                    <SelectItem value="payrollCycle-DESC">Schedule (Z-A)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -859,7 +835,7 @@ export default function PayrollsPage() {
           <Card>
             <CardContent className="p-12">
               <div className="flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <Loading variant="minimal" />
               </div>
             </CardContent>
           </Card>
@@ -882,8 +858,8 @@ export default function PayrollsPage() {
         ) : (
           <div>
             {viewMode === "table" && (
-              <PayrollsTable
-                payrolls={payrollsList}
+              <PayrollsTableUnified
+                payrolls={payrolls}
                 loading={!!loading || !!statsLoading}
                 onRefresh={refetch}
                 selectedPayrolls={selectedPayrolls}
@@ -896,16 +872,216 @@ export default function PayrollsPage() {
               />
             )}
 
-            {/* TODO: Add card and list views similar to clients page */}
+            {/* Card View */}
             {viewMode === "cards" && (
-              <div className="text-center py-8">
-                <p className="text-gray-500">Card view coming soon!</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {payrolls.map((payroll: any) => {
+                  const statusConfig = getStatusConfig(payroll.status || "Implementation");
+                  const StatusIcon = statusConfig.icon;
+                  
+                  return (
+                    <Card key={payroll.id} className="hover:shadow-lg transition-shadow">
+                      <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-lg font-semibold truncate">
+                            <Link 
+                              href={`/payrolls/${payroll.id}`}
+                              className="text-blue-600 hover:underline"
+                            >
+                              {payroll.name}
+                            </Link>
+                          </CardTitle>
+                          <Badge className={getStatusColor(payroll.status || "Implementation")}>
+                            <StatusIcon className="w-3 h-3 mr-1" />
+                            {payroll.status || "Implementation"}
+                          </Badge>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div className="space-y-2 text-sm">
+                          <div className="flex items-center gap-2">
+                            <Building2 className="w-4 h-4 text-gray-500" />
+                            <span className="text-gray-600">Client:</span>
+                            <span className="font-medium">{payroll.client?.name || "No client"}</span>
+                          </div>
+                          
+                          <div className="flex items-center gap-2">
+                            <UserCheck className="w-4 h-4 text-gray-500" />
+                            <span className="text-gray-600">Consultant:</span>
+                            <span className="font-medium">{payroll.primaryConsultant?.name || "Unassigned"}</span>
+                          </div>
+                          
+                          <div className="flex items-center gap-2">
+                            <Users className="w-4 h-4 text-gray-500" />
+                            <span className="text-gray-600">Employees:</span>
+                            <span className="font-medium">{payroll.employeeCount || 0}</span>
+                          </div>
+                          
+                          <div className="flex items-center gap-2">
+                            <Clock className="w-4 h-4 text-gray-500" />
+                            <span className="text-gray-600">Schedule:</span>
+                            <span className="font-medium">{formatPayrollCycle(payroll)}</span>
+                          </div>
+                          
+                          <div className="flex items-center gap-2">
+                            <CalendarDays className="w-4 h-4 text-gray-500" />
+                            <span className="text-gray-600">Next EFT:</span>
+                            <span className="font-medium">
+                              {payroll.nextEftDate?.[0]?.adjustedEftDate ||
+                              payroll.nextEftDate?.[0]?.originalEftDate
+                                ? formatDate(
+                                    payroll.nextEftDate[0]?.adjustedEftDate ||
+                                    payroll.nextEftDate[0]?.originalEftDate
+                                  )
+                                : "Not scheduled"}
+                            </span>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between pt-3 border-t">
+                          <Link href={`/payrolls/${payroll.id}`}>
+                            <Button size="sm" variant="outline">
+                              <Eye className="w-4 h-4 mr-2" />
+                              View
+                            </Button>
+                          </Link>
+                          
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm">
+                                <MoreHorizontal className="w-4 h-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem asChild>
+                                <Link href={`/payrolls/${payroll.id}`}>
+                                  <Eye className="w-4 h-4 mr-2" />
+                                  View Details
+                                </Link>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>
+                                <Edit className="w-4 h-4 mr-2" />
+                                Edit Payroll
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem>
+                                <Download className="w-4 h-4 mr-2" />
+                                Export
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             )}
 
+            {/* List View */}
             {viewMode === "list" && (
-              <div className="text-center py-8">
-                <p className="text-gray-500">List view coming soon!</p>
+              <div className="space-y-3">
+                {payrolls.map((payroll: any) => {
+                  const statusConfig = getStatusConfig(payroll.status || "Implementation");
+                  const StatusIcon = statusConfig.icon;
+                  
+                  return (
+                    <Card key={payroll.id} className="hover:shadow-md transition-shadow">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-4 flex-1">
+                            <div className="flex-shrink-0">
+                              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <FileText className="w-5 h-5 text-blue-600" />
+                              </div>
+                            </div>
+                            
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-3 mb-1">
+                                <Link 
+                                  href={`/payrolls/${payroll.id}`}
+                                  className="text-lg font-semibold text-blue-600 hover:underline truncate"
+                                >
+                                  {payroll.name}
+                                </Link>
+                                <Badge className={getStatusColor(payroll.status || "Implementation")}>
+                                  <StatusIcon className="w-3 h-3 mr-1" />
+                                  {payroll.status || "Implementation"}
+                                </Badge>
+                              </div>
+                              
+                              <div className="flex items-center gap-4 text-sm text-gray-600">
+                                <div className="flex items-center gap-1">
+                                  <Building2 className="w-3 h-3" />
+                                  <span>{payroll.client?.name || "No client"}</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <UserCheck className="w-3 h-3" />
+                                  <span>{payroll.primaryConsultant?.name || "Unassigned"}</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <Users className="w-3 h-3" />
+                                  <span>{payroll.employeeCount || 0} employees</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center space-x-4">
+                            <div className="text-right text-sm">
+                              <div className="font-medium text-gray-900">
+                                {formatPayrollCycle(payroll)}
+                              </div>
+                              <div className="text-gray-500">
+                                Next: {payroll.nextEftDate?.[0]?.adjustedEftDate ||
+                                payroll.nextEftDate?.[0]?.originalEftDate
+                                  ? formatDate(
+                                      payroll.nextEftDate[0]?.adjustedEftDate ||
+                                      payroll.nextEftDate[0]?.originalEftDate
+                                    )
+                                  : "Not scheduled"}
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center space-x-2">
+                              <Link href={`/payrolls/${payroll.id}`}>
+                                <Button size="sm" variant="outline">
+                                  <Eye className="w-4 h-4 mr-2" />
+                                  View
+                                </Button>
+                              </Link>
+                              
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="sm">
+                                    <MoreHorizontal className="w-4 h-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem asChild>
+                                    <Link href={`/payrolls/${payroll.id}`}>
+                                      <Eye className="w-4 h-4 mr-2" />
+                                      View Details
+                                    </Link>
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem>
+                                    <Edit className="w-4 h-4 mr-2" />
+                                    Edit Payroll
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem>
+                                    <Download className="w-4 h-4 mr-2" />
+                                    Export
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             )}
           </div>

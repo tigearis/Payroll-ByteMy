@@ -448,21 +448,21 @@ mutation DeletePayrollDateType($id: uuid!) {
 # Special operations
 # NOTE: generatePayrollDates is available as a query function, not a mutation
 
-# Action mutations for payroll assignments
-mutation CommitPayrollAssignments($changes: [PayrollAssignmentInput!]!) {
-  commitPayrollAssignments(changes: $changes) {
-    success
-    message
-    errors
-    affectedAssignments {
-      id
-      payrollDateId
-      originalConsultantId
-      newConsultantId
-      adjustedEftDate
-    }
-  }
-}
+# Action mutations for payroll assignments (commented out until Hasura actions are configured)
+# mutation CommitPayrollAssignments($changes: [PayrollAssignmentInput!]!) {
+#   commitPayrollAssignments(changes: $changes) {
+#     success
+#     message
+#     errors
+#     affectedAssignments {
+#       id
+#       payrollDateId
+#       originalConsultantId
+#       newConsultantId
+#       adjustedEftDate
+#     }
+#   }
+# }
 
 # Batch processing operations
 mutation ProcessPayrollBatch(

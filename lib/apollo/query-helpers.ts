@@ -1,6 +1,6 @@
 import "server-only";
 import { DocumentNode } from '@apollo/client';
-import { getHasuraToken } from '@/lib/auth/token-utils';
+import { auth } from '@clerk/nextjs/server';
 import { serverApolloClient } from './unified-client';
 
 /**
@@ -40,11 +40,17 @@ export async function executeQuery<TData = any, TVariables = any>(
   options: QueryOptions = {}
 ): Promise<TData> {
   try {
-    // Get authenticated Hasura token
-    const { token, error: tokenError } = await getHasuraToken();
+    // Get authenticated Hasura token from Clerk
+    const { getToken, userId } = await auth();
     
-    if (!token || tokenError) {
-      throw new Error(`Authentication failed: ${tokenError || 'No token available'}`);
+    if (!userId) {
+      throw new Error('Authentication failed: No user session found');
+    }
+    
+    const token = await getToken({ template: "hasura" });
+    
+    if (!token) {
+      throw new Error('Authentication failed: No Hasura token available');
     }
 
     // Execute query with Apollo Client
@@ -89,11 +95,17 @@ export async function executeMutation<TData = any, TVariables = any>(
   options: MutationOptions = {}
 ): Promise<TData> {
   try {
-    // Get authenticated Hasura token
-    const { token, error: tokenError } = await getHasuraToken();
+    // Get authenticated Hasura token from Clerk
+    const { getToken, userId } = await auth();
     
-    if (!token || tokenError) {
-      throw new Error(`Authentication failed: ${tokenError || 'No token available'}`);
+    if (!userId) {
+      throw new Error('Authentication failed: No user session found');
+    }
+    
+    const token = await getToken({ template: "hasura" });
+    
+    if (!token) {
+      throw new Error('Authentication failed: No Hasura token available');
     }
 
     // Execute mutation with Apollo Client

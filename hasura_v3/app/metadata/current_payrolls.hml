@@ -1,0 +1,274 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: current_payrolls
+  fields:
+    - name: backup_consultant_user_id
+      type: uuid
+    - name: client_id
+      type: uuid
+    - name: client_name
+      type: string
+    - name: created_at
+      type: timestamptz
+    - name: cycle_id
+      type: uuid
+    - name: date_type_id
+      type: uuid
+    - name: date_value
+      type: int_32
+    - name: go_live_date
+      type: date
+    - name: id
+      type: uuid
+    - name: manager_user_id
+      type: uuid
+    - name: name
+      type: string
+    - name: parent_payroll_id
+      type: uuid
+    - name: payroll_cycle_name
+      type: enum
+    - name: payroll_date_type_name
+      type: enum
+    - name: primary_consultant_user_id
+      type: uuid
+    - name: superseded_date
+      type: date
+    - name: updated_at
+      type: timestamptz
+    - name: version_number
+      type: int_32
+    - name: version_reason
+      type: string
+  graphql:
+    typeName: current_payrolls
+    inputTypeName: current_payrolls_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: current_payrolls
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: current_payrolls
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - backup_consultant_user_id
+          - client_id
+          - client_name
+          - created_at
+          - cycle_id
+          - date_type_id
+          - date_value
+          - go_live_date
+          - id
+          - manager_user_id
+          - name
+          - parent_payroll_id
+          - payroll_cycle_name
+          - payroll_date_type_name
+          - primary_consultant_user_id
+          - superseded_date
+          - updated_at
+          - version_number
+          - version_reason
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: current_payrolls_bool_exp
+  operand:
+    object:
+      type: current_payrolls
+      comparableFields:
+        - fieldName: backup_consultant_user_id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: client_id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: client_name
+          booleanExpressionType: varchar_bool_exp
+        - fieldName: created_at
+          booleanExpressionType: timestamptz_bool_exp
+        - fieldName: cycle_id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: date_type_id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: date_value
+          booleanExpressionType: int_4_bool_exp
+        - fieldName: go_live_date
+          booleanExpressionType: date_bool_exp
+        - fieldName: id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: manager_user_id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: name
+          booleanExpressionType: varchar_bool_exp
+        - fieldName: parent_payroll_id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: payroll_cycle_name
+          booleanExpressionType: payroll_cycle_type_bool_exp
+        - fieldName: payroll_date_type_name
+          booleanExpressionType: payroll_date_type_bool_exp
+        - fieldName: primary_consultant_user_id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: superseded_date
+          booleanExpressionType: date_bool_exp
+        - fieldName: updated_at
+          booleanExpressionType: timestamptz_bool_exp
+        - fieldName: version_number
+          booleanExpressionType: int_4_bool_exp
+        - fieldName: version_reason
+          booleanExpressionType: text_bool_exp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: current_payrolls_bool_exp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: current_payrolls_agg_exp
+  operand:
+    object:
+      aggregatedType: current_payrolls
+      aggregatableFields:
+        - fieldName: backup_consultant_user_id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: client_id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: client_name
+          aggregateExpression: varchar_agg_exp
+        - fieldName: created_at
+          aggregateExpression: timestamptz_agg_exp
+        - fieldName: cycle_id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: date_type_id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: date_value
+          aggregateExpression: int_4_agg_exp
+        - fieldName: go_live_date
+          aggregateExpression: date_agg_exp
+        - fieldName: id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: manager_user_id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: name
+          aggregateExpression: varchar_agg_exp
+        - fieldName: parent_payroll_id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: payroll_cycle_name
+          aggregateExpression: payroll_cycle_type_agg_exp
+        - fieldName: payroll_date_type_name
+          aggregateExpression: payroll_date_type_agg_exp
+        - fieldName: primary_consultant_user_id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: superseded_date
+          aggregateExpression: date_agg_exp
+        - fieldName: updated_at
+          aggregateExpression: timestamptz_agg_exp
+        - fieldName: version_number
+          aggregateExpression: int_4_agg_exp
+        - fieldName: version_reason
+          aggregateExpression: text_agg_exp
+  count:
+    enable: true
+    returnType: int_64
+  graphql:
+    selectTypeName: current_payrolls_agg_exp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: current_payrolls_order_by_exp
+  operand:
+    object:
+      orderedType: current_payrolls
+      orderableFields:
+        - fieldName: backup_consultant_user_id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: client_id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: client_name
+          orderByExpression: string_order_by_exp
+        - fieldName: created_at
+          orderByExpression: timestamptz_order_by_exp
+        - fieldName: cycle_id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: date_type_id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: date_value
+          orderByExpression: int_32_order_by_exp
+        - fieldName: go_live_date
+          orderByExpression: date_order_by_exp
+        - fieldName: id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: manager_user_id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: name
+          orderByExpression: string_order_by_exp
+        - fieldName: parent_payroll_id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: payroll_cycle_name
+          orderByExpression: enum_order_by_exp
+        - fieldName: payroll_date_type_name
+          orderByExpression: enum_order_by_exp
+        - fieldName: primary_consultant_user_id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: superseded_date
+          orderByExpression: date_order_by_exp
+        - fieldName: updated_at
+          orderByExpression: timestamptz_order_by_exp
+        - fieldName: version_number
+          orderByExpression: int_32_order_by_exp
+        - fieldName: version_reason
+          orderByExpression: string_order_by_exp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: current_payrolls_order_by_exp
+
+---
+kind: Model
+version: v2
+definition:
+  name: current_payrolls
+  objectType: current_payrolls
+  source:
+    dataConnectorName: payroll
+    collection: current_payrolls
+  filterExpressionType: current_payrolls_bool_exp
+  aggregateExpression: current_payrolls_agg_exp
+  orderByExpression: current_payrolls_order_by_exp
+  graphql:
+    selectMany:
+      queryRootField: current_payrolls
+      subscription:
+        rootField: current_payrolls
+    selectUniques: []
+    filterInputTypeName: current_payrolls_filter_input
+    aggregate:
+      queryRootField: current_payrolls_aggregate
+      subscription:
+        rootField: current_payrolls_aggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: current_payrolls
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

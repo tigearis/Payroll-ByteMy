@@ -1,0 +1,540 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_client_billing_assignment_billing_frequency
+  description: Update the 'billing_frequency' column in the
+    'client_billing_assignment' collection
+  fields:
+    - name: set
+      type: string
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_client_billing_assignment_billing_frequency
+    inputTypeName: update_column_client_billing_assignment_billing_frequency_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_client_billing_assignment_billing_frequency
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_client_billing_assignment_billing_frequency
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_client_billing_assignment_billing_plan_id
+  description: Update the 'billing_plan_id' column in the
+    'client_billing_assignment' collection
+  fields:
+    - name: set
+      type: uuid!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_client_billing_assignment_billing_plan_id
+    inputTypeName: update_column_client_billing_assignment_billing_plan_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_client_billing_assignment_billing_plan_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_client_billing_assignment_billing_plan_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_client_billing_assignment_client_id
+  description: Update the 'client_id' column in the 'client_billing_assignment' collection
+  fields:
+    - name: set
+      type: uuid!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_client_billing_assignment_client_id
+    inputTypeName: update_column_client_billing_assignment_client_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_client_billing_assignment_client_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_client_billing_assignment_client_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_client_billing_assignment_created_at
+  description: Update the 'created_at' column in the 'client_billing_assignment' collection
+  fields:
+    - name: set
+      type: timestamptz
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_client_billing_assignment_created_at
+    inputTypeName: update_column_client_billing_assignment_created_at_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_client_billing_assignment_created_at
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_client_billing_assignment_created_at
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_client_billing_assignment_custom_rate
+  description: Update the 'custom_rate' column in the 'client_billing_assignment' collection
+  fields:
+    - name: set
+      type: bigdecimal
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_client_billing_assignment_custom_rate
+    inputTypeName: update_column_client_billing_assignment_custom_rate_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_client_billing_assignment_custom_rate
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_client_billing_assignment_custom_rate
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_client_billing_assignment_effective_date
+  description: Update the 'effective_date' column in the
+    'client_billing_assignment' collection
+  fields:
+    - name: set
+      type: date
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_client_billing_assignment_effective_date
+    inputTypeName: update_column_client_billing_assignment_effective_date_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_client_billing_assignment_effective_date
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_client_billing_assignment_effective_date
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_client_billing_assignment_end_date
+  description: Update the 'end_date' column in the 'client_billing_assignment' collection
+  fields:
+    - name: set
+      type: date
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_client_billing_assignment_end_date
+    inputTypeName: update_column_client_billing_assignment_end_date_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_client_billing_assignment_end_date
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_client_billing_assignment_end_date
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_client_billing_assignment_id
+  description: Update the 'id' column in the 'client_billing_assignment' collection
+  fields:
+    - name: set
+      type: uuid!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_client_billing_assignment_id
+    inputTypeName: update_column_client_billing_assignment_id_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_client_billing_assignment_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_client_billing_assignment_id
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_client_billing_assignment_is_active
+  description: Update the 'is_active' column in the 'client_billing_assignment' collection
+  fields:
+    - name: set
+      type: boolean
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_client_billing_assignment_is_active
+    inputTypeName: update_column_client_billing_assignment_is_active_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_client_billing_assignment_is_active
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_client_billing_assignment_is_active
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_client_billing_assignment_is_enabled
+  description: Update the 'is_enabled' column in the 'client_billing_assignment' collection
+  fields:
+    - name: set
+      type: boolean
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_client_billing_assignment_is_enabled
+    inputTypeName: update_column_client_billing_assignment_is_enabled_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_client_billing_assignment_is_enabled
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_client_billing_assignment_is_enabled
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_client_billing_assignment_start_date
+  description: Update the 'start_date' column in the 'client_billing_assignment' collection
+  fields:
+    - name: set
+      type: date!
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_client_billing_assignment_start_date
+    inputTypeName: update_column_client_billing_assignment_start_date_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_client_billing_assignment_start_date
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_client_billing_assignment_start_date
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_column_client_billing_assignment_updated_at
+  description: Update the 'updated_at' column in the 'client_billing_assignment' collection
+  fields:
+    - name: set
+      type: timestamptz
+      description: Set the column to this value
+  graphql:
+    typeName: update_column_client_billing_assignment_updated_at
+    inputTypeName: update_column_client_billing_assignment_updated_at_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_column_client_billing_assignment_updated_at
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_column_client_billing_assignment_updated_at
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_client_billing_assignment_by_id_update_columns
+  description: Update the columns of the 'client_billing_assignment' collection
+  fields:
+    - name: billing_frequency
+      type: update_column_client_billing_assignment_billing_frequency
+      description: Update the 'billing_frequency' column in the
+        'client_billing_assignment' collection.
+    - name: billing_plan_id
+      type: update_column_client_billing_assignment_billing_plan_id
+      description: Update the 'billing_plan_id' column in the
+        'client_billing_assignment' collection.
+    - name: client_id
+      type: update_column_client_billing_assignment_client_id
+      description: Update the 'client_id' column in the 'client_billing_assignment'
+        collection.
+    - name: created_at
+      type: update_column_client_billing_assignment_created_at
+      description: Update the 'created_at' column in the 'client_billing_assignment'
+        collection.
+    - name: custom_rate
+      type: update_column_client_billing_assignment_custom_rate
+      description: Update the 'custom_rate' column in the 'client_billing_assignment'
+        collection.
+    - name: effective_date
+      type: update_column_client_billing_assignment_effective_date
+      description: Update the 'effective_date' column in the
+        'client_billing_assignment' collection.
+    - name: end_date
+      type: update_column_client_billing_assignment_end_date
+      description: Update the 'end_date' column in the 'client_billing_assignment'
+        collection.
+    - name: id
+      type: update_column_client_billing_assignment_id
+      description: Update the 'id' column in the 'client_billing_assignment' collection.
+    - name: is_active
+      type: update_column_client_billing_assignment_is_active
+      description: Update the 'is_active' column in the 'client_billing_assignment'
+        collection.
+    - name: is_enabled
+      type: update_column_client_billing_assignment_is_enabled
+      description: Update the 'is_enabled' column in the 'client_billing_assignment'
+        collection.
+    - name: start_date
+      type: update_column_client_billing_assignment_start_date
+      description: Update the 'start_date' column in the 'client_billing_assignment'
+        collection.
+    - name: updated_at
+      type: update_column_client_billing_assignment_updated_at
+      description: Update the 'updated_at' column in the 'client_billing_assignment'
+        collection.
+  graphql:
+    typeName: update_client_billing_assignment_by_id_update_columns
+    inputTypeName: update_client_billing_assignment_by_id_update_columns_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_client_billing_assignment_by_id_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_client_billing_assignment_by_id_update_columns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - billing_frequency
+          - billing_plan_id
+          - client_id
+          - created_at
+          - custom_rate
+          - effective_date
+          - end_date
+          - id
+          - is_active
+          - is_enabled
+          - start_date
+          - updated_at
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: update_client_billing_assignment_by_id_response
+  description: Responses from the 'update_client_billing_assignment_by_id' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[client_billing_assignment!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: update_client_billing_assignment_by_id_response
+    inputTypeName: update_client_billing_assignment_by_id_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: update_client_billing_assignment_by_id_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: update_client_billing_assignment_by_id_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: update_client_billing_assignment_by_id
+  outputType: update_client_billing_assignment_by_id_response!
+  arguments:
+    - name: key_id
+      type: uuid!
+    - name: post_check
+      type: client_billing_assignment_bool_exp
+      description: Update permission post-condition predicate over the
+        'client_billing_assignment' collection
+    - name: pre_check
+      type: client_billing_assignment_bool_exp
+      description: Update permission pre-condition predicate over the
+        'client_billing_assignment' collection
+    - name: update_columns
+      type: update_client_billing_assignment_by_id_update_columns!
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: update_client_billing_assignment_by_id
+  graphql:
+    rootFieldName: update_client_billing_assignment_by_id
+    rootFieldKind: Mutation
+  description: Update any row on the 'client_billing_assignment' collection using
+    the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: update_client_billing_assignment_by_id
+  permissions:
+    - role: admin
+      allowExecution: true
+

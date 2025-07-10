@@ -1,0 +1,100 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_position_admin_defaults_object
+  fields:
+    - name: default_admin_percentage
+      type: bigdecimal!
+    - name: description
+      type: string
+    - name: position
+      type: enum!
+    - name: updated_at
+      type: timestamptz
+    - name: updated_by
+      type: uuid
+  graphql:
+    typeName: insert_position_admin_defaults_object
+    inputTypeName: insert_position_admin_defaults_object_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_position_admin_defaults_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_position_admin_defaults_object
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - default_admin_percentage
+          - description
+          - position
+          - updated_at
+          - updated_by
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_position_admin_defaults_response
+  description: Responses from the 'insert_position_admin_defaults' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[position_admin_defaults!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: insert_position_admin_defaults_response
+    inputTypeName: insert_position_admin_defaults_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_position_admin_defaults_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_position_admin_defaults_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: insert_position_admin_defaults
+  outputType: insert_position_admin_defaults_response!
+  arguments:
+    - name: objects
+      type: "[insert_position_admin_defaults_object!]!"
+    - name: post_check
+      type: position_admin_defaults_bool_exp
+      description: Insert permission predicate over the 'position_admin_defaults' collection
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: insert_position_admin_defaults
+  graphql:
+    rootFieldName: insert_position_admin_defaults
+    rootFieldKind: Mutation
+  description: Insert into the position_admin_defaults table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: insert_position_admin_defaults
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -21,9 +21,8 @@ import {
   ChevronDown,
 } from "lucide-react";
 import Link from "next/link";
-import React, { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { GraphQLErrorBoundary } from "@/components/graphql-error-boundary";
-import { PermissionGuard } from "@/components/auth/permission-guard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -48,11 +47,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ClientsTable } from "@/domains/clients/components/clients-table";
-import { GetClientsListDocument, GetClientsDashboardStatsDocument } from "@/domains/clients/graphql/generated/graphql";
+import { ClientsTableUnified } from "@/domains/clients/components/clients-table-unified";
+import {
+  GetClientsListOptimizedDocument,
+  GetClientsDashboardStatsDocument,
+  type GetClientsListQuery,
+} from "@/domains/clients/graphql/generated/graphql";
 import { useSmartPolling } from "@/hooks/use-polling";
 import { useStrategicQuery } from "@/hooks/use-strategic-query";
-import { useUserRole } from "@/hooks/use-user-role";
+import { useDynamicLoading } from "@/lib/hooks/use-dynamic-loading";
 
 type ViewMode = "cards" | "table" | "list";
 
@@ -96,7 +99,6 @@ function MultiSelect({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          
           aria-expanded={open}
           className="w-full justify-between"
         >
@@ -127,15 +129,14 @@ function MultiSelect({
 
 function ClientsPage() {
   const { user, isLoaded: userLoaded } = useUser();
-  const { isLoading } = useUserRole();
+
   const canCreateClient = true;
   const canViewClients = true;
-  
+
   // Debug user and permissions
   console.log("User and permissions:", {
     userLoaded,
     user: user?.id,
-    isLoading,
     canCreateClient,
     canViewClients,
   });
@@ -157,7 +158,7 @@ function ClientsPage() {
 
   // Build GraphQL where conditions for server-side filtering
   const buildWhereConditions = () => {
-    const conditions: any[] = [];
+    const conditions: Record<string, unknown>[] = [];
 
     // Search term filter
     if (searchTerm) {
@@ -166,16 +167,22 @@ function ClientsPage() {
           { name: { _ilike: `%${searchTerm}%` } },
           { contactEmail: { _ilike: `%${searchTerm}%` } },
           { contactPerson: { _ilike: `%${searchTerm}%` } },
-          { contactPhone: { _ilike: `%${searchTerm}%` } }
-        ]
+          { contactPhone: { _ilike: `%${searchTerm}%` } },
+        ],
       });
     }
 
     // Status filter
     if (statusFilter.length > 0) {
-      if (statusFilter.includes("active") && !statusFilter.includes("inactive")) {
+      if (
+        statusFilter.includes("active") &&
+        !statusFilter.includes("inactive")
+      ) {
         conditions.push({ active: { _eq: true } });
-      } else if (statusFilter.includes("inactive") && !statusFilter.includes("active")) {
+      } else if (
+        statusFilter.includes("inactive") &&
+        !statusFilter.includes("active")
+      ) {
         conditions.push({ active: { _eq: false } });
       }
       // If both are selected, no filter needed
@@ -190,7 +197,7 @@ function ClientsPage() {
       name: "name",
       contactEmail: "contactEmail",
       contactPerson: "contactPerson",
-      createdAt: "createdAt"
+      createdAt: "createdAt",
     };
 
     const field = sortMap[sortField] || "name";
@@ -201,29 +208,29 @@ function ClientsPage() {
   const offset = (currentPage - 1) * pageSize;
 
   // Get dashboard stats efficiently
-  const { loading: statsLoading, error: statsError, data: statsData } = useQuery(GetClientsDashboardStatsDocument, {
-      skip: !userLoaded || !user || !canViewClients,
-      errorPolicy: "all",
-    }
-  );
+  const {
+    loading: _bytemyLoading,
+    error: statsError,
+    data: statsData,
+  } = useQuery(GetClientsDashboardStatsDocument, {
+    skip: !userLoaded || !user || !canViewClients,
+    errorPolicy: "all",
+  });
 
   // Main GraphQL operations with server-side filtering and pagination
-  const { loading, error, data, refetch, startPolling, stopPolling } = useStrategicQuery(
-    GetClientsListDocument,
-    "clients",
-    {
+  const { loading, error, data, refetch, startPolling, stopPolling } =
+    useStrategicQuery(GetClientsListOptimizedDocument, "clients", {
       variables: {
         limit: pageSize,
         offset: offset,
         where: buildWhereConditions(),
-        orderBy: buildOrderBy()
+        orderBy: buildOrderBy(),
       },
       pollInterval: 60000,
       skip: !userLoaded || !user || !canViewClients,
       errorPolicy: "all",
-      fetchPolicy: "cache-and-network"
-    }
-  );
+      fetchPolicy: "cache-and-network",
+    });
 
   useSmartPolling(
     { startPolling, stopPolling, refetch },
@@ -234,14 +241,14 @@ function ClientsPage() {
     }
   );
 
+  // Use dynamic loading system
+  const { Loading } = useDynamicLoading({
+    queryName: 'GetClientsList'
+  });
+
   // Show loading while user authentication is loading
-  if (!userLoaded || isLoading) {
-    return (
-      <div className="text-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-        <p className="mt-4 text-gray-600">Loading...</p>
-      </div>
-    );
+  if (!userLoaded) {
+    return <Loading />;
   }
 
   // Show sign-in prompt if user is not authenticated
@@ -261,18 +268,6 @@ function ClientsPage() {
   }
 
   // Show permission error if user doesn't have client read access
-  if (!canViewClients) {
-    return (
-      <div className="text-center py-12">
-        <div className="text-gray-500 mb-4">
-          You don't have permission to view clients
-        </div>
-        <p className="text-sm text-gray-400">
-          Current role: {userRole} | Required permission: client:read
-        </p>
-      </div>
-    );
-  }
 
   if (error || statsError) {
     return (
@@ -302,29 +297,37 @@ function ClientsPage() {
   const totalCount = data?.clientsAggregate?.aggregate?.count || 0;
   const totalPages = Math.ceil(totalCount / pageSize);
 
+  // Extract client type from query
+  type ClientData = GetClientsListQuery['clients'][0];
+  
   // Minimal client-side processing for display purposes only
-  const displayClients = clients.map((client: any) => ({
+  const displayClients = clients.map((client: ClientData) => ({
     ...client,
     payrollCount: client.payrollsAggregate?.aggregate?.count || 0,
-    totalEmployees: 0 // Not available per client in current query
+    totalEmployees: 0, // Not available per client in current query
   }));
 
   // Client-side payroll count filtering (since it requires aggregation)
-  const finalClients = payrollCountFilter.length > 0 
-    ? displayClients.filter((client: any) => {
-        const payrollCount = client.payrollCount;
-        return (
-          (payrollCountFilter.includes("0") && payrollCount === 0) ||
-          (payrollCountFilter.includes("1-5") && payrollCount >= 1 && payrollCount <= 5) ||
-          (payrollCountFilter.includes("6-10") && payrollCount >= 6 && payrollCount <= 10) ||
-          (payrollCountFilter.includes("10+") && payrollCount > 10)
-        );
-      })
-    : displayClients;
+  const finalClients =
+    payrollCountFilter.length > 0
+      ? displayClients.filter((client) => {
+          const payrollCount = client.payrollCount;
+          return (
+            (payrollCountFilter.includes("0") && payrollCount === 0) ||
+            (payrollCountFilter.includes("1-5") &&
+              payrollCount >= 1 &&
+              payrollCount <= 5) ||
+            (payrollCountFilter.includes("6-10") &&
+              payrollCount >= 6 &&
+              payrollCount <= 10) ||
+            (payrollCountFilter.includes("10+") && payrollCount > 10)
+          );
+        })
+      : displayClients;
 
   // Get unique values for filters from current page data
   const uniquePayrollCounts = Array.from(
-    new Set(clients.map((c: any) => c.payrollCount?.aggregate?.count || 0))
+    new Set(clients.map((c) => c.payrollsAggregate?.aggregate?.count || 0))
   ) as number[];
   uniquePayrollCounts.sort((a, b) => a - b);
 
@@ -349,12 +352,12 @@ function ClientsPage() {
   };
 
   // Reset to first page when filters change
-  const resetToFirstPage = () => {
+  const resetToFirstPage = useCallback(() => {
     setCurrentPage(1);
-  };
+  }, []);
 
   // Helper functions
-  const _formatCurrency = (amount: number) => {
+  const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-AU", {
       style: "currency",
       currency: "AUD",
@@ -382,18 +385,18 @@ function ClientsPage() {
   const totalClients = statsData?.activeClientsCount?.aggregate?.count || 0;
   const activeClients = totalClients; // This query already filters for active clients
   const totalPayrolls = statsData?.totalPayrollsCount?.aggregate?.count || 0;
-  const totalEmployees = statsData?.totalEmployeesSum?.aggregate?.sum?.employeeCount || 0;
-
+  const totalEmployees =
+    statsData?.totalEmployeesSum?.aggregate?.sum?.employeeCount || 0;
 
   // Use useEffect to reset page when filters change
-  React.useEffect(() => {
+  useEffect(() => {
     resetToFirstPage();
-  }, [searchTerm, statusFilter, payrollCountFilter]);
+  }, [searchTerm, statusFilter, payrollCountFilter, resetToFirstPage]);
 
   // Render card view
   const renderCardView = () => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {finalClients.map((client: any) => (
+      {finalClients.map((client) => (
         <Card
           key={client.id}
           className="hover:shadow-lg transition-shadow duration-200"
@@ -464,7 +467,7 @@ function ClientsPage() {
   // Render list view
   const renderListView = () => (
     <div className="space-y-3">
-      {finalClients.map((client: any) => (
+      {finalClients.map((client) => (
         <Card
           key={client.id}
           className="hover:shadow-md transition-shadow duration-200"
@@ -538,9 +541,9 @@ function ClientsPage() {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto py-6 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Clients</h1>
           <p className="text-gray-500">
@@ -639,7 +642,7 @@ function ClientsPage() {
                   placeholder="Search clients, contacts, emails, phone..."
                   value={searchTerm}
                   onChange={e => setSearchTerm(e.target.value)}
-                  className="pl-10 w-[300px]"
+                  className="pl-10 w-full max-w-sm"
                 />
               </div>
 
@@ -680,7 +683,7 @@ function ClientsPage() {
                   setSortDirection(direction as "ASC" | "DESC");
                 }}
               >
-                <SelectTrigger className="w-[200px]">
+                <SelectTrigger className="w-full sm:w-48">
                   <SelectValue placeholder="Sort by..." />
                 </SelectTrigger>
                 <SelectContent>
@@ -782,7 +785,7 @@ function ClientsPage() {
         <Card>
           <CardContent className="p-12">
             <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              <Loading variant="minimal" />
             </div>
           </CardContent>
         </Card>
@@ -813,7 +816,7 @@ function ClientsPage() {
       ) : (
         <div>
           {viewMode === "table" && (
-            <ClientsTable
+            <ClientsTableUnified
               clients={data?.clients || []}
               loading={loading}
               onRefresh={refetch}
@@ -832,25 +835,8 @@ function ClientsPage() {
 // Export component wrapped with GraphQL error boundary and permission guard
 export default function ClientsPageWithErrorBoundary() {
   return (
-    <PermissionGuard 
-      
-      fallback={
-        <div className="container mx-auto p-6">
-          <Card>
-            <CardContent className="p-6">
-              <div className="text-center text-muted-foreground">
-                You don't have permission to access client management.
-                <br />
-                This feature requires client read permissions.
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      }
-    >
-      <GraphQLErrorBoundary>
-        <ClientsPage />
-      </GraphQLErrorBoundary>
-    </PermissionGuard>
+    <GraphQLErrorBoundary>
+      <ClientsPage />
+    </GraphQLErrorBoundary>
   );
 }

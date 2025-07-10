@@ -1,0 +1,507 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: billing_items
+  fields:
+    - name: amount
+      type: bigdecimal
+    - name: approval_date
+      type: timestamptz
+    - name: approved_by
+      type: uuid
+    - name: billing_plan_id
+      type: uuid
+    - name: client_id
+      type: uuid
+    - name: confirmed_at
+      type: timestamptz
+      description: When this item was confirmed by manager
+    - name: confirmed_by
+      type: uuid
+      description: Manager who confirmed this item
+    - name: created_at
+      type: timestamp
+    - name: description
+      type: string
+    - name: hourly_rate
+      type: bigdecimal
+    - name: id
+      type: uuid!
+    - name: invoice_id
+      type: uuid
+    - name: is_approved
+      type: boolean
+    - name: notes
+      type: string
+      description: Additional notes about this billing item
+    - name: payroll_id
+      type: uuid
+    - name: quantity
+      type: int_32!
+    - name: service_id
+      type: uuid
+      description: Reference to the service from service catalog
+    - name: service_name
+      type: string
+    - name: staff_user_id
+      type: uuid
+      description: Staff member who performed the service
+    - name: status
+      type: string
+      description: "Status: draft, confirmed, billed"
+    - name: total_amount
+      type: bigdecimal
+    - name: unit_price
+      type: bigdecimal!
+    - name: updated_at
+      type: timestamptz
+  graphql:
+    typeName: billing_items
+    inputTypeName: billing_items_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: billing_items
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: billing_items
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - amount
+          - approval_date
+          - approved_by
+          - billing_plan_id
+          - client_id
+          - confirmed_at
+          - confirmed_by
+          - created_at
+          - description
+          - hourly_rate
+          - id
+          - invoice_id
+          - is_approved
+          - notes
+          - payroll_id
+          - quantity
+          - service_id
+          - service_name
+          - staff_user_id
+          - status
+          - total_amount
+          - unit_price
+          - updated_at
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: billing_items_bool_exp
+  operand:
+    object:
+      type: billing_items
+      comparableFields:
+        - fieldName: amount
+          booleanExpressionType: numeric_bool_exp
+        - fieldName: approval_date
+          booleanExpressionType: timestamptz_bool_exp
+        - fieldName: approved_by
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: billing_plan_id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: client_id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: confirmed_at
+          booleanExpressionType: timestamptz_bool_exp
+        - fieldName: confirmed_by
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: created_at
+          booleanExpressionType: timestamp_bool_exp
+        - fieldName: description
+          booleanExpressionType: text_bool_exp
+        - fieldName: hourly_rate
+          booleanExpressionType: numeric_bool_exp
+        - fieldName: id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: invoice_id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: is_approved
+          booleanExpressionType: bool_bool_exp
+        - fieldName: notes
+          booleanExpressionType: text_bool_exp
+        - fieldName: payroll_id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: quantity
+          booleanExpressionType: int_4_bool_exp
+        - fieldName: service_id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: service_name
+          booleanExpressionType: varchar_bool_exp
+        - fieldName: staff_user_id
+          booleanExpressionType: uuid_bool_exp
+        - fieldName: status
+          booleanExpressionType: varchar_bool_exp
+        - fieldName: total_amount
+          booleanExpressionType: numeric_bool_exp
+        - fieldName: unit_price
+          booleanExpressionType: numeric_bool_exp
+        - fieldName: updated_at
+          booleanExpressionType: timestamptz_bool_exp
+      comparableRelationships:
+        - relationshipName: billing_invoice_items
+        - relationshipName: user
+        - relationshipName: billing_plan
+        - relationshipName: client
+        - relationshipName: user_by_confirmed_by
+        - relationshipName: payroll
+        - relationshipName: billing_plan_by_service_id
+        - relationshipName: user_by_staff_user_id
+        - relationshipName: time_entries
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: billing_items_bool_exp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: billing_items_agg_exp
+  operand:
+    object:
+      aggregatedType: billing_items
+      aggregatableFields:
+        - fieldName: amount
+          aggregateExpression: numeric_agg_exp
+        - fieldName: approval_date
+          aggregateExpression: timestamptz_agg_exp
+        - fieldName: approved_by
+          aggregateExpression: uuid_agg_exp
+        - fieldName: billing_plan_id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: client_id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: confirmed_at
+          aggregateExpression: timestamptz_agg_exp
+        - fieldName: confirmed_by
+          aggregateExpression: uuid_agg_exp
+        - fieldName: created_at
+          aggregateExpression: timestamp_agg_exp
+        - fieldName: description
+          aggregateExpression: text_agg_exp
+        - fieldName: hourly_rate
+          aggregateExpression: numeric_agg_exp
+        - fieldName: id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: invoice_id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: is_approved
+          aggregateExpression: bool_agg_exp
+        - fieldName: notes
+          aggregateExpression: text_agg_exp
+        - fieldName: payroll_id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: quantity
+          aggregateExpression: int_4_agg_exp
+        - fieldName: service_id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: service_name
+          aggregateExpression: varchar_agg_exp
+        - fieldName: staff_user_id
+          aggregateExpression: uuid_agg_exp
+        - fieldName: status
+          aggregateExpression: varchar_agg_exp
+        - fieldName: total_amount
+          aggregateExpression: numeric_agg_exp
+        - fieldName: unit_price
+          aggregateExpression: numeric_agg_exp
+        - fieldName: updated_at
+          aggregateExpression: timestamptz_agg_exp
+  count:
+    enable: true
+    returnType: int_64
+  graphql:
+    selectTypeName: billing_items_agg_exp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: billing_items_order_by_exp
+  operand:
+    object:
+      orderedType: billing_items
+      orderableFields:
+        - fieldName: amount
+          orderByExpression: bigdecimal_order_by_exp
+        - fieldName: approval_date
+          orderByExpression: timestamptz_order_by_exp
+        - fieldName: approved_by
+          orderByExpression: uuid_order_by_exp
+        - fieldName: billing_plan_id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: client_id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: confirmed_at
+          orderByExpression: timestamptz_order_by_exp
+        - fieldName: confirmed_by
+          orderByExpression: uuid_order_by_exp
+        - fieldName: created_at
+          orderByExpression: timestamp_order_by_exp
+        - fieldName: description
+          orderByExpression: string_order_by_exp
+        - fieldName: hourly_rate
+          orderByExpression: bigdecimal_order_by_exp
+        - fieldName: id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: invoice_id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: is_approved
+          orderByExpression: boolean_order_by_exp
+        - fieldName: notes
+          orderByExpression: string_order_by_exp
+        - fieldName: payroll_id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: quantity
+          orderByExpression: int_32_order_by_exp
+        - fieldName: service_id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: service_name
+          orderByExpression: string_order_by_exp
+        - fieldName: staff_user_id
+          orderByExpression: uuid_order_by_exp
+        - fieldName: status
+          orderByExpression: string_order_by_exp
+        - fieldName: total_amount
+          orderByExpression: bigdecimal_order_by_exp
+        - fieldName: unit_price
+          orderByExpression: bigdecimal_order_by_exp
+        - fieldName: updated_at
+          orderByExpression: timestamptz_order_by_exp
+      orderableRelationships:
+        - relationshipName: user
+        - relationshipName: billing_plan
+        - relationshipName: client
+        - relationshipName: user_by_confirmed_by
+        - relationshipName: payroll
+        - relationshipName: billing_plan_by_service_id
+        - relationshipName: user_by_staff_user_id
+  graphql:
+    expressionTypeName: billing_items_order_by_exp
+
+---
+kind: Model
+version: v2
+definition:
+  name: billing_items
+  objectType: billing_items
+  source:
+    dataConnectorName: payroll
+    collection: billing_items
+  filterExpressionType: billing_items_bool_exp
+  aggregateExpression: billing_items_agg_exp
+  orderByExpression: billing_items_order_by_exp
+  graphql:
+    selectMany:
+      queryRootField: billing_items
+      subscription:
+        rootField: billing_items
+    selectUniques:
+      - queryRootField: billing_items_by_id
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: billing_items_by_id
+    filterInputTypeName: billing_items_filter_input
+    aggregate:
+      queryRootField: billing_items_aggregate
+      subscription:
+        rootField: billing_items_aggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: billing_items
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: billing_invoice_items
+  sourceType: billing_items
+  target:
+    model:
+      name: billing_invoice_item
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: billing_invoice_item_agg_exp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: item_id
+  graphql:
+    aggregateFieldName: billing_invoice_items_aggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: user
+  sourceType: billing_items
+  target:
+    model:
+      name: users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: approved_by
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: billing_plan
+  sourceType: billing_items
+  target:
+    model:
+      name: billing_plan
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: billing_plan_id
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: client
+  sourceType: billing_items
+  target:
+    model:
+      name: clients
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: client_id
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: user_by_confirmed_by
+  sourceType: billing_items
+  target:
+    model:
+      name: users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: confirmed_by
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payroll
+  sourceType: billing_items
+  target:
+    model:
+      name: payrolls
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: payroll_id
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: billing_plan_by_service_id
+  sourceType: billing_items
+  target:
+    model:
+      name: billing_plan
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: service_id
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: user_by_staff_user_id
+  sourceType: billing_items
+  target:
+    model:
+      name: users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: staff_user_id
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: time_entries
+  sourceType: billing_items
+  target:
+    model:
+      name: time_entries
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: time_entries_agg_exp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: billing_item_id
+  graphql:
+    aggregateFieldName: time_entries_aggregate
+

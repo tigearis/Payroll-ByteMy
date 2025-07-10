@@ -1,11 +1,12 @@
 // app/(dashboard)/settings/page.tsx
 "use client";
 
-import { Loader2, Save } from "lucide-react";
+import { Save } from "lucide-react";
 import { useState } from "react";
 import type React from "react";
 import { PermissionGuard } from "@/components/auth/permission-guard";
 import { Button } from "@/components/ui/button";
+import { ByteMySpinner } from "@/components/ui/bytemy-loading-icon";
 import {
   Card,
   CardContent,
@@ -38,7 +39,6 @@ const features = [
 ];
 
 export default function SettingsPage() {
-  // Auth simplified - no permission checking needed
   const { layoutType, setLayoutType, sidebarCollapsed, setSidebarCollapsed, toggleSidebar } = useLayoutPreferences();
   const [isLoading, setIsLoading] = useState(false);
   const [roleAccess, setRoleAccess] = useState({
@@ -78,35 +78,9 @@ export default function SettingsPage() {
     }, 1500);
   };
 
-  if (authLoading) {
-    return (
-      <div className="space-y-6">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">Settings</h2>
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!hasAdminAccess) {
-    return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Settings
-          </h1>
-          <p className="text-muted-foreground">
-            Manage your account settings and preferences.
-          </p>
-        </div>
-        <div>Unauthorized - Admin access required</div>
-      </div>
-    );
-  }
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto py-6 space-y-6">
       <div>
         <h2 className="text-3xl font-bold tracking-tight">Settings</h2>
         <p className="text-muted-foreground">
@@ -245,7 +219,7 @@ export default function SettingsPage() {
                 <Button type="submit" disabled={isLoading}>
                   {isLoading ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <ByteMySpinner size="sm" className="mr-2" />
                       Saving...
                     </>
                   ) : (
@@ -490,7 +464,7 @@ export default function SettingsPage() {
                 <Button type="submit" disabled={isLoading}>
                   {isLoading ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <ByteMySpinner size="sm" className="mr-2" />
                       Saving...
                     </>
                   ) : (
@@ -506,7 +480,6 @@ export default function SettingsPage() {
 
           <TabsContent value="users">
             <PermissionGuard 
-              
               fallback={
                 <Card>
                   <CardHeader>
@@ -541,7 +514,6 @@ export default function SettingsPage() {
 
           <TabsContent value="security">
             <PermissionGuard 
-              
               fallback={
                 <Card>
                   <CardHeader>
@@ -619,7 +591,7 @@ export default function SettingsPage() {
                         </p>
                       </div>
                       <Select defaultValue="app">
-                        <SelectTrigger id="2fa-method" className="w-[180px]">
+                        <SelectTrigger id="2fa-method" className="w-full sm:w-44">
                           <SelectValue placeholder="Select method" />
                         </SelectTrigger>
                         <SelectContent>
@@ -647,7 +619,7 @@ export default function SettingsPage() {
                       <Select defaultValue="30">
                         <SelectTrigger
                           id="session-timeout"
-                          className="w-[180px]"
+                          className="w-full sm:w-44"
                         >
                           <SelectValue placeholder="Select timeout" />
                         </SelectTrigger>
@@ -666,7 +638,7 @@ export default function SettingsPage() {
                 <Button type="submit" disabled={isLoading}>
                   {isLoading ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <ByteMySpinner size="sm" className="mr-2" />
                       Saving...
                     </>
                   ) : (
@@ -683,7 +655,6 @@ export default function SettingsPage() {
         </Tabs>
       </form>
       <PermissionGuard 
-        
         fallback={
           <Card>
             <CardHeader>

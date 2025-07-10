@@ -1,0 +1,98 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_user_email_template_favorites_object
+  fields:
+    - name: created_at
+      type: timestamptz
+    - name: id
+      type: uuid
+    - name: template_id
+      type: uuid!
+    - name: user_id
+      type: uuid!
+  graphql:
+    typeName: insert_user_email_template_favorites_object
+    inputTypeName: insert_user_email_template_favorites_object_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_user_email_template_favorites_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_user_email_template_favorites_object
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - created_at
+          - id
+          - template_id
+          - user_id
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_user_email_template_favorites_response
+  description: Responses from the 'insert_user_email_template_favorites' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[user_email_template_favorites!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: insert_user_email_template_favorites_response
+    inputTypeName: insert_user_email_template_favorites_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_user_email_template_favorites_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_user_email_template_favorites_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: insert_user_email_template_favorites
+  outputType: insert_user_email_template_favorites_response!
+  arguments:
+    - name: objects
+      type: "[insert_user_email_template_favorites_object!]!"
+    - name: post_check
+      type: user_email_template_favorites_bool_exp
+      description: Insert permission predicate over the
+        'user_email_template_favorites' collection
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: insert_user_email_template_favorites
+  graphql:
+    rootFieldName: insert_user_email_template_favorites
+    rootFieldKind: Mutation
+  description: Insert into the user_email_template_favorites table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: insert_user_email_template_favorites
+  permissions:
+    - role: admin
+      allowExecution: true
+

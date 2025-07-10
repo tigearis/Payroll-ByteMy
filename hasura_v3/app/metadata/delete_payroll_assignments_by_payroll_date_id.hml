@@ -1,0 +1,63 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: delete_payroll_assignments_by_payroll_date_id_response
+  description: Responses from the 'delete_payroll_assignments_by_payroll_date_id' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[payroll_assignments!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: delete_payroll_assignments_by_payroll_date_id_response
+    inputTypeName: delete_payroll_assignments_by_payroll_date_id_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: delete_payroll_assignments_by_payroll_date_id_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: delete_payroll_assignments_by_payroll_date_id_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: delete_payroll_assignments_by_payroll_date_id
+  outputType: delete_payroll_assignments_by_payroll_date_id_response!
+  arguments:
+    - name: key_payroll_date_id
+      type: uuid!
+    - name: pre_check
+      type: payroll_assignments_bool_exp
+      description: Delete permission predicate over the 'payroll_assignments' collection
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: delete_payroll_assignments_by_payroll_date_id
+  graphql:
+    rootFieldName: delete_payroll_assignments_by_payroll_date_id
+    rootFieldKind: Mutation
+  description: Delete any row on the 'payroll_assignments' collection using the
+    'payroll_date_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: delete_payroll_assignments_by_payroll_date_id
+  permissions:
+    - role: admin
+      allowExecution: true
+

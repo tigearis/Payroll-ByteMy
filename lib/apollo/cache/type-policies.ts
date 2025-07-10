@@ -17,6 +17,7 @@ import {
   createTemporalSort,
   createVersionSort
 } from "./merge-functions";
+import { mergeProfilePolicies } from "./profile-cache-fix";
 
 /**
  * Query-level field policies for list operations
@@ -83,6 +84,24 @@ const entityTypePolicies = {
         merge: (_existing: any, incoming: any) => incoming,
       },
       workSchedules: {
+        merge: (_existing: any, incoming: any) => incoming,
+      },
+      userWorkSchedules: {
+        merge: (_existing: any, incoming: any) => incoming,
+      },
+      managedUsers: {
+        merge: (_existing: any, incoming: any) => incoming,
+      },
+      primaryConsultantPayrolls: {
+        merge: (_existing: any, incoming: any) => incoming,
+      },
+      backupConsultantPayrolls: {
+        merge: (_existing: any, incoming: any) => incoming,
+      },
+      managedPayrolls: {
+        merge: (_existing: any, incoming: any) => incoming,
+      },
+      managerUser: {
         merge: (_existing: any, incoming: any) => incoming,
       },
     },
@@ -186,17 +205,39 @@ const entityTypePolicies = {
   resources: {
     keyFields: ["id"],
   },
+  
+  // Work schedule entities
+  workSchedule: {
+    keyFields: ["id"],
+  },
+  
+  userWorkSchedules: {
+    keyFields: ["id"],
+  },
+  
+  // Leave entities
+  leave: {
+    keyFields: ["id"],
+  },
+  
+  // Time entries
+  timeEntries: {
+    keyFields: ["id"],
+  },
 };
 
 /**
  * Complete type policies configuration
  */
-export const typePolicies: TypePolicies = {
+const baseTypePolicies: TypePolicies = {
   Query: {
     fields: queryFieldPolicies,
   },
   ...entityTypePolicies,
 };
+
+// Merge with profile-specific cache fixes
+export const typePolicies: TypePolicies = mergeProfilePolicies(baseTypePolicies);
 
 /**
  * Custom data ID generation for better normalization

@@ -10,6 +10,7 @@ import {
   CheckCircle,
   XCircle,
 } from "lucide-react";
+import { PermissionGuard } from "@/components/auth/permission-guard";
 import {
   UnifiedDataTable,
   DataTableColumn,
@@ -17,7 +18,6 @@ import {
   StatusConfig,
   createCellRenderers,
 } from "@/components/ui/unified-data-table";
-import { PermissionGuard } from "@/components/auth/permission-guard";
 
 // Client data type (based on existing client structure)
 interface Client {

@@ -28,6 +28,7 @@ import { ApolloLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import type { UnifiedClientOptions } from "../types";
 
+
 /**
  * Enhanced authentication link with improved Clerk integration
  */
@@ -122,14 +123,49 @@ export function createAuthLink(options: UnifiedClientOptions): ApolloLink {
           }
         }
 
-        // If we have a token, attach it
+        // If we have a token, attach it directly (Hasura handles JWT arrays natively)
         if (token) {
-          return {
-            headers: {
-              ...headers,
-              authorization: `Bearer ${token}`,
-            },
+          console.log("✅ JWT token retrieved, using native arrays for Hasura");
+          
+          // Parse the token to get the highest available role
+          let hasuraRole = undefined;
+          try {
+            const base64Payload = token.split('.')[1];
+            const decodedPayload = JSON.parse(atob(base64Payload));
+            const hasuraClaims = decodedPayload['https://hasura.io/jwt/claims'];
+            
+            if (hasuraClaims?.['x-hasura-allowed-roles']) {
+              const allowedRoles = hasuraClaims['x-hasura-allowed-roles'];
+              // Role hierarchy: developer > org_admin > manager > consultant > viewer
+              const roleHierarchy = ['developer', 'org_admin', 'manager', 'consultant', 'viewer'];
+              
+              // Find the highest role the user has
+              for (const role of roleHierarchy) {
+                if (allowedRoles.includes(role)) {
+                  hasuraRole = role;
+                  break;
+                }
+              }
+              
+              if (hasuraRole) {
+                console.log(`🔑 Using highest available role: ${hasuraRole}`);
+              }
+            }
+          } catch (error) {
+            console.warn('⚠️ Failed to parse JWT for role selection:', error);
+          }
+          
+          const authHeaders: Record<string, string> = {
+            ...headers,
+            authorization: `Bearer ${token}`,
           };
+          
+          // Add x-hasura-role header if we found a higher role than default
+          if (hasuraRole) {
+            authHeaders['x-hasura-role'] = hasuraRole;
+          }
+          
+          return { headers: authHeaders };
         } else {
           // Enhanced debugging when no token is available
           console.warn("⚠️ No JWT token available for GraphQL request", {

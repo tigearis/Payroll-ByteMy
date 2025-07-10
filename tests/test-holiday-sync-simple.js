@@ -74,11 +74,11 @@ async function testHasuraEndpoint() {
 
     if (response.ok && result.data) {
       console.log("✅ Hasura GraphQL endpoint is accessible");
-      const typeCount = result.data._schema.types.length;
+      const typeCount = result.data.schema.types.length;
       console.log(`   Schema contains ${typeCount} types`);
 
       // Check if holidays table exists
-      const holidaysType = result.data._schema.types.find(
+      const holidaysType = result.data.schema.types.find(
         t => t.name === "holidays"
       );
       if (holidaysType) {

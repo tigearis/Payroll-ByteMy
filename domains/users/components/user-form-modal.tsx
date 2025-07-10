@@ -1,15 +1,14 @@
 // @ts-nocheck
 "use client";
 
-import { PermissionGuard } from "@/components/auth/permission-guard";
-import { useEnhancedPermissions } from "@/lib/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, User, Mail, Shield, Users } from "lucide-react";
-import { useState, useEffect } from "react";
+import { User, Mail, Shield, Users } from "lucide-react";
+import { useState, useEffect, memo } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
+import { ByteMySpinner } from "@/components/ui/bytemy-loading-icon";
 import {
   Dialog,
   DialogContent,
@@ -36,11 +35,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import {
-  useUserManagement,
-  User as UserType,
-  Manager,
-} from "@/hooks/use-user-management";
+import { User as UserType, Manager } from "@/domains/users/types";
+import { getRoleDisplayName } from "@/lib/utils/role-utils";
 
 // Schema for both create and edit modes
 const createUserSchema = z.object({
@@ -98,18 +94,13 @@ const ROLE_ICONS = {
 };
 
 // @ts-nocheck
-export function UserFormModal({
+function UserFormModalComponent({
   mode,
   open,
   onOpenChange,
   user,
   onSuccess,
 }: UserFormModalProps) {
-  const { hasPermission } = useEnhancedPermissions();
-  
-  if (!hasPermission('staff:write')) {
-    return null;
-  }
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
@@ -158,7 +149,7 @@ export function UserFormModal({
         isActive: user.lastSignIn ? true : false,
       });
     }
-  }, [mode, user, form]);
+  }, [mode, user]); // Removed 'form' to prevent infinite loops
 
   // Reset form when modal closes
   useEffect(() => {
@@ -166,7 +157,7 @@ export function UserFormModal({
       form.reset();
       setIsSubmitting(false);
     }
-  }, [open, form]);
+  }, [open]); // Removed 'form' to prevent infinite loops
 
   const onSubmit = async (data: CreateUserFormData | EditUserFormData) => {
     try {
@@ -179,7 +170,10 @@ export function UserFormModal({
           firstName: createData.firstName,
           lastName: createData.lastName,
           role: createData.role,
-          managerId: createData.managerId && createData.managerId !== "none" ? createData.managerId : undefined,
+          managerId:
+            createData.managerId && createData.managerId !== "none"
+              ? createData.managerId
+              : undefined,
         });
 
         if (result.success) {
@@ -202,7 +196,10 @@ export function UserFormModal({
           name: editData.name,
           email: editData.email,
           role: editData.role,
-          managerId: editData.managerId && editData.managerId !== "none" ? editData.managerId : undefined,
+          managerId:
+            editData.managerId && editData.managerId !== "none"
+              ? editData.managerId
+              : undefined,
           isStaff: editData.isStaff,
         });
 
@@ -241,7 +238,7 @@ export function UserFormModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <User className="h-5 w-5" />
@@ -353,8 +350,8 @@ export function UserFormModal({
                               <div className="flex items-start gap-3">
                                 <Icon className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" />
                                 <div>
-                                  <div className="font-medium capitalize">
-                                    {role.replace("_", " ")}
+                                  <div className="font-medium">
+                                    {getRoleDisplayName(role)}
                                   </div>
                                   <div className="text-xs text-muted-foreground">
                                     {description}
@@ -478,7 +475,7 @@ export function UserFormModal({
               </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <ByteMySpinner size="sm" className="mr-2" />
                 )}
                 {mode === "create" ? "Add Team Member" : "Update User"}
               </Button>
@@ -489,5 +486,63 @@ export function UserFormModal({
     </Dialog>
   );
 }
+
+// ============================================================================
+// PERFORMANCE OPTIMIZED EXPORT WITH REACT.MEMO
+// ============================================================================
+
+/**
+ * Custom comparison function for UserFormModal React.memo
+ * Optimizes re-renders for complex form modals with user data
+ */
+function areUserFormModalPropsEqual(
+  prevProps: UserFormModalProps,
+  nextProps: UserFormModalProps
+): boolean {
+  // Quick primitive checks first
+  if (
+    prevProps.mode !== nextProps.mode ||
+    prevProps.open !== nextProps.open
+  ) {
+    return false;
+  }
+
+  // User object comparison (for edit mode)
+  if (prevProps.user !== nextProps.user) {
+    if (!prevProps.user || !nextProps.user) {
+      return prevProps.user === nextProps.user;
+    }
+    
+    // Deep comparison of user object properties
+    const prev = prevProps.user;
+    const next = nextProps.user;
+    
+    return (
+      prev.id === next.id &&
+      prev.firstName === next.firstName &&
+      prev.lastName === next.lastName &&
+      prev.email === next.email &&
+      prev.role === next.role &&
+      prev.managerId === next.managerId &&
+      prev.isActive === next.isActive
+    );
+  }
+
+  // Function callbacks typically change on every render, but we don't need to re-render
+  // the entire form modal for callback changes. The form behavior remains consistent.
+  
+  return true;
+}
+
+/**
+ * Memoized UserFormModal Component
+ * 
+ * Prevents unnecessary re-renders when props haven't meaningfully changed.
+ * Optimized for complex form interactions with user data and validation.
+ */
+export const UserFormModal = memo(
+  UserFormModalComponent,
+  areUserFormModalPropsEqual
+);
 
 export default UserFormModal;

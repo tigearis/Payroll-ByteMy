@@ -27,9 +27,12 @@ import {
   RefreshCw,
   UserX,
   Calendar,
+  Maximize2,
+  Minimize2,
 } from "lucide-react";
 import * as React from "react";
 import { useState, useMemo, useEffect } from "react";
+import { PermissionGuard } from "@/components/auth/permission-guard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -50,7 +53,16 @@ import {
   GetPayrollsByMonthQuery,
   UpdatePayrollDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
-import { PermissionGuard } from "@/components/auth/permission-guard";
+import {
+  GetHolidaysByDateRangeDocument,
+  GetHolidaysByDateRangeQuery,
+  GetAllStaffWorkloadDocument,
+  GetAllStaffWorkloadQuery,
+} from "@/domains/work-schedule/graphql/generated/graphql";
+import {
+  GetLeaveDocument,
+  GetLeaveQuery,
+} from "@/domains/leave/graphql/generated/graphql";
 
 type ViewPeriod = "week" | "fortnight" | "month";
 type TableOrientation = "consultants-as-columns" | "consultants-as-rows";
@@ -87,19 +99,30 @@ interface ConsultantSummary {
 interface Holiday {
   id: string;
   date: string;
-  local_name: string;
+  name: string;
+  localName: string;
   types: string[];
-  region: string[] | null;
-  country_code: string;
+  region?: string[] | null;
+  countryCode: any;
+  isGlobal?: boolean | null;
+  isFixed?: boolean | null;
+}
+
+interface HolidayDisplayInfo {
+  name: string;
+  designation: string;
+  isPrimary: boolean;
+  backgroundColor: string;
 }
 
 interface Leave {
-  id: string;
+  id?: string; // Optional since it may not be available in all contexts
   startDate: string;
   endDate: string;
   leaveType: string;
-  reason: string;
-  status: string;
+  reason?: string | null;
+  status?: any;
+  userId: string;
 }
 
 interface DragState {
@@ -124,6 +147,7 @@ export default function AdvancedPayrollScheduler() {
   const [tableOrientation, setTableOrientation] = useState<TableOrientation>(
     "consultants-as-columns"
   );
+  const [isExpanded, setIsExpanded] = useState(false);
 
   // Add hydration-safe state
   const [isClient, setIsClient] = useState(false);
@@ -144,13 +168,15 @@ export default function AdvancedPayrollScheduler() {
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [moveAsGroup] = useState(true);
   const [showGhosts, setShowGhosts] = useState(true);
+  
+  // Track edits across all dates/periods
+  const [globalEdits, setGlobalEdits] = useState<Map<string, { consultantId: string, consultantName: string }>>(new Map());
 
   const [dragState, setDragState] = useState<DragState>({
     isDragging: false,
     draggedPayroll: null,
     dragOverCell: null,
   });
-
 
   // Calculate date range
   const dateRange = useMemo(() => {
@@ -211,18 +237,87 @@ export default function AdvancedPayrollScheduler() {
     }
   );
 
+  // Get holidays for the selected date range
+  const { data: holidaysData } = useQuery<GetHolidaysByDateRangeQuery>(
+    GetHolidaysByDateRangeDocument,
+    {
+      variables: {
+        startDate: format(dateRange.start, "yyyy-MM-dd"),
+        endDate: format(dateRange.end, "yyyy-MM-dd"),
+        countryCode: "AU",
+      },
+      errorPolicy: "all",
+      skip: !isClient,
+      onCompleted: data => {
+        console.log("✅ Holidays query completed:", {
+          holidaysCount: data.holidays?.length || 0,
+          dateRange: `${format(dateRange.start, "yyyy-MM-dd")} to ${format(dateRange.end, "yyyy-MM-dd")}`,
+        });
+      },
+      onError: err => {
+        console.error("❌ Holidays query failed:", err);
+      },
+    }
+  );
+
+  // Get all staff workload to show all consultants (not just those with payrolls)
+  const { data: staffData, loading: staffLoading } = useQuery<GetAllStaffWorkloadQuery>(
+    GetAllStaffWorkloadDocument,
+    {
+      errorPolicy: "all",
+      skip: !isClient,
+      onCompleted: data => {
+        console.log("✅ Staff workload query completed:", {
+          staffCount: data.users?.length || 0,
+          consultantCount: data.users?.filter(u => u.role === 'consultant').length || 0,
+        });
+      },
+      onError: err => {
+        console.error("❌ Staff workload query failed:", err);
+      },
+    }
+  );
+
   const [updatePayrollConsultants, { loading: updating, error: updateError }] =
     useMutation(UpdatePayrollDocument);
 
-  // Helper function to check if consultant is on leave
-  const isConsultantOnLeave = (consultant: any, date: Date): boolean => {
-    if (!consultant?.leaves) return false;
+  // Get leave data for the selected date range
+  const { data: leaveData } = useQuery<GetLeaveQuery>(
+    GetLeaveDocument,
+    {
+      variables: {
+        where: {
+          _and: [
+            { startDate: { _lte: format(dateRange.end, "yyyy-MM-dd") } },
+            { endDate: { _gte: format(dateRange.start, "yyyy-MM-dd") } },
+            { status: { _eq: "Approved" } },
+          ],
+        },
+      },
+      errorPolicy: "all",
+      skip: !isClient,
+      onCompleted: data => {
+        console.log("✅ Leave query completed:", {
+          leaveCount: data.leave?.length || 0,
+          dateRange: `${format(dateRange.start, "yyyy-MM-dd")} to ${format(dateRange.end, "yyyy-MM-dd")}`,
+        });
+      },
+      onError: err => {
+        console.error("❌ Leave query failed:", err);
+      },
+    }
+  );
 
-    return consultant.leaves.some((leave: Leave) => {
+  // Helper function to check if consultant is on leave
+  const isConsultantOnLeave = (consultantId: string, date: Date): boolean => {
+    if (!leaveData?.leave) return false;
+
+    return leaveData.leave.some((leave: any) => {
       const leaveStart = new Date(leave.startDate);
       const leaveEnd = new Date(leave.endDate);
       return (
-        leave.status === "approved" &&
+        leave.userId === consultantId &&
+        leave.status === "Approved" &&
         isWithinInterval(date, { start: leaveStart, end: leaveEnd })
       );
     });
@@ -247,7 +342,9 @@ export default function AdvancedPayrollScheduler() {
         return;
       }
 
-      console.log(`📅 Processing payroll "${payroll.name}" with ${payroll.payrollDates.length} dates`);
+      console.log(
+        `📅 Processing payroll "${payroll.name}" with ${payroll.payrollDates.length} dates`
+      );
 
       payroll.payrollDates.forEach((dateInfo: any) => {
         const assignmentDate = new Date(dateInfo.adjustedEftDate);
@@ -263,7 +360,7 @@ export default function AdvancedPayrollScheduler() {
         // Check if primary consultant is on leave
         if (
           primaryConsultant &&
-          isConsultantOnLeave(primaryConsultant, assignmentDate)
+          isConsultantOnLeave(primaryConsultant.id, assignmentDate)
         ) {
           if (backupConsultant) {
             originalConsultantId = primaryConsultant.id;
@@ -295,7 +392,9 @@ export default function AdvancedPayrollScheduler() {
       });
     });
 
-    console.log(`✅ Transformed ${assignmentList.length} assignments from ${data.payrolls.length} payrolls`);
+    console.log(
+      `✅ Transformed ${assignmentList.length} assignments from ${data.payrolls.length} payrolls`
+    );
     return assignmentList;
   };
 
@@ -309,51 +408,95 @@ export default function AdvancedPayrollScheduler() {
         samplePayrollDate: data.payrolls?.[0]?.payrollDates?.[0],
       });
 
-      const freshAssignments = transformData(data);
-      setAssignments(freshAssignments);
-      setOriginalAssignments([...freshAssignments]);
+      let freshAssignments = transformData(data);
+      const ghostAssignments: PayrollAssignment[] = [];
+      
+      // Apply global edits if in preview mode
+      if (isPreviewMode && globalEdits.size > 0) {
+        freshAssignments = freshAssignments.map(assignment => {
+          const editKey = `${assignment.payrollId}-${assignment.adjustedEftDate}`;
+          const edit = globalEdits.get(editKey);
+          
+          if (edit && edit.consultantId !== assignment.consultantId) {
+            // Create a ghost for the original position
+            ghostAssignments.push({
+              ...assignment,
+              id: `ghost-${assignment.id}-${Date.now()}`,
+              isGhost: true,
+              ghostFromConsultant: edit.consultantName,
+              ghostFromDate: assignment.adjustedEftDate,
+            });
+            
+            // Return the moved assignment
+            return {
+              ...assignment,
+              consultantId: edit.consultantId,
+              consultantName: edit.consultantName
+            };
+          }
+          
+          return assignment;
+        });
+      }
+      
+      // Combine real assignments with ghosts
+      setAssignments([...freshAssignments, ...ghostAssignments]);
+      
+      // Only update original assignments if not in preview mode
+      if (!isPreviewMode) {
+        setOriginalAssignments([...freshAssignments]);
+      }
+      
       console.log("📋 Assignments set:", {
         assignmentsCount: freshAssignments.length,
         payrollsCount: data.payrolls?.length || 0,
         sampleAssignment: freshAssignments[0],
+        editsApplied: globalEdits.size,
       });
     }
-  }, [data]);
+  }, [data?.payrolls?.length, isPreviewMode, globalEdits.size]); // Use stable properties instead of objects
 
-  // Extract consultants from data
+  // Extract consultants from staff data - shows ALL consultants, not just those with payrolls
   const consultants = useMemo(() => {
-    if (!data?.payrolls) return [];
+    if (!staffData?.users) return [];
 
-    const consultantMap = new Map();
+    // Filter to only consultants and managers (who can act as consultants)
+    const consultantUsers = staffData.users.filter(user => 
+      user.role === 'consultant' || user.role === 'manager' || user.role === 'org_admin'
+    );
 
-    data.payrolls.forEach((payroll: any) => {
-      if (payroll.primaryConsultant) {
-        consultantMap.set(
-          payroll.primaryConsultant.id,
-          payroll.primaryConsultant
-        );
-      }
-      if (payroll.backupConsultant) {
-        consultantMap.set(
-          payroll.backupConsultant.id,
-          payroll.backupConsultant
-        );
-      }
-    });
+    const consultants = consultantUsers.map(user => ({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      workSchedules: user.userWorkSchedules || [],
+      skills: user.userSkills || [],
+      primaryPayrolls: user.primaryConsultantPayrolls || [],
+      backupPayrolls: user.backupConsultantPayrolls || [],
+    }));
 
-    console.log(`👥 Found ${consultantMap.size} unique consultants:`, Array.from(consultantMap.values()).map(c => c.name));
-    return Array.from(consultantMap.values());
-  }, [data]);
+    console.log(
+      `👥 Found ${consultants.length} total consultants (including those without payrolls):`,
+      consultants.map(c => `${c.name} (${c.primaryPayrolls.length + c.backupPayrolls.length} payrolls)`)
+    );
+    return consultants;
+  }, [staffData]);
 
   // Calculate consultant summaries
   const consultantSummaries = useMemo(() => {
     const summaries: ConsultantSummary[] = consultants.map(consultant => {
-      const consultantAssignments = assignments.filter(
-        a => a.consultantId === consultant.id && !a.isGhost
-      );
+      // Filter assignments to only those within the current date range
+      const consultantAssignments = assignments.filter(a => {
+        if (a.consultantId !== consultant.id || a.isGhost) return false;
+        
+        // Check if assignment date is within the current viewing period
+        const assignmentDate = new Date(a.adjustedEftDate);
+        return assignmentDate >= dateRange.start && assignmentDate <= dateRange.end;
+      });
 
       const hasLeaveInPeriod = dates.some(date =>
-        isConsultantOnLeave(consultant, date)
+        isConsultantOnLeave(consultant.id, date)
       );
 
       return {
@@ -373,9 +516,67 @@ export default function AdvancedPayrollScheduler() {
     });
 
     return summaries;
-  }, [consultants, assignments, dates]);
+  }, [consultants, assignments, dates, dateRange]);
 
-  const holidays: any[] = []; // holidays not included in GetPayrollsByMonthQuery
+  // Get holidays from query data
+  const holidays: Holiday[] = holidaysData?.holidays || [];
+
+  // Helper function to abbreviate holiday names for compact display
+  const getHolidayAbbreviation = (name: string): string => {
+    const abbreviations: { [key: string]: string } = {
+      "Christmas Day": "Christmas",
+      "Australia Day": "Aus Day",
+      "Queen's Birthday": "Queen's",
+      "Labour Day": "Labour",
+      "Melbourne Cup": "Melb Cup",
+      "Good Friday": "Good Fri",
+      "Easter Monday": "Easter Mon",
+      "Boxing Day": "Boxing",
+      "New Year's Day": "New Year",
+      "ANZAC Day": "ANZAC",
+    };
+
+    return (
+      abbreviations[name] ||
+      (name.length > 8 ? name.substring(0, 8) + "..." : name)
+    );
+  };
+
+  // Helper function to get holiday display information
+  const getHolidayDisplayInfo = (
+    holiday: Holiday,
+    isCompact: boolean = false
+  ): HolidayDisplayInfo => {
+    const isNSWOrNational =
+      holiday.isGlobal ||
+      holiday.region?.some(r => r.includes("NSW")) ||
+      holiday.region?.some(r => r.includes("National"));
+
+    // Determine designation based on holiday scope
+    let designation = "Regional";
+    if (holiday.isGlobal) {
+      designation = "National";
+    } else if (holiday.region && holiday.region.length > 0) {
+      if (holiday.region.length === 1) {
+        designation = holiday.region[0];
+      } else if (holiday.region.length <= 3) {
+        designation = holiday.region.join(", ");
+      } else {
+        designation = "Multiple States";
+      }
+    }
+
+    const fullName = holiday.localName || holiday.name;
+
+    return {
+      name: isCompact ? getHolidayAbbreviation(fullName) : fullName,
+      designation,
+      isPrimary: Boolean(isNSWOrNational),
+      backgroundColor: isNSWOrNational
+        ? "rgb(239, 68, 68)"
+        : "rgb(245, 158, 11)", // red for NSW/National, amber for others
+    };
+  };
 
   // Helper functions
   const getHolidayForDate = (date: Date): Holiday | null => {
@@ -444,11 +645,7 @@ export default function AdvancedPayrollScheduler() {
 
   // Navigation functions
   const navigatePrevious = () => {
-    // Clean up ghosts when navigating
-    if (isPreviewMode) {
-      setAssignments(prev => removeGhosts(prev));
-    }
-
+    // Don't clean up ghosts when navigating - let them be recreated from data
     switch (viewPeriod) {
       case "week":
         setCurrentDate(subWeeks(currentDate, 1));
@@ -463,11 +660,7 @@ export default function AdvancedPayrollScheduler() {
   };
 
   const navigateNext = () => {
-    // Clean up ghosts when navigating
-    if (isPreviewMode) {
-      setAssignments(prev => removeGhosts(prev));
-    }
-
+    // Don't clean up ghosts when navigating - let them be recreated from data
     switch (viewPeriod) {
       case "week":
         setCurrentDate(addWeeks(currentDate, 1));
@@ -530,20 +723,15 @@ export default function AdvancedPayrollScheduler() {
 
     const { draggedPayroll } = dragState;
     if (!draggedPayroll) return;
+    
+    // Find the target consultant name
+    const targetConsultantName = consultants.find(c => c.id === targetConsultantId)?.name || "Unknown";
 
     setAssignments(prev => {
-      const newGhosts: PayrollAssignment[] = [];
-
       if (moveAsGroup) {
         // Move all assignments for this payroll
         const updatedAssignments = prev
-          .filter(a => {
-            // Remove existing ghosts for this payroll only
-            if (a.isGhost && a.payrollId === draggedPayroll.payrollId) {
-              return false; // Remove old ghosts for this payroll
-            }
-            return true; // Keep everything else
-          })
+          .filter(a => !a.isGhost) // Remove ALL ghosts - they'll be recreated on data reload
           .map(a => {
             if (a.payrollId === draggedPayroll.payrollId) {
               // Find the original assignment to compare
@@ -551,56 +739,30 @@ export default function AdvancedPayrollScheduler() {
                 orig => orig.id === a.id
               );
 
-              // Check if we're moving back to the original position
-              const isReturningToOriginal =
-                originalAssignment &&
-                originalAssignment.consultantId === targetConsultantId &&
-                originalAssignment.adjustedEftDate === a.adjustedEftDate;
-
-              // Only create ghost if not returning to original position AND position is changing
-              if (
-                !isReturningToOriginal &&
-                a.consultantId !== targetConsultantId
-              ) {
-                newGhosts.push({
-                  ...a,
-                  id: `ghost-${a.id}-${Date.now()}-${Math.random()}`,
-                  isGhost: true,
-                  ghostFromConsultant:
-                    consultants.find(c => c.id === targetConsultantId)?.name ||
-                    "Unknown",
-                  ghostFromDate: a.adjustedEftDate,
-                });
-              }
-
               // Move to new position
-              return {
+              const updated = {
                 ...a,
                 consultantId: targetConsultantId,
-                consultantName:
-                  consultants.find(c => c.id === targetConsultantId)?.name ||
-                  "Unknown",
+                consultantName: targetConsultantName,
               };
+              
+              // Save to global edits immediately
+              const editKey = `${a.payrollId}-${a.adjustedEftDate}`;
+              setGlobalEdits(prev => new Map(prev).set(editKey, {
+                consultantId: targetConsultantId,
+                consultantName: targetConsultantName
+              }));
+              
+              return updated;
             }
             return a;
           });
 
-        return [...updatedAssignments, ...newGhosts];
+        return updatedAssignments;
       } else {
         // Move only the specific assignment
         const updatedAssignments = prev
-          .filter(a => {
-            // Remove existing ghosts for this specific assignment
-            if (
-              a.isGhost &&
-              a.id.startsWith(
-                `ghost-${draggedPayroll.id.replace("ghost-", "").split("-")[0]}`
-              )
-            ) {
-              return false; // Remove old ghosts for this assignment
-            }
-            return true; // Keep everything else
-          })
+          .filter(a => !a.isGhost) // Remove ALL ghosts - they'll be recreated on data reload
           .map(a => {
             if (a.id === draggedPayroll.id) {
               // Find the original assignment to compare
@@ -608,43 +770,27 @@ export default function AdvancedPayrollScheduler() {
                 orig => orig.id === a.id
               );
 
-              // Check if we're moving back to the original position
-              const isReturningToOriginal =
-                originalAssignment &&
-                originalAssignment.consultantId === targetConsultantId &&
-                originalAssignment.adjustedEftDate === targetDate;
-
-              // Only create ghost if not returning to original position AND position is changing
-              if (
-                !isReturningToOriginal &&
-                (a.consultantId !== targetConsultantId ||
-                  a.adjustedEftDate !== targetDate)
-              ) {
-                newGhosts.push({
-                  ...a,
-                  id: `ghost-${a.id}-${Date.now()}-${Math.random()}`,
-                  isGhost: true,
-                  ghostFromConsultant:
-                    consultants.find(c => c.id === targetConsultantId)?.name ||
-                    "Unknown",
-                  ghostFromDate: a.adjustedEftDate,
-                });
-              }
-
               // Move to new position
-              return {
+              const updated = {
                 ...a,
                 consultantId: targetConsultantId,
-                consultantName:
-                  consultants.find(c => c.id === targetConsultantId)?.name ||
-                  "Unknown",
+                consultantName: targetConsultantName,
                 adjustedEftDate: targetDate,
               };
+              
+              // Save to global edits immediately
+              const editKey = `${a.payrollId}-${targetDate}`;
+              setGlobalEdits(prev => new Map(prev).set(editKey, {
+                consultantId: targetConsultantId,
+                consultantName: targetConsultantName
+              }));
+              
+              return updated;
             }
             return a;
           });
 
-        return [...updatedAssignments, ...newGhosts];
+        return updatedAssignments;
       }
     });
 
@@ -657,12 +803,14 @@ export default function AdvancedPayrollScheduler() {
 
   // Get assignments for a specific cell
   const getAssignmentsForCell = (consultantId: string, date: Date) => {
-    const visibleAssignments = getVisibleAssignments(assignments);
-    return visibleAssignments.filter(assignment => {
+    const allCellAssignments = assignments.filter(assignment => {
       const isSameConsultant = assignment.consultantId === consultantId;
       const isSameDate = isSameDay(new Date(assignment.adjustedEftDate), date);
       return isSameConsultant && isSameDate;
     });
+    
+    // Apply ghost visibility filter
+    return getVisibleAssignments(allCellAssignments);
   };
 
   // Helper function to clean up ghost assignments
@@ -676,39 +824,42 @@ export default function AdvancedPayrollScheduler() {
   const pendingChanges = useMemo(() => {
     const changesMap = new Map<string, PendingChange>();
 
-    // Only look at non-ghost assignments
-    const realAssignments = removeGhosts(assignments);
-
-    realAssignments.forEach(current => {
-      const original = originalAssignments.find(orig => orig.id === current.id);
-      if (
-        original &&
-        (current.consultantId !== original.consultantId ||
-          current.adjustedEftDate !== original.adjustedEftDate)
-      ) {
-        const changeKey = current.payrollId;
-
-        if (!changesMap.has(changeKey)) {
-          changesMap.set(changeKey, {
-            payrollId: current.payrollId,
-            payrollName: current.payrollName,
-            fromConsultantId: original.consultantId,
-            toConsultantId: current.consultantId,
-            fromConsultantName: original.consultantName,
-            toConsultantName: current.consultantName,
-            affectedDates: [current.adjustedEftDate],
-          });
-        } else {
-          const existingChange = changesMap.get(changeKey)!;
-          if (!existingChange.affectedDates.includes(current.adjustedEftDate)) {
-            existingChange.affectedDates.push(current.adjustedEftDate);
+    // Look at all global edits across all periods
+    if (globalEdits.size > 0) {
+      globalEdits.forEach((edit, editKey) => {
+        const [payrollId, date] = editKey.split('-');
+        
+        // Find the original assignment info from the data
+        const payroll = data?.payrolls?.find((p: any) => p.id === payrollId);
+        if (payroll) {
+          const originalConsultant = payroll.primaryConsultant;
+          
+          if (originalConsultant && edit.consultantId !== originalConsultant.id) {
+            const changeKey = payrollId;
+            
+            if (!changesMap.has(changeKey)) {
+              changesMap.set(changeKey, {
+                payrollId: payrollId,
+                payrollName: payroll.name,
+                fromConsultantId: originalConsultant.id,
+                toConsultantId: edit.consultantId,
+                fromConsultantName: originalConsultant.name,
+                toConsultantName: edit.consultantName,
+                affectedDates: [date],
+              });
+            } else {
+              const existingChange = changesMap.get(changeKey)!;
+              if (!existingChange.affectedDates.includes(date)) {
+                existingChange.affectedDates.push(date);
+              }
+            }
           }
         }
-      }
-    });
+      });
+    }
 
     return Array.from(changesMap.values());
-  }, [assignments, originalAssignments]);
+  }, [globalEdits, data]);
 
   // Commit changes
   const commitChanges = async () => {
@@ -760,6 +911,7 @@ export default function AdvancedPayrollScheduler() {
         // Success: exit preview mode and refresh data
         const cleanAssignments = removeGhosts(assignments);
         setIsPreviewMode(false);
+        setGlobalEdits(new Map()); // Clear global edits after successful save
         setOriginalAssignments([...cleanAssignments]);
         setAssignments(cleanAssignments);
 
@@ -791,6 +943,7 @@ export default function AdvancedPayrollScheduler() {
   // Revert changes
   const revertChanges = () => {
     setIsPreviewMode(false);
+    setGlobalEdits(new Map()); // Clear all global edits
     setAssignments([...originalAssignments]);
   };
 
@@ -807,11 +960,80 @@ export default function AdvancedPayrollScheduler() {
   const getVisibleAssignments = (
     assignments: PayrollAssignment[]
   ): PayrollAssignment[] => {
-    if (showGhosts || !isPreviewMode) {
-      return assignments; // Show all assignments including ghosts
+    if (!isPreviewMode) {
+      return assignments; // Show all assignments when not in preview mode
+    }
+    if (showGhosts) {
+      return assignments; // Show all assignments including ghosts when toggle is on
     }
     return assignments.filter(a => !a.isGhost); // Hide ghosts when toggle is off
   };
+
+  // Responsive sizing state
+  const [responsiveConfig, setResponsiveConfig] = useState({
+    containerHeight: "70vh",
+    cellMinWidth: 140,
+    cellMinHeight: 60,
+    headerHeight: 80,
+    showFullDetails: true
+  });
+
+  // Update responsive config when state changes
+  useEffect(() => {
+    const updateConfig = () => {
+      if (isExpanded) {
+        setResponsiveConfig({
+          containerHeight: "calc(100vh - 12rem)",
+          cellMinWidth: 160,
+          cellMinHeight: 80,
+          headerHeight: tableOrientation === "consultants-as-columns" ? 100 : 160,
+          showFullDetails: true
+        });
+      } else {
+        setResponsiveConfig({
+          containerHeight: "70vh",
+          cellMinWidth: 140,
+          cellMinHeight: 60,
+          headerHeight: tableOrientation === "consultants-as-columns" ? 80 : 140,
+          showFullDetails: typeof window !== 'undefined' ? window.innerWidth >= 768 : true
+        });
+      }
+    };
+
+    updateConfig();
+
+    // Add window resize listener for responsive updates
+    const handleResize = () => {
+      if (!isExpanded) {
+        updateConfig();
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+    
+    // Return undefined when window is not available
+    return undefined;
+  }, [isExpanded, tableOrientation]);
+
+  // ESC key handler for fullscreen mode
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isExpanded) {
+        setIsExpanded(false);
+      }
+    };
+
+    if (isExpanded) {
+      document.addEventListener('keydown', handleEscapeKey);
+      return () => document.removeEventListener('keydown', handleEscapeKey);
+    }
+    
+    // Return undefined for the else case
+    return undefined;
+  }, [isExpanded]);
 
   // Format period display
   const formatPeriodDisplay = () => {
@@ -885,31 +1107,6 @@ export default function AdvancedPayrollScheduler() {
     };
   };
 
-  // Helper function to render array text as individual badges
-  const renderArrayBadges = (
-    items: string | string[] | undefined | null,
-    className: string = "",
-    variant: "default" | "outline" = "default"
-  ) => {
-    if (!items) return null;
-
-    const itemArray = Array.isArray(items) ? items : [items];
-
-    return (
-      <div className="flex flex-wrap gap-0.5 justify-center">
-        {itemArray.map((item, index) => (
-          <Badge
-            key={index}
-            variant={variant}
-            className={`text-xs px-1 py-0 h-4 text-center min-w-0 ${className}`}
-          >
-            {item}
-          </Badge>
-        ))}
-      </div>
-    );
-  };
-
   // Prevent hydration mismatch
   if (!isClient) {
     return (
@@ -923,12 +1120,12 @@ export default function AdvancedPayrollScheduler() {
   }
 
   // Loading state
-  if (loading) {
+  if (loading || staffLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p>Loading payroll scheduler...</p>
+          <p>Loading payroll scheduler and staff data...</p>
         </div>
       </div>
     );
@@ -988,7 +1185,11 @@ export default function AdvancedPayrollScheduler() {
               </p>
               <p>
                 <strong>Raw PayrollDates Count:</strong>{" "}
-                {data?.payrolls?.reduce((total, payroll) => total + (payroll.payrollDates?.length || 0), 0) || 0}
+                {data?.payrolls?.reduce(
+                  (total, payroll) =>
+                    total + (payroll.payrollDates?.length || 0),
+                  0
+                ) || 0}
               </p>
               <p>
                 <strong>Sample Payroll:</strong>{" "}
@@ -1046,16 +1247,36 @@ export default function AdvancedPayrollScheduler() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className={`space-y-6 ${isExpanded ? 'fixed inset-0 z-50 bg-background p-6 overflow-auto' : ''}`}>
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h2 className="text-3xl font-bold text-gray-900">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
             Advanced Payroll Scheduler
           </h2>
           <p className="text-gray-600">
             Drag-and-drop scheduling with consultant summaries
           </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="flex items-center gap-2"
+          >
+            {isExpanded ? (
+              <>
+                <Minimize2 className="w-4 h-4" />
+                <span className="hidden sm:inline">Exit Fullscreen</span>
+              </>
+            ) : (
+              <>
+                <Maximize2 className="w-4 h-4" />
+                <span className="hidden sm:inline">Expand</span>
+              </>
+            )}
+          </Button>
         </div>
       </div>
 
@@ -1114,10 +1335,20 @@ export default function AdvancedPayrollScheduler() {
               <Label>Show Original Positions</Label>
             </div>
 
+            {/* Expanded Mode Indicator */}
+            {isExpanded && (
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                  Fullscreen Mode
+                </Badge>
+                <span className="text-xs text-gray-500">Press ESC to exit</span>
+              </div>
+            )}
+
             {/* Preview Mode Actions */}
             {!isPreviewMode ? (
               <div className="ml-auto">
-                <PermissionGuard permission="payroll:write">
+                <PermissionGuard permissions={["payroll:write"]}>
                   <Button
                     onClick={enterPreviewMode}
                     disabled={loading || updating}
@@ -1138,7 +1369,7 @@ export default function AdvancedPayrollScheduler() {
                     Save failed
                   </Badge>
                 )}
-                <PermissionGuard permission="payroll:write">
+                <PermissionGuard permissions={["payroll:write"]}>
                   <Button
                     variant="outline"
                     size="sm"
@@ -1240,750 +1471,802 @@ export default function AdvancedPayrollScheduler() {
         </Card>
       )}
 
-      {/* Main Table */}
+      {/* Main Grid Table */}
       <Card className="dark:bg-card">
         <CardContent className="p-0">
-          <div className="overflow-auto max-h-[70vh] border rounded-lg bg-background dark:bg-card relative scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-gray-100 dark:scrollbar-track-gray-800">
-            <Table>
-              <TableHeader className="sticky top-0 z-20">
-                <TableRow className="bg-background dark:bg-card border-b-2 border-gray-200">
-                  <TableHead className="sticky left-0 bg-background dark:bg-card z-30 w-fit min-w-[40px] max-w-[140px] shadow-sm">
-                    {tableOrientation === "consultants-as-columns"
-                      ? "Date"
-                      : "Consultant"}
-                  </TableHead>
-                  {tableOrientation === "consultants-as-columns"
-                    ? consultants.map(consultant => {
-                        const summary = consultantSummaries.find(
-                          s => s.id === consultant.id
-                        );
-                        return (
-                          <TableHead
-                            key={consultant.id}
-                            className="text-center min-w-[140px] p-1 bg-background"
-                          >
-                            <Card
-                              className="shadow-sm border"
-                              style={getConsultantCardBackgroundStyle(
-                                summary?.totalProcessingTime || 0,
-                                summary?.isOnLeave
-                              )}
-                            >
-                              <CardContent className="p-2">
-                                <div className="space-y-1.5">
+          <div
+            className="border rounded-lg bg-background dark:bg-card overflow-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-gray-100 dark:scrollbar-track-gray-800"
+            style={{
+              maxHeight: responsiveConfig.containerHeight,
+              overflowX: "auto",
+              overflowY: "auto",
+              scrollBehavior: "smooth"
+            }}
+          >
+            <div 
+              className="grid relative"
+              style={{
+                gridTemplateColumns: tableOrientation === "consultants-as-columns" 
+                  ? `${responsiveConfig.cellMinWidth}px repeat(${consultants.length}, minmax(${responsiveConfig.cellMinWidth}px, ${isExpanded ? '1fr' : 'auto'}))`
+                  : `${responsiveConfig.cellMinWidth + 40}px repeat(${dates.length}, ${responsiveConfig.cellMinWidth}px)`,
+                width: tableOrientation === "consultants-as-columns" 
+                  ? isExpanded ? "100%" : "fit-content"
+                  : "fit-content",
+                minWidth: tableOrientation === "consultants-as-columns" ? "100%" : "unset"
+              }}
+            >
+              {/* Corner Header Cell */}
+              <div
+                className="sticky top-0 left-0 z-40 bg-background dark:bg-card border-b-2 border-r-2 border-gray-200 shadow-md flex items-center justify-center font-medium text-sm"
+                style={{
+                  position: "sticky",
+                  top: 0,
+                  left: 0,
+                  zIndex: 40,
+                  gridColumn: 1,
+                  gridRow: 1,
+                  height: responsiveConfig.headerHeight,
+                  width: tableOrientation === "consultants-as-columns" ? responsiveConfig.cellMinWidth : responsiveConfig.cellMinWidth + 40
+                }}
+              >
+                {tableOrientation === "consultants-as-columns" ? "Date" : "Consultant"}
+              </div>
+
+              {/* Header Cells */}
+              {tableOrientation === "consultants-as-columns"
+                ? consultants.map((consultant, index) => {
+                    const summary = consultantSummaries.find(
+                      s => s.id === consultant.id
+                    );
+                    return (
+                      <div
+                        key={consultant.id}
+                        className="sticky top-0 z-20 bg-background dark:bg-card border-b-2 border-gray-200 p-1"
+                        style={{
+                          position: "sticky",
+                          top: 0,
+                          zIndex: 20,
+                          gridColumn: index + 2,
+                          gridRow: 1,
+                          height: responsiveConfig.headerHeight
+                        }}
+                      >
+                        <Card
+                          className="shadow-sm border h-full"
+                          style={getConsultantCardBackgroundStyle(
+                            summary?.totalProcessingTime || 0,
+                            summary?.isOnLeave
+                          )}
+                        >
+                          <CardContent className="p-2 h-full flex flex-col justify-center">
+                            <div className="space-y-1.5">
+                              <div
+                                className={`font-semibold flex items-center justify-center gap-1.5 text-sm ${getConsultantHeaderTextColor(
+                                  summary?.totalProcessingTime || 0,
+                                  summary?.isOnLeave
+                                )}`}
+                              >
+                                {consultant.name}
+                                {summary?.isOnLeave && (
+                                  <UserX className="w-3 h-3 text-green-900 dark:text-green-400" />
+                                )}
+                              </div>
+                              <div className="text-xs grid grid-cols-3 gap-1.5">
+                                <div title="Payrolls" className="text-center">
+                                  <FileText
+                                    className={`w-3 h-3 mx-auto mb-0.5 ${getConsultantHeaderTextColor(
+                                      summary?.totalProcessingTime || 0,
+                                      summary?.isOnLeave,
+                                      true
+                                    )}`}
+                                  />
                                   <div
-                                    className={`font-semibold flex items-center justify-center gap-1.5 text-sm ${getConsultantHeaderTextColor(
+                                    className={`font-medium ${getConsultantHeaderTextColor(
                                       summary?.totalProcessingTime || 0,
                                       summary?.isOnLeave
                                     )}`}
                                   >
-                                    {consultant.name}
-                                    {summary?.isOnLeave && (
-                                      <UserX className="w-3 h-3 text-green-900 dark:text-green-400" />
-                                    )}
-                                  </div>
-                                  <div className="text-xs grid grid-cols-3 gap-1.5">
-                                    <div
-                                      title="Payrolls"
-                                      className="text-center"
-                                    >
-                                      <FileText
-                                        className={`w-3 h-3 mx-auto mb-0.5 ${getConsultantHeaderTextColor(
-                                          summary?.totalProcessingTime || 0,
-                                          summary?.isOnLeave,
-                                          true
-                                        )}`}
-                                      />
-                                      <div
-                                        className={`font-medium ${getConsultantHeaderTextColor(
-                                          summary?.totalProcessingTime || 0,
-                                          summary?.isOnLeave
-                                        )}`}
-                                      >
-                                        {summary?.totalPayrolls || 0}
-                                      </div>
-                                    </div>
-                                    <div
-                                      title="Employees"
-                                      className="text-center"
-                                    >
-                                      <Users
-                                        className={`w-3 h-3 mx-auto mb-0.5 ${getConsultantHeaderTextColor(
-                                          summary?.totalProcessingTime || 0,
-                                          summary?.isOnLeave,
-                                          true
-                                        )}`}
-                                      />
-                                      <div
-                                        className={`font-medium ${getConsultantHeaderTextColor(
-                                          summary?.totalProcessingTime || 0,
-                                          summary?.isOnLeave
-                                        )}`}
-                                      >
-                                        {summary?.totalEmployees || 0}
-                                      </div>
-                                    </div>
-                                    <div title="Hours" className="text-center">
-                                      <Clock
-                                        className={`w-3 h-3 mx-auto mb-0.5 ${getConsultantHeaderTextColor(
-                                          summary?.totalProcessingTime || 0,
-                                          summary?.isOnLeave,
-                                          true
-                                        )}`}
-                                      />
-                                      <div
-                                        className={`font-medium ${getConsultantHeaderTextColor(
-                                          summary?.totalProcessingTime || 0,
-                                          summary?.isOnLeave
-                                        )}`}
-                                      >
-                                        {summary?.totalProcessingTime || 0}h
-                                      </div>
-                                    </div>
+                                    {summary?.totalPayrolls || 0}
                                   </div>
                                 </div>
-                              </CardContent>
-                            </Card>
-                          </TableHead>
+                                <div title="Employees" className="text-center">
+                                  <Users
+                                    className={`w-3 h-3 mx-auto mb-0.5 ${getConsultantHeaderTextColor(
+                                      summary?.totalProcessingTime || 0,
+                                      summary?.isOnLeave,
+                                      true
+                                    )}`}
+                                  />
+                                  <div
+                                    className={`font-medium ${getConsultantHeaderTextColor(
+                                      summary?.totalProcessingTime || 0,
+                                      summary?.isOnLeave
+                                    )}`}
+                                  >
+                                    {summary?.totalEmployees || 0}
+                                  </div>
+                                </div>
+                                <div title="Hours" className="text-center">
+                                  <Clock
+                                    className={`w-3 h-3 mx-auto mb-0.5 ${getConsultantHeaderTextColor(
+                                      summary?.totalProcessingTime || 0,
+                                      summary?.isOnLeave,
+                                      true
+                                    )}`}
+                                  />
+                                  <div
+                                    className={`font-medium ${getConsultantHeaderTextColor(
+                                      summary?.totalProcessingTime || 0,
+                                      summary?.isOnLeave
+                                    )}`}
+                                  >
+                                    {summary?.totalProcessingTime || 0}h
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    );
+                  })
+                : dates.map((date, index) => {
+                    const holiday = getHolidayForDate(date);
+                    const holidayInfo = holiday
+                      ? getHolidayDisplayInfo(holiday, true)
+                      : null;
+                    const isWeekendDay = isWeekend(date);
+                    return (
+                      <div
+                        key={date.toISOString()}
+                        className="sticky top-0 z-20 bg-background dark:bg-card border-b-2 border-gray-200 p-1"
+                        style={{
+                          position: "sticky",
+                          top: 0,
+                          zIndex: 20,
+                          gridColumn: index + 2,
+                          gridRow: 1,
+                          height: responsiveConfig.headerHeight
+                        }}
+                      >
+                        <Card
+                          className={`${
+                            holiday
+                              ? holidayInfo?.isPrimary
+                                ? "bg-red-200 dark:bg-red-900/80 border-red-400 dark:border-red-600"
+                                : "bg-amber-200 dark:bg-amber-900/80 border-amber-400 dark:border-amber-600"
+                              : isWeekendDay
+                                ? "bg-blue-200 dark:bg-blue-900/80 border-blue-400 dark:border-blue-600"
+                                : "bg-card border-gray-200"
+                          } shadow-sm h-full`}
+                        >
+                          <CardContent className="p-1.5 h-full flex flex-col justify-center">
+                            <div className="space-y-0.5 text-center">
+                              <div className="text-xs font-medium text-gray-600">
+                                {format(date, "EEE")}
+                              </div>
+                              <div className="text-sm font-bold text-gray-900">
+                                {format(date, "MMM d")}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                {format(date, "yyyy")}
+                              </div>
+                              {holiday && holidayInfo ? (
+                                <div className="text-xs mt-1 space-y-1 flex flex-col items-center">
+                                  <div className="flex items-center justify-center gap-0.5">
+                                    <Calendar
+                                      className={`w-3 h-3 ${holidayInfo.isPrimary ? "text-red-600" : "text-amber-600"}`}
+                                    />
+                                  </div>
+                                  <Badge
+                                    variant="outline"
+                                    className={`text-xs px-1 py-0 h-4 font-medium truncate max-w-full ${
+                                      holidayInfo.isPrimary
+                                        ? "bg-red-50 text-red-700 border-red-200"
+                                        : "bg-amber-50 text-amber-700 border-amber-200"
+                                    }`}
+                                    title={holiday.localName || holiday.name}
+                                  >
+                                    {holidayInfo.name}
+                                  </Badge>
+                                  <Badge
+                                    variant="outline"
+                                    className={`text-xs px-1 py-0 h-4 truncate max-w-full ${
+                                      holidayInfo.isPrimary
+                                        ? "bg-red-50 text-red-700 border-red-200"
+                                        : "bg-amber-50 text-amber-700 border-amber-200"
+                                    }`}
+                                    title={`Holiday region: ${holidayInfo.designation}`}
+                                  >
+                                    {holidayInfo.designation}
+                                  </Badge>
+                                </div>
+                              ) : isWeekendDay ? (
+                                <div className="text-xs mt-0.5">
+                                  <Badge
+                                    variant="outline"
+                                    className="text-xs px-1 py-0 h-4 bg-blue-50 text-blue-700 border-blue-200"
+                                  >
+                                    Weekend
+                                  </Badge>
+                                </div>
+                              ) : null}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    );
+                  })}
+
+              {/* Data Cells - Consultants as Columns */}
+              {tableOrientation === "consultants-as-columns"
+                ? dates.map((date, dateIndex) => {
+                    const holiday = getHolidayForDate(date);
+                    const holidayInfo = holiday
+                      ? getHolidayDisplayInfo(holiday)
+                      : null;
+                    const isWeekendDay = isWeekend(date);
+
+                    return [
+                      // Row Header (Date Cell)
+                      <div
+                        key={`date-${date.toISOString()}`}
+                        className="sticky left-0 z-20 bg-background dark:bg-card border-r-2 border-gray-200 shadow-md p-2 font-medium"
+                        style={{
+                          position: "sticky",
+                          left: 0,
+                          zIndex: 20,
+                          gridColumn: 1,
+                          gridRow: dateIndex + 2,
+                          width: "140px",
+                          backgroundColor: holiday
+                            ? holidayInfo?.isPrimary
+                              ? "rgb(254, 242, 242)"
+                              : "rgb(255, 251, 235)"
+                            : isWeekendDay
+                              ? "rgb(239, 246, 255)"
+                              : dateIndex % 2 === 0
+                                ? "hsl(var(--muted) / 0.2)"
+                                : "hsl(var(--background))"
+                        }}
+                      >
+                        <Card
+                          className={`${
+                            holiday
+                              ? holidayInfo?.isPrimary
+                                ? "bg-red-200 dark:bg-red-900/80 border-red-400 dark:border-red-600"
+                                : "bg-amber-200 dark:bg-amber-900/80 border-amber-400 dark:border-amber-600"
+                              : isWeekendDay
+                                ? "bg-blue-200 dark:bg-blue-900/80 border-blue-400 dark:border-blue-600"
+                                : "bg-card border-gray-200"
+                          } shadow-sm h-full`}
+                        >
+                          <CardContent className="p-2 h-full flex flex-col justify-center">
+                            <div className="space-y-1 text-center">
+                              <div className="text-xs font-medium text-gray-600">
+                                {format(date, "EEE")}
+                              </div>
+                              <div className="text-sm font-bold text-gray-900">
+                                {format(date, "MMM d")}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                {format(date, "yyyy")}
+                              </div>
+                              {holiday && holidayInfo ? (
+                                <div className="text-xs mt-1.5 space-y-1 flex flex-col items-center">
+                                  <div className="flex items-center justify-center gap-1">
+                                    <Calendar
+                                      className={`w-3 h-3 ${holidayInfo.isPrimary ? "text-red-600" : "text-amber-600"}`}
+                                    />
+                                  </div>
+                                  <Badge
+                                    variant="outline"
+                                    className={`text-xs px-1 py-0 h-4 font-medium truncate max-w-full ${
+                                      holidayInfo.isPrimary
+                                        ? "bg-red-50 text-red-700 border-red-200"
+                                        : "bg-amber-50 text-amber-700 border-amber-200"
+                                    }`}
+                                    title={holiday.localName || holiday.name}
+                                  >
+                                    {holidayInfo.name}
+                                  </Badge>
+                                  <Badge
+                                    variant="outline"
+                                    className={`text-xs px-1 py-0 h-4 truncate max-w-full ${
+                                      holidayInfo.isPrimary
+                                        ? "bg-red-50 text-red-700 border-red-200"
+                                        : "bg-amber-50 text-amber-700 border-amber-200"
+                                    }`}
+                                    title={`Holiday region: ${holidayInfo.designation}`}
+                                  >
+                                    {holidayInfo.designation}
+                                  </Badge>
+                                </div>
+                              ) : isWeekendDay ? (
+                                <Badge
+                                  variant="outline"
+                                  className="text-xs bg-blue-50 text-blue-700 border-blue-200"
+                                >
+                                  Weekend
+                                </Badge>
+                              ) : null}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>,
+                      
+                      // Data Cells for this row
+                      ...consultants.map((consultant, consultantIndex) => {
+                        const cellAssignments = getAssignmentsForCell(
+                          consultant.id,
+                          date
                         );
-                      })
-                    : dates.map(date => {
-                        const holiday = getHolidayForDate(date);
-                        const isWeekendDay = isWeekend(date);
+                        const isOnLeave = isConsultantOnLeave(
+                          consultant.id,
+                          date
+                        );
+                        const isDropTarget =
+                          dragState.dragOverCell?.consultantId ===
+                            consultant.id &&
+                          dragState.dragOverCell?.date ===
+                            format(date, "yyyy-MM-dd");
+
                         return (
-                          <TableHead
-                            key={date.toISOString()}
-                            className="text-center min-w-[80px] max-w-[100px] p-1 bg-background"
+                          <div
+                            key={`${consultant.id}-${date.toISOString()}`}
+                            className={`p-2 border-l transition-all ${
+                              isDropTarget
+                                ? "bg-blue-200 border-2 border-blue-600"
+                                : ""
+                            } ${isOnLeave ? "bg-green-100" : ""}`}
+                            style={{
+                              minHeight: `${responsiveConfig.cellMinHeight}px`,
+                              gridColumn: consultantIndex + 2,
+                              gridRow: dateIndex + 2,
+                              backgroundColor: holiday
+                                ? holidayInfo?.isPrimary
+                                  ? "rgb(254, 242, 242)"
+                                  : "rgb(255, 251, 235)"
+                                : isWeekendDay
+                                  ? "rgb(239, 246, 255)"
+                                  : dateIndex % 2 === 0
+                                    ? "hsl(var(--muted) / 0.2)"
+                                    : "hsl(var(--background))"
+                            }}
+                            onDragOver={e =>
+                              handleDragOver(
+                                e,
+                                consultant.id,
+                                format(date, "yyyy-MM-dd")
+                              )
+                            }
+                            onDrop={e =>
+                              handleDrop(
+                                e,
+                                consultant.id,
+                                format(date, "yyyy-MM-dd")
+                              )
+                            }
                           >
-                            <Card
-                              className={`${
-                                holiday
-                                  ? "bg-red-200 dark:bg-red-900/80 border-red-400 dark:border-red-600"
-                                  : isWeekendDay
-                                    ? "bg-blue-200 dark:bg-blue-900/80 border-blue-400 dark:border-blue-600"
-                                    : "bg-card border-gray-200"
-                              } shadow-sm`}
-                            >
-                              <CardContent className="p-1.5">
-                                <div className="space-y-0.5 text-center">
-                                  <div className="text-xs font-medium text-gray-600">
-                                    {format(date, "EEE")}
-                                  </div>
-                                  <div className="text-sm font-bold text-gray-900">
-                                    {format(date, "MMM d")}
-                                  </div>
-                                  <div className="text-xs text-gray-500">
-                                    {format(date, "yyyy")}
-                                  </div>
-                                  {holiday ? (
-                                    <div className="text-xs mt-1 space-y-0.5">
-                                      <div className="flex items-center justify-center gap-0.5">
-                                        <Calendar className="w-3 h-3 text-red-600" />
-                                      </div>
-                                      {renderArrayBadges(
-                                        holiday.types?.map(type =>
-                                          type === "public"
-                                            ? "Pub"
-                                            : type === "bank"
-                                              ? "Bank"
-                                              : type === "regional"
-                                                ? "Reg"
-                                                : type.charAt(0).toUpperCase() +
-                                                  type.slice(1)
+                            <div className="space-y-1">
+                              {isOnLeave && (
+                                <div className="text-xs text-green-600 text-center">
+                                  <UserX className="w-3 h-3 mx-auto" />
+                                  On Leave
+                                </div>
+                              )}
+
+                              {cellAssignments.map(assignment => {
+                                const isBeingDragged =
+                                  dragState.isDragging &&
+                                  dragState.draggedPayroll?.id ===
+                                    assignment.id;
+
+                                return (
+                                  <div
+                                    key={assignment.id}
+                                    className={`
+                                      bg-card border rounded-lg shadow-sm px-2 py-1.5 mb-1 text-xs
+                                      transition-all duration-200 hover:shadow-md
+                                      ${
+                                        assignment.isGhost
+                                          ? "opacity-50 border-dashed pointer-events-none"
+                                          : ""
+                                      }
+                                      ${
+                                        assignment.isBackup
+                                          ? "border-red-200 dark:border-red-800"
+                                          : "border-gray-200"
+                                      }
+                                      ${
+                                        isBeingDragged
+                                          ? "opacity-30 scale-95"
+                                          : ""
+                                      }
+                                      ${
+                                        isPreviewMode && !assignment.isGhost
+                                          ? "cursor-move"
+                                          : ""
+                                      }
+                                    `}
+                                    style={{
+                                      backgroundColor:
+                                        getProcessingTimeColor(
+                                          assignment.processingTime,
+                                          false,
+                                          assignment.isBackup,
+                                          assignment.isGhost,
+                                          isAssignmentMoved(assignment)
                                         ),
-                                        "bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800"
-                                      )}
-                                      <div className="text-red-800 font-medium text-xs leading-tight truncate px-1">
-                                        {holiday.local_name}
-                                      </div>
-                                      {holiday.region &&
-                                        renderArrayBadges(
-                                          holiday.region.map(r =>
-                                            r.length > 3
-                                              ? r.substring(0, 3).toUpperCase()
-                                              : r.toUpperCase()
-                                          ),
-                                          "bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800"
-                                        )}
+                                    }}
+                                    draggable={
+                                      isPreviewMode && !assignment.isGhost
+                                    }
+                                    onDragStart={e =>
+                                      handleDragStart(e, assignment)
+                                    }
+                                    onDragEnd={handleDragEnd}
+                                  >
+                                    <div
+                                      className={`font-medium ${isExpanded ? 'text-sm' : 'text-xs'} mb-1 ${getTextColorForProcessingTime(
+                                        assignment.processingTime,
+                                        assignment.isGhost
+                                      )}`}
+                                    >
+                                      {assignment.payrollName}
                                     </div>
-                                  ) : isWeekendDay ? (
-                                    <div className="text-xs mt-0.5">
+                                    <div
+                                      className={`mb-1 text-xs ${getTextColorForProcessingTime(
+                                        assignment.processingTime,
+                                        assignment.isGhost
+                                      )}`}
+                                    >
+                                      {assignment.employeeCount} emp
+                                      {isExpanded && assignment.processingTime && (
+                                        <span className="ml-2">• {assignment.processingTime}h</span>
+                                      )}
+                                    </div>
+                                    <div
+                                      className={`text-xs ${getTextColorForProcessingTime(
+                                        assignment.processingTime,
+                                        assignment.isGhost
+                                      )}`}
+                                      title={assignment.clientName}
+                                    >
+                                      {isExpanded 
+                                        ? assignment.clientName 
+                                        : assignment.clientName.length > 15 
+                                          ? assignment.clientName.substring(0, 15) + "..." 
+                                          : assignment.clientName
+                                      }
+                                    </div>
+                                    {assignment.isBackup && (
                                       <Badge
                                         variant="outline"
-                                        className="text-xs px-1 py-0 h-4 bg-blue-50 text-blue-700 border-blue-200"
+                                        className="text-xs mt-1"
+                                        title={`Backup for ${assignment.originalConsultantName || "primary consultant"}`}
                                       >
-                                        Weekend
+                                        🔄{" "}
+                                        {assignment.originalConsultantName ||
+                                          "Backup"}
                                       </Badge>
-                                    </div>
-                                  ) : null}
-                                </div>
-                              </CardContent>
-                            </Card>
-                          </TableHead>
-                        );
-                      })}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {tableOrientation === "consultants-as-columns"
-                  ? dates.map((date, dateIndex) => {
-                      const holiday = getHolidayForDate(date);
-                      const isWeekendDay = isWeekend(date);
-
-                      // Row highlighting logic
-                      let rowClass = "";
-                      if (holiday) {
-                        rowClass =
-                          "bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-950/40 border-l-4 border-l-red-400 dark:border-l-red-500";
-                      } else if (isWeekendDay) {
-                        rowClass =
-                          "bg-blue-50 dark:bg-blue-950/30 hover:bg-blue-100 dark:hover:bg-blue-950/40 border-l-4 border-l-blue-400 dark:border-l-blue-500";
-                      } else if (dateIndex % 2 === 0) {
-                        rowClass = "bg-muted/20 hover:bg-muted/30";
-                      } else {
-                        rowClass = "bg-background hover:bg-muted/20";
-                      }
-
-                      return (
-                        <TableRow key={date.toISOString()} className={rowClass}>
-                          <TableCell className="sticky left-0 bg-inherit z-10 font-medium p-2 w-fit min-w-[40px] max-w-[80px] shadow-sm">
-                            <Card
-                              className={`${
-                                holiday
-                                  ? "bg-red-200 dark:bg-red-900/80 border-red-400 dark:border-red-600"
-                                  : isWeekendDay
-                                    ? "bg-blue-200 dark:bg-blue-900/80 border-blue-400 dark:border-blue-600"
-                                    : "bg-card border-gray-200"
-                              } shadow-sm`}
-                            >
-                              <CardContent className="p-2">
-                                <div className="space-y-1 text-center">
-                                  <div className="text-xs font-medium text-gray-600">
-                                    {format(date, "EEE")}
-                                  </div>
-                                  <div className="text-sm font-bold text-gray-900">
-                                    {format(date, "MMM d")}
-                                  </div>
-                                  <div className="text-xs text-gray-500">
-                                    {format(date, "yyyy")}
-                                  </div>
-                                  {holiday ? (
-                                    <div className="text-xs mt-1.5 space-y-1">
-                                      <div className="flex flex-wrap gap-1 justify-center">
-                                        <Calendar className="w-3 h-3 text-red-600" />
-                                        {renderArrayBadges(
-                                          holiday.types?.map(type =>
-                                            type === "public"
-                                              ? "Pub"
-                                              : type === "bank"
-                                                ? "Bank"
-                                                : type === "regional"
-                                                  ? "Reg"
-                                                  : type
-                                                      .charAt(0)
-                                                      .toUpperCase() +
-                                                    type.slice(1)
-                                          ),
-                                          "text-xs bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800"
-                                        )}
+                                    )}
+                                    {assignment.isGhost && (
+                                      <div className="text-muted-foreground text-xs mt-1 italic">
+                                        Moved to{" "}
+                                        {assignment.ghostFromConsultant}
                                       </div>
-                                      <div className="text-red-800 font-medium text-xs">
-                                        {holiday.local_name}
-                                      </div>
-                                      {holiday.region && (
-                                        <div className="flex flex-wrap gap-1 justify-center">
-                                          {renderArrayBadges(
-                                            holiday.region.map(r =>
-                                              r.length > 3
-                                                ? r
-                                                    .substring(0, 3)
-                                                    .toUpperCase()
-                                                : r.toUpperCase()
-                                            ),
-                                            "text-xs bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800"
+                                    )}
+                                    {!assignment.isGhost &&
+                                      getOriginalConsultantName(
+                                        assignment
+                                      ) && (
+                                        <div className="text-gray-600 dark:text-gray-400 text-xs mt-1 italic">
+                                          Moved from{" "}
+                                          {getOriginalConsultantName(
+                                            assignment
                                           )}
                                         </div>
                                       )}
-                                    </div>
-                                  ) : isWeekendDay ? (
-                                    <Badge
-                                      variant="outline"
-                                      className="text-xs bg-blue-50 text-blue-700 border-blue-200"
-                                    >
-                                      Weekend
-                                    </Badge>
-                                  ) : null}
-                                </div>
-                              </CardContent>
-                            </Card>
-                          </TableCell>
-                          {consultants.map(consultant => {
-                            const cellAssignments = getAssignmentsForCell(
-                              consultant.id,
-                              date
-                            );
-                            const isOnLeave = isConsultantOnLeave(
-                              consultant,
-                              date
-                            );
-                            const isDropTarget =
-                              dragState.dragOverCell?.consultantId ===
-                                consultant.id &&
-                              dragState.dragOverCell?.date ===
-                                format(date, "yyyy-MM-dd");
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })
+                    ].flat();
+                  })
+                  .flat()
+                : // Consultants as Rows orientation
+                  consultants.map((consultant, consultantIndex) => {
+                    const summary = consultantSummaries.find(
+                      s => s.id === consultant.id
+                    );
 
-                            return (
-                              <TableCell
-                                key={consultant.id}
-                                className={`p-2 border-l min-w-[80px] transition-all ${
-                                  isDropTarget
-                                    ? "bg-blue-200 border-2 border-blue-600"
-                                    : ""
-                                } ${isOnLeave ? "bg-green-100" : ""}`}
-                                onDragOver={e =>
-                                  handleDragOver(
-                                    e,
-                                    consultant.id,
-                                    format(date, "yyyy-MM-dd")
-                                  )
-                                }
-                                onDrop={e =>
-                                  handleDrop(
-                                    e,
-                                    consultant.id,
-                                    format(date, "yyyy-MM-dd")
-                                  )
-                                }
+                    return [
+                      // Row Header (Consultant Cell)
+                      <div
+                        key={`consultant-${consultant.id}`}
+                        className="sticky left-0 z-20 bg-background dark:bg-card border-r-2 border-gray-200 shadow-md p-2 font-medium"
+                        style={{
+                          position: "sticky",
+                          left: 0,
+                          zIndex: 20,
+                          gridColumn: 1,
+                          gridRow: consultantIndex + 2,
+                          backgroundColor: consultantIndex % 2 === 0
+                            ? "hsl(var(--muted) / 0.2)"
+                            : "hsl(var(--background))"
+                        }}
+                      >
+                        <Card
+                          className="shadow-sm border h-full"
+                          style={getConsultantCardBackgroundStyle(
+                            summary?.totalProcessingTime || 0,
+                            summary?.isOnLeave
+                          )}
+                        >
+                          <CardContent className="p-2 h-full flex flex-col justify-center">
+                            <div className="space-y-1.5">
+                              <div
+                                className={`font-semibold flex items-center justify-center gap-1.5 text-sm ${getConsultantHeaderTextColor(
+                                  summary?.totalProcessingTime || 0,
+                                  summary?.isOnLeave
+                                )}`}
                               >
-                                <div className="space-y-1">
-                                  {isOnLeave && (
-                                    <div className="text-xs text-green-600 text-center">
-                                      <UserX className="w-3 h-3 mx-auto" />
-                                      On Leave
-                                    </div>
-                                  )}
-
-                                  {cellAssignments.map(assignment => {
-                                    const isBeingDragged =
-                                      dragState.isDragging &&
-                                      dragState.draggedPayroll?.id ===
-                                        assignment.id;
-
-                                    return (
-                                      <div
-                                        key={assignment.id}
-                                        className={`
-                                          bg-card border rounded-lg shadow-sm px-2 py-1.5 mb-1 text-xs
-                                          transition-all duration-200 hover:shadow-md
-                                          ${
-                                            assignment.isGhost
-                                              ? "opacity-50 border-dashed pointer-events-none"
-                                              : ""
-                                          }
-                                          ${
-                                            assignment.isBackup
-                                              ? "border-red-200 dark:border-red-800"
-                                              : "border-gray-200"
-                                          }
-                                          ${
-                                            isBeingDragged
-                                              ? "opacity-30 scale-95"
-                                              : ""
-                                          }
-                                          ${
-                                            isPreviewMode && !assignment.isGhost
-                                              ? "cursor-move"
-                                              : ""
-                                          }
-                                        `}
-                                        style={{
-                                          backgroundColor:
-                                            getProcessingTimeColor(
-                                              assignment.processingTime,
-                                              false,
-                                              assignment.isBackup,
-                                              assignment.isGhost,
-                                              isAssignmentMoved(assignment)
-                                            ),
-                                        }}
-                                        draggable={
-                                          isPreviewMode && !assignment.isGhost
-                                        }
-                                        onDragStart={e =>
-                                          handleDragStart(e, assignment)
-                                        }
-                                        onDragEnd={handleDragEnd}
-                                      >
-                                        <div
-                                          className={`font-medium text-sm mb-1 ${getTextColorForProcessingTime(
-                                            assignment.processingTime,
-                                            assignment.isGhost
-                                          )}`}
-                                        >
-                                          {assignment.payrollName}
-                                        </div>
-                                        <div
-                                          className={`mb-1 ${getTextColorForProcessingTime(
-                                            assignment.processingTime,
-                                            assignment.isGhost
-                                          )}`}
-                                        >
-                                          {assignment.employeeCount} emp
-                                        </div>
-                                        <div
-                                          className={getTextColorForProcessingTime(
-                                            assignment.processingTime,
-                                            assignment.isGhost
-                                          )}
-                                        >
-                                          {assignment.clientName}
-                                        </div>
-                                        {assignment.isBackup && (
-                                          <Badge
-                                            variant="outline"
-                                            className="text-xs mt-1"
-                                          >
-                                            Backup
-                                          </Badge>
-                                        )}
-                                        {assignment.isGhost && (
-                                          <div className="text-muted-foreground text-xs mt-1 italic">
-                                            Moved to{" "}
-                                            {assignment.ghostFromConsultant}
-                                          </div>
-                                        )}
-                                        {!assignment.isGhost &&
-                                          getOriginalConsultantName(
-                                            assignment
-                                          ) && (
-                                            <div className="text-gray-100 dark:text-gray-600 text-xs mt-1 italic">
-                                              Moved from{" "}
-                                              {getOriginalConsultantName(
-                                                assignment
-                                              )}
-                                            </div>
-                                          )}
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              </TableCell>
-                            );
-                          })}
-                        </TableRow>
-                      );
-                    })
-                  : consultants.map((consultant, consultantIndex) => {
-                      const summary = consultantSummaries.find(
-                        s => s.id === consultant.id
-                      );
-
-                      // Alternating row colors for consultants
-                      const rowClass =
-                        consultantIndex % 2 === 0
-                          ? "bg-gray-50/30 hover:bg-gray-50"
-                          : "bg-white hover:bg-gray-50";
-
-                      return (
-                        <TableRow key={consultant.id} className={rowClass}>
-                          <TableCell className="sticky left-0 bg-inherit z-10 font-medium p-2 w-fit min-w-[120px] max-w-[140px] shadow-sm">
-                            <Card
-                              className="shadow-sm border"
-                              style={getConsultantCardBackgroundStyle(
-                                summary?.totalProcessingTime || 0,
-                                summary?.isOnLeave
-                              )}
-                            >
-                              <CardContent className="p-2">
-                                <div className="space-y-1.5">
+                                {consultant.name}
+                                {summary?.isOnLeave && (
+                                  <UserX className="w-3 h-3 text-green-900 dark:text-green-400" />
+                                )}
+                              </div>
+                              <div className="text-xs grid grid-cols-3 gap-1.5">
+                                <div title="Payrolls" className="text-center">
+                                  <FileText
+                                    className={`w-3 h-3 mx-auto mb-0.5 ${getConsultantHeaderTextColor(
+                                      summary?.totalProcessingTime || 0,
+                                      summary?.isOnLeave,
+                                      true
+                                    )}`}
+                                  />
                                   <div
-                                    className={`font-semibold flex items-center justify-center gap-1.5 text-sm ${getConsultantHeaderTextColor(
+                                    className={`font-medium ${getConsultantHeaderTextColor(
                                       summary?.totalProcessingTime || 0,
                                       summary?.isOnLeave
                                     )}`}
                                   >
-                                    {consultant.name}
-                                    {summary?.isOnLeave && (
-                                      <UserX className="w-3 h-3 text-green-900 dark:text-green-400" />
-                                    )}
-                                  </div>
-                                  <div className="text-xs grid grid-cols-3 gap-1.5">
-                                    <div
-                                      title="Payrolls"
-                                      className="text-center"
-                                    >
-                                      <FileText
-                                        className={`w-3 h-3 mx-auto mb-0.5 ${getConsultantHeaderTextColor(
-                                          summary?.totalProcessingTime || 0,
-                                          summary?.isOnLeave,
-                                          true
-                                        )}`}
-                                      />
-                                      <div
-                                        className={`font-medium ${getConsultantHeaderTextColor(
-                                          summary?.totalProcessingTime || 0,
-                                          summary?.isOnLeave
-                                        )}`}
-                                      >
-                                        {summary?.totalPayrolls || 0}
-                                      </div>
-                                    </div>
-                                    <div
-                                      title="Employees"
-                                      className="text-center"
-                                    >
-                                      <Users
-                                        className={`w-3 h-3 mx-auto mb-0.5 ${getConsultantHeaderTextColor(
-                                          summary?.totalProcessingTime || 0,
-                                          summary?.isOnLeave,
-                                          true
-                                        )}`}
-                                      />
-                                      <div
-                                        className={`font-medium ${getConsultantHeaderTextColor(
-                                          summary?.totalProcessingTime || 0,
-                                          summary?.isOnLeave
-                                        )}`}
-                                      >
-                                        {summary?.totalEmployees || 0}
-                                      </div>
-                                    </div>
-                                    <div title="Hours" className="text-center">
-                                      <Clock
-                                        className={`w-3 h-3 mx-auto mb-0.5 ${getConsultantHeaderTextColor(
-                                          summary?.totalProcessingTime || 0,
-                                          summary?.isOnLeave,
-                                          true
-                                        )}`}
-                                      />
-                                      <div
-                                        className={`font-medium ${getConsultantHeaderTextColor(
-                                          summary?.totalProcessingTime || 0,
-                                          summary?.isOnLeave
-                                        )}`}
-                                      >
-                                        {summary?.totalProcessingTime || 0}h
-                                      </div>
-                                    </div>
+                                    {summary?.totalPayrolls || 0}
                                   </div>
                                 </div>
-                              </CardContent>
-                            </Card>
-                          </TableCell>
-                          {dates.map(date => {
-                            const cellAssignments = getAssignmentsForCell(
-                              consultant.id,
-                              date
-                            );
-                            const isOnLeave = isConsultantOnLeave(
-                              consultant,
-                              date
-                            );
-                            const holiday = getHolidayForDate(date);
-                            const isWeekendDay = isWeekend(date);
-                            const isDropTarget =
-                              dragState.dragOverCell?.consultantId ===
-                                consultant.id &&
-                              dragState.dragOverCell?.date ===
-                                format(date, "yyyy-MM-dd");
+                                <div title="Employees" className="text-center">
+                                  <Users
+                                    className={`w-3 h-3 mx-auto mb-0.5 ${getConsultantHeaderTextColor(
+                                      summary?.totalProcessingTime || 0,
+                                      summary?.isOnLeave,
+                                      true
+                                    )}`}
+                                  />
+                                  <div
+                                    className={`font-medium ${getConsultantHeaderTextColor(
+                                      summary?.totalProcessingTime || 0,
+                                      summary?.isOnLeave
+                                    )}`}
+                                  >
+                                    {summary?.totalEmployees || 0}
+                                  </div>
+                                </div>
+                                <div title="Hours" className="text-center">
+                                  <Clock
+                                    className={`w-3 h-3 mx-auto mb-0.5 ${getConsultantHeaderTextColor(
+                                      summary?.totalProcessingTime || 0,
+                                      summary?.isOnLeave,
+                                      true
+                                    )}`}
+                                  />
+                                  <div
+                                    className={`font-medium ${getConsultantHeaderTextColor(
+                                      summary?.totalProcessingTime || 0,
+                                      summary?.isOnLeave
+                                    )}`}
+                                  >
+                                    {summary?.totalProcessingTime || 0}h
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>,
+                      
+                      // Data Cells for this row
+                      ...dates.map((date, dateIndex) => {
+                        const cellAssignments = getAssignmentsForCell(
+                          consultant.id,
+                          date
+                        );
+                        const isOnLeave = isConsultantOnLeave(
+                          consultant.id,
+                          date
+                        );
+                        const holiday = getHolidayForDate(date);
+                        const holidayInfo = holiday
+                          ? getHolidayDisplayInfo(holiday)
+                          : null;
+                        const isWeekendDay = isWeekend(date);
+                        const isDropTarget =
+                          dragState.dragOverCell?.consultantId ===
+                            consultant.id &&
+                          dragState.dragOverCell?.date ===
+                            format(date, "yyyy-MM-dd");
 
-                            // Cell highlighting for special dates
-                            let cellClass =
-                              "p-2 border-l min-w-[80px] transition-all";
-                            if (isDropTarget) {
-                              cellClass +=
-                                " bg-blue-200 border-2 border-blue-600";
-                            } else if (holiday) {
-                              cellClass += " bg-red-50/30";
-                            } else if (isWeekendDay) {
-                              cellClass += " bg-blue-50/30";
+                        return (
+                          <div
+                            key={`${consultant.id}-${date.toISOString()}`}
+                            className={`p-2 border-l transition-all ${
+                              isDropTarget
+                                ? "bg-blue-200 border-2 border-blue-600"
+                                : ""
+                            } ${isOnLeave ? "bg-green-100" : ""}`}
+                            style={{
+                              minHeight: `${responsiveConfig.cellMinHeight}px`,
+                              gridColumn: dateIndex + 2,
+                              gridRow: consultantIndex + 2,
+                              backgroundColor: holiday
+                                ? holidayInfo?.isPrimary
+                                  ? "rgb(254, 242, 242)"
+                                  : "rgb(255, 251, 235)"
+                                : isWeekendDay
+                                  ? "rgb(239, 246, 255)"
+                                  : consultantIndex % 2 === 0
+                                    ? "hsl(var(--muted) / 0.2)"
+                                    : "hsl(var(--background))"
+                            }}
+                            onDragOver={e =>
+                              handleDragOver(
+                                e,
+                                consultant.id,
+                                format(date, "yyyy-MM-dd")
+                              )
                             }
-                            if (isOnLeave) {
-                              cellClass += " bg-green-100";
+                            onDrop={e =>
+                              handleDrop(
+                                e,
+                                consultant.id,
+                                format(date, "yyyy-MM-dd")
+                              )
                             }
+                          >
+                            <div className="space-y-1">
+                              {isOnLeave && (
+                                <div className="text-xs text-green-600 text-center">
+                                  <UserX className="w-3 h-3 mx-auto" />
+                                  On Leave
+                                </div>
+                              )}
 
-                            return (
-                              <TableCell
-                                key={date.toISOString()}
-                                className={cellClass}
-                                onDragOver={e =>
-                                  handleDragOver(
-                                    e,
-                                    consultant.id,
-                                    format(date, "yyyy-MM-dd")
-                                  )
-                                }
-                                onDrop={e =>
-                                  handleDrop(
-                                    e,
-                                    consultant.id,
-                                    format(date, "yyyy-MM-dd")
-                                  )
-                                }
-                              >
-                                <div className="space-y-1">
-                                  {/* Special date indicators */}
-                                  {(holiday || isWeekendDay) && (
-                                    <div className="text-xs text-center mb-1">
-                                      {holiday ? (
-                                        <div className="space-y-0.5">
-                                          <div className="flex items-center justify-center gap-0.5">
-                                            <Calendar className="w-3 h-3 text-red-600" />
-                                          </div>
-                                          {renderArrayBadges(
-                                            holiday.types?.map(type =>
-                                              type === "public"
-                                                ? "Public"
-                                                : type === "bank"
-                                                  ? "Bank"
-                                                  : type === "regional"
-                                                    ? "Regional"
-                                                    : type
-                                                        .charAt(0)
-                                                        .toUpperCase() +
-                                                      type.slice(1)
-                                            ),
-                                            "bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800"
-                                          )}
-                                          <div className="text-red-800 font-medium text-xs leading-tight">
-                                            {holiday.local_name}
-                                          </div>
-                                          {holiday.region &&
-                                            renderArrayBadges(
-                                              holiday.region,
-                                              "bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800"
-                                            )}
-                                        </div>
-                                      ) : (
-                                        <Badge
-                                          variant="outline"
-                                          className="text-xs px-1 py-0 h-4 bg-blue-50 text-blue-700 border-blue-200"
-                                        >
-                                          Weekend
-                                        </Badge>
+                              {cellAssignments.map(assignment => {
+                                const isBeingDragged =
+                                  dragState.isDragging &&
+                                  dragState.draggedPayroll?.id ===
+                                    assignment.id;
+
+                                return (
+                                  <div
+                                    key={assignment.id}
+                                    className={`
+                                      bg-card border rounded-lg shadow-sm px-2 py-1.5 mb-1 text-xs
+                                      transition-all duration-200 hover:shadow-md
+                                      ${
+                                        assignment.isGhost
+                                          ? "opacity-50 border-dashed pointer-events-none"
+                                          : ""
+                                      }
+                                      ${
+                                        assignment.isBackup
+                                          ? "border-red-200 dark:border-red-800"
+                                          : "border-gray-200"
+                                      }
+                                      ${
+                                        isBeingDragged
+                                          ? "opacity-30 scale-95"
+                                          : ""
+                                      }
+                                      ${
+                                        isPreviewMode && !assignment.isGhost
+                                          ? "cursor-move"
+                                          : ""
+                                      }
+                                    `}
+                                    style={{
+                                      backgroundColor:
+                                        getProcessingTimeColor(
+                                          assignment.processingTime,
+                                          false,
+                                          assignment.isBackup,
+                                          assignment.isGhost,
+                                          isAssignmentMoved(assignment)
+                                        ),
+                                    }}
+                                    draggable={
+                                      isPreviewMode && !assignment.isGhost
+                                    }
+                                    onDragStart={e =>
+                                      handleDragStart(e, assignment)
+                                    }
+                                    onDragEnd={handleDragEnd}
+                                  >
+                                    <div
+                                      className={`font-medium ${isExpanded ? 'text-sm' : 'text-xs'} mb-1 ${getTextColorForProcessingTime(
+                                        assignment.processingTime,
+                                        assignment.isGhost
+                                      )}`}
+                                    >
+                                      {assignment.payrollName}
+                                    </div>
+                                    <div
+                                      className={`mb-1 text-xs ${getTextColorForProcessingTime(
+                                        assignment.processingTime,
+                                        assignment.isGhost
+                                      )}`}
+                                    >
+                                      {assignment.employeeCount} emp
+                                      {isExpanded && assignment.processingTime && (
+                                        <span className="ml-2">• {assignment.processingTime}h</span>
                                       )}
                                     </div>
-                                  )}
-
-                                  {isOnLeave && (
-                                    <div className="text-xs text-green-600 text-center">
-                                      <UserX className="w-3 h-3 mx-auto" />
-                                      On Leave
+                                    <div
+                                      className={`text-xs ${getTextColorForProcessingTime(
+                                        assignment.processingTime,
+                                        assignment.isGhost
+                                      )}`}
+                                      title={assignment.clientName}
+                                    >
+                                      {isExpanded 
+                                        ? assignment.clientName 
+                                        : assignment.clientName.length > 15 
+                                          ? assignment.clientName.substring(0, 15) + "..." 
+                                          : assignment.clientName
+                                      }
                                     </div>
-                                  )}
-
-                                  {cellAssignments.map(assignment => {
-                                    const isBeingDragged =
-                                      dragState.isDragging &&
-                                      dragState.draggedPayroll?.id ===
-                                        assignment.id;
-
-                                    return (
-                                      <div
-                                        key={assignment.id}
-                                        className={`
-                                          bg-card border rounded-lg shadow-sm px-2 py-1.5 mb-1 text-xs
-                                          transition-all duration-200 hover:shadow-md
-                                          ${
-                                            assignment.isGhost
-                                              ? "opacity-50 border-dashed pointer-events-none"
-                                              : ""
-                                          }
-                                          ${
-                                            assignment.isBackup
-                                              ? "border-red-200 dark:border-red-800"
-                                              : "border-gray-200"
-                                          }
-                                          ${
-                                            isBeingDragged
-                                              ? "opacity-30 scale-95"
-                                              : ""
-                                          }
-                                          ${
-                                            isPreviewMode && !assignment.isGhost
-                                              ? "cursor-move"
-                                              : ""
-                                          }
-                                        `}
-                                        style={{
-                                          backgroundColor:
-                                            getProcessingTimeColor(
-                                              assignment.processingTime,
-                                              false,
-                                              assignment.isBackup,
-                                              assignment.isGhost,
-                                              isAssignmentMoved(assignment)
-                                            ),
-                                        }}
-                                        draggable={
-                                          isPreviewMode && !assignment.isGhost
-                                        }
-                                        onDragStart={e =>
-                                          handleDragStart(e, assignment)
-                                        }
-                                        onDragEnd={handleDragEnd}
+                                    {assignment.isBackup && (
+                                      <Badge
+                                        variant="outline"
+                                        className="text-xs mt-1"
+                                        title={`Backup for ${assignment.originalConsultantName || "primary consultant"}`}
                                       >
-                                        <div
-                                          className={`font-medium text-sm mb-1 ${getTextColorForProcessingTime(
-                                            assignment.processingTime,
-                                            assignment.isGhost
-                                          )}`}
-                                        >
-                                          {assignment.payrollName}
-                                        </div>
-                                        <div
-                                          className={`mb-1 ${getTextColorForProcessingTime(
-                                            assignment.processingTime,
-                                            assignment.isGhost
-                                          )}`}
-                                        >
-                                          {assignment.employeeCount} emp
-                                        </div>
-                                        <div
-                                          className={getTextColorForProcessingTime(
-                                            assignment.processingTime,
-                                            assignment.isGhost
-                                          )}
-                                        >
-                                          {assignment.clientName}
-                                        </div>
-                                        {assignment.isBackup && (
-                                          <Badge
-                                            variant="outline"
-                                            className="text-xs mt-1"
-                                          >
-                                            Backup
-                                          </Badge>
-                                        )}
-                                        {assignment.isGhost && (
-                                          <div className="text-muted-foreground text-xs mt-1 italic">
-                                            Moved to{" "}
-                                            {assignment.ghostFromConsultant}
-                                          </div>
-                                        )}
-                                        {!assignment.isGhost &&
-                                          getOriginalConsultantName(
-                                            assignment
-                                          ) && (
-                                            <div className="text-gray-600 dark:text-gray-400 text-xs mt-1 italic">
-                                              Moved from{" "}
-                                              {getOriginalConsultantName(
-                                                assignment
-                                              )}
-                                            </div>
-                                          )}
+                                        🔄{" "}
+                                        {assignment.originalConsultantName ||
+                                          "Backup"}
+                                      </Badge>
+                                    )}
+                                    {assignment.isGhost && (
+                                      <div className="text-muted-foreground text-xs mt-1 italic">
+                                        Moved to{" "}
+                                        {assignment.ghostFromConsultant}
                                       </div>
-                                    );
-                                  })}
-                                </div>
-                              </TableCell>
-                            );
-                          })}
-                        </TableRow>
-                      );
-                    })}
-              </TableBody>
-            </Table>
+                                    )}
+                                    {!assignment.isGhost &&
+                                      getOriginalConsultantName(
+                                        assignment
+                                      ) && (
+                                        <div className="text-gray-600 dark:text-gray-400 text-xs mt-1 italic">
+                                          Moved from{" "}
+                                          {getOriginalConsultantName(
+                                            assignment
+                                          )}
+                                        </div>
+                                      )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })
+                    ].flat();
+                  })
+                  .flat()}
+            </div>
           </div>
         </CardContent>
       </Card>

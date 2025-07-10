@@ -27,7 +27,6 @@ import {
   GeneratePayrollDatesQueryDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
 import { useSmartPolling } from "@/hooks/use-polling";
-import { useUserRole } from "@/hooks/use-user-role";
 
 
 interface PayrollWithDateCount {
@@ -52,7 +51,6 @@ interface PayrollWithDateCount {
 }
 
 export function PayrollsMissingDates() {
-  const { userRole } = useUserRole();
   const { loading, error, data, refetch, startPolling, stopPolling } = useQuery(
     GetPayrollsMissingDatesDocument,
     {
@@ -102,14 +100,8 @@ export function PayrollsMissingDates() {
 
   console.log("Missing payroll IDs:", missingDatesPayrollIds);
 
-  if (
-    !userRole ||
-    !["org_admin", "developer"].includes(userRole) ||
-    missingDatesPayrollIds.length === 0
-  ) {
-    console.log(
-      "User does not have permission or no payrolls are missing dates."
-    );
+  if (missingDatesPayrollIds.length === 0) {
+    console.log("No payrolls are missing dates.");
     return null;
   }
 

@@ -1,0 +1,105 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_payroll_date_types_object
+  fields:
+    - name: created_at
+      type: timestamptz
+      description: Timestamp when the date type was created
+    - name: description
+      type: string
+      description: Detailed description of how this date type works
+    - name: id
+      type: uuid
+      description: Unique identifier for the payroll date type
+    - name: name
+      type: enum!
+      description: Name of the date type (Fixed, Last Working Day, etc.)
+    - name: updated_at
+      type: timestamptz
+      description: Timestamp when the date type was last updated
+  graphql:
+    typeName: insert_payroll_date_types_object
+    inputTypeName: insert_payroll_date_types_object_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_payroll_date_types_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_payroll_date_types_object
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - created_at
+          - description
+          - id
+          - name
+          - updated_at
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_payroll_date_types_response
+  description: Responses from the 'insert_payroll_date_types' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[payroll_date_types!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: insert_payroll_date_types_response
+    inputTypeName: insert_payroll_date_types_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_payroll_date_types_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_payroll_date_types_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: insert_payroll_date_types
+  outputType: insert_payroll_date_types_response!
+  arguments:
+    - name: objects
+      type: "[insert_payroll_date_types_object!]!"
+    - name: post_check
+      type: payroll_date_types_bool_exp
+      description: Insert permission predicate over the 'payroll_date_types' collection
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: insert_payroll_date_types
+  graphql:
+    rootFieldName: insert_payroll_date_types
+    rootFieldKind: Mutation
+  description: Insert into the payroll_date_types table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: insert_payroll_date_types
+  permissions:
+    - role: admin
+      allowExecution: true
+

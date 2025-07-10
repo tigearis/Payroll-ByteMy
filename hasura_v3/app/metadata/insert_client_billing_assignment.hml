@@ -1,0 +1,126 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_client_billing_assignment_object
+  fields:
+    - name: billing_frequency
+      type: string
+      description: "How often this service is billed: Per Job, Monthly, Quarterly, etc."
+    - name: billing_plan_id
+      type: uuid!
+    - name: client_id
+      type: uuid!
+    - name: created_at
+      type: timestamptz
+    - name: custom_rate
+      type: bigdecimal
+      description: Client-specific rate override (null uses standard rate)
+    - name: effective_date
+      type: date
+      description: When this rate agreement becomes effective
+    - name: end_date
+      type: date
+    - name: id
+      type: uuid
+    - name: is_active
+      type: boolean
+    - name: is_enabled
+      type: boolean
+      description: Whether this service is enabled for this client
+    - name: start_date
+      type: date!
+    - name: updated_at
+      type: timestamptz
+  graphql:
+    typeName: insert_client_billing_assignment_object
+    inputTypeName: insert_client_billing_assignment_object_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_client_billing_assignment_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_client_billing_assignment_object
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - billing_frequency
+          - billing_plan_id
+          - client_id
+          - created_at
+          - custom_rate
+          - effective_date
+          - end_date
+          - id
+          - is_active
+          - is_enabled
+          - start_date
+          - updated_at
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: insert_client_billing_assignment_response
+  description: Responses from the 'insert_client_billing_assignment' procedure
+  fields:
+    - name: affected_rows
+      type: int_32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[client_billing_assignment!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: insert_client_billing_assignment_response
+    inputTypeName: insert_client_billing_assignment_response_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: payroll
+      dataConnectorObjectType: insert_client_billing_assignment_response
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: insert_client_billing_assignment_response
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affected_rows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: insert_client_billing_assignment
+  outputType: insert_client_billing_assignment_response!
+  arguments:
+    - name: objects
+      type: "[insert_client_billing_assignment_object!]!"
+    - name: post_check
+      type: client_billing_assignment_bool_exp
+      description: Insert permission predicate over the 'client_billing_assignment'
+        collection
+  source:
+    dataConnectorName: payroll
+    dataConnectorCommand:
+      procedure: insert_client_billing_assignment
+  graphql:
+    rootFieldName: insert_client_billing_assignment
+    rootFieldKind: Mutation
+  description: Insert into the client_billing_assignment table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: insert_client_billing_assignment
+  permissions:
+    - role: admin
+      allowExecution: true
+

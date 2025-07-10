@@ -1,3 +1,4 @@
+// debug-auth.ts
 #!/usr/bin/env ts-node
 
 /**
@@ -15,8 +16,8 @@ import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
 
 // ES module setup
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const filename = fileURLToPath(import.meta.url);
+const dirname = dirname(filename);
 
 // Load environment variables
 config({ path: resolve(__dirname, '../.env') });
@@ -148,13 +149,13 @@ async function testAuthScenarios() {
     if (result.errors) {
       console.log('  ❌ Introspection failed:', result.errors[0]?.message);
     } else {
-      const usersAggregateField = result.data.__type.fields.find((field: any) => field.name === 'usersAggregate');
+      const usersAggregateField = result.data.type.fields.find((field: any) => field.name === 'usersAggregate');
       if (usersAggregateField) {
         console.log('  ✅ usersAggregate field exists in schema');
       } else {
         console.log('  ❌ usersAggregate field NOT found in schema');
         console.log('  Available user-related fields:');
-        const userFields = result.data.__type.fields.filter((field: any) => field.name.includes('user'));
+        const userFields = result.data.type.fields.filter((field: any) => field.name.includes('user'));
         userFields.forEach((field: any) => console.log(`    - ${field.name}`));
       }
     }

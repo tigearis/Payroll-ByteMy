@@ -261,7 +261,7 @@ function analyzeInheritance(results) {
     // Check expected inheritance patterns
     const expectedPatterns = {
       'org_admin should access everything manager can': 
-        roleResults.org_admin.fieldCount >= roleResults.manager.fieldCount,
+        roleResults.orgadmin.fieldCount >= roleResults.manager.fieldCount,
       'manager should access everything consultant can': 
         roleResults.manager.fieldCount >= roleResults.consultant.fieldCount,
       'consultant should access everything viewer can': 
@@ -346,8 +346,8 @@ async function main() {
 }
 
 // Run if called directly
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const filename = fileURLToPath(import.meta.url);
+const dirname = dirname(filename);
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   main();

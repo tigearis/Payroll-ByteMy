@@ -1,0 +1,24 @@
+table:
+  name: team_capacity_by_position
+  schema: public
+configuration:
+  column_config:
+    avg_admin_percentage:
+      custom_name: avgAdminPercentage
+    consultant_count:
+      custom_name: consultantCount
+    total_admin_hours:
+      custom_name: totalAdminHours
+    total_payroll_capacity:
+      custom_name: totalPayrollCapacity
+    total_work_hours:
+      custom_name: totalWorkHours
+  custom_column_names:
+    avg_admin_percentage: avgAdminPercentage
+    consultant_count: consultantCount
+    total_admin_hours: totalAdminHours
+    total_payroll_capacity: totalPayrollCapacity
+    total_work_hours: totalWorkHours
+  custom_root_fields: {}
+apollo_federation_config:
+  enable: v1

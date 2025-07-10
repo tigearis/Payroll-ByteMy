@@ -1,0 +1,244 @@
+# Advanced Reporting and Analytics Operations - Semi-Automated Billing System
+
+# Financial Performance Reporting
+query GetFinancialPerformanceData {
+  # Current period metrics
+  currentPeriod: billingInvoiceAggregate {
+    aggregate {
+      count
+      sum {
+        totalAmount
+        totalHours
+        payrollCount
+      }
+      avg {
+        totalAmount
+      }
+    }
+  }
+}
+
+# Revenue Analytics
+query GetRevenueAnalytics {
+  # Total revenue metrics
+  totalRevenue: billingInvoiceAggregate {
+    aggregate {
+      sum {
+        totalAmount
+      }
+    }
+  }
+
+  # Revenue trends
+  monthlyRevenue: billingInvoice(
+    orderBy: { createdAt: ASC }
+    limit: 100
+  ) {
+    totalAmount
+    createdAt
+  }
+}
+
+# Client Profitability Analysis
+query GetClientProfitabilityAnalysis {
+  clients(
+    limit: 50
+    orderBy: { name: ASC }
+  ) {
+    id
+    name
+    contactPerson
+    contactEmail
+    createdAt
+  }
+}
+
+# Client Performance Metrics  
+query GetClientPerformanceMetrics($clientId: uuid!) {
+  client: clientById(id: $clientId) {
+    id
+    name
+    contactPerson
+    contactEmail
+    createdAt
+  }
+}
+
+# Client Forecast Data
+query GetClientForecastData($clientId: uuid!) {
+  client: clientById(id: $clientId) {
+    id
+    name
+  }
+}
+
+# Business Intelligence Data
+query GetBusinessIntelligenceData {
+  # Overall system metrics
+  systemMetrics: billingInvoiceAggregate {
+    aggregate {
+      count
+      sum {
+        totalAmount
+        totalHours
+        payrollCount
+      }
+      avg {
+        totalAmount
+      }
+    }
+  }
+
+  # Client distribution
+  clientMetrics: clientsAggregate {
+    aggregate {
+      count
+    }
+  }
+
+  # Service performance
+  serviceMetrics: billingItems(
+    limit: 100
+    orderBy: { createdAt: DESC }
+  ) {
+    serviceName
+    totalAmount
+    hourlyRate
+    quantity
+    createdAt
+  }
+
+  # Invoice status distribution
+  invoicesByStatus: billingInvoice(
+    limit: 100
+    orderBy: { createdAt: DESC }
+  ) {
+    status
+    totalAmount
+    createdAt
+  }
+}
+
+# Automation Metrics
+query GetAutomationMetrics {
+  # Billing items processed
+  billingItemsProcessed: billingItemsAggregate {
+    aggregate {
+      count
+      sum {
+        totalAmount
+      }
+    }
+  }
+
+  # Invoices generated
+  invoicesGenerated: billingInvoiceAggregate {
+    aggregate {
+      count
+      sum {
+        totalAmount
+      }
+    }
+  }
+
+  # Approved vs manual items
+  approvedItems: billingItemsAggregate(
+    where: {
+      isApproved: { _eq: true }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+
+  pendingApproval: billingItemsAggregate(
+    where: {
+      isApproved: { _eq: false }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Efficiency Analytics
+query GetEfficiencyAnalytics {
+  # Processing time metrics
+  billingItems(
+    orderBy: { createdAt: DESC }
+    limit: 100
+  ) {
+    id
+    createdAt
+    updatedAt
+    isApproved
+    approvalDate
+    serviceName
+  }
+
+  # Invoice generation efficiency
+  invoices: billingInvoice(
+    orderBy: { createdAt: DESC }
+    limit: 100
+  ) {
+    id
+    createdAt
+    issuedDate
+    status
+    totalAmount
+  }
+}
+
+# Financial KPI Summary
+query GetFinancialKpiSummary {
+  # Revenue metrics
+  totalRevenue: billingInvoiceAggregate(
+    where: {
+      status: { _neq: "cancelled" }
+    }
+  ) {
+    aggregate {
+      sum {
+        totalAmount
+      }
+      count
+    }
+  }
+
+  # Paid invoices
+  paidRevenue: billingInvoiceAggregate(
+    where: {
+      status: { _eq: "paid" }
+    }
+  ) {
+    aggregate {
+      sum {
+        totalAmount
+      }
+      count
+    }
+  }
+
+  # Outstanding invoices
+  outstandingRevenue: billingInvoiceAggregate(
+    where: {
+      status: { _in: ["sent", "viewed"] }
+    }
+  ) {
+    aggregate {
+      sum {
+        totalAmount
+      }
+      count
+    }
+  }
+
+  # Client metrics
+  activeClients: clientsAggregate {
+    aggregate {
+      count
+    }
+  }
+}

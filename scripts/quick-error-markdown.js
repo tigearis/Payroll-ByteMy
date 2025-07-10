@@ -134,7 +134,7 @@ function formatLintOutput(output) {
 
 // Main execution
 const markdown = convertLintToMarkdown();
-const outputFile = process.argv.includes("--stdout") ? null : "LINT_REPORT.md";
+const outputFile = process.argv.includes("--stdout") ? null : "LINTREPORT.md";
 
 if (outputFile) {
   writeFileSync(outputFile, markdown);
