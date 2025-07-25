@@ -16,6 +16,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useState } from "react";
+import { PermissionGuard } from "@/components/auth/permission-guard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,7 +27,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PermissionGuard } from "@/components/auth/permission-guard";
 import { safeFormatDate } from "@/lib/utils/date-utils";
 
 // Mock data for initial implementation - will be replaced with real queries

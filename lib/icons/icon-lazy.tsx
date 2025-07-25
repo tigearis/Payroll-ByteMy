@@ -1,8 +1,8 @@
 // lib/icons/icon-lazy.tsx
 "use client";
 
-import { Suspense, lazy } from "react";
 import { LucideProps } from "lucide-react";
+import { Suspense, lazy } from "react";
 
 // ============================================================================
 // CODE SPLITTING: LAZY LOAD ICON SETS

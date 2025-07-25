@@ -7,8 +7,8 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { useHierarchicalPermissions } from "./use-hierarchical-permissions";
 import type { UserRole } from "@/lib/permissions/hierarchical-permissions";
+import { useHierarchicalPermissions } from "./use-hierarchical-permissions";
 
 export interface UserManagementHook {
   // Permission checks

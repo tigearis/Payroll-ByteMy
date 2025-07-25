@@ -1069,7 +1069,14 @@ function StaffCard({
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <CardTitle className="text-lg">{member.name}</CardTitle>
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-lg">{member.name}</CardTitle>
+              {member.isStaff ? (
+                <Badge className="bg-blue-100 text-blue-800">Staff</Badge>
+              ) : (
+                <Badge variant="outline" className="text-gray-600">Non-Staff</Badge>
+              )}
+            </div>
             <p className="text-sm text-gray-500">{member.email}</p>
           </div>
           <DropdownMenu>

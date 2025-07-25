@@ -25,7 +25,7 @@ import { usePathname } from "next/navigation";
 import { twMerge } from "tailwind-merge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { usePermissions } from "@/hooks/use-permissions";
+import { usePermissions, useRole } from "@/hooks/use-permissions";
 import { useFeatureFlags } from "@/lib/feature-flags";
 import { useLayoutPreferences } from "@/lib/preferences/layout-preferences";
 import { ThemeToggle } from "./theme-toggle";
@@ -167,6 +167,7 @@ export function Sidebar() {
   const pathname = usePathname();
   const { isLoaded } = useUser();
   const { can, isLoaded: permissionsLoaded } = usePermissions();
+  const { isDeveloper } = useRole();
   const { sidebarCollapsed, toggleSidebar } = useLayoutPreferences();
   const { flags } = useFeatureFlags();
 
@@ -216,6 +217,11 @@ export function Sidebar() {
       return false;
     }
     if (route.href === '/security' && !flags.securityReporting) {
+      return false;
+    }
+    
+    // Hide reports for non-developers
+    if (route.href === '/reports' && !isDeveloper) {
       return false;
     }
     

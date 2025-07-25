@@ -1,5 +1,5 @@
-// debug-auth.ts
 #!/usr/bin/env ts-node
+// debug-auth.ts
 
 /**
  * Authentication Debugging Script

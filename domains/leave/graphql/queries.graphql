@@ -499,3 +499,76 @@ query GetTeamLeaveCalendar($managerUserId: uuid!, $startDate: date!, $endDate: d
     ...LeaveCalendarItem
   }
 }
+
+# Manager hierarchical queries for leave management
+query GetSubordinateUsers($managerId: uuid!) {
+  users(
+    where: { 
+      managerId: { _eq: $managerId }
+      isActive: { _eq: true }
+    }
+    orderBy: { name: ASC }
+  ) {
+    id
+    name
+    email
+    role
+    isStaff
+    isActive
+    managerId
+  }
+}
+
+query GetManagerTeamForLeave($managerId: uuid!) {
+  # Get all users that this manager can create leave for
+  users(
+    where: {
+      _or: [
+        # Direct reports
+        { managerId: { _eq: $managerId } }
+        # Second level reports (reports of reports) - only for org_admin and developer
+        { managerUser: { managerId: { _eq: $managerId } } }
+      ]
+      isActive: { _eq: true }
+    }
+    orderBy: { name: ASC }
+  ) {
+    id
+    name
+    email
+    role
+    isStaff
+    isActive
+    managerId
+    managerUser {
+      id
+      name
+      email
+      role
+    }
+  }
+}
+
+# Get all active users for developers/admins to create leave
+query GetAllUsersForLeave {
+  users(
+    where: { 
+      isActive: { _eq: true }
+    }
+    orderBy: { name: ASC }
+  ) {
+    id
+    name
+    email
+    role
+    isStaff
+    isActive
+    managerId
+    managerUser {
+      id
+      name
+      email
+      role
+    }
+  }
+}

@@ -3,9 +3,15 @@ import {
   GetLeaveDocument, 
   GetLeaveDashboardStatsDocument,
   CreateLeaveDocument,
+  CreateLeaveForEmployeeDocument,
+  CreatePendingLeaveForEmployeeDocument,
+  GetManagerTeamForLeaveDocument,
   type GetLeaveQuery,
   type GetLeaveDashboardStatsQuery,
-  type CreateLeaveMutation
+  type CreateLeaveMutation,
+  type CreateLeaveForEmployeeMutation,
+  type CreatePendingLeaveForEmployeeMutation,
+  type GetManagerTeamForLeaveQuery
 } from "@/domains/leave/graphql/generated/graphql";
 import { executeTypedQuery, executeTypedMutation } from "@/lib/apollo/query-helpers";
 import { withAuth } from "@/lib/auth/api-auth";
@@ -106,10 +112,20 @@ export const GET = withAuth(async (req) => {
 });
 
 // POST /api/leave - Create new leave request
-export const POST = withAuth(async (req) => {
+export const POST = withAuth(async (req, session) => {
   try {
     const body = await req.json();
-    const { userId, startDate, endDate, leaveType, reason } = body;
+    const { 
+      userId, 
+      startDate, 
+      endDate, 
+      leaveType, 
+      reason, 
+      isForSomeoneElse, 
+      managerCreateRequest, 
+      managerId,
+      autoApprove 
+    } = body;
 
     // Validate required fields
     if (!userId || !startDate || !endDate || !leaveType) {
@@ -161,7 +177,82 @@ export const POST = withAuth(async (req) => {
       );
     }
 
-    // Create leave request
+    // Handle manager-created requests
+    if (managerCreateRequest && managerId) {
+      // Verify the manager has permission to create leave for this user
+      const canManageTeamLeave = ["manager", "org_admin", "developer"].includes(session.role);
+      
+      if (!canManageTeamLeave) {
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: "Insufficient permissions to create leave for team members" 
+          },
+          { status: 403 }
+        );
+      }
+
+      // Verify the target user is a subordinate of the manager
+      const teamData = await executeTypedQuery<GetManagerTeamForLeaveQuery>(
+        GetManagerTeamForLeaveDocument,
+        { managerId }
+      );
+
+      const isSubordinate = teamData.users?.some(user => user.id === userId);
+      
+      if (!isSubordinate) {
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: "You can only create leave requests for your direct or indirect reports" 
+          },
+          { status: 403 }
+        );
+      }
+
+      // Use appropriate mutation based on auto-approve setting
+      if (autoApprove) {
+        const data = await executeTypedMutation<CreateLeaveForEmployeeMutation>(
+          CreateLeaveForEmployeeDocument,
+          {
+            userId,
+            startDate,
+            endDate,
+            leaveType,
+            reason: reason || null,
+          }
+        );
+
+        return NextResponse.json({
+          success: true,
+          data: {
+            leave: data.insertLeave,
+            autoApproved: true
+          }
+        });
+      } else {
+        const data = await executeTypedMutation<CreatePendingLeaveForEmployeeMutation>(
+          CreatePendingLeaveForEmployeeDocument,
+          {
+            userId,
+            startDate,
+            endDate,
+            leaveType,
+            reason: reason || null,
+          }
+        );
+
+        return NextResponse.json({
+          success: true,
+          data: {
+            leave: data.insertLeave,
+            autoApproved: false
+          }
+        });
+      }
+    }
+
+    // Regular user creating their own leave request
     const data = await executeTypedMutation<CreateLeaveMutation>(
       CreateLeaveDocument,
       {

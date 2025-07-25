@@ -9,14 +9,14 @@ export const metadata: Metadata = {
 
 export default function ReportsPage() {
   return (
-    <PermissionGuard resource="reports" action="read" fallback={
+    <PermissionGuard role="developer" fallback={
       <div className="container mx-auto py-6">
         <div className="text-center py-12">
           <h3 className="text-lg font-medium mb-2 text-red-800">
             Access Denied
           </h3>
           <p className="text-red-600">
-            You don't have permission to access reports. Contact your administrator for access.
+            Reports are only accessible to developers. Contact your administrator for access.
           </p>
         </div>
       </div>

@@ -80,6 +80,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ClientServiceAgreements } from "@/domains/billing/components/service-catalog/client-service-agreements";
 import {
   GetClientByIdDocument,
   UpdateClientDocument,
@@ -87,7 +88,6 @@ import {
   ArchiveClientDocument,
   type GetClientByIdQuery,
 } from "@/domains/clients/graphql/generated/graphql";
-import { ClientServiceAgreements } from "@/domains/billing/components/service-catalog/client-service-agreements";
 import { QuickEmailDialog } from "@/domains/email/components/quick-email-dialog";
 import { NotesListWithAdd } from "@/domains/notes/components/notes-list";
 import { type PayrollListItemFragment } from "@/domains/payrolls/graphql/generated/graphql";

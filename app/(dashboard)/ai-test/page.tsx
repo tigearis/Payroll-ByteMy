@@ -1,15 +1,15 @@
 "use client";
 
 import { useUser } from "@clerk/nextjs";
-import { 
-  CheckCircle, 
-  XCircle, 
-  AlertCircle, 
+import {
+  CheckCircle,
+  XCircle,
+  AlertCircle,
   Loader2,
   Bot,
   Database,
   Shield,
-  Zap
+  Zap,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { AIChat } from "@/components/ai/chat-interface";
@@ -109,25 +109,33 @@ export default function AITestPage() {
     tests[0] = {
       ...tests[0],
       status: isLoaded && user ? "pass" : "fail",
-      message: isLoaded && user 
-        ? `Authenticated as ${user.firstName} ${user.lastName} (${user.publicMetadata?.role || "no role"})` 
-        : "Not authenticated or user data not loaded",
-      details: user ? JSON.stringify({
-        userId: user.id,
-        role: user.publicMetadata?.role,
-        email: user.emailAddresses[0]?.emailAddress,
-      }, null, 2) : undefined,
+      message:
+        isLoaded && user
+          ? `Authenticated as ${user.firstName} ${user.lastName} (${user.publicMetadata?.role || "no role"})`
+          : "Not authenticated or user data not loaded",
+      details: user
+        ? JSON.stringify(
+            {
+              userId: user.id,
+              role: user.publicMetadata?.role,
+              email: user.emailAddresses[0]?.emailAddress,
+            },
+            null,
+            2
+          )
+        : undefined,
     };
     setTestResults([...tests]);
 
     // Test 2: Environment Variables
     await new Promise(resolve => setTimeout(resolve, 500));
-    const envPassing = environmentStatus.hasura_url && environmentStatus.clerk_auth;
+    const envPassing =
+      environmentStatus.hasura_url && environmentStatus.clerk_auth;
     tests[1] = {
       ...tests[1],
       status: envPassing ? "pass" : "fail",
-      message: envPassing 
-        ? "All required environment variables are configured" 
+      message: envPassing
+        ? "All required environment variables are configured"
         : "Some environment variables are missing",
       details: JSON.stringify(environmentStatus, null, 2),
     };
@@ -140,7 +148,7 @@ export default function AITestPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-user-role": (user?.publicMetadata?.role as string) || "viewer",
+          "x-hasura-role": (user?.publicMetadata?.role as string) || "viewer",
         },
         body: JSON.stringify({
           message: "Hello, this is a test message.",
@@ -151,12 +159,12 @@ export default function AITestPage() {
       });
 
       const chatData = await chatResponse.json();
-      
+
       tests[2] = {
         ...tests[2],
         status: chatResponse.ok ? "pass" : "fail",
-        message: chatResponse.ok 
-          ? "AI chat API is working correctly" 
+        message: chatResponse.ok
+          ? "AI chat API is working correctly"
           : `Chat API failed: ${chatData.error || "Unknown error"}`,
         details: JSON.stringify(chatData, null, 2),
       };
@@ -177,7 +185,7 @@ export default function AITestPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-user-role": (user?.publicMetadata?.role as string) || "viewer",
+          "x-hasura-role": (user?.publicMetadata?.role as string) || "viewer",
         },
         body: JSON.stringify({
           test: "basic functionality",
@@ -191,12 +199,12 @@ export default function AITestPage() {
       const testData = await testResponse.json();
       console.log("Test endpoint working:", testData);
 
-      // Now test the full query endpoint 
+      // Now test the full query endpoint
       const queryResponse = await fetch("/api/ai-assistant/query", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-user-role": (user?.publicMetadata?.role as string) || "viewer",
+          "x-hasura-role": (user?.publicMetadata?.role as string) || "viewer",
         },
         body: JSON.stringify({
           request: "Show me recent payrolls",
@@ -210,25 +218,31 @@ export default function AITestPage() {
       // Get response text first to handle JSON parsing errors better
       const responseText = await queryResponse.text();
       let queryData;
-      
+
       try {
         queryData = JSON.parse(responseText);
       } catch (jsonError) {
-        throw new Error(`JSON parsing failed. Response status: ${queryResponse.status}, Response body: "${responseText.substring(0, 200)}..."`);
+        throw new Error(
+          `JSON parsing failed. Response status: ${queryResponse.status}, Response body: "${responseText.substring(0, 200)}..."`
+        );
       }
-      
+
       tests[3] = {
         ...tests[3],
         status: queryResponse.ok ? "pass" : "fail",
-        message: queryResponse.ok 
-          ? "AI query generation and execution working" 
+        message: queryResponse.ok
+          ? "AI query generation and execution working"
           : `Query API failed: ${queryData.error || "Unknown error"}`,
-        details: JSON.stringify({
-          query: queryData.query?.substring(0, 200) + "...",
-          explanation: queryData.explanation,
-          data: queryData.data ? "Data returned successfully" : "No data",
-          errors: queryData.errors,
-        }, null, 2),
+        details: JSON.stringify(
+          {
+            query: queryData.query?.substring(0, 200) + "...",
+            explanation: queryData.explanation,
+            data: queryData.data ? "Data returned successfully" : "No data",
+            errors: queryData.errors,
+          },
+          null,
+          2
+        ),
       };
     } catch (error) {
       tests[3] = {
@@ -246,7 +260,7 @@ export default function AITestPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-user-role": (user?.publicMetadata?.role as string) || "viewer",
+          "x-hasura-role": (user?.publicMetadata?.role as string) || "viewer",
         },
         body: JSON.stringify({
           pathname: "/ai-test",
@@ -255,12 +269,12 @@ export default function AITestPage() {
       });
 
       const contextData = await contextResponse.json();
-      
+
       tests[4] = {
         ...tests[4],
         status: contextResponse.ok ? "pass" : "fail",
-        message: contextResponse.ok 
-          ? "Context extraction working correctly" 
+        message: contextResponse.ok
+          ? "Context extraction working correctly"
           : `Context API failed: ${contextData.error || "Unknown error"}`,
         details: JSON.stringify(contextData, null, 2),
       };
@@ -279,7 +293,8 @@ export default function AITestPage() {
       ...tests[5],
       status: "pass",
       message: "Rate limiting is configured with in-memory fallback",
-      details: "Using in-memory rate limiting. Redis configuration is optional for development.",
+      details:
+        "Using in-memory rate limiting. Redis configuration is optional for development.",
     };
     setTestResults([...tests]);
 
@@ -312,13 +327,14 @@ export default function AITestPage() {
     }
   };
 
-  const overallStatus = testResults.length > 0 
-    ? testResults.every(t => t.status === "pass") 
-      ? "pass"
-      : testResults.some(t => t.status === "fail")
-      ? "fail" 
-      : "warning"
-    : "pending";
+  const overallStatus =
+    testResults.length > 0
+      ? testResults.every(t => t.status === "pass")
+        ? "pass"
+        : testResults.some(t => t.status === "fail")
+          ? "fail"
+          : "warning"
+      : "pending";
 
   return (
     <div className="container mx-auto py-6 space-y-6 max-w-6xl">
@@ -330,11 +346,12 @@ export default function AITestPage() {
             AI Assistant Test Suite
           </h1>
           <p className="text-muted-foreground">
-            Comprehensive testing of AI assistant functionality and configuration
+            Comprehensive testing of AI assistant functionality and
+            configuration
           </p>
         </div>
-        <Button 
-          onClick={runTests} 
+        <Button
+          onClick={runTests}
           disabled={isRunning || !isLoaded}
           size="lg"
           className="flex items-center gap-2"
@@ -355,18 +372,22 @@ export default function AITestPage() {
 
       {/* Overall Status */}
       {testResults.length > 0 && (
-        <Alert className={
-          overallStatus === "pass" 
-            ? "border-green-200 bg-green-50" 
-            : overallStatus === "fail"
-            ? "border-red-200 bg-red-50"
-            : "border-yellow-200 bg-yellow-50"
-        }>
+        <Alert
+          className={
+            overallStatus === "pass"
+              ? "border-green-200 bg-green-50"
+              : overallStatus === "fail"
+                ? "border-red-200 bg-red-50"
+                : "border-yellow-200 bg-yellow-50"
+          }
+        >
           <div className="flex items-center gap-2">
             {getStatusIcon(overallStatus)}
             <AlertDescription>
-              {overallStatus === "pass" && "All tests passed! AI assistant is ready to use."}
-              {overallStatus === "fail" && "Some tests failed. Please check the details below."}
+              {overallStatus === "pass" &&
+                "All tests passed! AI assistant is ready to use."}
+              {overallStatus === "fail" &&
+                "Some tests failed. Please check the details below."}
               {overallStatus === "warning" && "Tests completed with warnings."}
             </AlertDescription>
           </div>
@@ -385,8 +406,8 @@ export default function AITestPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               {testResults.map((test, index) => (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className="flex items-start justify-between p-3 rounded-lg border"
                 >
                   <div className="flex items-start gap-3 flex-1">
@@ -413,7 +434,7 @@ export default function AITestPage() {
                   </div>
                 </div>
               ))}
-              
+
               {testResults.length === 0 && (
                 <div className="text-center py-8 text-muted-foreground">
                   <Database className="h-12 w-12 mx-auto mb-3 opacity-50" />
@@ -444,14 +465,20 @@ export default function AITestPage() {
                 <div className="flex items-center justify-between">
                   <span>Clerk Authentication</span>
                   {environmentStatus.clerk_auth ? (
-                    <Badge className="bg-green-100 text-green-800">✓ Active</Badge>
+                    <Badge className="bg-green-100 text-green-800">
+                      ✓ Active
+                    </Badge>
                   ) : (
-                    <Badge className="bg-red-100 text-red-800">✗ Not Auth</Badge>
+                    <Badge className="bg-red-100 text-red-800">
+                      ✗ Not Auth
+                    </Badge>
                   )}
                 </div>
                 <div className="flex items-center justify-between">
                   <span>LLM Service</span>
-                  <Badge className="bg-green-100 text-green-800">✓ Configured</Badge>
+                  <Badge className="bg-green-100 text-green-800">
+                    ✓ Configured
+                  </Badge>
                 </div>
               </div>
             </CardContent>

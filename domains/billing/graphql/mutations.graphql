@@ -96,6 +96,15 @@ mutation UpdateService($id: uuid!, $updates: billingPlansSetInput!) {
   }
 }
 
+mutation DeleteService($id: uuid!) {
+  updateBillingPlanById(pkColumns: { id: $id }, _set: { isActive: false }) {
+    id
+    name
+    isActive
+    updatedAt
+  }
+}
+
 # Billing Items Management
 mutation CreateBillingItem($input: billingItemsInsertInput!) {
   insertBillingItem(object: $input) {

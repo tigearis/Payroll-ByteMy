@@ -17,9 +17,7 @@ import {
 } from "@/lib/apollo/query-helpers";
 import { withAuth } from "@/lib/auth/api-auth";
 import {
-  getEffectivePermissions,
-  hasHierarchicalPermission,
-  type UserRole as HierarchicalUserRole
+  getEffectivePermissions
 } from "@/lib/permissions/hierarchical-permissions";
 
 const clerkClient = createClerkClient({

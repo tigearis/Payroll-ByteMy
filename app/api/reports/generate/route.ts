@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { clientApolloClient } from "@/lib/apollo/unified-client";
-import { requireReportsAccess } from "@/lib/permissions/api-permission-guard";
+import { adminApolloClient } from "@/lib/apollo/unified-client";
+import { requireDeveloperAccess } from "@/lib/permissions/api-permission-guard";
 
 // Schema for report request
 const reportRequestSchema = z.object({
@@ -93,11 +93,16 @@ async function getSchemaViaIntrospection() {
   }
 
   try {
-    const response = await clientApolloClient.query({
+    console.log('🔍 Executing GraphQL introspection query...');
+    const response = await adminApolloClient.query({
       query: INTROSPECTION_QUERY,
+      fetchPolicy: "network-only",
     });
+    console.log('✅ GraphQL introspection query successful');
 
     const schema = response.data.__schema;
+    
+    console.log(`📋 Schema types found: ${schema.types?.length || 0}`);
 
     // Extract available fields and relationships
     const availableFields: Record<string, string[]> = {};
@@ -106,7 +111,7 @@ async function getSchemaViaIntrospection() {
 
     // Process each type in the schema
     schema.types.forEach((type: any) => {
-      if (type.kind === "OBJECT" && REPORTDOMAINS.includes(type.name)) {
+      if (type.kind === "OBJECT" && REPORT_DOMAINS.includes(type.name)) {
         const domainName = type.name;
         const fields: string[] = [];
         const types: Record<string, string> = {};
@@ -114,18 +119,27 @@ async function getSchemaViaIntrospection() {
         // Extract fields for this domain
         if (type.fields) {
           type.fields.forEach((field: any) => {
-            if (!EXCLUDEDFIELDS.includes(field.name)) {
-              fields.push(field.name);
+            try {
+              if (field && field.name && !EXCLUDED_FIELDS.includes(field.name)) {
+                fields.push(field.name);
 
-              // Determine field type
-              const fieldType = getFieldType(field.type);
-              types[field.name] = fieldType;
+                // Determine field type
+                const fieldType = getFieldType(field.type);
+                types[field.name] = fieldType;
+              }
+            } catch (fieldError) {
+              console.warn(`⚠️ Error processing field ${field?.name} in ${domainName}:`, fieldError);
+              // Continue processing other fields
             }
           });
         }
 
         availableFields[domainName] = fields;
         fieldTypes[domainName] = types;
+        
+        if (domainName === 'clients') {
+          console.log(`🔍 Clients fields found:`, fields);
+        }
       }
     });
 
@@ -139,14 +153,14 @@ async function getSchemaViaIntrospection() {
         const fieldType = domainTypes[field];
 
         // Check if this field references another domain
-        if (fieldType && REPORTDOMAINS.includes(fieldType)) {
+        if (fieldType && REPORT_DOMAINS.includes(fieldType)) {
           domainRelationships[fieldType] = field;
         }
 
         // Check for array relationships (e.g., payrolls field in clients)
         if (fieldType && fieldType.endsWith("[]")) {
           const baseType = fieldType.slice(0, -2); // Remove '[]'
-          if (REPORTDOMAINS.includes(baseType)) {
+          if (REPORT_DOMAINS.includes(baseType)) {
             domainRelationships[baseType] = field;
           }
         }
@@ -173,6 +187,10 @@ async function getSchemaViaIntrospection() {
 }
 
 function getFieldType(type: any): string {
+  if (!type) {
+    return "Unknown";
+  }
+
   if (type.kind === "NON_NULL") {
     return getFieldType(type.ofType);
   }
@@ -187,7 +205,7 @@ function getFieldType(type: any): string {
 
 export async function POST(request: NextRequest) {
   // Check permissions first
-  const authResult = await requireReportsAccess('create');
+  const authResult = await requireDeveloperAccess();
   if (authResult instanceof NextResponse) {
     return authResult; // Permission denied
   }
@@ -232,14 +250,29 @@ export async function POST(request: NextRequest) {
 
     // Build dynamic GraphQL query
     const query = buildDynamicQuery(validatedRequest, schema);
+    
+    console.log('🔍 Generated GraphQL query:', query);
 
     // Execute query
-    const response = await clientApolloClient.query({
+    const response = await adminApolloClient.query({
       query: gql`
         ${query}
       `,
       variables: validatedRequest.filters || {},
+      fetchPolicy: "no-cache",
+      errorPolicy: "all",
     });
+    
+    console.log('📊 GraphQL response:', JSON.stringify(response.data, null, 2));
+    
+    if (response.errors && response.errors.length > 0) {
+      console.error('🚨 GraphQL errors:', response.errors);
+      throw new Error(`GraphQL query failed: ${response.errors[0].message}`);
+    }
+    
+    if (!response.data) {
+      throw new Error('No data returned from GraphQL query');
+    }
 
     // Transform data for CSV export
     const transformedData = transformDataForExport(
@@ -329,6 +362,11 @@ function buildDynamicQuery(
 
   query += ` {\n`;
 
+  // Always include id field for Apollo cache normalization
+  if (!primaryFields.includes('id')) {
+    query += `    id\n`;
+  }
+
   // Add primary domain fields
   primaryFields.forEach(field => {
     query += `    ${field}\n`;
@@ -380,17 +418,8 @@ function findRelationshipPath(
     return reverseRelationships[fromDomain];
   }
 
-  // Check through intermediate domains
-  // For example: clients -> payrolls -> payroll_dates
-  if (fromDomain === "clients" && toDomain === "payroll_dates") {
-    return "payrolls { payroll_dates }";
-  }
-  if (fromDomain === "clients" && toDomain === "billing") {
-    return "payrolls { billing_records }";
-  }
-  if (fromDomain === "payrolls" && toDomain === "clients") {
-    return "client";
-  }
+  // For now, disable hardcoded relationships to avoid conflicts
+  // TODO: Implement proper relationship detection from schema
 
   return null;
 }
@@ -459,18 +488,25 @@ function transformDataForExport(
 
 // GET endpoint to get available fields and relationships via introspection
 export async function GET() {
-  // Check permissions first
-  const authResult = await requireReportsAccess('read');
+  console.log('📊 Reports API GET called');
+  
+  // Check permissions first - only developers can access reports
+  const authResult = await requireDeveloperAccess();
   if (authResult instanceof NextResponse) {
+    console.log('🚫 Reports API permission denied - developer role required');
     return authResult; // Permission denied
   }
 
+  console.log('✅ Reports API permission granted for developer');
   const { user, userId } = authResult;
 
   try {
+    console.log('🔍 Starting schema introspection...');
 
     // Get schema via introspection
     const schema = await getSchemaViaIntrospection();
+    
+    console.log('✅ Schema introspection completed');
 
     return NextResponse.json({
       success: true,
@@ -483,7 +519,8 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error("Report metadata error:", error);
+    console.error("❌ Report metadata error:", error);
+    console.error("❌ Error stack:", error instanceof Error ? error.stack : "No stack trace");
     return NextResponse.json(
       {
         error: "Failed to get report metadata",

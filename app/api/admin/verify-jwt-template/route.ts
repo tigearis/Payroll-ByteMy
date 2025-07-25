@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
-import { clerkClient } from "@clerk/nextjs/server";
-import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { gql } from "@apollo/client";
+import { clerkClient } from "@clerk/nextjs/server";
+import { NextRequest, NextResponse } from "next/server";
+import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { withAuth } from "@/lib/auth/api-auth";
 
 // Admin endpoint to verify JWT template implementation

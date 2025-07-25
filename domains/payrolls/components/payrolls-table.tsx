@@ -148,13 +148,13 @@ const formatPayrollCycle = (payroll: any) => {
   // Get the cycle name from the relationship
   const cycleEnum = payroll?.payrollCycle?.name;
   if (cycleEnum) {
-    const cycle = PAYROLLCYCLES.find(c => c.id === cycleEnum);
+    const cycle = PAYROLL_CYCLES.find(c => c.id === cycleEnum);
     return cycle ? cycle.name : cycleEnum;
   }
 
   // Fallback to cycleId if available
   if (payroll?.cycleId) {
-    const cycle = PAYROLLCYCLES.find(c => c.id === payroll.cycleId);
+    const cycle = PAYROLL_CYCLES.find(c => c.id === payroll.cycleId);
     return cycle ? cycle.name : `${payroll.cycleId} (Unknown)`;
   }
 
@@ -248,7 +248,7 @@ export function PayrollsTable({
   selectedPayrolls = [],
   onSelectPayroll,
   onSelectAll,
-  visibleColumns = COLUMNDEFINITIONS.filter(col => col.defaultVisible).map(
+  visibleColumns = COLUMN_DEFINITIONS.filter(col => col.defaultVisible).map(
     col => col.key
   ),
   sortField = "name",
@@ -256,7 +256,7 @@ export function PayrollsTable({
   onSort,
 }: PayrollsTableProps) {
   const renderSortableHeader = (label: string, field: string) => {
-    const column = COLUMNDEFINITIONS.find(col => col.key === field);
+    const column = COLUMN_DEFINITIONS.find(col => col.key === field);
     if (!column?.sortable || !onSort) {
       return label;
     }
@@ -471,7 +471,7 @@ export function PayrollsTable({
                               payroll.nextEftDate?.[0]?.originalEftDate
                                 ? formatDate(
                                     payroll.nextEftDate[0]?.adjustedEftDate ||
-                                    payroll.nextEftDate[0]?.originalEftDate
+                                      payroll.nextEftDate[0]?.originalEftDate
                                   )
                                 : "Not scheduled"}
                             </span>

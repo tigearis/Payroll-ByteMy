@@ -336,7 +336,7 @@ query GetStaffList {
   users(
     where: {
       isActive: { _eq: true }
-      role: { _in: ["consultant", "manager", "org_admin"] }
+      role: { _in: ["developer", "org_admin", "manager", "consultant"] }
     }
     orderBy: { name: ASC }
   ) {
@@ -790,7 +790,7 @@ query GetStaffPaginated(
     where: {
       _and: [
         { isActive: { _eq: true } }
-        { role: { _in: ["consultant", "manager", "org_admin"] } }
+        { role: { _in: ["developer", "org_admin", "manager", "consultant"] } }
         $where
       ]
     }
@@ -807,7 +807,7 @@ query GetStaffPaginated(
     where: {
       _and: [
         { isActive: { _eq: true } }
-        { role: { _in: ["consultant", "manager", "org_admin"] } }
+        { role: { _in: ["developer", "org_admin", "manager", "consultant"] } }
         $where
       ]
     }
@@ -938,7 +938,7 @@ query GetStaffQuickList {
   users(
     where: {
       isActive: { _eq: true }
-      role: { _in: ["consultant", "manager", "org_admin"] }
+      role: { _in: ["developer", "org_admin", "manager", "consultant"] }
     }
     orderBy: { name: ASC }
   ) {
