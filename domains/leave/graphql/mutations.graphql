@@ -357,3 +357,70 @@ mutation CancelMyLeave($id: uuid!) {
     endDate
   }
 }
+
+# Manager leave creation mutations
+mutation CreateLeaveForEmployee(
+  $userId: uuid!
+  $startDate: date!
+  $endDate: date!
+  $leaveType: String!
+  $reason: String
+) {
+  insertLeave(
+    object: {
+      userId: $userId
+      startDate: $startDate
+      endDate: $endDate
+      leaveType: $leaveType
+      reason: $reason
+      status: Approved
+    }
+  ) {
+    ...LeaveDetailed
+    leaveUser {
+      id
+      name
+      email
+      role
+      managerUser {
+        id
+        name
+        email
+        role
+      }
+    }
+  }
+}
+
+mutation CreatePendingLeaveForEmployee(
+  $userId: uuid!
+  $startDate: date!
+  $endDate: date!
+  $leaveType: String!
+  $reason: String
+) {
+  insertLeave(
+    object: {
+      userId: $userId
+      startDate: $startDate
+      endDate: $endDate
+      leaveType: $leaveType
+      reason: $reason
+      status: Pending
+    }
+  ) {
+    ...LeaveDetailed
+    leaveUser {
+      id
+      name
+      email
+      role
+      managerUser {
+        id
+        name
+        email
+        role
+      }
+    }
+  }
+}

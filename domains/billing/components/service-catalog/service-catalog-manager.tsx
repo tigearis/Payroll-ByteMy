@@ -49,10 +49,10 @@ const ServiceEditor: React.FC<ServiceEditorProps> = ({ service, onSave, onCancel
   const [formData, setFormData] = useState({
     name: service?.name || '',
     description: service?.description || '',
-    standard_rate: service?.standard_rate?.toString() || '',
-    billing_unit: service?.billing_unit || 'Per Payroll',
+    standardRate: service?.standardRate?.toString() || '',
+    billingUnit: service?.billingUnit || 'Per Payroll',
     category: service?.category || 'Processing',
-    is_active: service?.is_active ?? true,
+    isActive: service?.isActive ?? true,
     currency: service?.currency || 'AUD'
   });
 
@@ -66,10 +66,10 @@ const ServiceEditor: React.FC<ServiceEditorProps> = ({ service, onSave, onCancel
       const input = {
         name: formData.name,
         description: formData.description,
-        standard_rate: parseFloat(formData.standard_rate),
-        billing_unit: formData.billing_unit,
+        standardRate: parseFloat(formData.standardRate),
+        billingUnit: formData.billingUnit,
         category: formData.category,
-        is_active: formData.is_active,
+        isActive: formData.isActive,
         currency: formData.currency
       };
 
@@ -152,22 +152,22 @@ const ServiceEditor: React.FC<ServiceEditorProps> = ({ service, onSave, onCancel
                 id="standard_rate"
                 type="number"
                 step="0.01"
-                value={formData.standard_rate}
-                onChange={(e) => setFormData(prev => ({ ...prev, standard_rate: e.target.value }))}
+                value={formData.standardRate}
+                onChange={(e) => setFormData(prev => ({ ...prev, standardRate: e.target.value }))}
                 required
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="billing_unit">Billing Unit</Label>
               <Select
-                value={formData.billing_unit}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, billing_unit: value }))}
+                value={formData.billingUnit}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, billingUnit: value }))}
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {BILLINGUNITS.map(unit => (
+                  {BILLING_UNITS.map(unit => (
                     <SelectItem key={unit} value={unit}>
                       {unit}
                     </SelectItem>
@@ -194,11 +194,11 @@ const ServiceEditor: React.FC<ServiceEditorProps> = ({ service, onSave, onCancel
 
           <div className="flex items-center space-x-2">
             <Switch
-              id="is_active"
-              checked={formData.is_active}
-              onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_active: checked }))}
+              id="isActive"
+              checked={formData.isActive}
+              onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isActive: checked }))}
             />
-            <Label htmlFor="is_active">Service is active</Label>
+            <Label htmlFor="isActive">Service is active</Label>
           </div>
 
           <div className="flex gap-2 pt-4">
@@ -228,7 +228,7 @@ export const ServiceCatalogManager: React.FC<ServiceCatalogManagerProps> = ({
   const [showEditor, setShowEditor] = useState(showCreateForm);
   const [filterCategory, setFilterCategory] = useState<string>('');
 
-  const { data, loading, refetch } = useQuery(GetServiceCatalogDocument, {
+  const { data, loading, refetch, error } = useQuery(GetServiceCatalogDocument, {
     variables: {
       category: filterCategory ? `%${filterCategory}%` : undefined,
       isActive: true
@@ -328,9 +328,19 @@ export const ServiceCatalogManager: React.FC<ServiceCatalogManagerProps> = ({
 
       {loading ? (
         <div className="text-center py-8">Loading services...</div>
+      ) : error ? (
+        <div className="text-center py-8 text-red-600">
+          <p>Error loading services: {error.message}</p>
+          <button 
+            onClick={() => refetch()} 
+            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Retry
+          </button>
+        </div>
       ) : (
         <div className="grid gap-4">
-          {data?.billing_plan?.map((service) => (
+          {data?.billingPlans?.map((service) => (
             <Card key={service.id}>
               <CardContent className="p-6">
                 <div className="flex justify-between items-start">
@@ -341,19 +351,19 @@ export const ServiceCatalogManager: React.FC<ServiceCatalogManagerProps> = ({
                         {service.category}
                       </Badge>
                       <Badge variant="outline">
-                        {service.billing_unit}
+                        {service.billingUnit}
                       </Badge>
-                      {!service.is_active && (
+                      {!service.isActive && (
                         <Badge variant="destructive">Inactive</Badge>
                       )}
                     </div>
                     <p className="text-gray-600 mb-3">{service.description}</p>
                     <div className="flex items-center gap-4">
                       <span className="text-lg font-bold">
-                        ${service.standard_rate} {service.currency}
+                        ${service.standardRate} {service.currency}
                       </span>
                       <span className="text-sm text-gray-500">
-                        {service.billing_unit}
+                        {service.billingUnit}
                       </span>
                     </div>
                   </div>

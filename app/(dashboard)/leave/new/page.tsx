@@ -1,9 +1,10 @@
 "use client";
 
-import { ArrowLeft, Calendar, FileText, User, Clock, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Calendar, FileText, User, Clock, AlertTriangle, Users, Check } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useQuery } from "@apollo/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -16,14 +17,26 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { usePermissions } from "@/hooks/use-permissions";
 import { useToast } from "@/hooks/use-toast";
+import { 
+  GetManagerTeamForLeaveDocument, 
+  GetAllUsersForLeaveDocument,
+  type GetManagerTeamForLeaveQuery,
+  type GetAllUsersForLeaveQuery
+} from "@/domains/leave/graphql/generated/graphql";
 
 interface LeaveFormData {
   startDate: string;
   endDate: string;
   leaveType: "Annual" | "Sick" | "Unpaid" | "Other" | "";
   reason: string;
+  selectedEmployeeId?: string;
+  isForSomeoneElse: boolean;
+  autoApprove: boolean;
 }
 
 interface LeaveFormErrors {
@@ -31,11 +44,13 @@ interface LeaveFormErrors {
   endDate?: string;
   leaveType?: string;
   reason?: string;
+  selectedEmployeeId?: string;
 }
 
 function NewLeaveRequestPage() {
   const router = useRouter();
   const { currentUser, loading: userLoading } = useCurrentUser();
+  const { can, canAny } = usePermissions();
   const { toast } = useToast();
 
   const [formData, setFormData] = useState<LeaveFormData>({
@@ -43,10 +58,59 @@ function NewLeaveRequestPage() {
     endDate: "",
     leaveType: "",
     reason: "",
+    selectedEmployeeId: "",
+    isForSomeoneElse: false,
+    autoApprove: false,
   });
 
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<LeaveFormErrors>({});
+
+  // Check if user can manage team leave (manager and above)
+  // Simplified check - just use role hierarchy for now
+  const canManageTeamLeave = currentUser?.role && ["manager", "org_admin", "developer"].includes(currentUser.role);
+  const isDeveloperOrAdmin = currentUser?.role && ["developer", "org_admin"].includes(currentUser.role);
+
+  // Query for subordinate users - use different query based on role
+  const { data: managerTeamData, loading: managerTeamLoading, error: managerTeamError } = useQuery<GetManagerTeamForLeaveQuery>(
+    GetManagerTeamForLeaveDocument,
+    {
+      variables: { managerId: currentUser?.id! },
+      skip: !currentUser?.id || !canManageTeamLeave || isDeveloperOrAdmin,
+    }
+  );
+
+  // Query for all users (developers and org admins only)
+  const { data: allUsersData, loading: allUsersLoading, error: allUsersError } = useQuery<GetAllUsersForLeaveQuery>(
+    GetAllUsersForLeaveDocument,
+    {
+      skip: !currentUser?.id || !isDeveloperOrAdmin,
+    }
+  );
+
+  // Use appropriate data based on role
+  const teamData = isDeveloperOrAdmin ? allUsersData : managerTeamData;
+  const teamLoading = isDeveloperOrAdmin ? allUsersLoading : managerTeamLoading;
+  const teamError = isDeveloperOrAdmin ? allUsersError : managerTeamError;
+  // Filter out current user from the list
+  const subordinateUsers = (teamData?.users || []).filter(user => user.id !== currentUser?.id);
+
+  // Debug logging
+  console.log("Leave Page Debug:", {
+    currentUser: currentUser,
+    userRole: currentUser?.role,
+    canManageTeamLeave,
+    isDeveloperOrAdmin,
+    subordinateUsersCount: subordinateUsers.length,
+    subordinateUsers,
+    teamDataRaw: teamData,
+    allUsersData,
+    managerTeamData,
+    teamLoading,
+    teamError,
+    skipManagerQuery: !currentUser?.id || !canManageTeamLeave || isDeveloperOrAdmin,
+    skipAllUsersQuery: !currentUser?.id || !isDeveloperOrAdmin
+  });
 
   // Form validation
   const validateForm = (): boolean => {
@@ -81,6 +145,11 @@ function NewLeaveRequestPage() {
       newErrors.leaveType = "Leave type is required";
     }
 
+    // Validate employee selection for managers
+    if (formData.isForSomeoneElse && !formData.selectedEmployeeId) {
+      newErrors.selectedEmployeeId = "Employee selection is required";
+    }
+
     // Reason is required for certain leave types
     if ((formData.leaveType === "Other" || formData.leaveType === "Sick") && !formData.reason.trim()) {
       newErrors.reason = `Reason is required for ${formData.leaveType} leave`;
@@ -101,6 +170,9 @@ function NewLeaveRequestPage() {
     setLoading(true);
 
     try {
+      const targetUserId = formData.isForSomeoneElse ? formData.selectedEmployeeId : currentUser?.id;
+      const selectedEmployee = subordinateUsers.find(u => u.id === formData.selectedEmployeeId);
+      
       const response = await fetch("/api/leave", {
         method: "POST",
         headers: {
@@ -108,16 +180,23 @@ function NewLeaveRequestPage() {
         },
         body: JSON.stringify({
           ...formData,
-          userId: currentUser?.id,
+          userId: targetUserId,
+          isForSomeoneElse: formData.isForSomeoneElse,
+          managerCreateRequest: formData.isForSomeoneElse,
+          managerId: currentUser?.id,
         }),
       });
 
       const data = await response.json();
 
       if (data.success) {
+        const requestType = formData.isForSomeoneElse ? "for" : "submitted";
+        const employeeName = formData.isForSomeoneElse ? selectedEmployee?.name : "your";
+        const statusText = formData.autoApprove ? "has been approved" : "is pending approval";
+        
         toast({
-          title: "Leave Request Submitted",
-          description: "Your leave request has been submitted and is pending approval.",
+          title: "Leave Request Created",
+          description: `Leave request ${requestType} ${employeeName} ${statusText}.`,
         });
         router.push("/leave");
       } else {
@@ -227,16 +306,123 @@ function NewLeaveRequestPage() {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Manager Controls */}
+                {canManageTeamLeave && (
+                  teamLoading ? (
+                    <div className="p-4 bg-gray-50 rounded-lg animate-pulse">
+                      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                      <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                  ) : subordinateUsers.length > 0 ? (
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-3 p-4 bg-blue-50 rounded-lg">
+                      <Users className="h-5 w-5 text-blue-600" />
+                      <div className="flex-1">
+                        <h4 className="font-medium text-blue-900">Manager Options</h4>
+                        <p className="text-sm text-blue-700">You can create leave requests for your team members</p>
+                      </div>
+                      <Switch
+                        checked={formData.isForSomeoneElse}
+                        onCheckedChange={(checked) => 
+                          setFormData(prev => ({ 
+                            ...prev, 
+                            isForSomeoneElse: checked,
+                            selectedEmployeeId: checked ? "" : prev.selectedEmployeeId
+                          }))
+                        }
+                      />
+                    </div>
+                    
+                    {formData.isForSomeoneElse && (
+                      <div className="space-y-3">
+                        <div>
+                          <Label htmlFor="employeeSelect">Select Employee *</Label>
+                          <Select 
+                            value={formData.selectedEmployeeId} 
+                            onValueChange={(value) => handleInputChange("selectedEmployeeId", value)}
+                          >
+                            <SelectTrigger className={errors.selectedEmployeeId ? "border-red-500" : ""}>
+                              <SelectValue placeholder="Choose an employee" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {subordinateUsers.map((user) => (
+                                <SelectItem key={user.id} value={user.id}>
+                                  <div className="flex items-center space-x-2">
+                                    <span>{user.name}</span>
+                                    <Badge variant="outline" className="text-xs">
+                                      {user.role}
+                                    </Badge>
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          {errors.selectedEmployeeId && (
+                            <p className="text-sm text-red-600 mt-1">{errors.selectedEmployeeId}</p>
+                          )}
+                        </div>
+                        
+                        <div className="flex items-center space-x-3 p-3 bg-green-50 rounded-md">
+                          <Check className="h-4 w-4 text-green-600" />
+                          <div className="flex-1">
+                            <Label htmlFor="autoApprove" className="font-medium text-green-900">
+                              Auto-approve this request
+                            </Label>
+                            <p className="text-sm text-green-700">
+                              Approve immediately instead of requiring approval
+                            </p>
+                          </div>
+                          <Switch
+                            id="autoApprove"
+                            checked={formData.autoApprove}
+                            onCheckedChange={(checked) => 
+                              setFormData(prev => ({ ...prev, autoApprove: checked }))
+                            }
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="p-4 bg-gray-50 rounded-lg">
+                    <p className="text-sm text-gray-600">
+                      {isDeveloperOrAdmin 
+                        ? `As a ${currentUser?.role}, you can create leave requests for any user, but no active users were found.`
+                        : `As a ${currentUser?.role}, you can create leave requests for team members, but no subordinates were found in your team.`
+                      }
+                    </p>
+                  </div>
+                )
+                )}
+
                 {/* Employee Information */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="employee">Employee</Label>
+                    <Label htmlFor="employee">
+                      {formData.isForSomeoneElse ? "Request For" : "Employee"}
+                    </Label>
                     <div className="mt-1 p-3 bg-gray-50 rounded-md">
                       <div className="flex items-center">
                         <User className="h-4 w-4 mr-2 text-gray-500" />
                         <div>
-                          <p className="font-medium">{currentUser.name}</p>
-                          <p className="text-sm text-gray-500">{currentUser.email}</p>
+                          {formData.isForSomeoneElse && formData.selectedEmployeeId ? (
+                            (() => {
+                              const selectedEmployee = subordinateUsers.find(u => u.id === formData.selectedEmployeeId);
+                              return selectedEmployee ? (
+                                <>
+                                  <p className="font-medium">{selectedEmployee.name}</p>
+                                  <p className="text-sm text-gray-500">{selectedEmployee.email}</p>
+                                </>
+                              ) : (
+                                <p className="text-sm text-gray-500">Select an employee above</p>
+                              );
+                            })()
+                          ) : (
+                            <>
+                              <p className="font-medium">{currentUser.name}</p>
+                              <p className="text-sm text-gray-500">{currentUser.email}</p>
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>

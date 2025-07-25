@@ -16,9 +16,9 @@ import {
   type GetPayrollsQuery,
 } from "@/domains/payrolls/graphql/generated/graphql";
 import { executeTypedQuery } from "@/lib/apollo/query-helpers";
+import { createSuccessResponse } from "@/lib/error-handling/standardized-errors";
 import { sensitiveRoute, mutationRoute } from "@/lib/security/secure-api-wrapper";
 import { CreatePayrollSchema, PaginationSchema } from "@/lib/validation/schemas";
-import { createSuccessResponse } from "@/lib/error-handling/standardized-errors";
 
 // ============================================================================
 // GET /api/payrolls - List payrolls with pagination

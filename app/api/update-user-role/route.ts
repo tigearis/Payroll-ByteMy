@@ -1,12 +1,12 @@
 // app/api/update-user-role/route.ts
 import { clerkClient } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+import { updateUserRole } from "@/domains/users/services/user-sync";
 import { withAuth } from "@/lib/auth/api-auth";
 import { 
   getHierarchicalPermissionsFromDatabase,
   type UserRole 
 } from "@/lib/permissions/hierarchical-permissions";
-import { updateUserRole } from "@/domains/users/services/user-sync";
 
 // Helper function to check role level using hierarchical system
 function hasRoleLevel(userRole: UserRole, requiredRole: UserRole): boolean {

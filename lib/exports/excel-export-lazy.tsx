@@ -1,9 +1,9 @@
 // lib/exports/excel-export-lazy.tsx
 "use client";
 
+import { Download, Loader2 } from "lucide-react";
 import { Suspense, lazy } from "react";
 import { Button } from "@/components/ui/button";
-import { Download, Loader2 } from "lucide-react";
 
 // ============================================================================
 // CODE SPLITTING: LAZY LOAD HEAVY EXCEL DEPENDENCIES

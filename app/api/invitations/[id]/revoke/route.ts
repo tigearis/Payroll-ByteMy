@@ -103,7 +103,7 @@ export const PUT = withAuthParams(async (req: NextRequest, { params }, session) 
         {
           invitationId: invitation.id,
           revokeReason: reason.trim(),
-          revokedBy: invitation.invitedBy || invitation.id, // Use inviter's ID or invitation ID as placeholder
+          revokedBy: session.databaseId || invitation.invitedBy, // Use database user ID who is revoking
         }
       );
 

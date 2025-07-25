@@ -49,6 +49,10 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // Import lucide-react icons with explicit typing
 import {
+  GetLeaveDocument,
+  GetLeaveQuery,
+} from "@/domains/leave/graphql/generated/graphql";
+import {
   GetPayrollsByMonthDocument,
   GetPayrollsByMonthQuery,
   UpdatePayrollDocument,
@@ -59,10 +63,6 @@ import {
   GetAllStaffWorkloadDocument,
   GetAllStaffWorkloadQuery,
 } from "@/domains/work-schedule/graphql/generated/graphql";
-import {
-  GetLeaveDocument,
-  GetLeaveQuery,
-} from "@/domains/leave/graphql/generated/graphql";
 
 type ViewPeriod = "week" | "fortnight" | "month";
 type TableOrientation = "consultants-as-columns" | "consultants-as-rows";

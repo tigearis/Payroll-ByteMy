@@ -348,7 +348,7 @@ export default function PayrollsPage() {
   const [sortField, setSortField] = useState<string>("updatedAt");
   const [sortDirection, setSortDirection] = useState<"ASC" | "DESC">("DESC");
   const [visibleColumns, setVisibleColumns] = useState<string[]>(
-    COLUMNDEFINITIONS.filter(col => col.defaultVisible).map(col => col.key)
+    COLUMN_DEFINITIONS.filter(col => col.defaultVisible).map(col => col.key)
   );
 
   // All remaining hooks BEFORE any conditional logic
@@ -404,7 +404,9 @@ export default function PayrollsPage() {
       status: { status: sortDirection },
       payrollCycle: { payrollCycle: { name: sortDirection } },
     };
-    return sortMap[sortField] ? [sortMap[sortField]] : [{ updatedAt: sortDirection }];
+    return sortMap[sortField]
+      ? [sortMap[sortField]]
+      : [{ updatedAt: sortDirection }];
   }, [sortField, sortDirection]);
 
   const offset = (currentPage - 1) * pageSize;
@@ -436,7 +438,6 @@ export default function PayrollsPage() {
   const payrolls = data?.payrolls || [];
   const totalCount = data?.payrollsAggregate?.aggregate?.count || 0;
   const totalPages = Math.ceil(totalCount / pageSize);
-
 
   const displayPayrolls = useMemo(() => {
     return payrolls.map((payroll: any) => {
@@ -563,7 +564,6 @@ export default function PayrollsPage() {
     setDateTypeFilter([]);
   }, []);
 
-
   const hasActiveFilters =
     searchTerm ||
     statusFilter.length > 0 ||
@@ -578,7 +578,7 @@ export default function PayrollsPage() {
 
   // Use dynamic loading system
   const { Loading } = useDynamicLoading({
-    queryName: 'GetPayrollsTableEnhanced'
+    queryName: "GetPayrollsTableEnhanced",
   });
 
   if (loading && !payrolls.length) {
@@ -723,10 +723,10 @@ export default function PayrollsPage() {
                 {/* Sort Dropdown */}
                 <Select
                   value={`${sortField}-${sortDirection}`}
-                  onValueChange={(value) => {
-                    const [field, direction] = value.split('-');
+                  onValueChange={value => {
+                    const [field, direction] = value.split("-");
                     setSortField(field);
-                    setSortDirection(direction as 'ASC' | 'DESC');
+                    setSortDirection(direction as "ASC" | "DESC");
                     setCurrentPage(1);
                   }}
                 >
@@ -740,14 +740,30 @@ export default function PayrollsPage() {
                     <SelectItem value="client-DESC">Client (Z-A)</SelectItem>
                     <SelectItem value="status-ASC">Status (A-Z)</SelectItem>
                     <SelectItem value="status-DESC">Status (Z-A)</SelectItem>
-                    <SelectItem value="consultant-ASC">Consultant (A-Z)</SelectItem>
-                    <SelectItem value="consultant-DESC">Consultant (Z-A)</SelectItem>
-                    <SelectItem value="employees-ASC">Employees (Low-High)</SelectItem>
-                    <SelectItem value="employees-DESC">Employees (High-Low)</SelectItem>
-                    <SelectItem value="lastUpdated-ASC">Updated (Oldest)</SelectItem>
-                    <SelectItem value="lastUpdated-DESC">Updated (Newest)</SelectItem>
-                    <SelectItem value="payrollCycle-ASC">Schedule (A-Z)</SelectItem>
-                    <SelectItem value="payrollCycle-DESC">Schedule (Z-A)</SelectItem>
+                    <SelectItem value="consultant-ASC">
+                      Consultant (A-Z)
+                    </SelectItem>
+                    <SelectItem value="consultant-DESC">
+                      Consultant (Z-A)
+                    </SelectItem>
+                    <SelectItem value="employees-ASC">
+                      Employees (Low-High)
+                    </SelectItem>
+                    <SelectItem value="employees-DESC">
+                      Employees (High-Low)
+                    </SelectItem>
+                    <SelectItem value="lastUpdated-ASC">
+                      Updated (Oldest)
+                    </SelectItem>
+                    <SelectItem value="lastUpdated-DESC">
+                      Updated (Newest)
+                    </SelectItem>
+                    <SelectItem value="payrollCycle-ASC">
+                      Schedule (A-Z)
+                    </SelectItem>
+                    <SelectItem value="payrollCycle-DESC">
+                      Schedule (Z-A)
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -876,22 +892,31 @@ export default function PayrollsPage() {
             {viewMode === "cards" && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {payrolls.map((payroll: any) => {
-                  const statusConfig = getStatusConfig(payroll.status || "Implementation");
+                  const statusConfig = getStatusConfig(
+                    payroll.status || "Implementation"
+                  );
                   const StatusIcon = statusConfig.icon;
-                  
+
                   return (
-                    <Card key={payroll.id} className="hover:shadow-lg transition-shadow">
+                    <Card
+                      key={payroll.id}
+                      className="hover:shadow-lg transition-shadow"
+                    >
                       <CardHeader className="pb-3">
                         <div className="flex items-center justify-between">
                           <CardTitle className="text-lg font-semibold truncate">
-                            <Link 
+                            <Link
                               href={`/payrolls/${payroll.id}`}
                               className="text-blue-600 hover:underline"
                             >
                               {payroll.name}
                             </Link>
                           </CardTitle>
-                          <Badge className={getStatusColor(payroll.status || "Implementation")}>
+                          <Badge
+                            className={getStatusColor(
+                              payroll.status || "Implementation"
+                            )}
+                          >
                             <StatusIcon className="w-3 h-3 mr-1" />
                             {payroll.status || "Implementation"}
                           </Badge>
@@ -902,27 +927,35 @@ export default function PayrollsPage() {
                           <div className="flex items-center gap-2">
                             <Building2 className="w-4 h-4 text-gray-500" />
                             <span className="text-gray-600">Client:</span>
-                            <span className="font-medium">{payroll.client?.name || "No client"}</span>
+                            <span className="font-medium">
+                              {payroll.client?.name || "No client"}
+                            </span>
                           </div>
-                          
+
                           <div className="flex items-center gap-2">
                             <UserCheck className="w-4 h-4 text-gray-500" />
                             <span className="text-gray-600">Consultant:</span>
-                            <span className="font-medium">{payroll.primaryConsultant?.name || "Unassigned"}</span>
+                            <span className="font-medium">
+                              {payroll.primaryConsultant?.name || "Unassigned"}
+                            </span>
                           </div>
-                          
+
                           <div className="flex items-center gap-2">
                             <Users className="w-4 h-4 text-gray-500" />
                             <span className="text-gray-600">Employees:</span>
-                            <span className="font-medium">{payroll.employeeCount || 0}</span>
+                            <span className="font-medium">
+                              {payroll.employeeCount || 0}
+                            </span>
                           </div>
-                          
+
                           <div className="flex items-center gap-2">
                             <Clock className="w-4 h-4 text-gray-500" />
                             <span className="text-gray-600">Schedule:</span>
-                            <span className="font-medium">{formatPayrollCycle(payroll)}</span>
+                            <span className="font-medium">
+                              {formatPayrollCycle(payroll)}
+                            </span>
                           </div>
-                          
+
                           <div className="flex items-center gap-2">
                             <CalendarDays className="w-4 h-4 text-gray-500" />
                             <span className="text-gray-600">Next EFT:</span>
@@ -931,13 +964,13 @@ export default function PayrollsPage() {
                               payroll.nextEftDate?.[0]?.originalEftDate
                                 ? formatDate(
                                     payroll.nextEftDate[0]?.adjustedEftDate ||
-                                    payroll.nextEftDate[0]?.originalEftDate
+                                      payroll.nextEftDate[0]?.originalEftDate
                                   )
                                 : "Not scheduled"}
                             </span>
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center justify-between pt-3 border-t">
                           <Link href={`/payrolls/${payroll.id}`}>
                             <Button size="sm" variant="outline">
@@ -945,7 +978,7 @@ export default function PayrollsPage() {
                               View
                             </Button>
                           </Link>
-                          
+
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button variant="ghost" size="sm">
@@ -982,11 +1015,16 @@ export default function PayrollsPage() {
             {viewMode === "list" && (
               <div className="space-y-3">
                 {payrolls.map((payroll: any) => {
-                  const statusConfig = getStatusConfig(payroll.status || "Implementation");
+                  const statusConfig = getStatusConfig(
+                    payroll.status || "Implementation"
+                  );
                   const StatusIcon = statusConfig.icon;
-                  
+
                   return (
-                    <Card key={payroll.id} className="hover:shadow-md transition-shadow">
+                    <Card
+                      key={payroll.id}
+                      className="hover:shadow-md transition-shadow"
+                    >
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-4 flex-1">
@@ -995,54 +1033,66 @@ export default function PayrollsPage() {
                                 <FileText className="w-5 h-5 text-blue-600" />
                               </div>
                             </div>
-                            
+
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-3 mb-1">
-                                <Link 
+                                <Link
                                   href={`/payrolls/${payroll.id}`}
                                   className="text-lg font-semibold text-blue-600 hover:underline truncate"
                                 >
                                   {payroll.name}
                                 </Link>
-                                <Badge className={getStatusColor(payroll.status || "Implementation")}>
+                                <Badge
+                                  className={getStatusColor(
+                                    payroll.status || "Implementation"
+                                  )}
+                                >
                                   <StatusIcon className="w-3 h-3 mr-1" />
                                   {payroll.status || "Implementation"}
                                 </Badge>
                               </div>
-                              
+
                               <div className="flex items-center gap-4 text-sm text-gray-600">
                                 <div className="flex items-center gap-1">
                                   <Building2 className="w-3 h-3" />
-                                  <span>{payroll.client?.name || "No client"}</span>
+                                  <span>
+                                    {payroll.client?.name || "No client"}
+                                  </span>
                                 </div>
                                 <div className="flex items-center gap-1">
                                   <UserCheck className="w-3 h-3" />
-                                  <span>{payroll.primaryConsultant?.name || "Unassigned"}</span>
+                                  <span>
+                                    {payroll.primaryConsultant?.name ||
+                                      "Unassigned"}
+                                  </span>
                                 </div>
                                 <div className="flex items-center gap-1">
                                   <Users className="w-3 h-3" />
-                                  <span>{payroll.employeeCount || 0} employees</span>
+                                  <span>
+                                    {payroll.employeeCount || 0} employees
+                                  </span>
                                 </div>
                               </div>
                             </div>
                           </div>
-                          
+
                           <div className="flex items-center space-x-4">
                             <div className="text-right text-sm">
                               <div className="font-medium text-gray-900">
                                 {formatPayrollCycle(payroll)}
                               </div>
                               <div className="text-gray-500">
-                                Next: {payroll.nextEftDate?.[0]?.adjustedEftDate ||
+                                Next:{" "}
+                                {payroll.nextEftDate?.[0]?.adjustedEftDate ||
                                 payroll.nextEftDate?.[0]?.originalEftDate
                                   ? formatDate(
                                       payroll.nextEftDate[0]?.adjustedEftDate ||
-                                      payroll.nextEftDate[0]?.originalEftDate
+                                        payroll.nextEftDate[0]?.originalEftDate
                                     )
                                   : "Not scheduled"}
                               </div>
                             </div>
-                            
+
                             <div className="flex items-center space-x-2">
                               <Link href={`/payrolls/${payroll.id}`}>
                                 <Button size="sm" variant="outline">
@@ -1050,7 +1100,7 @@ export default function PayrollsPage() {
                                   View
                                 </Button>
                               </Link>
-                              
+
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                   <Button variant="ghost" size="sm">

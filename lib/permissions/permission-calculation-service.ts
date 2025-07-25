@@ -10,6 +10,7 @@ import { gql } from "@apollo/client";
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 import {
   getHierarchicalPermissionsFromDatabase,
+  getEffectivePermissions,
   type UserRole,
 } from "./hierarchical-permissions";
 
@@ -84,7 +85,7 @@ export class PermissionCalculationService {
    */
   async calculateUserPermissions(
     userId: string,
-    userRole: Role,
+    userRole: UserRole,
     forceRefresh = false
   ): Promise<{
     permissions: string[];
@@ -144,9 +145,7 @@ export class PermissionCalculationService {
       console.error("Error calculating user permissions:", error);
 
       // Fallback to role-based permissions only
-      const rolePermissions = await getHierarchicalPermissionsFromDatabase(
-        userRole as UserRole
-      );
+      const rolePermissions = getEffectivePermissions(userRole);
       const flatPermissions = rolePermissions.map((p: string) =>
         p.replace(".", ":")
       );
@@ -225,16 +224,14 @@ export class PermissionCalculationService {
    * Calculate effective permissions with inheritance and overrides
    */
   private async calculateEffectivePermissions(
-    userRole: Role,
+    userRole: UserRole,
     overrides: PermissionOverride[]
   ): Promise<EffectivePermission[]> {
     const now = new Date();
     const effectivePermissions = new Map<string, EffectivePermission>();
 
     // Start with base role permissions
-    const rolePermissions = await getHierarchicalPermissionsFromDatabase(
-      userRole as UserRole
-    );
+    const rolePermissions = getEffectivePermissions(userRole);
 
     rolePermissions.forEach((permission: string) => {
       const [resource, action] = permission.split(".");
@@ -284,8 +281,8 @@ export class PermissionCalculationService {
         granted: override.granted,
         source: override.role ? "role_override" : "user_override",
         granted_by: override.role || override.created_by_user_id,
-        conditions: override.conditions,
-        expires_at: override.expires_at,
+        ...(override.conditions && { conditions: override.conditions }),
+        ...(override.expires_at && { expires_at: override.expires_at }),
       });
     });
 
@@ -297,7 +294,7 @@ export class PermissionCalculationService {
    */
   async hasPermission(
     userId: string,
-    userRole: Role,
+    userRole: UserRole,
     resource: string,
     action: string
   ): Promise<boolean> {
@@ -321,7 +318,7 @@ export class PermissionCalculationService {
    */
   async hasAnyPermission(
     userId: string,
-    userRole: Role,
+    userRole: UserRole,
     requiredPermissions: string[]
   ): Promise<boolean> {
     if (process.env.DISABLE_PERMISSIONS === "true") {
@@ -347,7 +344,7 @@ export class PermissionCalculationService {
    */
   async hasAllPermissions(
     userId: string,
-    userRole: Role,
+    userRole: UserRole,
     requiredPermissions: string[]
   ): Promise<boolean> {
     if (process.env.DISABLE_PERMISSIONS === "true") {
@@ -373,7 +370,7 @@ export class PermissionCalculationService {
    */
   async getResourcePermissions(
     userId: string,
-    userRole: Role,
+    userRole: UserRole,
     resource: string
   ): Promise<string[]> {
     const { permissions } = await this.calculateUserPermissions(
@@ -392,7 +389,7 @@ export class PermissionCalculationService {
    */
   async canAccessResource(
     userId: string,
-    userRole: Role,
+    userRole: UserRole,
     resource: string
   ): Promise<boolean> {
     const { permissions } = await this.calculateUserPermissions(
@@ -527,7 +524,7 @@ export const permissionCalculationService =
 // Helper functions for backward compatibility
 export async function calculateUserPermissions(
   userId: string,
-  userRole: Role,
+  userRole: UserRole,
   forceRefresh = false
 ) {
   return permissionCalculationService.calculateUserPermissions(
@@ -539,7 +536,7 @@ export async function calculateUserPermissions(
 
 export async function hasPermission(
   userId: string,
-  userRole: Role,
+  userRole: UserRole,
   resource: string,
   action: string
 ) {
@@ -553,7 +550,7 @@ export async function hasPermission(
 
 export async function hasAnyPermission(
   userId: string,
-  userRole: Role,
+  userRole: UserRole,
   requiredPermissions: string[]
 ) {
   return permissionCalculationService.hasAnyPermission(
@@ -565,7 +562,7 @@ export async function hasAnyPermission(
 
 export async function hasAllPermissions(
   userId: string,
-  userRole: Role,
+  userRole: UserRole,
   requiredPermissions: string[]
 ) {
   return permissionCalculationService.hasAllPermissions(

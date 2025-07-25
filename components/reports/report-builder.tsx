@@ -73,13 +73,13 @@ export function ReportBuilder() {
   const [selectedFields, setSelectedFields] = useState<
     Record<string, string[]>
   >({
-    clients: ["name", "contact_person", "active"],
+    clients: ["id", "name", "contactPerson", "active"],
   });
   const [filters, setFilters] = useState<Record<string, any>>({});
   const [sortBy, setSortBy] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [limit, setLimit] = useState<number>(100);
-  const [includeRelationships, setIncludeRelationships] = useState(true);
+  const [includeRelationships, setIncludeRelationships] = useState(false);
 
   // Load metadata on component mount
   useEffect(() => {
@@ -91,13 +91,25 @@ export function ReportBuilder() {
     try {
       const response = await fetch("/api/reports/generate");
       if (!response.ok) {
-        throw new Error("Failed to load report metadata");
+        const errorData = await response.json();
+        console.error("Report metadata error response:", response.status, errorData);
+        throw new Error(errorData.error || "Failed to load report metadata");
       }
       const result = await response.json();
-      setMetadata(result.data);
+      
+      // Check if the response has the expected structure
+      if (!result.data || !result.data.availableFields) {
+        throw new Error("Invalid metadata response structure");
+      }
+      
+      setMetadata({
+        availableFields: result.data.availableFields,
+        relationships: result.data.relationships,
+        domains: result.data.domains || Object.keys(result.data.availableFields),
+      });
     } catch (error) {
       console.error("Error loading metadata:", error);
-      toast.error("Failed to load report configuration");
+      toast.error(error instanceof Error ? error.message : "Failed to load report configuration");
     } finally {
       setLoading(false);
     }

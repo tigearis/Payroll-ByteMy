@@ -12,7 +12,6 @@ import {
   type SearchUsersPaginatedQuery
 } from "@/domains/users/graphql/generated/graphql";
 import { executeTypedQuery } from "@/lib/apollo/query-helpers";
-import { requireStaffAccess } from "@/lib/permissions/api-permission-guard";
 
 interface StaffFilters {
   search?: string;
@@ -45,29 +44,15 @@ interface StaffListResponse {
 }
 
 export async function GET(req: NextRequest) {
-  // Use simple auth check instead of complex permission system
-  const { auth } = await import("@clerk/nextjs/server");
-  const { userId, getToken } = await auth();
+  // Use unified auth system
+  const { withAuth } = await import("@/lib/auth/api-auth");
   
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  // Get role from JWT
-  let role = 'viewer';
-  try {
-    const token = await getToken({ template: "hasura" });
-    if (token) {
-      const base64Payload = token.split('.')[1];
-      const decodedPayload = JSON.parse(atob(base64Payload));
-      const hasuraClaims = decodedPayload['https://hasura.io/jwt/claims'];
-      
-      // Use the x-hasura-role or default-role
-      role = hasuraClaims?.['x-hasura-role'] || hasuraClaims?.['x-hasura-default-role'] || 'viewer';
+  return withAuth(async (request: NextRequest, session) => {
+    try {
+      const { searchParams } = new URL(req.url);
       
       // Check if user has staff access permissions
-      const allowedRoles = hasuraClaims?.['x-hasura-allowed-roles'] || [];
-      const hasStaffAccess = ['developer', 'org_admin', 'manager'].some(r => allowedRoles.includes(r));
+      const hasStaffAccess = ['developer', 'org_admin', 'manager'].includes(session.role);
       
       if (!hasStaffAccess) {
         return NextResponse.json({ error: "Insufficient permissions" }, { status: 403 });
@@ -75,19 +60,11 @@ export async function GET(req: NextRequest) {
       
       // Check if user is trying to access all users without developer permissions
       const includeNonStaff = searchParams.get("includeNonStaff") === "true";
-      const isDeveloper = role === 'developer' || allowedRoles.includes('developer');
+      const isDeveloper = session.role === 'developer';
       
       if (includeNonStaff && !isDeveloper) {
         return NextResponse.json({ error: "Developer access required for all users view" }, { status: 403 });
       }
-    }
-  } catch (error) {
-    console.error("Failed to decode JWT:", error);
-    return NextResponse.json({ error: "Invalid token" }, { status: 401 });
-  }
-
-  try {
-    const { searchParams } = new URL(req.url);
     
     // Parse query parameters
     const page = parseInt(searchParams.get("page") || "1");
@@ -100,7 +77,7 @@ export async function GET(req: NextRequest) {
     const orderBy = (searchParams.get("orderBy") as any) || "name";
     const orderDirection = (searchParams.get("orderDirection") as any) || "ASC";
     const includeStats = searchParams.get("includeStats") === "true";
-    const includeNonStaff = searchParams.get("includeNonStaff") === "true";
+    // includeNonStaff already declared above
 
     // Calculate offset
     const offset = (page - 1) * limit;
@@ -249,6 +226,7 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
+  })(req);
 }
 
 // Helper function to format stats data

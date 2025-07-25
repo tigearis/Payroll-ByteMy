@@ -7,8 +7,7 @@
 
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { type UserRole } from "./database-permissions";
-import { permissionCalculationService } from "./permission-calculation-service";
+import { type UserRole, hasHierarchicalPermission } from "./hierarchical-permissions";
 
 // Response types for permission failures
 export interface PermissionError {
@@ -61,6 +60,7 @@ export class ApiPermissionGuard {
       const user = await currentUser();
 
       if (!userId || !user) {
+        console.log(`🚫 Auth failed: userId=${userId}, user=${!!user}`);
         return {
           allowed: false,
           error: {
@@ -70,24 +70,23 @@ export class ApiPermissionGuard {
       }
 
       const userRole = (user.publicMetadata?.role as UserRole) || "viewer";
+      const excludedPermissions = (user.publicMetadata?.excludedPermissions as string[]) || [];
 
-      // Get user permissions using the new calculation service
-      const permissionResult =
-        await permissionCalculationService.calculateUserPermissions(
-          userId,
-          userRole
-        );
+      console.log(`👤 User: ${userId}, Role: ${userRole}, Excluded: ${excludedPermissions.length}`);
 
-      const userPermissions = permissionResult.permissions;
+      // For now, we'll create a simple permissions array for backward compatibility
+      const userPermissions: string[] = [];
 
       // Check specific resource.action permission
       if (options.resource && options.action) {
-        const hasPermission = await permissionCalculationService.hasPermission(
-          userId,
+        const permissionKey = `${options.resource}.${options.action}`;
+        const hasPermission = hasHierarchicalPermission(
           userRole,
-          options.resource,
-          options.action
+          permissionKey,
+          excludedPermissions
         );
+
+        console.log(`🔍 Permission check: ${permissionKey} for role ${userRole} = ${hasPermission}`);
 
         if (!hasPermission) {
           return {
@@ -108,17 +107,14 @@ export class ApiPermissionGuard {
 
       // Check multiple permissions
       if (options.permissions && options.permissions.length > 0) {
+        const checkPermission = (perm: string) => {
+          const permissionKey = perm.includes('.') ? perm : `${perm}.read`;
+          return hasHierarchicalPermission(userRole, permissionKey, excludedPermissions);
+        };
+
         const hasRequiredPermissions = options.requireAll
-          ? await permissionCalculationService.hasAllPermissions(
-              userId,
-              userRole,
-              options.permissions
-            )
-          : await permissionCalculationService.hasAnyPermission(
-              userId,
-              userRole,
-              options.permissions
-            );
+          ? options.permissions.every(checkPermission)
+          : options.permissions.some(checkPermission);
 
         if (!hasRequiredPermissions) {
           return {
@@ -223,47 +219,48 @@ export class ApiPermissionGuard {
    * Check if user can access specific resource
    */
   async canAccessResource(
-    userId: string,
+    _userId: string,
     userRole: UserRole,
     resource: string
   ): Promise<boolean> {
-    return permissionCalculationService.canAccessResource(
-      userId,
-      userRole,
-      resource
-    );
+    // Check if user has any permission on this resource
+    const readPermission = `${resource}.read`;
+    return hasHierarchicalPermission(userRole, readPermission, []);
   }
 
   /**
    * Check if user has specific permission
    */
   async hasPermission(
-    userId: string,
+    _userId: string,
     userRole: UserRole,
     resource: string,
     action: string
   ): Promise<boolean> {
-    return permissionCalculationService.hasPermission(
-      userId,
-      userRole,
-      resource,
-      action
-    );
+    const permissionKey = `${resource}.${action}`;
+    return hasHierarchicalPermission(userRole, permissionKey, []);
   }
 
   /**
    * Get user's permissions for a resource
    */
   async getResourcePermissions(
-    userId: string,
+    _userId: string,
     userRole: UserRole,
     resource: string
   ): Promise<string[]> {
-    return permissionCalculationService.getResourcePermissions(
-      userId,
-      userRole,
-      resource
-    );
+    // Return basic actions that might be available for this resource
+    const possibleActions = ['read', 'create', 'update', 'delete', 'manage'];
+    const availableActions: string[] = [];
+    
+    for (const action of possibleActions) {
+      const permissionKey = `${resource}.${action}`;
+      if (hasHierarchicalPermission(userRole, permissionKey, [])) {
+        availableActions.push(action);
+      }
+    }
+    
+    return availableActions;
   }
 }
 

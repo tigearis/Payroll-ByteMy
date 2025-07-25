@@ -33,6 +33,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
   Popover,
@@ -47,14 +54,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { StaffLoading } from "@/components/ui/smart-loading";
-import { useDynamicLoading } from "@/lib/hooks/use-dynamic-loading";
 import { getRoleDisplayNameUpper, getRoleColor } from "@/lib/utils/role-utils";
 
 interface Invitation {
   id: string;
   email: string;
   invitedRole: string;
-  status: string;
+  status?: string; // Legacy field
+  invitationStatus?: string; // GraphQL field
   createdAt: string;
   expiresAt: string;
   acceptedAt?: string;
@@ -86,6 +93,157 @@ interface InvitationManagementProps {
   embedded?: boolean; // Whether this is embedded in another page
 }
 
+// Helper function to get the correct status field
+const getInvitationStatus = (invitation: Invitation) => {
+  return invitation.invitationStatus || invitation.status || "";
+};
+
+// Invitation Details Modal Component
+function InvitationDetailsModal({ 
+  invitation, 
+  isOpen, 
+  onClose, 
+  onResend, 
+  onRevoke 
+}: {
+  invitation: Invitation;
+  isOpen: boolean;
+  onClose: () => void;
+  onResend: (invitationId: string) => void;
+  onRevoke: (invitationId: string) => void;
+}) {
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "pending": return "bg-yellow-100 text-yellow-800";
+      case "accepted": return "bg-green-100 text-green-800";
+      case "expired": return "bg-red-100 text-red-800";
+      case "revoked": return "bg-gray-100 text-gray-800";
+      default: return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getRoleColor = (role: string) => {
+    switch (role) {
+      case "developer": return "bg-purple-100 text-purple-800";
+      case "org_admin": return "bg-red-100 text-red-800";
+      case "manager": return "bg-blue-100 text-blue-800";
+      case "consultant": return "bg-green-100 text-green-800";
+      case "viewer": return "bg-gray-100 text-gray-800";
+      default: return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const formatDate = (dateString: string | undefined | null) => {
+    if (!dateString) return "Not available";
+    
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return "Invalid date";
+      }
+      return date.toLocaleString();
+    } catch (error) {
+      return "Invalid date";
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Invitation Details</DialogTitle>
+          <DialogDescription>
+            Detailed information and actions for this invitation
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-6">
+          {/* Basic Information */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3">Basic Information</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-gray-500">Email Address</label>
+                <p className="text-lg">{invitation.email}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-500">Invited Role</label>
+                <div className="mt-1">
+                  <Badge className={getRoleColor(invitation.invitedRole)}>
+                    {getRoleDisplayNameUpper(invitation.invitedRole)}
+                  </Badge>
+                </div>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-500">Status</label>
+                <div className="mt-1">
+                  <Badge className={getStatusColor(getInvitationStatus(invitation))}>
+                    {getInvitationStatus(invitation) || "Pending"}
+                  </Badge>
+                </div>
+              </div>
+              {invitation.invitedByUser && (
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Invited By</label>
+                  <p>{invitation.invitedByUser.name}</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Timeline Information */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3">Timeline</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-gray-500">Created</label>
+                <p>{formatDate(invitation.createdAt)}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-500">Expires</label>
+                <p>{formatDate(invitation.expiresAt)}</p>
+              </div>
+              {invitation.acceptedAt && (
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Accepted</label>
+                  <p>{formatDate(invitation.acceptedAt)}</p>
+                </div>
+              )}
+              {invitation.revokedAt && (
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Revoked</label>
+                  <p>{formatDate(invitation.revokedAt)}</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Actions */}
+          {(getInvitationStatus(invitation)?.toLowerCase() === "pending" || !getInvitationStatus(invitation)) && (
+            <div>
+              <h3 className="text-lg font-semibold mb-3">Actions</h3>
+              <div className="flex gap-2">
+                <Button onClick={() => onResend(invitation.id)} variant="outline">
+                  <Send className="w-4 h-4 mr-2" />
+                  Resend Invitation
+                </Button>
+                <Button 
+                  onClick={() => onRevoke(invitation.id)} 
+                  variant="outline" 
+                  className="text-red-600 border-red-200 hover:bg-red-50"
+                >
+                  <X className="w-4 h-4 mr-2" />
+                  Revoke
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export function InvitationManagement({ embedded = false }: InvitationManagementProps) {
   const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [stats, setStats] = useState<InvitationStats | null>(null);
@@ -96,10 +254,15 @@ export function InvitationManagement({ embedded = false }: InvitationManagementP
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
   const [selectedUrgency, setSelectedUrgency] = useState<string[]>([]);
   const [selectedInvitations, setSelectedInvitations] = useState<string[]>([]);
+  const [selectedInvitation, setSelectedInvitation] = useState<Invitation | null>(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
-  const { isLoading, error, refreshTrigger, handleRefresh } = useDynamicLoading({
-    loadingStates: ["stats", "invitations"],
-  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  
+  const handleRefresh = () => {
+    setRefreshTrigger(prev => prev + 1);
+  };
 
   // Fetch invitations
   useEffect(() => {
@@ -109,6 +272,7 @@ export function InvitationManagement({ embedded = false }: InvitationManagementP
 
   const fetchInvitations = async () => {
     try {
+      setIsLoading(true);
       const queryParams = new URLSearchParams({
         search: searchTerm,
         ...(selectedStatuses.length > 0 && { statuses: selectedStatuses.join(",") }),
@@ -129,7 +293,8 @@ export function InvitationManagement({ embedded = false }: InvitationManagementP
       }
     } catch (error) {
       console.error("Failed to fetch invitations:", error);
-      // You could also set an error state here to show in the UI
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -184,7 +349,16 @@ export function InvitationManagement({ embedded = false }: InvitationManagementP
     }
   };
 
-  const getStatusBadge = (status: string) => {
+  const handleViewDetails = (invitation: Invitation) => {
+    setSelectedInvitation(invitation);
+    setIsDetailsModalOpen(true);
+  };
+
+  const getStatusBadge = (status: string | undefined | null) => {
+    if (!status || status === "") {
+      return <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>;
+    }
+    
     switch (status.toLowerCase()) {
       case "pending":
         return <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>;
@@ -199,15 +373,11 @@ export function InvitationManagement({ embedded = false }: InvitationManagementP
     }
   };
 
-  const getRoleBadge = (role: string) => {
-    const roleColors = {
-      developer: "bg-purple-100 text-purple-800",
-      org_admin: "bg-red-100 text-red-800",
-      manager: "bg-blue-100 text-blue-800",
-      consultant: "bg-green-100 text-green-800",
-      viewer: "bg-gray-100 text-gray-800",
-    };
-
+  const getRoleBadge = (role: string | undefined | null) => {
+    if (!role) {
+      return <Badge variant="outline">Unknown</Badge>;
+    }
+    
     return (
       <Badge className={getRoleColor(role)}>
         {getRoleDisplayNameUpper(role)}
@@ -238,9 +408,9 @@ export function InvitationManagement({ embedded = false }: InvitationManagementP
           <div className="space-y-1">
             <div className="font-medium">{invitation.email}</div>
             <div className="flex items-center gap-2">
-              {getStatusBadge(invitation.status)}
+              {getStatusBadge(getInvitationStatus(invitation))}
               {getRoleBadge(invitation.invitedRole)}
-              {invitation.status === "pending" && getUrgencyBadge(invitation.expiresAt)}
+              {(getInvitationStatus(invitation)?.toLowerCase() === "pending" || !getInvitationStatus(invitation)) && getUrgencyBadge(invitation.expiresAt)}
             </div>
           </div>
           <DropdownMenu>
@@ -250,11 +420,11 @@ export function InvitationManagement({ embedded = false }: InvitationManagementP
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleViewDetails(invitation)}>
                 <Eye className="w-4 h-4 mr-2" />
                 View Details
               </DropdownMenuItem>
-              {invitation.status === "pending" && (
+              {(getInvitationStatus(invitation)?.toLowerCase() === "pending" || !getInvitationStatus(invitation)) && (
                 <>
                   <DropdownMenuItem onClick={() => handleResendInvitation(invitation.id)}>
                     <Send className="w-4 h-4 mr-2" />
@@ -429,35 +599,56 @@ export function InvitationManagement({ embedded = false }: InvitationManagementP
         <p className="text-sm text-gray-500 mb-4">
           Found {invitations.length} invitation(s) | Loading: {isLoading ? 'Yes' : 'No'}
         </p>
-        <Button 
-          onClick={async () => {
-            try {
-              const testResponse = await fetch('/api/invitations/create', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  email: 'test@example.com',
-                  firstName: 'Test',
-                  lastName: 'User',
-                  role: 'viewer',
-                  sendImmediately: false
-                })
-              });
-              const result = await testResponse.json();
-              console.log('Test invitation result:', result);
-              if (result.success) {
-                fetchInvitations();
+        <div className="flex gap-2 mb-4">
+          <Button 
+            onClick={async () => {
+              try {
+                const testResponse = await fetch('/api/invitations/create', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    email: `test-${Date.now()}@example.com`,
+                    firstName: 'Test',
+                    lastName: 'User',
+                    role: 'viewer',
+                    sendImmediately: false
+                  })
+                });
+                const result = await testResponse.json();
+                console.log('Test invitation result:', result);
+                if (result.success) {
+                  fetchInvitations();
+                  fetchStats();
+                }
+              } catch (err) {
+                console.error('Test invitation error:', err);
               }
-            } catch (err) {
-              console.error('Test invitation error:', err);
-            }
-          }}
-          variant="outline" 
-          size="sm"
-          className="mb-4"
-        >
-          Create Test Invitation
-        </Button>
+            }}
+            variant="outline" 
+            size="sm"
+          >
+            Create Test Invitation
+          </Button>
+          <Button 
+            onClick={() => {
+              console.log('Current invitations:', invitations);
+              invitations.forEach((inv, index) => {
+                console.log(`Invitation ${index}:`, {
+                  email: inv.email,
+                  status: inv.status,
+                  invitationStatus: inv.invitationStatus,
+                  resolvedStatus: getInvitationStatus(inv),
+                  statusType: typeof inv.status,
+                  invitationStatusType: typeof inv.invitationStatus
+                });
+              });
+            }}
+            variant="outline" 
+            size="sm"
+          >
+            Debug Invitations
+          </Button>
+        </div>
       </div>
       
       {viewMode === "cards" && (
@@ -488,7 +679,7 @@ export function InvitationManagement({ embedded = false }: InvitationManagementP
                     <tr key={invitation.id} className="border-b hover:bg-gray-50">
                       <td className="p-4">{invitation.email}</td>
                       <td className="p-4">{getRoleBadge(invitation.invitedRole)}</td>
-                      <td className="p-4">{getStatusBadge(invitation.status)}</td>
+                      <td className="p-4">{getStatusBadge(getInvitationStatus(invitation))}</td>
                       <td className="p-4">{invitation.invitedByUser?.name || 'System'}</td>
                       <td className="p-4">{new Date(invitation.expiresAt).toLocaleDateString()}</td>
                       <td className="p-4">
@@ -499,11 +690,11 @@ export function InvitationManagement({ embedded = false }: InvitationManagementP
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleViewDetails(invitation)}>
                               <Eye className="w-4 h-4 mr-2" />
                               View Details
                             </DropdownMenuItem>
-                            {invitation.status === "pending" && (
+                            {(getInvitationStatus(invitation)?.toLowerCase() === "pending" || !getInvitationStatus(invitation)) && (
                               <>
                                 <DropdownMenuItem onClick={() => handleResendInvitation(invitation.id)}>
                                   <Send className="w-4 h-4 mr-2" />
@@ -539,6 +730,20 @@ export function InvitationManagement({ embedded = false }: InvitationManagementP
             <p className="text-gray-600">No invitations match your current filters.</p>
           </CardContent>
         </Card>
+      )}
+
+      {/* Invitation Details Modal */}
+      {selectedInvitation && (
+        <InvitationDetailsModal
+          invitation={selectedInvitation}
+          isOpen={isDetailsModalOpen}
+          onClose={() => {
+            setIsDetailsModalOpen(false);
+            setSelectedInvitation(null);
+          }}
+          onResend={handleResendInvitation}
+          onRevoke={handleRevokeInvitation}
+        />
       )}
     </div>
   );

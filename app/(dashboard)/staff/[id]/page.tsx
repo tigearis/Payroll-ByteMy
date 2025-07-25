@@ -65,6 +65,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { useRole } from "@/hooks/use-permissions";
 // Note: Complex permission GraphQL operations removed - using simplified role system
 import {
   GetStaffDetailCompleteDocument,
@@ -112,6 +113,7 @@ export default function StaffDetailsPage() {
   const params = useParams();
   const id = params.id as string;
   const { userId } = useAuth(); // Get current user's Clerk ID
+  const { role: currentUserRole, isDeveloper, isAtLeast } = useRole();
   // Permissions removed
 
   // State management
@@ -135,6 +137,35 @@ export default function StaffDetailsPage() {
   // Helper function to check if user is viewing their own profile
   const isCurrentUser = (user: any): boolean => {
     return user?.clerkUserId === userId;
+  };
+
+  // Function to check if current user can change roles
+  const canChangeRole = (targetRole: string): boolean => {
+    if (!currentUserRole) return false;
+    
+    const roleHierarchy: Record<string, number> = {
+      developer: 5, org_admin: 4, manager: 3, consultant: 2, viewer: 1
+    };
+    
+    const currentLevel = roleHierarchy[currentUserRole] || 0;
+    const targetLevel = roleHierarchy[targetRole] || 0;
+    
+    // Developers can change anyone's role to anything
+    if (currentUserRole === 'developer') return true;
+    
+    // Org admins can assign roles up to manager level
+    if (currentUserRole === 'org_admin') return targetLevel <= 3;
+    
+    // Managers can assign roles up to consultant level
+    if (currentUserRole === 'manager') return targetLevel <= 2;
+    
+    // Consultants and viewers cannot change roles
+    return false;
+  };
+
+  // Get available roles for current user
+  const getAvailableRoles = () => {
+    return ROLE_OPTIONS.filter(role => canChangeRole(role.value));
   };
 
   // GraphQL queries with hierarchical permission guards
@@ -209,28 +240,49 @@ export default function StaffDetailsPage() {
         managerId: editedUser.managerId || null,
       };
 
+      // Update basic user data
       await updateUser({
         variables: {
           id,
           set: updateData,
         },
       });
+
+      // Handle role change separately if role was changed
+      if (editedUser.role && editedUser.role !== user.role) {
+        await handleRoleChange(editedUser.role);
+      }
     } catch (error) {
       console.error("Error in handleSave:", error);
     }
   };
 
-  // Handle role change
+  // Handle role change with validation
   const handleRoleChange = async (newRole: string) => {
     try {
+      // Validate permission to change role
+      if (!canChangeRole(newRole)) {
+        toast.error(`You don't have permission to assign the ${newRole} role`);
+        return;
+      }
+
+      // Prevent users from changing their own role
+      if (isCurrentUser(user)) {
+        toast.error("You cannot change your own role. Please contact an administrator.");
+        return;
+      }
+
       await updateUserRole({
         variables: {
           id,
           role: newRole,
         },
       });
+
+      toast.success(`User role updated to ${newRole.replace('_', ' ')}`);
     } catch (error) {
       console.error("Error updating role:", error);
+      toast.error("Failed to update user role. Please try again.");
     }
   };
 
@@ -474,11 +526,21 @@ export default function StaffDetailsPage() {
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
-                <div>
+                <div className="flex-1">
                   <p className="text-sm font-medium text-gray-600">Role</p>
                   <p className="text-2xl font-bold text-gray-900 capitalize">
                     {user.role?.replace('_', ' ')}
                   </p>
+                  {getAvailableRoles().length > 0 && !isCurrentUser(user) && (
+                    <p className="text-xs text-green-600 mt-1">
+                      Can modify role
+                    </p>
+                  )}
+                  {isCurrentUser(user) && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Your role
+                    </p>
+                  )}
                 </div>
                 <Shield className="w-8 h-8 text-blue-600" />
               </div>
@@ -630,18 +692,43 @@ export default function StaffDetailsPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="flex-shrink-0">
-                      <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <Shield className="w-4 h-4 text-blue-600" />
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="flex-shrink-0">
+                        <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                          <Shield className="w-4 h-4 text-blue-600" />
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-500">Current Role</p>
+                        <div className="flex items-center gap-2">
+                          <Badge className="bg-blue-100 text-blue-800 capitalize">
+                            {user.role?.replace('_', ' ')}
+                          </Badge>
+                          {getAvailableRoles().length > 0 && !isCurrentUser(user) && (
+                            <span className="text-xs text-green-600">Can be changed</span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-500">Current Role</p>
-                      <p className="text-sm text-gray-900 capitalize">
-                        {user.role?.replace('_', ' ')}
-                      </p>
-                    </div>
+                    {/* Quick role change dropdown */}
+                    {getAvailableRoles().length > 0 && !isCurrentUser(user) && (
+                      <Select 
+                        value={user.role} 
+                        onValueChange={handleRoleChange}
+                      >
+                        <SelectTrigger className="w-32 h-8">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {getAvailableRoles().map((role) => (
+                            <SelectItem key={role.value} value={role.value}>
+                              {role.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
                   </div>
 
                   <div className="flex items-center space-x-3">
@@ -767,16 +854,45 @@ export default function StaffDetailsPage() {
 
           {/* Permissions Tab */}
           <TabsContent value="permissions" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Permission Overview */}
-              <Card className="lg:col-span-2">
+            <PermissionGuard role="developer" fallback={
+              <Card>
                 <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="flex items-center">
-                      <Shield className="w-5 h-5 mr-2" />
-                      User Permissions
-                    </CardTitle>
-                    <PermissionGuard  fallback={null}>
+                  <CardTitle className="flex items-center">
+                    <Shield className="w-5 h-5 mr-2" />
+                    Permission Management
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-12">
+                    <Shield className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                    <h3 className="text-lg font-medium mb-2 text-amber-800">
+                      Developer Access Required
+                    </h3>
+                    <p className="text-amber-600 mb-4">
+                      Advanced permission management is restricted to developers only.
+                    </p>
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 max-w-md mx-auto">
+                      <h4 className="font-medium text-amber-900 mb-2">Current User Role</h4>
+                      <Badge className="bg-blue-100 text-blue-800 capitalize">
+                        {user.role?.replace('_', ' ')}
+                      </Badge>
+                      <p className="text-sm text-amber-700 mt-2">
+                        This role provides access to standard system features through role-based permissions.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            }>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Permission Overview */}
+                <Card className="lg:col-span-2">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center">
+                        <Shield className="w-5 h-5 mr-2" />
+                        User Permissions
+                      </CardTitle>
                       <Button 
                         onClick={() => setShowPermissionDialog(true)}
                         size="sm"
@@ -784,59 +900,57 @@ export default function StaffDetailsPage() {
                         <Settings className="w-4 h-4 mr-2" />
                         Manage Permissions
                       </Button>
-                    </PermissionGuard>
-                  </div>
-                  <div className="flex items-center gap-4 mt-4">
-                    <Input
-                      placeholder="Search permissions..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="max-w-sm"
-                    />
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {Object.entries({} as Record<string, string[]>).map(([category, permissions]) => {
-                      const categoryPermissions = permissions.filter((p: string) => 
-                        filteredPermissions.includes(p)
-                      );
-                      
-                      if (categoryPermissions.length === 0) return null;
-                      
-                      return (
-                        <div key={category} className="space-y-2">
-                          <h4 className="text-sm font-medium text-gray-900 capitalize">
-                            {category.toLowerCase()} Permissions
-                          </h4>
-                          <div className="grid grid-cols-1 gap-2">
-                            {categoryPermissions.map((permission: string) => {
-                              const status = getPermissionStatus(permission);
-                              return (
-                                <div
-                                  key={permission}
-                                  className="flex items-center justify-between p-3 border rounded-lg"
-                                >
-                                  <div className="flex items-center space-x-3">
-                                    <div className={`w-3 h-3 rounded-full ${
-                                      status.hasPermission ? 'bg-green-500' : 'bg-red-500'
-                                    }`} />
-                                    <div>
-                                      <p className="text-sm font-medium text-gray-900">
-                                        {permission}
-                                      </p>
-                                      <p className="text-xs text-gray-500">
-                                        Source: {status.source === "role" ? `Role (${user.role})` : 
-                                          status.source === "granted" ? "Explicitly Granted" : "Explicitly Restricted"}
-                                      </p>
+                    </div>
+                    <div className="flex items-center gap-4 mt-4">
+                      <Input
+                        placeholder="Search permissions..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="max-w-sm"
+                      />
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {Object.entries({} as Record<string, string[]>).map(([category, permissions]) => {
+                        const categoryPermissions = permissions.filter((p: string) => 
+                          filteredPermissions.includes(p)
+                        );
+                        
+                        if (categoryPermissions.length === 0) return null;
+                        
+                        return (
+                          <div key={category} className="space-y-2">
+                            <h4 className="text-sm font-medium text-gray-900 capitalize">
+                              {category.toLowerCase()} Permissions
+                            </h4>
+                            <div className="grid grid-cols-1 gap-2">
+                              {categoryPermissions.map((permission: string) => {
+                                const status = getPermissionStatus(permission);
+                                return (
+                                  <div
+                                    key={permission}
+                                    className="flex items-center justify-between p-3 border rounded-lg"
+                                  >
+                                    <div className="flex items-center space-x-3">
+                                      <div className={`w-3 h-3 rounded-full ${
+                                        status.hasPermission ? 'bg-green-500' : 'bg-red-500'
+                                      }`} />
+                                      <div>
+                                        <p className="text-sm font-medium text-gray-900">
+                                          {permission}
+                                        </p>
+                                        <p className="text-xs text-gray-500">
+                                          Source: {status.source === "role" ? `Role (${user.role})` : 
+                                            status.source === "granted" ? "Explicitly Granted" : "Explicitly Restricted"}
+                                        </p>
+                                      </div>
                                     </div>
-                                  </div>
-                                  <div className="flex items-center space-x-2">
-                                    <Badge variant={status.hasPermission ? "default" : "destructive"}>
-                                      {status.hasPermission ? "Allowed" : "Denied"}
-                                    </Badge>
-                                    {status.override && (
-                                      <PermissionGuard  fallback={null}>
+                                    <div className="flex items-center space-x-2">
+                                      <Badge variant={status.hasPermission ? "default" : "destructive"}>
+                                        {status.hasPermission ? "Allowed" : "Denied"}
+                                      </Badge>
+                                      {status.override && (
                                         <Button
                                           variant="ghost"
                                           size="sm"
@@ -849,41 +963,39 @@ export default function StaffDetailsPage() {
                                         >
                                           <X className="w-3 h-3" />
                                         </Button>
-                                      </PermissionGuard>
-                                    )}
+                                      )}
+                                    </div>
                                   </div>
-                                </div>
-                              );
-                            })}
+                                );
+                              })}
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
 
-              {/* Permission Overrides */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <FileText className="w-5 h-5 mr-2" />
-                    Active Overrides
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {false ? (
-                      [].map((override: any) => (
-                        <div
-                          key={override.id}
-                          className="p-3 border rounded-lg space-y-2"
-                        >
-                          <div className="flex items-center justify-between">
-                            <Badge variant={override.granted ? "default" : "destructive"}>
-                              {override.granted ? "Grant" : "Restrict"}
-                            </Badge>
-                            <PermissionGuard  fallback={null}>
+                {/* Permission Overrides */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <FileText className="w-5 h-5 mr-2" />
+                      Active Overrides
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {false ? (
+                        [].map((override: any) => (
+                          <div
+                            key={override.id}
+                            className="p-3 border rounded-lg space-y-2"
+                          >
+                            <div className="flex items-center justify-between">
+                              <Badge variant={override.granted ? "default" : "destructive"}>
+                                {override.granted ? "Grant" : "Restrict"}
+                              </Badge>
                               <Button
                                 variant="ghost"
                                 size="sm"
@@ -892,33 +1004,33 @@ export default function StaffDetailsPage() {
                               >
                                 <X className="w-3 h-3" />
                               </Button>
-                            </PermissionGuard>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium">
-                              {override.resource}:{override.operation}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              {override.reason}
-                            </p>
-                            {override.expiresAt && (
-                              <p className="text-xs text-orange-600">
-                                Expires: {new Date(override.expiresAt).toLocaleDateString()}
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium">
+                                {override.resource}:{override.operation}
                               </p>
-                            )}
+                              <p className="text-xs text-gray-500">
+                                {override.reason}
+                              </p>
+                              {override.expiresAt && (
+                                <p className="text-xs text-orange-600">
+                                  Expires: {new Date(override.expiresAt).toLocaleDateString()}
+                                </p>
+                              )}
+                            </div>
                           </div>
+                        ))
+                      ) : (
+                        <div className="text-center py-6">
+                          <FileText className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                          <p className="text-sm text-gray-500">No active overrides</p>
                         </div>
-                      ))
-                    ) : (
-                      <div className="text-center py-6">
-                        <FileText className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                        <p className="text-sm text-gray-500">No active overrides</p>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </PermissionGuard>
           </TabsContent>
 
           {/* Activity Tab */}
@@ -1009,6 +1121,52 @@ export default function StaffDetailsPage() {
                   </SelectContent>
                 </Select>
               </div>
+
+              {/* Role Selection - Only show if user has permission and not editing themselves */}
+              {getAvailableRoles().length > 0 && !isCurrentUser(user) && (
+                <div>
+                  <Label htmlFor="role">Role</Label>
+                  <Select 
+                    value={editedUser.role || user.role} 
+                    onValueChange={(value) => handleInputChange("role", value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select role..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {getAvailableRoles().map((role) => (
+                        <SelectItem key={role.value} value={role.value}>
+                          <div className="flex flex-col items-start">
+                            <span className="font-medium">{role.label}</span>
+                            <span className="text-xs text-gray-500">{role.description}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Current role: <span className="font-medium capitalize">{user.role?.replace('_', ' ')}</span>
+                  </p>
+                </div>
+              )}
+
+              {/* Show current role if user can't change roles or is editing themselves */}
+              {(getAvailableRoles().length === 0 || isCurrentUser(user)) && (
+                <div>
+                  <Label>Current Role</Label>
+                  <div className="p-3 border rounded-lg bg-gray-50">
+                    <div className="flex flex-col">
+                      <span className="font-medium capitalize">{user.role?.replace('_', ' ')}</span>
+                      <span className="text-xs text-gray-500">
+                        {isCurrentUser(user) 
+                          ? "You cannot change your own role" 
+                          : "You don't have permission to change this user's role"
+                        }
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="flex items-center space-x-2">
                 <Switch

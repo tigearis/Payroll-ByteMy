@@ -7,13 +7,13 @@
 
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
+import { hasRoleLevel } from '@/lib/auth/simple-permissions';
 import { 
   type UserRole,
   hasHierarchicalPermission,
   hasAnyHierarchicalPermission,
   getEffectivePermissions
 } from '@/lib/permissions/hierarchical-permissions';
-import { hasRoleLevel } from '@/lib/auth/simple-permissions';
 
 // Helper function to sanitize role
 function sanitizeRole(role: string | undefined): UserRole {

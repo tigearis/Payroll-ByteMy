@@ -65,16 +65,16 @@ function PayrollFormComponent({
   // Role formatting helper
   const formatRole = (role: string): string => {
     switch (role) {
-      case 'org_admin':
-        return 'Admin';
-      case 'manager':
-        return 'Manager';
-      case 'consultant':
-        return 'Consultant';
-      case 'developer':
-        return 'Developer';
-      case 'viewer':
-        return 'Viewer';
+      case "org_admin":
+        return "Admin";
+      case "manager":
+        return "Manager";
+      case "consultant":
+        return "Consultant";
+      case "developer":
+        return "Developer";
+      case "viewer":
+        return "Viewer";
       default:
         return role.charAt(0).toUpperCase() + role.slice(1);
     }
@@ -125,19 +125,19 @@ function PayrollFormComponent({
       !formData.processingTime
     )
       return false;
-    
+
     // Validate processing days range
     const processingDays = parseInt(formData.processingDaysBeforeEft);
     if (isNaN(processingDays) || processingDays < 1 || processingDays > 10) {
       return false;
     }
-    
+
     // Validate processing time range (1-24 hours)
     const processingTime = parseInt(formData.processingTime);
     if (isNaN(processingTime) || processingTime < 1 || processingTime > 24) {
       return false;
     }
-    
+
     if (showClientField && !formData.clientId) return false;
 
     const cycleName = getCycleNameById(formData.cycleId);
@@ -288,9 +288,7 @@ function PayrollFormComponent({
       <CardContent className="space-y-6">
         <div className="space-y-4">
           <h4 className="font-medium text-gray-900">Basic Information</h4>
-          <div
-            className="grid grid-cols-1 md:grid-cols-2 gap-4"
-          >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {showClientField ? (
               <div>
                 <Label htmlFor="client">Client *</Label>
@@ -391,49 +389,48 @@ function PayrollFormComponent({
 
           {/* Processing Configuration */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="processing-days">
-                  Processing Days Before EFT *
-                </Label>
-                <Input
-                  id="processing-days"
-                  type="number"
-                  placeholder="e.g., 3"
-                  value={formData.processingDaysBeforeEft}
-                  onChange={e =>
-                    handleChange("processingDaysBeforeEft", e.target.value)
-                  }
-                  className="mt-1"
-                  disabled={isLoading}
-                  min="1"
-                  max="10"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Business days required for payroll processing before EFT date (typically 1-10 days)
-                </p>
-              </div>
-              <div>
-                <Label htmlFor="processing-time">
-                  Max Processing Time (Hours) *
-                </Label>
-                <Input
-                  id="processing-time"
-                  type="number"
-                  placeholder="e.g., 4"
-                  value={formData.processingTime}
-                  onChange={e =>
-                    handleChange("processingTime", e.target.value)
-                  }
-                  className="mt-1"
-                  disabled={isLoading}
-                  min="1"
-                  max="24"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Maximum hours needed to process this payroll (1-24 hours)
-                </p>
-              </div>
+            <div>
+              <Label htmlFor="processing-days">
+                Processing Days Before EFT *
+              </Label>
+              <Input
+                id="processing-days"
+                type="number"
+                placeholder="e.g., 3"
+                value={formData.processingDaysBeforeEft}
+                onChange={e =>
+                  handleChange("processingDaysBeforeEft", e.target.value)
+                }
+                className="mt-1"
+                disabled={isLoading}
+                min="1"
+                max="10"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Business days required for payroll processing before EFT date
+                (typically 1-10 days)
+              </p>
             </div>
+            <div>
+              <Label htmlFor="processing-time">
+                Max Processing Time (Hours) *
+              </Label>
+              <Input
+                id="processing-time"
+                type="number"
+                placeholder="e.g., 4"
+                value={formData.processingTime}
+                onChange={e => handleChange("processingTime", e.target.value)}
+                className="mt-1"
+                disabled={isLoading}
+                min="1"
+                max="24"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Maximum hours needed to process this payroll (1-24 hours)
+              </p>
+            </div>
+          </div>
 
           {/* Payroll Cycle row */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -448,7 +445,7 @@ function PayrollFormComponent({
                   <SelectValue placeholder="Select cycle..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {PAYROLLCYCLES.map(cycle => (
+                  {PAYROLL_CYCLES.map(cycle => (
                     <SelectItem key={cycle.id} value={cycle.id}>
                       {cycle.name}
                     </SelectItem>
@@ -507,7 +504,8 @@ function PayrollFormComponent({
               <SelectContent>
                 {availablePrimaryConsultants.map((consultant: any) => (
                   <SelectItem key={consultant.id} value={consultant.id}>
-                    {consultant.name} ({consultant.email}) - {formatRole(consultant.role)}
+                    {consultant.name} ({consultant.email}) -{" "}
+                    {formatRole(consultant.role)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -537,7 +535,8 @@ function PayrollFormComponent({
                 <SelectItem value="none">None</SelectItem>
                 {availableBackupConsultants.map((consultant: any) => (
                   <SelectItem key={consultant.id} value={consultant.id}>
-                    {consultant.name} ({consultant.email}) - {formatRole(consultant.role)}
+                    {consultant.name} ({consultant.email}) -{" "}
+                    {formatRole(consultant.role)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -576,7 +575,8 @@ function PayrollFormComponent({
               <SelectContent>
                 {availableManagers.map((manager: any) => (
                   <SelectItem key={manager.id} value={manager.id}>
-                    {manager.name} ({manager.email}) - {formatRole(manager.role)}
+                    {manager.name} ({manager.email}) -{" "}
+                    {formatRole(manager.role)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -635,7 +635,7 @@ function arePayrollFormPropsEqual(
     // Deep comparison of form data fields
     const prevForm = prevProps.formData;
     const nextForm = nextProps.formData;
-    
+
     return (
       prevForm.name === nextForm.name &&
       prevForm.clientId === nextForm.clientId &&
@@ -657,19 +657,16 @@ function arePayrollFormPropsEqual(
   // Function comparison - these typically change on every render
   // We skip comparing functions as they're likely to have different references
   // but the form behavior should remain consistent
-  
+
   return true;
 }
 
 /**
  * Memoized PayrollForm Component
- * 
+ *
  * Prevents unnecessary re-renders when props haven't meaningfully changed.
  * Optimized for complex form interactions with multiple GraphQL queries.
  */
-export const PayrollForm = memo(
-  PayrollFormComponent,
-  arePayrollFormPropsEqual
-);
+export const PayrollForm = memo(PayrollFormComponent, arePayrollFormPropsEqual);
 
 export default PayrollForm;

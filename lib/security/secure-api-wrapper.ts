@@ -14,9 +14,9 @@ import { z } from 'zod';
 
 // Import our security modules
 import { requirePermission, requireRole, requireAdmin, requireDeveloper } from '@/lib/auth/api-permissions';
-import { withValidation, ValidationOptions } from '@/lib/validation/middleware';
-import { withRateLimit, RATE_LIMIT_PRESETS, RateLimitConfig } from '@/lib/security/rate-limiting';
 import { withErrorHandling, createErrorResponse, logSecurityEvent } from '@/lib/error-handling/standardized-errors';
+import { withRateLimit, RATE_LIMIT_PRESETS, RateLimitConfig } from '@/lib/security/rate-limiting';
+import { withValidation, ValidationOptions } from '@/lib/validation/middleware';
 
 // ============================================================================
 // Security Configuration Types
@@ -483,7 +483,7 @@ export function adminRoute() {
   return secureApiRoute({
     requireAuth: true,
     requiredRole: 'org_admin',
-    rateLimit: RATELIMITPRESETS.STRICT,
+    rateLimit: RATE_LIMIT_PRESETS.STRICT,
     addSecurityHeaders: true,
     auditLog: { enabled: true, logLevel: 'detailed' }
   });
@@ -496,7 +496,7 @@ export function developerRoute() {
   return secureApiRoute({
     requireAuth: true,
     requiredRole: 'developer',
-    rateLimit: RATELIMITPRESETS.STRICT,
+    rateLimit: RATE_LIMIT_PRESETS.STRICT,
     addSecurityHeaders: true,
     auditLog: { enabled: true, logLevel: 'detailed' }
   });
@@ -508,7 +508,7 @@ export function developerRoute() {
 export function publicRoute() {
   return secureApiRoute({
     requireAuth: false,
-    rateLimit: RATELIMITPRESETS.STANDARD,
+    rateLimit: RATE_LIMIT_PRESETS.STANDARD,
     addSecurityHeaders: true,
     auditLog: { enabled: true, logLevel: 'basic' }
   });
@@ -521,7 +521,7 @@ export function sensitiveRoute(resource: string, action: string) {
   return secureApiRoute({
     requireAuth: true,
     permissions: { resource, action },
-    rateLimit: RATELIMITPRESETS.STRICT,
+    rateLimit: RATE_LIMIT_PRESETS.STRICT,
     addSecurityHeaders: true,
     auditLog: { enabled: true, logLevel: 'detailed' }
   });
@@ -534,7 +534,7 @@ export function mutationRoute(resource: string, action: string) {
   return secureApiRoute({
     requireAuth: true,
     permissions: { resource, action },
-    rateLimit: RATELIMITPRESETS.MUTATION,
+    rateLimit: RATE_LIMIT_PRESETS.MUTATION,
     addSecurityHeaders: true,
     auditLog: { enabled: true, logLevel: 'detailed' }
   });
@@ -572,7 +572,7 @@ export const POST = secureApiRoute({
   validation: {
     body: CreatePayrollSchema
   },
-  rateLimit: RATELIMITPRESETS.MUTATION,
+  rateLimit: RATE_LIMIT_PRESETS.MUTATION,
   auditLog: { enabled: true, logLevel: 'detailed' },
   customChecks: [
     async (request, context) => {

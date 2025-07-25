@@ -33,11 +33,11 @@ import {
 } from "@/components/ui/select";
 import { QuickLoading } from "@/components/ui/smart-loading";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { GetPayrollsByMonthDocument } from "../graphql/generated/graphql";
 import {
   GetAllStaffWorkloadDocument,
   GetAllStaffWorkloadQuery,
 } from "@/domains/work-schedule/graphql/generated/graphql";
+import { GetPayrollsByMonthDocument } from "../graphql/generated/graphql";
 
 // Import generated GraphQL operations from the payrolls domain
 

@@ -1,6 +1,6 @@
 /**
  * Hasura Dynamic Query AI Assistant
- * 
+ *
  * A conversational data assistant that answers questions by dynamically
  * generating and executing GraphQL queries against Hasura. Focused on
  * providing direct answers without exposing technical details.
@@ -13,7 +13,6 @@ import {
   Send,
   Copy,
   Download,
-  AlertCircle,
   CheckCircle,
   Loader2,
   Bot,
@@ -29,7 +28,6 @@ import {
 } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { toast } from "sonner";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -67,10 +65,10 @@ interface HasuraDataAssistantProps {
   height?: string;
 }
 
-export function HasuraDataAssistant({ 
-  context, 
+export function HasuraDataAssistant({
+  context,
   className,
-  height = "600px" 
+  height = "600px",
 }: HasuraDataAssistantProps) {
   const { user } = useUser();
   const [messages, setMessages] = useState<DataMessage[]>([]);
@@ -94,15 +92,20 @@ export function HasuraDataAssistant({
   // Load suggested questions based on current context
   const loadSuggestedQuestions = async () => {
     try {
-      const response = await fetch(`/api/ai-assistant/query?pathname=${encodeURIComponent(context.pathname)}`, {
-        headers: {
-          "x-user-role": (user?.publicMetadata?.role as string) || "viewer",
-        },
-      });
+      const response = await fetch(
+        `/api/ai-assistant/query?pathname=${encodeURIComponent(context.pathname)}`,
+        {
+          headers: {
+            "x-hasura-role": (user?.publicMetadata?.role as string) || "viewer",
+          },
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
-        setSuggestedQuestions(data.suggestions?.map((s: any) => s.title || s) || []);
+        setSuggestedQuestions(
+          data.suggestions?.map((s: any) => s.title || s) || []
+        );
       }
     } catch (error) {
       console.error("Error loading suggestions:", error);
@@ -129,12 +132,12 @@ export function HasuraDataAssistant({
 
       try {
         const startTime = Date.now();
-        
+
         const response = await fetch("/api/ai-assistant/query", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "x-user-role": (user?.publicMetadata?.role as string) || "viewer",
+            "x-hasura-role": (user?.publicMetadata?.role as string) || "viewer",
           },
           body: JSON.stringify({
             request: questionToAsk,
@@ -149,7 +152,9 @@ export function HasuraDataAssistant({
         const executionTime = Date.now() - startTime;
 
         if (!response.ok) {
-          const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
+          const errorData = await response
+            .json()
+            .catch(() => ({ error: "Unknown error" }));
           throw new Error(errorData.error || `HTTP ${response.status}`);
         }
 
@@ -173,10 +178,9 @@ export function HasuraDataAssistant({
         };
 
         setMessages(prev => [...prev, assistantMessage]);
-
       } catch (error) {
         console.error("Error asking question:", error);
-        
+
         const errorMessage: DataMessage = {
           id: `error-${Date.now()}`,
           role: "assistant",
@@ -184,7 +188,7 @@ export function HasuraDataAssistant({
           timestamp: new Date(),
           type: "error",
         };
-        
+
         setMessages(prev => [...prev, errorMessage]);
         toast.error("Failed to get answer");
       } finally {
@@ -195,7 +199,10 @@ export function HasuraDataAssistant({
   );
 
   // Format the AI response in a business-friendly way
-  const formatBusinessResponse = (data: any, originalQuestion: string): string => {
+  const formatBusinessResponse = (
+    data: any,
+    originalQuestion: string
+  ): string => {
     if (!data.data) {
       return data.explanation || "I couldn't retrieve data for that question.";
     }
@@ -208,7 +215,7 @@ export function HasuraDataAssistant({
     // Generate a basic summary based on the data
     const recordCount = calculateRecordCount(data.data);
     const businessContext = determineBusinessContext(originalQuestion);
-    
+
     if (recordCount === 0) {
       return `No ${businessContext} found matching your criteria. You may want to adjust your search parameters or timeframe.`;
     }
@@ -223,12 +230,12 @@ export function HasuraDataAssistant({
   // Calculate total record count from nested data structure
   const calculateRecordCount = (data: any): number => {
     if (!data) return 0;
-    
+
     let total = 0;
     for (const [key, value] of Object.entries(data)) {
       if (Array.isArray(value)) {
         total += value.length;
-      } else if (value && typeof value === 'object') {
+      } else if (value && typeof value === "object") {
         total += 1;
       }
     }
@@ -238,34 +245,38 @@ export function HasuraDataAssistant({
   // Determine business context from the question
   const determineBusinessContext = (question: string): string => {
     const lowerQuestion = question.toLowerCase();
-    
+
     if (lowerQuestion.includes("client")) return "clients";
     if (lowerQuestion.includes("payroll")) return "payrolls";
-    if (lowerQuestion.includes("staff") || lowerQuestion.includes("user")) return "staff members";
-    if (lowerQuestion.includes("schedule") || lowerQuestion.includes("time")) return "schedule entries";
-    if (lowerQuestion.includes("revenue") || lowerQuestion.includes("billing")) return "financial records";
-    if (lowerQuestion.includes("leave") || lowerQuestion.includes("holiday")) return "leave entries";
+    if (lowerQuestion.includes("staff") || lowerQuestion.includes("user"))
+      return "staff members";
+    if (lowerQuestion.includes("schedule") || lowerQuestion.includes("time"))
+      return "schedule entries";
+    if (lowerQuestion.includes("revenue") || lowerQuestion.includes("billing"))
+      return "financial records";
+    if (lowerQuestion.includes("leave") || lowerQuestion.includes("holiday"))
+      return "leave entries";
     if (lowerQuestion.includes("skill")) return "skills";
-    
+
     return "records";
   };
 
   // Handle different types of errors with helpful messages
   const handleErrorResponse = (error: Error): string => {
     const message = error.message.toLowerCase();
-    
+
     if (message.includes("permission") || message.includes("access")) {
       return "I don't have permission to access that information. Please check with your administrator if you need access to this data.";
     }
-    
+
     if (message.includes("rate limit")) {
       return "I'm receiving too many requests right now. Please wait a moment and try again.";
     }
-    
+
     if (message.includes("authentication")) {
       return "There was an authentication issue. Please try refreshing the page and logging in again.";
     }
-    
+
     return "I encountered an issue while trying to answer your question. Please try rephrasing your question or try again later.";
   };
 
@@ -288,13 +299,13 @@ export function HasuraDataAssistant({
   };
 
   // Export data as CSV or JSON
-  const exportData = (data: any, format: 'json' | 'csv' = 'json') => {
+  const exportData = (data: any, format: "json" | "csv" = "json") => {
     if (!data) return;
-    
-    const timestamp = new Date().toISOString().split('T')[0];
+
+    const timestamp = new Date().toISOString().split("T")[0];
     const filename = `payroll-data-export-${timestamp}.${format}`;
-    
-    if (format === 'json') {
+
+    if (format === "json") {
       const blob = new Blob([JSON.stringify(data, null, 2)], {
         type: "application/json",
       });
@@ -307,23 +318,31 @@ export function HasuraDataAssistant({
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     }
-    
+
     toast.success(`Data exported as ${format.toUpperCase()}`);
   };
 
   // Get icon based on business context
   const getContextIcon = (context: string) => {
     switch (context) {
-      case "clients": return <Users className="h-4 w-4" />;
-      case "payrolls": return <FileText className="h-4 w-4" />;
-      case "financial records": return <DollarSign className="h-4 w-4" />;
-      case "schedule entries": return <Calendar className="h-4 w-4" />;
-      default: return <Database className="h-4 w-4" />;
+      case "clients":
+        return <Users className="h-4 w-4" />;
+      case "payrolls":
+        return <FileText className="h-4 w-4" />;
+      case "financial records":
+        return <DollarSign className="h-4 w-4" />;
+      case "schedule entries":
+        return <Calendar className="h-4 w-4" />;
+      default:
+        return <Database className="h-4 w-4" />;
     }
   };
 
   return (
-    <div className={cn("flex flex-col border rounded-lg bg-white", className)} style={{ height }}>
+    <div
+      className={cn("flex flex-col border rounded-lg bg-white", className)}
+      style={{ height }}
+    >
       {/* Header */}
       <div className="border-b p-4">
         <div className="flex items-center space-x-2">
@@ -351,9 +370,10 @@ export function HasuraDataAssistant({
               </CardHeader>
               <CardContent className="space-y-3">
                 <p className="text-sm text-gray-600">
-                  I can help you understand your business data by answering questions like:
+                  I can help you understand your business data by answering
+                  questions like:
                 </p>
-                
+
                 <div className="grid grid-cols-1 gap-2">
                   <div className="flex items-center space-x-2 text-xs text-gray-600">
                     <BarChart3 className="h-3 w-3" />
@@ -381,16 +401,18 @@ export function HasuraDataAssistant({
                         Quick questions for this page:
                       </p>
                       <div className="flex flex-wrap gap-1">
-                        {suggestedQuestions.slice(0, 3).map((question, index) => (
-                          <Badge
-                            key={index}
-                            variant="outline"
-                            className="text-xs cursor-pointer hover:bg-blue-50 hover:border-blue-200"
-                            onClick={() => handleAskQuestion(question)}
-                          >
-                            {question}
-                          </Badge>
-                        ))}
+                        {suggestedQuestions
+                          .slice(0, 3)
+                          .map((question, index) => (
+                            <Badge
+                              key={index}
+                              variant="outline"
+                              className="text-xs cursor-pointer hover:bg-blue-50 hover:border-blue-200"
+                              onClick={() => handleAskQuestion(question)}
+                            >
+                              {question}
+                            </Badge>
+                          ))}
                       </div>
                     </div>
                   </>
@@ -399,7 +421,7 @@ export function HasuraDataAssistant({
             </Card>
           )}
 
-          {messages.map((message) => (
+          {messages.map(message => (
             <div
               key={message.id}
               className={cn(
@@ -426,12 +448,14 @@ export function HasuraDataAssistant({
                 {message.role === "assistant" && (
                   <div className="p-3 pb-0">
                     <div className="flex items-center space-x-2 mb-2">
-                      {message.metadata?.businessContext && 
-                        getContextIcon(message.metadata.businessContext)
-                      }
+                      {message.metadata?.businessContext &&
+                        getContextIcon(message.metadata.businessContext)}
                       <span className="font-medium text-sm">
-                        {message.type === "answer" ? "Data Insights" : 
-                         message.type === "error" ? "Issue" : "Response"}
+                        {message.type === "answer"
+                          ? "Data Insights"
+                          : message.type === "error"
+                            ? "Issue"
+                            : "Response"}
                       </span>
                       {message.metadata?.recordCount !== undefined && (
                         <Badge variant="outline" className="text-xs">
@@ -468,7 +492,7 @@ export function HasuraDataAssistant({
                             </Button>
                           </div>
                         </div>
-                        
+
                         {/* Simple data preview */}
                         <div className="text-xs bg-gray-50 rounded p-2 max-h-32 overflow-y-auto">
                           <pre className="whitespace-pre-wrap">
@@ -478,22 +502,30 @@ export function HasuraDataAssistant({
                       </div>
 
                       {/* Business Insights */}
-                      {message.metadata.insights && message.metadata.insights.length > 0 && (
-                        <div className="bg-blue-50 rounded border border-blue-200 p-3">
-                          <div className="flex items-center space-x-2 mb-2">
-                            <Lightbulb className="h-4 w-4 text-blue-600" />
-                            <span className="text-sm font-medium text-blue-800">Key Insights</span>
+                      {message.metadata.insights &&
+                        message.metadata.insights.length > 0 && (
+                          <div className="bg-blue-50 rounded border border-blue-200 p-3">
+                            <div className="flex items-center space-x-2 mb-2">
+                              <Lightbulb className="h-4 w-4 text-blue-600" />
+                              <span className="text-sm font-medium text-blue-800">
+                                Key Insights
+                              </span>
+                            </div>
+                            <ul className="text-xs space-y-1 text-blue-700">
+                              {message.metadata.insights.map(
+                                (insight, index) => (
+                                  <li
+                                    key={index}
+                                    className="flex items-start space-x-1"
+                                  >
+                                    <span>•</span>
+                                    <span>{insight}</span>
+                                  </li>
+                                )
+                              )}
+                            </ul>
                           </div>
-                          <ul className="text-xs space-y-1 text-blue-700">
-                            {message.metadata.insights.map((insight, index) => (
-                              <li key={index} className="flex items-start space-x-1">
-                                <span>•</span>
-                                <span>{insight}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
+                        )}
                     </div>
                   )}
 
@@ -533,7 +565,9 @@ export function HasuraDataAssistant({
               <div className="bg-gray-50 border rounded-lg p-3">
                 <div className="flex items-center space-x-2">
                   <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
-                  <span className="text-sm text-gray-600">Analyzing your data...</span>
+                  <span className="text-sm text-gray-600">
+                    Analyzing your data...
+                  </span>
                 </div>
               </div>
             </div>
@@ -549,7 +583,7 @@ export function HasuraDataAssistant({
           <Input
             ref={inputRef}
             value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
+            onChange={e => setInputValue(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Ask a question about your data..."
             disabled={isLoading}
@@ -567,9 +601,11 @@ export function HasuraDataAssistant({
             )}
           </Button>
         </div>
-        
+
         <div className="text-xs text-gray-500 mt-2 flex items-center justify-between">
-          <span>I'll generate and execute GraphQL queries to answer your questions</span>
+          <span>
+            I'll generate and execute GraphQL queries to answer your questions
+          </span>
           <div className="flex items-center space-x-1">
             <CheckCircle className="h-3 w-3 text-green-500" />
             <span>Secure & Role-based</span>

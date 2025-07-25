@@ -168,7 +168,7 @@ export const RATE_LIMIT_PRESETS = {
  */
 function defaultKeyGenerator(request: NextRequest): string {
   // Try to get user ID from JWT token
-  let userId = 'anonymous';
+  const userId = 'anonymous';
   
   try {
     const authHeader = request.headers.get('authorization');

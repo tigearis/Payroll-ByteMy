@@ -1,6 +1,7 @@
 // lib/exports/unified-export.tsx
 "use client";
 
+import { Download, FileText, FileSpreadsheet, FileImage } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,9 +11,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Download, FileText, FileSpreadsheet, FileImage } from "lucide-react";
-import { LazyPDFExport } from "./pdf-export-lazy";
 import { LazyExcelExport } from "./excel-export-lazy";
+import { LazyPDFExport } from "./pdf-export-lazy";
 
 // ============================================================================
 // UNIFIED EXPORT COMPONENT WITH CODE SPLITTING

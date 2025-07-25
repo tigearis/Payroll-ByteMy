@@ -9,8 +9,8 @@
 
 import { useAuth } from "@clerk/nextjs";
 import { useHierarchicalPermissions } from "@/hooks/use-hierarchical-permissions";
-import { isAdmin, isManager, isDeveloper, isStaff } from "./simple-permissions";
 import type { UserRole } from "@/lib/permissions/hierarchical-permissions";
+import { isAdmin, isManager, isDeveloper, isStaff } from "./simple-permissions";
 
 // Simple auth context for backward compatibility
 export function useAuthContext() {

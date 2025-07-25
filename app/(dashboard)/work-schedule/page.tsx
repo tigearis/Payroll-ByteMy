@@ -39,12 +39,12 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { ManagerOnly, PermissionGuard } from "@/components/auth/permission-guard";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ManagerOnly, PermissionGuard } from "@/components/auth/permission-guard";
 import {
   GetPayrollsForBulkAssignmentDocument,
   type GetPayrollsForBulkAssignmentQuery,

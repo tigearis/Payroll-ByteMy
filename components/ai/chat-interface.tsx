@@ -11,7 +11,6 @@ import { useUser } from "@clerk/nextjs";
 import {
   Send,
   Copy,
-  Download,
   AlertCircle,
   CheckCircle,
   Loader2,
@@ -127,10 +126,16 @@ export function AIChat({ context, compact = false, className }: AIChatProps) {
 
         // Always use query endpoint for data requests, regardless of active tab
         if (isDataRequest) {
-          console.log("🔍 Detected data request, routing to query generation:", messageToSend);
+          console.log(
+            "🔍 Detected data request, routing to query generation:",
+            messageToSend
+          );
           await handleQueryGeneration(messageToSend, userMessage);
         } else {
-          console.log("💬 Detected chat request, routing to regular chat:", messageToSend);
+          console.log(
+            "💬 Detected chat request, routing to regular chat:",
+            messageToSend
+          );
           await handleChatMessage(messageToSend, userMessage);
         }
       } catch (error) {
@@ -158,7 +163,7 @@ export function AIChat({ context, compact = false, className }: AIChatProps) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-user-role": (user?.publicMetadata?.role as string) || "viewer",
+        "x-hasura-role": (user?.publicMetadata?.role as string) || "viewer",
       },
       body: JSON.stringify({
         message,
@@ -198,12 +203,12 @@ export function AIChat({ context, compact = false, className }: AIChatProps) {
   ) => {
     try {
       console.log("🚀 Starting query generation for:", message);
-      
+
       const response = await fetch("/api/ai-assistant/query", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-user-role": (user?.publicMetadata?.role as string) || "viewer",
+          "x-hasura-role": (user?.publicMetadata?.role as string) || "viewer",
         },
         body: JSON.stringify({
           request: message,
@@ -216,29 +221,32 @@ export function AIChat({ context, compact = false, className }: AIChatProps) {
       });
 
       console.log("📡 Query API response status:", response.status);
-      
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
+        const errorData = await response
+          .json()
+          .catch(() => ({ error: "Unknown error" }));
         console.log("❌ Query API failed with:", errorData);
-        
+
         // Handle specific error cases
         if (response.status === 403) {
           const assistantMessage: Message = {
             id: `error-${Date.now()}`,
             role: "assistant",
-            content: `I don't have permission to access that data. ${errorData.error || ''}`,
+            content: `I don't have permission to access that data. ${errorData.error || ""}`,
             timestamp: new Date(),
             type: "error",
           };
           setMessages(prev => [...prev, assistantMessage]);
           return;
         }
-        
+
         if (response.status === 429) {
           const assistantMessage: Message = {
             id: `error-${Date.now()}`,
             role: "assistant",
-            content: "I'm receiving too many requests right now. Please wait a moment and try again.",
+            content:
+              "I'm receiving too many requests right now. Please wait a moment and try again.",
             timestamp: new Date(),
             type: "error",
           };
@@ -247,20 +255,26 @@ export function AIChat({ context, compact = false, className }: AIChatProps) {
         }
 
         // For other errors, fall back to chat
-        console.warn("🔄 Query generation failed, falling back to chat:", errorData);
-        console.warn("🔄 User role:", (user?.publicMetadata?.role as string) || "viewer");
+        console.warn(
+          "🔄 Query generation failed, falling back to chat:",
+          errorData
+        );
+        console.warn(
+          "🔄 User role:",
+          (user?.publicMetadata?.role as string) || "viewer"
+        );
         console.warn("🔄 Response status:", response.status);
-        
+
         // Show user feedback about why query failed
         const fallbackMessage: Message = {
           id: `fallback-${Date.now()}`,
-          role: "assistant", 
-          content: `I couldn't execute a data query (${errorData.error || 'Unknown error'}), but I can still help explain things. If you need to retrieve actual data, you may need elevated permissions.`,
+          role: "assistant",
+          content: `I couldn't execute a data query (${errorData.error || "Unknown error"}), but I can still help explain things. If you need to retrieve actual data, you may need elevated permissions.`,
           timestamp: new Date(),
           type: "chat",
         };
         setMessages(prev => [...prev, fallbackMessage]);
-        
+
         await handleChatMessage(message, userMessage);
         return;
       }
@@ -286,18 +300,19 @@ export function AIChat({ context, compact = false, className }: AIChatProps) {
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
       console.error("Query generation error:", error);
-      
+
       // Fall back to regular chat for network errors
       try {
         const fallbackMessage: Message = {
           id: `fallback-${Date.now()}`,
           role: "assistant",
-          content: "I'm having trouble generating a data query right now. Let me try to help you with general information instead.",
+          content:
+            "I'm having trouble generating a data query right now. Let me try to help you with general information instead.",
           timestamp: new Date(),
           type: "chat",
         };
         setMessages(prev => [...prev, fallbackMessage]);
-        
+
         // Try regular chat as fallback
         await handleChatMessage(message, userMessage);
       } catch (fallbackError) {
@@ -305,7 +320,8 @@ export function AIChat({ context, compact = false, className }: AIChatProps) {
         const errorMessage: Message = {
           id: `error-${Date.now()}`,
           role: "assistant",
-          content: "I'm experiencing technical difficulties. Please try again later.",
+          content:
+            "I'm experiencing technical difficulties. Please try again later.",
           timestamp: new Date(),
           type: "error",
         };
@@ -457,12 +473,12 @@ export function AIChat({ context, compact = false, className }: AIChatProps) {
                     {/* Rich Query Results with QueryResult component */}
                     {message.metadata.data && message.metadata.query && (
                       <div className="border rounded-lg p-1 bg-white">
-                        <QueryResult 
+                        <QueryResult
                           content={JSON.stringify({
                             query: message.metadata.query,
                             data: message.metadata.data,
                             summary: message.content, // Use the AI's explanation as summary
-                            insights: message.metadata.errors ? [] : undefined // Add insights if no errors
+                            insights: message.metadata.errors ? [] : undefined, // Add insights if no errors
                           })}
                         />
                       </div>
@@ -543,11 +559,11 @@ export function AIChat({ context, compact = false, className }: AIChatProps) {
             onChange={e => setInputValue(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder={
-              compact 
+              compact
                 ? "Ask me anything..."
                 : activeTab === "query"
-                ? "Ask for data or generate a query..."
-                : "Ask me anything..."
+                  ? "Ask for data or generate a query..."
+                  : "Ask me anything..."
             }
             disabled={isLoading}
             className="flex-1 text-sm"

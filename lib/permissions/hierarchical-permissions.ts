@@ -1,7 +1,7 @@
 // lib/permissions/hierarchical-permissions.ts
+import crypto from "crypto";
 import { gql } from "@apollo/client";
 import { adminApolloClient } from "@/lib/apollo/unified-client";
-import crypto from "crypto";
 
 // Type definitions
 export type UserRole =

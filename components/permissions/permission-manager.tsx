@@ -16,8 +16,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { usePermissions } from '@/hooks/use-permissions';
 import { useHierarchicalPermissions } from '@/hooks/use-hierarchical-permissions';
+import { usePermissions } from '@/hooks/use-permissions';
 import { type UserRole } from '@/lib/permissions/hierarchical-permissions';
 
 // Define resources and actions for permission management

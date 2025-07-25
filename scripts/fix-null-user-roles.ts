@@ -1,5 +1,5 @@
-// fix-null-user-roles.ts
 #!/usr/bin/env node
+// fix-null-user-roles.ts
 import { config } from "dotenv";
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { gql } from "@apollo/client";

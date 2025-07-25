@@ -2,8 +2,8 @@
 "use client";
 
 import { Suspense, lazy } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // ============================================================================
 // CODE SPLITTING: LAZY LOAD HEAVY CHART DEPENDENCIES
