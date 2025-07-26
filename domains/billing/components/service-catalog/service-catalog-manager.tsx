@@ -21,7 +21,7 @@ import {
 } from '../../../billing/graphql/generated/graphql';
 
 interface ServiceEditorProps {
-  service?: ServiceCatalogFragmentFragment;
+  service?: ServiceCatalogFragmentFragment | undefined;
   onSave: () => void;
   onCancel: () => void;
 }
@@ -230,7 +230,7 @@ export const ServiceCatalogManager: React.FC<ServiceCatalogManagerProps> = ({
 
   const { data, loading, refetch, error } = useQuery(GetServiceCatalogDocument, {
     variables: {
-      category: filterCategory ? `%${filterCategory}%` : undefined,
+      category: filterCategory ? `%${filterCategory}%` : null,
       isActive: true
     }
   });

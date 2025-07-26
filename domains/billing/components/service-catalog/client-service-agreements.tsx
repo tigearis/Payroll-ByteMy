@@ -23,7 +23,7 @@ interface ClientServiceAgreement {
   service_id: string;
   service_name: string;
   standard_rate: number;
-  custom_rate?: number;
+  custom_rate?: number | undefined;
   billing_unit: string;
   category: string;
   billing_frequency: string;
@@ -85,11 +85,11 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
         {
           id: agreement.id,
           service_id: agreement.billingPlanId,
-          service_name: agreement.assignedBillingPlan?.name || '',
+          service_name: agreement.assignedBillingPlan?.name || 'Unknown Service',
           standard_rate: agreement.assignedBillingPlan?.standardRate || 0,
           custom_rate: agreement.customRate || undefined,
-          billing_unit: agreement.assignedBillingPlan?.billingUnit || '',
-          category: agreement.assignedBillingPlan?.category || '',
+          billing_unit: agreement.assignedBillingPlan?.billingUnit || 'Per Payroll',
+          category: agreement.assignedBillingPlan?.category || 'Processing',
           billing_frequency: agreement.billingFrequency || 'Per Job',
           is_enabled: agreement.isEnabled || false,
           effective_date: agreement.effectiveDate || new Date().toISOString().split('T')[0]
@@ -102,11 +102,11 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
       const existing = existingAgreements.get(service.id);
       return existing || {
         service_id: service.id,
-        service_name: service.name,
-        standard_rate: service.standardRate,
+        service_name: service.name || 'Unknown Service',
+        standard_rate: service.standardRate || 0,
         custom_rate: undefined,
-        billing_unit: service.billingUnit,
-        category: service.category || '',
+        billing_unit: service.billingUnit || 'Per Payroll',
+        category: service.category || 'Processing',
         billing_frequency: 'Per Job',
         is_enabled: false,
         effective_date: new Date().toISOString().split('T')[0]
@@ -124,12 +124,12 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
         .map(agreement => ({
           clientId: clientId,
           billingPlanId: agreement.service_id,
-          customRate: agreement.custom_rate,
-          billingFrequency: agreement.billing_frequency,
-          effectiveDate: agreement.effective_date,
+          customRate: agreement.custom_rate || null,
+          billingFrequency: agreement.billing_frequency || 'Per Job',
+          effectiveDate: agreement.effective_date || new Date().toISOString().split('T')[0],
           isEnabled: agreement.is_enabled,
           isActive: true,
-          startDate: agreement.effective_date,
+          startDate: agreement.effective_date || new Date().toISOString().split('T')[0],
           endDate: null
         }));
 
@@ -309,7 +309,7 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {BILLINGFREQUENCIES.map(frequency => (
+                          {BILLING_FREQUENCIES.map(frequency => (
                             <SelectItem key={frequency} value={frequency}>
                               {frequency}
                             </SelectItem>
@@ -358,12 +358,12 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
                     <TableRow key={agreement.id}>
                       <TableCell>
                         <div className="font-medium">
-                          {agreement.assignedBillingPlan?.name}
+                          {agreement.assignedBillingPlan?.name || 'Unknown Service'}
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge className={getCategoryColor(agreement.assignedBillingPlan?.category || '')}>
-                          {agreement.assignedBillingPlan?.category}
+                        <Badge className={getCategoryColor(agreement.assignedBillingPlan?.category || 'Processing')}>
+                          {agreement.assignedBillingPlan?.category || 'Processing'}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -380,11 +380,11 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline">
-                          {agreement.assignedBillingPlan?.billingUnit}
+                          {agreement.assignedBillingPlan?.billingUnit || 'Per Payroll'}
                         </Badge>
                       </TableCell>
-                      <TableCell>{agreement.billingFrequency}</TableCell>
-                      <TableCell>{agreement.effectiveDate}</TableCell>
+                      <TableCell>{agreement.billingFrequency || 'Per Job'}</TableCell>
+                      <TableCell>{agreement.effectiveDate || 'Not set'}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
