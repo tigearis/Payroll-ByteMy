@@ -34,7 +34,7 @@ interface LeaveFormData {
   endDate: string;
   leaveType: "Annual" | "Sick" | "Unpaid" | "Other" | "";
   reason: string;
-  selectedEmployeeId?: string;
+  selectedEmployeeId: string;
   isForSomeoneElse: boolean;
   autoApprove: boolean;
 }
@@ -45,6 +45,7 @@ interface LeaveFormErrors {
   leaveType?: string;
   reason?: string;
   selectedEmployeeId?: string;
+  isForSomeoneElse?: string;
 }
 
 function NewLeaveRequestPage() {
@@ -226,7 +227,7 @@ function NewLeaveRequestPage() {
     }));
 
     // Clear error when user starts typing
-    if (errors[field]) {
+    if (errors[field as keyof LeaveFormErrors]) {
       setErrors(prev => ({
         ...prev,
         [field]: undefined,

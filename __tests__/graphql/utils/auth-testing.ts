@@ -393,7 +393,7 @@ export class TestDataManager {
         status: 'Active',
         employeeCount: 10,
         clientId: testClientId,
-        primaryConsultantId: TESTUSERS.consultant.id
+        primaryConsultantId: TEST_USERS.consultant.id
       }
     });
 

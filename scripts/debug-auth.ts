@@ -1,4 +1,3 @@
-// debug-auth.ts
 #!/usr/bin/env ts-node
 // debug-auth.ts
 
@@ -14,14 +13,14 @@
 
 import { config } from 'dotenv';
 import { fileURLToPath } from 'url';
-import { dirname, resolve } from 'path';
+import { dirname as pathDirname, resolve } from 'path';
 
 // ES module setup
 const filename = fileURLToPath(import.meta.url);
-const dirname = dirname(filename);
+const dirname = pathDirname(filename);
 
 // Load environment variables
-config({ path: resolve(__dirname, '../.env') });
+config({ path: resolve(dirname, '../.env') });
 
 const HASURA_ENDPOINT = process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL;
 const ADMIN_SECRET = process.env.HASURA_GRAPHQL_ADMIN_SECRET;

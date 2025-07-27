@@ -64,10 +64,10 @@ export class AdminOperationsService {
   }
 
   // Execute admin query with permission check
-  async executeAdminQuery<T = any>(
-    query: any,
-    variables?: any
-  ): Promise<{ data?: T; errors?: readonly any[] }> {
+  async executeAdminQuery<T = unknown>(
+    query: unknown,
+    variables?: Record<string, unknown>
+  ): Promise<{ data?: T; errors?: readonly Error[] }> {
     const { isValid } = await this.validateAdminAccess();
 
     if (!isValid) {
@@ -82,17 +82,17 @@ export class AdminOperationsService {
       });
 
       return { data: result.data, errors: result.errors || [] };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Admin query error:", error);
       return { errors: [error] };
     }
   }
 
   // Execute admin mutation with permission check
-  async executeAdminMutation<T = any>(
-    mutation: any,
-    variables?: any
-  ): Promise<{ data?: T; errors?: readonly any[] }> {
+  async executeAdminMutation<T = unknown>(
+    mutation: unknown,
+    variables?: Record<string, unknown>
+  ): Promise<{ data?: T; errors?: readonly Error[] }> {
     const { isValid } = await this.validateAdminAccess();
 
     if (!isValid) {
@@ -106,7 +106,7 @@ export class AdminOperationsService {
       });
 
       return { data: result.data, errors: result.errors || [] };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Admin mutation error:", error);
       return { errors: [error] };
     }
@@ -281,30 +281,30 @@ export class AdminOperationsService {
 }
 
 // Export singleton instance with lazy initialization
-let adminOperationsService: AdminOperationsService | null = null;
+let _adminOperationsService: AdminOperationsService | null = null;
 
 export const adminOperationsService: Pick<
   AdminOperationsService,
   "executeAdminQuery" | "executeAdminMutation" | "syncUserWithDatabase" | "cleanAllPayrollDates" | "regeneratePayrollDates"
 > = {
-  executeAdminQuery: async <T = any>(
-    query: any,
-    variables?: any
-  ): Promise<{ data?: T; errors?: readonly any[] }> => {
+  executeAdminQuery: async <T = unknown>(
+    query: unknown,
+    variables?: Record<string, unknown>
+  ): Promise<{ data?: T; errors?: readonly Error[] }> => {
     if (!_adminOperationsService) {
       _adminOperationsService = AdminOperationsService.getInstance();
     }
-    return adminOperationsService.executeAdminQuery(query, variables);
+    return _adminOperationsService.executeAdminQuery(query, variables);
   },
   
-  executeAdminMutation: async <T = any>(
-    mutation: any,
-    variables?: any
-  ): Promise<{ data?: T; errors?: readonly any[] }> => {
+  executeAdminMutation: async <T = unknown>(
+    mutation: unknown,
+    variables?: Record<string, unknown>
+  ): Promise<{ data?: T; errors?: readonly Error[] }> => {
     if (!_adminOperationsService) {
       _adminOperationsService = AdminOperationsService.getInstance();
     }
-    return adminOperationsService.executeAdminMutation(
+    return _adminOperationsService.executeAdminMutation(
       mutation,
       variables
     );
@@ -321,7 +321,7 @@ export const adminOperationsService: Pick<
     if (!_adminOperationsService) {
       _adminOperationsService = AdminOperationsService.getInstance();
     }
-    return adminOperationsService.syncUserWithDatabase(
+    return _adminOperationsService.syncUserWithDatabase(
       clerkUserId,
       name,
       email,
@@ -335,7 +335,7 @@ export const adminOperationsService: Pick<
     if (!_adminOperationsService) {
       _adminOperationsService = AdminOperationsService.getInstance();
     }
-    return adminOperationsService.cleanAllPayrollDates();
+    return _adminOperationsService.cleanAllPayrollDates();
   },
 
   regeneratePayrollDates: async (
@@ -346,7 +346,7 @@ export const adminOperationsService: Pick<
     if (!_adminOperationsService) {
       _adminOperationsService = AdminOperationsService.getInstance();
     }
-    return adminOperationsService.regeneratePayrollDates(
+    return _adminOperationsService.regeneratePayrollDates(
       payrollId,
       startDate,
       endDate

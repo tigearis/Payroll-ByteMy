@@ -28,10 +28,10 @@ function validateFile(file: File): { isValid: boolean; error?: string } {
   }
 
   // Check file type
-  if (!ALLOWEDTYPES.includes(file.type)) {
+  if (!ALLOWED_TYPES.includes(file.type)) {
     return {
       isValid: false,
-      error: `Invalid file type. Allowed types: ${ALLOWEDTYPES.join(', ')}`
+      error: `Invalid file type. Allowed types: ${ALLOWED_TYPES.join(', ')}`
     };
   }
 

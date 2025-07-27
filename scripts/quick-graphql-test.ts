@@ -8,14 +8,14 @@
 
 import { config } from 'dotenv';
 import { fileURLToPath } from 'url';
-import { dirname, resolve } from 'path';
+import { dirname as pathDirname, resolve } from 'path';
 
 // ES module equivalent of __dirname
 const filename = fileURLToPath(import.meta.url);
-const dirname = dirname(filename);
+const dirname = pathDirname(filename);
 
 // Load environment variables
-config({ path: resolve(__dirname, '../.env') });
+config({ path: resolve(dirname, '../.env') });
 
 // Environment validation
 const HASURA_ENDPOINT = process.env.NEXT_PUBLIC_HASURA_GRAPHQL_URL;

@@ -275,7 +275,7 @@ export const CompactWorkloadCard: React.FC<CompactWorkloadCardProps> = ({
                 {/* Capacity background bars */}
                 <Bar
                   dataKey="capacity"
-                  fill={CHARTCOLORS.available}
+                  fill={CHART_COLORS.available}
                   radius={[2, 2, 0, 0]}
                   stackId="capacity"
                 />
@@ -290,9 +290,9 @@ export const CompactWorkloadCard: React.FC<CompactWorkloadCardProps> = ({
                     <Cell
                       key={`cell-${index}`}
                       fill={
-                        entry.utilization > 100 ? CHARTCOLORS.overallocated :
-                        entry.utilization > 85 ? CHARTCOLORS.high :
-                        CHARTCOLORS.optimal
+                        entry.utilization > 100 ? CHART_COLORS.overallocated :
+                        entry.utilization > 85 ? CHART_COLORS.high :
+                        CHART_COLORS.optimal
                       }
                     />
                   ))}
@@ -301,7 +301,7 @@ export const CompactWorkloadCard: React.FC<CompactWorkloadCardProps> = ({
                 {/* Overflow bars */}
                 <Bar
                   dataKey="overflowHours"
-                  fill={CHARTCOLORS.overflow}
+                  fill={CHART_COLORS.overflow}
                   radius={[2, 2, 0, 0]}
                   stackId="capacity"
                 />

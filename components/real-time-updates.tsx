@@ -10,9 +10,9 @@ import { useRealTimeSubscription } from "@/hooks/use-subscription";
 interface RealTimeUpdatesProps {
   subscription: DocumentNode;
   refetchQueries: DocumentNode[];
-  variables?: Record<string, any>;
+  variables?: Record<string, unknown>;
   showToasts?: boolean;
-  onUpdate?: (data: any) => void;
+  onUpdate?: (data: unknown) => void;
   children?: ReactNode;
 }
 
@@ -37,7 +37,12 @@ export function RealTimeUpdates({
     ...(onUpdate && { onData: onUpdate }),
   };
 
-  const { isConnected } = useRealTimeSubscription(subscriptionOptions);
+  const { isConnected, error } = useRealTimeSubscription(subscriptionOptions);
+
+  // If subscriptions are not supported, just render children without real-time updates
+  if (error && error.message?.includes('not supported')) {
+    return children || null;
+  }
 
   // Either render children (if provided) or nothing
   return children ? (
@@ -66,7 +71,7 @@ export function PayrollUpdatesListener({
 }: {
   refetchQueries?: DocumentNode[];
   showToasts?: boolean;
-  onUpdate?: (data: any) => void;
+  onUpdate?: (data: unknown) => void;
 }) {
   // Import extracted GraphQL operations
 

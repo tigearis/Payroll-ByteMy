@@ -49,14 +49,14 @@ interface SecurityConfig {
   };
 
   // Custom security checks
-  customChecks?: Array<(request: NextRequest, context: any) => Promise<boolean> | boolean>;
+  customChecks?: Array<(request: NextRequest, context: Record<string, unknown>) => Promise<boolean> | boolean>;
 }
 
 interface SecureHandlerContext {
   validated?: {
-    body?: any;
-    query?: any;
-    params?: any;
+    body?: Record<string, unknown>;
+    query?: Record<string, unknown>;
+    params?: Record<string, unknown>;
   };
   auth?: {
     userId: string;
@@ -79,16 +79,16 @@ interface SecureHandlerContext {
  * Comprehensive secure API wrapper
  */
 export function secureApiRoute(config: SecurityConfig = {}) {
-  return function <T extends any[]>(
+  return function <T extends unknown[]>(
     handler: (
       request: NextRequest,
-      context: { params?: any },
+      context: { params?: Record<string, unknown> },
       secureContext: SecureHandlerContext
     ) => Promise<NextResponse> | NextResponse
   ) {
     return async function (
       request: NextRequest,
-      context: { params?: any }
+      context: { params?: Record<string, unknown> }
     ): Promise<NextResponse> {
       const requestId = crypto.randomUUID?.() || Math.random().toString(36);
       const timestamp = new Date().toISOString();
@@ -296,7 +296,11 @@ function getClientIP(request: NextRequest): string {
  */
 async function checkAuthentication(request: NextRequest): Promise<{
   success: boolean;
-  auth?: any;
+  auth?: {
+    userId: string;
+    role: string;
+    permissions: string[];
+  };
   response?: NextResponse;
   error?: string;
 }> {
@@ -365,11 +369,11 @@ async function checkAuthentication(request: NextRequest): Promise<{
  */
 async function performValidation(
   request: NextRequest,
-  context: { params?: any },
+  context: { params?: Record<string, unknown> },
   validation: ValidationOptions
 ): Promise<{
   success: boolean;
-  data?: any;
+  data?: Record<string, unknown>;
   errors?: string[];
   response?: NextResponse;
 }> {
@@ -431,7 +435,7 @@ async function logAuditEvent(
   context: SecureHandlerContext,
   auditConfig: NonNullable<SecurityConfig['auditLog']>,
   response?: NextResponse,
-  error?: any
+  error?: Error | { message: string; stack?: string }
 ): Promise<void> {
   const auditEntry = {
     eventType,
@@ -483,7 +487,7 @@ export function adminRoute() {
   return secureApiRoute({
     requireAuth: true,
     requiredRole: 'org_admin',
-    rateLimit: RATELIMIT_PRESETS.STRICT,
+    rateLimit: RATE_LIMIT_PRESETS.STRICT,
     addSecurityHeaders: true,
     auditLog: { enabled: true, logLevel: 'detailed' }
   });
@@ -496,7 +500,7 @@ export function developerRoute() {
   return secureApiRoute({
     requireAuth: true,
     requiredRole: 'developer',
-    rateLimit: RATELIMIT_PRESETS.STRICT,
+    rateLimit: RATE_LIMIT_PRESETS.STRICT,
     addSecurityHeaders: true,
     auditLog: { enabled: true, logLevel: 'detailed' }
   });
@@ -508,7 +512,7 @@ export function developerRoute() {
 export function publicRoute() {
   return secureApiRoute({
     requireAuth: false,
-    rateLimit: RATELIMIT_PRESETS.STANDARD,
+    rateLimit: RATE_LIMIT_PRESETS.STANDARD,
     addSecurityHeaders: true,
     auditLog: { enabled: true, logLevel: 'basic' }
   });
@@ -521,7 +525,7 @@ export function sensitiveRoute(resource: string, action: string) {
   return secureApiRoute({
     requireAuth: true,
     permissions: { resource, action },
-    rateLimit: RATELIMIT_PRESETS.STRICT,
+    rateLimit: RATE_LIMIT_PRESETS.STRICT,
     addSecurityHeaders: true,
     auditLog: { enabled: true, logLevel: 'detailed' }
   });
@@ -534,7 +538,7 @@ export function mutationRoute(resource: string, action: string) {
   return secureApiRoute({
     requireAuth: true,
     permissions: { resource, action },
-    rateLimit: RATELIMIT_PRESETS.MUTATION,
+    rateLimit: RATE_LIMIT_PRESETS.MUTATION,
     addSecurityHeaders: true,
     auditLog: { enabled: true, logLevel: 'detailed' }
   });
@@ -572,7 +576,7 @@ export const POST = secureApiRoute({
   validation: {
     body: CreatePayrollSchema
   },
-  rateLimit: RATELIMIT_PRESETS.MUTATION,
+  rateLimit: RATE_LIMIT_PRESETS.MUTATION,
   auditLog: { enabled: true, logLevel: 'detailed' },
   customChecks: [
     async (request, context) => {

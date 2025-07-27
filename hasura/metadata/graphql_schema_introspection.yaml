@@ -1,1 +1,4 @@
-disabled_for_roles: []
+disabled_for_roles: 
+  - viewer
+  - consultant
+  - manager

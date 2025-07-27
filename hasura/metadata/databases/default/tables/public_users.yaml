@@ -442,25 +442,19 @@ select_permissions:
   - role: viewer
     permission:
       columns:
-        - clerk_user_id
-        - created_at
-        - deactivated_at
-        - deactivated_by
-        - default_admin_time_percentage
-        - email
         - id
+        - name
         - image
         - is_active
-        - is_staff
-        - manager_id
-        - name
         - position
-        - role
-        - updated_at
-        - username
-      filter: {}
-      allow_aggregations: true
-    comment: Viewers can see basic user information
+      filter:
+        _or:
+          - id:
+              _eq: X-Hasura-User-Id
+          - is_active:
+              _eq: true
+      allow_aggregations: false
+    comment: Viewers can only see basic public information about active users and their own profile
 update_permissions:
   - role: consultant
     permission:

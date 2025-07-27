@@ -40,7 +40,7 @@ const ROLE_CONFIGS = [
 
 test.describe('Permission Boundary Testing', () => {
   
-  ROLECONFIGS.forEach(({ name, storageState, access }) => {
+  ROLE_CONFIGS.forEach(({ name, storageState, access }) => {
     
     test.describe(`${name.toUpperCase()} Role Permissions`, () => {
       

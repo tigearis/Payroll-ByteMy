@@ -94,14 +94,14 @@ describe('End-to-End Business Workflow Testing', () => {
         {
           id: userId,
           _set: {
-            managerId: TESTUSERS.manager.id
+            managerId: TEST_USERS.manager.id
           }
         },
         'manager'
       );
       
       expect(assignManagerResult.success).toBe(true);
-      expect(assignManagerResult.data?.update_users_by_pk?.managerId).toBe(TESTUSERS.manager.id);
+      expect(assignManagerResult.data?.update_users_by_pk?.managerId).toBe(TEST_USERS.manager.id);
       
       // 3. Update user details
       console.log('  ✏️  Updating user details...');
@@ -154,7 +154,7 @@ describe('End-to-End Business Workflow Testing', () => {
       expect(queryUserResult.success).toBe(true);
       const user = queryUserResult.data?.users_by_pk;
       expect(user?.name).toBe('Updated Workflow User');
-      expect(user?.manager?.id).toBe(TESTUSERS.manager.id);
+      expect(user?.manager?.id).toBe(TEST_USERS.manager.id);
       
       // 5. Deactivate user
       console.log('  🚫 Deactivating user...');
@@ -238,8 +238,8 @@ describe('End-to-End Business Workflow Testing', () => {
             status: 'Active',
             employeeCount: 35,
             clientId: clientId,
-            primaryConsultantId: TESTUSERS.consultant.id,
-            managerId: TESTUSERS.manager.id,
+            primaryConsultantId: TEST_USERS.consultant.id,
+            managerId: TEST_USERS.manager.id,
             payrollCycleId: '550e8400-e29b-41d4-a716-446655440300' // Weekly cycle
           }
         },
@@ -272,7 +272,7 @@ describe('End-to-End Business Workflow Testing', () => {
           object: {
             title: 'Client Onboarding Notes',
             content: 'Client setup completed. Weekly payroll cycle configured with 35 employees. Primary consultant assigned.',
-            authorId: TESTUSERS.manager.id,
+            authorId: TEST_USERS.manager.id,
             entityType: 'client',
             entityId: clientId,
             isPrivate: false
@@ -330,7 +330,7 @@ describe('End-to-End Business Workflow Testing', () => {
       // Verify client exists with payroll
       expect(setupData?.clients_by_pk?.name).toBe('Workflow Test Client Pty Ltd');
       expect(setupData?.clients_by_pk?.payrolls?.length).toBeGreaterThan(0);
-      expect(setupData?.clients_by_pk?.payrolls[0]?.primaryConsultant?.id).toBe(TESTUSERS.consultant.id);
+      expect(setupData?.clients_by_pk?.payrolls[0]?.primaryConsultant?.id).toBe(TEST_USERS.consultant.id);
       
       // Verify notes exist
       expect(setupData?.notes?.length).toBeGreaterThan(0);
@@ -391,7 +391,7 @@ describe('End-to-End Business Workflow Testing', () => {
         }`,
         {
           object: {
-            userId: TESTUSERS.consultant.id,
+            userId: TEST_USERS.consultant.id,
             payrollId: existingPayrollId,
             payrollDateId: payrollDateId,
             assignmentDate: new Date().toISOString(),
@@ -446,7 +446,7 @@ describe('End-to-End Business Workflow Testing', () => {
           object: {
             title: 'Payroll Processing Update',
             content: 'Payroll processing started. EFT date scheduled. Consultant assigned.',
-            authorId: TESTUSERS.consultant.id,
+            authorId: TEST_USERS.consultant.id,
             entityType: 'payroll',
             entityId: existingPayrollId,
             isPrivate: false

@@ -282,27 +282,27 @@ export const LOADING_MESSAGES: LoadingConfig = {
 // Utility functions for smart loading message detection
 export function getRouteLoadingMessage(pathname: string): LoadingMessage {
   // Try exact match first
-  if (LOADINGMESSAGES.routes[pathname]) {
-    return LOADINGMESSAGES.routes[pathname];
+  if (LOADING_MESSAGES.routes[pathname]) {
+    return LOADING_MESSAGES.routes[pathname];
   }
 
   // Try dynamic route patterns
-  for (const [pattern, message] of Object.entries(LOADINGMESSAGES.routes)) {
+  for (const [pattern, message] of Object.entries(LOADING_MESSAGES.routes)) {
     if (pattern.includes("[") && matchesDynamicRoute(pathname, pattern)) {
       return message;
     }
   }
 
-  return LOADINGMESSAGES.defaults.page;
+  return LOADING_MESSAGES.defaults.page;
 }
 
 export function getQueryLoadingMessage(operationName: string): LoadingMessage {
-  if (LOADINGMESSAGES.queries[operationName]) {
-    return LOADINGMESSAGES.queries[operationName];
+  if (LOADING_MESSAGES.queries[operationName]) {
+    return LOADING_MESSAGES.queries[operationName];
   }
 
   // Try partial matches for generated query names
-  for (const [queryName, message] of Object.entries(LOADINGMESSAGES.queries)) {
+  for (const [queryName, message] of Object.entries(LOADING_MESSAGES.queries)) {
     if (
       operationName.includes(queryName) ||
       queryName.includes(operationName)
@@ -311,32 +311,32 @@ export function getQueryLoadingMessage(operationName: string): LoadingMessage {
     }
   }
 
-  return LOADINGMESSAGES.defaults.query;
+  return LOADING_MESSAGES.defaults.query;
 }
 
 export function getComponentLoadingMessage(
   componentName: string
 ): LoadingMessage {
-  if (LOADINGMESSAGES.components[componentName]) {
-    return LOADINGMESSAGES.components[componentName];
+  if (LOADING_MESSAGES.components[componentName]) {
+    return LOADING_MESSAGES.components[componentName];
   }
 
   // Try partial matches
-  for (const [name, message] of Object.entries(LOADINGMESSAGES.components)) {
+  for (const [name, message] of Object.entries(LOADING_MESSAGES.components)) {
     if (componentName.includes(name) || name.includes(componentName)) {
       return message;
     }
   }
 
-  return LOADINGMESSAGES.defaults.component;
+  return LOADING_MESSAGES.defaults.component;
 }
 
 export function getActionLoadingMessage(actionType: string): LoadingMessage {
-  if (LOADINGMESSAGES.actions[actionType]) {
-    return LOADINGMESSAGES.actions[actionType];
+  if (LOADING_MESSAGES.actions[actionType]) {
+    return LOADING_MESSAGES.actions[actionType];
   }
 
-  return LOADINGMESSAGES.defaults.mutation;
+  return LOADING_MESSAGES.defaults.mutation;
 }
 
 // Helper function to match dynamic routes like /payrolls/[id]

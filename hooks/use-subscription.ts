@@ -10,10 +10,10 @@ import { toast } from "sonner";
 
 interface UseRealTimeSubscriptionOptions {
   document: DocumentNode;
-  variables?: Record<string, any>;
+  variables?: Record<string, unknown>;
   refetchQueries?: DocumentNode[];
   shouldToast?: boolean;
-  onData?: (data: any) => void;
+  onData?: (data: unknown) => void;
 }
 
 /**
@@ -51,17 +51,22 @@ export function useRealTimeSubscription({
 
       // Refresh relevant queries
       if (stableRefetchQueries && stableRefetchQueries.length > 0) {
-        await client.refetchQueries({
-          include: stableRefetchQueries,
-        });
+        try {
+          await client.refetchQueries({
+            include: stableRefetchQueries,
+          });
+        } catch (refetchError) {
+          console.warn("Failed to refetch queries:", refetchError);
+        }
       }
     },
     onError: error => {
-      console.error("Subscription error:", error);
+      console.warn("Subscription error (WebSocket may not be configured):", error);
       setIsConnected(false);
       setRetryCount(prev => prev + 1);
 
-      if (shouldToast && retryCount === 0) {
+      // Only show toast for actual connection errors, not configuration issues
+      if (shouldToast && retryCount === 0 && !error.message?.includes('not supported')) {
         toast.error("Real-time connection lost. Attempting to reconnect...");
       }
     },
@@ -79,6 +84,8 @@ export function useRealTimeSubscription({
           if (stableRefetchQueries && stableRefetchQueries.length > 0) {
             client.refetchQueries({
               include: stableRefetchQueries,
+            }).catch(refetchError => {
+              console.warn("Failed to refetch queries on reconnection:", refetchError);
             });
           }
         },

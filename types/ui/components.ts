@@ -86,7 +86,7 @@ export interface FormField<T = any> {
   options?: SelectOption[];
   validation?: FormValidation;
   helpText?: string;
-  defaultValue?: any;
+  defaultValue?: string | number | boolean | Date;
 }
 
 /**
@@ -110,13 +110,13 @@ export interface FormValidation {
   pattern?: RegExp | string;
   min?: number | string;
   max?: number | string;
-  custom?: (value: any) => string | undefined;
+  custom?: (value: unknown) => string | undefined;
 }
 
 /**
  * Form state management
  */
-export interface FormState<T = any> {
+export interface FormState<T = Record<string, unknown>> {
   values: T;
   errors: Partial<Record<keyof T, string>>;
   touched: Partial<Record<keyof T, boolean>>;
@@ -131,7 +131,7 @@ export interface FormState<T = any> {
 /**
  * Table column definition
  */
-export interface TableColumn<T = any> {
+export interface TableColumn<T = Record<string, unknown>> {
   key: keyof T | string;
   title: string;
   dataIndex?: keyof T;
@@ -139,7 +139,7 @@ export interface TableColumn<T = any> {
   align?: "left" | "center" | "right";
   sortable?: boolean;
   filterable?: boolean;
-  render?: (value: any, record: T, index: number) => ReactNode;
+  render?: (value: unknown, record: T, index: number) => ReactNode;
   className?: string;
 }
 
@@ -157,7 +157,7 @@ export interface TableSort {
 export interface TableFilter {
   field: string;
   operator: "eq" | "ne" | "gt" | "lt" | "gte" | "lte" | "like" | "in" | "nin";
-  value: any;
+  value: unknown;
 }
 
 /**
@@ -389,7 +389,7 @@ export interface CreateUserModalProps extends ModalProps {
 export interface PayrollFormProps {
   payroll?: PayrollSummary;
   client?: ClientSummary;
-  onSubmit: (data: any) => void;
+  onSubmit: (data: Record<string, unknown>) => void;
   onCancel: () => void;
   isLoading?: boolean;
   mode: "create" | "edit" | "view";
@@ -400,10 +400,10 @@ export interface PayrollFormProps {
  */
 export interface LeaveRequestFormProps {
   user: UserSummary;
-  onSubmit: (data: any) => void;
+  onSubmit: (data: Record<string, unknown>) => void;
   onCancel: () => void;
   isLoading?: boolean;
-  defaultValues?: Partial<any>;
+  defaultValues?: Partial<Record<string, unknown>>;
 }
 
 /**
@@ -411,7 +411,7 @@ export interface LeaveRequestFormProps {
  */
 export interface PermissionOverrideModalProps extends ModalProps {
   user: UserSummary;
-  onOverrideCreated: (override: any) => void;
+  onOverrideCreated: (override: Record<string, unknown>) => void;
   currentPermissions: string[];
 }
 

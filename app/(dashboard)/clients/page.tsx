@@ -51,7 +51,7 @@ import { ClientsTableUnified } from "@/domains/clients/components/clients-table-
 import {
   GetClientsListOptimizedDocument,
   GetClientsDashboardStatsDocument,
-  type GetClientsListQuery,
+  type GetClientsListOptimizedQuery,
 } from "@/domains/clients/graphql/generated/graphql";
 import { useSmartPolling } from "@/hooks/use-polling";
 import { useStrategicQuery } from "@/hooks/use-strategic-query";
@@ -295,10 +295,10 @@ function ClientsPage() {
 
   const clients = data?.clients || [];
   const totalCount = data?.clientsAggregate?.aggregate?.count || 0;
-  const totalPages = Math.ceil(totalCount / pageSize);
+  const _totalPages = Math.ceil(totalCount / pageSize);
 
   // Extract client type from query
-  type ClientData = GetClientsListQuery['clients'][0];
+  type ClientData = GetClientsListOptimizedQuery['clients'][0];
   
   // Minimal client-side processing for display purposes only
   const displayClients = clients.map((client: ClientData) => ({
@@ -310,7 +310,7 @@ function ClientsPage() {
   // Client-side payroll count filtering (since it requires aggregation)
   const finalClients =
     payrollCountFilter.length > 0
-      ? displayClients.filter((client) => {
+      ? displayClients.filter((client: any) => {
           const payrollCount = client.payrollCount;
           return (
             (payrollCountFilter.includes("0") && payrollCount === 0) ||
@@ -327,7 +327,7 @@ function ClientsPage() {
 
   // Get unique values for filters from current page data
   const uniquePayrollCounts = Array.from(
-    new Set(clients.map((c) => c.payrollsAggregate?.aggregate?.count || 0))
+    new Set(clients.map((c: any) => c.payrollsAggregate?.aggregate?.count || 0))
   ) as number[];
   uniquePayrollCounts.sort((a, b) => a - b);
 
@@ -396,7 +396,7 @@ function ClientsPage() {
   // Render card view
   const renderCardView = () => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {finalClients.map((client) => (
+      {finalClients.map((client: any) => (
         <Card
           key={client.id}
           className="hover:shadow-lg transition-shadow duration-200"
@@ -467,7 +467,7 @@ function ClientsPage() {
   // Render list view
   const renderListView = () => (
     <div className="space-y-3">
-      {finalClients.map((client) => (
+      {finalClients.map((client: any) => (
         <Card
           key={client.id}
           className="hover:shadow-md transition-shadow duration-200"

@@ -132,7 +132,7 @@ export async function GET(request: NextRequest) {
 
     // Process each type in the schema
     schema.types.forEach((type: any) => {
-      if (type.kind === "OBJECT" && REPORTDOMAINS.includes(type.name)) {
+      if (type.kind === "OBJECT" && REPORT_DOMAINS.includes(type.name)) {
         const domainName = type.name;
         const fields: string[] = [];
         const types: Record<string, string> = {};
@@ -140,7 +140,7 @@ export async function GET(request: NextRequest) {
         // Extract fields for this domain
         if (type.fields) {
           type.fields.forEach((field: any) => {
-            if (!EXCLUDEDFIELDS.includes(field.name)) {
+            if (!EXCLUDED_FIELDS.includes(field.name)) {
               fields.push(field.name);
 
               // Determine field type
@@ -165,14 +165,14 @@ export async function GET(request: NextRequest) {
         const fieldType = domainTypes[field];
 
         // Check if this field references another domain
-        if (fieldType && REPORTDOMAINS.includes(fieldType)) {
+        if (fieldType && REPORT_DOMAINS.includes(fieldType)) {
           domainRelationships[fieldType] = field;
         }
 
         // Check for array relationships (e.g., payrolls field in clients)
         if (fieldType && fieldType.endsWith("[]")) {
           const baseType = fieldType.slice(0, -2); // Remove '[]'
-          if (REPORTDOMAINS.includes(baseType)) {
+          if (REPORT_DOMAINS.includes(baseType)) {
             domainRelationships[baseType] = field;
           }
         }
@@ -186,7 +186,7 @@ export async function GET(request: NextRequest) {
     // Get query fields to understand available root queries
     const queryFields = schema.queryType?.fields || [];
     const availableQueries = queryFields
-      .filter((field: any) => REPORTDOMAINS.includes(field.name))
+      .filter((field: any) => REPORT_DOMAINS.includes(field.name))
       .map((field: any) => field.name);
 
     return NextResponse.json({

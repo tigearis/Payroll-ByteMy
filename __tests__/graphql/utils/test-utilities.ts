@@ -89,7 +89,7 @@ export interface GraphQLOperation {
 
 // Test data generators for each domain
 export class TestDataGenerators {
-  static user(overrides: Partial<typeof TESTUSERS.developer> = {}) {
+  static user(overrides: Partial<typeof TEST_USERS.developer> = {}) {
     return {
       id: '550e8400-e29b-41d4-a716-446655440000',
       name: 'Test User',

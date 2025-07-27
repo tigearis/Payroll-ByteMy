@@ -46,18 +46,6 @@ insert_permissions:
       columns: '*'
     comment: Developer role has full insert access
 select_permissions:
-  - role: consultant
-    permission:
-      columns:
-        - action
-        - created_at
-        - description
-        - id
-        - legacy_permission_name
-        - resource_id
-        - updated_at
-      filter: {}
-    comment: Consultants can view permission details
   - role: developer
     permission:
       columns: '*'
@@ -90,18 +78,6 @@ select_permissions:
       filter: {}
       allow_aggregations: true
     comment: Org admins can view all permission data
-  - role: viewer
-    permission:
-      columns:
-        - action
-        - created_at
-        - description
-        - id
-        - legacy_permission_name
-        - resource_id
-        - updated_at
-      filter: {}
-    comment: Viewers can see basic permission information
 update_permissions:
   - role: developer
     permission:

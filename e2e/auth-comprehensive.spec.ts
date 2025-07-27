@@ -31,7 +31,7 @@ test.describe('Comprehensive Authentication Testing', () => {
         }, { timeout: TIMEOUTS.authentication });
         
         // Fill credentials
-        const emailSelectors = TESTSELECTORS.emailInput.split(', ');
+        const emailSelectors = TEST_SELECTORS.emailInput.split(', ');
         let emailFilled = false;
         
         for (const selector of emailSelectors) {
@@ -49,7 +49,7 @@ test.describe('Comprehensive Authentication Testing', () => {
         
         expect(emailFilled, `Could not find email input for ${roleKey}`).toBe(true);
         
-        const passwordSelectors = TESTSELECTORS.passwordInput.split(', ');
+        const passwordSelectors = TEST_SELECTORS.passwordInput.split(', ');
         let passwordFilled = false;
         
         for (const selector of passwordSelectors) {
@@ -68,7 +68,7 @@ test.describe('Comprehensive Authentication Testing', () => {
         expect(passwordFilled, `Could not find password input for ${roleKey}`).toBe(true);
         
         // Submit form
-        const submitSelectors = TESTSELECTORS.signInButton.split(', ');
+        const submitSelectors = TEST_SELECTORS.signInButton.split(', ');
         let submitted = false;
         
         for (const selector of submitSelectors) {
@@ -90,10 +90,10 @@ test.describe('Comprehensive Authentication Testing', () => {
         await page.waitForURL(/\/dashboard/, { timeout: TIMEOUTS.authentication });
         
         // Verify authentication success
-        await expect(page.locator(TESTSELECTORS.mainContent)).toBeVisible({ timeout: TIMEOUTS.pageLoad });
+        await expect(page.locator(TEST_SELECTORS.mainContent)).toBeVisible({ timeout: TIMEOUTS.pageLoad });
         
         // Verify we're on the dashboard
-        await expect(page.locator(TESTSELECTORS.pageTitle)).toBeVisible();
+        await expect(page.locator(TEST_SELECTORS.pageTitle)).toBeVisible();
         
         console.log(`✅ Successfully authenticated as ${roleKey}`);
       });
@@ -104,7 +104,7 @@ test.describe('Comprehensive Authentication Testing', () => {
     
     test('should maintain session across page refreshes', async ({ page }) => {
       // Login as admin
-      const adminUser = TESTUSERS.admin;
+      const adminUser = TEST_USERS.admin;
       await page.goto('/sign-in');
       
       // Authenticate (simplified for session test)
@@ -113,9 +113,9 @@ test.describe('Comprehensive Authentication Testing', () => {
                !document.body.textContent?.includes('Loading authentication...');
       }, { timeout: TIMEOUTS.authentication });
       
-      const emailInput = page.locator(TESTSELECTORS.emailInput).first();
-      const passwordInput = page.locator(TESTSELECTORS.passwordInput).first();
-      const submitButton = page.locator(TESTSELECTORS.signInButton).first();
+      const emailInput = page.locator(TEST_SELECTORS.emailInput).first();
+      const passwordInput = page.locator(TEST_SELECTORS.passwordInput).first();
+      const submitButton = page.locator(TEST_SELECTORS.signInButton).first();
       
       await emailInput.fill(adminUser.email);
       await passwordInput.fill(adminUser.password);
@@ -127,7 +127,7 @@ test.describe('Comprehensive Authentication Testing', () => {
       await page.reload();
       
       // Should still be authenticated
-      await expect(page.locator(TESTSELECTORS.mainContent)).toBeVisible({ timeout: TIMEOUTS.pageLoad });
+      await expect(page.locator(TEST_SELECTORS.mainContent)).toBeVisible({ timeout: TIMEOUTS.pageLoad });
       
       // Should not be redirected to sign-in
       expect(page.url()).not.toContain('/sign-in');
@@ -137,7 +137,7 @@ test.describe('Comprehensive Authentication Testing', () => {
     
     test('should handle logout correctly', async ({ page }) => {
       // Login as manager
-      const managerUser = TESTUSERS.manager;
+      const managerUser = TEST_USERS.manager;
       await page.goto('/sign-in');
       
       await page.waitForFunction(() => {
@@ -145,9 +145,9 @@ test.describe('Comprehensive Authentication Testing', () => {
                !document.body.textContent?.includes('Loading authentication...');
       }, { timeout: TIMEOUTS.authentication });
       
-      const emailInput = page.locator(TESTSELECTORS.emailInput).first();
-      const passwordInput = page.locator(TESTSELECTORS.passwordInput).first();
-      const submitButton = page.locator(TESTSELECTORS.signInButton).first();
+      const emailInput = page.locator(TEST_SELECTORS.emailInput).first();
+      const passwordInput = page.locator(TEST_SELECTORS.passwordInput).first();
+      const submitButton = page.locator(TEST_SELECTORS.signInButton).first();
       
       await emailInput.fill(managerUser.email);
       await passwordInput.fill(managerUser.password);
@@ -156,7 +156,7 @@ test.describe('Comprehensive Authentication Testing', () => {
       await page.waitForURL(/\/dashboard/, { timeout: TIMEOUTS.authentication });
       
       // Look for sign out button or user menu
-      const signOutSelectors = TESTSELECTORS.signOutButton.split(', ');
+      const signOutSelectors = TEST_SELECTORS.signOutButton.split(', ');
       let signOutClicked = false;
       
       for (const selector of signOutSelectors) {
@@ -175,7 +175,7 @@ test.describe('Comprehensive Authentication Testing', () => {
       // Alternative: look for user menu first
       if (!signOutClicked) {
         try {
-          const userMenu = page.locator(TESTSELECTORS.userMenu).first();
+          const userMenu = page.locator(TEST_SELECTORS.userMenu).first();
           if (await userMenu.isVisible({ timeout: 5000 })) {
             await userMenu.click();
             
@@ -218,9 +218,9 @@ test.describe('Comprehensive Authentication Testing', () => {
                !document.body.textContent?.includes('Loading authentication...');
       }, { timeout: TIMEOUTS.authentication });
       
-      const emailInput = page.locator(TESTSELECTORS.emailInput).first();
-      const passwordInput = page.locator(TESTSELECTORS.passwordInput).first();
-      const submitButton = page.locator(TESTSELECTORS.signInButton).first();
+      const emailInput = page.locator(TEST_SELECTORS.emailInput).first();
+      const passwordInput = page.locator(TEST_SELECTORS.passwordInput).first();
+      const submitButton = page.locator(TEST_SELECTORS.signInButton).first();
       
       // Use invalid credentials
       await emailInput.fill('invalid@example.com');
@@ -234,7 +234,7 @@ test.describe('Comprehensive Authentication Testing', () => {
       expect(page.url()).not.toContain('/dashboard');
       
       // Look for error message
-      const errorSelectors = TESTSELECTORS.errorMessage.split(', ');
+      const errorSelectors = TEST_SELECTORS.errorMessage.split(', ');
       let errorFound = false;
       
       for (const selector of errorSelectors) {
@@ -269,9 +269,9 @@ test.describe('Comprehensive Authentication Testing', () => {
                  !document.body.textContent?.includes('Loading authentication...');
         }, { timeout: TIMEOUTS.authentication });
         
-        const emailInput = page.locator(TESTSELECTORS.emailInput).first();
-        const passwordInput = page.locator(TESTSELECTORS.passwordInput).first();
-        const submitButton = page.locator(TESTSELECTORS.signInButton).first();
+        const emailInput = page.locator(TEST_SELECTORS.emailInput).first();
+        const passwordInput = page.locator(TEST_SELECTORS.passwordInput).first();
+        const submitButton = page.locator(TEST_SELECTORS.signInButton).first();
         
         await emailInput.fill(userConfig.email);
         await passwordInput.fill(userConfig.password);

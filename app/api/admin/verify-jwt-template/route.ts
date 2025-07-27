@@ -73,9 +73,9 @@ export const GET = withAuth(async (request: NextRequest, session) => {
       usersWithCompleteJWT: 0,
       usersWithIncompleteJWT: 0,
       usersNotInDatabase: 0,
-      fieldCoverage: {},
-      sampleUser: null,
-      issues: []
+      fieldCoverage: {} as Record<string, { present: number; missing: number }>,
+      sampleUser: null as any,
+      issues: [] as any[]
     };
 
     // Initialize field coverage
@@ -89,7 +89,7 @@ export const GET = withAuth(async (request: NextRequest, session) => {
       const metadata = clerkUser.publicMetadata || {};
       
       // Find corresponding database user
-      const dbUser = databaseUsers.find(u => u.clerkUserId === clerkUser.id);
+      const dbUser = databaseUsers.find((u: any) => u.clerkUserId === clerkUser.id);
       
       if (!dbUser) {
         results.usersNotInDatabase++;

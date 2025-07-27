@@ -21,7 +21,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   CreateClientDocument,
   GetClientsListOptimizedDocument,
-  type CreateClientMutation,
 } from "@/domains/clients/graphql/generated/graphql";
 import {
   PayrollForm,
@@ -104,9 +103,9 @@ export default function NewClientPage() {
       const clientResult = await createClient({
         variables: {
           name: formData.name.trim(),
-          contactPerson: formData.contactperson.trim() || null,
-          contactEmail: formData.contactemail.trim() || null,
-          contactPhone: formData.contactphone.trim() || null,
+          contactPerson: formData.contact_person.trim() || null,
+          contactEmail: formData.contact_email.trim() || null,
+          contactPhone: formData.contact_phone.trim() || null,
         },
       });
 
