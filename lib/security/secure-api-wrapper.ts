@@ -483,7 +483,7 @@ export function adminRoute() {
   return secureApiRoute({
     requireAuth: true,
     requiredRole: 'org_admin',
-    rateLimit: RATE_LIMIT_PRESETS.STRICT,
+    rateLimit: RATELIMIT_PRESETS.STRICT,
     addSecurityHeaders: true,
     auditLog: { enabled: true, logLevel: 'detailed' }
   });
@@ -496,7 +496,7 @@ export function developerRoute() {
   return secureApiRoute({
     requireAuth: true,
     requiredRole: 'developer',
-    rateLimit: RATE_LIMIT_PRESETS.STRICT,
+    rateLimit: RATELIMIT_PRESETS.STRICT,
     addSecurityHeaders: true,
     auditLog: { enabled: true, logLevel: 'detailed' }
   });
@@ -508,7 +508,7 @@ export function developerRoute() {
 export function publicRoute() {
   return secureApiRoute({
     requireAuth: false,
-    rateLimit: RATE_LIMIT_PRESETS.STANDARD,
+    rateLimit: RATELIMIT_PRESETS.STANDARD,
     addSecurityHeaders: true,
     auditLog: { enabled: true, logLevel: 'basic' }
   });
@@ -521,7 +521,7 @@ export function sensitiveRoute(resource: string, action: string) {
   return secureApiRoute({
     requireAuth: true,
     permissions: { resource, action },
-    rateLimit: RATE_LIMIT_PRESETS.STRICT,
+    rateLimit: RATELIMIT_PRESETS.STRICT,
     addSecurityHeaders: true,
     auditLog: { enabled: true, logLevel: 'detailed' }
   });
@@ -534,7 +534,7 @@ export function mutationRoute(resource: string, action: string) {
   return secureApiRoute({
     requireAuth: true,
     permissions: { resource, action },
-    rateLimit: RATE_LIMIT_PRESETS.MUTATION,
+    rateLimit: RATELIMIT_PRESETS.MUTATION,
     addSecurityHeaders: true,
     auditLog: { enabled: true, logLevel: 'detailed' }
   });
@@ -572,7 +572,7 @@ export const POST = secureApiRoute({
   validation: {
     body: CreatePayrollSchema
   },
-  rateLimit: RATE_LIMIT_PRESETS.MUTATION,
+  rateLimit: RATELIMIT_PRESETS.MUTATION,
   auditLog: { enabled: true, logLevel: 'detailed' },
   customChecks: [
     async (request, context) => {

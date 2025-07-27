@@ -167,7 +167,7 @@ const ServiceEditor: React.FC<ServiceEditorProps> = ({ service, onSave, onCancel
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {BILLING_UNITS.map(unit => (
+                  {BILLINGUNITS.map(unit => (
                     <SelectItem key={unit} value={unit}>
                       {unit}
                     </SelectItem>

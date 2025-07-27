@@ -315,14 +315,14 @@ async function calculateExcludedPermissions(
  * Get inherited permissions for a role based on hierarchy
  */
 function getInheritedPermissions(role: UserRole): string[] {
-  const roleIndex = ROLE_HIERARCHY.indexOf(role);
-  if (roleIndex === -1) return ROLE_BASE_PERMISSIONS.viewer;
+  const roleIndex = ROLEHIERARCHY.indexOf(role);
+  if (roleIndex === -1) return ROLEBASE_PERMISSIONS.viewer;
 
   // For hierarchical inheritance, get permissions from this role and all lower roles
   const inheritedPermissions = new Set<string>();
 
   // Add permissions from this role and all roles it can inherit from
-  for (let i = roleIndex; i < ROLE_HIERARCHY.length; i++) {
+  for (let i = roleIndex; i < ROLEHIERARCHY.length; i++) {
     const currentRole = ROLE_HIERARCHY[i];
     const rolePermissions = ROLE_BASE_PERMISSIONS[currentRole];
     rolePermissions.forEach((perm: any) => inheritedPermissions.add(perm));
@@ -335,11 +335,11 @@ function getInheritedPermissions(role: UserRole): string[] {
  * Generate allowed roles based on hierarchy
  */
 function generateAllowedRolesHierarchy(userRole: UserRole): UserRole[] {
-  const roleIndex = ROLE_HIERARCHY.indexOf(userRole);
+  const roleIndex = ROLEHIERARCHY.indexOf(userRole);
   if (roleIndex === -1) return ["viewer"];
 
   // User can access their role and all roles below it in hierarchy
-  return ROLE_HIERARCHY.slice(roleIndex);
+  return ROLEHIERARCHY.slice(roleIndex);
 }
 
 /**

@@ -80,7 +80,7 @@ function displayFixSummary() {
     "• lib/auth/token-utils.ts - Enhanced hasCompleteData validation"
   );
   console.log(
-    "• OAUTHREDIRECTLOOP_ANALYSIS_REPORT.md - Comprehensive analysis\n"
+    "• OAUTHREDIRECTLOOPANALYSIS_REPORT.md - Comprehensive analysis\n"
   );
 }
 

@@ -1,0 +1,82 @@
+# Page snapshot
+
+```yaml
+- button "Toggle theme":
+  - img
+  - img
+  - text: Toggle theme
+- button:
+  - img
+- navigation:
+  - link "Dashboard":
+    - /url: /dashboard
+    - img
+    - text: Dashboard
+  - link "Clients":
+    - /url: /clients
+    - img
+    - text: Clients
+  - link "Payrolls":
+    - /url: /payrolls
+    - img
+    - text: Payrolls
+  - link "Schedule":
+    - /url: /payroll-schedule
+    - img
+    - text: Schedule
+  - link "Work Schedule":
+    - /url: /work-schedule
+    - img
+    - text: Work Schedule
+  - link "Staff":
+    - /url: /staff
+    - img
+    - text: Staff
+  - link "Leave":
+    - /url: /leave
+    - img
+    - text: Leave
+  - link "Bulk Upload":
+    - /url: /bulk-upload
+    - img
+    - text: Bulk Upload
+- paragraph: "Role:"
+- heading "Payroll Matrix" [level=1]
+- button "Jim Consultant JC"
+- main:
+  - heading "Staff Management" [level=1]
+  - paragraph: Manage team members, roles, and permissions
+  - button "Refresh":
+    - img
+    - text: Refresh
+  - tablist:
+    - tab "Staff Members" [selected]:
+      - img
+      - text: Staff Members
+    - tab "Invitations":
+      - img
+      - text: Invitations
+  - tabpanel "Staff Members":
+    - img
+    - textbox "Search staff..."
+    - button "Filters":
+      - img
+      - text: Filters
+    - button:
+      - img
+    - button:
+      - img
+    - button:
+      - img
+    - img
+    - text: Insufficient permissions
+    - button:
+      - img
+    - img
+    - heading "No staff members found" [level=3]
+    - paragraph: Get started by adding your first staff member
+- region "Notifications alt+T"
+- alert
+- button "Open Next.js Dev Tools":
+  - img
+```

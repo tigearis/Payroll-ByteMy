@@ -445,7 +445,7 @@ function PayrollFormComponent({
                   <SelectValue placeholder="Select cycle..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {PAYROLL_CYCLES.map(cycle => (
+                  {PAYROLLCYCLES.map(cycle => (
                     <SelectItem key={cycle.id} value={cycle.id}>
                       {cycle.name}
                     </SelectItem>

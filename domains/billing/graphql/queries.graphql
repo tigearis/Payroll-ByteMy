@@ -149,10 +149,9 @@ query GetClientServicesWithRates($clientId: uuid!) {
 }
 
 # Service Catalog Queries
-query GetServiceCatalog($category: String, $isActive: Boolean) {
+query GetServiceCatalog($isActive: Boolean) {
   billingPlans(
     where: { 
-      category: { _ilike: $category }
       isActive: { _eq: $isActive } 
     }
     orderBy: { category: ASC, name: ASC }

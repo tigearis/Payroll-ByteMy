@@ -292,7 +292,7 @@ export async function getAllowedRolesFromDatabase(
     const allowedRoles = allRoles
       .filter((role: any) => (role.priority || 0) <= highestPriority)
       .map((role: any) => role.name as UserRole)
-      .filter((roleName: any) => ROLE_HIERARCHY.includes(roleName))
+      .filter((roleName: any) => ROLEHIERARCHY.includes(roleName))
       .sort((a: any, b: any) => {
         const aPriority =
           allRoles.find((r: any) => r.name === a)?.priority || 0;
@@ -314,10 +314,10 @@ export async function getAllowedRolesFromDatabase(
  * Fallback method to get allowed roles using static hierarchy
  */
 function getStaticAllowedRoles(userRole: UserRole): UserRole[] {
-  const roleIndex = ROLE_HIERARCHY.indexOf(userRole);
+  const roleIndex = ROLEHIERARCHY.indexOf(userRole);
   if (roleIndex === -1) return ["viewer"];
 
-  return ROLE_HIERARCHY.slice(roleIndex);
+  return ROLEHIERARCHY.slice(roleIndex);
 }
 
 /**

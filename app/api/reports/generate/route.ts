@@ -111,7 +111,7 @@ async function getSchemaViaIntrospection() {
 
     // Process each type in the schema
     schema.types.forEach((type: any) => {
-      if (type.kind === "OBJECT" && REPORT_DOMAINS.includes(type.name)) {
+      if (type.kind === "OBJECT" && REPORTDOMAINS.includes(type.name)) {
         const domainName = type.name;
         const fields: string[] = [];
         const types: Record<string, string> = {};
@@ -120,7 +120,7 @@ async function getSchemaViaIntrospection() {
         if (type.fields) {
           type.fields.forEach((field: any) => {
             try {
-              if (field && field.name && !EXCLUDED_FIELDS.includes(field.name)) {
+              if (field && field.name && !EXCLUDEDFIELDS.includes(field.name)) {
                 fields.push(field.name);
 
                 // Determine field type
@@ -153,14 +153,14 @@ async function getSchemaViaIntrospection() {
         const fieldType = domainTypes[field];
 
         // Check if this field references another domain
-        if (fieldType && REPORT_DOMAINS.includes(fieldType)) {
+        if (fieldType && REPORTDOMAINS.includes(fieldType)) {
           domainRelationships[fieldType] = field;
         }
 
         // Check for array relationships (e.g., payrolls field in clients)
         if (fieldType && fieldType.endsWith("[]")) {
           const baseType = fieldType.slice(0, -2); // Remove '[]'
-          if (REPORT_DOMAINS.includes(baseType)) {
+          if (REPORTDOMAINS.includes(baseType)) {
             domainRelationships[baseType] = field;
           }
         }

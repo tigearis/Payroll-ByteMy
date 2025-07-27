@@ -62,7 +62,9 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
   const { data: servicesData, loading: servicesLoading, error: servicesError } = useQuery(
     GetServiceCatalogDocument,
     {
-      variables: { isActive: true }
+      variables: { 
+        isActive: true
+      }
     }
   );
 
@@ -309,7 +311,7 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {BILLING_FREQUENCIES.map(frequency => (
+                          {BILLINGFREQUENCIES.map(frequency => (
                             <SelectItem key={frequency} value={frequency}>
                               {frequency}
                             </SelectItem>

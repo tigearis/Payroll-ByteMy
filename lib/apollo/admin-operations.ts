@@ -281,7 +281,7 @@ export class AdminOperationsService {
 }
 
 // Export singleton instance with lazy initialization
-let _adminOperationsService: AdminOperationsService | null = null;
+let adminOperationsService: AdminOperationsService | null = null;
 
 export const adminOperationsService: Pick<
   AdminOperationsService,
@@ -294,7 +294,7 @@ export const adminOperationsService: Pick<
     if (!_adminOperationsService) {
       _adminOperationsService = AdminOperationsService.getInstance();
     }
-    return _adminOperationsService.executeAdminQuery(query, variables);
+    return adminOperationsService.executeAdminQuery(query, variables);
   },
   
   executeAdminMutation: async <T = any>(
@@ -304,7 +304,7 @@ export const adminOperationsService: Pick<
     if (!_adminOperationsService) {
       _adminOperationsService = AdminOperationsService.getInstance();
     }
-    return _adminOperationsService.executeAdminMutation(
+    return adminOperationsService.executeAdminMutation(
       mutation,
       variables
     );
@@ -321,7 +321,7 @@ export const adminOperationsService: Pick<
     if (!_adminOperationsService) {
       _adminOperationsService = AdminOperationsService.getInstance();
     }
-    return _adminOperationsService.syncUserWithDatabase(
+    return adminOperationsService.syncUserWithDatabase(
       clerkUserId,
       name,
       email,
@@ -335,7 +335,7 @@ export const adminOperationsService: Pick<
     if (!_adminOperationsService) {
       _adminOperationsService = AdminOperationsService.getInstance();
     }
-    return _adminOperationsService.cleanAllPayrollDates();
+    return adminOperationsService.cleanAllPayrollDates();
   },
 
   regeneratePayrollDates: async (
@@ -346,7 +346,7 @@ export const adminOperationsService: Pick<
     if (!_adminOperationsService) {
       _adminOperationsService = AdminOperationsService.getInstance();
     }
-    return _adminOperationsService.regeneratePayrollDates(
+    return adminOperationsService.regeneratePayrollDates(
       payrollId,
       startDate,
       endDate

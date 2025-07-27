@@ -11,6 +11,7 @@ import {
   DEFAULT_FEATURE_FLAGS,
   type FeatureFlag
 } from './types';
+// Logout state management removed - using Clerk's UserButton instead
 
 interface UseFeatureFlagsResult {
   flags: FeatureFlagConfig;
@@ -21,12 +22,13 @@ interface UseFeatureFlagsResult {
 }
 
 export function useFeatureFlags(): UseFeatureFlagsResult {
-  const { user } = useUser();
+  const { user, isSignedIn } = useUser();
   const userRole = user?.publicMetadata?.role as string;
   
   const { data, loading, error, refetch } = useQuery(GET_FEATURE_FLAGS, {
     errorPolicy: 'all',
     fetchPolicy: 'cache-and-network',
+    skip: !isSignedIn, // Skip query when user is not signed in
   });
 
   const flags = useMemo(() => {

@@ -1,0 +1,120 @@
+{
+  "databaseConnection": {
+    "status": "connected",
+    "timestamp": "2025-07-27T01:13:37.098Z",
+    "version": "PostgreSQL 15.13 on aarch64-unknown-linux-gnu, compiled by gcc (Debian 10.2.1-6) 10.2.1 20210110, 64-bit",
+    "url": "postgres://neondb_owner:***@ep-black-sunset-a7wbc0zq-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require"
+  },
+  "hasuraConnection": {
+    "status": "connected",
+    "endpoint": "https://hasura.bytemy.com.au/v1/graphql",
+    "timestamp": "2025-07-27T01:13:36.892Z"
+  },
+  "consistencyTests": {
+    "tableCounts": {
+      "users": {
+        "databaseCount": 7,
+        "hasuraCount": 7,
+        "consistent": true,
+        "difference": 0
+      },
+      "clients": {
+        "databaseCount": 11,
+        "hasuraCount": 11,
+        "consistent": true,
+        "difference": 0
+      },
+      "payrolls": {
+        "databaseCount": 23,
+        "hasuraCount": 23,
+        "consistent": true,
+        "difference": 0
+      },
+      "roles": {
+        "databaseCount": 5,
+        "hasuraCount": 5,
+        "consistent": true,
+        "difference": 0
+      },
+      "permissions": {
+        "databaseCount": 128,
+        "hasuraCount": 128,
+        "consistent": true,
+        "difference": 0
+      },
+      "user_roles": {
+        "error": "Hasura query failed: field 'user_rolesAggregate' not found in type: 'query_root'",
+        "consistent": false
+      },
+      "role_permissions": {
+        "error": "Hasura query failed: field 'role_permissionsAggregate' not found in type: 'query_root'",
+        "consistent": false
+      },
+      "audit_logs": {
+        "error": "relation \"audit_logs\" does not exist",
+        "consistent": false
+      },
+      "notes": {
+        "databaseCount": 8,
+        "hasuraCount": 8,
+        "consistent": true,
+        "difference": 0
+      },
+      "leave_requests": {
+        "error": "relation \"leave_requests\" does not exist",
+        "consistent": false
+      },
+      "billing_items": {
+        "error": "Hasura query failed: field 'billing_itemsAggregate' not found in type: 'query_root'",
+        "consistent": false
+      },
+      "time_entries": {
+        "error": "Hasura query failed: field 'time_entriesAggregate' not found in type: 'query_root'",
+        "consistent": false
+      }
+    }
+  },
+  "materializedViews": {
+    "payroll_dashboard_stats": {
+      "populated": true,
+      "recordCount": 17,
+      "lastUpdated": null,
+      "consistent": true
+    }
+  },
+  "calculatedFields": {
+    "error": "column bi.user_id does not exist"
+  },
+  "relationshipIntegrity": {
+    "payrolls_without_clients": {
+      "orphanCount": 0,
+      "hasOrphans": false
+    },
+    "users_with_invalid_managers": {
+      "orphanCount": 0,
+      "hasOrphans": false
+    },
+    "user_roles_without_users": {
+      "orphanCount": 0,
+      "hasOrphans": false
+    },
+    "role_permissions_without_roles": {
+      "orphanCount": 0,
+      "hasOrphans": false
+    },
+    "circular_manager_references": {
+      "circularCount": 0,
+      "hasCircular": false
+    }
+  },
+  "auditTrails": {
+    "error": "relation \"audit_logs\" does not exist"
+  },
+  "summary": {
+    "totalTests": 20,
+    "passedTests": 12,
+    "failedTests": 8,
+    "criticalIssues": [],
+    "warnings": []
+  }
+}

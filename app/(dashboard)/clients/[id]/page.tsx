@@ -93,39 +93,8 @@ import { NotesListWithAdd } from "@/domains/notes/components/notes-list";
 import { type PayrollListItemFragment } from "@/domains/payrolls/graphql/generated/graphql";
 import { useSmartPolling } from "@/hooks/use-polling";
 import { safeFormatDate } from "@/lib/utils/date-utils";
+import { getScheduleSummary } from "@/domains/payrolls/utils/schedule-helpers";
 
-// Helper function to format payroll cycle information
-const formatPayrollCycle = (payroll: PayrollListItemFragment) => {
-  const cycleName = payroll.payrollCycle?.name;
-
-  if (!cycleName) {
-    return "Not configured";
-  }
-
-  // Create readable cycle name
-  let readableCycle = "";
-  switch (cycleName) {
-    case "weekly":
-      readableCycle = "Weekly";
-      break;
-    case "fortnightly":
-      readableCycle = "Fortnightly";
-      break;
-    case "bi_monthly":
-      readableCycle = "Bi-Monthly";
-      break;
-    case "monthly":
-      readableCycle = "Monthly";
-      break;
-    case "quarterly":
-      readableCycle = "Quarterly";
-      break;
-    default:
-      readableCycle = cycleName.charAt(0).toUpperCase() + cycleName.slice(1);
-  }
-
-  return readableCycle;
-};
 
 // Payroll status configuration (same as payrolls page)
 const getStatusConfig = (status: string) => {
@@ -365,7 +334,7 @@ export default function ClientDetailPage() {
       return {
         ...payroll,
         employeeCount: totalEmployees,
-        payrollSchedule: formatPayrollCycle(payroll),
+        payrollSchedule: getScheduleSummary(payroll),
         priority:
           totalEmployees > 50 ? "high" : totalEmployees > 20 ? "medium" : "low",
         progress: getStatusConfig(payroll.status || "Implementation")
@@ -1172,7 +1141,7 @@ export default function ClientDetailPage() {
           businessContext={{
             category: 'client',
             clientId: id,
-            recipientEmails: [client.contactEmail].filter(Boolean)
+            recipientEmails: [client.contactEmail].filter((email): email is string => Boolean(email))
           }}
           suggestedSubject={`Regarding: ${client.name}`}
           title="Send Client Email"

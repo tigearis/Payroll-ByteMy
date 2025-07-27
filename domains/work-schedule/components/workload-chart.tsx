@@ -158,11 +158,11 @@ const WorkloadChart: React.FC<WorkloadChartProps> = ({
 
   // Legend data
   const legendData = useMemo(() => [
-    { value: "Available Capacity", type: "square", color: COLOR_THEME.capacity },
-    { value: "Optimal (< 85%)", type: "square", color: COLOR_THEME.optimal },
-    { value: "High (85-100%)", type: "square", color: COLOR_THEME.high },
-    { value: "Overallocated (> 100%)", type: "square", color: COLOR_THEME.overallocated },
-    { value: "Overflow", type: "square", color: COLOR_THEME.overflow },
+    { value: "Available Capacity", type: "square", color: COLORTHEME.capacity },
+    { value: "Optimal (< 85%)", type: "square", color: COLORTHEME.optimal },
+    { value: "High (85-100%)", type: "square", color: COLORTHEME.high },
+    { value: "Overallocated (> 100%)", type: "square", color: COLORTHEME.overallocated },
+    { value: "Overflow", type: "square", color: COLORTHEME.overflow },
   ], []);
 
   // Chart margin based on view period - optimized for more space
@@ -259,7 +259,7 @@ const WorkloadChart: React.FC<WorkloadChartProps> = ({
             {/* Capacity background bar */}
             <Bar
               dataKey="payrollCapacityHours"
-              fill={COLOR_THEME.capacity}
+              fill={COLORTHEME.capacity}
               name="Total Capacity"
               radius={[2, 2, 0, 0]}
               stackId="capacity"
@@ -281,10 +281,10 @@ const WorkloadChart: React.FC<WorkloadChartProps> = ({
                   key={`cell-${index}`}
                   fill={
                     entry.utilization > 100
-                      ? COLOR_THEME.overallocated
+                      ? COLORTHEME.overallocated
                       : entry.utilization > 85
-                        ? COLOR_THEME.high
-                        : COLOR_THEME.optimal
+                        ? COLORTHEME.high
+                        : COLORTHEME.optimal
                   }
                 />
               ))}
@@ -296,7 +296,7 @@ const WorkloadChart: React.FC<WorkloadChartProps> = ({
               name="Overallocated Hours"
               radius={[2, 2, 0, 0]}
               stackId="capacity"
-              fill={COLOR_THEME.overflow}
+              fill={COLORTHEME.overflow}
               onClick={handleBarClick}
               style={{ cursor: 'pointer' }}
             />

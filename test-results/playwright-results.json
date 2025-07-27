@@ -1,0 +1,548 @@
+{
+  "config": {
+    "configFile": "/Users/nathanharris/Payroll/Payroll-ByteMy/playwright.config.ts",
+    "rootDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/e2e",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/playwright-results.json"
+        }
+      ],
+      [
+        "junit",
+        {
+          "outputFile": "test-results/playwright-junit.xml"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "auth-setup",
+        "name": "auth-setup",
+        "testDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/auth.setup.ts"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "auth-setup-consultant",
+        "name": "auth-setup-consultant",
+        "testDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/auth-setups/consultant.setup.ts"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "auth-setup-developer",
+        "name": "auth-setup-developer",
+        "testDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/auth-setups/developer.setup.ts"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "auth-setup-admin",
+        "name": "auth-setup-admin",
+        "testDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/auth-setups/admin.setup.ts"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "auth-setup-manager",
+        "name": "auth-setup-manager",
+        "testDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/auth-setups/manager.setup.ts"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "auth-setup-viewer",
+        "name": "auth-setup-viewer",
+        "testDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/auth-setups/viewer.setup.ts"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "developer-complete",
+        "name": "developer-complete",
+        "testDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/roles/developer-complete.spec.ts"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "org-admin-comprehensive",
+        "name": "org-admin-comprehensive",
+        "testDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/roles/org-admin-comprehensive.spec.ts"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "manager-team-operations",
+        "name": "manager-team-operations",
+        "testDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/roles/manager-team-operations.spec.ts"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "consultant-workflows",
+        "name": "consultant-workflows",
+        "testDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/roles/consultant-workflows.spec.ts"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "viewer-readonly",
+        "name": "viewer-readonly",
+        "testDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/roles/viewer-readonly.spec.ts"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "admin-tests",
+        "name": "admin-tests",
+        "testDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/admin-*.spec.ts",
+          "**/critical-*.spec.ts",
+          "**/dashboard-*.spec.ts",
+          "**/data-integrity.spec.ts"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "manager-tests",
+        "name": "manager-tests",
+        "testDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/manager-*.spec.ts",
+          "**/team-*.spec.ts"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "consultant-tests",
+        "name": "consultant-tests",
+        "testDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/consultant-*.spec.ts",
+          "**/operational-*.spec.ts"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "viewer-tests",
+        "name": "viewer-tests",
+        "testDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/viewer-*.spec.ts",
+          "**/readonly-*.spec.ts"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "permission-boundaries",
+        "name": "permission-boundaries",
+        "testDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/permission-boundaries.spec.ts"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "role-based-comprehensive",
+        "name": "role-based-comprehensive",
+        "testDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/roles/*.spec.ts"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "all-tests",
+        "name": "all-tests",
+        "testDir": "/Users/nathanharris/Payroll/Payroll-ByteMy/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/roles/*.spec.ts",
+          "**/permission-boundaries.spec.ts",
+          "**/data-integrity.spec.ts"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.53.2",
+    "workers": 4,
+    "webServer": {
+      "command": "pnpm dev",
+      "url": "http://localhost:3000",
+      "reuseExistingServer": true,
+      "stdout": "ignore",
+      "stderr": "pipe",
+      "env": {
+        "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_aGFybGVzcy1wcmltYXRlLTUzLmNsZXJrLmFjY291bnRzLmRldiQ",
+        "CLERK_SECRET_KEY": "sk_test_Vmcx7vTwGJWmXtwVc5hWUxKGIF7BiwA2GevfPUNCVv"
+      }
+    }
+  },
+  "suites": [
+    {
+      "title": "auth-setups/consultant.setup.ts",
+      "file": "auth-setups/consultant.setup.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "authenticate consultant only",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "auth-setup-consultant",
+              "projectName": "auth-setup-consultant",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 12964,
+                  "errors": [],
+                  "stdout": [
+                    {
+                      "text": "🚀 Starting consultant-only authentication setup...\n"
+                    },
+                    {
+                      "text": "🔐 Authenticating consultant: consultant@example.com (max retries: 3)\n"
+                    },
+                    {
+                      "text": "🔄 Authentication attempt 1/3 for consultant\n"
+                    },
+                    {
+                      "text": "🚪 Enhanced session cleanup for consultant\n"
+                    },
+                    {
+                      "text": "✅ Successfully navigated to sign-in page on attempt 1\n"
+                    },
+                    {
+                      "text": "✅ Sign-in form ready on attempt 1\n"
+                    },
+                    {
+                      "text": "📝 Filling credentials for consultant\n"
+                    },
+                    {
+                      "text": "✅ Credentials filled and verified for consultant\n"
+                    },
+                    {
+                      "text": "🔄 Form submitted for consultant, waiting for redirect...\n"
+                    },
+                    {
+                      "text": "✅ consultant authentication successful on attempt 1\n"
+                    },
+                    {
+                      "text": "💾 Saved consultant auth state to playwright/.auth/consultant.json\n"
+                    },
+                    {
+                      "text": "✅ Consultant authentication ready for testing\n"
+                    },
+                    {
+                      "text": "🎯 Consultant auth setup complete!\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2025-07-26T09:00:14.467Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "3b71f327f403d320e8ab-f2704e8f7638ed034556",
+          "file": "auth-setups/consultant.setup.ts",
+          "line": 20,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "roles/consultant-workflows.spec.ts",
+      "file": "roles/consultant-workflows.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Consultant Role - Operational Workflows",
+          "file": "roles/consultant-workflows.spec.ts",
+          "line": 11,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "Authentication & Access Verification",
+              "file": "roles/consultant-workflows.spec.ts",
+              "line": 14,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should be blocked from management and admin features",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 90000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "consultant-workflows",
+                      "projectName": "consultant-workflows",
+                      "results": [
+                        {
+                          "workerIndex": 1,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 7280,
+                          "error": {
+                            "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
+                            "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/nathanharris/Payroll/Payroll-ByteMy/e2e/roles/consultant-workflows.spec.ts:44:35",
+                            "location": {
+                              "file": "/Users/nathanharris/Payroll/Payroll-ByteMy/e2e/roles/consultant-workflows.spec.ts",
+                              "column": 35,
+                              "line": 44
+                            },
+                            "snippet": "  42 |         const isProperlyBlocked = currentUrl.includes('/dashboard') && !currentUrl.includes(pagePath);\n  43 |         \n> 44 |         expect(isProperlyBlocked).toBe(true);\n     |                                   ^\n  45 |         console.log(`✅ Consultant properly blocked from ${pagePath} → redirected to ${currentUrl}`);\n  46 |       }\n  47 |     });"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "/Users/nathanharris/Payroll/Payroll-ByteMy/e2e/roles/consultant-workflows.spec.ts",
+                                "column": 35,
+                                "line": 44
+                              },
+                              "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  42 |         const isProperlyBlocked = currentUrl.includes('/dashboard') && !currentUrl.includes(pagePath);\n  43 |         \n> 44 |         expect(isProperlyBlocked).toBe(true);\n     |                                   ^\n  45 |         console.log(`✅ Consultant properly blocked from ${pagePath} → redirected to ${currentUrl}`);\n  46 |       }\n  47 |     });\n    at /Users/nathanharris/Payroll/Payroll-ByteMy/e2e/roles/consultant-workflows.spec.ts:44:35"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-07-26T09:00:28.409Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "/Users/nathanharris/Payroll/Payroll-ByteMy/test-results/roles-consultant-workflows-61768-nagement-and-admin-features-consultant-workflows/test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "/Users/nathanharris/Payroll/Payroll-ByteMy/test-results/roles-consultant-workflows-61768-nagement-and-admin-features-consultant-workflows/video.webm"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "/Users/nathanharris/Payroll/Payroll-ByteMy/test-results/roles-consultant-workflows-61768-nagement-and-admin-features-consultant-workflows/error-context.md"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "/Users/nathanharris/Payroll/Payroll-ByteMy/e2e/roles/consultant-workflows.spec.ts",
+                            "column": 35,
+                            "line": 44
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "c7380e94eb4190417a45-2de3795c0d8803023157",
+                  "file": "roles/consultant-workflows.spec.ts",
+                  "line": 30,
+                  "column": 5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-07-26T09:00:13.285Z",
+    "duration": 22587.516,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

@@ -95,7 +95,7 @@ export function ClientsTable({
   clients,
   loading = false,
   onRefresh,
-  visibleColumns = COLUMN_DEFINITIONS.filter(col => col.defaultVisible).map(
+  visibleColumns = COLUMNDEFINITIONS.filter(col => col.defaultVisible).map(
     col => col.key
   ),
   sortField = "name",
@@ -103,7 +103,7 @@ export function ClientsTable({
   onSort,
 }: ClientsTableProps) {
   const renderSortableHeader = (label: string, field: string) => {
-    const column = COLUMN_DEFINITIONS.find(col => col.key === field);
+    const column = COLUMNDEFINITIONS.find(col => col.key === field);
     if (!column?.sortable || !onSort) {
       return label;
     }

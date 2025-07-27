@@ -165,7 +165,7 @@ export default function StaffDetailsPage() {
 
   // Get available roles for current user
   const getAvailableRoles = () => {
-    return ROLE_OPTIONS.filter(role => canChangeRole(role.value));
+    return ROLEOPTIONS.filter(role => canChangeRole(role.value));
   };
 
   // GraphQL queries with hierarchical permission guards

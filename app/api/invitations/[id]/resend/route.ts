@@ -17,6 +17,38 @@ const clerkClient = createClerkClient({
   secretKey: process.env.CLERK_SECRET_KEY!,
 });
 
+// Helper functions for role and permission management
+function getPermissionsForRole(role: string): string[] {
+  // This is a simplified implementation - ideally should use hierarchical system
+  const rolePermissions = {
+    developer: ["*"],
+    org_admin: ["staff.manage", "security.manage"],
+    manager: ["staff.update", "staff.read"],
+    consultant: ["staff.read"],
+    viewer: ["staff.read"]
+  };
+  
+  return rolePermissions[role as keyof typeof rolePermissions] || [];
+}
+
+function getAllowedRoles(role: string): string[] {
+  // Return allowed roles for each role level
+  const allowedRolesByRole = {
+    developer: ["developer", "org_admin", "manager", "consultant", "viewer"],
+    org_admin: ["org_admin", "manager", "consultant", "viewer"],
+    manager: ["manager", "consultant", "viewer"],
+    consultant: ["consultant", "viewer"],
+    viewer: ["viewer"]
+  };
+  
+  return allowedRolesByRole[role as keyof typeof allowedRolesByRole] || ["viewer"];
+}
+
+function hashPermissions(permissions: string[]): string {
+  // Simple hash of permissions for cache busting
+  return permissions.join(",").replace(/[^a-zA-Z0-9]/g, "").substring(0, 16);
+}
+
 interface ResendInvitationRequest {
   expiryDays?: number;
   message?: string;
@@ -120,11 +152,40 @@ export const POST = withAuthParams(async (req: NextRequest, { params }, session)
 
       let newClerkInvitation = null;
 
+      // Revoke old Clerk invitation FIRST if it exists
+      if (invitation.clerkInvitationId) {
+        try {
+          console.log(`🗑️ Revoking old Clerk invitation: ${invitation.clerkInvitationId}`);
+          await clerkClient.invitations.revokeInvitation(invitation.clerkInvitationId);
+          console.log(`✅ Old Clerk invitation revoked: ${invitation.clerkInvitationId}`);
+        } catch (revokeError: any) {
+          console.warn("Failed to revoke old Clerk invitation:", revokeError);
+          warnings.push("Old Clerk invitation could not be revoked automatically");
+          
+          // If revoke fails and it's not because the invitation doesn't exist, we should still try to create new one
+          if (!revokeError.message?.includes("not found") && !revokeError.message?.includes("does not exist")) {
+            console.error("❌ Critical: Could not revoke existing invitation, aborting resend");
+            return NextResponse.json<ResendInvitationResponse>(
+              { 
+                success: false, 
+                error: `Cannot create new invitation while old one exists: ${revokeError.message}`,
+                warnings
+              },
+              { status: 400 }
+            );
+          }
+        }
+      }
+
       // Create new Clerk invitation
       try {
         console.log(`📧 Creating new Clerk invitation for ${invitation.email}`);
 
         const roleToUse = updateRole || invitation.invitedRole;
+
+        const userPermissions = getPermissionsForRole(roleToUse);
+        const allowedRoles = getAllowedRoles(roleToUse);
+        const permissionHash = hashPermissions(userPermissions);
 
         newClerkInvitation = await clerkClient.invitations.createInvitation({
           emailAddress: invitation.email,
@@ -133,8 +194,10 @@ export const POST = withAuthParams(async (req: NextRequest, { params }, session)
             role: roleToUse,
             firstName: invitation.firstName,
             lastName: invitation.lastName,
-            permissions: getPermissionsForRole(roleToUse as any),
-            allowedRoles: getAllowedRoles(roleToUse as any),
+            permissions: userPermissions,
+            permissionHash: permissionHash,
+            permissionVersion: "1.0",
+            allowedRoles: allowedRoles,
             resendOfInvitation: invitation.id,
             originalInvitationDate: invitation.createdAt,
             ...(invitation.managerId && { managerId: invitation.managerId }),
@@ -143,25 +206,22 @@ export const POST = withAuthParams(async (req: NextRequest, { params }, session)
         });
 
         console.log(`✅ New Clerk invitation created: ${newClerkInvitation.id}`);
-
-        // Revoke old Clerk invitation if it exists
-        if (invitation.clerkInvitationId) {
-          try {
-            await clerkClient.invitations.revokeInvitation(invitation.clerkInvitationId);
-            console.log(`🗑️ Revoked old Clerk invitation: ${invitation.clerkInvitationId}`);
-          } catch (revokeError) {
-            console.warn("Failed to revoke old Clerk invitation:", revokeError);
-            warnings.push("Old Clerk invitation could not be revoked automatically");
-          }
-        }
-
       } catch (clerkError: any) {
         console.error("Failed to create new Clerk invitation:", clerkError);
+        
+        // Provide detailed error information
+        const errorDetails = {
+          message: clerkError.message,
+          status: clerkError.status,
+          errors: clerkError.errors,
+          clerkTraceId: clerkError.clerkTraceId
+        };
+        console.error("Detailed Clerk error:", errorDetails);
         
         return NextResponse.json<ResendInvitationResponse>(
           { 
             success: false, 
-            error: `Failed to resend invitation via Clerk: ${clerkError.message}`,
+            error: `Failed to create new invitation: ${clerkError.message}`,
             warnings
           },
           { status: 500 }
