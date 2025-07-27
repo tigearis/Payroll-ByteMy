@@ -115,7 +115,7 @@ export class ComprehensiveTestDataManager {
             isStaff: true,
             username: userData.email.split('@')[0],
             image: null,
-            managerId: role === 'consultant' ? TESTUSERS.manager.id : null
+            managerId: role === 'consultant' ? TEST_USERS.manager.id : null
           }
         });
 
@@ -271,9 +271,9 @@ export class ComprehensiveTestDataManager {
         status: 'Active',
         employeeCount: 25,
         clientId: '550e8400-e29b-41d4-a716-446655440100', // Alpha client
-        primaryConsultantId: TESTUSERS.consultant.id,
+        primaryConsultantId: TEST_USERS.consultant.id,
         backupConsultantId: null,
-        managerId: TESTUSERS.manager.id,
+        managerId: TEST_USERS.manager.id,
         payrollCycleId: '550e8400-e29b-41d4-a716-446655440300' // Weekly
       },
       {
@@ -282,9 +282,9 @@ export class ComprehensiveTestDataManager {
         status: 'Active',
         employeeCount: 50,
         clientId: '550e8400-e29b-41d4-a716-446655440101', // Beta client
-        primaryConsultantId: TESTUSERS.consultant.id,
+        primaryConsultantId: TEST_USERS.consultant.id,
         backupConsultantId: null,
-        managerId: TESTUSERS.manager.id,
+        managerId: TEST_USERS.manager.id,
         payrollCycleId: '550e8400-e29b-41d4-a716-446655440301' // Fortnightly
       },
       {
@@ -293,9 +293,9 @@ export class ComprehensiveTestDataManager {
         status: 'Inactive',
         employeeCount: 15,
         clientId: '550e8400-e29b-41d4-a716-446655440102', // Gamma client (inactive)
-        primaryConsultantId: TESTUSERS.consultant.id,
+        primaryConsultantId: TEST_USERS.consultant.id,
         backupConsultantId: null,
-        managerId: TESTUSERS.manager.id,
+        managerId: TEST_USERS.manager.id,
         payrollCycleId: '550e8400-e29b-41d4-a716-446655440302' // Monthly
       }
     ];
@@ -472,7 +472,7 @@ export class ComprehensiveTestDataManager {
         id: '550e8400-e29b-41d4-a716-446655440700',
         title: 'Payroll Processing Note',
         content: 'This is a test note for payroll processing',
-        authorId: TESTUSERS.consultant.id,
+        authorId: TEST_USERS.consultant.id,
         entityType: 'payroll',
         entityId: '550e8400-e29b-41d4-a716-446655440200',
         isPrivate: false
@@ -481,7 +481,7 @@ export class ComprehensiveTestDataManager {
         id: '550e8400-e29b-41d4-a716-446655440701',
         title: 'Client Communication',
         content: 'Private note about client communication',
-        authorId: TESTUSERS.manager.id,
+        authorId: TEST_USERS.manager.id,
         entityType: 'client',
         entityId: '550e8400-e29b-41d4-a716-446655440100',
         isPrivate: true
@@ -509,7 +509,7 @@ export class ComprehensiveTestDataManager {
     const testLeave = [
       {
         id: '550e8400-e29b-41d4-a716-446655440800',
-        userId: TESTUSERS.consultant.id,
+        userId: TEST_USERS.consultant.id,
         leaveType: 'annual',
         startDate: new Date().toISOString().split('T')[0],
         endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -540,7 +540,7 @@ export class ComprehensiveTestDataManager {
     const auditEntries = [
       {
         id: '550e8400-e29b-41d4-a716-446655440900',
-        userId: TESTUSERS.consultant.id,
+        userId: TEST_USERS.consultant.id,
         action: 'READ',
         resourceType: 'payroll',
         resourceId: '550e8400-e29b-41d4-a716-446655440200',
@@ -576,7 +576,7 @@ export class ComprehensiveTestDataManager {
         content: 'Your payroll {{payroll_name}} has been completed successfully.',
         templateType: 'payroll_notification',
         isActive: true,
-        createdBy: TESTUSERS.manager.id
+        createdBy: TEST_USERS.manager.id
       }
     ];
 

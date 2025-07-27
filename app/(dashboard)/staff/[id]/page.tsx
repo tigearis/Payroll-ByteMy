@@ -165,7 +165,7 @@ export default function StaffDetailsPage() {
 
   // Get available roles for current user
   const getAvailableRoles = () => {
-    return ROLEOPTIONS.filter(role => canChangeRole(role.value));
+    return ROLE_OPTIONS.filter(role => canChangeRole(role.value));
   };
 
   // GraphQL queries with hierarchical permission guards
@@ -249,7 +249,7 @@ export default function StaffDetailsPage() {
       });
 
       // Handle role change separately if role was changed
-      if (editedUser.role && editedUser.role !== user.role) {
+      if (editedUser.role && editedUser.role !== user?.role) {
         await handleRoleChange(editedUser.role);
       }
     } catch (error) {

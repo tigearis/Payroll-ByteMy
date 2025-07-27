@@ -37,7 +37,7 @@ export const GET = withAuth(async (req, session) => {
     switch (action) {
       case 'defaults':
         return NextResponse.json({
-          positions: VALIDPOSITIONS.map(position => ({
+          positions: VALID_POSITIONS.map(position => ({
             position,
             defaultAdminPercentage: POSITION_ADMIN_DEFAULTS[position],
             description: getPositionDescription(position)
@@ -108,9 +108,9 @@ export const PUT = withAuth(async (req, session) => {
     }
 
     // Validate position
-    if (!VALIDPOSITIONS.includes(position as UserPosition)) {
+    if (!VALID_POSITIONS.includes(position as UserPosition)) {
       return NextResponse.json(
-        { error: `Invalid position. Must be one of: ${VALIDPOSITIONS.join(', ')}` },
+        { error: `Invalid position. Must be one of: ${VALID_POSITIONS.join(', ')}` },
         { status: 400 }
       );
     }
@@ -196,9 +196,9 @@ export const POST = withAuth(async (req, session) => {
       );
     }
 
-    if (position && !VALIDPOSITIONS.includes(position as UserPosition)) {
+    if (position && !VALID_POSITIONS.includes(position as UserPosition)) {
       return NextResponse.json(
-        { error: `Invalid position. Must be one of: ${VALIDPOSITIONS.join(', ')}` },
+        { error: `Invalid position. Must be one of: ${VALID_POSITIONS.join(', ')}` },
         { status: 400 }
       );
     }

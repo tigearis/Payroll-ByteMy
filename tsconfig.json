@@ -51,32 +51,55 @@
   },
   "include": [
     "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
     ".next/types/**/*.ts",
-    "app/**/*",
-    "components/**/*",
-    "lib/**/*",
-    "domains/**/*",
-    "hooks/**/*",
-    "types/**/*",
-    "shared/**/*",
-    "config/**/*",
-    "scripts/**/*",
-    "tests/**/*",
-    "database/**/*",
-    "eslint.config.js"
+    "eslint.config.js",
+    
+    // Core application files
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "components/**/*.ts", 
+    "components/**/*.tsx",
+    "lib/**/*.ts",
+    "lib/**/*.tsx",
+    "domains/**/*.ts",
+    "domains/**/*.tsx",
+    "hooks/**/*.ts",
+    "types/**/*.ts",
+    "shared/**/*.ts",
+    "config/**/*.ts",
+    
+    // Root level files
+    "middleware.ts",
+    "*.ts",
+    "*.tsx"
   ],
   "exclude": [
     "node_modules",
     "backups/**/*",
     "_backup_delete/**/*",
+    
+    // Build and configuration files
     "playwright.config.ts",
+    "playwright-minimal.config.ts",
     "jest.config.*",
+    "jest.*.config.*",
     "vitest.config.*",
+    ".next/**/*",
+    "vercel.json",
+    "postcss.config.mjs",
+    "tailwind.config.ts",
+    
+    // Test directories and files
     "e2e/**/*",
     "cypress/**/*",
     "__tests__/**/*",
+    "test-isolated/**/*",
+    "test-results/**/*",
+    "tests/**/*",
+    "coverage/**/*",
+    "playwright/**/*",
+    "playwright-report/**/*",
+    "jest-html-reporters-attach/**/*",
     "**/*.test.ts",
     "**/*.test.tsx",
     "**/*.test.js",
@@ -89,13 +112,73 @@
     "**/*.spec.mjs",
     "**/*.test.cjs",
     "**/*.spec.cjs",
-    "test-results/**/*",
-    "coverage/**/*",
+    
+    // Documentation and reports
     "*.md",
-    ".next/**/*",
+    "**/*.md",
+    "docs/**/*",
+    "Screenshots/**/*",
+    "APP_AUDIT/**/*",
+    "audit-reports/**/*",
+    
+    // Legacy and backup files
+    "hasura_v3/**/*",
+    "create-test-user-simple.js",
+    "demo-*.mjs",
+    "test-*.js",
+    "test-*.mjs",
+    "test-*.cjs",
+    "test-*.ts",
+    "validate-*.mjs",
+    "**/*-backup.*",
+    "**/*-old.*",
+    "**/*-legacy.*",
+    "**/*.backup",
+    "**/*.old",
+    
+    // Scripts directory (except type files)
+    "scripts/**/*.js",
+    "scripts/**/*.mjs",
+    "scripts/**/*.cjs",
+    "scripts/lint-fixes/**/*",
+    "scripts/tests/**/*",
+    
+    // Database and Hasura files
+    "database/**/*",
+    "hasura/**/*",
+    "schema.sql",
+    "*.sql",
+    "**/*.sql",
+    
+    // Development and build artifacts
+    "dev-startup.log",
+    "tsconfig.tsbuildinfo",
+    "audit-report.json",
+    "graphql-audit-report.json",
+    "graphql-test-report.html",
+    "pnpm-lock.yaml",
+    "work-schedule-implmentation.md",
+    
+    // IDE and system files
+    "*.code-workspace",
+    ".cursorrules",
+    ".github/**/*",
     "node_modules/@types/react-dom/**/*",
     "node_modules/next/dist/**/*",
-    ".cursorrules",
-    ".github/**/*"
+    
+    // Excel and binary files
+    "**/*.xlsm",
+    "**/*.xlsx",
+    "**/*.pdf",
+    "**/*.png",
+    "**/*.jpg",
+    "**/*.svg",
+    "**/*.webm",
+    
+    // Temporary and disabled files
+    "middleware-disabled.ts",
+    "**/*.temp",
+    "**/*.tmp",
+    "**/*.disabled"
   ]
 }

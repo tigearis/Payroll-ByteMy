@@ -237,7 +237,7 @@ async function seedTestData() {
       LEFT JOIN roles r ON ur.role_id = r.id
       WHERE u.email IN ($1, $2, $3, $4, $5)
       ORDER BY r.priority DESC;
-    `, TESTUSERS.map(u => u.email));
+    `, TEST_USERS.map(u => u.email));
 
     console.log('📋 Final test user verification:');
     finalUserRoleCheck.rows.forEach(user => {
@@ -251,7 +251,7 @@ async function seedTestData() {
       FROM users u
       LEFT JOIN userroles ur ON u.id = ur.user_id
       WHERE ur.user_id IS NULL AND u.email IN ($1, $2, $3, $4, $5);
-    `, TESTUSERS.map(u => u.email));
+    `, TEST_USERS.map(u => u.email));
 
     if (usersWithoutRoles.rows.length > 0) {
       console.log('\n❌ Users without role assignments:');
@@ -266,7 +266,7 @@ async function seedTestData() {
     console.log('\n📊 SEEDING SUMMARY:');
     console.log('==================');
     console.log(`✅ 5 roles verified in hierarchy`);
-    console.log(`✅ ${TESTUSERS.length} test users processed`);
+    console.log(`✅ ${TEST_USERS.length} test users processed`);
     console.log(`✅ Role assignments verified and cleaned`);
     console.log(`✅ Business test data verified`);
     console.log(`✅ Audit trail entries created`);

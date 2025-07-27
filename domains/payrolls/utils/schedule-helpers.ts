@@ -157,13 +157,13 @@ export const getCycleName = (payroll: any) => {
   const cycleEnum = payroll?.payrollCycle?.name;
   if (cycleEnum) {
     // Look up the display name in our constants
-    const cycle = PAYROLLCYCLES.find(c => c.id === cycleEnum);
+    const cycle = PAYROLL_CYCLES.find(c => c.id === cycleEnum);
     return cycle ? cycle.name : cycleEnum; // Return display name like 'Weekly' or fallback to enum
   }
 
   // Fallback to cycleId lookup if nested object not available
   if (payroll?.cycleId) {
-    const cycle = PAYROLLCYCLES.find(c => c.id === payroll.cycleId);
+    const cycle = PAYROLL_CYCLES.find(c => c.id === payroll.cycleId);
     return cycle ? cycle.name : `${payroll.cycleId} (Unknown)`;
   }
 

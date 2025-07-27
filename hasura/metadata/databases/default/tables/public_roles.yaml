@@ -49,19 +49,6 @@ insert_permissions:
       columns: '*'
     comment: Developer role has full insert access
 select_permissions:
-  - role: consultant
-    permission:
-      columns:
-        - created_at
-        - description
-        - display_name
-        - id
-        - is_system_role
-        - name
-        - priority
-        - updated_at
-      filter: {}
-    comment: Consultants can view available roles
   - role: developer
     permission:
       columns: '*'
@@ -96,19 +83,6 @@ select_permissions:
       filter: {}
       allow_aggregations: true
     comment: Org admins can view all roles
-  - role: viewer
-    permission:
-      columns:
-        - created_at
-        - description
-        - display_name
-        - id
-        - is_system_role
-        - name
-        - priority
-        - updated_at
-      filter: {}
-    comment: Viewers can see basic role information
 update_permissions:
   - role: developer
     permission:

@@ -252,7 +252,7 @@ export function SkillsEditModal({
   };
 
   const getProficiencyColor = (level: string) => {
-    const proficiency = PROFICIENCYLEVELS.find(p => p.value === level);
+    const proficiency = PROFICIENCY_LEVELS.find(p => p.value === level);
     return proficiency?.color || "bg-gray-100 text-gray-700";
   };
 
@@ -270,7 +270,7 @@ export function SkillsEditModal({
     return "Manage the skills required for this payroll";
   };
 
-  const availableSkillsToAdd = AVAILABLESKILLS.filter(
+  const availableSkillsToAdd = AVAILABLE_SKILLS.filter(
     skill => !skills.some(existing => existing.skillName === skill)
   );
 
@@ -339,7 +339,7 @@ export function SkillsEditModal({
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              {PROFICIENCYLEVELS.map(level => (
+                              {PROFICIENCY_LEVELS.map(level => (
                                 <SelectItem
                                   key={level.value}
                                   value={level.value}
@@ -414,7 +414,7 @@ export function SkillsEditModal({
                           <SelectValue placeholder="Select level..." />
                         </SelectTrigger>
                         <SelectContent>
-                          {PROFICIENCYLEVELS.map(level => (
+                          {PROFICIENCY_LEVELS.map(level => (
                             <SelectItem key={level.value} value={level.value}>
                               {level.label}
                             </SelectItem>

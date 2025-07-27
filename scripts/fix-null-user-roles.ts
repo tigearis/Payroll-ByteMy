@@ -1,4 +1,3 @@
-// fix-null-user-roles.ts
 #!/usr/bin/env node
 // fix-null-user-roles.ts
 import { config } from "dotenv";

@@ -78,10 +78,8 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { NotesListWithAdd } from "@/domains/notes/components/notes-list";
-import EnhancedCalendar, { PAYROLL_CYCLES, PAYROLL_DATE_TYPES, WEEKDAYS } from "@/domains/payrolls/components/enhanced-calendar";
 import { PayrollDatesView } from "@/domains/payrolls/components/payroll-dates-view";
 import { PayrollForm, PayrollFormData } from "@/domains/payrolls/components/payroll-form";
-import { PayrollVersionHistory } from "@/domains/payrolls/components/payroll-version-history";
 
 // Lazy load heavy billing components
 const PayrollBillingInterface = dynamic(
@@ -106,28 +104,14 @@ import {
   GetPayrollsDocument,
   UpdatePayrollDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
-import {
-  GetPayrollWithBillingDataDocument,
-  GetBillingItemsByPayrollDocument,
-  GetTimeEntriesByPayrollDocument,
-} from "@/domains/billing/graphql/generated/graphql";
+// Billing documents imported on-demand
 
 // Import additional documents separately to avoid potential module resolution issues
 import { GetPayrollCyclesDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { GetPayrollDateTypesDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { GetLatestPayrollVersionDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { GeneratePayrollDatesDocument } from "@/domains/payrolls/graphql/generated/graphql";
-import {
-  getOrdinalSuffix,
-  calculateFortnightlyWeeks,
-  getWeekType,
-  getCycleName,
-  getDateTypeName,
-  getDateValueDisplay,
-  getEnhancedScheduleSummary,
-  getScheduleSummary,
-  getBusinessWeekday
-} from "@/domains/payrolls/utils/schedule-helpers";
+// Schedule helper utilities imported on-demand
 import { GetAllUsersListDocument } from "@/domains/users/graphql/generated/graphql";
 import {
   usePayrollVersioning,

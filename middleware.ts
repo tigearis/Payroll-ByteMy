@@ -12,6 +12,14 @@ import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { nanoid } from "nanoid"; // ← correlation-ID generator
 
+// ── TYPES ─────────────────────────────────────────────────────────────────
+interface HasuraClaims {
+  'x-hasura-default-role'?: string;
+  'x-hasura-allowed-roles'?: string[];
+  'x-hasura-user-id'?: string;
+  [key: string]: unknown;
+}
+
 // ── 1. ROUTE DEFINITIONS ──────────────────────────────────────────────
 const PUBLIC_ROUTES = ["/", "/sign-in", "/sign-up", "/accept-invitation"];
 const SYSTEM_ROUTES = ["/api/webhooks", "/api/cron"];
@@ -31,12 +39,12 @@ const BROWSER_SYSTEM_ROUTES = [
 // ── 2. HELPERS ────────────────────────────────────────────────────────
 const startsWith = (p: string, r: string) => p === r || p.startsWith(r + "/");
 
-const isPublicRoute = (p: string) => PUBLICROUTES.some(r => startsWith(p, r));
-const isSystemRoute = (p: string) => SYSTEMROUTES.some(r => p.startsWith(r));
+const isPublicRoute = (p: string) => PUBLIC_ROUTES.some(r => startsWith(p, r));
+const isSystemRoute = (p: string) => SYSTEM_ROUTES.some(r => p.startsWith(r));
 const isOAuthCallback = (p: string) =>
-  OAUTHCALLBACK_PREFIXES.some(r => startsWith(p, r));
+  OAUTH_CALLBACK_PREFIXES.some(r => startsWith(p, r));
 const isBrowserSystemRoute = (p: string) => 
-  BROWSERSYSTEM_ROUTES.some(r => p.startsWith(r));
+  BROWSER_SYSTEM_ROUTES.some(r => p.startsWith(r));
 const isStaticAsset = (p: string) =>
   p.match(/\.(svg|png|jpg|jpeg|gif|webp|ico|woff2?|ttf|css|js)$/);
 
@@ -79,7 +87,7 @@ export default clerkMiddleware(
 
       // 3.3 Enhanced JWT token extraction with cache prevention
       let userRole = 'viewer'; // Default fallback
-      let hasuraClaims: any = null;
+      let hasuraClaims: HasuraClaims | null = null;
       let tokenAge = 0;
 
       try {
@@ -105,7 +113,7 @@ export default clerkMiddleware(
             console.log(`🔍 JWT token age: ${tokenAge}s, fresh: ${isTokenFresh}`);
           }
         } catch (tokenError) {
-          console.warn(`⚠️ Token retrieval warning: ${tokenError.message}`);
+          console.warn(`⚠️ Token retrieval warning: ${(tokenError as Error).message}`);
         }
 
         if (token && isTokenFresh) {
@@ -172,7 +180,7 @@ export default clerkMiddleware(
               }
             }
           } catch (oldTokenError) {
-            console.warn(`⚠️ Could not extract role from old token: ${oldTokenError.message}`);
+            console.warn(`⚠️ Could not extract role from old token: ${(oldTokenError as Error).message}`);
             userRole = 'viewer';
           }
         } else {
@@ -181,7 +189,7 @@ export default clerkMiddleware(
         }
 
       } catch (jwtError) {
-        console.error(`❌ JWT processing error: ${jwtError.message}`);
+        console.error(`❌ JWT processing error: ${(jwtError as Error).message}`);
         userRole = 'viewer'; // Fail secure
       }
 
@@ -189,8 +197,8 @@ export default clerkMiddleware(
       console.log(`🔍 MIDDLEWARE: ${userRole} accessing ${pathname}`);
       
       // Define role-based route restrictions inline for Edge Runtime compatibility
-      const roleHierarchy = { developer: 5, org_admin: 4, manager: 3, consultant: 2, viewer: 1 };
-      const routePermissions = {
+      const roleHierarchy: Record<string, number> = { developer: 5, org_admin: 4, manager: 3, consultant: 2, viewer: 1 };
+      const routePermissions: Record<string, string> = {
         '/staff': 'manager',
         '/billing': 'manager', 
         '/reports': 'manager',
@@ -208,7 +216,7 @@ export default clerkMiddleware(
       };
       
       // Check if route requires specific role
-      const requiredRole = routePermissions[pathname];
+      const requiredRole = routePermissions[pathname] as string | undefined;
       if (requiredRole) {
         const userLevel = roleHierarchy[userRole] || 0;
         const requiredLevel = roleHierarchy[requiredRole] || 0;

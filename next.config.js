@@ -233,20 +233,92 @@ const nextConfig = {
   // Build optimization - exclude test files and dev tools
   outputFileTracingExcludes: {
     "*": [
+      // Test directories and files
       "./e2e/**/*",
       "./tests/**/*",
       "./**/*.test.*",
       "./**/*.spec.*",
       "./cypress/**/*",
       "./playwright.config.*",
+      "./playwright-minimal.config.*",
       "./jest.config.*",
-      "./.git/**/*",
-      "./node_modules/@types/**/*",
+      "./jest.*.config.*",
+      "./__tests__/**/*",
+      "./test-isolated/**/*",
+      "./test-results/**/*",
+      "./playwright/**/*",
+      "./playwright-report/**/*",
+      "./jest-html-reporters-attach/**/*",
       "./coverage/**/*",
       "./.storybook/**/*",
       "./stories/**/*",
+      
+      // Documentation and reports
+      "./docs/**/*",
+      "./Screenshots/**/*",
+      "./APP_AUDIT/**/*",
+      "./audit-reports/**/*",
+      "./**/*.md",
+      
+      // Legacy and backup files
       "./backups/**/*",
       "./_backup_delete/**/*",
+      "./hasura_v3/**/*",
+      "./create-test-user-simple.js",
+      "./demo-*.mjs",
+      "./test-*.js",
+      "./test-*.mjs",
+      "./test-*.cjs",
+      "./test-*.ts",
+      "./validate-*.mjs",
+      "./**/*-backup.*",
+      "./**/*-old.*",
+      "./**/*-legacy.*",
+      "./**/*.backup",
+      "./**/*.old",
+      
+      // Scripts (most not needed in production)
+      "./scripts/**/*.js",
+      "./scripts/**/*.mjs", 
+      "./scripts/**/*.cjs",
+      "./scripts/lint-fixes/**/*",
+      "./scripts/tests/**/*",
+      
+      // Database and Hasura files
+      "./database/**/*",
+      "./hasura/**/*",
+      "./schema.sql",
+      "./**/*.sql",
+      
+      // Development artifacts
+      "./dev-startup.log",
+      "./tsconfig.tsbuildinfo",
+      "./audit-report.json",
+      "./graphql-audit-report.json",
+      "./graphql-test-report.html",
+      "./pnpm-lock.yaml",
+      "./work-schedule-implmentation.md",
+      
+      // IDE and system files
+      "./.git/**/*",
+      "./node_modules/@types/**/*",
+      "./*.code-workspace",
+      "./.cursorrules",
+      "./.github/**/*",
+      
+      // Binary and media files
+      "./**/*.xlsm",
+      "./**/*.xlsx", 
+      "./**/*.pdf",
+      "./**/*.png",
+      "./**/*.jpg",
+      "./**/*.webm",
+      
+      // Temporary files
+      "./middleware-disabled.ts",
+      "./**/*.temp",
+      "./**/*.tmp",
+      "./**/*.disabled"
     ],
   },
 

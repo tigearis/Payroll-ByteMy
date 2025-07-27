@@ -398,16 +398,3 @@ export function addSecurityHeaders(response: NextResponse): NextResponse {
 // Export all validation middleware
 // ============================================================================
 
-export {
-  withValidation,
-  withBodyValidation,
-  withQueryValidation, 
-  withParamsValidation,
-  validateFileUpload,
-  validateCSVContent,
-  createValidationErrorResponse,
-  createSuccessResponse,
-  createErrorResponse,
-  getClientIdentifier,
-  addSecurityHeaders
-};

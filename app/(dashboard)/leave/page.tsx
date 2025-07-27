@@ -18,14 +18,11 @@ import {
   MoreHorizontal,
   X,
   ChevronDown,
-  User,
-  Users,
-  CalendarDays,
   FileText,
 } from "lucide-react";
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
-import { PermissionGuard } from "@/components/auth/permission-guard";
+// PermissionGuard imported on-demand
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -50,16 +47,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+// Select components imported on-demand
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useDynamicLoading } from "@/lib/hooks/use-dynamic-loading";
-import { getRoleDisplayName, getPositionDisplayName, getRoleAndPositionDisplay, getRoleColor } from "@/lib/utils/role-utils";
+import { getRoleAndPositionDisplay, getRoleColor } from "@/lib/utils/role-utils";
 
 // Create loading component for leave
 function LeaveLoading() {

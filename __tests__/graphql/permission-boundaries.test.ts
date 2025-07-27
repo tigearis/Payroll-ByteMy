@@ -351,7 +351,7 @@ describe('GraphQL Permission Boundary Testing', () => {
         // Test with consultant role - should have limited access
         const result = await testClient.executeAsRole(
           this.extractSimpleQuery(operation) || '',
-          { userId: TESTUSERS.consultant.id },
+          { userId: TEST_USERS.consultant.id },
           'consultant'
         );
         
@@ -439,7 +439,7 @@ describe('GraphQL Permission Boundary Testing', () => {
           object: {
             title: 'Permission Test Note',
             content: 'Test note for permission testing',
-            authorId: TESTUSERS.consultant.id,
+            authorId: TEST_USERS.consultant.id,
             entityType: 'test',
             entityId: '550e8400-e29b-41d4-a716-446655440000'
           }

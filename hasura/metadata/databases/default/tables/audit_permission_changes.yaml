@@ -33,15 +33,11 @@ configuration:
     target_user_id: targetUserId
   custom_name: permissionChanges
   custom_root_fields:
-    delete: bulkDeletePermissionChanges
-    delete_by_pk: deletePermissionChangeById
     insert: bulkInsertPermissionChanges
     insert_one: insertPermissionChange
     select: permissionChanges
     select_aggregate: permissionChangesAggregate
     select_by_pk: permissionChangeById
-    update: bulkUpdatePermissionChanges
-    update_by_pk: updatePermissionChangeById
 insert_permissions:
   - role: developer
     permission:
@@ -85,17 +81,5 @@ select_permissions:
         changed_by_user_id:
           _eq: X-Hasura-User-Id
       allow_aggregations: true
-update_permissions:
-  - role: developer
-    permission:
-      columns: '*'
-      filter: {}
-      check: {}
-    comment: Developer role has full update access
-delete_permissions:
-  - role: developer
-    permission:
-      filter: {}
-    comment: Developer role has full delete access
 apollo_federation_config:
   enable: v1

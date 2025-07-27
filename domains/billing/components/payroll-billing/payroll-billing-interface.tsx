@@ -16,7 +16,8 @@ import { Textarea } from '@/components/ui/textarea';
 import {
   GetPayrollForBillingDocument,
   GetClientServicesWithRatesDocument,
-  GeneratePayrollBillingDocument,
+  CreatePayrollBillingDocument,
+  CreateTimeEntryDocument,
   type PayrollBillingFragmentFragment
 } from '../../../billing/graphql/generated/graphql';
 import { TimeEntryModal } from '../time-tracking/time-entry-modal';
@@ -64,17 +65,12 @@ export const PayrollBillingInterface: React.FC<PayrollBillingInterfaceProps> = (
     }
   );
 
-  // For now, comment out the mutation until the new one is generated
-  // const [generatePayrollBilling] = useMutation(GeneratePayrollBillingDocument);
-  
-  // Temporary placeholder function
-  const generatePayrollBilling = async () => {
-    console.warn("generatePayrollBilling mutation not yet implemented");
-    throw new Error("Billing functionality is still being configured");
-  };
+  // Use the working CreatePayrollBilling mutation
+  const [createPayrollBilling] = useMutation(CreatePayrollBillingDocument);
+  const [createTimeEntry] = useMutation(CreateTimeEntryDocument);
 
   const payroll = payrollData?.payrollById;
-  const clientServices = servicesData?.client_services_with_rates || [];
+  const clientServices = servicesData?.clientBillingAssignments || [];
 
   // Calculate auto-quantities based on payroll data and service type
   const calculateAutoQuantity = (billingUnit: string, payrollData: any): number => {
@@ -103,13 +99,15 @@ export const PayrollBillingInterface: React.FC<PayrollBillingInterfaceProps> = (
   useEffect(() => {
     if (payroll && clientServices.length > 0) {
       const selections = clientServices.map(service => {
-        const autoQuantity = calculateAutoQuantity(service.billing_unit, payroll);
+        const billingPlan = service.assignedBillingPlan;
+        const effectiveRate = service.customRate || billingPlan.standardRate;
+        const autoQuantity = calculateAutoQuantity(billingPlan.billingUnit, payroll);
         return {
-          service_id: service.service_id,
-          service_name: service.service_name,
-          billing_unit: service.billing_unit,
-          standard_rate: service.standard_rate,
-          effective_rate: service.effective_rate,
+          service_id: service.billingPlanId,
+          service_name: billingPlan.name,
+          billing_unit: billingPlan.billingUnit,
+          standard_rate: billingPlan.standardRate,
+          effective_rate: effectiveRate,
           auto_quantity: autoQuantity,
           quantity: autoQuantity,
           notes: '',
@@ -166,34 +164,63 @@ export const PayrollBillingInterface: React.FC<PayrollBillingInterfaceProps> = (
 
     try {
       const billingItems = selectedServices.map(selection => ({
-        payroll_id: payrollId,
-        service_id: selection.service_id,
+        payrollId: payrollId,
+        clientId: payroll.clientId,
+        billingPlanId: selection.service_id,
         description: selection.service_name,
         quantity: selection.quantity,
-        unit_price: selection.effective_rate,
-        notes: selection.notes || undefined,
-        staff_user_id: payroll.primaryConsultantUserId || undefined,
-        status: 'draft'
+        unitPrice: selection.effective_rate,
+        amount: selection.quantity * selection.effective_rate,
+        serviceName: selection.service_name,
+        hourlyRate: selection.effective_rate,
+        staffUserId: payroll.primaryConsultantUserId || undefined,
+        status: 'draft',
+        isApproved: false,
+        notes: selection.notes || undefined
       }));
 
-      const timeEntriesToCreate = timeEntries.map(entry => ({
-        staff_user_id: entry.staff_user_id,
-        client_id: payroll.clientId,
-        payroll_id: payrollId,
-        work_date: entry.work_date,
-        hours_spent: entry.hours_spent,
-        description: entry.description
-      }));
-
-      await generatePayrollBilling({
+      const result = await createPayrollBilling({
         variables: {
           payrollId,
-          serviceSelections: billingItems,
-          timeEntries: timeEntriesToCreate
+          billingItems
         }
       });
 
-      toast.success('Billing items created successfully');
+      const createdBillingItems = result.data?.billingItems?.returning || [];
+      let timeEntriesCreated = 0;
+
+      // Create time entries if any exist and link them to the first billing item
+      if (timeEntries.length > 0 && createdBillingItems.length > 0) {
+        const primaryBillingItem = createdBillingItems[0];
+        
+        for (const timeEntry of timeEntries) {
+          try {
+            await createTimeEntry({
+              variables: {
+                input: {
+                  staffUserId: payroll.primaryConsultantUserId,
+                  clientId: payroll.clientId,
+                  payrollId: payrollId,
+                  billingItemId: primaryBillingItem.id,
+                  workDate: timeEntry.work_date,
+                  hoursSpent: timeEntry.hours_spent,
+                  description: timeEntry.description
+                }
+              }
+            });
+            timeEntriesCreated++;
+          } catch (timeEntryError) {
+            console.error('Failed to create time entry:', timeEntryError);
+            // Continue with other time entries even if one fails
+          }
+        }
+      }
+
+      const successMessage = timeEntriesCreated > 0 
+        ? `Created ${result.data?.billingItems?.affectedRows} billing items and ${timeEntriesCreated} time entries successfully`
+        : `Created ${result.data?.billingItems?.affectedRows} billing items successfully`;
+      
+      toast.success(successMessage);
       onBillingCompleted?.();
     } catch (error) {
       toast.error('Failed to create billing items');
@@ -456,7 +483,7 @@ export const PayrollBillingInterface: React.FC<PayrollBillingInterfaceProps> = (
       {showTimeModal && (
         <TimeEntryModal
           payrollId={payrollId}
-          clientId={payroll.client_id}
+          clientId={payroll.clientId}
           onClose={() => setShowTimeModal(false)}
           onTimeEntriesUpdate={(entries, total) => {
             setTimeEntries(entries);

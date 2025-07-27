@@ -85,9 +85,11 @@ export const ProfitabilityDashboard: React.FC<ProfitabilityDashboardProps> = ({
     GetPayrollProfitabilityDocument,
     {
       variables: {
-        payrollId: undefined // Get all payrolls or filter by client
+        startDate: dateRange?.start ? new Date(dateRange.start).toISOString() : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(), // Last 30 days
+        endDate: dateRange?.end ? new Date(dateRange.end).toISOString() : new Date().toISOString()
       },
-      errorPolicy: 'all' // Don't crash on GraphQL errors
+      errorPolicy: 'all', // Don't crash on GraphQL errors
+      skip: !dateRange // Skip query if no date range provided
     }
   );
 
@@ -96,14 +98,16 @@ export const ProfitabilityDashboard: React.FC<ProfitabilityDashboardProps> = ({
     GetStaffBillingPerformanceDocument,
     {
       variables: {
-        staffId,
-        dateFrom: dateRange?.start,
-        dateTo: dateRange?.end
-      }
+        staffId: staffId || null, // Ensure staffId is not undefined
+        dateFrom: dateRange?.start || null,
+        dateTo: dateRange?.end || null
+      },
+      errorPolicy: 'all', // Don't crash on GraphQL errors
+      skip: !staffId // Skip query if no staffId provided
     }
   );
 
-  const payrolls = payrollData?.payroll_profitability || [];
+  const payrolls = payrollData?.payrolls || [];
   const staffPerformance = staffData?.staff_billing_performance || [];
 
   // Calculate aggregate metrics

@@ -123,7 +123,7 @@ class CaseConventionValidator {
       return;
     }
 
-    if (!FILENAMING_PATTERNS.DIRECTORIES.test(dirName)) {
+    if (!FILE_NAMING_PATTERNS.DIRECTORIES.test(dirName)) {
       this.errors.push({
         type: "directory",
         path: fullPath,
@@ -241,7 +241,7 @@ class CaseConventionValidator {
       case ".css":
       case ".scss":
       case ".less":
-        if (!FILENAMING_PATTERNS.DIRECTORIES.test(baseName)) {
+        if (!FILE_NAMING_PATTERNS.DIRECTORIES.test(baseName)) {
           this.errors.push({
             type: "file",
             path: fullPath,

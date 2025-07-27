@@ -490,14 +490,14 @@ async function testOperationWithRole(
 
 async function runComprehensiveRoleTests(): Promise<void> {
   console.log('🧪 Starting comprehensive Hasura role testing...\n');
-  console.log(`Testing ${ALLOPERATIONS.length} operations across ${USERROLES.length} roles\n`);
+  console.log(`Testing ${ALL_OPERATIONS.length} operations across ${USER_ROLES.length} roles\n`);
   
   const allResults: TestResult[] = [];
   let totalTests = 0;
   let completedTests = 0;
   
   // Calculate total tests
-  totalTests = ALLOPERATIONS.length * USERROLES.length;
+  totalTests = ALL_OPERATIONS.length * USER_ROLES.length;
   
   for (const operation of ALL_OPERATIONS) {
     console.log(`\n📋 Testing: ${operation.name} (${operation.type}) - ${operation.domain} domain`);

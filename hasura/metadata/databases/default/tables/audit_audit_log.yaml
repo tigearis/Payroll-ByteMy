@@ -45,15 +45,11 @@ configuration:
     user_role: userRole
   custom_name: auditLogs
   custom_root_fields:
-    delete: bulkDeleteAuditLogs
-    delete_by_pk: deleteAuditLogById
     insert: bulkInsertAuditLogs
     insert_one: insertAuditLog
     select: auditLogs
     select_aggregate: auditLogsAggregate
     select_by_pk: auditLogById
-    update: bulkUpdateAuditLogs
-    update_by_pk: updateAuditLogById
 insert_permissions:
   - role: system
     permission:
@@ -158,17 +154,5 @@ select_permissions:
           _eq: X-Hasura-User-Id
       allow_aggregations: true
     comment: Viewers can see basic audit info for their own actions
-update_permissions:
-  - role: developer
-    permission:
-      columns: '*'
-      filter: {}
-      check: {}
-    comment: Developer role has full update access
-delete_permissions:
-  - role: developer
-    permission:
-      filter: {}
-    comment: Developer role has full delete access
 apollo_federation_config:
   enable: v1

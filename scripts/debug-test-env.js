@@ -45,5 +45,5 @@ const TEST_USERS = {
   },
 };
 
-console.log('Developer:', TESTUSERS.developer.email, '-> Password ending:', TESTUSERS.developer.password.slice(-4));
-console.log('Org Admin:', TESTUSERS.orgadmin.email, '-> Password ending:', TESTUSERS.orgadmin.password.slice(-4));
+console.log('Developer:', TEST_USERS.developer.email, '-> Password ending:', TEST_USERS.developer.password.slice(-4));
+console.log('Org Admin:', TEST_USERS.orgadmin.email, '-> Password ending:', TEST_USERS.orgadmin.password.slice(-4));
