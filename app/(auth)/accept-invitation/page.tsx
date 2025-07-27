@@ -22,7 +22,7 @@ function AcceptInvitationContent() {
   const router = useRouter();
   const { user, isLoaded: userLoaded } = useUser();
   
-  const ticket = searchParams.get("ticket");
+  const ticket = searchParams.get("__clerk_ticket");
   const [status, setStatus] = useState<InvitationStatus>("loading");
   const [error, setError] = useState<string | null>(null);
   const [_invitation, setInvitation] = useState<unknown>(null);

@@ -22,6 +22,38 @@ const clerkClient = createClerkClient({
   secretKey: process.env.CLERK_SECRET_KEY!,
 });
 
+// Helper functions for role and permission management
+function getPermissionsForRole(role: string): string[] {
+  // This is a simplified implementation - ideally should use hierarchical system
+  const rolePermissions = {
+    developer: ["*"],
+    org_admin: ["staff.manage", "security.manage"],
+    manager: ["staff.update", "staff.read"],
+    consultant: ["staff.read"],
+    viewer: ["staff.read"]
+  };
+  
+  return rolePermissions[role as keyof typeof rolePermissions] || [];
+}
+
+function getAllowedRoles(role: string): string[] {
+  // Return allowed roles for each role level
+  const allowedRolesByRole = {
+    developer: ["developer", "org_admin", "manager", "consultant", "viewer"],
+    org_admin: ["org_admin", "manager", "consultant", "viewer"],
+    manager: ["manager", "consultant", "viewer"],
+    consultant: ["consultant", "viewer"],
+    viewer: ["viewer"]
+  };
+  
+  return allowedRolesByRole[role as keyof typeof allowedRolesByRole] || ["viewer"];
+}
+
+function hashPermissions(permissions: string[]): string {
+  // Simple hash of permissions for cache busting
+  return permissions.join(",").replace(/[^a-zA-Z0-9]/g, "").substring(0, 16);
+}
+
 interface CreateInvitationRequest {
   email: string;
   firstName: string;

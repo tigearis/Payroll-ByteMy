@@ -1,0 +1,260 @@
+{
+  "soc2Compliance": {
+    "audit_logging_completeness": {
+      "category": "Security",
+      "description": "Verify comprehensive audit logging is implemented",
+      "compliant": false,
+      "details": {
+        "totalAuditLogs": 467,
+        "hasRequiredFields": false,
+        "sampleLog": {
+          "id": "a2ff385f-d874-4747-8a41-5555c377c5d5",
+          "action": "AUDIT_TEST",
+          "resourceType": "system",
+          "resourceId": "test-audit-123",
+          "userId": "7898704c-ee5c-4ade-81f3-80a4388413fb",
+          "ipAddress": null,
+          "userAgent": null,
+          "createdAt": "2025-07-27T01:01:45.909977+00:00",
+          "metadata": null
+        }
+      }
+    },
+    "user_access_controls": {
+      "category": "Security",
+      "description": "Verify proper user access controls and role management",
+      "compliant": false,
+      "error": "GraphQL error: field 'active' not found in type: 'users'"
+    },
+    "data_processing_integrity": {
+      "category": "Processing Integrity",
+      "description": "Verify data processing controls and integrity checks",
+      "compliant": false,
+      "error": "GraphQL error: field 'hoursWorked' not found in type: 'timeEntries'"
+    },
+    "availability_controls": {
+      "category": "Availability",
+      "description": "Verify system availability and backup procedures",
+      "compliant": true,
+      "details": {
+        "responseTime": 59,
+        "isResponsive": true,
+        "hasData": true,
+        "aggregates": {
+          "usersAggregate": {
+            "aggregate": {
+              "count": 7
+            }
+          },
+          "clientsAggregate": {
+            "aggregate": {
+              "count": 11
+            }
+          },
+          "payrollsAggregate": {
+            "aggregate": {
+              "count": 23
+            }
+          }
+        }
+      }
+    },
+    "confidentiality_controls": {
+      "category": "Confidentiality",
+      "description": "Verify data confidentiality and access restrictions",
+      "compliant": "user_2yXhEiNJEhLR25QDFnqD4dzpkkL",
+      "details": {
+        "viewerHasLimitedAccess": true,
+        "adminHasFullAccess": "user_2yXhEiNJEhLR25QDFnqD4dzpkkL",
+        "viewerFields": [
+          "id",
+          "name",
+          "email",
+          "role"
+        ],
+        "adminFields": [
+          "id",
+          "name",
+          "email",
+          "role",
+          "clerkUserId",
+          "managerId"
+        ]
+      }
+    }
+  },
+  "dataEncryption": {
+    "database_connection_encryption": {
+      "description": "Verify database connections use TLS encryption",
+      "compliant": true,
+      "details": {
+        "hasuraUrl": "https://hasura.bytemy.com.au/v1/***",
+        "usesHttps": true,
+        "protocol": "HTTPS/TLS"
+      }
+    },
+    "api_endpoint_encryption": {
+      "description": "Verify API endpoints use HTTPS",
+      "compliant": false,
+      "details": {
+        "baseUrl": "http://localhost:3000",
+        "usesHttps": false,
+        "protocol": "HTTP (Insecure)"
+      }
+    },
+    "environment_variable_security": {
+      "description": "Verify sensitive configuration is properly secured",
+      "compliant": true,
+      "details": {
+        "totalSensitiveVars": 3,
+        "secureVars": 3,
+        "allVarsSecure": true,
+        "missingVars": []
+      }
+    }
+  },
+  "auditTrails": {
+    "comprehensive_audit_coverage": {
+      "description": "Verify all critical operations are audited",
+      "compliant": false,
+      "details": {
+        "totalLogs": 100,
+        "hasActionCoverage": false,
+        "hasResourceCoverage": false,
+        "hasUserTracking": false,
+        "hasIpTracking": false,
+        "actionTypes": [
+          "AUDIT_TEST",
+          "invitation_status_change",
+          "MIGRATION",
+          "UPDATE",
+          "INSERT"
+        ],
+        "resourceTypes": [
+          "system",
+          "user_invitation",
+          "users",
+          "user_roles",
+          "role_permissions"
+        ]
+      }
+    },
+    "audit_log_integrity": {
+      "description": "Verify audit logs cannot be modified and have proper retention",
+      "compliant": false,
+      "error": "GraphQL error: field 'updatedAt' not found in type: 'auditLogs'"
+    },
+    "audit_search_capabilities": {
+      "description": "Verify audit logs can be searched and filtered effectively",
+      "compliant": false,
+      "details": {
+        "userSearchWorks": false,
+        "actionSearchWorks": false,
+        "userSearchResults": 0,
+        "actionSearchResults": 0
+      }
+    }
+  },
+  "dataRetention": {
+    "user_data_lifecycle": {
+      "description": "Verify user data has proper lifecycle management",
+      "compliant": false,
+      "error": "GraphQL error: field 'active' not found in type: 'users'"
+    },
+    "audit_log_retention": {
+      "description": "Verify audit logs have appropriate retention periods",
+      "compliant": false,
+      "error": "GraphQL error: inconsistent arguments between multiple selections of field 'auditLogs'"
+    }
+  },
+  "privacyCompliance": {
+    "data_minimization": {
+      "description": "Verify only necessary personal data is collected",
+      "compliant": true,
+      "details": {
+        "totalUsers": 5,
+        "hasEssentialFields": true,
+        "userFields": [
+          "id",
+          "name",
+          "email",
+          "role",
+          "isStaff",
+          "createdAt"
+        ]
+      }
+    },
+    "access_transparency": {
+      "description": "Verify users can access their personal data",
+      "compliant": false,
+      "error": "GraphQL error: missing session variable: \"x-hasura-user-id\""
+    }
+  },
+  "gdprCompliance": {},
+  "securityMonitoring": {},
+  "backupRecovery": {},
+  "summary": {
+    "totalChecks": 15,
+    "passedChecks": 5,
+    "failedChecks": 10,
+    "complianceScore": 0,
+    "criticalFindings": [
+      {
+        "type": "soc2_compliance",
+        "category": "Security",
+        "test": "audit_logging_completeness",
+        "description": "Verify comprehensive audit logging is implemented"
+      },
+      {
+        "type": "soc2_compliance",
+        "category": "Security",
+        "test": "user_access_controls",
+        "description": "Verify proper user access controls and role management"
+      },
+      {
+        "type": "soc2_compliance",
+        "category": "Processing Integrity",
+        "test": "data_processing_integrity",
+        "description": "Verify data processing controls and integrity checks"
+      },
+      {
+        "type": "data_encryption",
+        "test": "api_endpoint_encryption",
+        "description": "Verify API endpoints use HTTPS"
+      },
+      {
+        "type": "audit_trail",
+        "test": "comprehensive_audit_coverage",
+        "description": "Verify all critical operations are audited"
+      },
+      {
+        "type": "audit_trail",
+        "test": "audit_log_integrity",
+        "description": "Verify audit logs cannot be modified and have proper retention"
+      },
+      {
+        "type": "audit_trail",
+        "test": "audit_search_capabilities",
+        "description": "Verify audit logs can be searched and filtered effectively"
+      }
+    ],
+    "complianceIssues": [
+      {
+        "type": "data_retention",
+        "test": "user_data_lifecycle",
+        "description": "Verify user data has proper lifecycle management"
+      },
+      {
+        "type": "data_retention",
+        "test": "audit_log_retention",
+        "description": "Verify audit logs have appropriate retention periods"
+      },
+      {
+        "type": "privacy_compliance",
+        "test": "access_transparency",
+        "description": "Verify users can access their personal data"
+      }
+    ],
+    "recommendations": []
+  }
+}

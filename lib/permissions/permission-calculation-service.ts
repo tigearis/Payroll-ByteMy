@@ -472,7 +472,7 @@ export class PermissionCalculationService {
 
     if (result.data?.delete_permission_overrides_by_pk) {
       // Clear cache for the affected user
-      const userId = result.data.deletepermissionoverrides_by_pk.user_id;
+      const userId = result.data.deletepermissionoverridesby_pk.user_id;
       this.clearUserCache(userId);
       return true;
     }

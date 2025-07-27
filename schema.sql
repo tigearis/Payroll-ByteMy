@@ -803,7 +803,7 @@ BEGIN
             jsonb_build_object('status', NEW.invitation_status),
             audit_data,
             NOW(),
-            'system',
+            '127.0.0.1'::inet,
             'database_trigger'
         );
     END IF;
@@ -859,15 +859,15 @@ BEGIN
             user_agent
         ) VALUES (
             COALESCE(changed_by_user_id, NEW.id),
-            user_status_change,
-            user,
+            'user_status_change',
+            'user',
             NEW.id::text,
-            jsonb_build_object(status, OLD.status),
-            jsonb_build_object(status, NEW.status),
+            jsonb_build_object('status', OLD.status),
+            jsonb_build_object('status', NEW.status),
             audit_data,
             NOW(),
-            system,
-            database_trigger
+            '127.0.0.1'::inet,
+            'database_trigger'
         );
     END IF;
     

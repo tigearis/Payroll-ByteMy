@@ -220,6 +220,13 @@ query GetInvitationByTicket($clerkTicket: String!) {
   }
 }
 
+# Get invitation by Clerk invitation ID (for acceptance flow)
+query GetInvitationByClerkId($clerkInvitationId: String!) {
+  userInvitations(where: { clerkInvitationId: { _eq: $clerkInvitationId } }, limit: 1) {
+    ...UserInvitationDetail
+  }
+}
+
 # Get invitation history for a user (admin view)
 query GetInvitationHistory($email: String!, $limit: Int = 10) {
   userInvitations(
@@ -742,7 +749,7 @@ fragment UserInvitationDetail on userInvitations {
   clerkTicket
   invitationMetadata
   invitedBy
-  status
+  invitationStatus
   expiresAt
   createdAt
   updatedAt

@@ -1,7 +1,7 @@
 // scripts/update-test-passwords.js
 // Script to update passwords for existing test users
 
-import { createClerkClient } from '@clerk/clerk-sdk-node';
+import { createClerkClient } from '@clerk/backend';
 import dotenv from 'dotenv';
 
 // Load test environment variables
@@ -11,37 +11,39 @@ const clerk = createClerkClient({
   secretKey: process.env.CLERK_SECRET_KEY
 });
 
+// Updated with secure passwords and correct email addresses from env files
 const passwordUpdates = [
   {
-    email: 'developer@test.payroll.com',
-    newPassword: 'DevSecure789!xyz',
+    email: 'admin@example.com',
+    newPassword: 'PayrollAdmin2024!@#$SecureKey89',
+    role: 'org_admin'
   },
   {
-    email: 'orgadmin@test.payroll.com',
-    newPassword: 'OrgAdmin789!xyz',
+    email: 'manager@example.com',
+    newPassword: 'PayrollMgr2024!@#$SecureKey90',
+    role: 'manager'
   },
   {
-    email: 'manager@test.payroll.com',
-    newPassword: 'Manager789!xyz',
+    email: 'developer@example.com',
+    newPassword: 'PayrollDev2024!@#$SecureKey91',
+    role: 'developer'
   },
   {
-    email: 'consultant@test.payroll.com',
-    newPassword: 'Consultant789!xyz',
+    email: 'consultant@example.com',
+    newPassword: 'PayrollCon2024!@#$SecureKey92',
+    role: 'consultant'
   },
   {
-    email: 'viewer@test.payroll.com',
-    newPassword: 'Viewer789!xyz',
-  },
-  {
-    email: 'test@payroll.com',
-    newPassword: 'General789!xyz',
+    email: 'viewer@example.com',
+    newPassword: 'PayrollView2024!@#$SecureKey93',
+    role: 'viewer'
   },
 ];
 
 async function updateUserPasswords() {
   console.log('🔐 Updating test user passwords...');
   
-  if (!process.env.CLERK_SECRET_KEY || !process.env.CLERKSECRETKEY.startsWith('sk_test_')) {
+  if (!process.env.CLERK_SECRET_KEY || !process.env.CLERKSECRET_KEY.startsWith('sk_test_')) {
     console.error('❌ Error: CLERK_SECRET_KEY must be a test environment key (starts with sk_test_)');
     process.exit(1);
   }
@@ -51,7 +53,7 @@ async function updateUserPasswords() {
 
   for (const update of passwordUpdates) {
     try {
-      console.log(`\n🔑 Updating password for: ${update.email}`);
+      console.log(`\n🔑 Updating password for: ${update.email} (${update.role})`);
       
       // Find user by email
       const { data: usersData, totalCount } = await clerk.users.getUserList({
@@ -63,16 +65,18 @@ async function updateUserPasswords() {
       }
 
       const user = usersData[0];
+      console.log(`   📧 Found user: ${user.emailAddresses[0]?.emailAddress} (ID: ${user.id})`);
       
       // Update the user's password (server-side admin update)
       await clerk.users.updateUser(user.id, {
         password: update.newPassword,
       });
 
-      console.log(`✅ Successfully updated password for: ${update.email}`);
+      console.log(`✅ Successfully updated password for: ${update.email} (${update.role})`);
+      console.log(`   🔐 New password length: ${update.newPassword.length} characters`);
       successCount++;
     } catch (error) {
-      console.error(`❌ Error updating password for ${update.email}:`);
+      console.error(`❌ Error updating password for ${update.email} (${update.role}):`);
       console.error(`   Error: ${error.message}`);
       if (error.errors) {
         error.errors.forEach(err => {

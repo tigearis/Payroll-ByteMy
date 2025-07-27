@@ -167,14 +167,18 @@ export function createAuthLink(options: UnifiedClientOptions): ApolloLink {
           
           return { headers: authHeaders };
         } else {
-          // Enhanced debugging when no token is available
-          console.warn("⚠️ No JWT token available for GraphQL request", {
-            hasClerk: !!(window as any).Clerk,
-            hasSession: !!(window as any).Clerk?.session,
-            hasUser: !!(window as any).Clerk?.user,
-            clerkLoaded: (window as any).Clerk?.loaded,
-            sessionStatus: (window as any).Clerk?.session?.status,
-          });
+          // Only warn about missing tokens if Clerk is loaded and we should have a user
+          const clerk = (window as any).Clerk;
+          if (clerk?.loaded && clerk?.user) {
+            console.warn("⚠️ No JWT token available for authenticated user", {
+              hasClerk: !!clerk,
+              hasSession: !!clerk?.session,
+              hasUser: !!clerk?.user,
+              clerkLoaded: clerk?.loaded,
+              sessionStatus: clerk?.session?.status,
+            });
+          }
+          // Skip logging for unauthenticated users to reduce noise
         }
       }
 

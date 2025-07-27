@@ -2,8 +2,10 @@ import { test, expect } from '@playwright/test';
 import { AuthHelpers } from './utils/auth-helpers';
 
 const TEST_CREDENTIALS = {
-  email: process.env.E2E_TEST_EMAIL || 'test@example.com',
-  password: process.env.E2E_TEST_PASSWORD || 'TestPassword123!',
+  email: process.env.E2E_MANAGER_EMAIL || 'manager@example.com',
+  password: process.env.E2E_MANAGER_PASSWORD || 'Manager1',
+  role: 'manager',
+  description: 'Manager user for dashboard testing'
 };
 
 test.describe('Critical Dashboard Flows', () => {

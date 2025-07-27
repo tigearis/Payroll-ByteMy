@@ -1,0 +1,556 @@
+{
+  "queryPerformance": {
+    "simple_user_list": {
+      "complexity": "low",
+      "description": "Basic user listing",
+      "runs": 5,
+      "averageTime": 49,
+      "minTime": 16,
+      "maxTime": 177,
+      "variance": 161,
+      "performanceRating": "excellent"
+    },
+    "complex_payroll_dashboard": {
+      "complexity": "high",
+      "description": "Complex payroll dashboard with multiple aggregations",
+      "error": "All runs failed",
+      "performanceRating": "failed"
+    },
+    "nested_user_relationships": {
+      "complexity": "medium",
+      "description": "Users with nested relationships",
+      "error": "All runs failed",
+      "performanceRating": "failed"
+    },
+    "permission_intensive_query": {
+      "complexity": "high",
+      "description": "Query that exercises permission system heavily",
+      "error": "All runs failed",
+      "performanceRating": "failed"
+    },
+    "aggregate_heavy_query": {
+      "complexity": "very_high",
+      "description": "Multiple complex aggregations",
+      "runs": 5,
+      "averageTime": 68,
+      "minTime": 57,
+      "maxTime": 100,
+      "variance": 43,
+      "performanceRating": "excellent"
+    }
+  },
+  "concurrentUserTests": {
+    "consultant_workflow": {
+      "1": {
+        "totalTime": 30,
+        "averageIndividualTime": 30,
+        "successfulRequests": 1,
+        "failedRequests": 0,
+        "throughput": 33,
+        "degradationFactor": 1
+      },
+      "3": {
+        "totalTime": 135,
+        "averageIndividualTime": 74,
+        "successfulRequests": 3,
+        "failedRequests": 0,
+        "throughput": 22,
+        "degradationFactor": 2.466666666666667
+      },
+      "5": {
+        "totalTime": 68,
+        "averageIndividualTime": 48,
+        "successfulRequests": 5,
+        "failedRequests": 0,
+        "throughput": 74,
+        "degradationFactor": 1.6
+      },
+      "10": {
+        "totalTime": 163,
+        "averageIndividualTime": 101,
+        "successfulRequests": 10,
+        "failedRequests": 0,
+        "throughput": 61,
+        "degradationFactor": 3.3666666666666667
+      }
+    },
+    "manager_dashboard": {
+      "1": {
+        "totalTime": 61,
+        "averageIndividualTime": 61,
+        "successfulRequests": 1,
+        "failedRequests": 0,
+        "throughput": 16,
+        "degradationFactor": 1
+      },
+      "3": {
+        "totalTime": 64,
+        "averageIndividualTime": 59,
+        "successfulRequests": 3,
+        "failedRequests": 0,
+        "throughput": 47,
+        "degradationFactor": 0.9672131147540983
+      },
+      "5": {
+        "totalTime": 67,
+        "averageIndividualTime": 55,
+        "successfulRequests": 5,
+        "failedRequests": 0,
+        "throughput": 75,
+        "degradationFactor": 0.9016393442622951
+      },
+      "10": {
+        "totalTime": 130,
+        "averageIndividualTime": 64,
+        "successfulRequests": 10,
+        "failedRequests": 0,
+        "throughput": 77,
+        "degradationFactor": 1.0491803278688525
+      }
+    },
+    "admin_overview": {
+      "1": {
+        "totalTime": 61,
+        "averageIndividualTime": 61,
+        "successfulRequests": 1,
+        "failedRequests": 0,
+        "throughput": 16,
+        "degradationFactor": 1
+      },
+      "3": {
+        "totalTime": 64,
+        "averageIndividualTime": 57,
+        "successfulRequests": 3,
+        "failedRequests": 0,
+        "throughput": 47,
+        "degradationFactor": 0.9344262295081968
+      },
+      "5": {
+        "totalTime": 53,
+        "averageIndividualTime": 46,
+        "successfulRequests": 5,
+        "failedRequests": 0,
+        "throughput": 94,
+        "degradationFactor": 0.7540983606557377
+      },
+      "10": {
+        "totalTime": 85,
+        "averageIndividualTime": 66,
+        "successfulRequests": 10,
+        "failedRequests": 0,
+        "throughput": 118,
+        "degradationFactor": 1.0819672131147542
+      }
+    }
+  },
+  "permissionSystemPerformance": {
+    "simple_without_permissions": {
+      "description": "Simple query without permission checking",
+      "averageTime": 25,
+      "runs": 3
+    }
+  },
+  "aggregatePerformance": {
+    "single_table_aggregate": {
+      "description": "Simple count aggregation",
+      "executionTime": 21,
+      "performanceRating": "excellent"
+    },
+    "multi_table_aggregates": {
+      "description": "Multiple table aggregations",
+      "executionTime": 27,
+      "performanceRating": "excellent"
+    },
+    "complex_nested_aggregates": {
+      "description": "Nested aggregations with filtering",
+      "error": "GraphQL error: inconsistent arguments between multiple selections of field 'payrollsAggregate'"
+    }
+  },
+  "memoryAnalysis": {},
+  "databaseOptimization": {},
+  "realWorldSimulation": {
+    "consultant_morning_routine": {
+      "description": "Consultant checking dashboard, clients, and recent activities",
+      "steps": [
+        {
+          "success": true,
+          "data": {
+            "clients": [
+              {
+                "id": "65e17d2e-df6e-448b-abb3-eea9d566a239",
+                "name": "Bluewave Consulting",
+                "active": true,
+                "payrollsAggregate": {
+                  "aggregate": {
+                    "count": 4
+                  }
+                }
+              },
+              {
+                "id": "ed90f235-e212-4ecd-aedf-402a2a91125f",
+                "name": "Greenfields Group",
+                "active": true,
+                "payrollsAggregate": {
+                  "aggregate": {
+                    "count": 4
+                  }
+                }
+              },
+              {
+                "id": "4ecd4666-c94e-43ba-97dc-3c78c8badffb",
+                "name": "Redstone Holdings",
+                "active": true,
+                "payrollsAggregate": {
+                  "aggregate": {
+                    "count": 4
+                  }
+                }
+              },
+              {
+                "id": "92ff771d-d468-4c91-ae58-d66b3ce1bd22",
+                "name": "Zenith Solutions",
+                "active": true,
+                "payrollsAggregate": {
+                  "aggregate": {
+                    "count": 4
+                  }
+                }
+              },
+              {
+                "id": "69cb7e99-72a2-41b2-9fe0-08b4a2d6857c",
+                "name": "Acme Pty Ltd",
+                "active": true,
+                "payrollsAggregate": {
+                  "aggregate": {
+                    "count": 6
+                  }
+                }
+              },
+              {
+                "id": "cbc88fa8-de26-49b7-972b-c89310469da4",
+                "name": "Test",
+                "active": true,
+                "payrollsAggregate": {
+                  "aggregate": {
+                    "count": 0
+                  }
+                }
+              },
+              {
+                "id": "e9f0f635-c229-45cd-9f2b-8e0c461601f4",
+                "name": "Test 2",
+                "active": true,
+                "payrollsAggregate": {
+                  "aggregate": {
+                    "count": 1
+                  }
+                }
+              },
+              {
+                "id": "c1000001-e29b-41d4-a716-446655440001",
+                "name": "ABC Small Business Pty Ltd",
+                "active": true,
+                "payrollsAggregate": {
+                  "aggregate": {
+                    "count": 0
+                  }
+                }
+              },
+              {
+                "id": "c1000002-e29b-41d4-a716-446655440002",
+                "name": "XYZ Corporation Ltd",
+                "active": true,
+                "payrollsAggregate": {
+                  "aggregate": {
+                    "count": 0
+                  }
+                }
+              },
+              {
+                "id": "c1000003-e29b-41d4-a716-446655440003",
+                "name": "Tech Startup Innovations",
+                "active": true,
+                "payrollsAggregate": {
+                  "aggregate": {
+                    "count": 0
+                  }
+                }
+              }
+            ],
+            "payrolls": [
+              {
+                "id": "0fce8712-f65b-4dd5-96a9-d1c86c8b7138",
+                "name": "Bi-Monthly Payroll - SOM",
+                "status": "Active",
+                "client": {
+                  "name": "Greenfields Group"
+                }
+              },
+              {
+                "id": "6cae0f5c-d909-4e24-ab78-ccf3543ed7f5",
+                "name": "Fortnightly Payroll - Week A - Monday",
+                "status": "Active",
+                "client": {
+                  "name": "Greenfields Group"
+                }
+              },
+              {
+                "id": "5c2ef179-308f-4545-bf7b-40c83b55f0c8",
+                "name": "Monthly Payroll - 29th",
+                "status": "Active",
+                "client": {
+                  "name": "Greenfields Group"
+                }
+              },
+              {
+                "id": "06b63aa8-53d4-458d-bdb2-95227585cc0b",
+                "name": "Fortnightly Payroll - Week B - Tuesday",
+                "status": "Active",
+                "client": {
+                  "name": "Zenith Solutions"
+                }
+              },
+              {
+                "id": "17f681eb-3c58-4aa7-b6c1-9e75e2771a1d",
+                "name": "Weekly Payroll - Tuesday",
+                "status": "Active",
+                "client": {
+                  "name": "Bluewave Consulting"
+                }
+              }
+            ]
+          },
+          "executionTime": 43,
+          "description": "dashboard_check",
+          "timestamp": "2025-07-27T01:18:00.503Z"
+        },
+        {
+          "success": false,
+          "error": "GraphQL error: field 'title' not found in type: 'notes'",
+          "executionTime": 8,
+          "description": "check_notifications",
+          "timestamp": "2025-07-27T01:18:00.511Z"
+        },
+        {
+          "success": true,
+          "data": {
+            "users": [
+              {
+                "id": "7898704c-ee5c-4ade-81f3-80a4388413fb",
+                "name": "Test User",
+                "role": "consultant",
+                "assignedRoles": [
+                  {
+                    "assignedRole": {
+                      "name": "consultant"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "22a368d4-5d3f-4026-840c-55af6fb16972",
+                "name": "Jim Consultant",
+                "role": "consultant",
+                "assignedRoles": [
+                  {
+                    "assignedRole": {
+                      "name": "consultant"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "e4313314-b89e-4346-9bb5-3aaf464c7152",
+                "name": "Vera Viewer",
+                "role": "viewer",
+                "assignedRoles": [
+                  {
+                    "assignedRole": {
+                      "name": "viewer"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "executionTime": 26,
+          "description": "review_team_status",
+          "timestamp": "2025-07-27T01:18:00.537Z"
+        }
+      ],
+      "totalTime": 69,
+      "averageStepTime": 23,
+      "userExperience": "excellent"
+    },
+    "manager_weekly_review": {
+      "description": "Manager conducting weekly performance review",
+      "steps": [
+        {
+          "success": true,
+          "data": {
+            "clientsAggregate": {
+              "aggregate": {
+                "count": 11
+              }
+            },
+            "payrollsAggregate": {
+              "aggregate": {
+                "count": 23
+              }
+            },
+            "usersAggregate": {
+              "aggregate": {
+                "count": 7
+              }
+            }
+          },
+          "executionTime": 30,
+          "description": "overall_metrics",
+          "timestamp": "2025-07-27T01:18:00.567Z"
+        },
+        {
+          "success": true,
+          "data": {
+            "users": [
+              {
+                "id": "7898704c-ee5c-4ade-81f3-80a4388413fb",
+                "name": "Test User",
+                "role": "consultant",
+                "billingItemsAggregate": {
+                  "aggregate": {
+                    "count": 0
+                  }
+                },
+                "authoredNotesAggregate": {
+                  "aggregate": {
+                    "count": 0
+                  }
+                }
+              },
+              {
+                "id": "d9ac8a7b-f679-49a1-8c99-837eb977578b",
+                "name": "Nathan Harris",
+                "role": "developer",
+                "billingItemsAggregate": {
+                  "aggregate": {
+                    "count": 0
+                  }
+                },
+                "authoredNotesAggregate": {
+                  "aggregate": {
+                    "count": 6
+                  }
+                }
+              },
+              {
+                "id": "3c2d1f6e-17a3-4a5f-8856-a2106456755c",
+                "name": "Test Developer",
+                "role": "developer",
+                "billingItemsAggregate": {
+                  "aggregate": {
+                    "count": 0
+                  }
+                },
+                "authoredNotesAggregate": {
+                  "aggregate": {
+                    "count": 0
+                  }
+                }
+              },
+              {
+                "id": "9aed2a64-0407-4dff-a621-2b7013e1713a",
+                "name": "John Admin",
+                "role": "org_admin",
+                "billingItemsAggregate": {
+                  "aggregate": {
+                    "count": 0
+                  }
+                },
+                "authoredNotesAggregate": {
+                  "aggregate": {
+                    "count": 0
+                  }
+                }
+              },
+              {
+                "id": "0727c441-3fa7-44c2-b8f3-4e0b77986ac1",
+                "name": "Jane Manager",
+                "role": "manager",
+                "billingItemsAggregate": {
+                  "aggregate": {
+                    "count": 0
+                  }
+                },
+                "authoredNotesAggregate": {
+                  "aggregate": {
+                    "count": 0
+                  }
+                }
+              },
+              {
+                "id": "22a368d4-5d3f-4026-840c-55af6fb16972",
+                "name": "Jim Consultant",
+                "role": "consultant",
+                "billingItemsAggregate": {
+                  "aggregate": {
+                    "count": 0
+                  }
+                },
+                "authoredNotesAggregate": {
+                  "aggregate": {
+                    "count": 0
+                  }
+                }
+              },
+              {
+                "id": "e4313314-b89e-4346-9bb5-3aaf464c7152",
+                "name": "Vera Viewer",
+                "role": "viewer",
+                "billingItemsAggregate": {
+                  "aggregate": {
+                    "count": 0
+                  }
+                },
+                "authoredNotesAggregate": {
+                  "aggregate": {
+                    "count": 0
+                  }
+                }
+              }
+            ]
+          },
+          "executionTime": 31,
+          "description": "team_performance",
+          "timestamp": "2025-07-27T01:18:00.598Z"
+        }
+      ],
+      "totalTime": 61,
+      "averageStepTime": 31,
+      "userExperience": "excellent"
+    }
+  },
+  "summary": {
+    "totalTests": 5,
+    "averageResponseTime": 41,
+    "slowQueries": [],
+    "performanceIssues": [
+      {
+        "type": "concurrency_degradation",
+        "scenario": "consultant_workflow",
+        "concurrency": 3,
+        "degradationFactor": 2.466666666666667
+      },
+      {
+        "type": "concurrency_degradation",
+        "scenario": "consultant_workflow",
+        "concurrency": 10,
+        "degradationFactor": 3.3666666666666667
+      }
+    ],
+    "scalabilityRecommendations": [
+      "Monitor performance as data grows",
+      "Address concurrent user degradation",
+      "Implement connection pooling optimization"
+    ]
+  }
+}

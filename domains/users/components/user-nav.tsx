@@ -7,6 +7,7 @@
 
 import { useUser, useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { useState, startTransition } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +19,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useLogoutState } from "@/lib/auth/logout-state";
 
 /**
  * UserNav Component
@@ -29,7 +31,7 @@ import {
  * - Shows user avatar with fallback to initials
  * - Displays full name and email
  * - Provides quick navigation to profile and settings
- * - Handles secure sign-out with redirect
+ * - Handles secure sign-out with Clerk's recommended approach
  *
  * @component
  * @example
@@ -42,6 +44,8 @@ export function UserNav() {
   const router = useRouter();
   const { user, isLoaded } = useUser();
   const { signOut } = useClerk();
+  const { isLoggingOut, setLoggingOut } = useLogoutState();
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   /**
    * Determines the best avatar image to display for the user
@@ -91,11 +95,105 @@ export function UserNav() {
   };
 
   /**
-   * Handles user sign-out process
-   * Signs out from Clerk and redirects to home page
+   * Handles user sign-out process with React 18 transitions for stability
+   * Uses startTransition to prevent hooks errors during redirect
    */
   const handleSignOut = async () => {
-    await signOut({ redirectUrl: "/" });
+    // Prevent multiple logout attempts
+    if (isSigningOut || isLoggingOut) {
+      console.log('⚠️ Sign-out already in progress, ignoring duplicate request');
+      return;
+    }
+
+    console.log('🔐 Starting sign-out process...');
+
+    try {
+      // Set signing out state to prevent component changes
+      setIsSigningOut(true);
+      setLoggingOut(true);
+
+      // Use React 18 startTransition for non-blocking state updates
+      startTransition(() => {
+        // Batch any pending state updates before redirect
+        console.log('🔄 Batching state updates before sign-out...');
+      });
+
+      // Small delay to allow React to finish any pending updates
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Clear any ongoing operations that might cause hook issues
+      if (typeof window !== 'undefined') {
+        // Cancel any pending timeouts or intervals
+        for (let i = 1; i < 99999; i++) window.clearTimeout(i);
+        
+        // Clear Apollo cache to prevent hooks during unmount
+        if ((window as any).__APOLLO_CLIENT__) {
+          try {
+            await (window as any)._APOLLO_CLIENT__.clearStore();
+            console.log('✅ Apollo cache cleared before sign-out');
+          } catch (apolloError) {
+            console.warn('⚠️ Apollo cache clear failed:', apolloError);
+          }
+        }
+      }
+
+      // Try primary strategy: Clerk sign-out with redirect
+      console.log('🔐 Initiating Clerk sign-out...');
+      
+      // Alternative strategy: If hooks errors persist, use manual redirect
+      const useAlternativeStrategy = sessionStorage.getItem('use-alternative-logout') === 'true';
+      
+      if (useAlternativeStrategy) {
+        console.log('🔄 Using alternative logout strategy...');
+        // Sign out without redirect, then manually navigate
+        await signOut();
+        console.log('✅ Clerk sign-out completed, manually redirecting...');
+        
+        // Clear states before redirect
+        setIsSigningOut(false);
+        setLoggingOut(false);
+        
+        // Use replace to avoid back button issues
+        window.location.replace('/');
+      } else {
+        // Primary strategy: Let Clerk handle the redirect
+        console.log('🔐 Using primary strategy with Clerk redirect...');
+        
+        // Set a timeout to clear loading state if redirect takes too long
+        const timeoutId = setTimeout(() => {
+          console.warn('⚠️ Logout taking longer than expected, clearing loading state...');
+          setIsSigningOut(false);
+          setLoggingOut(false);
+          // Force redirect if Clerk redirect failed
+          window.location.replace('/');
+        }, 3000); // 3 second timeout
+        
+        try {
+          await signOut({ redirectUrl: "/" });
+          clearTimeout(timeoutId);
+        } catch (signOutError) {
+          clearTimeout(timeoutId);
+          throw signOutError;
+        }
+      }
+      
+    } catch (error) {
+      console.error('❌ Sign-out error:', error);
+      
+      // If primary strategy fails, enable alternative for next time
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('use-alternative-logout', 'true');
+        console.log('🔄 Alternative logout strategy enabled for future attempts');
+      }
+      
+      // Reset states on error
+      setIsSigningOut(false);
+      setLoggingOut(false);
+      
+      // Immediate fallback to manual navigation
+      console.log('🔄 Falling back to manual navigation...');
+      window.location.replace('/');
+    }
   };
 
   return (
@@ -141,7 +239,26 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut}>Log out</DropdownMenuItem>
+        <DropdownMenuItem 
+          onClick={isSigningOut || isLoggingOut ? () => {
+            // Emergency reset if stuck in loading state
+            console.log('🔄 Emergency logout state reset');
+            setIsSigningOut(false);
+            setLoggingOut(false);
+            sessionStorage.removeItem('logout-in-progress');
+            sessionStorage.setItem('use-alternative-logout', 'true');
+            window.location.replace('/');
+          } : handleSignOut}
+        >
+          {isSigningOut || isLoggingOut ? (
+            <div className="flex items-center gap-2">
+              <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-gray-600"></div>
+              <span>Signing out... <small>(click to force)</small></span>
+            </div>
+          ) : (
+            "Log out"
+          )}
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

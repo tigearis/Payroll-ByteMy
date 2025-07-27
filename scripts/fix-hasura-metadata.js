@@ -262,8 +262,8 @@ function analyzeMetadataFile(filePath) {
     if (metadata.array_relationships) {
       metadata.arrayrelationships.forEach(rel => {
         if (rel.using?.foreign_key_constraint_on) {
-          const column = rel.using.foreignkeyconstraint_on.column;
-          const referencedTable = rel.using.foreignkeyconstraint_on.table?.name;
+          const column = rel.using.foreignkeyconstrainton.column;
+          const referencedTable = rel.using.foreignkeyconstrainton.table?.name;
           const expectedName = generateMeaningfulRelationshipName(referencedTable, column, true);
           
           if (rel.name !== expectedName && !isAcceptableRelationshipName(rel.name, column)) {

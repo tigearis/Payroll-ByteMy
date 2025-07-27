@@ -3,7 +3,6 @@
 
 import { useSignIn } from "@clerk/nextjs";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ByteMyLoadingIcon } from "@/components/ui/bytemy-loading-icon";
@@ -254,16 +253,6 @@ export default function SignInPage() {
                 )}
               </button>
             </form>
-
-            {/* Sign up link */}
-            <div className="text-center">
-              <Link
-                href="/sign-up"
-                className="text-sm text-blue-600 hover:text-blue-500 font-medium"
-              >
-                Don&apos;t have an account? Sign up
-              </Link>
-            </div>
           </div>
         </div>
       </div>

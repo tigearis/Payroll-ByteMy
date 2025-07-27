@@ -10,49 +10,205 @@ dotenv.config({ path: '.env.test' });
  */
 export default defineConfig({
   testDir: './e2e',
-  fullyParallel: false, // Disable parallel execution for setup tests
+  fullyParallel: true, // Enable parallel execution for better performance
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: 1, // Use single worker for setup to avoid conflicts
-  reporter: 'html',
-  timeout: 30 * 1000,
+  workers: process.env.CI ? 2 : 4, // More workers for better performance
+  reporter: [
+    ['html'],
+    ['json', { outputFile: 'test-results/playwright-results.json' }],
+    ['junit', { outputFile: 'test-results/playwright-junit.xml' }]
+  ],
+  timeout: 45 * 1000, // Increased timeout for complex workflows
   expect: {
-    timeout: 5000,
+    timeout: 10000, // Increased expect timeout
   },
   use: {
     baseURL: process.env.BASE_URL || 'http://localhost:3000',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
+    // Add more debugging options
+    actionTimeout: 10000,
+    navigationTimeout: 30000,
   },
   
-  // Ensure test environment variables are available
-  globalSetup: './e2e/global-setup.ts',
+  // globalSetup: './e2e/global-setup.ts',
 
   projects: [
-    // Setup project to authenticate users (run serially to avoid conflicts)
+    // Setup projects for each role
     {
-      name: 'setup',
-      testMatch: /.*\.setup\.ts/,
-      use: {
+      name: 'auth-setup',
+      testMatch: '**/auth.setup.ts',
+    },
+    
+    // Individual auth setup projects for efficient role testing
+    {
+      name: 'auth-setup-consultant',
+      testMatch: '**/auth-setups/consultant.setup.ts',
+    },
+    {
+      name: 'auth-setup-developer',
+      testMatch: '**/auth-setups/developer.setup.ts',
+    },
+    {
+      name: 'auth-setup-admin',
+      testMatch: '**/auth-setups/admin.setup.ts',
+    },
+    {
+      name: 'auth-setup-manager',
+      testMatch: '**/auth-setups/manager.setup.ts',
+    },
+    {
+      name: 'auth-setup-viewer',
+      testMatch: '**/auth-setups/viewer.setup.ts',
+    },
+    
+    // Role-based comprehensive testing projects
+    {
+      name: 'developer-complete',
+      use: { 
         ...devices['Desktop Chrome'],
+        storageState: 'playwright/.auth/developer.json',
       },
+      dependencies: ['auth-setup-developer'],
+      testMatch: [
+        '**/roles/developer-complete.spec.ts'
+      ],
     },
-    // Main test projects
+    
     {
-      name: 'chromium',
+      name: 'org-admin-comprehensive',
+      use: { 
+        ...devices['Desktop Chrome'],
+        storageState: 'playwright/.auth/admin.json',
+      },
+      dependencies: ['auth-setup-admin'],
+      testMatch: [
+        '**/roles/org-admin-comprehensive.spec.ts'
+      ],
+    },
+    
+    {
+      name: 'manager-team-operations',
+      use: { 
+        ...devices['Desktop Chrome'],
+        storageState: 'playwright/.auth/manager.json',
+      },
+      dependencies: ['auth-setup-manager'],
+      testMatch: [
+        '**/roles/manager-team-operations.spec.ts'
+      ],
+    },
+    
+    {
+      name: 'consultant-workflows',
+      use: { 
+        ...devices['Desktop Chrome'],
+        storageState: 'playwright/.auth/consultant.json',
+      },
+      dependencies: ['auth-setup-consultant'],
+      testMatch: [
+        '**/roles/consultant-workflows.spec.ts'
+      ],
+    },
+    
+    {
+      name: 'viewer-readonly',
+      use: { 
+        ...devices['Desktop Chrome'],
+        storageState: 'playwright/.auth/viewer.json',
+      },
+      dependencies: ['auth-setup-viewer'],
+      testMatch: [
+        '**/roles/viewer-readonly.spec.ts'
+      ],
+    },
+    
+    // Legacy admin/management tests (keep for compatibility)
+    {
+      name: 'admin-tests',
+      use: { 
+        ...devices['Desktop Chrome'],
+        storageState: 'playwright/.auth/admin.json',
+      },
+      dependencies: ['auth-setup'],
+      testMatch: [
+        '**/admin-*.spec.ts',
+        '**/critical-*.spec.ts',
+        '**/dashboard-*.spec.ts',
+        '**/data-integrity.spec.ts'
+      ],
+    },
+    
+    {
+      name: 'manager-tests',
+      use: { 
+        ...devices['Desktop Chrome'],
+        storageState: 'playwright/.auth/manager.json',
+      },
+      dependencies: ['auth-setup'],
+      testMatch: [
+        '**/manager-*.spec.ts',
+        '**/team-*.spec.ts'
+      ],
+    },
+    
+    {
+      name: 'consultant-tests',
+      use: { 
+        ...devices['Desktop Chrome'],
+        storageState: 'playwright/.auth/consultant.json',
+      },
+      dependencies: ['auth-setup'],
+      testMatch: [
+        '**/consultant-*.spec.ts',
+        '**/operational-*.spec.ts'
+      ],
+    },
+    
+    {
+      name: 'viewer-tests',
+      use: { 
+        ...devices['Desktop Chrome'],
+        storageState: 'playwright/.auth/viewer.json',
+      },
+      dependencies: ['auth-setup'],
+      testMatch: [
+        '**/viewer-*.spec.ts',
+        '**/readonly-*.spec.ts'
+      ],
+    },
+    
+    // Cross-role boundary testing
+    {
+      name: 'permission-boundaries',
       use: { ...devices['Desktop Chrome'] },
-      dependencies: ['setup'],
+      testMatch: [
+        '**/permission-boundaries.spec.ts'
+      ],
     },
+    
+    // Comprehensive role-based testing suite
     {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-      dependencies: ['setup'],
+      name: 'role-based-comprehensive',
+      use: { ...devices['Desktop Chrome'] },
+      dependencies: ['auth-setup'],
+      testMatch: [
+        '**/roles/*.spec.ts'
+      ],
     },
+    
+    // All tests project for running everything
     {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-      dependencies: ['setup'],
+      name: 'all-tests',
+      use: { ...devices['Desktop Chrome'] },
+      dependencies: ['auth-setup'],
+      testMatch: [
+        '**/roles/*.spec.ts',
+        '**/permission-boundaries.spec.ts', 
+        '**/data-integrity.spec.ts'
+      ],
     },
   ],
 

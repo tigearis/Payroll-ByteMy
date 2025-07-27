@@ -1,0 +1,147 @@
+{
+  "corePayroll": {
+    "payroll_processing": {
+      "description": "Complete payroll processing workflow",
+      "implemented": false,
+      "error": "GraphQL error: field 'processingStatus' not found in type: 'payrolls'"
+    },
+    "time_entry_management": {
+      "description": "Time entry creation and management",
+      "implemented": false,
+      "error": "GraphQL error: field 'hoursWorked' not found in type: 'timeEntries'"
+    },
+    "payroll_calculations": {
+      "description": "Automated payroll calculations and tax processing",
+      "implemented": false,
+      "details": {
+        "hasCalculationFiles": false,
+        "hasCalculationFields": false,
+        "staffWithCalculations": 0
+      }
+    },
+    "payroll_reports": {
+      "description": "Payroll reporting and export capabilities",
+      "implemented": false,
+      "details": {
+        "hasReportingFiles": true,
+        "hasAggregateData": false
+      }
+    }
+  },
+  "userManagement": {
+    "user_registration_onboarding": {
+      "description": "User registration and onboarding workflow",
+      "implemented": false,
+      "details": {
+        "hasOnboardingFiles": false,
+        "totalUsers": 0
+      }
+    },
+    "role_permission_management": {
+      "description": "Role-based access control and permission management",
+      "implemented": false,
+      "error": "GraphQL error: field 'rolePermissions' not found in type: 'roles'"
+    },
+    "user_profile_management": {
+      "description": "User profile editing and management",
+      "implemented": false,
+      "details": {
+        "hasProfileFiles": true
+      }
+    }
+  },
+  "clientManagement": {
+    "client_onboarding": {
+      "description": "Client onboarding and setup workflow",
+      "implemented": false,
+      "details": {
+        "hasOnboardingFiles": false,
+        "totalClients": 0,
+        "activeClients": 0
+      }
+    },
+    "client_relationship_management": {
+      "description": "Client relationship and communication tracking",
+      "implemented": false,
+      "error": "GraphQL error: field 'assignedUsers' not found in type: 'clients'"
+    },
+    "client_billing_integration": {
+      "description": "Client billing and invoice integration",
+      "implemented": false,
+      "error": "GraphQL error: field 'dueDate' not found in type: 'billingItems'"
+    }
+  },
+  "billingInvoicing": {},
+  "leaveManagement": {},
+  "workScheduling": {},
+  "auditCompliance": {},
+  "emailSystem": {
+    "email_template_management": {
+      "description": "Email template creation and management",
+      "implemented": false,
+      "details": {
+        "hasTemplateFiles": false,
+        "totalTemplates": 0,
+        "activeTemplates": 0
+      }
+    },
+    "email_sending_tracking": {
+      "description": "Email sending and delivery tracking",
+      "implemented": false,
+      "details": {
+        "totalEmailsSent": 0,
+        "successfulEmails": 0
+      }
+    }
+  },
+  "externalIntegrations": {},
+  "aiAssistant": {
+    "natural_language_querying": {
+      "description": "Natural language database querying",
+      "implemented": true,
+      "details": {
+        "hasAIFiles": true,
+        "hasAPIEndpoints": true,
+        "hasNLPCapability": true
+      }
+    },
+    "ai_data_insights": {
+      "description": "AI-powered data insights and recommendations",
+      "implemented": false,
+      "details": {
+        "hasInsightFiles": false
+      }
+    }
+  },
+  "summary": {
+    "totalFeatures": 14,
+    "implementedFeatures": 1,
+    "partialFeatures": 0,
+    "missingFeatures": 13,
+    "completenessScore": 0,
+    "criticalMissing": [
+      {
+        "category": "core_payroll",
+        "feature": "payroll_processing",
+        "description": "Complete payroll processing workflow"
+      },
+      {
+        "category": "core_payroll",
+        "feature": "time_entry_management",
+        "description": "Time entry creation and management"
+      },
+      {
+        "category": "core_payroll",
+        "feature": "payroll_calculations",
+        "description": "Automated payroll calculations and tax processing"
+      },
+      {
+        "category": "core_payroll",
+        "feature": "payroll_reports",
+        "description": "Payroll reporting and export capabilities"
+      }
+    ],
+    "partialImplementations": [],
+    "recommendations": []
+  }
+}

@@ -15,7 +15,7 @@ import { writeFileSync } from "fs";
 
 class ErrorMarkdownReporter {
   constructor(options = {}) {
-    this.outputFile = options.outputFile || "TSLINTERRORS_REPORT.md";
+    this.outputFile = options.outputFile || "TSLINTERRORSREPORT.md";
     this.includeWarnings = options.includeWarnings !== false;
     this.includeSuggestions = options.includeSuggestions !== false;
     this.groupByFile = options.groupByFile !== false;
@@ -377,7 +377,7 @@ const args = process.argv.slice(2);
 const options = {
   outputFile:
     args.find(arg => arg.startsWith("--output="))?.split("=")[1] ||
-    "TSLINTERRORS_REPORT.md",
+    "TSLINTERRORSREPORT.md",
   includeWarnings: !args.includes("--no-warnings"),
   includeSuggestions: !args.includes("--no-suggestions"),
   groupByFile: !args.includes("--no-grouping"),

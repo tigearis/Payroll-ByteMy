@@ -141,6 +141,7 @@ fragment PayrollBase on payrolls {
   processingTime
   processingDaysBeforeEft
   versionNumber
+  supersededDate
   createdAt
   updatedAt
 }
@@ -163,6 +164,21 @@ fragment PayrollListItem on payrolls {
   backupConsultantUserId
   managerUserId
   createdByUserId
+  # Schedule information
+  cycleId
+  dateTypeId
+  dateValue
+  payrollCycle {
+    id
+    name
+    description
+  }
+  payrollDateType {
+    id
+    name
+    description
+  }
+  # User relationships
   primaryConsultant {
     ...UserMinimal
   }

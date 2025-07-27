@@ -348,7 +348,7 @@ export default function PayrollsPage() {
   const [sortField, setSortField] = useState<string>("updatedAt");
   const [sortDirection, setSortDirection] = useState<"ASC" | "DESC">("DESC");
   const [visibleColumns, setVisibleColumns] = useState<string[]>(
-    COLUMN_DEFINITIONS.filter(col => col.defaultVisible).map(col => col.key)
+    COLUMNDEFINITIONS.filter(col => col.defaultVisible).map(col => col.key)
   );
 
   // All remaining hooks BEFORE any conditional logic

@@ -218,7 +218,7 @@ export function withAuthParams(
 /**
  * Simple authentication check function
  */
-export async function authenticateApiRequest(_request: NextRequest): Promise<AuthResult> {
+export async function authenticateApiRequest(request: NextRequest): Promise<AuthResult> {
   try {
     const { userId, sessionClaims, getToken } = await auth();
 

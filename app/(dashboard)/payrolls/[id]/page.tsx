@@ -1408,7 +1408,7 @@ export default function PayrollPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                       <div className="text-center p-4 bg-blue-50 rounded-lg">
                         <div className="text-2xl font-bold text-blue-700">
                           {payroll.employeeCount || totalEmployees || 0}
@@ -1417,17 +1417,11 @@ export default function PayrollPage() {
                       </div>
                       <div className="text-center p-4 bg-green-50 rounded-lg">
                         <div className="text-2xl font-bold text-green-700">
-                          {payrollDates.length}
+                          {(payroll as any).payrollDates?.length || payrollDates.length || 0}
                         </div>
                         <div className="text-sm text-green-600">
                           Pay Periods
                         </div>
-                      </div>
-                      <div className="text-center p-4 bg-purple-50 rounded-lg">
-                        <div className="text-lg font-bold text-purple-700">
-                          {getCycleName(payroll)}
-                        </div>
-                        <div className="text-sm text-purple-600">Schedule</div>
                       </div>
                       <div className="text-center p-4 bg-orange-50 rounded-lg">
                         <div className="text-2xl font-bold text-orange-700">
@@ -1451,7 +1445,48 @@ export default function PayrollPage() {
                     <div className="mt-4">
                       <div className="text-center p-4 bg-teal-50 rounded-lg">
                         <div className="text-2xl font-bold text-teal-700 break-words leading-tight">
-                          {getEnhancedScheduleSummary(payroll)}
+                          {(() => {
+                            // Try multiple data sources to get schedule info
+                            const cycleName = payroll?.payrollCycle?.name;
+                            const cycleId = payroll?.cycleId;
+                            const dateValue = payroll?.dateValue;
+                            const payrollName = payroll?.name;
+                            
+                            // If we have cycle and date value, format it properly
+                            if (cycleName && dateValue !== undefined && dateValue !== null) {
+                              const weekday = dateValue === 1 ? "Monday" :
+                                            dateValue === 2 ? "Tuesday" :
+                                            dateValue === 3 ? "Wednesday" :
+                                            dateValue === 4 ? "Thursday" :
+                                            dateValue === 5 ? "Friday" : `Day ${dateValue}`;
+                              
+                              const displayCycle = cycleName.charAt(0).toUpperCase() + cycleName.slice(1);
+                              return `${displayCycle} - ${weekday}`;
+                            }
+                            
+                            // Fallback: extract from payroll name if available
+                            if (payrollName) {
+                              if (payrollName.includes("Fortnightly")) {
+                                if (payrollName.includes("Monday")) return "Fortnightly - Monday";
+                                if (payrollName.includes("Tuesday")) return "Fortnightly - Tuesday";
+                                if (payrollName.includes("Wednesday")) return "Fortnightly - Wednesday";
+                                if (payrollName.includes("Thursday")) return "Fortnightly - Thursday";
+                                if (payrollName.includes("Friday")) return "Fortnightly - Friday";
+                                return "Fortnightly";
+                              }
+                              if (payrollName.includes("Weekly")) {
+                                if (payrollName.includes("Monday")) return "Weekly - Monday";
+                                if (payrollName.includes("Tuesday")) return "Weekly - Tuesday";
+                                if (payrollName.includes("Wednesday")) return "Weekly - Wednesday";
+                                if (payrollName.includes("Thursday")) return "Weekly - Thursday";
+                                if (payrollName.includes("Friday")) return "Weekly - Friday";
+                                return "Weekly";
+                              }
+                              if (payrollName.includes("Monthly")) return "Monthly";
+                            }
+                            
+                            return "Schedule not configured";
+                          })()}
                         </div>
                         <div className="text-sm text-teal-600">Schedule</div>
                       </div>
