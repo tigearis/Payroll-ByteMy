@@ -114,7 +114,21 @@ export const GET = withAuth(async (request: NextRequest, session) => {
     // Get schema via introspection using authenticated query helper
     const response = await executeQuery(INTROSPECTION_QUERY);
 
+    console.log('🔍 Introspection response:', JSON.stringify(response, null, 2));
+    
     const schema = response.__schema;
+    
+    if (!schema) {
+      console.error('❌ No __schema found in response');
+      throw new Error('Invalid schema response: missing __schema');
+    }
+    
+    if (!schema.types || !Array.isArray(schema.types)) {
+      console.error('❌ Schema types invalid:', schema.types);
+      throw new Error('Invalid schema response: missing or invalid types array');
+    }
+    
+    console.log(`📋 Schema introspection successful: ${schema.types.length} types found`);
 
     // Extract available fields and relationships
     const availableFields: Record<string, string[]> = {};
@@ -122,27 +136,68 @@ export const GET = withAuth(async (request: NextRequest, session) => {
     const fieldTypes: Record<string, Record<string, string>> = {};
 
     // Process each type in the schema
-    schema.types.forEach((type: any) => {
-      if (type.kind === "OBJECT" && REPORT_DOMAINS.includes(type.name)) {
-        const domainName = type.name;
-        const fields: string[] = [];
-        const types: Record<string, string> = {};
-
-        // Extract fields for this domain
-        if (type.fields) {
-          type.fields.forEach((field: any) => {
-            if (!EXCLUDED_FIELDS.includes(field.name)) {
-              fields.push(field.name);
-
-              // Determine field type
-              const fieldType = getFieldType(field.type);
-              types[field.name] = fieldType;
-            }
-          });
+    schema.types.forEach((type: any, index: number) => {
+      try {
+        if (!type) {
+          console.warn(`⚠️ Skipping null type at index ${index}`);
+          return;
         }
+        
+        if (!type.kind) {
+          console.warn(`⚠️ Type at index ${index} missing 'kind' property:`, JSON.stringify(type, null, 2));
+          return;
+        }
+        
+        if (!type.name) {
+          console.warn(`⚠️ Type at index ${index} missing 'name' property:`, JSON.stringify(type, null, 2));
+          return;
+        }
+        
+        if (type.kind === "OBJECT" && REPORT_DOMAINS.includes(type.name)) {
+          const domainName = type.name;
+          const fields: string[] = [];
+          const types: Record<string, string> = {};
 
-        availableFields[domainName] = fields;
-        fieldTypes[domainName] = types;
+          // Extract fields for this domain
+          if (type.fields && Array.isArray(type.fields)) {
+            type.fields.forEach((field: any, fieldIndex: number) => {
+              try {
+                if (!field) {
+                  console.warn(`⚠️ Skipping null field at index ${fieldIndex} in type ${domainName}`);
+                  return;
+                }
+                
+                if (!field.name) {
+                  console.warn(`⚠️ Field at index ${fieldIndex} in type ${domainName} missing 'name'`);
+                  return;
+                }
+                
+                if (!EXCLUDED_FIELDS.includes(field.name)) {
+                  fields.push(field.name);
+
+                  // Determine field type with safety check
+                  if (field.type) {
+                    const fieldType = getFieldType(field.type);
+                    types[field.name] = fieldType;
+                  } else {
+                    console.warn(`⚠️ Field ${field.name} in type ${domainName} missing type information`);
+                    types[field.name] = "Unknown";
+                  }
+                }
+              } catch (fieldError) {
+                console.error(`❌ Error processing field ${fieldIndex} in type ${domainName}:`, fieldError);
+              }
+            });
+          }
+
+          availableFields[domainName] = fields;
+          fieldTypes[domainName] = types;
+          
+          console.log(`✅ Processed domain ${domainName}: ${fields.length} fields`);
+        }
+      } catch (typeError) {
+        console.error(`❌ Error processing type at index ${index}:`, typeError);
+        console.error(`❌ Problematic type:`, JSON.stringify(type, null, 2));
       }
     });
 
@@ -204,13 +259,33 @@ export const GET = withAuth(async (request: NextRequest, session) => {
 });
 
 function getFieldType(type: any): string {
+  if (!type) {
+    console.warn('⚠️ getFieldType called with null/undefined type');
+    return "Unknown";
+  }
+  
+  if (!type.kind) {
+    console.warn('⚠️ getFieldType called with type missing kind property:', JSON.stringify(type, null, 2));
+    return type.name || "Unknown";
+  }
+
   if (type.kind === "NON_NULL") {
-    return getFieldType(type.ofType);
+    if (type.ofType) {
+      return getFieldType(type.ofType);
+    } else {
+      console.warn('⚠️ NON_NULL type missing ofType property');
+      return "Unknown";
+    }
   }
 
   if (type.kind === "LIST") {
-    const baseType = getFieldType(type.ofType);
-    return `${baseType}[]`;
+    if (type.ofType) {
+      const baseType = getFieldType(type.ofType);
+      return `${baseType}[]`;
+    } else {
+      console.warn('⚠️ LIST type missing ofType property');
+      return "Unknown[]";
+    }
   }
 
   return type.name || "Unknown";
