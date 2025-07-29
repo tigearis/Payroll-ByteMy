@@ -228,23 +228,25 @@ function StaffPage() {
     setError(null);
 
     try {
-      const params = new URLSearchParams({
-        page: currentPage.toString(),
-        limit: pageSize.toString(),
-        includeStats: "true",
+      // Build request body instead of URL parameters
+      const requestBody = {
+        page: currentPage,
+        limit: pageSize,
+        includeStats: true,
+        filters: {
+          ...(searchTerm && { search: searchTerm }),
+          ...(roleFilter.length > 0 && { roles: roleFilter }),
+          ...(statusFilter.length > 0 && { statuses: statusFilter }),
+        }
+      };
+
+      const response = await fetch(`/api/staff`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
       });
-
-      if (searchTerm) {
-        params.append("search", searchTerm);
-      }
-      if (roleFilter.length > 0) {
-        params.append("roles", roleFilter.join(","));
-      }
-      if (statusFilter.length > 0) {
-        params.append("statuses", statusFilter.join(","));
-      }
-
-      const response = await fetch(`/api/staff?${params.toString()}`);
       const data = await response.json();
 
       if (data.success) {
