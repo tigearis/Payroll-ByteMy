@@ -29,6 +29,7 @@ interface StaffListRequest {
   orderBy?: "name" | "email" | "role" | "createdAt" | "updatedAt";
   orderDirection?: "ASC" | "DESC";
   includeStats?: boolean;
+  includeNonStaff?: boolean;
 }
 
 interface StaffListResponse {
@@ -44,37 +45,35 @@ interface StaffListResponse {
   error?: string;
 }
 
-export const GET = withAuth(async (req: NextRequest, session) => {
-    try {
-      const { searchParams } = new URL(req.url);
-      
-      // Check if user has staff access permissions
-      const hasStaffAccess = session.role && ['developer', 'org_admin', 'manager'].includes(session.role);
-      
-      if (!hasStaffAccess) {
-        return NextResponse.json({ error: "Insufficient permissions" }, { status: 403 });
-      }
-      
-      // Check if user is trying to access all users without developer permissions
-      const includeNonStaff = searchParams.get("includeNonStaff") === "true";
-      const isDeveloper = session.role === 'developer';
-      
-      if (includeNonStaff && !isDeveloper) {
-        return NextResponse.json({ error: "Developer access required for all users view" }, { status: 403 });
-      }
+// Shared function to handle staff list logic
+async function handleStaffListRequest(params: StaffListRequest, session: any): Promise<NextResponse<StaffListResponse>> {
+  try {
+    // Check if user has staff access permissions
+    const hasStaffAccess = session.role && ['developer', 'org_admin', 'manager'].includes(session.role);
     
-    // Parse query parameters
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = Math.min(parseInt(searchParams.get("limit") || "20"), 100); // Cap at 100
-    const search = searchParams.get("search") || undefined;
-    const roles = searchParams.get("roles")?.split(",").filter(Boolean) || [];
-    const statuses = searchParams.get("statuses")?.split(",").filter(Boolean) || [];
-    const isActive = searchParams.get("isActive") ? searchParams.get("isActive") === "true" : undefined;
-    const managerId = searchParams.get("managerId") || undefined;
-    const orderBy = (searchParams.get("orderBy") as any) || "name";
-    const orderDirection = (searchParams.get("orderDirection") as any) || "ASC";
-    const includeStats = searchParams.get("includeStats") === "true";
-    // includeNonStaff already declared above
+    if (!hasStaffAccess) {
+      return NextResponse.json({ error: "Insufficient permissions" }, { status: 403 });
+    }
+    
+    // Check if user is trying to access all users without developer permissions
+    const isDeveloper = session.role === 'developer';
+    
+    if (params.includeNonStaff && !isDeveloper) {
+      return NextResponse.json({ error: "Developer access required for all users view" }, { status: 403 });
+    }
+  
+    // Parse and validate parameters
+    const page = Math.max(parseInt(String(params.page || 1)), 1);
+    const limit = Math.min(Math.max(parseInt(String(params.limit || 20)), 1), 100); // Cap at 100
+    const search = params.filters?.search || undefined;
+    const roles = params.filters?.roles || [];
+    const statuses = params.filters?.statuses || [];
+    const isActive = params.filters?.isActive;
+    const managerId = params.filters?.managerId || undefined;
+    const orderBy = params.orderBy || "name";
+    const orderDirection = params.orderDirection || "ASC";
+    const includeStats = params.includeStats || false;
+    const includeNonStaff = params.includeNonStaff || false;
 
     // Calculate offset
     const offset = (page - 1) * limit;
@@ -225,6 +224,69 @@ export const GET = withAuth(async (req: NextRequest, session) => {
         error: error.message || "Failed to fetch staff list",
       },
       { status: 500 }
+    );
+  }
+}
+
+// GET endpoint (existing - uses query parameters)
+export const GET = withAuth(async (req: NextRequest, session) => {
+  const { searchParams } = new URL(req.url);
+  
+  // Parse query parameters
+  const page = parseInt(searchParams.get("page") || "1");
+  const limit = parseInt(searchParams.get("limit") || "20");
+  const includeStats = searchParams.get("includeStats") === "true";
+  const includeNonStaff = searchParams.get("includeNonStaff") === "true";
+  const search = searchParams.get("search") || undefined;
+  const roles = searchParams.get("roles")?.split(",").filter(Boolean) || [];
+  const statuses = searchParams.get("statuses")?.split(",").filter(Boolean) || [];
+  const isActive = searchParams.get("isActive") ? searchParams.get("isActive") === "true" : undefined;
+  const managerId = searchParams.get("managerId") || undefined;
+  const orderBy = (searchParams.get("orderBy") as any) || "name";
+  const orderDirection = (searchParams.get("orderDirection") as any) || "ASC";
+
+  const params: StaffListRequest = {
+    page,
+    limit,
+    includeStats,
+    includeNonStaff,
+    filters: {
+      search,
+      roles,
+      statuses,
+      isActive,
+      managerId,
+    },
+    orderBy,
+    orderDirection,
+  };
+
+  return handleStaffListRequest(params, session);
+});
+
+// POST endpoint (new - uses request body)
+export const POST = withAuth(async (req: NextRequest, session) => {
+  try {
+    const body = await req.json();
+    const params: StaffListRequest = {
+      page: body.page || 1,
+      limit: body.limit || 20,
+      includeStats: body.includeStats || false,
+      includeNonStaff: body.includeNonStaff || false,
+      filters: body.filters || {},
+      orderBy: body.orderBy || "name",
+      orderDirection: body.orderDirection || "ASC",
+    };
+
+    return handleStaffListRequest(params, session);
+  } catch (error: any) {
+    console.error("Failed to parse request body:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Invalid request body",
+      },
+      { status: 400 }
     );
   }
 });
