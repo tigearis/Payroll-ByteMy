@@ -44,8 +44,7 @@ interface StaffListResponse {
   error?: string;
 }
 
-export async function GET(req: NextRequest) {
-  return withAuth(async (_request: NextRequest, session) => {
+export const GET = withAuth(async (req: NextRequest, session) => {
     try {
       const { searchParams } = new URL(req.url);
       
@@ -228,8 +227,7 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-  })(req);
-}
+});
 
 // Helper function to format stats data
 function formatStatsData(statsData: GetUserStatusDashboardStatsQuery) {
