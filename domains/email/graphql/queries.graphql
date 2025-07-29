@@ -229,7 +229,9 @@ query GetTemplateUsageStats($templateId: uuid!, $fromDate: timestamptz!) {
     sendStatus
     sentAt
     senderUser {
-      name
+      firstName
+      lastName
+      computedName
     }
   }
 }

@@ -12,7 +12,9 @@ subscription UserUpdates($userId: uuid!) {
 subscription ActiveUsers {
   users(where: { isActive: { _eq: true } }) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     updatedAt
   }

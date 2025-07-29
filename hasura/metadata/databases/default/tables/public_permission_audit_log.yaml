@@ -114,5 +114,17 @@ select_permissions:
         - user_id
       filter: {}
     comment: Viewers can see basic information
+update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
+delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access
 apollo_federation_config:
   enable: v1

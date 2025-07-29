@@ -1,0 +1,7 @@
+table:
+  name: service_limitations
+  schema: public
+object_relationships:
+  - name: validationResult
+    using:
+      foreign_key_constraint_on: result_id

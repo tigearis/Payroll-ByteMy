@@ -40,7 +40,7 @@ const GET_USER_BY_EMAIL = gql`
       id
       clerkUserId
       role
-      name
+      computedName
       email
       isStaff
       managerId
@@ -49,7 +49,7 @@ const GET_USER_BY_EMAIL = gql`
       updatedAt
       managerUser {
         id
-        name
+        computedName
         email
         role
       }
@@ -64,7 +64,7 @@ const GET_USER_BY_CLERK_ID = gql`
       id
       clerkUserId
       role
-      name
+      computedName
       email
       isStaff
       managerId
@@ -73,7 +73,7 @@ const GET_USER_BY_CLERK_ID = gql`
       updatedAt
       managerUser {
         id
-        name
+        computedName
         email
         role
       }
@@ -85,7 +85,8 @@ const GET_USER_BY_CLERK_ID = gql`
 const UPSERT_USER = gql`
   mutation UpsertUser(
     $clerkId: String!
-    $name: String!
+    $firstName: String!
+    $lastName: String!
     $email: String!
     $role: userrole = "viewer"
     $isStaff: Boolean = false
@@ -95,7 +96,8 @@ const UPSERT_USER = gql`
     insertUser(
       object: {
         clerkUserId: $clerkId
-        name: $name
+        firstName: $firstName
+        lastName: $lastName
         email: $email
         role: $role
         isStaff: $isStaff
@@ -104,11 +106,13 @@ const UPSERT_USER = gql`
       }
       onConflict: {
         constraint: users_clerk_user_id_key
-        updateColumns: [name, email, image, updatedAt]
+        updateColumns: [firstName, lastName, email, image, updatedAt]
       }
     ) {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
       clerkUserId
@@ -139,7 +143,7 @@ const UPDATE_USER_ROLE = gql`
       }
     ) {
       id
-      name
+      computedName
       email
       role
       isStaff
@@ -147,7 +151,7 @@ const UPDATE_USER_ROLE = gql`
       updatedAt
       managerUser {
         id
-        name
+        computedName
         email
       }
     }
@@ -162,7 +166,7 @@ const UPDATE_USER_CLERK_ID = gql`
       _set: { clerkUserId: $clerkId, updatedAt: "now()" }
     ) {
       id
-      name
+      computedName
       email
       role
       clerkUserId
@@ -181,7 +185,7 @@ const UPDATE_USER_IMAGE = gql`
       _set: { image: $image, updatedAt: "now()" }
     ) {
       id
-      name
+      computedName
       email
       role
       clerkUserId
@@ -196,7 +200,7 @@ const UPDATE_USER_IMAGE = gql`
 // Enhanced user sync function with better error handling
 export async function syncUserWithDatabase(
   clerkId: string,
-  name: string,
+  fullName: string,
   email: string,
   role: UserRole = "viewer",
   managerId?: string,
@@ -282,9 +286,14 @@ export async function syncUserWithDatabase(
     }
 
     // If still no user found, create a new one
-    if (!databaseUser && name && email) {
+    if (!databaseUser && fullName && email) {
+      // Parse fullName into firstName and lastName
+      const nameParts = fullName.trim().split(/\s+/);
+      const firstName = nameParts[0] || "";
+      const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
+      
       console.log(
-        `📝 Creating new user in database: ${name} (${email}) with role: ${role}`
+        `📝 Creating new user in database: ${fullName} (${email}) with role: ${role}`
       );
 
       const { data: newUserData, errors: mutationErrors } =
@@ -292,7 +301,8 @@ export async function syncUserWithDatabase(
           mutation: UPSERT_USER,
           variables: {
             clerkId,
-            name,
+            firstName,
+            lastName,
             email,
             role,
             isStaff,
@@ -319,7 +329,7 @@ export async function syncUserWithDatabase(
       databaseUser.image !== clerkImageUrl
     ) {
       // Update existing user's image if it's different
-      console.log(`🖼️ Updating user image: ${databaseUser.name}`);
+      console.log(`🖼️ Updating user image: ${databaseUser.computedName}`);
 
       const { data: updateImageData, errors: updateImageErrors } =
         await adminApolloClient.mutate({
@@ -339,7 +349,7 @@ export async function syncUserWithDatabase(
       }
     } else if (databaseUser) {
       console.log(
-        `✅ Found existing user in database: ${databaseUser.name} (${databaseUser.role})`
+        `✅ Found existing user in database: ${databaseUser.computedName} (${databaseUser.role})`
       );
     }
 
@@ -522,7 +532,7 @@ export async function deleteUserFromDatabase(clerkId: string) {
         affectedRows
         returning {
           id
-          name
+          computedName
           email
           clerkUserId
         }

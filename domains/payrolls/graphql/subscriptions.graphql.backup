@@ -1,0 +1,126 @@
+# Payrolls Domain Subscriptions
+# Security Classification: MEDIUM - Business operational data
+# SOC2 Compliance: Row-level security and audit logging enforced
+
+# Core payroll subscriptions
+subscription PayrollsUpdates {
+  payrolls(
+    where: { supersededDate: { _isNull: true } }
+    orderBy: { updatedAt: DESC }
+  ) {
+    ...PayrollListItem
+  }
+}
+
+subscription PayrollUpdates($id: uuid!) {
+  payrolls(where: { id: { _eq: $id } }) {
+    ...PayrollDetailed
+  }
+}
+
+# Active payrolls subscription
+subscription ActivePayrollsUpdates {
+  payrolls(
+    where: {
+      supersededDate: { _isNull: true }
+      status: { _eq: "Active" }
+    }
+    orderBy: { name: ASC }
+  ) {
+    ...PayrollSummary
+    client {
+      id
+      name
+    }
+  }
+}
+
+# Dashboard stats subscription
+subscription PayrollStatsUpdates {
+  payrollsAggregate(
+    where: { supersededDate: { _isNull: true } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Assignment and workload subscriptions
+subscription UnassignedPayrollsUpdates {
+  payrolls(
+    where: {
+      supersededDate: { _isNull: true }
+      _or: [
+        { primaryConsultantUserId: { _isNull: true } }
+        { backupConsultantUserId: { _isNull: true } }
+        { managerUserId: { _isNull: true } }
+      ]
+    }
+  ) {
+    ...PayrollForAssignment
+  }
+}
+
+# Payroll dates subscriptions
+subscription PayrollDatesUpdates($payrollId: uuid!) {
+  payrollDates(
+    where: { payrollId: { _eq: $payrollId } }
+    orderBy: { originalEftDate: ASC }
+  ) {
+    id
+    originalEftDate
+    adjustedEftDate
+    processingDate
+    notes
+    updatedAt
+  }
+}
+
+subscription UpcomingPayrollDatesUpdates {
+  payrollDates(
+    where: { originalEftDate: { _gte: "now()" } }
+    orderBy: { originalEftDate: ASC }
+    limit: 20
+  ) {
+    id
+    originalEftDate
+    adjustedEftDate
+    processingDate
+    notes
+    # Note: payrollAssignment relationship not available on payrollDates
+    # This would need to be handled differently based on actual schema
+    payrollId
+  }
+}
+
+# System monitoring subscriptions
+subscription PayrollSystemHealthUpdates {
+  payrolls(
+    where: {
+      supersededDate: { _isNull: true }
+      status: { _in: ["pending_approval", "processing", "draft"] }
+    }
+    orderBy: { updatedAt: ASC }
+  ) {
+    ...PayrollListItem
+    primaryConsultant {
+      id
+      name
+    }
+    manager {
+      id
+      name
+    }
+  }
+}
+
+# Generic payroll subscription (alias for PayrollsUpdates)
+subscription PayrollSubscription {
+  payrolls(
+    where: { supersededDate: { _isNull: true } }
+    orderBy: { updatedAt: DESC }
+  ) {
+    ...PayrollListItem
+  }
+}

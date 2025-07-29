@@ -456,14 +456,13 @@ export default function AdvancedPayrollScheduler() {
     }
   }, [data?.payrolls?.length, isPreviewMode, globalEdits.size]); // Use stable properties instead of objects
 
-  // Extract consultants from staff data - shows ALL consultants, not just those with payrolls
+  // Extract consultants from staff data - shows ALL active staff, not just those with payrolls
   const consultants = useMemo(() => {
     if (!staffData?.users) return [];
 
-    // Filter to only consultants and managers (who can act as consultants)
-    const consultantUsers = staffData.users.filter(user => 
-      user.role === 'consultant' || user.role === 'manager' || user.role === 'org_admin'
-    );
+    // Show ALL active staff so payrolls can be assigned to anyone
+    // This fixes the chicken-and-egg problem where you couldn't assign payrolls to staff without existing assignments
+    const consultantUsers = staffData.users; // No role filtering - show all active staff
 
     const consultants = consultantUsers.map(user => ({
       id: user.id,
@@ -477,13 +476,13 @@ export default function AdvancedPayrollScheduler() {
     }));
 
     console.log(
-      `👥 Found ${consultants.length} total consultants (including those without payrolls):`,
-      consultants.map(c => `${c.name} (${c.primaryPayrolls.length + c.backupPayrolls.length} payrolls)`)
+      `👥 Found ${consultants.length} total staff members available for payroll assignment:`,
+      consultants.map(c => `${c.name} [${c.role}] (${c.primaryPayrolls.length + c.backupPayrolls.length} payrolls)`)
     );
     return consultants;
   }, [staffData]);
 
-  // Calculate consultant summaries
+  // Calculate staff summaries (includes all staff, not just those with current assignments)
   const consultantSummaries = useMemo(() => {
     const summaries: ConsultantSummary[] = consultants.map(consultant => {
       // Filter assignments to only those within the current date range
@@ -1074,7 +1073,7 @@ export default function AdvancedPayrollScheduler() {
 
   // Helper function to get text color for consultant header cards based on total processing time
   const getConsultantHeaderTextColor = (
-    _totalProcessingTime: number,
+    totalProcessingTime: number,
     isOnLeave = false,
     isIcon = false
   ): string => {
@@ -1085,6 +1084,13 @@ export default function AdvancedPayrollScheduler() {
         : "text-green-900 dark:text-green-100";
     }
 
+    // Orange cards for available staff with no assignments - dark text for good contrast
+    if (totalProcessingTime === 0) {
+      return isIcon
+        ? "text-orange-800 dark:text-orange-200"
+        : "text-orange-900 dark:text-orange-100";
+    }
+
     // Light blue cards for normal consultants - dark text for good contrast
     return isIcon
       ? "text-blue-800 dark:text-blue-200"
@@ -1093,12 +1099,19 @@ export default function AdvancedPayrollScheduler() {
 
   // Helper function for consultant card background colors
   const getConsultantCardBackgroundStyle = (
-    _totalProcessingTime: number,
+    totalProcessingTime: number,
     isOnLeave = false
   ): React.CSSProperties => {
     if (isOnLeave) {
       return {
         backgroundColor: `rgb(134, 239, 172)`, // Lighter green for on leave (green-300)
+      };
+    }
+
+    // Show different color for staff with no assignments to make them obvious
+    if (totalProcessingTime === 0) {
+      return {
+        backgroundColor: `rgb(254, 215, 170)`, // Light orange for available staff (orange-200)
       };
     }
 
@@ -1255,7 +1268,10 @@ export default function AdvancedPayrollScheduler() {
             Advanced Payroll Scheduler
           </h2>
           <p className="text-gray-600">
-            Drag-and-drop scheduling with consultant summaries
+            Drag-and-drop scheduling with all staff (including those without current assignments)
+          </p>
+          <p className="text-sm text-gray-500 mt-1">
+            Orange columns = available staff • Blue columns = staff with assignments • Green columns = staff on leave
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -1433,43 +1449,58 @@ export default function AdvancedPayrollScheduler() {
       )}
 
       {/* Color Legend */}
-      {isPreviewMode && (
-        <Card>
-          <CardContent className="p-3">
-            <div className="flex items-center gap-4 text-xs text-muted-foreground flex-wrap">
-              <span className="font-medium text-foreground">Color Legend:</span>
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded bg-primary/40"></div>
-                <span>Original Position</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div
-                  className="w-3 h-3 rounded"
-                  style={{ backgroundColor: "hsl(var(--orange) / 0.4)" }}
-                ></div>
-                <span>Moved Assignment</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded bg-destructive/40"></div>
-                <span>Backup Consultant</span>
-              </div>
-              {showGhosts && (
-                <div className="flex items-center gap-1">
-                  <div className="w-3 h-3 rounded border-dashed border-2 border-muted-foreground bg-muted/30"></div>
-                  <span>Original Position (Ghost)</span>
-                </div>
-              )}
-              {!showGhosts && isPreviewMode && pendingChanges.length > 0 && (
-                <div className="flex items-center gap-1 text-orange-600 dark:text-orange-400">
-                  <span className="text-xs italic">
-                    Ghosts hidden - toggle to see original positions
-                  </span>
-                </div>
-              )}
+      <Card>
+        <CardContent className="p-3">
+          <div className="flex items-center gap-4 text-xs text-muted-foreground flex-wrap">
+            <span className="font-medium text-foreground">Staff Legend:</span>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 rounded" style={{ backgroundColor: "rgb(147, 197, 253)" }}></div>
+              <span>Staff with Assignments</span>
             </div>
-          </CardContent>
-        </Card>
-      )}
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 rounded" style={{ backgroundColor: "rgb(254, 215, 170)" }}></div>
+              <span>Available Staff (No Current Assignments)</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 rounded" style={{ backgroundColor: "rgb(134, 239, 172)" }}></div>
+              <span>Staff on Leave</span>
+            </div>
+            {isPreviewMode && (
+              <>
+                <span className="font-medium text-foreground">Assignment Legend:</span>
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 rounded bg-primary/40"></div>
+                  <span>Original Position</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div
+                    className="w-3 h-3 rounded"
+                    style={{ backgroundColor: "hsl(var(--orange) / 0.4)" }}
+                  ></div>
+                  <span>Moved Assignment</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 rounded bg-destructive/40"></div>
+                  <span>Backup Consultant</span>
+                </div>
+                {showGhosts && (
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 rounded border-dashed border-2 border-muted-foreground bg-muted/30"></div>
+                    <span>Original Position (Ghost)</span>
+                  </div>
+                )}
+                {!showGhosts && isPreviewMode && pendingChanges.length > 0 && (
+                  <div className="flex items-center gap-1 text-orange-600 dark:text-orange-400">
+                    <span className="text-xs italic">
+                      Ghosts hidden - toggle to see original positions
+                    </span>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Main Grid Table */}
       <Card className="dark:bg-card">

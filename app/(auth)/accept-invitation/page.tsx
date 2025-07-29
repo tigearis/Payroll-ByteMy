@@ -14,6 +14,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { 
+  getInvitationFlowState, 
+  getInvitationRedirectAction, 
+  logInvitationFlow 
+} from "@/lib/invitation-utils";
 
 type InvitationStatus = "loading" | "ready" | "accepting" | "success" | "error" | "invalid";
 
@@ -26,6 +31,9 @@ function AcceptInvitationContent() {
   const [status, setStatus] = useState<InvitationStatus>("loading");
   const [error, setError] = useState<string | null>(null);
   const [_invitation, setInvitation] = useState<unknown>(null);
+  
+  // Email conflict detection
+  const [emailConflictDetected, setEmailConflictDetected] = useState(false);
 
   // Check invitation validity when component loads
   useEffect(() => {
@@ -37,10 +45,58 @@ function AcceptInvitationContent() {
 
     if (userLoaded) {
       if (user) {
+        // User is authenticated, ready to accept invitation
         setStatus("ready");
+        
+        // Log the authenticated state
+        const searchParams = new URLSearchParams(window.location.search);
+        const invitationState = getInvitationFlowState(searchParams);
+        logInvitationFlow("accept-invitation-authenticated", invitationState, {
+          userId: user.id,
+          userEmail: user.emailAddresses[0]?.emailAddress,
+        });
       } else {
-        // Redirect to sign-in with return URL
-        window.location.href = `/sign-in?redirect_url=${encodeURIComponent(window.location.href)}`;
+        // User not authenticated - handle invitation flow redirect
+        const searchParams = new URLSearchParams(window.location.search);
+        const invitationState = getInvitationFlowState(searchParams);
+        
+        logInvitationFlow("accept-invitation-unauthenticated", invitationState);
+        
+        if (invitationState.hasTicket && invitationState.ticketData) {
+          const redirectAction = getInvitationRedirectAction(
+            invitationState.ticketData,
+            window.location.href
+          );
+          
+          console.log("🔄 Handling invitation redirect:", redirectAction);
+          
+          switch (redirectAction.action) {
+            case 'redirect_sign_up':
+              console.log("✅ Redirecting to sign-up for new user invitation");
+              window.location.href = redirectAction.redirectUrl!;
+              break;
+              
+            case 'redirect_sign_in':
+              console.log("✅ Redirecting to sign-in for existing user invitation");
+              window.location.href = redirectAction.redirectUrl!;
+              break;
+              
+            case 'already_complete':
+              console.log("ℹ️ Invitation already complete, user should be signed in");
+              // This shouldn't happen if user is not authenticated, but handle gracefully
+              setStatus("error");
+              setError("Invitation was already completed but user is not signed in");
+              break;
+              
+            default:
+              console.warn("⚠️ Unknown invitation redirect action, falling back to sign-up");
+              window.location.href = `/sign-up?redirect_url=${encodeURIComponent(window.location.href)}`;
+          }
+        } else {
+          // No valid ticket, fall back to basic sign-up
+          console.log("⚠️ No valid invitation ticket, redirecting to basic sign-up");
+          window.location.href = `/sign-up?redirect_url=${encodeURIComponent(window.location.href)}`;
+        }
       }
     }
   }, [ticket, user, userLoaded]);
@@ -78,10 +134,22 @@ function AcceptInvitationContent() {
           router.push("/dashboard");
         }, 2000);
       } else {
+        // Check if this is an email conflict error
+        const errorMessage = result.error || "Failed to accept invitation";
+        const isEmailConflict = errorMessage.toLowerCase().includes('email') && 
+                               (errorMessage.toLowerCase().includes('already') || 
+                                errorMessage.toLowerCase().includes('exist') ||
+                                errorMessage.toLowerCase().includes('use'));
+        
+        if (isEmailConflict) {
+          setEmailConflictDetected(true);
+          console.log("🔍 Email conflict detected during invitation acceptance");
+        }
+        
         setStatus("error");
-        setError(result.error || "Failed to accept invitation");
+        setError(errorMessage);
         toast.error("Failed to accept invitation", {
-          description: result.error,
+          description: errorMessage,
         });
       }
     } catch (_err: unknown) {
@@ -122,7 +190,7 @@ function AcceptInvitationContent() {
       case "ready":
         return {
           title: "Accept Invitation",
-          description: "You've been invited to join the team. Click below to accept your invitation and create your account.",
+          description: "You've been invited to join the team. Click below to accept your invitation.",
         };
       case "accepting":
         return {
@@ -184,20 +252,46 @@ function AcceptInvitationContent() {
             
             {status === "error" && (
               <div className="space-y-2">
-                <Button 
-                  onClick={() => window.location.reload()} 
-                  variant="outline" 
-                  className="w-full"
-                >
-                  Try Again
-                </Button>
-                <Button 
-                  onClick={() => router.push("/")} 
-                  variant="ghost" 
-                  className="w-full"
-                >
-                  Go Home
-                </Button>
+                {emailConflictDetected ? (
+                  <>
+                    <div className="p-3 bg-blue-100 rounded text-sm text-blue-800 mb-3">
+                      <strong>Email Conflict:</strong> This email might already be associated with a different account.
+                    </div>
+                    <Button 
+                      onClick={() => {
+                        // Clear current session and try signing in
+                        window.location.href = `/sign-in?redirect_url=${encodeURIComponent(window.location.href)}`;
+                      }}
+                      className="w-full"
+                    >
+                      Sign In with Existing Account
+                    </Button>
+                    <Button 
+                      onClick={() => window.location.reload()} 
+                      variant="outline" 
+                      className="w-full"
+                    >
+                      Try Again
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button 
+                      onClick={() => window.location.reload()} 
+                      variant="outline" 
+                      className="w-full"
+                    >
+                      Try Again
+                    </Button>
+                    <Button 
+                      onClick={() => router.push("/")} 
+                      variant="ghost" 
+                      className="w-full"
+                    >
+                      Go Home
+                    </Button>
+                  </>
+                )}
               </div>
             )}
             

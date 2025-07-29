@@ -1,0 +1,3 @@
+table:
+  name: system_health
+  schema: public

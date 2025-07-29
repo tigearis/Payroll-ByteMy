@@ -629,6 +629,590 @@ enum CursorOrdering {
 }
 
 """
+columns and relationships of "data_backups"
+"""
+type DataBackups {
+  backupType: String
+  checksum: String
+  completedAt: timestamptz
+  compressionType: String
+  createdAt: timestamptz
+  encryptionKeyHash: String
+  errorMessage: String
+  expiresAt: timestamptz
+  fileSize: bigint
+  id: uuid!
+  metadata(
+    """JSON select path"""
+    path: String
+  ): jsonb
+  retentionDays: Int
+  startedAt: timestamptz
+  status: String
+  storagePath: String
+  tablesIncluded: [String!]
+  """An object relationship"""
+  user: users
+  userId: uuid
+}
+
+"""
+aggregated selection of "data_backups"
+"""
+type DataBackupsAggregate {
+  aggregate: DataBackupsAggregateFields
+  nodes: [DataBackups!]!
+}
+
+input DataBackupsAggregateBoolExp {
+  count: dataBackupsAggregateBoolExpCount
+}
+
+"""
+aggregate fields of "data_backups"
+"""
+type DataBackupsAggregateFields {
+  avg: DataBackupsAvgFields
+  count(columns: [DataBackupsSelectColumn!], distinct: Boolean): Int!
+  max: DataBackupsMaxFields
+  min: DataBackupsMinFields
+  stddev: DataBackupsStddevFields
+  stddevPop: DataBackupsStddevPopFields
+  stddevSamp: DataBackupsStddevSampFields
+  sum: DataBackupsSumFields
+  varPop: DataBackupsVarPopFields
+  varSamp: DataBackupsVarSampFields
+  variance: DataBackupsVarianceFields
+}
+
+"""
+order by aggregate values of table "data_backups"
+"""
+input DataBackupsAggregateOrderBy {
+  avg: DataBackupsAvgOrderBy
+  count: OrderBy
+  max: DataBackupsMaxOrderBy
+  min: DataBackupsMinOrderBy
+  stddev: DataBackupsStddevOrderBy
+  stddevPop: DataBackupsStddevPopOrderBy
+  stddevSamp: DataBackupsStddevSampOrderBy
+  sum: DataBackupsSumOrderBy
+  varPop: DataBackupsVarPopOrderBy
+  varSamp: DataBackupsVarSampOrderBy
+  variance: DataBackupsVarianceOrderBy
+}
+
+"""append existing jsonb value of filtered columns with new jsonb value"""
+input DataBackupsAppendInput {
+  metadata: jsonb
+}
+
+"""
+input type for inserting array relation for remote table "data_backups"
+"""
+input DataBackupsArrRelInsertInput {
+  data: [DataBackupsInsertInput!]!
+  """upsert condition"""
+  onConflict: DataBackupsOnConflict
+}
+
+"""aggregate avg on columns"""
+type DataBackupsAvgFields {
+  fileSize: Float
+  retentionDays: Float
+}
+
+"""
+order by avg() on columns of table "data_backups"
+"""
+input DataBackupsAvgOrderBy {
+  fileSize: OrderBy
+  retentionDays: OrderBy
+}
+
+"""
+Boolean expression to filter rows from the table "data_backups". All fields are combined with a logical 'AND'.
+"""
+input DataBackupsBoolExp {
+  _and: [DataBackupsBoolExp!]
+  _not: DataBackupsBoolExp
+  _or: [DataBackupsBoolExp!]
+  backupType: StringComparisonExp
+  checksum: StringComparisonExp
+  completedAt: TimestamptzComparisonExp
+  compressionType: StringComparisonExp
+  createdAt: TimestamptzComparisonExp
+  encryptionKeyHash: StringComparisonExp
+  errorMessage: StringComparisonExp
+  expiresAt: TimestamptzComparisonExp
+  fileSize: BigintComparisonExp
+  id: UuidComparisonExp
+  metadata: JsonbComparisonExp
+  retentionDays: IntComparisonExp
+  startedAt: TimestamptzComparisonExp
+  status: StringComparisonExp
+  storagePath: StringComparisonExp
+  tablesIncluded: StringArrayComparisonExp
+  user: usersBoolExp
+  userId: UuidComparisonExp
+}
+
+"""
+unique or primary key constraints on table "data_backups"
+"""
+enum DataBackupsConstraint {
+  """
+  unique or primary key constraint on columns "id"
+  """
+  data_backups_pkey
+}
+
+"""
+delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+"""
+input DataBackupsDeleteAtPathInput {
+  metadata: [String!]
+}
+
+"""
+delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+"""
+input DataBackupsDeleteElemInput {
+  metadata: Int
+}
+
+"""
+delete key/value pair or string element. key/value pairs are matched based on their key value
+"""
+input DataBackupsDeleteKeyInput {
+  metadata: String
+}
+
+"""
+input type for incrementing numeric columns in table "data_backups"
+"""
+input DataBackupsIncInput {
+  fileSize: bigint
+  retentionDays: Int
+}
+
+"""
+input type for inserting data into table "data_backups"
+"""
+input DataBackupsInsertInput {
+  backupType: String
+  checksum: String
+  completedAt: timestamptz
+  compressionType: String
+  createdAt: timestamptz
+  encryptionKeyHash: String
+  errorMessage: String
+  expiresAt: timestamptz
+  fileSize: bigint
+  id: uuid
+  metadata: jsonb
+  retentionDays: Int
+  startedAt: timestamptz
+  status: String
+  storagePath: String
+  tablesIncluded: [String!]
+  user: usersObjRelInsertInput
+  userId: uuid
+}
+
+"""aggregate max on columns"""
+type DataBackupsMaxFields {
+  backupType: String
+  checksum: String
+  completedAt: timestamptz
+  compressionType: String
+  createdAt: timestamptz
+  encryptionKeyHash: String
+  errorMessage: String
+  expiresAt: timestamptz
+  fileSize: bigint
+  id: uuid
+  retentionDays: Int
+  startedAt: timestamptz
+  status: String
+  storagePath: String
+  tablesIncluded: [String!]
+  userId: uuid
+}
+
+"""
+order by max() on columns of table "data_backups"
+"""
+input DataBackupsMaxOrderBy {
+  backupType: OrderBy
+  checksum: OrderBy
+  completedAt: OrderBy
+  compressionType: OrderBy
+  createdAt: OrderBy
+  encryptionKeyHash: OrderBy
+  errorMessage: OrderBy
+  expiresAt: OrderBy
+  fileSize: OrderBy
+  id: OrderBy
+  retentionDays: OrderBy
+  startedAt: OrderBy
+  status: OrderBy
+  storagePath: OrderBy
+  tablesIncluded: OrderBy
+  userId: OrderBy
+}
+
+"""aggregate min on columns"""
+type DataBackupsMinFields {
+  backupType: String
+  checksum: String
+  completedAt: timestamptz
+  compressionType: String
+  createdAt: timestamptz
+  encryptionKeyHash: String
+  errorMessage: String
+  expiresAt: timestamptz
+  fileSize: bigint
+  id: uuid
+  retentionDays: Int
+  startedAt: timestamptz
+  status: String
+  storagePath: String
+  tablesIncluded: [String!]
+  userId: uuid
+}
+
+"""
+order by min() on columns of table "data_backups"
+"""
+input DataBackupsMinOrderBy {
+  backupType: OrderBy
+  checksum: OrderBy
+  completedAt: OrderBy
+  compressionType: OrderBy
+  createdAt: OrderBy
+  encryptionKeyHash: OrderBy
+  errorMessage: OrderBy
+  expiresAt: OrderBy
+  fileSize: OrderBy
+  id: OrderBy
+  retentionDays: OrderBy
+  startedAt: OrderBy
+  status: OrderBy
+  storagePath: OrderBy
+  tablesIncluded: OrderBy
+  userId: OrderBy
+}
+
+"""
+response of any mutation on the table "data_backups"
+"""
+type DataBackupsMutationResponse {
+  """number of rows affected by the mutation"""
+  affectedRows: Int!
+  """data from the rows affected by the mutation"""
+  returning: [DataBackups!]!
+}
+
+"""
+on_conflict condition type for table "data_backups"
+"""
+input DataBackupsOnConflict {
+  constraint: DataBackupsConstraint!
+  updateColumns: [DataBackupsUpdateColumn!]! = []
+  where: DataBackupsBoolExp
+}
+
+"""Ordering options when selecting data from "data_backups"."""
+input DataBackupsOrderBy {
+  backupType: OrderBy
+  checksum: OrderBy
+  completedAt: OrderBy
+  compressionType: OrderBy
+  createdAt: OrderBy
+  encryptionKeyHash: OrderBy
+  errorMessage: OrderBy
+  expiresAt: OrderBy
+  fileSize: OrderBy
+  id: OrderBy
+  metadata: OrderBy
+  retentionDays: OrderBy
+  startedAt: OrderBy
+  status: OrderBy
+  storagePath: OrderBy
+  tablesIncluded: OrderBy
+  user: usersOrderBy
+  userId: OrderBy
+}
+
+"""primary key columns input for table: data_backups"""
+input DataBackupsPkColumnsInput {
+  id: uuid!
+}
+
+"""prepend existing jsonb value of filtered columns with new jsonb value"""
+input DataBackupsPrependInput {
+  metadata: jsonb
+}
+
+"""
+select columns of table "data_backups"
+"""
+enum DataBackupsSelectColumn {
+  """column name"""
+  backupType
+  """column name"""
+  checksum
+  """column name"""
+  completedAt
+  """column name"""
+  compressionType
+  """column name"""
+  createdAt
+  """column name"""
+  encryptionKeyHash
+  """column name"""
+  errorMessage
+  """column name"""
+  expiresAt
+  """column name"""
+  fileSize
+  """column name"""
+  id
+  """column name"""
+  metadata
+  """column name"""
+  retentionDays
+  """column name"""
+  startedAt
+  """column name"""
+  status
+  """column name"""
+  storagePath
+  """column name"""
+  tablesIncluded
+  """column name"""
+  userId
+}
+
+"""
+input type for updating data in table "data_backups"
+"""
+input DataBackupsSetInput {
+  backupType: String
+  checksum: String
+  completedAt: timestamptz
+  compressionType: String
+  createdAt: timestamptz
+  encryptionKeyHash: String
+  errorMessage: String
+  expiresAt: timestamptz
+  fileSize: bigint
+  id: uuid
+  metadata: jsonb
+  retentionDays: Int
+  startedAt: timestamptz
+  status: String
+  storagePath: String
+  tablesIncluded: [String!]
+  userId: uuid
+}
+
+"""aggregate stddev on columns"""
+type DataBackupsStddevFields {
+  fileSize: Float
+  retentionDays: Float
+}
+
+"""
+order by stddev() on columns of table "data_backups"
+"""
+input DataBackupsStddevOrderBy {
+  fileSize: OrderBy
+  retentionDays: OrderBy
+}
+
+"""aggregate stddevPop on columns"""
+type DataBackupsStddevPopFields {
+  fileSize: Float
+  retentionDays: Float
+}
+
+"""
+order by stddevPop() on columns of table "data_backups"
+"""
+input DataBackupsStddevPopOrderBy {
+  fileSize: OrderBy
+  retentionDays: OrderBy
+}
+
+"""aggregate stddevSamp on columns"""
+type DataBackupsStddevSampFields {
+  fileSize: Float
+  retentionDays: Float
+}
+
+"""
+order by stddevSamp() on columns of table "data_backups"
+"""
+input DataBackupsStddevSampOrderBy {
+  fileSize: OrderBy
+  retentionDays: OrderBy
+}
+
+"""
+Streaming cursor of the table "data_backups"
+"""
+input DataBackupsStreamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: DataBackupsStreamCursorValueInput!
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input DataBackupsStreamCursorValueInput {
+  backupType: String
+  checksum: String
+  completedAt: timestamptz
+  compressionType: String
+  createdAt: timestamptz
+  encryptionKeyHash: String
+  errorMessage: String
+  expiresAt: timestamptz
+  fileSize: bigint
+  id: uuid
+  metadata: jsonb
+  retentionDays: Int
+  startedAt: timestamptz
+  status: String
+  storagePath: String
+  tablesIncluded: [String!]
+  userId: uuid
+}
+
+"""aggregate sum on columns"""
+type DataBackupsSumFields {
+  fileSize: bigint
+  retentionDays: Int
+}
+
+"""
+order by sum() on columns of table "data_backups"
+"""
+input DataBackupsSumOrderBy {
+  fileSize: OrderBy
+  retentionDays: OrderBy
+}
+
+"""
+update columns of table "data_backups"
+"""
+enum DataBackupsUpdateColumn {
+  """column name"""
+  backupType
+  """column name"""
+  checksum
+  """column name"""
+  completedAt
+  """column name"""
+  compressionType
+  """column name"""
+  createdAt
+  """column name"""
+  encryptionKeyHash
+  """column name"""
+  errorMessage
+  """column name"""
+  expiresAt
+  """column name"""
+  fileSize
+  """column name"""
+  id
+  """column name"""
+  metadata
+  """column name"""
+  retentionDays
+  """column name"""
+  startedAt
+  """column name"""
+  status
+  """column name"""
+  storagePath
+  """column name"""
+  tablesIncluded
+  """column name"""
+  userId
+}
+
+input DataBackupsUpdates {
+  """append existing jsonb value of filtered columns with new jsonb value"""
+  _append: DataBackupsAppendInput
+  """
+  delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+  """
+  _deleteAtPath: DataBackupsDeleteAtPathInput
+  """
+  delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+  """
+  _deleteElem: DataBackupsDeleteElemInput
+  """
+  delete key/value pair or string element. key/value pairs are matched based on their key value
+  """
+  _deleteKey: DataBackupsDeleteKeyInput
+  """increments the numeric columns with given value of the filtered values"""
+  _inc: DataBackupsIncInput
+  """prepend existing jsonb value of filtered columns with new jsonb value"""
+  _prepend: DataBackupsPrependInput
+  """sets the columns of the filtered rows to the given values"""
+  _set: DataBackupsSetInput
+  """filter the rows which have to be updated"""
+  where: DataBackupsBoolExp!
+}
+
+"""aggregate varPop on columns"""
+type DataBackupsVarPopFields {
+  fileSize: Float
+  retentionDays: Float
+}
+
+"""
+order by varPop() on columns of table "data_backups"
+"""
+input DataBackupsVarPopOrderBy {
+  fileSize: OrderBy
+  retentionDays: OrderBy
+}
+
+"""aggregate varSamp on columns"""
+type DataBackupsVarSampFields {
+  fileSize: Float
+  retentionDays: Float
+}
+
+"""
+order by varSamp() on columns of table "data_backups"
+"""
+input DataBackupsVarSampOrderBy {
+  fileSize: OrderBy
+  retentionDays: OrderBy
+}
+
+"""aggregate variance on columns"""
+type DataBackupsVarianceFields {
+  fileSize: Float
+  retentionDays: Float
+}
+
+"""
+order by variance() on columns of table "data_backups"
+"""
+input DataBackupsVarianceOrderBy {
+  fileSize: OrderBy
+  retentionDays: OrderBy
+}
+
+"""
 Boolean expression to compare columns of type "date". All fields are combined with logical 'AND'.
 """
 input DateComparisonExp {
@@ -2760,12 +3344,981 @@ type PositionAdminDefaultsVarianceFields {
   defaultAdminPercentage: Float
 }
 
+"""
+columns and relationships of "rate_limits"
+"""
+type RateLimits {
+  createdAt: timestamptz
+  id: uuid!
+  limitExceededCount: Int!
+  requestCount: Int!
+  serviceId: String!
+  windowDurationMinutes: Int!
+  windowStart: timestamptz!
+}
+
+"""
+aggregated selection of "rate_limits"
+"""
+type RateLimitsAggregate {
+  aggregate: RateLimitsAggregateFields
+  nodes: [RateLimits!]!
+}
+
+"""
+aggregate fields of "rate_limits"
+"""
+type RateLimitsAggregateFields {
+  avg: RateLimitsAvgFields
+  count(columns: [RateLimitsSelectColumn!], distinct: Boolean): Int!
+  max: RateLimitsMaxFields
+  min: RateLimitsMinFields
+  stddev: RateLimitsStddevFields
+  stddevPop: RateLimitsStddevPopFields
+  stddevSamp: RateLimitsStddevSampFields
+  sum: RateLimitsSumFields
+  varPop: RateLimitsVarPopFields
+  varSamp: RateLimitsVarSampFields
+  variance: RateLimitsVarianceFields
+}
+
+"""aggregate avg on columns"""
+type RateLimitsAvgFields {
+  limitExceededCount: Float
+  requestCount: Float
+  windowDurationMinutes: Float
+}
+
+"""
+Boolean expression to filter rows from the table "rate_limits". All fields are combined with a logical 'AND'.
+"""
+input RateLimitsBoolExp {
+  _and: [RateLimitsBoolExp!]
+  _not: RateLimitsBoolExp
+  _or: [RateLimitsBoolExp!]
+  createdAt: TimestamptzComparisonExp
+  id: UuidComparisonExp
+  limitExceededCount: IntComparisonExp
+  requestCount: IntComparisonExp
+  serviceId: StringComparisonExp
+  windowDurationMinutes: IntComparisonExp
+  windowStart: TimestamptzComparisonExp
+}
+
+"""
+unique or primary key constraints on table "rate_limits"
+"""
+enum RateLimitsConstraint {
+  """
+  unique or primary key constraint on columns "id"
+  """
+  rate_limits_pkey
+  """
+  unique or primary key constraint on columns "window_start", "service_id"
+  """
+  rate_limits_service_id_window_start_key
+}
+
+"""
+input type for incrementing numeric columns in table "rate_limits"
+"""
+input RateLimitsIncInput {
+  limitExceededCount: Int
+  requestCount: Int
+  windowDurationMinutes: Int
+}
+
+"""
+input type for inserting data into table "rate_limits"
+"""
+input RateLimitsInsertInput {
+  createdAt: timestamptz
+  id: uuid
+  limitExceededCount: Int
+  requestCount: Int
+  serviceId: String
+  windowDurationMinutes: Int
+  windowStart: timestamptz
+}
+
+"""aggregate max on columns"""
+type RateLimitsMaxFields {
+  createdAt: timestamptz
+  id: uuid
+  limitExceededCount: Int
+  requestCount: Int
+  serviceId: String
+  windowDurationMinutes: Int
+  windowStart: timestamptz
+}
+
+"""aggregate min on columns"""
+type RateLimitsMinFields {
+  createdAt: timestamptz
+  id: uuid
+  limitExceededCount: Int
+  requestCount: Int
+  serviceId: String
+  windowDurationMinutes: Int
+  windowStart: timestamptz
+}
+
+"""
+response of any mutation on the table "rate_limits"
+"""
+type RateLimitsMutationResponse {
+  """number of rows affected by the mutation"""
+  affectedRows: Int!
+  """data from the rows affected by the mutation"""
+  returning: [RateLimits!]!
+}
+
+"""
+on_conflict condition type for table "rate_limits"
+"""
+input RateLimitsOnConflict {
+  constraint: RateLimitsConstraint!
+  updateColumns: [RateLimitsUpdateColumn!]! = []
+  where: RateLimitsBoolExp
+}
+
+"""Ordering options when selecting data from "rate_limits"."""
+input RateLimitsOrderBy {
+  createdAt: OrderBy
+  id: OrderBy
+  limitExceededCount: OrderBy
+  requestCount: OrderBy
+  serviceId: OrderBy
+  windowDurationMinutes: OrderBy
+  windowStart: OrderBy
+}
+
+"""primary key columns input for table: rate_limits"""
+input RateLimitsPkColumnsInput {
+  id: uuid!
+}
+
+"""
+select columns of table "rate_limits"
+"""
+enum RateLimitsSelectColumn {
+  """column name"""
+  createdAt
+  """column name"""
+  id
+  """column name"""
+  limitExceededCount
+  """column name"""
+  requestCount
+  """column name"""
+  serviceId
+  """column name"""
+  windowDurationMinutes
+  """column name"""
+  windowStart
+}
+
+"""
+input type for updating data in table "rate_limits"
+"""
+input RateLimitsSetInput {
+  createdAt: timestamptz
+  id: uuid
+  limitExceededCount: Int
+  requestCount: Int
+  serviceId: String
+  windowDurationMinutes: Int
+  windowStart: timestamptz
+}
+
+"""aggregate stddev on columns"""
+type RateLimitsStddevFields {
+  limitExceededCount: Float
+  requestCount: Float
+  windowDurationMinutes: Float
+}
+
+"""aggregate stddevPop on columns"""
+type RateLimitsStddevPopFields {
+  limitExceededCount: Float
+  requestCount: Float
+  windowDurationMinutes: Float
+}
+
+"""aggregate stddevSamp on columns"""
+type RateLimitsStddevSampFields {
+  limitExceededCount: Float
+  requestCount: Float
+  windowDurationMinutes: Float
+}
+
+"""
+Streaming cursor of the table "rate_limits"
+"""
+input RateLimitsStreamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: RateLimitsStreamCursorValueInput!
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input RateLimitsStreamCursorValueInput {
+  createdAt: timestamptz
+  id: uuid
+  limitExceededCount: Int
+  requestCount: Int
+  serviceId: String
+  windowDurationMinutes: Int
+  windowStart: timestamptz
+}
+
+"""aggregate sum on columns"""
+type RateLimitsSumFields {
+  limitExceededCount: Int
+  requestCount: Int
+  windowDurationMinutes: Int
+}
+
+"""
+update columns of table "rate_limits"
+"""
+enum RateLimitsUpdateColumn {
+  """column name"""
+  createdAt
+  """column name"""
+  id
+  """column name"""
+  limitExceededCount
+  """column name"""
+  requestCount
+  """column name"""
+  serviceId
+  """column name"""
+  windowDurationMinutes
+  """column name"""
+  windowStart
+}
+
+input RateLimitsUpdates {
+  """increments the numeric columns with given value of the filtered values"""
+  _inc: RateLimitsIncInput
+  """sets the columns of the filtered rows to the given values"""
+  _set: RateLimitsSetInput
+  """filter the rows which have to be updated"""
+  where: RateLimitsBoolExp!
+}
+
+"""aggregate varPop on columns"""
+type RateLimitsVarPopFields {
+  limitExceededCount: Float
+  requestCount: Float
+  windowDurationMinutes: Float
+}
+
+"""aggregate varSamp on columns"""
+type RateLimitsVarSampFields {
+  limitExceededCount: Float
+  requestCount: Float
+  windowDurationMinutes: Float
+}
+
+"""aggregate variance on columns"""
+type RateLimitsVarianceFields {
+  limitExceededCount: Float
+  requestCount: Float
+  windowDurationMinutes: Float
+}
+
 type ScheduleResponse {
   dates: [String!]
   errors: [String!]
   message: String
   scheduleId: String
   success: Boolean!
+}
+
+"""
+columns and relationships of "security_alerts"
+"""
+type SecurityAlerts {
+  alertType: String!
+  createdAt: timestamptz
+  description: String!
+  id: uuid!
+  ipAddress: inet
+  isResolved: Boolean
+  metadata(
+    """JSON select path"""
+    path: String
+  ): jsonb
+  resolutionNotes: String
+  resolvedAt: timestamptz
+  resolvedBy: uuid
+  """An object relationship"""
+  resolvedByUser: users
+  severity: String
+  title: String!
+  """An object relationship"""
+  user: users
+  userAgent: String
+  userId: uuid
+}
+
+"""
+aggregated selection of "security_alerts"
+"""
+type SecurityAlertsAggregate {
+  aggregate: SecurityAlertsAggregateFields
+  nodes: [SecurityAlerts!]!
+}
+
+"""
+aggregate fields of "security_alerts"
+"""
+type SecurityAlertsAggregateFields {
+  count(columns: [SecurityAlertsSelectColumn!], distinct: Boolean): Int!
+  max: SecurityAlertsMaxFields
+  min: SecurityAlertsMinFields
+}
+
+"""append existing jsonb value of filtered columns with new jsonb value"""
+input SecurityAlertsAppendInput {
+  metadata: jsonb
+}
+
+"""
+Boolean expression to filter rows from the table "security_alerts". All fields are combined with a logical 'AND'.
+"""
+input SecurityAlertsBoolExp {
+  _and: [SecurityAlertsBoolExp!]
+  _not: SecurityAlertsBoolExp
+  _or: [SecurityAlertsBoolExp!]
+  alertType: StringComparisonExp
+  createdAt: TimestamptzComparisonExp
+  description: StringComparisonExp
+  id: UuidComparisonExp
+  ipAddress: InetComparisonExp
+  isResolved: BooleanComparisonExp
+  metadata: JsonbComparisonExp
+  resolutionNotes: StringComparisonExp
+  resolvedAt: TimestamptzComparisonExp
+  resolvedBy: UuidComparisonExp
+  resolvedByUser: usersBoolExp
+  severity: StringComparisonExp
+  title: StringComparisonExp
+  user: usersBoolExp
+  userAgent: StringComparisonExp
+  userId: UuidComparisonExp
+}
+
+"""
+unique or primary key constraints on table "security_alerts"
+"""
+enum SecurityAlertsConstraint {
+  """
+  unique or primary key constraint on columns "id"
+  """
+  security_alerts_pkey
+}
+
+"""
+delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+"""
+input SecurityAlertsDeleteAtPathInput {
+  metadata: [String!]
+}
+
+"""
+delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+"""
+input SecurityAlertsDeleteElemInput {
+  metadata: Int
+}
+
+"""
+delete key/value pair or string element. key/value pairs are matched based on their key value
+"""
+input SecurityAlertsDeleteKeyInput {
+  metadata: String
+}
+
+"""
+input type for inserting data into table "security_alerts"
+"""
+input SecurityAlertsInsertInput {
+  alertType: String
+  createdAt: timestamptz
+  description: String
+  id: uuid
+  ipAddress: inet
+  isResolved: Boolean
+  metadata: jsonb
+  resolutionNotes: String
+  resolvedAt: timestamptz
+  resolvedBy: uuid
+  resolvedByUser: usersObjRelInsertInput
+  severity: String
+  title: String
+  user: usersObjRelInsertInput
+  userAgent: String
+  userId: uuid
+}
+
+"""aggregate max on columns"""
+type SecurityAlertsMaxFields {
+  alertType: String
+  createdAt: timestamptz
+  description: String
+  id: uuid
+  resolutionNotes: String
+  resolvedAt: timestamptz
+  resolvedBy: uuid
+  severity: String
+  title: String
+  userAgent: String
+  userId: uuid
+}
+
+"""aggregate min on columns"""
+type SecurityAlertsMinFields {
+  alertType: String
+  createdAt: timestamptz
+  description: String
+  id: uuid
+  resolutionNotes: String
+  resolvedAt: timestamptz
+  resolvedBy: uuid
+  severity: String
+  title: String
+  userAgent: String
+  userId: uuid
+}
+
+"""
+response of any mutation on the table "security_alerts"
+"""
+type SecurityAlertsMutationResponse {
+  """number of rows affected by the mutation"""
+  affectedRows: Int!
+  """data from the rows affected by the mutation"""
+  returning: [SecurityAlerts!]!
+}
+
+"""
+on_conflict condition type for table "security_alerts"
+"""
+input SecurityAlertsOnConflict {
+  constraint: SecurityAlertsConstraint!
+  updateColumns: [SecurityAlertsUpdateColumn!]! = []
+  where: SecurityAlertsBoolExp
+}
+
+"""Ordering options when selecting data from "security_alerts"."""
+input SecurityAlertsOrderBy {
+  alertType: OrderBy
+  createdAt: OrderBy
+  description: OrderBy
+  id: OrderBy
+  ipAddress: OrderBy
+  isResolved: OrderBy
+  metadata: OrderBy
+  resolutionNotes: OrderBy
+  resolvedAt: OrderBy
+  resolvedBy: OrderBy
+  resolvedByUser: usersOrderBy
+  severity: OrderBy
+  title: OrderBy
+  user: usersOrderBy
+  userAgent: OrderBy
+  userId: OrderBy
+}
+
+"""primary key columns input for table: security_alerts"""
+input SecurityAlertsPkColumnsInput {
+  id: uuid!
+}
+
+"""prepend existing jsonb value of filtered columns with new jsonb value"""
+input SecurityAlertsPrependInput {
+  metadata: jsonb
+}
+
+"""
+select columns of table "security_alerts"
+"""
+enum SecurityAlertsSelectColumn {
+  """column name"""
+  alertType
+  """column name"""
+  createdAt
+  """column name"""
+  description
+  """column name"""
+  id
+  """column name"""
+  ipAddress
+  """column name"""
+  isResolved
+  """column name"""
+  metadata
+  """column name"""
+  resolutionNotes
+  """column name"""
+  resolvedAt
+  """column name"""
+  resolvedBy
+  """column name"""
+  severity
+  """column name"""
+  title
+  """column name"""
+  userAgent
+  """column name"""
+  userId
+}
+
+"""
+input type for updating data in table "security_alerts"
+"""
+input SecurityAlertsSetInput {
+  alertType: String
+  createdAt: timestamptz
+  description: String
+  id: uuid
+  ipAddress: inet
+  isResolved: Boolean
+  metadata: jsonb
+  resolutionNotes: String
+  resolvedAt: timestamptz
+  resolvedBy: uuid
+  severity: String
+  title: String
+  userAgent: String
+  userId: uuid
+}
+
+"""
+Streaming cursor of the table "security_alerts"
+"""
+input SecurityAlertsStreamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: SecurityAlertsStreamCursorValueInput!
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input SecurityAlertsStreamCursorValueInput {
+  alertType: String
+  createdAt: timestamptz
+  description: String
+  id: uuid
+  ipAddress: inet
+  isResolved: Boolean
+  metadata: jsonb
+  resolutionNotes: String
+  resolvedAt: timestamptz
+  resolvedBy: uuid
+  severity: String
+  title: String
+  userAgent: String
+  userId: uuid
+}
+
+"""
+update columns of table "security_alerts"
+"""
+enum SecurityAlertsUpdateColumn {
+  """column name"""
+  alertType
+  """column name"""
+  createdAt
+  """column name"""
+  description
+  """column name"""
+  id
+  """column name"""
+  ipAddress
+  """column name"""
+  isResolved
+  """column name"""
+  metadata
+  """column name"""
+  resolutionNotes
+  """column name"""
+  resolvedAt
+  """column name"""
+  resolvedBy
+  """column name"""
+  severity
+  """column name"""
+  title
+  """column name"""
+  userAgent
+  """column name"""
+  userId
+}
+
+input SecurityAlertsUpdates {
+  """append existing jsonb value of filtered columns with new jsonb value"""
+  _append: SecurityAlertsAppendInput
+  """
+  delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+  """
+  _deleteAtPath: SecurityAlertsDeleteAtPathInput
+  """
+  delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+  """
+  _deleteElem: SecurityAlertsDeleteElemInput
+  """
+  delete key/value pair or string element. key/value pairs are matched based on their key value
+  """
+  _deleteKey: SecurityAlertsDeleteKeyInput
+  """prepend existing jsonb value of filtered columns with new jsonb value"""
+  _prepend: SecurityAlertsPrependInput
+  """sets the columns of the filtered rows to the given values"""
+  _set: SecurityAlertsSetInput
+  """filter the rows which have to be updated"""
+  where: SecurityAlertsBoolExp!
+}
+
+"""
+columns and relationships of "security_settings"
+"""
+type SecuritySettings {
+  createdAt: timestamptz
+  id: uuid!
+  isSystemWide: Boolean
+  settingKey: String!
+  settingValue(
+    """JSON select path"""
+    path: String
+  ): jsonb!
+  updatedAt: timestamptz
+  updatedBy: uuid
+  """An object relationship"""
+  user: users
+  userId: uuid
+}
+
+"""
+aggregated selection of "security_settings"
+"""
+type SecuritySettingsAggregate {
+  aggregate: SecuritySettingsAggregateFields
+  nodes: [SecuritySettings!]!
+}
+
+input SecuritySettingsAggregateBoolExp {
+  bool_and: securitySettingsAggregateBoolExpBool_and
+  bool_or: securitySettingsAggregateBoolExpBool_or
+  count: securitySettingsAggregateBoolExpCount
+}
+
+"""
+aggregate fields of "security_settings"
+"""
+type SecuritySettingsAggregateFields {
+  count(columns: [SecuritySettingsSelectColumn!], distinct: Boolean): Int!
+  max: SecuritySettingsMaxFields
+  min: SecuritySettingsMinFields
+}
+
+"""
+order by aggregate values of table "security_settings"
+"""
+input SecuritySettingsAggregateOrderBy {
+  count: OrderBy
+  max: SecuritySettingsMaxOrderBy
+  min: SecuritySettingsMinOrderBy
+}
+
+"""append existing jsonb value of filtered columns with new jsonb value"""
+input SecuritySettingsAppendInput {
+  settingValue: jsonb
+}
+
+"""
+input type for inserting array relation for remote table "security_settings"
+"""
+input SecuritySettingsArrRelInsertInput {
+  data: [SecuritySettingsInsertInput!]!
+  """upsert condition"""
+  onConflict: SecuritySettingsOnConflict
+}
+
+"""
+Boolean expression to filter rows from the table "security_settings". All fields are combined with a logical 'AND'.
+"""
+input SecuritySettingsBoolExp {
+  _and: [SecuritySettingsBoolExp!]
+  _not: SecuritySettingsBoolExp
+  _or: [SecuritySettingsBoolExp!]
+  createdAt: TimestamptzComparisonExp
+  id: UuidComparisonExp
+  isSystemWide: BooleanComparisonExp
+  settingKey: StringComparisonExp
+  settingValue: JsonbComparisonExp
+  updatedAt: TimestamptzComparisonExp
+  updatedBy: UuidComparisonExp
+  user: usersBoolExp
+  userId: UuidComparisonExp
+}
+
+"""
+unique or primary key constraints on table "security_settings"
+"""
+enum SecuritySettingsConstraint {
+  """
+  unique or primary key constraint on columns "id"
+  """
+  security_settings_pkey
+  """
+  unique or primary key constraint on columns "user_id", "setting_key"
+  """
+  security_settings_user_id_setting_key_key
+}
+
+"""
+delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+"""
+input SecuritySettingsDeleteAtPathInput {
+  settingValue: [String!]
+}
+
+"""
+delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+"""
+input SecuritySettingsDeleteElemInput {
+  settingValue: Int
+}
+
+"""
+delete key/value pair or string element. key/value pairs are matched based on their key value
+"""
+input SecuritySettingsDeleteKeyInput {
+  settingValue: String
+}
+
+"""
+input type for inserting data into table "security_settings"
+"""
+input SecuritySettingsInsertInput {
+  createdAt: timestamptz
+  id: uuid
+  isSystemWide: Boolean
+  settingKey: String
+  settingValue: jsonb
+  updatedAt: timestamptz
+  updatedBy: uuid
+  user: usersObjRelInsertInput
+  userId: uuid
+}
+
+"""aggregate max on columns"""
+type SecuritySettingsMaxFields {
+  createdAt: timestamptz
+  id: uuid
+  settingKey: String
+  updatedAt: timestamptz
+  updatedBy: uuid
+  userId: uuid
+}
+
+"""
+order by max() on columns of table "security_settings"
+"""
+input SecuritySettingsMaxOrderBy {
+  createdAt: OrderBy
+  id: OrderBy
+  settingKey: OrderBy
+  updatedAt: OrderBy
+  updatedBy: OrderBy
+  userId: OrderBy
+}
+
+"""aggregate min on columns"""
+type SecuritySettingsMinFields {
+  createdAt: timestamptz
+  id: uuid
+  settingKey: String
+  updatedAt: timestamptz
+  updatedBy: uuid
+  userId: uuid
+}
+
+"""
+order by min() on columns of table "security_settings"
+"""
+input SecuritySettingsMinOrderBy {
+  createdAt: OrderBy
+  id: OrderBy
+  settingKey: OrderBy
+  updatedAt: OrderBy
+  updatedBy: OrderBy
+  userId: OrderBy
+}
+
+"""
+response of any mutation on the table "security_settings"
+"""
+type SecuritySettingsMutationResponse {
+  """number of rows affected by the mutation"""
+  affectedRows: Int!
+  """data from the rows affected by the mutation"""
+  returning: [SecuritySettings!]!
+}
+
+"""
+on_conflict condition type for table "security_settings"
+"""
+input SecuritySettingsOnConflict {
+  constraint: SecuritySettingsConstraint!
+  updateColumns: [SecuritySettingsUpdateColumn!]! = []
+  where: SecuritySettingsBoolExp
+}
+
+"""Ordering options when selecting data from "security_settings"."""
+input SecuritySettingsOrderBy {
+  createdAt: OrderBy
+  id: OrderBy
+  isSystemWide: OrderBy
+  settingKey: OrderBy
+  settingValue: OrderBy
+  updatedAt: OrderBy
+  updatedBy: OrderBy
+  user: usersOrderBy
+  userId: OrderBy
+}
+
+"""primary key columns input for table: security_settings"""
+input SecuritySettingsPkColumnsInput {
+  id: uuid!
+}
+
+"""prepend existing jsonb value of filtered columns with new jsonb value"""
+input SecuritySettingsPrependInput {
+  settingValue: jsonb
+}
+
+"""
+select columns of table "security_settings"
+"""
+enum SecuritySettingsSelectColumn {
+  """column name"""
+  createdAt
+  """column name"""
+  id
+  """column name"""
+  isSystemWide
+  """column name"""
+  settingKey
+  """column name"""
+  settingValue
+  """column name"""
+  updatedAt
+  """column name"""
+  updatedBy
+  """column name"""
+  userId
+}
+
+"""
+select "securitySettingsAggregateBoolExpBool_andArgumentsColumns" columns of table "security_settings"
+"""
+enum SecuritySettingsSelectColumnSecuritySettingsAggregateBoolExpBool_andArgumentsColumns {
+  """column name"""
+  isSystemWide
+}
+
+"""
+select "securitySettingsAggregateBoolExpBool_orArgumentsColumns" columns of table "security_settings"
+"""
+enum SecuritySettingsSelectColumnSecuritySettingsAggregateBoolExpBool_orArgumentsColumns {
+  """column name"""
+  isSystemWide
+}
+
+"""
+input type for updating data in table "security_settings"
+"""
+input SecuritySettingsSetInput {
+  createdAt: timestamptz
+  id: uuid
+  isSystemWide: Boolean
+  settingKey: String
+  settingValue: jsonb
+  updatedAt: timestamptz
+  updatedBy: uuid
+  userId: uuid
+}
+
+"""
+Streaming cursor of the table "security_settings"
+"""
+input SecuritySettingsStreamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: SecuritySettingsStreamCursorValueInput!
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input SecuritySettingsStreamCursorValueInput {
+  createdAt: timestamptz
+  id: uuid
+  isSystemWide: Boolean
+  settingKey: String
+  settingValue: jsonb
+  updatedAt: timestamptz
+  updatedBy: uuid
+  userId: uuid
+}
+
+"""
+update columns of table "security_settings"
+"""
+enum SecuritySettingsUpdateColumn {
+  """column name"""
+  createdAt
+  """column name"""
+  id
+  """column name"""
+  isSystemWide
+  """column name"""
+  settingKey
+  """column name"""
+  settingValue
+  """column name"""
+  updatedAt
+  """column name"""
+  updatedBy
+  """column name"""
+  userId
+}
+
+input SecuritySettingsUpdates {
+  """append existing jsonb value of filtered columns with new jsonb value"""
+  _append: SecuritySettingsAppendInput
+  """
+  delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+  """
+  _deleteAtPath: SecuritySettingsDeleteAtPathInput
+  """
+  delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+  """
+  _deleteElem: SecuritySettingsDeleteElemInput
+  """
+  delete key/value pair or string element. key/value pairs are matched based on their key value
+  """
+  _deleteKey: SecuritySettingsDeleteKeyInput
+  """prepend existing jsonb value of filtered columns with new jsonb value"""
+  _prepend: SecuritySettingsPrependInput
+  """sets the columns of the filtered rows to the given values"""
+  _set: SecuritySettingsSetInput
+  """filter the rows which have to be updated"""
+  where: SecuritySettingsBoolExp!
 }
 
 """Staff performance metrics for billing and time tracking"""
@@ -3049,6 +4602,707 @@ input StringComparisonExp {
   _regex: String
   """does the column match the given SQL regular expression"""
   _similar: String
+}
+
+"""
+columns and relationships of "system_configuration"
+"""
+type SystemConfiguration {
+  configKey: String!
+  configType: String!
+  configValue(
+    """JSON select path"""
+    path: String
+  ): jsonb!
+  createdAt: timestamptz
+  description: String
+  id: uuid!
+  isActive: Boolean!
+  updatedAt: timestamptz
+}
+
+"""
+aggregated selection of "system_configuration"
+"""
+type SystemConfigurationAggregate {
+  aggregate: SystemConfigurationAggregateFields
+  nodes: [SystemConfiguration!]!
+}
+
+"""
+aggregate fields of "system_configuration"
+"""
+type SystemConfigurationAggregateFields {
+  count(columns: [SystemConfigurationSelectColumn!], distinct: Boolean): Int!
+  max: SystemConfigurationMaxFields
+  min: SystemConfigurationMinFields
+}
+
+"""append existing jsonb value of filtered columns with new jsonb value"""
+input SystemConfigurationAppendInput {
+  configValue: jsonb
+}
+
+"""
+Boolean expression to filter rows from the table "system_configuration". All fields are combined with a logical 'AND'.
+"""
+input SystemConfigurationBoolExp {
+  _and: [SystemConfigurationBoolExp!]
+  _not: SystemConfigurationBoolExp
+  _or: [SystemConfigurationBoolExp!]
+  configKey: StringComparisonExp
+  configType: StringComparisonExp
+  configValue: JsonbComparisonExp
+  createdAt: TimestamptzComparisonExp
+  description: StringComparisonExp
+  id: UuidComparisonExp
+  isActive: BooleanComparisonExp
+  updatedAt: TimestamptzComparisonExp
+}
+
+"""
+unique or primary key constraints on table "system_configuration"
+"""
+enum SystemConfigurationConstraint {
+  """
+  unique or primary key constraint on columns "config_key"
+  """
+  system_configuration_config_key_key
+  """
+  unique or primary key constraint on columns "id"
+  """
+  system_configuration_pkey
+}
+
+"""
+delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+"""
+input SystemConfigurationDeleteAtPathInput {
+  configValue: [String!]
+}
+
+"""
+delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+"""
+input SystemConfigurationDeleteElemInput {
+  configValue: Int
+}
+
+"""
+delete key/value pair or string element. key/value pairs are matched based on their key value
+"""
+input SystemConfigurationDeleteKeyInput {
+  configValue: String
+}
+
+"""
+input type for inserting data into table "system_configuration"
+"""
+input SystemConfigurationInsertInput {
+  configKey: String
+  configType: String
+  configValue: jsonb
+  createdAt: timestamptz
+  description: String
+  id: uuid
+  isActive: Boolean
+  updatedAt: timestamptz
+}
+
+"""aggregate max on columns"""
+type SystemConfigurationMaxFields {
+  configKey: String
+  configType: String
+  createdAt: timestamptz
+  description: String
+  id: uuid
+  updatedAt: timestamptz
+}
+
+"""aggregate min on columns"""
+type SystemConfigurationMinFields {
+  configKey: String
+  configType: String
+  createdAt: timestamptz
+  description: String
+  id: uuid
+  updatedAt: timestamptz
+}
+
+"""
+response of any mutation on the table "system_configuration"
+"""
+type SystemConfigurationMutationResponse {
+  """number of rows affected by the mutation"""
+  affectedRows: Int!
+  """data from the rows affected by the mutation"""
+  returning: [SystemConfiguration!]!
+}
+
+"""
+on_conflict condition type for table "system_configuration"
+"""
+input SystemConfigurationOnConflict {
+  constraint: SystemConfigurationConstraint!
+  updateColumns: [SystemConfigurationUpdateColumn!]! = []
+  where: SystemConfigurationBoolExp
+}
+
+"""Ordering options when selecting data from "system_configuration"."""
+input SystemConfigurationOrderBy {
+  configKey: OrderBy
+  configType: OrderBy
+  configValue: OrderBy
+  createdAt: OrderBy
+  description: OrderBy
+  id: OrderBy
+  isActive: OrderBy
+  updatedAt: OrderBy
+}
+
+"""primary key columns input for table: system_configuration"""
+input SystemConfigurationPkColumnsInput {
+  id: uuid!
+}
+
+"""prepend existing jsonb value of filtered columns with new jsonb value"""
+input SystemConfigurationPrependInput {
+  configValue: jsonb
+}
+
+"""
+select columns of table "system_configuration"
+"""
+enum SystemConfigurationSelectColumn {
+  """column name"""
+  configKey
+  """column name"""
+  configType
+  """column name"""
+  configValue
+  """column name"""
+  createdAt
+  """column name"""
+  description
+  """column name"""
+  id
+  """column name"""
+  isActive
+  """column name"""
+  updatedAt
+}
+
+"""
+input type for updating data in table "system_configuration"
+"""
+input SystemConfigurationSetInput {
+  configKey: String
+  configType: String
+  configValue: jsonb
+  createdAt: timestamptz
+  description: String
+  id: uuid
+  isActive: Boolean
+  updatedAt: timestamptz
+}
+
+"""
+Streaming cursor of the table "system_configuration"
+"""
+input SystemConfigurationStreamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: SystemConfigurationStreamCursorValueInput!
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input SystemConfigurationStreamCursorValueInput {
+  configKey: String
+  configType: String
+  configValue: jsonb
+  createdAt: timestamptz
+  description: String
+  id: uuid
+  isActive: Boolean
+  updatedAt: timestamptz
+}
+
+"""
+update columns of table "system_configuration"
+"""
+enum SystemConfigurationUpdateColumn {
+  """column name"""
+  configKey
+  """column name"""
+  configType
+  """column name"""
+  configValue
+  """column name"""
+  createdAt
+  """column name"""
+  description
+  """column name"""
+  id
+  """column name"""
+  isActive
+  """column name"""
+  updatedAt
+}
+
+input SystemConfigurationUpdates {
+  """append existing jsonb value of filtered columns with new jsonb value"""
+  _append: SystemConfigurationAppendInput
+  """
+  delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+  """
+  _deleteAtPath: SystemConfigurationDeleteAtPathInput
+  """
+  delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+  """
+  _deleteElem: SystemConfigurationDeleteElemInput
+  """
+  delete key/value pair or string element. key/value pairs are matched based on their key value
+  """
+  _deleteKey: SystemConfigurationDeleteKeyInput
+  """prepend existing jsonb value of filtered columns with new jsonb value"""
+  _prepend: SystemConfigurationPrependInput
+  """sets the columns of the filtered rows to the given values"""
+  _set: SystemConfigurationSetInput
+  """filter the rows which have to be updated"""
+  where: SystemConfigurationBoolExp!
+}
+
+"""
+columns and relationships of "system_health"
+"""
+type SystemHealth {
+  activeUsers: Int
+  alerts(
+    """JSON select path"""
+    path: String
+  ): jsonb
+  apiResponseTime: Int
+  cpuUsage: numeric
+  databaseResponseTime: Int
+  diskUsage: numeric
+  errorRate: numeric
+  id: uuid!
+  memoryUsage: numeric
+  metadata(
+    """JSON select path"""
+    path: String
+  ): jsonb
+  status: String
+  timestamp: timestamptz
+}
+
+"""
+aggregated selection of "system_health"
+"""
+type SystemHealthAggregate {
+  aggregate: SystemHealthAggregateFields
+  nodes: [SystemHealth!]!
+}
+
+"""
+aggregate fields of "system_health"
+"""
+type SystemHealthAggregateFields {
+  avg: SystemHealthAvgFields
+  count(columns: [SystemHealthSelectColumn!], distinct: Boolean): Int!
+  max: SystemHealthMaxFields
+  min: SystemHealthMinFields
+  stddev: SystemHealthStddevFields
+  stddevPop: SystemHealthStddevPopFields
+  stddevSamp: SystemHealthStddevSampFields
+  sum: SystemHealthSumFields
+  varPop: SystemHealthVarPopFields
+  varSamp: SystemHealthVarSampFields
+  variance: SystemHealthVarianceFields
+}
+
+"""append existing jsonb value of filtered columns with new jsonb value"""
+input SystemHealthAppendInput {
+  alerts: jsonb
+  metadata: jsonb
+}
+
+"""aggregate avg on columns"""
+type SystemHealthAvgFields {
+  activeUsers: Float
+  apiResponseTime: Float
+  cpuUsage: Float
+  databaseResponseTime: Float
+  diskUsage: Float
+  errorRate: Float
+  memoryUsage: Float
+}
+
+"""
+Boolean expression to filter rows from the table "system_health". All fields are combined with a logical 'AND'.
+"""
+input SystemHealthBoolExp {
+  _and: [SystemHealthBoolExp!]
+  _not: SystemHealthBoolExp
+  _or: [SystemHealthBoolExp!]
+  activeUsers: IntComparisonExp
+  alerts: JsonbComparisonExp
+  apiResponseTime: IntComparisonExp
+  cpuUsage: NumericComparisonExp
+  databaseResponseTime: IntComparisonExp
+  diskUsage: NumericComparisonExp
+  errorRate: NumericComparisonExp
+  id: UuidComparisonExp
+  memoryUsage: NumericComparisonExp
+  metadata: JsonbComparisonExp
+  status: StringComparisonExp
+  timestamp: TimestamptzComparisonExp
+}
+
+"""
+unique or primary key constraints on table "system_health"
+"""
+enum SystemHealthConstraint {
+  """
+  unique or primary key constraint on columns "id"
+  """
+  system_health_pkey
+}
+
+"""
+delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+"""
+input SystemHealthDeleteAtPathInput {
+  alerts: [String!]
+  metadata: [String!]
+}
+
+"""
+delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+"""
+input SystemHealthDeleteElemInput {
+  alerts: Int
+  metadata: Int
+}
+
+"""
+delete key/value pair or string element. key/value pairs are matched based on their key value
+"""
+input SystemHealthDeleteKeyInput {
+  alerts: String
+  metadata: String
+}
+
+"""
+input type for incrementing numeric columns in table "system_health"
+"""
+input SystemHealthIncInput {
+  activeUsers: Int
+  apiResponseTime: Int
+  cpuUsage: numeric
+  databaseResponseTime: Int
+  diskUsage: numeric
+  errorRate: numeric
+  memoryUsage: numeric
+}
+
+"""
+input type for inserting data into table "system_health"
+"""
+input SystemHealthInsertInput {
+  activeUsers: Int
+  alerts: jsonb
+  apiResponseTime: Int
+  cpuUsage: numeric
+  databaseResponseTime: Int
+  diskUsage: numeric
+  errorRate: numeric
+  id: uuid
+  memoryUsage: numeric
+  metadata: jsonb
+  status: String
+  timestamp: timestamptz
+}
+
+"""aggregate max on columns"""
+type SystemHealthMaxFields {
+  activeUsers: Int
+  apiResponseTime: Int
+  cpuUsage: numeric
+  databaseResponseTime: Int
+  diskUsage: numeric
+  errorRate: numeric
+  id: uuid
+  memoryUsage: numeric
+  status: String
+  timestamp: timestamptz
+}
+
+"""aggregate min on columns"""
+type SystemHealthMinFields {
+  activeUsers: Int
+  apiResponseTime: Int
+  cpuUsage: numeric
+  databaseResponseTime: Int
+  diskUsage: numeric
+  errorRate: numeric
+  id: uuid
+  memoryUsage: numeric
+  status: String
+  timestamp: timestamptz
+}
+
+"""
+response of any mutation on the table "system_health"
+"""
+type SystemHealthMutationResponse {
+  """number of rows affected by the mutation"""
+  affectedRows: Int!
+  """data from the rows affected by the mutation"""
+  returning: [SystemHealth!]!
+}
+
+"""
+on_conflict condition type for table "system_health"
+"""
+input SystemHealthOnConflict {
+  constraint: SystemHealthConstraint!
+  updateColumns: [SystemHealthUpdateColumn!]! = []
+  where: SystemHealthBoolExp
+}
+
+"""Ordering options when selecting data from "system_health"."""
+input SystemHealthOrderBy {
+  activeUsers: OrderBy
+  alerts: OrderBy
+  apiResponseTime: OrderBy
+  cpuUsage: OrderBy
+  databaseResponseTime: OrderBy
+  diskUsage: OrderBy
+  errorRate: OrderBy
+  id: OrderBy
+  memoryUsage: OrderBy
+  metadata: OrderBy
+  status: OrderBy
+  timestamp: OrderBy
+}
+
+"""primary key columns input for table: system_health"""
+input SystemHealthPkColumnsInput {
+  id: uuid!
+}
+
+"""prepend existing jsonb value of filtered columns with new jsonb value"""
+input SystemHealthPrependInput {
+  alerts: jsonb
+  metadata: jsonb
+}
+
+"""
+select columns of table "system_health"
+"""
+enum SystemHealthSelectColumn {
+  """column name"""
+  activeUsers
+  """column name"""
+  alerts
+  """column name"""
+  apiResponseTime
+  """column name"""
+  cpuUsage
+  """column name"""
+  databaseResponseTime
+  """column name"""
+  diskUsage
+  """column name"""
+  errorRate
+  """column name"""
+  id
+  """column name"""
+  memoryUsage
+  """column name"""
+  metadata
+  """column name"""
+  status
+  """column name"""
+  timestamp
+}
+
+"""
+input type for updating data in table "system_health"
+"""
+input SystemHealthSetInput {
+  activeUsers: Int
+  alerts: jsonb
+  apiResponseTime: Int
+  cpuUsage: numeric
+  databaseResponseTime: Int
+  diskUsage: numeric
+  errorRate: numeric
+  id: uuid
+  memoryUsage: numeric
+  metadata: jsonb
+  status: String
+  timestamp: timestamptz
+}
+
+"""aggregate stddev on columns"""
+type SystemHealthStddevFields {
+  activeUsers: Float
+  apiResponseTime: Float
+  cpuUsage: Float
+  databaseResponseTime: Float
+  diskUsage: Float
+  errorRate: Float
+  memoryUsage: Float
+}
+
+"""aggregate stddevPop on columns"""
+type SystemHealthStddevPopFields {
+  activeUsers: Float
+  apiResponseTime: Float
+  cpuUsage: Float
+  databaseResponseTime: Float
+  diskUsage: Float
+  errorRate: Float
+  memoryUsage: Float
+}
+
+"""aggregate stddevSamp on columns"""
+type SystemHealthStddevSampFields {
+  activeUsers: Float
+  apiResponseTime: Float
+  cpuUsage: Float
+  databaseResponseTime: Float
+  diskUsage: Float
+  errorRate: Float
+  memoryUsage: Float
+}
+
+"""
+Streaming cursor of the table "system_health"
+"""
+input SystemHealthStreamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: SystemHealthStreamCursorValueInput!
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input SystemHealthStreamCursorValueInput {
+  activeUsers: Int
+  alerts: jsonb
+  apiResponseTime: Int
+  cpuUsage: numeric
+  databaseResponseTime: Int
+  diskUsage: numeric
+  errorRate: numeric
+  id: uuid
+  memoryUsage: numeric
+  metadata: jsonb
+  status: String
+  timestamp: timestamptz
+}
+
+"""aggregate sum on columns"""
+type SystemHealthSumFields {
+  activeUsers: Int
+  apiResponseTime: Int
+  cpuUsage: numeric
+  databaseResponseTime: Int
+  diskUsage: numeric
+  errorRate: numeric
+  memoryUsage: numeric
+}
+
+"""
+update columns of table "system_health"
+"""
+enum SystemHealthUpdateColumn {
+  """column name"""
+  activeUsers
+  """column name"""
+  alerts
+  """column name"""
+  apiResponseTime
+  """column name"""
+  cpuUsage
+  """column name"""
+  databaseResponseTime
+  """column name"""
+  diskUsage
+  """column name"""
+  errorRate
+  """column name"""
+  id
+  """column name"""
+  memoryUsage
+  """column name"""
+  metadata
+  """column name"""
+  status
+  """column name"""
+  timestamp
+}
+
+input SystemHealthUpdates {
+  """append existing jsonb value of filtered columns with new jsonb value"""
+  _append: SystemHealthAppendInput
+  """
+  delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+  """
+  _deleteAtPath: SystemHealthDeleteAtPathInput
+  """
+  delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+  """
+  _deleteElem: SystemHealthDeleteElemInput
+  """
+  delete key/value pair or string element. key/value pairs are matched based on their key value
+  """
+  _deleteKey: SystemHealthDeleteKeyInput
+  """increments the numeric columns with given value of the filtered values"""
+  _inc: SystemHealthIncInput
+  """prepend existing jsonb value of filtered columns with new jsonb value"""
+  _prepend: SystemHealthPrependInput
+  """sets the columns of the filtered rows to the given values"""
+  _set: SystemHealthSetInput
+  """filter the rows which have to be updated"""
+  where: SystemHealthBoolExp!
+}
+
+"""aggregate varPop on columns"""
+type SystemHealthVarPopFields {
+  activeUsers: Float
+  apiResponseTime: Float
+  cpuUsage: Float
+  databaseResponseTime: Float
+  diskUsage: Float
+  errorRate: Float
+  memoryUsage: Float
+}
+
+"""aggregate varSamp on columns"""
+type SystemHealthVarSampFields {
+  activeUsers: Float
+  apiResponseTime: Float
+  cpuUsage: Float
+  databaseResponseTime: Float
+  diskUsage: Float
+  errorRate: Float
+  memoryUsage: Float
+}
+
+"""aggregate variance on columns"""
+type SystemHealthVarianceFields {
+  activeUsers: Float
+  apiResponseTime: Float
+  cpuUsage: Float
+  databaseResponseTime: Float
+  diskUsage: Float
+  errorRate: Float
+  memoryUsage: Float
 }
 
 """
@@ -3551,6 +5805,382 @@ type UserRoleResponse {
   newRole: String
   success: Boolean!
   userId: String
+}
+
+"""
+columns and relationships of "user_sessions"
+"""
+type UserSessions {
+  createdAt: timestamptz
+  expiresAt: timestamptz!
+  id: uuid!
+  ipAddress: inet
+  isActive: Boolean
+  lastActivity: timestamptz
+  locationData(
+    """JSON select path"""
+    path: String
+  ): jsonb
+  logoutReason: String
+  sessionToken: String!
+  """An object relationship"""
+  user: users!
+  userAgent: String
+  userId: uuid!
+}
+
+"""
+aggregated selection of "user_sessions"
+"""
+type UserSessionsAggregate {
+  aggregate: UserSessionsAggregateFields
+  nodes: [UserSessions!]!
+}
+
+input UserSessionsAggregateBoolExp {
+  bool_and: userSessionsAggregateBoolExpBool_and
+  bool_or: userSessionsAggregateBoolExpBool_or
+  count: userSessionsAggregateBoolExpCount
+}
+
+"""
+aggregate fields of "user_sessions"
+"""
+type UserSessionsAggregateFields {
+  count(columns: [UserSessionsSelectColumn!], distinct: Boolean): Int!
+  max: UserSessionsMaxFields
+  min: UserSessionsMinFields
+}
+
+"""
+order by aggregate values of table "user_sessions"
+"""
+input UserSessionsAggregateOrderBy {
+  count: OrderBy
+  max: UserSessionsMaxOrderBy
+  min: UserSessionsMinOrderBy
+}
+
+"""append existing jsonb value of filtered columns with new jsonb value"""
+input UserSessionsAppendInput {
+  locationData: jsonb
+}
+
+"""
+input type for inserting array relation for remote table "user_sessions"
+"""
+input UserSessionsArrRelInsertInput {
+  data: [UserSessionsInsertInput!]!
+  """upsert condition"""
+  onConflict: UserSessionsOnConflict
+}
+
+"""
+Boolean expression to filter rows from the table "user_sessions". All fields are combined with a logical 'AND'.
+"""
+input UserSessionsBoolExp {
+  _and: [UserSessionsBoolExp!]
+  _not: UserSessionsBoolExp
+  _or: [UserSessionsBoolExp!]
+  createdAt: TimestamptzComparisonExp
+  expiresAt: TimestamptzComparisonExp
+  id: UuidComparisonExp
+  ipAddress: InetComparisonExp
+  isActive: BooleanComparisonExp
+  lastActivity: TimestamptzComparisonExp
+  locationData: JsonbComparisonExp
+  logoutReason: StringComparisonExp
+  sessionToken: StringComparisonExp
+  user: usersBoolExp
+  userAgent: StringComparisonExp
+  userId: UuidComparisonExp
+}
+
+"""
+unique or primary key constraints on table "user_sessions"
+"""
+enum UserSessionsConstraint {
+  """
+  unique or primary key constraint on columns "id"
+  """
+  user_sessions_pkey
+  """
+  unique or primary key constraint on columns "session_token"
+  """
+  user_sessions_session_token_key
+}
+
+"""
+delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+"""
+input UserSessionsDeleteAtPathInput {
+  locationData: [String!]
+}
+
+"""
+delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+"""
+input UserSessionsDeleteElemInput {
+  locationData: Int
+}
+
+"""
+delete key/value pair or string element. key/value pairs are matched based on their key value
+"""
+input UserSessionsDeleteKeyInput {
+  locationData: String
+}
+
+"""
+input type for inserting data into table "user_sessions"
+"""
+input UserSessionsInsertInput {
+  createdAt: timestamptz
+  expiresAt: timestamptz
+  id: uuid
+  ipAddress: inet
+  isActive: Boolean
+  lastActivity: timestamptz
+  locationData: jsonb
+  logoutReason: String
+  sessionToken: String
+  user: usersObjRelInsertInput
+  userAgent: String
+  userId: uuid
+}
+
+"""aggregate max on columns"""
+type UserSessionsMaxFields {
+  createdAt: timestamptz
+  expiresAt: timestamptz
+  id: uuid
+  lastActivity: timestamptz
+  logoutReason: String
+  sessionToken: String
+  userAgent: String
+  userId: uuid
+}
+
+"""
+order by max() on columns of table "user_sessions"
+"""
+input UserSessionsMaxOrderBy {
+  createdAt: OrderBy
+  expiresAt: OrderBy
+  id: OrderBy
+  lastActivity: OrderBy
+  logoutReason: OrderBy
+  sessionToken: OrderBy
+  userAgent: OrderBy
+  userId: OrderBy
+}
+
+"""aggregate min on columns"""
+type UserSessionsMinFields {
+  createdAt: timestamptz
+  expiresAt: timestamptz
+  id: uuid
+  lastActivity: timestamptz
+  logoutReason: String
+  sessionToken: String
+  userAgent: String
+  userId: uuid
+}
+
+"""
+order by min() on columns of table "user_sessions"
+"""
+input UserSessionsMinOrderBy {
+  createdAt: OrderBy
+  expiresAt: OrderBy
+  id: OrderBy
+  lastActivity: OrderBy
+  logoutReason: OrderBy
+  sessionToken: OrderBy
+  userAgent: OrderBy
+  userId: OrderBy
+}
+
+"""
+response of any mutation on the table "user_sessions"
+"""
+type UserSessionsMutationResponse {
+  """number of rows affected by the mutation"""
+  affectedRows: Int!
+  """data from the rows affected by the mutation"""
+  returning: [UserSessions!]!
+}
+
+"""
+on_conflict condition type for table "user_sessions"
+"""
+input UserSessionsOnConflict {
+  constraint: UserSessionsConstraint!
+  updateColumns: [UserSessionsUpdateColumn!]! = []
+  where: UserSessionsBoolExp
+}
+
+"""Ordering options when selecting data from "user_sessions"."""
+input UserSessionsOrderBy {
+  createdAt: OrderBy
+  expiresAt: OrderBy
+  id: OrderBy
+  ipAddress: OrderBy
+  isActive: OrderBy
+  lastActivity: OrderBy
+  locationData: OrderBy
+  logoutReason: OrderBy
+  sessionToken: OrderBy
+  user: usersOrderBy
+  userAgent: OrderBy
+  userId: OrderBy
+}
+
+"""primary key columns input for table: user_sessions"""
+input UserSessionsPkColumnsInput {
+  id: uuid!
+}
+
+"""prepend existing jsonb value of filtered columns with new jsonb value"""
+input UserSessionsPrependInput {
+  locationData: jsonb
+}
+
+"""
+select columns of table "user_sessions"
+"""
+enum UserSessionsSelectColumn {
+  """column name"""
+  createdAt
+  """column name"""
+  expiresAt
+  """column name"""
+  id
+  """column name"""
+  ipAddress
+  """column name"""
+  isActive
+  """column name"""
+  lastActivity
+  """column name"""
+  locationData
+  """column name"""
+  logoutReason
+  """column name"""
+  sessionToken
+  """column name"""
+  userAgent
+  """column name"""
+  userId
+}
+
+"""
+select "userSessionsAggregateBoolExpBool_andArgumentsColumns" columns of table "user_sessions"
+"""
+enum UserSessionsSelectColumnUserSessionsAggregateBoolExpBool_andArgumentsColumns {
+  """column name"""
+  isActive
+}
+
+"""
+select "userSessionsAggregateBoolExpBool_orArgumentsColumns" columns of table "user_sessions"
+"""
+enum UserSessionsSelectColumnUserSessionsAggregateBoolExpBool_orArgumentsColumns {
+  """column name"""
+  isActive
+}
+
+"""
+input type for updating data in table "user_sessions"
+"""
+input UserSessionsSetInput {
+  createdAt: timestamptz
+  expiresAt: timestamptz
+  id: uuid
+  ipAddress: inet
+  isActive: Boolean
+  lastActivity: timestamptz
+  locationData: jsonb
+  logoutReason: String
+  sessionToken: String
+  userAgent: String
+  userId: uuid
+}
+
+"""
+Streaming cursor of the table "user_sessions"
+"""
+input UserSessionsStreamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: UserSessionsStreamCursorValueInput!
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input UserSessionsStreamCursorValueInput {
+  createdAt: timestamptz
+  expiresAt: timestamptz
+  id: uuid
+  ipAddress: inet
+  isActive: Boolean
+  lastActivity: timestamptz
+  locationData: jsonb
+  logoutReason: String
+  sessionToken: String
+  userAgent: String
+  userId: uuid
+}
+
+"""
+update columns of table "user_sessions"
+"""
+enum UserSessionsUpdateColumn {
+  """column name"""
+  createdAt
+  """column name"""
+  expiresAt
+  """column name"""
+  id
+  """column name"""
+  ipAddress
+  """column name"""
+  isActive
+  """column name"""
+  lastActivity
+  """column name"""
+  locationData
+  """column name"""
+  logoutReason
+  """column name"""
+  sessionToken
+  """column name"""
+  userAgent
+  """column name"""
+  userId
+}
+
+input UserSessionsUpdates {
+  """append existing jsonb value of filtered columns with new jsonb value"""
+  _append: UserSessionsAppendInput
+  """
+  delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+  """
+  _deleteAtPath: UserSessionsDeleteAtPathInput
+  """
+  delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+  """
+  _deleteElem: UserSessionsDeleteElemInput
+  """
+  delete key/value pair or string element. key/value pairs are matched based on their key value
+  """
+  _deleteKey: UserSessionsDeleteKeyInput
+  """prepend existing jsonb value of filtered columns with new jsonb value"""
+  _prepend: UserSessionsPrependInput
+  """sets the columns of the filtered rows to the given values"""
+  _set: UserSessionsSetInput
+  """filter the rows which have to be updated"""
+  where: UserSessionsBoolExp!
 }
 
 """
@@ -4878,283 +7508,6 @@ input authEventsUpdates {
   where: authEventsBoolExp!
 }
 
-"""
-columns and relationships of "neon_auth.users_sync"
-"""
-type authUsersSync {
-  """Timestamp when the user was created in the auth system"""
-  createdAt: timestamptz
-  """Timestamp when the user was deleted in the auth system"""
-  deletedAt: timestamptz
-  """User's email address from authentication provider"""
-  email: String
-  """Unique identifier from the authentication provider"""
-  id: String!
-  """User's full name from authentication provider"""
-  name: String
-  """Complete JSON data from the authentication provider"""
-  rawJson(
-    """JSON select path"""
-    path: String
-  ): jsonb!
-  """Timestamp when the user was last updated in the auth system"""
-  updatedAt: timestamptz
-}
-
-"""
-aggregated selection of "neon_auth.users_sync"
-"""
-type authUsersSyncAggregate {
-  aggregate: authUsersSyncAggregateFields
-  nodes: [authUsersSync!]!
-}
-
-"""
-aggregate fields of "neon_auth.users_sync"
-"""
-type authUsersSyncAggregateFields {
-  count(columns: [authUsersSyncSelectColumn!], distinct: Boolean): Int!
-  max: authUsersSyncMaxFields
-  min: authUsersSyncMinFields
-}
-
-"""append existing jsonb value of filtered columns with new jsonb value"""
-input authUsersSyncAppendInput {
-  """Complete JSON data from the authentication provider"""
-  rawJson: jsonb
-}
-
-"""
-Boolean expression to filter rows from the table "neon_auth.users_sync". All fields are combined with a logical 'AND'.
-"""
-input authUsersSyncBoolExp {
-  _and: [authUsersSyncBoolExp!]
-  _not: authUsersSyncBoolExp
-  _or: [authUsersSyncBoolExp!]
-  createdAt: TimestamptzComparisonExp
-  deletedAt: TimestamptzComparisonExp
-  email: StringComparisonExp
-  id: StringComparisonExp
-  name: StringComparisonExp
-  rawJson: JsonbComparisonExp
-  updatedAt: TimestamptzComparisonExp
-}
-
-"""
-unique or primary key constraints on table "neon_auth.users_sync"
-"""
-enum authUsersSyncConstraint {
-  """
-  unique or primary key constraint on columns "id"
-  """
-  users_sync_pkey
-}
-
-"""
-delete the field or element with specified path (for JSON arrays, negative integers count from the end)
-"""
-input authUsersSyncDeleteAtPathInput {
-  """Complete JSON data from the authentication provider"""
-  rawJson: [String!]
-}
-
-"""
-delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
-"""
-input authUsersSyncDeleteElemInput {
-  """Complete JSON data from the authentication provider"""
-  rawJson: Int
-}
-
-"""
-delete key/value pair or string element. key/value pairs are matched based on their key value
-"""
-input authUsersSyncDeleteKeyInput {
-  """Complete JSON data from the authentication provider"""
-  rawJson: String
-}
-
-"""
-input type for inserting data into table "neon_auth.users_sync"
-"""
-input authUsersSyncInsertInput {
-  """Timestamp when the user was deleted in the auth system"""
-  deletedAt: timestamptz
-  """Complete JSON data from the authentication provider"""
-  rawJson: jsonb
-  """Timestamp when the user was last updated in the auth system"""
-  updatedAt: timestamptz
-}
-
-"""aggregate max on columns"""
-type authUsersSyncMaxFields {
-  """Timestamp when the user was created in the auth system"""
-  createdAt: timestamptz
-  """Timestamp when the user was deleted in the auth system"""
-  deletedAt: timestamptz
-  """User's email address from authentication provider"""
-  email: String
-  """Unique identifier from the authentication provider"""
-  id: String
-  """User's full name from authentication provider"""
-  name: String
-  """Timestamp when the user was last updated in the auth system"""
-  updatedAt: timestamptz
-}
-
-"""aggregate min on columns"""
-type authUsersSyncMinFields {
-  """Timestamp when the user was created in the auth system"""
-  createdAt: timestamptz
-  """Timestamp when the user was deleted in the auth system"""
-  deletedAt: timestamptz
-  """User's email address from authentication provider"""
-  email: String
-  """Unique identifier from the authentication provider"""
-  id: String
-  """User's full name from authentication provider"""
-  name: String
-  """Timestamp when the user was last updated in the auth system"""
-  updatedAt: timestamptz
-}
-
-"""
-response of any mutation on the table "neon_auth.users_sync"
-"""
-type authUsersSyncMutationResponse {
-  """number of rows affected by the mutation"""
-  affectedRows: Int!
-  """data from the rows affected by the mutation"""
-  returning: [authUsersSync!]!
-}
-
-"""
-on_conflict condition type for table "neon_auth.users_sync"
-"""
-input authUsersSyncOnConflict {
-  constraint: authUsersSyncConstraint!
-  updateColumns: [authUsersSyncUpdateColumn!]! = []
-  where: authUsersSyncBoolExp
-}
-
-"""Ordering options when selecting data from "neon_auth.users_sync"."""
-input authUsersSyncOrderBy {
-  createdAt: OrderBy
-  deletedAt: OrderBy
-  email: OrderBy
-  id: OrderBy
-  name: OrderBy
-  rawJson: OrderBy
-  updatedAt: OrderBy
-}
-
-"""primary key columns input for table: neon_auth.users_sync"""
-input authUsersSyncPkColumnsInput {
-  """Unique identifier from the authentication provider"""
-  id: String!
-}
-
-"""prepend existing jsonb value of filtered columns with new jsonb value"""
-input authUsersSyncPrependInput {
-  """Complete JSON data from the authentication provider"""
-  rawJson: jsonb
-}
-
-"""
-select columns of table "neon_auth.users_sync"
-"""
-enum authUsersSyncSelectColumn {
-  """column name"""
-  createdAt
-  """column name"""
-  deletedAt
-  """column name"""
-  email
-  """column name"""
-  id
-  """column name"""
-  name
-  """column name"""
-  rawJson
-  """column name"""
-  updatedAt
-}
-
-"""
-input type for updating data in table "neon_auth.users_sync"
-"""
-input authUsersSyncSetInput {
-  """Timestamp when the user was deleted in the auth system"""
-  deletedAt: timestamptz
-  """Complete JSON data from the authentication provider"""
-  rawJson: jsonb
-  """Timestamp when the user was last updated in the auth system"""
-  updatedAt: timestamptz
-}
-
-"""
-Streaming cursor of the table "authUsersSync"
-"""
-input authUsersSyncStreamCursorInput {
-  """Stream column input with initial value"""
-  initialValue: authUsersSyncStreamCursorValueInput!
-  """cursor ordering"""
-  ordering: CursorOrdering
-}
-
-"""Initial value of the column from where the streaming should start"""
-input authUsersSyncStreamCursorValueInput {
-  """Timestamp when the user was created in the auth system"""
-  createdAt: timestamptz
-  """Timestamp when the user was deleted in the auth system"""
-  deletedAt: timestamptz
-  """User's email address from authentication provider"""
-  email: String
-  """Unique identifier from the authentication provider"""
-  id: String
-  """User's full name from authentication provider"""
-  name: String
-  """Complete JSON data from the authentication provider"""
-  rawJson: jsonb
-  """Timestamp when the user was last updated in the auth system"""
-  updatedAt: timestamptz
-}
-
-"""
-update columns of table "neon_auth.users_sync"
-"""
-enum authUsersSyncUpdateColumn {
-  """column name"""
-  deletedAt
-  """column name"""
-  rawJson
-  """column name"""
-  updatedAt
-}
-
-input authUsersSyncUpdates {
-  """append existing jsonb value of filtered columns with new jsonb value"""
-  _append: authUsersSyncAppendInput
-  """
-  delete the field or element with specified path (for JSON arrays, negative integers count from the end)
-  """
-  _deleteAtPath: authUsersSyncDeleteAtPathInput
-  """
-  delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
-  """
-  _deleteElem: authUsersSyncDeleteElemInput
-  """
-  delete key/value pair or string element. key/value pairs are matched based on their key value
-  """
-  _deleteKey: authUsersSyncDeleteKeyInput
-  """prepend existing jsonb value of filtered columns with new jsonb value"""
-  _prepend: authUsersSyncPrependInput
-  """sets the columns of the filtered rows to the given values"""
-  _set: authUsersSyncSetInput
-  """filter the rows which have to be updated"""
-  where: authUsersSyncBoolExp!
-}
-
 scalar bigint
 
 """
@@ -5420,6 +7773,32 @@ columns and relationships of "billing_invoice"
 """
 type billingInvoice {
   """An array relationship"""
+  billingEventLogs(
+    """distinct select on columns"""
+    distinctOn: [billingEventLogsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [billingEventLogsOrderBy!]
+    """filter the rows returned"""
+    where: billingEventLogsBoolExp
+  ): [billingEventLogs!]!
+  """An aggregate relationship"""
+  billingEventLogsAggregate(
+    """distinct select on columns"""
+    distinctOn: [billingEventLogsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [billingEventLogsOrderBy!]
+    """filter the rows returned"""
+    where: billingEventLogsBoolExp
+  ): billingEventLogsAggregate!
+  """An array relationship"""
   billingInvoiceItems(
     """distinct select on columns"""
     distinctOn: [billingInvoiceItemSelectColumn!]
@@ -5445,6 +7824,8 @@ type billingInvoice {
     """filter the rows returned"""
     where: billingInvoiceItemBoolExp
   ): billingInvoiceItemAggregate!
+  """An object relationship"""
+  billingPeriod: billingPeriods
   billingPeriodEnd: date!
   """Reference to billing period this invoice covers"""
   billingPeriodId: uuid
@@ -5558,8 +7939,11 @@ input billingInvoiceBoolExp {
   _and: [billingInvoiceBoolExp!]
   _not: billingInvoiceBoolExp
   _or: [billingInvoiceBoolExp!]
+  billingEventLogs: billingEventLogsBoolExp
+  billingEventLogsAggregate: billingEventLogsAggregateBoolExp
   billingInvoiceItems: billingInvoiceItemBoolExp
   billingInvoiceItemsAggregate: billingInvoiceItemAggregateBoolExp
+  billingPeriod: billingPeriodsBoolExp
   billingPeriodEnd: DateComparisonExp
   billingPeriodId: UuidComparisonExp
   billingPeriodStart: DateComparisonExp
@@ -5608,7 +7992,9 @@ input billingInvoiceIncInput {
 input type for inserting data into table "billing_invoice"
 """
 input billingInvoiceInsertInput {
+  billingEventLogs: billingEventLogsArrRelInsertInput
   billingInvoiceItems: billingInvoiceItemArrRelInsertInput
+  billingPeriod: billingPeriodsObjRelInsertInput
   billingPeriodEnd: date
   """Reference to billing period this invoice covers"""
   billingPeriodId: uuid
@@ -6316,7 +8702,9 @@ input billingInvoiceOnConflict {
 
 """Ordering options when selecting data from "billing_invoice"."""
 input billingInvoiceOrderBy {
+  billingEventLogsAggregate: billingEventLogsAggregateOrderBy
   billingInvoiceItemsAggregate: billingInvoiceItemAggregateOrderBy
+  billingPeriod: billingPeriodsOrderBy
   billingPeriodEnd: OrderBy
   billingPeriodId: OrderBy
   billingPeriodStart: OrderBy
@@ -6635,6 +9023,32 @@ type billingItems {
   approvedBy: uuid
   """An object relationship"""
   approver: users
+  """An array relationship"""
+  billingInvoiceItems(
+    """distinct select on columns"""
+    distinctOn: [billingInvoiceItemSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [billingInvoiceItemOrderBy!]
+    """filter the rows returned"""
+    where: billingInvoiceItemBoolExp
+  ): [billingInvoiceItem!]!
+  """An aggregate relationship"""
+  billingInvoiceItemsAggregate(
+    """distinct select on columns"""
+    distinctOn: [billingInvoiceItemSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [billingInvoiceItemOrderBy!]
+    """filter the rows returned"""
+    where: billingInvoiceItemBoolExp
+  ): billingInvoiceItemAggregate!
   billingPlanId: uuid
   """An object relationship"""
   billingPlanItems: billingPlans
@@ -6810,6 +9224,8 @@ input billingItemsBoolExp {
   approvalDate: TimestamptzComparisonExp
   approvedBy: UuidComparisonExp
   approver: usersBoolExp
+  billingInvoiceItems: billingInvoiceItemBoolExp
+  billingInvoiceItemsAggregate: billingInvoiceItemAggregateBoolExp
   billingPlanId: UuidComparisonExp
   billingPlanItems: billingPlansBoolExp
   billingServicePlan: billingPlansBoolExp
@@ -6867,6 +9283,7 @@ input billingItemsInsertInput {
   approvalDate: timestamptz
   approvedBy: uuid
   approver: usersObjRelInsertInput
+  billingInvoiceItems: billingInvoiceItemArrRelInsertInput
   billingPlanId: uuid
   billingPlanItems: billingPlansObjRelInsertInput
   billingServicePlan: billingPlansObjRelInsertInput
@@ -7068,6 +9485,7 @@ input billingItemsOrderBy {
   approvalDate: OrderBy
   approvedBy: OrderBy
   approver: usersOrderBy
+  billingInvoiceItemsAggregate: billingInvoiceItemAggregateOrderBy
   billingPlanId: OrderBy
   billingPlanItems: billingPlansOrderBy
   billingServicePlan: billingPlansOrderBy
@@ -7661,6 +10079,15 @@ type billingPeriodsMutationResponse {
   affectedRows: Int!
   """data from the rows affected by the mutation"""
   returning: [billingPeriods!]!
+}
+
+"""
+input type for inserting object relation for remote table "billing_periods"
+"""
+input billingPeriodsObjRelInsertInput {
+  data: billingPeriodsInsertInput!
+  """upsert condition"""
+  onConflict: billingPeriodsOnConflict
 }
 
 """
@@ -10338,6 +12765,13 @@ type dataAccessLogsVarianceFields {
   rowCount: Float
 }
 
+input dataBackupsAggregateBoolExpCount {
+  arguments: [DataBackupsSelectColumn!]
+  distinct: Boolean
+  filter: DataBackupsBoolExp
+  predicate: IntComparisonExp!
+}
+
 scalar date
 
 input emailDraftsAggregateBoolExpCount {
@@ -12287,13 +14721,6 @@ type mutation_root {
     where: usersRoleBackupBoolExp!
   ): usersRoleBackupMutationResponse
   """
-  delete data from the table: "neon_auth.users_sync"
-  """
-  bulkDeleteUsersSync(
-    """filter the rows which have to be deleted"""
-    where: authUsersSyncBoolExp!
-  ): authUsersSyncMutationResponse
-  """
   delete data from the table: "work_schedule"
   """
   bulkDeleteWorkSchedule(
@@ -12670,15 +15097,6 @@ type mutation_root {
     """the rows to be inserted"""
     objects: [usersRoleBackupInsertInput!]!
   ): usersRoleBackupMutationResponse
-  """
-  insert data into the table: "neon_auth.users_sync"
-  """
-  bulkInsertUsersSync(
-    """the rows to be inserted"""
-    objects: [authUsersSyncInsertInput!]!
-    """upsert condition"""
-    onConflict: authUsersSyncOnConflict
-  ): authUsersSyncMutationResponse
   """
   insert data into the table: "work_schedule"
   """
@@ -13253,31 +15671,6 @@ type mutation_root {
     where: usersRoleBackupBoolExp!
   ): usersRoleBackupMutationResponse
   """
-  update data of the table: "neon_auth.users_sync"
-  """
-  bulkUpdateUsersSync(
-    """append existing jsonb value of filtered columns with new jsonb value"""
-    _append: authUsersSyncAppendInput
-    """
-    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
-    """
-    _deleteAtPath: authUsersSyncDeleteAtPathInput
-    """
-    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
-    """
-    _deleteElem: authUsersSyncDeleteElemInput
-    """
-    delete key/value pair or string element. key/value pairs are matched based on their key value
-    """
-    _deleteKey: authUsersSyncDeleteKeyInput
-    """prepend existing jsonb value of filtered columns with new jsonb value"""
-    _prepend: authUsersSyncPrependInput
-    """sets the columns of the filtered rows to the given values"""
-    _set: authUsersSyncSetInput
-    """filter the rows which have to be updated"""
-    where: authUsersSyncBoolExp!
-  ): authUsersSyncMutationResponse
-  """
   update data of the table: "work_schedule"
   """
   bulkUpdateWorkSchedule(
@@ -13373,6 +15766,17 @@ type mutation_root {
   delete single row from the table: "audit.data_access_log"
   """
   deleteDataAccessLogById(id: uuid!): dataAccessLogs
+  """
+  delete data from the table: "data_backups"
+  """
+  deleteDataBackups(
+    """filter the rows which have to be deleted"""
+    where: DataBackupsBoolExp!
+  ): DataBackupsMutationResponse
+  """
+  delete single row from the table: "data_backups"
+  """
+  deleteDataBackupsByPk(id: uuid!): DataBackups
   """
   delete data from the table: "email_drafts"
   """
@@ -13521,6 +15925,17 @@ type mutation_root {
   """
   deletePositionAdminDefaultsByPk(position: user_position!): PositionAdminDefaults
   """
+  delete data from the table: "rate_limits"
+  """
+  deleteRateLimits(
+    """filter the rows which have to be deleted"""
+    where: RateLimitsBoolExp!
+  ): RateLimitsMutationResponse
+  """
+  delete single row from the table: "rate_limits"
+  """
+  deleteRateLimitsByPk(id: uuid!): RateLimits
+  """
   delete single row from the table: "resources"
   """
   deleteResourceById(id: uuid!): resources
@@ -13533,9 +15948,53 @@ type mutation_root {
   """
   deleteRolePermissionById(id: uuid!): rolePermissions
   """
+  delete data from the table: "security_alerts"
+  """
+  deleteSecurityAlerts(
+    """filter the rows which have to be deleted"""
+    where: SecurityAlertsBoolExp!
+  ): SecurityAlertsMutationResponse
+  """
+  delete single row from the table: "security_alerts"
+  """
+  deleteSecurityAlertsByPk(id: uuid!): SecurityAlerts
+  """
+  delete data from the table: "security_settings"
+  """
+  deleteSecuritySettings(
+    """filter the rows which have to be deleted"""
+    where: SecuritySettingsBoolExp!
+  ): SecuritySettingsMutationResponse
+  """
+  delete single row from the table: "security_settings"
+  """
+  deleteSecuritySettingsByPk(id: uuid!): SecuritySettings
+  """
   delete single row from the table: "audit.slow_queries"
   """
   deleteSlowQueryById(id: uuid!): slowQueries
+  """
+  delete data from the table: "system_configuration"
+  """
+  deleteSystemConfiguration(
+    """filter the rows which have to be deleted"""
+    where: SystemConfigurationBoolExp!
+  ): SystemConfigurationMutationResponse
+  """
+  delete single row from the table: "system_configuration"
+  """
+  deleteSystemConfigurationByPk(id: uuid!): SystemConfiguration
+  """
+  delete data from the table: "system_health"
+  """
+  deleteSystemHealth(
+    """filter the rows which have to be deleted"""
+    where: SystemHealthBoolExp!
+  ): SystemHealthMutationResponse
+  """
+  delete single row from the table: "system_health"
+  """
+  deleteSystemHealthByPk(id: uuid!): SystemHealth
   """
   delete data from the table: "time_entries"
   """
@@ -13574,12 +16033,16 @@ type mutation_root {
   """
   deleteUserRoleById(id: uuid!): userRoles
   """
-  delete single row from the table: "neon_auth.users_sync"
+  delete data from the table: "user_sessions"
   """
-  deleteUserSyncById(
-    """Unique identifier from the authentication provider"""
-    id: String!
-  ): authUsersSync
+  deleteUserSessions(
+    """filter the rows which have to be deleted"""
+    where: UserSessionsBoolExp!
+  ): UserSessionsMutationResponse
+  """
+  delete single row from the table: "user_sessions"
+  """
+  deleteUserSessionsByPk(id: uuid!): UserSessions
   """
   delete single row from the table: "work_schedule"
   """
@@ -13732,6 +16195,24 @@ type mutation_root {
     """upsert condition"""
     onConflict: dataAccessLogsOnConflict
   ): dataAccessLogs
+  """
+  insert data into the table: "data_backups"
+  """
+  insertDataBackups(
+    """the rows to be inserted"""
+    objects: [DataBackupsInsertInput!]!
+    """upsert condition"""
+    onConflict: DataBackupsOnConflict
+  ): DataBackupsMutationResponse
+  """
+  insert a single row into the table: "data_backups"
+  """
+  insertDataBackupsOne(
+    """the row to be inserted"""
+    object: DataBackupsInsertInput!
+    """upsert condition"""
+    onConflict: DataBackupsOnConflict
+  ): DataBackups
   """
   insert data into the table: "email_drafts"
   """
@@ -13983,6 +16464,24 @@ type mutation_root {
     onConflict: PositionAdminDefaultsOnConflict
   ): PositionAdminDefaults
   """
+  insert data into the table: "rate_limits"
+  """
+  insertRateLimits(
+    """the rows to be inserted"""
+    objects: [RateLimitsInsertInput!]!
+    """upsert condition"""
+    onConflict: RateLimitsOnConflict
+  ): RateLimitsMutationResponse
+  """
+  insert a single row into the table: "rate_limits"
+  """
+  insertRateLimitsOne(
+    """the row to be inserted"""
+    object: RateLimitsInsertInput!
+    """upsert condition"""
+    onConflict: RateLimitsOnConflict
+  ): RateLimits
+  """
   insert a single row into the table: "resources"
   """
   insertResource(
@@ -14010,6 +16509,42 @@ type mutation_root {
     onConflict: rolePermissionsOnConflict
   ): rolePermissions
   """
+  insert data into the table: "security_alerts"
+  """
+  insertSecurityAlerts(
+    """the rows to be inserted"""
+    objects: [SecurityAlertsInsertInput!]!
+    """upsert condition"""
+    onConflict: SecurityAlertsOnConflict
+  ): SecurityAlertsMutationResponse
+  """
+  insert a single row into the table: "security_alerts"
+  """
+  insertSecurityAlertsOne(
+    """the row to be inserted"""
+    object: SecurityAlertsInsertInput!
+    """upsert condition"""
+    onConflict: SecurityAlertsOnConflict
+  ): SecurityAlerts
+  """
+  insert data into the table: "security_settings"
+  """
+  insertSecuritySettings(
+    """the rows to be inserted"""
+    objects: [SecuritySettingsInsertInput!]!
+    """upsert condition"""
+    onConflict: SecuritySettingsOnConflict
+  ): SecuritySettingsMutationResponse
+  """
+  insert a single row into the table: "security_settings"
+  """
+  insertSecuritySettingsOne(
+    """the row to be inserted"""
+    object: SecuritySettingsInsertInput!
+    """upsert condition"""
+    onConflict: SecuritySettingsOnConflict
+  ): SecuritySettings
+  """
   insert a single row into the table: "audit.slow_queries"
   """
   insertSlowQuery(
@@ -14018,6 +16553,42 @@ type mutation_root {
     """upsert condition"""
     onConflict: slowQueriesOnConflict
   ): slowQueries
+  """
+  insert data into the table: "system_configuration"
+  """
+  insertSystemConfiguration(
+    """the rows to be inserted"""
+    objects: [SystemConfigurationInsertInput!]!
+    """upsert condition"""
+    onConflict: SystemConfigurationOnConflict
+  ): SystemConfigurationMutationResponse
+  """
+  insert a single row into the table: "system_configuration"
+  """
+  insertSystemConfigurationOne(
+    """the row to be inserted"""
+    object: SystemConfigurationInsertInput!
+    """upsert condition"""
+    onConflict: SystemConfigurationOnConflict
+  ): SystemConfiguration
+  """
+  insert data into the table: "system_health"
+  """
+  insertSystemHealth(
+    """the rows to be inserted"""
+    objects: [SystemHealthInsertInput!]!
+    """upsert condition"""
+    onConflict: SystemHealthOnConflict
+  ): SystemHealthMutationResponse
+  """
+  insert a single row into the table: "system_health"
+  """
+  insertSystemHealthOne(
+    """the row to be inserted"""
+    object: SystemHealthInsertInput!
+    """upsert condition"""
+    onConflict: SystemHealthOnConflict
+  ): SystemHealth
   """
   insert data into the table: "time_entries"
   """
@@ -14089,21 +16660,30 @@ type mutation_root {
     onConflict: userRolesOnConflict
   ): userRoles
   """
+  insert data into the table: "user_sessions"
+  """
+  insertUserSessions(
+    """the rows to be inserted"""
+    objects: [UserSessionsInsertInput!]!
+    """upsert condition"""
+    onConflict: UserSessionsOnConflict
+  ): UserSessionsMutationResponse
+  """
+  insert a single row into the table: "user_sessions"
+  """
+  insertUserSessionsOne(
+    """the row to be inserted"""
+    object: UserSessionsInsertInput!
+    """upsert condition"""
+    onConflict: UserSessionsOnConflict
+  ): UserSessions
+  """
   insert a single row into the table: "user_skills"
   """
   insertUserSkill(
     """the row to be inserted"""
     object: userSkillInsertInput!
   ): userSkill
-  """
-  insert a single row into the table: "neon_auth.users_sync"
-  """
-  insertUserSync(
-    """the row to be inserted"""
-    object: authUsersSyncInsertInput!
-    """upsert condition"""
-    onConflict: authUsersSyncOnConflict
-  ): authUsersSync
   """
   insert a single row into the table: "users_role_backup"
   """
@@ -14228,13 +16808,6 @@ type mutation_root {
     """updates to execute, in order"""
     updates: [authEventsUpdates!]!
   ): [authEventsMutationResponse]
-  """
-  update multiples rows of table: "neon_auth.users_sync"
-  """
-  updateAuthUsersSyncMany(
-    """updates to execute, in order"""
-    updates: [authUsersSyncUpdates!]!
-  ): [authUsersSyncMutationResponse]
   """
   update single row of the table: "billing_event_log"
   """
@@ -14433,6 +17006,66 @@ type mutation_root {
     """updates to execute, in order"""
     updates: [dataAccessLogsUpdates!]!
   ): [dataAccessLogsMutationResponse]
+  """
+  update data of the table: "data_backups"
+  """
+  updateDataBackups(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: DataBackupsAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: DataBackupsDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: DataBackupsDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: DataBackupsDeleteKeyInput
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: DataBackupsIncInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: DataBackupsPrependInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: DataBackupsSetInput
+    """filter the rows which have to be updated"""
+    where: DataBackupsBoolExp!
+  ): DataBackupsMutationResponse
+  """
+  update single row of the table: "data_backups"
+  """
+  updateDataBackupsByPk(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: DataBackupsAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: DataBackupsDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: DataBackupsDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: DataBackupsDeleteKeyInput
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: DataBackupsIncInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: DataBackupsPrependInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: DataBackupsSetInput
+    pkColumns: DataBackupsPkColumnsInput!
+  ): DataBackups
+  """
+  update multiples rows of table: "data_backups"
+  """
+  updateDataBackupsMany(
+    """updates to execute, in order"""
+    updates: [DataBackupsUpdates!]!
+  ): [DataBackupsMutationResponse]
   """
   update data of the table: "email_drafts"
   """
@@ -14998,6 +17631,34 @@ type mutation_root {
     updates: [PositionAdminDefaultsUpdates!]!
   ): [PositionAdminDefaultsMutationResponse]
   """
+  update data of the table: "rate_limits"
+  """
+  updateRateLimits(
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: RateLimitsIncInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: RateLimitsSetInput
+    """filter the rows which have to be updated"""
+    where: RateLimitsBoolExp!
+  ): RateLimitsMutationResponse
+  """
+  update single row of the table: "rate_limits"
+  """
+  updateRateLimitsByPk(
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: RateLimitsIncInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: RateLimitsSetInput
+    pkColumns: RateLimitsPkColumnsInput!
+  ): RateLimits
+  """
+  update multiples rows of table: "rate_limits"
+  """
+  updateRateLimitsMany(
+    """updates to execute, in order"""
+    updates: [RateLimitsUpdates!]!
+  ): [RateLimitsMutationResponse]
+  """
   update single row of the table: "resources"
   """
   updateResourceById(
@@ -15061,6 +17722,118 @@ type mutation_root {
     updates: [rolesUpdates!]!
   ): [rolesMutationResponse]
   """
+  update data of the table: "security_alerts"
+  """
+  updateSecurityAlerts(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: SecurityAlertsAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: SecurityAlertsDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: SecurityAlertsDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: SecurityAlertsDeleteKeyInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: SecurityAlertsPrependInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: SecurityAlertsSetInput
+    """filter the rows which have to be updated"""
+    where: SecurityAlertsBoolExp!
+  ): SecurityAlertsMutationResponse
+  """
+  update single row of the table: "security_alerts"
+  """
+  updateSecurityAlertsByPk(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: SecurityAlertsAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: SecurityAlertsDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: SecurityAlertsDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: SecurityAlertsDeleteKeyInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: SecurityAlertsPrependInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: SecurityAlertsSetInput
+    pkColumns: SecurityAlertsPkColumnsInput!
+  ): SecurityAlerts
+  """
+  update multiples rows of table: "security_alerts"
+  """
+  updateSecurityAlertsMany(
+    """updates to execute, in order"""
+    updates: [SecurityAlertsUpdates!]!
+  ): [SecurityAlertsMutationResponse]
+  """
+  update data of the table: "security_settings"
+  """
+  updateSecuritySettings(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: SecuritySettingsAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: SecuritySettingsDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: SecuritySettingsDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: SecuritySettingsDeleteKeyInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: SecuritySettingsPrependInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: SecuritySettingsSetInput
+    """filter the rows which have to be updated"""
+    where: SecuritySettingsBoolExp!
+  ): SecuritySettingsMutationResponse
+  """
+  update single row of the table: "security_settings"
+  """
+  updateSecuritySettingsByPk(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: SecuritySettingsAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: SecuritySettingsDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: SecuritySettingsDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: SecuritySettingsDeleteKeyInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: SecuritySettingsPrependInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: SecuritySettingsSetInput
+    pkColumns: SecuritySettingsPkColumnsInput!
+  ): SecuritySettings
+  """
+  update multiples rows of table: "security_settings"
+  """
+  updateSecuritySettingsMany(
+    """updates to execute, in order"""
+    updates: [SecuritySettingsUpdates!]!
+  ): [SecuritySettingsMutationResponse]
+  """
   update multiples rows of table: "audit.slow_queries"
   """
   updateSlowQueriesMany(
@@ -15075,6 +17848,122 @@ type mutation_root {
     _set: slowQueriesSetInput
     pkColumns: slowQueriesPkColumnsInput!
   ): slowQueries
+  """
+  update data of the table: "system_configuration"
+  """
+  updateSystemConfiguration(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: SystemConfigurationAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: SystemConfigurationDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: SystemConfigurationDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: SystemConfigurationDeleteKeyInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: SystemConfigurationPrependInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: SystemConfigurationSetInput
+    """filter the rows which have to be updated"""
+    where: SystemConfigurationBoolExp!
+  ): SystemConfigurationMutationResponse
+  """
+  update single row of the table: "system_configuration"
+  """
+  updateSystemConfigurationByPk(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: SystemConfigurationAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: SystemConfigurationDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: SystemConfigurationDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: SystemConfigurationDeleteKeyInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: SystemConfigurationPrependInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: SystemConfigurationSetInput
+    pkColumns: SystemConfigurationPkColumnsInput!
+  ): SystemConfiguration
+  """
+  update multiples rows of table: "system_configuration"
+  """
+  updateSystemConfigurationMany(
+    """updates to execute, in order"""
+    updates: [SystemConfigurationUpdates!]!
+  ): [SystemConfigurationMutationResponse]
+  """
+  update data of the table: "system_health"
+  """
+  updateSystemHealth(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: SystemHealthAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: SystemHealthDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: SystemHealthDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: SystemHealthDeleteKeyInput
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: SystemHealthIncInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: SystemHealthPrependInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: SystemHealthSetInput
+    """filter the rows which have to be updated"""
+    where: SystemHealthBoolExp!
+  ): SystemHealthMutationResponse
+  """
+  update single row of the table: "system_health"
+  """
+  updateSystemHealthByPk(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: SystemHealthAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: SystemHealthDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: SystemHealthDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: SystemHealthDeleteKeyInput
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: SystemHealthIncInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: SystemHealthPrependInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: SystemHealthSetInput
+    pkColumns: SystemHealthPkColumnsInput!
+  ): SystemHealth
+  """
+  update multiples rows of table: "system_health"
+  """
+  updateSystemHealthMany(
+    """updates to execute, in order"""
+    updates: [SystemHealthUpdates!]!
+  ): [SystemHealthMutationResponse]
   """
   update data of the table: "time_entries"
   """
@@ -15191,36 +18080,68 @@ type mutation_root {
     updates: [userRolesUpdates!]!
   ): [userRolesMutationResponse]
   """
+  update data of the table: "user_sessions"
+  """
+  updateUserSessions(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: UserSessionsAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: UserSessionsDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: UserSessionsDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: UserSessionsDeleteKeyInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: UserSessionsPrependInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: UserSessionsSetInput
+    """filter the rows which have to be updated"""
+    where: UserSessionsBoolExp!
+  ): UserSessionsMutationResponse
+  """
+  update single row of the table: "user_sessions"
+  """
+  updateUserSessionsByPk(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: UserSessionsAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: UserSessionsDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: UserSessionsDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: UserSessionsDeleteKeyInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: UserSessionsPrependInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: UserSessionsSetInput
+    pkColumns: UserSessionsPkColumnsInput!
+  ): UserSessions
+  """
+  update multiples rows of table: "user_sessions"
+  """
+  updateUserSessionsMany(
+    """updates to execute, in order"""
+    updates: [UserSessionsUpdates!]!
+  ): [UserSessionsMutationResponse]
+  """
   update multiples rows of table: "user_skills"
   """
   updateUserSkillMany(
     """updates to execute, in order"""
     updates: [userSkillUpdates!]!
   ): [userSkillMutationResponse]
-  """
-  update single row of the table: "neon_auth.users_sync"
-  """
-  updateUserSyncById(
-    """append existing jsonb value of filtered columns with new jsonb value"""
-    _append: authUsersSyncAppendInput
-    """
-    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
-    """
-    _deleteAtPath: authUsersSyncDeleteAtPathInput
-    """
-    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
-    """
-    _deleteElem: authUsersSyncDeleteElemInput
-    """
-    delete key/value pair or string element. key/value pairs are matched based on their key value
-    """
-    _deleteKey: authUsersSyncDeleteKeyInput
-    """prepend existing jsonb value of filtered columns with new jsonb value"""
-    _prepend: authUsersSyncPrependInput
-    """sets the columns of the filtered rows to the given values"""
-    _set: authUsersSyncSetInput
-    pkColumns: authUsersSyncPkColumnsInput!
-  ): authUsersSync
   """
   update multiples rows of table: "users"
   """
@@ -21919,9 +24840,7 @@ type query_root {
   fetch data from the table: "billing_event_log" using primary key columns
   """
   billingEventLogById(id: uuid!): billingEventLogs
-  """
-  fetch data from the table: "billing_event_log"
-  """
+  """An array relationship"""
   billingEventLogs(
     """distinct select on columns"""
     distinctOn: [billingEventLogsSelectColumn!]
@@ -21934,9 +24853,7 @@ type query_root {
     """filter the rows returned"""
     where: billingEventLogsBoolExp
   ): [billingEventLogs!]!
-  """
-  fetch aggregated fields from the table: "billing_event_log"
-  """
+  """An aggregate relationship"""
   billingEventLogsAggregate(
     """distinct select on columns"""
     distinctOn: [billingEventLogsSelectColumn!]
@@ -22398,6 +25315,34 @@ type query_root {
     """filter the rows returned"""
     where: dataAccessLogsBoolExp
   ): dataAccessLogsAggregate!
+  """An array relationship"""
+  dataBackups(
+    """distinct select on columns"""
+    distinctOn: [DataBackupsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [DataBackupsOrderBy!]
+    """filter the rows returned"""
+    where: DataBackupsBoolExp
+  ): [DataBackups!]!
+  """An aggregate relationship"""
+  dataBackupsAggregate(
+    """distinct select on columns"""
+    distinctOn: [DataBackupsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [DataBackupsOrderBy!]
+    """filter the rows returned"""
+    where: DataBackupsBoolExp
+  ): DataBackupsAggregate!
+  """fetch data from the table: "data_backups" using primary key columns"""
+  dataBackupsByPk(id: uuid!): DataBackups
   """An array relationship"""
   emailDrafts(
     """distinct select on columns"""
@@ -23428,6 +26373,38 @@ type query_root {
   fetch data from the table: "position_admin_defaults" using primary key columns
   """
   positionAdminDefaultsByPk(position: user_position!): PositionAdminDefaults
+  """
+  fetch data from the table: "rate_limits"
+  """
+  rateLimits(
+    """distinct select on columns"""
+    distinctOn: [RateLimitsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [RateLimitsOrderBy!]
+    """filter the rows returned"""
+    where: RateLimitsBoolExp
+  ): [RateLimits!]!
+  """
+  fetch aggregated fields from the table: "rate_limits"
+  """
+  rateLimitsAggregate(
+    """distinct select on columns"""
+    distinctOn: [RateLimitsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [RateLimitsOrderBy!]
+    """filter the rows returned"""
+    where: RateLimitsBoolExp
+  ): RateLimitsAggregate!
+  """fetch data from the table: "rate_limits" using primary key columns"""
+  rateLimitsByPk(id: uuid!): RateLimits
   """fetch data from the table: "resources" using primary key columns"""
   resourceById(id: uuid!): resources
   """
@@ -23527,6 +26504,68 @@ type query_root {
     where: rolesBoolExp
   ): rolesAggregate!
   """
+  fetch data from the table: "security_alerts"
+  """
+  securityAlerts(
+    """distinct select on columns"""
+    distinctOn: [SecurityAlertsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [SecurityAlertsOrderBy!]
+    """filter the rows returned"""
+    where: SecurityAlertsBoolExp
+  ): [SecurityAlerts!]!
+  """
+  fetch aggregated fields from the table: "security_alerts"
+  """
+  securityAlertsAggregate(
+    """distinct select on columns"""
+    distinctOn: [SecurityAlertsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [SecurityAlertsOrderBy!]
+    """filter the rows returned"""
+    where: SecurityAlertsBoolExp
+  ): SecurityAlertsAggregate!
+  """fetch data from the table: "security_alerts" using primary key columns"""
+  securityAlertsByPk(id: uuid!): SecurityAlerts
+  """An array relationship"""
+  securitySettings(
+    """distinct select on columns"""
+    distinctOn: [SecuritySettingsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [SecuritySettingsOrderBy!]
+    """filter the rows returned"""
+    where: SecuritySettingsBoolExp
+  ): [SecuritySettings!]!
+  """An aggregate relationship"""
+  securitySettingsAggregate(
+    """distinct select on columns"""
+    distinctOn: [SecuritySettingsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [SecuritySettingsOrderBy!]
+    """filter the rows returned"""
+    where: SecuritySettingsBoolExp
+  ): SecuritySettingsAggregate!
+  """
+  fetch data from the table: "security_settings" using primary key columns
+  """
+  securitySettingsByPk(id: uuid!): SecuritySettings
+  """
   fetch data from the table: "audit.slow_queries"
   """
   slowQueries(
@@ -23590,6 +26629,72 @@ type query_root {
     """filter the rows returned"""
     where: StaffBillingPerformanceBoolExp
   ): StaffBillingPerformanceAggregate!
+  """
+  fetch data from the table: "system_configuration"
+  """
+  systemConfiguration(
+    """distinct select on columns"""
+    distinctOn: [SystemConfigurationSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [SystemConfigurationOrderBy!]
+    """filter the rows returned"""
+    where: SystemConfigurationBoolExp
+  ): [SystemConfiguration!]!
+  """
+  fetch aggregated fields from the table: "system_configuration"
+  """
+  systemConfigurationAggregate(
+    """distinct select on columns"""
+    distinctOn: [SystemConfigurationSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [SystemConfigurationOrderBy!]
+    """filter the rows returned"""
+    where: SystemConfigurationBoolExp
+  ): SystemConfigurationAggregate!
+  """
+  fetch data from the table: "system_configuration" using primary key columns
+  """
+  systemConfigurationByPk(id: uuid!): SystemConfiguration
+  """
+  fetch data from the table: "system_health"
+  """
+  systemHealth(
+    """distinct select on columns"""
+    distinctOn: [SystemHealthSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [SystemHealthOrderBy!]
+    """filter the rows returned"""
+    where: SystemHealthBoolExp
+  ): [SystemHealth!]!
+  """
+  fetch aggregated fields from the table: "system_health"
+  """
+  systemHealthAggregate(
+    """distinct select on columns"""
+    distinctOn: [SystemHealthSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [SystemHealthOrderBy!]
+    """filter the rows returned"""
+    where: SystemHealthBoolExp
+  ): SystemHealthAggregate!
+  """fetch data from the table: "system_health" using primary key columns"""
+  systemHealthByPk(id: uuid!): SystemHealth
   """
   fetch data from the table: "team_capacity_by_position"
   """
@@ -23775,6 +26880,34 @@ type query_root {
     """filter the rows returned"""
     where: userRolesBoolExp
   ): userRolesAggregate!
+  """An array relationship"""
+  userSessions(
+    """distinct select on columns"""
+    distinctOn: [UserSessionsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [UserSessionsOrderBy!]
+    """filter the rows returned"""
+    where: UserSessionsBoolExp
+  ): [UserSessions!]!
+  """An aggregate relationship"""
+  userSessionsAggregate(
+    """distinct select on columns"""
+    distinctOn: [UserSessionsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [UserSessionsOrderBy!]
+    """filter the rows returned"""
+    where: UserSessionsBoolExp
+  ): UserSessionsAggregate!
+  """fetch data from the table: "user_sessions" using primary key columns"""
+  userSessionsByPk(id: uuid!): UserSessions
   """
   fetch data from the table: "user_skills"
   """
@@ -23805,13 +26938,6 @@ type query_root {
     """filter the rows returned"""
     where: userSkillBoolExp
   ): userSkillAggregate!
-  """
-  fetch data from the table: "neon_auth.users_sync" using primary key columns
-  """
-  userSyncById(
-    """Unique identifier from the authentication provider"""
-    id: String!
-  ): authUsersSync
   """
   fetch data from the table: "users"
   """
@@ -23872,36 +26998,6 @@ type query_root {
     """filter the rows returned"""
     where: usersRoleBackupBoolExp
   ): usersRoleBackupAggregate!
-  """
-  fetch data from the table: "neon_auth.users_sync"
-  """
-  usersSync(
-    """distinct select on columns"""
-    distinctOn: [authUsersSyncSelectColumn!]
-    """limit the number of rows returned"""
-    limit: Int
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-    """sort the rows by one or more columns"""
-    orderBy: [authUsersSyncOrderBy!]
-    """filter the rows returned"""
-    where: authUsersSyncBoolExp
-  ): [authUsersSync!]!
-  """
-  fetch aggregated fields from the table: "neon_auth.users_sync"
-  """
-  usersSyncAggregate(
-    """distinct select on columns"""
-    distinctOn: [authUsersSyncSelectColumn!]
-    """limit the number of rows returned"""
-    limit: Int
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-    """sort the rows by one or more columns"""
-    orderBy: [authUsersSyncOrderBy!]
-    """filter the rows returned"""
-    where: authUsersSyncBoolExp
-  ): authUsersSyncAggregate!
   """
   fetch data from the table: "work_schedule"
   """
@@ -24832,6 +27928,27 @@ type rolesVarianceFields {
   priority: Float
 }
 
+input securitySettingsAggregateBoolExpBool_and {
+  arguments: SecuritySettingsSelectColumnSecuritySettingsAggregateBoolExpBool_andArgumentsColumns!
+  distinct: Boolean
+  filter: SecuritySettingsBoolExp
+  predicate: BooleanComparisonExp!
+}
+
+input securitySettingsAggregateBoolExpBool_or {
+  arguments: SecuritySettingsSelectColumnSecuritySettingsAggregateBoolExpBool_orArgumentsColumns!
+  distinct: Boolean
+  filter: SecuritySettingsBoolExp
+  predicate: BooleanComparisonExp!
+}
+
+input securitySettingsAggregateBoolExpCount {
+  arguments: [SecuritySettingsSelectColumn!]
+  distinct: Boolean
+  filter: SecuritySettingsBoolExp
+  predicate: IntComparisonExp!
+}
+
 """
 columns and relationships of "audit.slow_queries"
 """
@@ -25257,23 +28374,10 @@ type subscription_root {
     where: authEventsBoolExp
   ): [authEvents!]!
   """
-  fetch data from the table in a streaming manner: "neon_auth.users_sync"
-  """
-  authUsersSyncStream(
-    """maximum number of rows returned in a single batch"""
-    batchSize: Int!
-    """cursor to stream the results returned by the query"""
-    cursor: [authUsersSyncStreamCursorInput]!
-    """filter the rows returned"""
-    where: authUsersSyncBoolExp
-  ): [authUsersSync!]!
-  """
   fetch data from the table: "billing_event_log" using primary key columns
   """
   billingEventLogById(id: uuid!): billingEventLogs
-  """
-  fetch data from the table: "billing_event_log"
-  """
+  """An array relationship"""
   billingEventLogs(
     """distinct select on columns"""
     distinctOn: [billingEventLogsSelectColumn!]
@@ -25286,9 +28390,7 @@ type subscription_root {
     """filter the rows returned"""
     where: billingEventLogsBoolExp
   ): [billingEventLogs!]!
-  """
-  fetch aggregated fields from the table: "billing_event_log"
-  """
+  """An aggregate relationship"""
   billingEventLogsAggregate(
     """distinct select on columns"""
     distinctOn: [billingEventLogsSelectColumn!]
@@ -25892,6 +28994,45 @@ type subscription_root {
     """filter the rows returned"""
     where: dataAccessLogsBoolExp
   ): [dataAccessLogs!]!
+  """An array relationship"""
+  dataBackups(
+    """distinct select on columns"""
+    distinctOn: [DataBackupsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [DataBackupsOrderBy!]
+    """filter the rows returned"""
+    where: DataBackupsBoolExp
+  ): [DataBackups!]!
+  """An aggregate relationship"""
+  dataBackupsAggregate(
+    """distinct select on columns"""
+    distinctOn: [DataBackupsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [DataBackupsOrderBy!]
+    """filter the rows returned"""
+    where: DataBackupsBoolExp
+  ): DataBackupsAggregate!
+  """fetch data from the table: "data_backups" using primary key columns"""
+  dataBackupsByPk(id: uuid!): DataBackups
+  """
+  fetch data from the table in a streaming manner: "data_backups"
+  """
+  dataBackupsStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+    """cursor to stream the results returned by the query"""
+    cursor: [DataBackupsStreamCursorInput]!
+    """filter the rows returned"""
+    where: DataBackupsBoolExp
+  ): [DataBackups!]!
   """An array relationship"""
   emailDrafts(
     """distinct select on columns"""
@@ -27227,6 +30368,49 @@ type subscription_root {
     """filter the rows returned"""
     where: PositionAdminDefaultsBoolExp
   ): [PositionAdminDefaults!]!
+  """
+  fetch data from the table: "rate_limits"
+  """
+  rateLimits(
+    """distinct select on columns"""
+    distinctOn: [RateLimitsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [RateLimitsOrderBy!]
+    """filter the rows returned"""
+    where: RateLimitsBoolExp
+  ): [RateLimits!]!
+  """
+  fetch aggregated fields from the table: "rate_limits"
+  """
+  rateLimitsAggregate(
+    """distinct select on columns"""
+    distinctOn: [RateLimitsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [RateLimitsOrderBy!]
+    """filter the rows returned"""
+    where: RateLimitsBoolExp
+  ): RateLimitsAggregate!
+  """fetch data from the table: "rate_limits" using primary key columns"""
+  rateLimitsByPk(id: uuid!): RateLimits
+  """
+  fetch data from the table in a streaming manner: "rate_limits"
+  """
+  rateLimitsStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+    """cursor to stream the results returned by the query"""
+    cursor: [RateLimitsStreamCursorInput]!
+    """filter the rows returned"""
+    where: RateLimitsBoolExp
+  ): [RateLimits!]!
   """fetch data from the table: "resources" using primary key columns"""
   resourceById(id: uuid!): resources
   """
@@ -27359,6 +30543,90 @@ type subscription_root {
     where: rolesBoolExp
   ): [roles!]!
   """
+  fetch data from the table: "security_alerts"
+  """
+  securityAlerts(
+    """distinct select on columns"""
+    distinctOn: [SecurityAlertsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [SecurityAlertsOrderBy!]
+    """filter the rows returned"""
+    where: SecurityAlertsBoolExp
+  ): [SecurityAlerts!]!
+  """
+  fetch aggregated fields from the table: "security_alerts"
+  """
+  securityAlertsAggregate(
+    """distinct select on columns"""
+    distinctOn: [SecurityAlertsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [SecurityAlertsOrderBy!]
+    """filter the rows returned"""
+    where: SecurityAlertsBoolExp
+  ): SecurityAlertsAggregate!
+  """fetch data from the table: "security_alerts" using primary key columns"""
+  securityAlertsByPk(id: uuid!): SecurityAlerts
+  """
+  fetch data from the table in a streaming manner: "security_alerts"
+  """
+  securityAlertsStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+    """cursor to stream the results returned by the query"""
+    cursor: [SecurityAlertsStreamCursorInput]!
+    """filter the rows returned"""
+    where: SecurityAlertsBoolExp
+  ): [SecurityAlerts!]!
+  """An array relationship"""
+  securitySettings(
+    """distinct select on columns"""
+    distinctOn: [SecuritySettingsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [SecuritySettingsOrderBy!]
+    """filter the rows returned"""
+    where: SecuritySettingsBoolExp
+  ): [SecuritySettings!]!
+  """An aggregate relationship"""
+  securitySettingsAggregate(
+    """distinct select on columns"""
+    distinctOn: [SecuritySettingsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [SecuritySettingsOrderBy!]
+    """filter the rows returned"""
+    where: SecuritySettingsBoolExp
+  ): SecuritySettingsAggregate!
+  """
+  fetch data from the table: "security_settings" using primary key columns
+  """
+  securitySettingsByPk(id: uuid!): SecuritySettings
+  """
+  fetch data from the table in a streaming manner: "security_settings"
+  """
+  securitySettingsStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+    """cursor to stream the results returned by the query"""
+    cursor: [SecuritySettingsStreamCursorInput]!
+    """filter the rows returned"""
+    where: SecuritySettingsBoolExp
+  ): [SecuritySettings!]!
+  """
   fetch data from the table: "audit.slow_queries"
   """
   slowQueries(
@@ -27444,6 +30712,94 @@ type subscription_root {
     """filter the rows returned"""
     where: StaffBillingPerformanceBoolExp
   ): [StaffBillingPerformance!]!
+  """
+  fetch data from the table: "system_configuration"
+  """
+  systemConfiguration(
+    """distinct select on columns"""
+    distinctOn: [SystemConfigurationSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [SystemConfigurationOrderBy!]
+    """filter the rows returned"""
+    where: SystemConfigurationBoolExp
+  ): [SystemConfiguration!]!
+  """
+  fetch aggregated fields from the table: "system_configuration"
+  """
+  systemConfigurationAggregate(
+    """distinct select on columns"""
+    distinctOn: [SystemConfigurationSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [SystemConfigurationOrderBy!]
+    """filter the rows returned"""
+    where: SystemConfigurationBoolExp
+  ): SystemConfigurationAggregate!
+  """
+  fetch data from the table: "system_configuration" using primary key columns
+  """
+  systemConfigurationByPk(id: uuid!): SystemConfiguration
+  """
+  fetch data from the table in a streaming manner: "system_configuration"
+  """
+  systemConfigurationStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+    """cursor to stream the results returned by the query"""
+    cursor: [SystemConfigurationStreamCursorInput]!
+    """filter the rows returned"""
+    where: SystemConfigurationBoolExp
+  ): [SystemConfiguration!]!
+  """
+  fetch data from the table: "system_health"
+  """
+  systemHealth(
+    """distinct select on columns"""
+    distinctOn: [SystemHealthSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [SystemHealthOrderBy!]
+    """filter the rows returned"""
+    where: SystemHealthBoolExp
+  ): [SystemHealth!]!
+  """
+  fetch aggregated fields from the table: "system_health"
+  """
+  systemHealthAggregate(
+    """distinct select on columns"""
+    distinctOn: [SystemHealthSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [SystemHealthOrderBy!]
+    """filter the rows returned"""
+    where: SystemHealthBoolExp
+  ): SystemHealthAggregate!
+  """fetch data from the table: "system_health" using primary key columns"""
+  systemHealthByPk(id: uuid!): SystemHealth
+  """
+  fetch data from the table in a streaming manner: "system_health"
+  """
+  systemHealthStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+    """cursor to stream the results returned by the query"""
+    cursor: [SystemHealthStreamCursorInput]!
+    """filter the rows returned"""
+    where: SystemHealthBoolExp
+  ): [SystemHealth!]!
   """
   fetch data from the table: "team_capacity_by_position"
   """
@@ -27695,6 +31051,45 @@ type subscription_root {
     """filter the rows returned"""
     where: userRolesBoolExp
   ): [userRoles!]!
+  """An array relationship"""
+  userSessions(
+    """distinct select on columns"""
+    distinctOn: [UserSessionsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [UserSessionsOrderBy!]
+    """filter the rows returned"""
+    where: UserSessionsBoolExp
+  ): [UserSessions!]!
+  """An aggregate relationship"""
+  userSessionsAggregate(
+    """distinct select on columns"""
+    distinctOn: [UserSessionsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [UserSessionsOrderBy!]
+    """filter the rows returned"""
+    where: UserSessionsBoolExp
+  ): UserSessionsAggregate!
+  """fetch data from the table: "user_sessions" using primary key columns"""
+  userSessionsByPk(id: uuid!): UserSessions
+  """
+  fetch data from the table in a streaming manner: "user_sessions"
+  """
+  userSessionsStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+    """cursor to stream the results returned by the query"""
+    cursor: [UserSessionsStreamCursorInput]!
+    """filter the rows returned"""
+    where: UserSessionsBoolExp
+  ): [UserSessions!]!
   """
   fetch data from the table: "user_skills"
   """
@@ -27736,13 +31131,6 @@ type subscription_root {
     """filter the rows returned"""
     where: userSkillBoolExp
   ): [userSkill!]!
-  """
-  fetch data from the table: "neon_auth.users_sync" using primary key columns
-  """
-  userSyncById(
-    """Unique identifier from the authentication provider"""
-    id: String!
-  ): authUsersSync
   """
   fetch data from the table: "users"
   """
@@ -27825,36 +31213,6 @@ type subscription_root {
     """filter the rows returned"""
     where: usersBoolExp
   ): [users!]!
-  """
-  fetch data from the table: "neon_auth.users_sync"
-  """
-  usersSync(
-    """distinct select on columns"""
-    distinctOn: [authUsersSyncSelectColumn!]
-    """limit the number of rows returned"""
-    limit: Int
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-    """sort the rows by one or more columns"""
-    orderBy: [authUsersSyncOrderBy!]
-    """filter the rows returned"""
-    where: authUsersSyncBoolExp
-  ): [authUsersSync!]!
-  """
-  fetch aggregated fields from the table: "neon_auth.users_sync"
-  """
-  usersSyncAggregate(
-    """distinct select on columns"""
-    distinctOn: [authUsersSyncSelectColumn!]
-    """limit the number of rows returned"""
-    limit: Int
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-    """sort the rows by one or more columns"""
-    orderBy: [authUsersSyncOrderBy!]
-    """filter the rows returned"""
-    where: authUsersSyncBoolExp
-  ): authUsersSyncAggregate!
   """
   fetch data from the table: "work_schedule"
   """
@@ -29376,6 +32734,27 @@ input userRolesUpdates {
   where: userRolesBoolExp!
 }
 
+input userSessionsAggregateBoolExpBool_and {
+  arguments: UserSessionsSelectColumnUserSessionsAggregateBoolExpBool_andArgumentsColumns!
+  distinct: Boolean
+  filter: UserSessionsBoolExp
+  predicate: BooleanComparisonExp!
+}
+
+input userSessionsAggregateBoolExpBool_or {
+  arguments: UserSessionsSelectColumnUserSessionsAggregateBoolExpBool_orArgumentsColumns!
+  distinct: Boolean
+  filter: UserSessionsBoolExp
+  predicate: BooleanComparisonExp!
+}
+
+input userSessionsAggregateBoolExpCount {
+  arguments: [UserSessionsSelectColumn!]
+  distinct: Boolean
+  filter: UserSessionsBoolExp
+  predicate: IntComparisonExp!
+}
+
 """
 columns and relationships of "user_skills"
 """
@@ -29721,6 +33100,7 @@ type users {
   bio: String
   """External identifier from Clerk authentication service"""
   clerkUserId: String
+  computedName: String
   """An array relationship"""
   consultantAssignments(
     """distinct select on columns"""
@@ -29853,6 +33233,32 @@ type users {
     """filter the rows returned"""
     where: permissionOverridesBoolExp
   ): permissionOverridesAggregate!
+  """An array relationship"""
+  dataBackups(
+    """distinct select on columns"""
+    distinctOn: [DataBackupsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [DataBackupsOrderBy!]
+    """filter the rows returned"""
+    where: DataBackupsBoolExp
+  ): [DataBackups!]!
+  """An aggregate relationship"""
+  dataBackupsAggregate(
+    """distinct select on columns"""
+    distinctOn: [DataBackupsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [DataBackupsOrderBy!]
+    """filter the rows returned"""
+    where: DataBackupsBoolExp
+  ): DataBackupsAggregate!
   deactivatedAt: timestamptz
   deactivatedBy: String
   """Default admin time percentage for this user"""
@@ -29963,6 +33369,7 @@ type users {
     """filter the rows returned"""
     where: EmailTemplatesBoolExp
   ): EmailTemplatesAggregate!
+  firstName: String!
   """Unique identifier for the user"""
   id: uuid!
   """URL to the user's profile image"""
@@ -29970,6 +33377,7 @@ type users {
   isActive: Boolean
   """Whether the user is a staff member (vs. external user)"""
   isStaff: Boolean
+  lastName: String!
   """An array relationship"""
   managedPayrolls(
     """distinct select on columns"""
@@ -30164,6 +33572,32 @@ type users {
   ): payrollsAggregate!
   """User's system role (viewer, consultant, manager, org_admin)"""
   role: user_role!
+  """An array relationship"""
+  securitySettings(
+    """distinct select on columns"""
+    distinctOn: [SecuritySettingsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [SecuritySettingsOrderBy!]
+    """filter the rows returned"""
+    where: SecuritySettingsBoolExp
+  ): [SecuritySettings!]!
+  """An aggregate relationship"""
+  securitySettingsAggregate(
+    """distinct select on columns"""
+    distinctOn: [SecuritySettingsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [SecuritySettingsOrderBy!]
+    """filter the rows returned"""
+    where: SecuritySettingsBoolExp
+  ): SecuritySettingsAggregate!
   """Current user status - must be consistent with isActive field"""
   status: user_status_enum!
   """Reason for the status change (for audit purposes)"""
@@ -30437,6 +33871,32 @@ type users {
     where: permissionOverridesBoolExp
   ): permissionOverridesAggregate!
   """An array relationship"""
+  userSessions(
+    """distinct select on columns"""
+    distinctOn: [UserSessionsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [UserSessionsOrderBy!]
+    """filter the rows returned"""
+    where: UserSessionsBoolExp
+  ): [UserSessions!]!
+  """An aggregate relationship"""
+  userSessionsAggregate(
+    """distinct select on columns"""
+    distinctOn: [UserSessionsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [UserSessionsOrderBy!]
+    """filter the rows returned"""
+    where: UserSessionsBoolExp
+  ): UserSessionsAggregate!
+  """An array relationship"""
   userSkills(
     """distinct select on columns"""
     distinctOn: [userSkillSelectColumn!]
@@ -30632,6 +34092,7 @@ input usersBoolExp {
   billingItemsUserIdAggregate: billingItemsAggregateBoolExp
   bio: StringComparisonExp
   clerkUserId: StringComparisonExp
+  computedName: StringComparisonExp
   consultantAssignments: payrollAssignmentsBoolExp
   consultantAssignmentsAggregate: payrollAssignmentsAggregateBoolExp
   createdAssignmentAudits: payrollAssignmentAuditsBoolExp
@@ -30643,6 +34104,8 @@ input usersBoolExp {
   createdBillingEventsAggregate: billingEventLogsAggregateBoolExp
   createdPermissionOverrides: permissionOverridesBoolExp
   createdPermissionOverridesAggregate: permissionOverridesAggregateBoolExp
+  dataBackups: DataBackupsBoolExp
+  dataBackupsAggregate: DataBackupsAggregateBoolExp
   deactivatedAt: TimestamptzComparisonExp
   deactivatedBy: StringComparisonExp
   defaultAdminTimePercentage: NumericComparisonExp
@@ -30655,10 +34118,12 @@ input usersBoolExp {
   emailTemplatesAggregate: EmailTemplatesAggregateBoolExp
   emailTemplatesCreatedByUserId: EmailTemplatesBoolExp
   emailTemplatesCreatedByUserIdAggregate: EmailTemplatesAggregateBoolExp
+  firstName: StringComparisonExp
   id: UuidComparisonExp
   image: StringComparisonExp
   isActive: BooleanComparisonExp
   isStaff: BooleanComparisonExp
+  lastName: StringComparisonExp
   managedPayrolls: payrollsBoolExp
   managedPayrollsAggregate: payrollsAggregateBoolExp
   managedTeamMembers: usersBoolExp
@@ -30679,6 +34144,8 @@ input usersBoolExp {
   primaryConsultantPayrolls: payrollsBoolExp
   primaryConsultantPayrollsAggregate: payrollsAggregateBoolExp
   role: UserRoleComparisonExp
+  securitySettings: SecuritySettingsBoolExp
+  securitySettingsAggregate: SecuritySettingsAggregateBoolExp
   status: UserStatusEnumComparisonExp
   statusChangeReason: StringComparisonExp
   statusChangedAt: TimestamptzComparisonExp
@@ -30705,6 +34172,8 @@ input usersBoolExp {
   userPermissionAuditsAggregate: permissionAuditLogsAggregateBoolExp
   userPermissionOverrides: permissionOverridesBoolExp
   userPermissionOverridesAggregate: permissionOverridesAggregateBoolExp
+  userSessions: UserSessionsBoolExp
+  userSessionsAggregate: UserSessionsAggregateBoolExp
   userSkills: userSkillBoolExp
   userSkillsAggregate: userSkillAggregateBoolExp
   userWorkSchedules: workScheduleBoolExp
@@ -30767,6 +34236,7 @@ input usersInsertInput {
   createdAt: timestamptz
   createdBillingEvents: billingEventLogsArrRelInsertInput
   createdPermissionOverrides: permissionOverridesArrRelInsertInput
+  dataBackups: DataBackupsArrRelInsertInput
   deactivatedAt: timestamptz
   deactivatedBy: String
   """Default admin time percentage for this user"""
@@ -30777,6 +34247,7 @@ input usersInsertInput {
   emailSendLogs: EmailSendLogsArrRelInsertInput
   emailTemplates: EmailTemplatesArrRelInsertInput
   emailTemplatesCreatedByUserId: EmailTemplatesArrRelInsertInput
+  firstName: String
   """Unique identifier for the user"""
   id: uuid
   """URL to the user's profile image"""
@@ -30784,6 +34255,7 @@ input usersInsertInput {
   isActive: Boolean
   """Whether the user is a staff member (vs. external user)"""
   isStaff: Boolean
+  lastName: String
   managedPayrolls: payrollsArrRelInsertInput
   managedTeamMembers: usersArrRelInsertInput
   managedUsers: usersArrRelInsertInput
@@ -30802,6 +34274,7 @@ input usersInsertInput {
   primaryConsultantPayrolls: payrollsArrRelInsertInput
   """User's system role (viewer, consultant, manager, org_admin)"""
   role: user_role
+  securitySettings: SecuritySettingsArrRelInsertInput
   """Current user status - must be consistent with isActive field"""
   status: user_status_enum
   """Reason for the status change (for audit purposes)"""
@@ -30823,6 +34296,7 @@ input usersInsertInput {
   userLeaveRecords: leaveArrRelInsertInput
   userPermissionAudits: permissionAuditLogsArrRelInsertInput
   userPermissionOverrides: permissionOverridesArrRelInsertInput
+  userSessions: UserSessionsArrRelInsertInput
   userSkills: userSkillArrRelInsertInput
   userWorkSchedules: workScheduleArrRelInsertInput
   """User's unique username for login"""
@@ -30838,6 +34312,7 @@ type usersMaxFields {
   bio: String
   """External identifier from Clerk authentication service"""
   clerkUserId: String
+  computedName: String
   """Timestamp when the user was created"""
   createdAt: timestamptz
   deactivatedAt: timestamptz
@@ -30846,10 +34321,12 @@ type usersMaxFields {
   defaultAdminTimePercentage: numeric
   """User's email address (unique)"""
   email: String
+  firstName: String
   """Unique identifier for the user"""
   id: uuid
   """URL to the user's profile image"""
   image: String
+  lastName: String
   """Reference to the user's manager"""
   managerId: uuid
   """User's full name"""
@@ -30884,6 +34361,7 @@ input usersMaxOrderBy {
   bio: OrderBy
   """External identifier from Clerk authentication service"""
   clerkUserId: OrderBy
+  computedName: OrderBy
   """Timestamp when the user was created"""
   createdAt: OrderBy
   deactivatedAt: OrderBy
@@ -30892,10 +34370,12 @@ input usersMaxOrderBy {
   defaultAdminTimePercentage: OrderBy
   """User's email address (unique)"""
   email: OrderBy
+  firstName: OrderBy
   """Unique identifier for the user"""
   id: OrderBy
   """URL to the user's profile image"""
   image: OrderBy
+  lastName: OrderBy
   """Reference to the user's manager"""
   managerId: OrderBy
   """User's full name"""
@@ -30928,6 +34408,7 @@ type usersMinFields {
   bio: String
   """External identifier from Clerk authentication service"""
   clerkUserId: String
+  computedName: String
   """Timestamp when the user was created"""
   createdAt: timestamptz
   deactivatedAt: timestamptz
@@ -30936,10 +34417,12 @@ type usersMinFields {
   defaultAdminTimePercentage: numeric
   """User's email address (unique)"""
   email: String
+  firstName: String
   """Unique identifier for the user"""
   id: uuid
   """URL to the user's profile image"""
   image: String
+  lastName: String
   """Reference to the user's manager"""
   managerId: uuid
   """User's full name"""
@@ -30974,6 +34457,7 @@ input usersMinOrderBy {
   bio: OrderBy
   """External identifier from Clerk authentication service"""
   clerkUserId: OrderBy
+  computedName: OrderBy
   """Timestamp when the user was created"""
   createdAt: OrderBy
   deactivatedAt: OrderBy
@@ -30982,10 +34466,12 @@ input usersMinOrderBy {
   defaultAdminTimePercentage: OrderBy
   """User's email address (unique)"""
   email: OrderBy
+  firstName: OrderBy
   """Unique identifier for the user"""
   id: OrderBy
   """URL to the user's profile image"""
   image: OrderBy
+  lastName: OrderBy
   """Reference to the user's manager"""
   managerId: OrderBy
   """User's full name"""
@@ -31049,12 +34535,14 @@ input usersOrderBy {
   billingItemsUserIdAggregate: billingItemsAggregateOrderBy
   bio: OrderBy
   clerkUserId: OrderBy
+  computedName: OrderBy
   consultantAssignmentsAggregate: payrollAssignmentsAggregateOrderBy
   createdAssignmentAuditsAggregate: payrollAssignmentAuditsAggregateOrderBy
   createdAssignmentsAggregate: payrollAssignmentsAggregateOrderBy
   createdAt: OrderBy
   createdBillingEventsAggregate: billingEventLogsAggregateOrderBy
   createdPermissionOverridesAggregate: permissionOverridesAggregateOrderBy
+  dataBackupsAggregate: DataBackupsAggregateOrderBy
   deactivatedAt: OrderBy
   deactivatedBy: OrderBy
   defaultAdminTimePercentage: OrderBy
@@ -31063,10 +34551,12 @@ input usersOrderBy {
   emailSendLogsAggregate: EmailSendLogsAggregateOrderBy
   emailTemplatesAggregate: EmailTemplatesAggregateOrderBy
   emailTemplatesCreatedByUserIdAggregate: EmailTemplatesAggregateOrderBy
+  firstName: OrderBy
   id: OrderBy
   image: OrderBy
   isActive: OrderBy
   isStaff: OrderBy
+  lastName: OrderBy
   managedPayrollsAggregate: payrollsAggregateOrderBy
   managedTeamMembersAggregate: usersAggregateOrderBy
   managedUsersAggregate: usersAggregateOrderBy
@@ -31080,6 +34570,7 @@ input usersOrderBy {
   position: OrderBy
   primaryConsultantPayrollsAggregate: payrollsAggregateOrderBy
   role: OrderBy
+  securitySettingsAggregate: SecuritySettingsAggregateOrderBy
   status: OrderBy
   statusChangeReason: OrderBy
   statusChangedAt: OrderBy
@@ -31096,6 +34587,7 @@ input usersOrderBy {
   userLeaveRecordsAggregate: leaveAggregateOrderBy
   userPermissionAuditsAggregate: permissionAuditLogsAggregateOrderBy
   userPermissionOverridesAggregate: permissionOverridesAggregateOrderBy
+  userSessionsAggregate: UserSessionsAggregateOrderBy
   userSkillsAggregate: userSkillAggregateOrderBy
   userWorkSchedulesAggregate: workScheduleAggregateOrderBy
   username: OrderBy
@@ -31252,6 +34744,8 @@ enum usersSelectColumn {
   """column name"""
   clerkUserId
   """column name"""
+  computedName
+  """column name"""
   createdAt
   """column name"""
   deactivatedAt
@@ -31262,6 +34756,8 @@ enum usersSelectColumn {
   """column name"""
   email
   """column name"""
+  firstName
+  """column name"""
   id
   """column name"""
   image
@@ -31269,6 +34765,8 @@ enum usersSelectColumn {
   isActive
   """column name"""
   isStaff
+  """column name"""
+  lastName
   """column name"""
   managerId
   """column name"""
@@ -31331,6 +34829,7 @@ input usersSetInput {
   defaultAdminTimePercentage: numeric
   """User's email address (unique)"""
   email: String
+  firstName: String
   """Unique identifier for the user"""
   id: uuid
   """URL to the user's profile image"""
@@ -31338,6 +34837,7 @@ input usersSetInput {
   isActive: Boolean
   """Whether the user is a staff member (vs. external user)"""
   isStaff: Boolean
+  lastName: String
   """Reference to the user's manager"""
   managerId: uuid
   """User's full name"""
@@ -31422,6 +34922,7 @@ input usersStreamCursorValueInput {
   bio: String
   """External identifier from Clerk authentication service"""
   clerkUserId: String
+  computedName: String
   """Timestamp when the user was created"""
   createdAt: timestamptz
   deactivatedAt: timestamptz
@@ -31430,6 +34931,7 @@ input usersStreamCursorValueInput {
   defaultAdminTimePercentage: numeric
   """User's email address (unique)"""
   email: String
+  firstName: String
   """Unique identifier for the user"""
   id: uuid
   """URL to the user's profile image"""
@@ -31437,6 +34939,7 @@ input usersStreamCursorValueInput {
   isActive: Boolean
   """Whether the user is a staff member (vs. external user)"""
   isStaff: Boolean
+  lastName: String
   """Reference to the user's manager"""
   managerId: uuid
   """User's full name"""
@@ -31496,6 +34999,8 @@ enum usersUpdateColumn {
   """column name"""
   email
   """column name"""
+  firstName
+  """column name"""
   id
   """column name"""
   image
@@ -31503,6 +35008,8 @@ enum usersUpdateColumn {
   isActive
   """column name"""
   isStaff
+  """column name"""
+  lastName
   """column name"""
   managerId
   """column name"""

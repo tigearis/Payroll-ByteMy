@@ -36,7 +36,7 @@ query GetWorkSchedulesByDateRange($startDate: String!, $endDate: String!) {
 query GetTeamCapacityDashboard($managerUserId: uuid!) {
   workSchedule(
     where: { user: { managerId: { _eq: $managerUserId } } }
-    orderBy: { user: { name: ASC }, workDay: ASC }
+    orderBy: { user: { computedName: ASC }, workDay: ASC }
   ) {
     ...WorkScheduleDashboardCard
   }
@@ -52,7 +52,9 @@ query GetConsultantCapacity($userId: uuid!) {
 query GetUsersBasic {
   users(where: { isStaff: { _eq: true } }) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     managerId
@@ -66,7 +68,9 @@ query GetUsersBasic {
 query GetUserById($id: uuid!) {
   userById(id: $id) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     managerId
@@ -91,10 +95,12 @@ query GetTeamWorkloadOptimized($managerId: uuid!) {
       isStaff: { _eq: true }
       isActive: { _eq: true }
     }
-    orderBy: { name: ASC }
+    orderBy: { computedName: ASC }
   ) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     defaultAdminTimePercentage
@@ -191,7 +197,9 @@ query GetTeamWorkloadOptimized($managerId: uuid!) {
 query GetTeamMembers($managerId: uuid!) {
   users(where: { managerId: { _eq: $managerId } }) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     managerId
@@ -209,10 +217,12 @@ query GetTeamMembersWithCapacity($managerId: uuid!) {
     where: {
       _and: [{ managerId: { _eq: $managerId } }, { isStaff: { _eq: true } }]
     }
-    orderBy: { name: ASC }
+    orderBy: { computedName: ASC }
   ) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     managerId
@@ -226,9 +236,11 @@ query GetTeamMembersWithCapacity($managerId: uuid!) {
 
 # Query for assignment wizard - get available consultants
 query GetAvailableConsultants {
-  users(where: { isStaff: { _eq: true } }, orderBy: { name: ASC }) {
+  users(where: { isStaff: { _eq: true } }, orderBy: { computedName: ASC }) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     defaultAdminTimePercentage
@@ -246,7 +258,9 @@ query GetAvailableConsultants {
 query GetConsultantWorkload($consultantId: uuid!) {
   users(where: { id: { _eq: $consultantId } }) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     defaultAdminTimePercentage
@@ -312,15 +326,21 @@ query GetPayrollsForAssignment {
     managerUserId
     primaryConsultant {
       id
-      name
+      firstName
+      lastName
+      computedName
     }
     backupConsultant {
       id
-      name
+      firstName
+      lastName
+      computedName
     }
     manager {
       id
-      name
+      firstName
+      lastName
+      computedName
     }
     payrollDates(orderBy: { adjustedEftDate: ASC }, limit: 3) {
       id
@@ -340,10 +360,12 @@ query GetTeamWorkload($managerUserId: uuid!) {
         { isActive: { _eq: true } }
       ]
     }
-    orderBy: { name: ASC }
+    orderBy: { computedName: ASC }
   ) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     defaultAdminTimePercentage
@@ -401,7 +423,7 @@ query GetHolidaysByDateRange(
 query GetAllStaffCapacityDashboard {
   workSchedule(
     where: { user: { isStaff: { _eq: true }, isActive: { _eq: true } } }
-    orderBy: { user: { name: ASC }, workDay: ASC }
+    orderBy: { user: { computedName: ASC }, workDay: ASC }
   ) {
     id
     userId
@@ -412,7 +434,9 @@ query GetAllStaffCapacityDashboard {
     usesDefaultAdminTime
     user {
       id
-      name
+      firstName
+    lastName
+    computedName
       email
       role
       defaultAdminTimePercentage
@@ -425,10 +449,12 @@ query GetAllStaffCapacityDashboard {
 query GetAllStaffWorkload {
   users(
     where: { isStaff: { _eq: true }, isActive: { _eq: true } }
-    orderBy: { name: ASC }
+    orderBy: { computedName: ASC }
   ) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     defaultAdminTimePercentage

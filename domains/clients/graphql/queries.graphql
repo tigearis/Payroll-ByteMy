@@ -26,7 +26,9 @@ query GetClientsListOptimized(
       employeeCount
       primaryConsultant {
         id
-        name
+        firstName
+        lastName
+        computedName
         email
       }
       # ✅ Next payroll date included

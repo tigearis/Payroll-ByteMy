@@ -37,7 +37,9 @@ interface CreateStaffRequest {
 
 interface UserData {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
+  computedName?: string | null;
   email: string;
   role: string;
   isActive?: boolean;
@@ -64,7 +66,18 @@ interface CreateStaffResponse {
 
 export const POST = withAuth(async (req: NextRequest, session) => {
   try {
+    console.log("🚀 Staff creation API called");
+    console.log("📋 Session data:", {
+      userId: session.userId,
+      databaseId: session.databaseId,
+      email: session.email,
+      role: session.role,
+      permissions: session.permissions?.length || 0,
+    });
+
     const body: CreateStaffRequest = await req.json();
+    console.log("📝 Request body:", body);
+    
     const {
       email,
       firstName,
@@ -78,6 +91,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
 
     // Validate required fields
     if (!email || !firstName || !lastName || !role) {
+      console.log("❌ Missing required fields");
       return NextResponse.json<CreateStaffResponse>(
         {
           success: false,
@@ -101,20 +115,25 @@ export const POST = withAuth(async (req: NextRequest, session) => {
     // Check if user already exists (unless explicitly skipping)
     if (!skipExistingCheck) {
       try {
+        console.log("🔍 Checking for existing user:", email);
         const existingUserData = await executeTypedQuery<GetUserByEmailQuery>(
           GetUserByEmailDocument,
           { email }
         );
+        console.log("✅ User check query successful");
 
         if (existingUserData.users && existingUserData.users.length > 0) {
           const existingUser = existingUserData.users[0];
+          console.log("⚠️ User already exists:", existingUser.email);
           return NextResponse.json<CreateStaffResponse>(
             {
               success: false,
               error: `User with email ${email} already exists`,
               user: {
                 id: existingUser.id,
-                name: existingUser.name,
+                firstName: existingUser.firstName,
+                lastName: existingUser.lastName,
+                computedName: existingUser.computedName,
                 email: existingUser.email,
                 role: existingUser.role,
                 isActive: existingUser.isActive,
@@ -123,8 +142,9 @@ export const POST = withAuth(async (req: NextRequest, session) => {
             { status: 409 }
           );
         }
+        console.log("✅ No existing user found, proceeding with creation");
       } catch (queryError) {
-        console.warn("Error checking existing user:", queryError);
+        console.warn("⚠️ Error checking existing user:", queryError);
         // Continue with creation if query fails
       }
     }
@@ -133,8 +153,11 @@ export const POST = withAuth(async (req: NextRequest, session) => {
     let invitation = null;
 
     if (sendInvitation) {
+      console.log("📧 Starting invitation creation process");
+      
       // Check if we have the current user's database ID from JWT token
       if (!session.databaseId) {
+        console.log("❌ No database ID in session");
         return NextResponse.json<CreateStaffResponse>(
           {
             success: false,
@@ -163,39 +186,43 @@ export const POST = withAuth(async (req: NextRequest, session) => {
           },
         };
 
-        console.log("Invitation data being sent to Clerk:", JSON.stringify(clerkInvitationRequest, null, 2));
+        console.log("📤 Invitation data being sent to Clerk:", JSON.stringify(clerkInvitationRequest, null, 2));
 
         // Create Clerk invitation
+        console.log("🔄 Calling Clerk API...");
         const clerkInvitation = await clerkClient.invitations.createInvitation(clerkInvitationRequest);
-
-        console.log(`✅ Clerk invitation created: ${clerkInvitation.id}`);
+        console.log(`✅ Clerk invitation created successfully: ${clerkInvitation.id}`);
 
         // Create invitation record in database
         const expiresAt = new Date();
         expiresAt.setDate(expiresAt.getDate() + 7); // 7 days from now
 
+        const mutationVariables = {
+          email,
+          firstName,
+          lastName,
+          invitedRole: role,
+          managerId: managerId || null,
+          clerkInvitationId: clerkInvitation.id,
+          clerkTicket: null, // Clerk will set this
+          invitationMetadata: {
+            clerkInvitationId: clerkInvitation.id,
+            redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/accept-invitation`,
+          },
+          invitedBy: session.databaseId, // Using database user ID from JWT token
+          expiresAt: expiresAt.toISOString(),
+        };
+
+        console.log("🔄 Creating database invitation record with variables:", JSON.stringify(mutationVariables, null, 2));
+
         const dbInvitationResponse =
           await executeTypedMutation<CreateInvitationEnhancedMutation>(
             CreateInvitationEnhancedDocument,
-            {
-              email,
-              firstName,
-              lastName,
-              invitedRole: role,
-              managerId: managerId || null,
-              clerkInvitationId: clerkInvitation.id,
-              clerkTicket: null, // Clerk will set this
-              invitationMetadata: {
-                clerkInvitationId: clerkInvitation.id,
-                redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/accept-invitation`,
-              },
-              invitedBy: session.databaseId, // Using database user ID from JWT token
-              expiresAt: expiresAt.toISOString(),
-            }
+            mutationVariables
           );
 
+        console.log("✅ GraphQL mutation executed successfully");
         invitation = dbInvitationResponse.insertUserInvitation;
-
         console.log(`✅ Database invitation record created: ${invitation?.id}`);
 
         return NextResponse.json<CreateStaffResponse>({
@@ -206,18 +233,59 @@ export const POST = withAuth(async (req: NextRequest, session) => {
         });
       } catch (invitationError: unknown) {
         const errorMessage = invitationError instanceof Error ? invitationError.message : 'Unknown error';
-        console.error("Error creating invitation:", invitationError);
-        console.error("Clerk error details:", invitationError.errors);
-        console.error("Clerk trace ID:", invitationError.clerkTraceId);
+        console.error("❌ INVITATION CREATION ERROR:", invitationError);
+        
+        let userFriendlyMessage = errorMessage;
+        let statusCode = 500;
+        
+        // Enhanced error logging and Clerk-specific error handling
+        if (invitationError && typeof invitationError === 'object') {
+          const errorObj = invitationError as any;
+          console.error("🔍 Error details:");
+          console.error("  - Message:", errorObj.message);
+          console.error("  - Stack:", errorObj.stack);
+          console.error("  - Clerk errors:", errorObj.errors);
+          console.error("  - Clerk trace ID:", errorObj.clerkTraceId);
+          console.error("  - GraphQL errors:", errorObj.graphQLErrors);
+          console.error("  - Network error:", errorObj.networkError);
+          
+          // Handle Clerk-specific errors
+          if (errorObj.errors && Array.isArray(errorObj.errors)) {
+            const clerkError = errorObj.errors[0];
+            if (clerkError?.code === 'form_identifier_exists') {
+              userFriendlyMessage = `The email address ${email} is already registered in the system. Please use a different email address or check if the user already exists.`;
+              statusCode = 409; // Conflict
+            } else if (clerkError?.code === 'form_param_format_invalid') {
+              userFriendlyMessage = `Invalid email format: ${email}. Please provide a valid email address.`;
+              statusCode = 400; // Bad Request
+            } else if (clerkError?.code === 'form_param_missing') {
+              userFriendlyMessage = 'Missing required information for invitation. Please fill in all required fields.';
+              statusCode = 400; // Bad Request
+            } else if (clerkError?.message) {
+              userFriendlyMessage = `Invitation failed: ${clerkError.message}`;
+            }
+          }
+          
+          // Handle GraphQL errors
+          if (errorObj.graphQLErrors && Array.isArray(errorObj.graphQLErrors)) {
+            const graphqlError = errorObj.graphQLErrors[0];
+            if (graphqlError?.extensions?.code === 'permission-error') {
+              userFriendlyMessage = 'You do not have permission to create invitations. Please contact your administrator.';
+              statusCode = 403; // Forbidden
+            } else if (graphqlError?.message?.includes('violates check constraint')) {
+              userFriendlyMessage = 'Invalid invitation data. Please check all fields and try again.';
+              statusCode = 422; // Unprocessable Entity
+            }
+          }
+        }
 
-        // If Clerk invitation creation failed, return error
         return NextResponse.json<CreateStaffResponse>(
           {
             success: false,
-            error: `Failed to create invitation: ${errorMessage}`,
+            error: userFriendlyMessage,
             invitationSent: false,
           },
-          { status: 500 }
+          { status: statusCode }
         );
       }
     } else {
@@ -231,7 +299,8 @@ export const POST = withAuth(async (req: NextRequest, session) => {
         const userData = await executeTypedMutation<CreateUserByEmailMutation>(
           CreateUserByEmailDocument,
           {
-            name: fullName,
+            firstName,
+            lastName,
             email,
             role,
             managerId: managerId || null,

@@ -37,10 +37,20 @@ configuration:
     update: bulkUpdateBillingInvoice
     update_by_pk: updateBillingInvoiceById
 object_relationships:
+  - name: billingPeriod
+    using:
+      foreign_key_constraint_on: billing_period_id
   - name: client
     using:
       foreign_key_constraint_on: client_id
 array_relationships:
+  - name: billingEventLogs
+    using:
+      foreign_key_constraint_on:
+        column: invoice_id
+        table:
+          name: billing_event_log
+          schema: public
   - name: billingInvoiceItems
     using:
       foreign_key_constraint_on:

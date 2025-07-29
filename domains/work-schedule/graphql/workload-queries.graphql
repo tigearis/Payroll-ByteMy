@@ -7,7 +7,9 @@ query GetConsultantPayrollWorkload(
   # User basic info
   userById(id: $userId) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     defaultAdminTimePercentage
@@ -89,10 +91,12 @@ query GetTeamPayrollWorkload(
       isStaff: { _eq: true }
       isActive: { _eq: true }
     }
-    orderBy: { name: ASC }
+    orderBy: { computedName: ASC }
   ) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     defaultAdminTimePercentage
@@ -244,12 +248,16 @@ query GetPayrollAssignmentDetails(
     }
     primaryConsultant {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
     }
     backupConsultant {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
     }
     payrollDates(

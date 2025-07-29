@@ -151,7 +151,9 @@ mutation UpdateUserDefaultAdminTime(
     }
   ) {
     id
-    name
+    firstName
+    lastName
+    computedName
     defaultAdminTimePercentage
     updatedAt
   }
@@ -180,15 +182,21 @@ mutation AssignPayrollToConsultant(
     managerUserId
     primaryConsultant {
       id
-      name
+      firstName
+      lastName
+      computedName
     }
     backupConsultant {
       id
-      name
+      firstName
+      lastName
+      computedName
     }
     manager {
       id
-      name
+      firstName
+      lastName
+      computedName
     }
     updatedAt
   }
@@ -217,15 +225,21 @@ mutation BulkAssignPayrolls(
       managerUserId
       primaryConsultant {
         id
-        name
+        firstName
+        lastName
+        computedName
       }
       backupConsultant {
         id
-        name
+        firstName
+        lastName
+        computedName
       }
       manager {
         id
-        name
+        firstName
+        lastName
+        computedName
       }
       updatedAt
     }

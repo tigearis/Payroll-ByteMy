@@ -189,7 +189,9 @@ export async function GET(req: NextRequest) {
       data: {
         users: users.map(user => ({
           id: user.id,
-          name: user.name,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          computedName: user.computedName,
           email: user.email,
           role: user.role,
           isActive: user.isActive,
@@ -200,7 +202,9 @@ export async function GET(req: NextRequest) {
           updatedAt: user.updatedAt,
           managerUser: user.managerUser ? {
             id: user.managerUser.id,
-            name: user.managerUser.name,
+            firstName: user.managerUser.firstName,
+            lastName: user.managerUser.lastName,
+            computedName: user.managerUser.computedName,
             email: user.managerUser.email,
             role: (user.managerUser as any).role || null,
           } : null,

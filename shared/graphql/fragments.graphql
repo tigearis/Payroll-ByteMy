@@ -9,7 +9,9 @@
 # Minimal user info for references (1-3 fields)
 fragment UserMinimal on users {
   id
-  name
+  firstName
+  lastName
+  computedName
   email
 }
 
@@ -23,6 +25,7 @@ fragment UserCoreShared on users {
 # Standard user info for lists and basic operations (7-8 fields)
 fragment UserBasic on users {
   ...UserCoreShared
+  clerkUserId
   createdAt
   updatedAt
 }

@@ -148,7 +148,7 @@ query SearchNotes($searchTerm: String!, $limit: Int = 50) {
     where: {
       _or: [
         { content: { _ilike: $searchTerm } }
-        { authorUser: { name: { _ilike: $searchTerm } } }
+        { authorUser: { computedName: { _ilike: $searchTerm } } }
       ]
     }
     orderBy: { createdAt: DESC }
@@ -391,7 +391,7 @@ query SearchNotesPaginated(
     where: {
       _or: [
         { content: { _ilike: $searchTerm } }
-        { authorUser: { name: { _ilike: $searchTerm } } }
+        { authorUser: { computedName: { _ilike: $searchTerm } } }
       ]
     }
     orderBy: { createdAt: DESC }
@@ -405,7 +405,7 @@ query SearchNotesPaginated(
     where: {
       _or: [
         { content: { _ilike: $searchTerm } }
-        { authorUser: { name: { _ilike: $searchTerm } } }
+        { authorUser: { computedName: { _ilike: $searchTerm } } }
       ]
     }
   ) {

@@ -14,7 +14,9 @@ fragment UserSkillComplete on userSkill {
   userId
   skilledUser {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
   }
@@ -67,7 +69,9 @@ query GetAllUserSkills {
 query GetUsersWithSkills {
   users(where: { isStaff: { _eq: true } }) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     userSkills {
@@ -120,7 +124,9 @@ query GetConsultantsWithSkills($requiredSkills: [String!]!) {
     }
   ) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     defaultAdminTimePercentage

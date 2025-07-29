@@ -53,13 +53,14 @@ const nextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.com https://accounts.bytemy.com.au https://clerk.bytemy.com.au https://*.clerk.accounts.dev https://*.vercel.app https://*.vercel-insights.com https://*.vercel-analytics.com",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.com https://accounts.bytemy.com.au https://clerk.bytemy.com.au https://*.clerk.accounts.dev https://*.vercel.app https://*.vercel-insights.com https://*.vercel-analytics.com https://challenges.cloudflare.com https://*.cloudflare.com https://js.monitor.azure.com https://api.stripe.com https://maps.googleapis.com",
+              "script-src-elem 'self' 'unsafe-inline' https://clerk.com https://accounts.bytemy.com.au https://clerk.bytemy.com.au https://*.clerk.accounts.dev https://*.vercel.app https://*.vercel-insights.com https://*.vercel-analytics.com https://challenges.cloudflare.com https://*.cloudflare.com https://api.stripe.com https://maps.googleapis.com",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: https: blob:",
               "font-src 'self' data: https://fonts.gstatic.com", // Added for Geist fonts
-              "connect-src 'self' https://api.clerk.com https://clerk.com https://clerk-telemetry.com https://accounts.bytemy.com.au https://clerk.bytemy.com.au https://*.clerk.accounts.dev wss://accounts.bytemy.com.au wss://clerk.bytemy.com.au wss://*.clerk.accounts.dev https://*.neon.tech wss://*.neon.tech https://bytemy.hasura.app wss://bytemy.hasura.app https://hasura.bytemy.com.au wss://hasura.bytemy.com.au https://payroll.app.bytemy.com.au https://*.vercel.app https://*.vercel-insights.com https://*.vercel-analytics.com",
+              "connect-src 'self' https://api.clerk.com https://clerk.com https://clerk-telemetry.com https://*.clerk-telemetry.com https://accounts.bytemy.com.au https://clerk.bytemy.com.au https://*.clerk.accounts.dev wss://accounts.bytemy.com.au wss://clerk.bytemy.com.au wss://*.clerk.accounts.dev https://*.neon.tech wss://*.neon.tech https://bytemy.hasura.app wss://bytemy.hasura.app https://hasura.bytemy.com.au wss://hasura.bytemy.com.au https://payroll.app.bytemy.com.au https://*.vercel.app https://*.vercel-insights.com https://*.vercel-analytics.com https://challenges.cloudflare.com https://*.cloudflare.com https://api.stripe.com https://maps.googleapis.com",
               "worker-src 'self' blob:",
-              "frame-src 'self' https://clerk.com https://accounts.bytemy.com.au https://clerk.bytemy.com.au https://*.clerk.accounts.dev",
+              "frame-src 'self' https://clerk.com https://accounts.bytemy.com.au https://clerk.bytemy.com.au https://*.clerk.accounts.dev https://challenges.cloudflare.com https://*.cloudflare.com",
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",

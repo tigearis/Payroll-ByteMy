@@ -31,12 +31,12 @@ configuration:
       custom_name: lastName
     manager_id:
       custom_name: managerId
+    revoke_reason:
+      custom_name: revokeReason
     revoked_at:
       custom_name: revokedAt
     revoked_by:
       custom_name: revokedBy
-    revoke_reason:
-      custom_name: revokeReason
     updated_at:
       custom_name: updatedAt
   custom_column_names:
@@ -54,9 +54,9 @@ configuration:
     invited_role: invitedRole
     last_name: lastName
     manager_id: managerId
+    revoke_reason: revokeReason
     revoked_at: revokedAt
     revoked_by: revokedBy
-    revoke_reason: revokeReason
     updated_at: updatedAt
   custom_name: userInvitations
   custom_root_fields:
