@@ -1,0 +1,368 @@
+# Billing Items GraphQL Operations
+
+# Fragments
+fragment BillingItemCore on billingItems {
+  id
+  description
+  amount
+  quantity
+  unitPrice
+  totalAmount
+  status
+  notes
+  createdAt
+  updatedAt
+  approvalDate
+  isApproved
+  clientId
+  staffUserId
+  approvedBy
+  confirmedAt
+  confirmedBy
+  payrollId
+  billingPlanId
+  serviceId
+  serviceName
+  hourlyRate
+  invoiceId
+}
+
+fragment BillingItemWithRelations on billingItems {
+  ...BillingItemCore
+  client {
+    id
+    name
+    contactEmail
+  }
+  staffUser {
+    id
+    firstName
+    lastName
+    email
+  }
+  approver {
+    id
+    firstName
+    lastName
+    email
+  }
+  relatedPayroll {
+    id
+    name
+    status
+  }
+  billingServicePlan {
+    id
+    name
+    description
+    standardRate
+    billingUnit
+    category
+  }
+}
+
+fragment BillingItemStats on billingItemsAggregate {
+  aggregate {
+    count
+    sum {
+      amount
+      totalAmount
+      quantity
+    }
+    avg {
+      amount
+      totalAmount
+      quantity
+    }
+  }
+}
+
+# Queries
+query GetBillingItemsAdvanced(
+  $limit: Int = 50
+  $offset: Int = 0
+  $where: billingItemsBoolExp
+  $orderBy: [billingItemsOrderBy!] = [{ createdAt: DESC }]
+) {
+  billingItems(
+    limit: $limit
+    offset: $offset
+    where: $where
+    orderBy: $orderBy
+  ) {
+    ...BillingItemWithRelations
+  }
+}
+
+query GetBillingItemByIdAdvanced($id: uuid!) {
+  billingItemById(id: $id) {
+    ...BillingItemWithRelations
+  }
+}
+
+query GetBillingItemsStatsAdvanced(
+  $where: billingItemsBoolExp = {}
+) {
+  billingItemsAggregate(where: $where) {
+    ...BillingItemStats
+  }
+  
+  pending: billingItemsAggregate(
+    where: { 
+      _and: [
+        $where,
+        { status: { _eq: "pending" } }
+      ]
+    }
+  ) {
+    ...BillingItemStats
+  }
+  
+  approved: billingItemsAggregate(
+    where: { 
+      _and: [
+        $where,
+        { status: { _eq: "approved" } }
+      ]
+    }
+  ) {
+    ...BillingItemStats
+  }
+  
+  rejected: billingItemsAggregate(
+    where: { 
+      _and: [
+        $where,
+        { status: { _eq: "rejected" } }
+      ]
+    }
+  ) {
+    ...BillingItemStats
+  }
+}
+
+query GetBillingItemsByClientAdvanced(
+  $clientId: uuid!
+  $limit: Int = 50
+  $offset: Int = 0
+  $orderBy: [billingItemsOrderBy!] = [{ createdAt: DESC }]
+) {
+  billingItems(
+    where: { clientId: { _eq: $clientId } }
+    limit: $limit
+    offset: $offset
+    orderBy: $orderBy
+  ) {
+    ...BillingItemWithRelations
+  }
+}
+
+query GetBillingItemsByUserAdvanced(
+  $userId: uuid!
+  $limit: Int = 50
+  $offset: Int = 0
+  $orderBy: [billingItemsOrderBy!] = [{ createdAt: DESC }]
+) {
+  billingItems(
+    where: { staffUserId: { _eq: $userId } }
+    limit: $limit
+    offset: $offset
+    orderBy: $orderBy
+  ) {
+    ...BillingItemWithRelations
+  }
+}
+
+query GetRecentBillingItemsAdvanced(
+  $limit: Int = 10
+  $days: Int = 30
+) {
+  billingItems(
+    where: {
+      createdAt: {
+        _gte: "date_trunc('day', now() - interval '$days days')"
+      }
+    }
+    limit: $limit
+    orderBy: { createdAt: DESC }
+  ) {
+    ...BillingItemWithRelations
+  }
+}
+
+# Mutations
+mutation CreateBillingItemAdvanced($input: billingItemsInsertInput!) {
+  insertBillingItem(object: $input) {
+    ...BillingItemWithRelations
+  }
+}
+
+mutation UpdateBillingItemAdvanced(
+  $id: uuid!
+  $updates: billingItemsSetInput!
+) {
+  updateBillingItemById(
+    pkColumns: { id: $id }
+    _set: $updates
+  ) {
+    ...BillingItemWithRelations
+  }
+}
+
+mutation DeleteBillingItemAdvanced($id: uuid!) {
+  deleteBillingItemById(id: $id) {
+    id
+    description
+  }
+}
+
+mutation BulkUpdateBillingItemsStatusAdvanced(
+  $ids: [uuid!]!
+  $status: String!
+  $approvedBy: uuid
+) {
+  updateBillingItemsMany(
+    updates: [{
+      where: { id: { _in: $ids } }
+      _set: {
+        status: $status
+        approvedBy: $approvedBy
+        approvalDate: "now()"
+        isApproved: true
+      }
+    }]
+  ) {
+    affectedRows
+  }
+}
+
+mutation ApproveBillingItemAdvanced(
+  $id: uuid!
+  $approvedBy: uuid!
+) {
+  updateBillingItemById(
+    pkColumns: { id: $id }
+    _set: {
+      status: "approved"
+      approvedBy: $approvedBy
+      approvalDate: "now()"
+      isApproved: true
+    }
+  ) {
+    ...BillingItemWithRelations
+  }
+}
+
+mutation RejectBillingItemAdvanced(
+  $id: uuid!
+  $approvedBy: uuid!
+  $notes: String
+) {
+  updateBillingItemById(
+    pkColumns: { id: $id }
+    _set: {
+      status: "rejected"
+      approvedBy: $approvedBy
+      approvalDate: "now()"
+      isApproved: false
+      notes: $notes
+    }
+  ) {
+    ...BillingItemWithRelations
+  }
+}
+
+mutation ArchiveBillingItemAdvanced($id: uuid!) {
+  updateBillingItemById(
+    pkColumns: { id: $id }
+    _set: {
+      status: "archived"
+    }
+  ) {
+    ...BillingItemWithRelations
+  }
+}
+
+# Subscriptions
+subscription BillingItemsSubscriptionAdvanced(
+  $where: billingItemsBoolExp
+  $limit: Int = 50
+) {
+  billingItems(
+    where: $where
+    limit: $limit
+    orderBy: { createdAt: DESC }
+  ) {
+    ...BillingItemWithRelations
+  }
+}
+
+subscription BillingItemByIdSubscriptionAdvanced($id: uuid!) {
+  billingItemById(id: $id) {
+    ...BillingItemWithRelations
+  }
+}
+
+subscription BillingItemsStatsSubscriptionAdvanced(
+  $where: billingItemsBoolExp
+) {
+  billingItemsAggregate(where: $where) {
+    ...BillingItemStats
+  }
+}
+
+# Additional Queries for Client and User Selection
+query GetClientsForBillingItemsAdvanced {
+  clients(
+    where: { active: { _eq: true } }
+    orderBy: { name: ASC }
+  ) {
+    id
+    name
+    contactEmail
+    active
+  }
+}
+
+query GetUsersForBillingItemsAdvanced {
+  users(
+    where: { isActive: { _eq: true } }
+    orderBy: [{ firstName: ASC }, { lastName: ASC }]
+  ) {
+    id
+    firstName
+    lastName
+    email
+    role
+  }
+}
+
+# Audit Queries
+query GetBillingItemAuditLogAdvanced(
+  $billingItemId: String!
+  $limit: Int = 50
+  $offset: Int = 0
+) {
+  auditLogs(
+    where: {
+      _and: [
+        { resourceType: { _eq: "billing_items" } }
+        { resourceId: { _eq: $billingItemId } }
+      ]
+    }
+    limit: $limit
+    offset: $offset
+    orderBy: { createdAt: DESC }
+  ) {
+    id
+    action
+    oldValues
+    newValues
+    createdAt
+    ipAddress
+    userAgent
+    userId
+    userEmail
+    userRole
+  }
+}

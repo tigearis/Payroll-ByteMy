@@ -4,6 +4,7 @@
 import { useQuery } from "@apollo/client";
 import { format } from "date-fns";
 import { CalendarDays, User } from "lucide-react";
+import Link from "next/link";
 import { PermissionGuard } from "@/components/auth/permission-guard";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -150,68 +151,67 @@ function UrgentAlertsInner() {
           : null;
 
         return (
-          <div
+          <Link
             key={payroll.id}
-            className="border border-blue-200 bg-blue-50 p-4 rounded-lg hover:bg-blue-100 transition-colors"
+            href={`/payrolls/${payroll.id}`}
+            className="block"
           >
-            <div className="flex items-start gap-3">
-              <CalendarDays className="h-4 w-4 text-blue-600 mt-0.5" />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <h4 className="font-medium text-blue-900 truncate">
-                    {payroll.client?.name} - {payroll.name}
-                  </h4>
-                  <Badge
-                    variant={getStatusVariant(payroll.status)}
-                    className="text-xs"
-                  >
-                    {payroll.status}
-                  </Badge>
-                </div>
-
-                <div className="text-sm text-blue-700 space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span>
-                      Due:{" "}
-                      {nextDate?.adjustedEftDate
-                        ? format(
-                            new Date(nextDate.adjustedEftDate),
-                            "MMM dd, yyyy"
-                          )
+            <div className="border border-blue-200 bg-blue-50 p-4 rounded-lg hover:bg-blue-100 transition-colors cursor-pointer">
+              <div className="flex items-start gap-3">
+                <CalendarDays className="h-4 w-4 text-blue-600 mt-0.5" />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h4 className="font-medium text-blue-900 truncate">
+                      {payroll.client?.name} - {payroll.name} - {payroll.status} - {nextDate?.adjustedEftDate
+                        ? format(new Date(nextDate.adjustedEftDate), "MMM dd, yyyy")
                         : "Not scheduled"}
-                    </span>
-                    {daysUntil !== null && (
-                      <span
-                        className={`text-xs px-2 py-1 rounded-full ${
-                          daysUntil <= 1
-                            ? "bg-red-100 text-red-700"
-                            : daysUntil <= 3
-                              ? "bg-orange-100 text-orange-700"
-                              : "bg-green-100 text-green-700"
-                        }`}
-                      >
-                        {daysUntil === 0
-                          ? "Today"
-                          : daysUntil === 1
-                            ? "Tomorrow"
-                            : `${daysUntil} days`}
-                      </span>
-                    )}
+                    </h4>
                   </div>
 
-                  <div className="flex items-center justify-between">
-                    <span>Role: {userRole}</span>
-                    {nextDate?.processingDate && (
-                      <span className="text-xs">
-                        Process:{" "}
-                        {format(new Date(nextDate.processingDate), "MMM dd")}
+                  <div className="text-sm text-blue-700 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span>
+                        Due:{" "}
+                        {nextDate?.adjustedEftDate
+                          ? format(
+                              new Date(nextDate.adjustedEftDate),
+                              "MMM dd, yyyy"
+                            )
+                          : "Not scheduled"}
                       </span>
-                    )}
+                      {daysUntil !== null && (
+                        <span
+                          className={`text-xs px-2 py-1 rounded-full ${
+                            daysUntil <= 1
+                              ? "bg-red-100 text-red-700"
+                              : daysUntil <= 3
+                                ? "bg-orange-100 text-orange-700"
+                                : "bg-green-100 text-green-700"
+                          }`}
+                        >
+                          {daysUntil === 0
+                            ? "Today"
+                            : daysUntil === 1
+                              ? "Tomorrow"
+                              : `${daysUntil} days`}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <span>Role: {userRole}</span>
+                      {nextDate?.processingDate && (
+                        <span className="text-xs">
+                          Process:{" "}
+                          {format(new Date(nextDate.processingDate), "MMM dd")}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          </Link>
         );
       })}
     </div>

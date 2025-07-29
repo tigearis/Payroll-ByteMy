@@ -34,6 +34,7 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { PermissionGuard } from "@/components/auth/permission-guard";
 import { SkillsEditModal } from "@/components/skills-edit-modal";
+import { PermissionEditor } from "@/components/permissions/permission-editor";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -855,183 +856,12 @@ export default function StaffDetailsPage() {
 
           {/* Permissions Tab */}
           <TabsContent value="permissions" className="space-y-6">
-            <PermissionGuard role="developer" fallback={
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Shield className="w-5 h-5 mr-2" />
-                    Permission Management
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-center py-12">
-                    <Shield className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-                    <h3 className="text-lg font-medium mb-2 text-amber-800">
-                      Developer Access Required
-                    </h3>
-                    <p className="text-amber-600 mb-4">
-                      Advanced permission management is restricted to developers only.
-                    </p>
-                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 max-w-md mx-auto">
-                      <h4 className="font-medium text-amber-900 mb-2">Current User Role</h4>
-                      <Badge className="bg-blue-100 text-blue-800 capitalize">
-                        {user.role?.replace('_', ' ')}
-                      </Badge>
-                      <p className="text-sm text-amber-700 mt-2">
-                        This role provides access to standard system features through role-based permissions.
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            }>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Permission Overview */}
-                <Card className="lg:col-span-2">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="flex items-center">
-                        <Shield className="w-5 h-5 mr-2" />
-                        User Permissions
-                      </CardTitle>
-                      <Button 
-                        onClick={() => setShowPermissionDialog(true)}
-                        size="sm"
-                      >
-                        <Settings className="w-4 h-4 mr-2" />
-                        Manage Permissions
-                      </Button>
-                    </div>
-                    <div className="flex items-center gap-4 mt-4">
-                      <Input
-                        placeholder="Search permissions..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="max-w-sm"
-                      />
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {Object.entries({} as Record<string, string[]>).map(([category, permissions]) => {
-                        const categoryPermissions = permissions.filter((p: string) => 
-                          filteredPermissions.includes(p)
-                        );
-                        
-                        if (categoryPermissions.length === 0) return null;
-                        
-                        return (
-                          <div key={category} className="space-y-2">
-                            <h4 className="text-sm font-medium text-gray-900 capitalize">
-                              {category.toLowerCase()} Permissions
-                            </h4>
-                            <div className="grid grid-cols-1 gap-2">
-                              {categoryPermissions.map((permission: string) => {
-                                const status = getPermissionStatus(permission);
-                                return (
-                                  <div
-                                    key={permission}
-                                    className="flex items-center justify-between p-3 border rounded-lg"
-                                  >
-                                    <div className="flex items-center space-x-3">
-                                      <div className={`w-3 h-3 rounded-full ${
-                                        status.hasPermission ? 'bg-green-500' : 'bg-red-500'
-                                      }`} />
-                                      <div>
-                                        <p className="text-sm font-medium text-gray-900">
-                                          {permission}
-                                        </p>
-                                        <p className="text-xs text-gray-500">
-                                          Source: {status.source === "role" ? `Role (${user.role})` : 
-                                            status.source === "granted" ? "Explicitly Granted" : "Explicitly Restricted"}
-                                        </p>
-                                      </div>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                      <Badge variant={status.hasPermission ? "default" : "destructive"}>
-                                        {status.hasPermission ? "Allowed" : "Denied"}
-                                      </Badge>
-                                      {status.override && (
-                                        <Button
-                                          variant="ghost"
-                                          size="sm"
-                                          onClick={() => {
-                                            if (status.override?.id) {
-                                              handleRemoveOverride(status.override.id);
-                                            }
-                                          }}
-                                          className="h-7 w-7 p-0"
-                                        >
-                                          <X className="w-3 h-3" />
-                                        </Button>
-                                      )}
-                                    </div>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Permission Overrides */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <FileText className="w-5 h-5 mr-2" />
-                      Active Overrides
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      {false ? (
-                        [].map((override: any) => (
-                          <div
-                            key={override.id}
-                            className="p-3 border rounded-lg space-y-2"
-                          >
-                            <div className="flex items-center justify-between">
-                              <Badge variant={override.granted ? "default" : "destructive"}>
-                                {override.granted ? "Grant" : "Restrict"}
-                              </Badge>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleRemoveOverride(override.id)}
-                                className="h-7 w-7 p-0"
-                              >
-                                <X className="w-3 h-3" />
-                              </Button>
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium">
-                                {override.resource}:{override.operation}
-                              </p>
-                              <p className="text-xs text-gray-500">
-                                {override.reason}
-                              </p>
-                              {override.expiresAt && (
-                                <p className="text-xs text-orange-600">
-                                  Expires: {new Date(override.expiresAt).toLocaleDateString()}
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="text-center py-6">
-                          <FileText className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                          <p className="text-sm text-gray-500">No active overrides</p>
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </PermissionGuard>
+            <PermissionEditor
+              userId={id}
+              clerkUserId={user.clerkUserId}
+              userRole={user.role}
+              userName={user.computedName || `${user.firstName} ${user.lastName}`}
+            />
           </TabsContent>
 
           {/* Activity Tab */}
