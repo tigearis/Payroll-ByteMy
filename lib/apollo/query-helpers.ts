@@ -1,7 +1,7 @@
 import "server-only";
 import { DocumentNode } from '@apollo/client';
 import { auth } from '@clerk/nextjs/server';
-import { serverApolloClient } from './unified-client';
+import { adminApolloClient } from './unified-client';
 
 /**
  * Apollo Query Helpers for Server-Side Operations
@@ -40,30 +40,14 @@ export async function executeQuery<TData = any, TVariables = any>(
   options: QueryOptions = {}
 ): Promise<TData> {
   try {
-    // Get authenticated Hasura token from Clerk
-    const { getToken, userId } = await auth();
-    
-    if (!userId) {
-      throw new Error('Authentication failed: No user session found');
-    }
-    
-    const token = await getToken({ template: "hasura" });
-    
-    if (!token) {
-      throw new Error('Authentication failed: No Hasura token available');
-    }
-
-    // Execute query with Apollo Client
-    const { data, errors } = await serverApolloClient.query({
+    // Use admin client for server-side operations instead of manual token handling
+    const { data, errors } = await adminApolloClient.query({
       query: document,
       variables,
       fetchPolicy: options.fetchPolicy || 'no-cache', // Default to fresh data for API routes
       context: {
-        // Tell auth link to use server context
-        context: "server",
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
+        // Use admin context for server operations
+        context: "admin",
         // Merge any additional context
         ...options.context,
       },
@@ -95,29 +79,13 @@ export async function executeMutation<TData = any, TVariables = any>(
   options: MutationOptions = {}
 ): Promise<TData> {
   try {
-    // Get authenticated Hasura token from Clerk
-    const { getToken, userId } = await auth();
-    
-    if (!userId) {
-      throw new Error('Authentication failed: No user session found');
-    }
-    
-    const token = await getToken({ template: "hasura" });
-    
-    if (!token) {
-      throw new Error('Authentication failed: No Hasura token available');
-    }
-
-    // Execute mutation with Apollo Client
-    const { data, errors } = await serverApolloClient.mutate({
+    // Use admin client for server-side operations instead of manual token handling
+    const { data, errors } = await adminApolloClient.mutate({
       mutation: document,
       variables,
       context: {
-        // Tell auth link to use server context
-        context: "server",
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
+        // Use admin context for server operations
+        context: "admin",
         // Merge any additional context
         ...options.context,
       },
