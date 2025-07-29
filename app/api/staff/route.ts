@@ -48,15 +48,21 @@ interface StaffListResponse {
 // Shared function to handle staff list logic
 async function handleStaffListRequest(params: StaffListRequest, session: any): Promise<NextResponse<StaffListResponse>> {
   try {
-    // Check if user has staff access permissions
-    const hasStaffAccess = session.role && ['developer', 'org_admin', 'manager'].includes(session.role);
+    // Debug session object to see what's available
+    console.log('🔍 Session object debug:', JSON.stringify(session, null, 2));
+    
+    // Check if user has staff access permissions - check multiple role fields
+    const userRole = session.role || session.defaultRole || session.hasuraClaims?.['x-hasura-default-role'] || session.hasuraClaims?.['x-hasura-role'];
+    const hasStaffAccess = userRole && ['developer', 'org_admin', 'manager'].includes(userRole);
+    
+    console.log('🔍 Role check:', { userRole, hasStaffAccess, sessionRole: session.role, sessionDefaultRole: session.defaultRole });
     
     if (!hasStaffAccess) {
-      return NextResponse.json({ error: "Insufficient permissions" }, { status: 403 });
+      return NextResponse.json({ error: "Insufficient permissions", debug: { userRole, sessionKeys: Object.keys(session) } }, { status: 403 });
     }
     
     // Check if user is trying to access all users without developer permissions
-    const isDeveloper = session.role === 'developer';
+    const isDeveloper = userRole === 'developer';
     
     if (params.includeNonStaff && !isDeveloper) {
       return NextResponse.json({ error: "Developer access required for all users view" }, { status: 403 });
