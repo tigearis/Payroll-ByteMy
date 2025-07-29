@@ -29,6 +29,8 @@ type WebhookEvent = {
 };
 
 export async function POST(req: NextRequest) {
+  console.log("🚀 WEBHOOK STARTED - Processing Clerk webhook request");
+  
   // Define the service operation for logging
   const operation: ServiceOperation = {
     type: 'webhook',
@@ -39,6 +41,7 @@ export async function POST(req: NextRequest) {
   };
 
   try {
+    console.log("🔧 SERVICE AUTH CHECK - Starting service authentication");
     // Service authentication check (for audit logging)
     const authResult = { isValid: authenticateServiceRequest() };
 
@@ -46,43 +49,62 @@ export async function POST(req: NextRequest) {
       console.warn(`🔒 Service auth warning: ${authResult.reason}`);
       // Continue processing as webhook signature validation is the primary security
     }
+    console.log("✅ SERVICE AUTH - Service auth check completed");
   } catch (authError) {
     console.warn('🔒 Service auth check failed:', authError);
     // Continue processing as webhook signature is primary security
   }
 
+  console.log("🔐 WEBHOOK SECRET CHECK - Verifying webhook secret exists");
   if (!webhookSecret) {
+    console.error("❌ WEBHOOK SECRET MISSING - CLERK_WEBHOOK_SECRET not found");
     throw new Error("Missing CLERK_WEBHOOK_SECRET");
   }
+  console.log("✅ WEBHOOK SECRET - Secret found, proceeding with verification");
 
+  console.log("📥 HEADERS - Getting webhook headers");
   // Get headers once and reuse
   const headerPayload = await headers();
   const svixId = headerPayload.get("svix-id");
   const svixTimestamp = headerPayload.get("svix-timestamp");
   const svixSignature = headerPayload.get("svix-signature");
 
+  console.log("📋 HEADERS EXTRACTED:", {
+    svixId: svixId?.substring(0, 20) + "...",
+    svixTimestamp,
+    svixSignature: svixSignature?.substring(0, 20) + "...",
+    hasAllHeaders: !!(svixId && svixTimestamp && svixSignature)
+  });
+
   if (!svixId || !svixTimestamp || !svixSignature) {
+    console.error("❌ MISSING SVIX HEADERS - Headers incomplete");
     return new Response("Error occurred -- no svix headers", { status: 400 });
   }
 
+  console.log("📄 PAYLOAD - Reading request body");
   const payload = await req.text();
   const body = JSON.parse(payload);
+  console.log("✅ PAYLOAD - Body parsed successfully");
 
+  console.log("🔐 SIGNATURE VERIFICATION - Creating webhook verifier");
   const wh = new Webhook(webhookSecret);
 
   let evt: WebhookEvent;
 
   try {
+    console.log("🔍 VERIFYING - Checking webhook signature");
     evt = wh.verify(payload, {
       "svix-id": svixId,
       "svix-timestamp": svixTimestamp,
       "svix-signature": svixSignature,
     }) as WebhookEvent;
+    console.log("✅ VERIFICATION SUCCESS - Webhook signature verified");
   } catch (err) {
-    console.error("Error verifying webhook:", err);
+    console.error("❌ VERIFICATION FAILED - Error verifying webhook:", err);
     return new Response("Error occurred", { status: 400 });
   }
 
+  console.log("🎯 EVENT PROCESSING - Extracting event data");
   const {
     id,
     email_addresses,
@@ -93,10 +115,19 @@ export async function POST(req: NextRequest) {
   } = evt.data;
   const eventType = evt.type;
 
-  console.log(`🔔 Clerk Webhook: ${eventType} for user ${id}`);
-  console.log("Webhook body:", body);
+  console.log(`🔔 WEBHOOK EVENT: ${eventType} for user ${id}`);
+  console.log("📊 EVENT DATA:", {
+    userId: id,
+    eventType,
+    firstName: first_name,
+    lastName: last_name,
+    emailCount: email_addresses?.length || 0,
+    hasImageUrl: !!image_url
+  });
+  console.log("📋 FULL WEBHOOK BODY:", body);
 
   try {
+    console.log("🔄 PROCESSING - Starting event processing");
     // Update operation metadata with event details
     operation.userId = id;
     operation.metadata = {
@@ -105,18 +136,32 @@ export async function POST(req: NextRequest) {
       clerkUserId: id,
     };
 
+    console.log(`🎭 EVENT TYPE - Processing ${eventType}`);
     switch (eventType) {
       case "user.created":
-        console.log("👤 New user created:", id);
+        console.log("👤 USER CREATION - Processing new user created event:", id);
 
         // Validate user exists in Clerk before syncing
         try {
+          console.log("🔍 CLERK VALIDATION - Fetching user from Clerk API");
           const clerkUser = await clerkClient.users.getUser(id);
-          console.log(`✅ Validated user exists in Clerk: ${clerkUser.id}`);
+          console.log(`✅ CLERK VALIDATION SUCCESS - User exists in Clerk:`, {
+            id: clerkUser.id,
+            email: clerkUser.emailAddresses?.[0]?.emailAddress,
+            firstName: clerkUser.firstName,
+            lastName: clerkUser.lastName
+          });
           
           // Use validated data from Clerk
           const userEmail = clerkUser.emailAddresses.find(email => email.id === clerkUser.primaryEmailAddressId)?.emailAddress || '';
           const userName = `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim() || "New User";
+          
+          console.log("📧 EMAIL EXTRACTION:", {
+            userEmail,
+            userName,
+            primaryEmailId: clerkUser.primaryEmailAddressId,
+            totalEmails: clerkUser.emailAddresses.length
+          });
           
           // ENHANCED: Check for pending invitations for this email
           let roleFromInvitation: UserRole | null = null;
@@ -124,7 +169,7 @@ export async function POST(req: NextRequest) {
           
           if (userEmail) {
             try {
-              console.log(`🔍 Checking for pending invitations for email: ${userEmail}`);
+              console.log(`🔍 INVITATION CHECK - Looking for pending invitations for email: ${userEmail}`);
               
               const invitationCheck = await adminApolloClient.query({
                 query: gql`
@@ -152,17 +197,29 @@ export async function POST(req: NextRequest) {
                 fetchPolicy: 'network-only'
               });
               
+              console.log("💾 INVITATION QUERY RESULT:", {
+                found: invitationCheck.data?.userInvitations?.length || 0,
+                invitations: invitationCheck.data?.userInvitations
+              });
+              
               const pendingInvitation = invitationCheck.data?.userInvitations?.[0];
               if (pendingInvitation) {
                 roleFromInvitation = pendingInvitation.invitedRole as UserRole;
                 managerIdFromInvitation = pendingInvitation.managerId;
-                console.log(`✅ Found pending invitation - using role: ${roleFromInvitation}, manager: ${managerIdFromInvitation || 'none'}`);
+                console.log(`✅ INVITATION FOUND - Using invitation data:`, {
+                  role: roleFromInvitation,
+                  managerId: managerIdFromInvitation || 'none',
+                  invitationId: pendingInvitation.id,
+                  status: pendingInvitation.invitationStatus
+                });
               } else {
-                console.log("ℹ️ No pending invitations found for this email");
+                console.log("ℹ️ NO INVITATION - No pending invitations found for this email");
               }
             } catch (invitationError) {
-              console.warn("⚠️ Could not check for pending invitations:", invitationError);
+              console.error("❌ INVITATION ERROR - Could not check for pending invitations:", invitationError);
             }
+          } else {
+            console.warn("⚠️ NO EMAIL - Cannot check for invitations without user email");
           }
           
           // SECURITY FIX: Prioritize invitation role > metadata role > viewer (least privilege)
@@ -170,8 +227,15 @@ export async function POST(req: NextRequest) {
           const finalRole = roleFromInvitation || (invitationRole as UserRole) || "viewer";
           const finalManagerId = managerIdFromInvitation;
 
-          console.log(`📋 Role assignment priority: invitation(${roleFromInvitation}) > metadata(${invitationRole}) > default(viewer) = ${finalRole}`);
+          console.log(`📋 ROLE ASSIGNMENT - Priority logic:`, {
+            invitationRole: roleFromInvitation || 'none',
+            metadataRole: invitationRole || 'none',
+            defaultRole: 'viewer',
+            finalRole: finalRole,
+            finalManagerId: finalManagerId || 'none'
+          });
 
+          console.log("🔄 USER SYNC - Starting database synchronization");
           const syncedUser = await syncUserWithDatabase(
             id,
             userName,
@@ -181,12 +245,19 @@ export async function POST(req: NextRequest) {
             clerkUser.imageUrl
           );
 
+          console.log(`✅ USER SYNC SUCCESS - User synced with database:`, {
+            id: syncedUser?.id,
+            email: syncedUser?.email,
+            role: syncedUser?.role,
+            computedName: syncedUser?.computedName
+          });
+
           console.log(`✅ User synced with role: ${finalRole}${finalManagerId ? `, manager: ${finalManagerId}` : ''}`);
           
           // If user was created from an invitation, automatically accept the invitation
           if (roleFromInvitation && syncedUser) {
             try {
-              console.log(`🎫 Auto-accepting invitation for webhook-created user`);
+              console.log(`🎫 INVITATION ACCEPTANCE - Auto-accepting invitation for webhook-created user`);
               
               const acceptInvitationResult = await adminApolloClient.mutate({
                 mutation: gql`
@@ -218,6 +289,11 @@ export async function POST(req: NextRequest) {
                   email: userEmail,
                   acceptedBy: syncedUser.id
                 }
+              });
+              
+              console.log("💾 INVITATION MUTATION RESULT:", {
+                variables: { email: userEmail, acceptedBy: syncedUser.id },
+                result: acceptInvitationResult.data
               });
               
               const acceptedInvitations = acceptInvitationResult.data?.bulkUpdateUserInvitations?.affectedRows || 0;
@@ -301,23 +377,34 @@ export async function POST(req: NextRequest) {
         console.log(`Unhandled webhook type: ${eventType}`);
     }
   } catch (error: any) {
-    console.error("❌ Error handling webhook - DETAILED:", {
-      error,
+    console.error("❌ WEBHOOK ERROR - Critical failure in webhook processing:");
+    console.error("🔍 ERROR DETAILS:", {
       message: error.message,
-      stack: error.stack,
       name: error.name,
+      stack: error.stack?.split('\n').slice(0, 5).join('\n'), // First 5 lines of stack
       cause: error.cause,
-      graphQLErrors: error.graphQLErrors,
-      networkError: error.networkError,
-      extraInfo: error.extraInfo,
-      errorCode: error.code,
-      status: error.status,
-      statusText: error.statusText,
       webhookEventType: eventType,
-      clerkUserId: id,
+      clerkUserId: id
     });
+    
+    // GraphQL specific errors
+    if (error.graphQLErrors) {
+      console.error("🔍 GRAPHQL ERRORS:", error.graphQLErrors);
+    }
+    
+    if (error.networkError) {
+      console.error("🔍 NETWORK ERROR:", error.networkError);
+    }
+    
+    // Apollo Client errors
+    if (error.extraInfo) {
+      console.error("🔍 APOLLO EXTRA INFO:", error.extraInfo);
+    }
+    
+    console.error("❌ WEBHOOK FAILED - Returning 500 to Clerk");
     return new Response("Error processing webhook", { status: 500 });
   }
 
+  console.log("✅ WEBHOOK SUCCESS - Processing completed successfully");
   return new Response("", { status: 200 });
 }
