@@ -1,5 +1,6 @@
 import { streamText } from "ai"
 import { executeHasuraQuery, introspectSchema } from "@/lib/hasura"
+import { createOllama } from "ollama-ai-provider"
 
 export const maxDuration = 30
 
@@ -14,8 +15,7 @@ export async function POST(req: Request) {
     return new Response("Ollama configuration required", { status: 400 })
   }
 
-  // Import ollama provider
-  const { createOllama } = await import("ollama-ai-provider")
+  // Create ollama provider instance
   const ollamaInstance = createOllama({
     baseURL: ollamaConfig.baseURL,
   })
