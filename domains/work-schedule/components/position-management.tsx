@@ -33,7 +33,9 @@ import { POSITION_ADMIN_DEFAULTS, type UserPosition } from "../services/enhanced
 
 interface UserWithPosition {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
+  computedName?: string;
   email: string;
   position: UserPosition;
   defaultAdminTimePercentage: number;
@@ -518,7 +520,7 @@ export function BulkPositionManagement({
                   className="rounded"
                 />
                 <label htmlFor={`user-${user.id}`} className="flex items-center space-x-2 text-sm">
-                  <span>{user.name}</span>
+                  <span>{user.computedName || `${user.firstName} ${user.lastName}`.trim()}</span>
                   <Badge className={getPositionColor(user.position)} variant="secondary">
                     {getPositionDisplayName(user.position)}
                   </Badge>
