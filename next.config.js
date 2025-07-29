@@ -82,8 +82,7 @@ const nextConfig = {
             key: "Access-Control-Allow-Origin",
             value:
               process.env.NODE_ENV === "production"
-                ? process.env.NEXT_PUBLIC_APP_URL ||
-                  "https://payroll.app.bytemy.com.au"
+                ? (process.env.NEXT_PUBLIC_APP_URL || "https://payroll.app.bytemy.com.au").trim()
                 : "http://localhost:3000",
           },
           {
