@@ -344,7 +344,8 @@ export default function ClientDetailPage() {
         ),
         // Store backup consultant name for easy access in UI
         backupConsultantName:
-          payroll.backupConsultant?.name || "Unassigned",
+          payroll.backupConsultant?.computedName || 
+          (payroll.backupConsultant ? `${payroll.backupConsultant.firstName} ${payroll.backupConsultant.lastName}` : "Unassigned"),
       };
     });
   };
@@ -884,8 +885,8 @@ export default function ClientDetailPage() {
                                   <div className="flex items-center gap-2">
                                     <UserCheck className="w-4 h-4 text-gray-400" />
                                     <span>
-                                      {payroll.primaryConsultant?.name ||
-                                        "Unassigned"}
+                                      {payroll.primaryConsultant?.computedName ||
+                                        (payroll.primaryConsultant ? `${payroll.primaryConsultant.firstName} ${payroll.primaryConsultant.lastName}` : "Unassigned")}
                                     </span>
                                   </div>
                                 </TableCell>
@@ -895,8 +896,8 @@ export default function ClientDetailPage() {
                                   <div className="flex items-center gap-2">
                                     <UserCheck className="w-4 h-4 text-gray-500" />
                                     <span>
-                                      {payroll.backupConsultant?.name ||
-                                        "Unassigned"}
+                                      {payroll.backupConsultant?.computedName ||
+                                        (payroll.backupConsultant ? `${payroll.backupConsultant.firstName} ${payroll.backupConsultant.lastName}` : "Unassigned")}
                                     </span>
                                   </div>
                                 </TableCell>
@@ -906,7 +907,8 @@ export default function ClientDetailPage() {
                                   <div className="flex items-center gap-2">
                                     <UserCheck className="w-4 h-4 text-blue-500" />
                                     <span>
-                                      {payroll.manager?.name || "Unassigned"}
+                                      {payroll.manager?.computedName ||
+                                        (payroll.manager ? `${payroll.manager.firstName} ${payroll.manager.lastName}` : "Unassigned")}
                                     </span>
                                   </div>
                                 </TableCell>

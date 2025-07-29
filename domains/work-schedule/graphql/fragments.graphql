@@ -32,7 +32,9 @@ fragment WorkScheduleWithUser on workSchedule {
   ...WorkScheduleBasic
   user {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     defaultAdminTimePercentage
@@ -43,7 +45,9 @@ fragment WorkScheduleComplete on workSchedule {
   ...WorkScheduleBasic
   user {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     managerId
@@ -56,7 +60,9 @@ fragment TeamWorkSchedule on workSchedule {
   ...WorkScheduleBasic
   user {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     managerId
@@ -76,7 +82,9 @@ fragment WorkScheduleCapacity on workSchedule {
   usesDefaultAdminTime
   user {
     id
-    name
+    firstName
+    lastName
+    computedName
     defaultAdminTimePercentage
   }
 }
@@ -97,7 +105,9 @@ fragment WorkScheduleCalendarItem on workSchedule {
   payrollCapacityHours
   user {
     id
-    name
+    firstName
+    lastName
+    computedName
   }
 }
 
@@ -117,7 +127,9 @@ fragment WorkScheduleDashboardCard on workSchedule {
   ...WorkScheduleCapacity
   user {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     defaultAdminTimePercentage
@@ -146,7 +158,9 @@ fragment WorkScheduleForAudit on workSchedule {
   ...WorkScheduleChangeLog
   user {
     id
-    name
+    firstName
+    lastName
+    computedName
     role
   }
 }

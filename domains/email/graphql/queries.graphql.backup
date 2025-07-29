@@ -1,0 +1,235 @@
+# Email Domain Queries
+# Security Classification: HIGH - Email communication data
+
+# Get all active email templates
+query GetEmailTemplates($category: String, $isActive: Boolean = true) {
+  emailTemplates(
+    where: {
+      category: { _eq: $category }
+      isActive: { _eq: $isActive }
+    }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...EmailTemplateWithRelations
+  }
+}
+
+# Get email template by ID
+query GetEmailTemplateById($templateId: uuid!) {
+  emailTemplatesByPk(id: $templateId) {
+    ...EmailTemplateWithRelations
+  }
+}
+
+# Get system email templates
+query GetSystemEmailTemplates {
+  emailTemplates(
+    where: {
+      isSystemTemplate: { _eq: true }
+      isActive: { _eq: true }
+    }
+    orderBy: [{ category: ASC }, { name: ASC }]
+  ) {
+    ...EmailTemplateBase
+  }
+}
+
+# Get user's favorite templates
+query GetUserFavoriteTemplates($userId: uuid!) {
+  userEmailTemplateFavorites(
+    where: { userId: { _eq: $userId } }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...UserEmailTemplateFavorite
+  }
+}
+
+# Get email templates by category with usage stats
+query GetEmailTemplatesByCategory($category: String!) {
+  emailTemplates(
+    where: {
+      category: { _eq: $category }
+      isActive: { _eq: true }
+    }
+    orderBy: { name: ASC }
+  ) {
+    ...EmailTemplateBase
+    ...TemplateUsageStats
+  }
+}
+
+# Get email send logs
+query GetEmailSendLogs(
+  $limit: Int = 50
+  $offset: Int = 0
+  $senderId: uuid
+  $status: String
+  $fromDate: timestamptz
+  $toDate: timestamptz
+) {
+  emailSendLogs(
+    limit: $limit
+    offset: $offset
+    where: {
+      senderUserId: { _eq: $senderId }
+      sendStatus: { _eq: $status }
+      createdAt: { _gte: $fromDate, _lte: $toDate }
+    }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...EmailSendLogWithRelations
+  }
+}
+
+# Get email send log by ID
+query GetEmailSendLogById($logId: uuid!) {
+  emailSendLogsByPk(id: $logId) {
+    ...EmailSendLogWithRelations
+  }
+}
+
+# Get user's email drafts
+query GetUserEmailDrafts($userId: uuid!) {
+  emailDrafts(
+    where: { userId: { _eq: $userId } }
+    orderBy: { updatedAt: DESC }
+  ) {
+    ...EmailDraftWithRelations
+  }
+}
+
+# Get email draft by ID
+query GetEmailDraftById($draftId: uuid!) {
+  emailDraftsByPk(id: $draftId) {
+    ...EmailDraftWithRelations
+  }
+}
+
+# Get email analytics for dashboard
+query GetEmailAnalytics(
+  $fromDate: timestamptz!
+  $toDate: timestamptz!
+  $userId: uuid
+) {
+  emailSendLogsAggregate(
+    where: {
+      createdAt: { _gte: $fromDate, _lte: $toDate }
+      senderUserId: { _eq: $userId }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  sentEmails: emailSendLogsAggregate(
+    where: {
+      createdAt: { _gte: $fromDate, _lte: $toDate }
+      senderUserId: { _eq: $userId }
+      sendStatus: { _eq: "sent" }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  deliveredEmails: emailSendLogsAggregate(
+    where: {
+      createdAt: { _gte: $fromDate, _lte: $toDate }
+      senderUserId: { _eq: $userId }
+      sendStatus: { _eq: "delivered" }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  failedEmails: emailSendLogsAggregate(
+    where: {
+      createdAt: { _gte: $fromDate, _lte: $toDate }
+      senderUserId: { _eq: $userId }
+      sendStatus: { _eq: "failed" }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Get recent email activity
+query GetRecentEmailActivity($limit: Int = 10, $userId: uuid) {
+  emailSendLogs(
+    limit: $limit
+    where: { senderUserId: { _eq: $userId } }
+    orderBy: { createdAt: DESC }
+  ) {
+    id
+    subject
+    recipientEmails
+    sendStatus
+    sentAt
+    createdAt
+    emailTemplate {
+      name
+      category
+    }
+  }
+}
+
+# Search email templates
+query SearchEmailTemplates($searchTerm: String!, $category: String) {
+  emailTemplates(
+    where: {
+      _and: [
+        {
+          _or: [
+            { name: { _ilike: $searchTerm } }
+            { description: { _ilike: $searchTerm } }
+          ]
+        }
+        { category: { _eq: $category } }
+        { isActive: { _eq: true } }
+      ]
+    }
+    orderBy: { name: ASC }
+  ) {
+    ...EmailTemplateBase
+    ...TemplateUsageStats
+  }
+}
+
+# Get template usage statistics
+query GetTemplateUsageStats($templateId: uuid!, $fromDate: timestamptz!) {
+  emailTemplatesByPk(id: $templateId) {
+    id
+    name
+    category
+    emailSendLogsAggregate(
+      where: { createdAt: { _gte: $fromDate } }
+    ) {
+      aggregate {
+        count
+      }
+    }
+  }
+  
+  emailSendLogs(
+    where: {
+      templateId: { _eq: $templateId }
+      createdAt: { _gte: $fromDate }
+    }
+    orderBy: { createdAt: DESC }
+    limit: 10
+  ) {
+    id
+    recipientEmails
+    sendStatus
+    sentAt
+    senderUser {
+      name
+    }
+  }
+}

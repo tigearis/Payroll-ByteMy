@@ -39,11 +39,15 @@ configuration:
     user_id: userId
   custom_name: dataAccessLogs
   custom_root_fields:
+    delete: bulkDeleteDataAccessLogs
+    delete_by_pk: deleteDataAccessLogById
     insert: bulkInsertDataAccessLogs
     insert_one: insertDataAccessLog
     select: dataAccessLogs
     select_aggregate: dataAccessLogsAggregate
     select_by_pk: dataAccessLogById
+    update: bulkUpdateDataAccessLogs
+    update_by_pk: updateDataAccessLogById
 insert_permissions:
   - role: system
     permission:
@@ -102,5 +106,17 @@ select_permissions:
       filter: {}
       allow_aggregations: true
     comment: Organization admins can view all data access logs including CRITICAL
+update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
+delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access
 apollo_federation_config:
   enable: v1

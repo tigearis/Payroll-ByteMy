@@ -30,11 +30,15 @@ configuration:
     user_id: userId
   custom_name: authEvents
   custom_root_fields:
+    delete: bulkDeleteAuthEvents
+    delete_by_pk: deleteAuthEventById
     insert: bulkInsertAuthEvents
     insert_one: insertAuthEvent
     select: authEvents
     select_aggregate: authEventsAggregate
     select_by_pk: authEventById
+    update: bulkUpdateAuthEvents
+    update_by_pk: updateAuthEventById
 insert_permissions:
   - role: system
     permission:
@@ -108,5 +112,17 @@ select_permissions:
           _eq: X-Hasura-User-Id
       allow_aggregations: true
     comment: Viewers can see basic auth info for their own events
+update_permissions:
+  - role: developer
+    permission:
+      columns: '*'
+      filter: {}
+      check: {}
+    comment: Developer role has full update access
+delete_permissions:
+  - role: developer
+    permission:
+      filter: {}
+    comment: Developer role has full delete access
 apollo_federation_config:
   enable: v1

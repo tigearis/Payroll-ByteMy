@@ -85,7 +85,7 @@ export function CreateUserModal({
 }: CreateUserModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [managers, setManagers] = useState<
-    Array<{ id: string; name: string; email: string }>
+    Array<{ id: string; firstName: string; lastName: string; computedName?: string | null; email: string }>
   >([]);
   const [managersLoading, setManagersLoading] = useState(false);
 
@@ -129,7 +129,9 @@ export function CreateUserModal({
         setManagers(
           data.data.users.map((user: any) => ({
             id: user.id,
-            name: user.name,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            computedName: user.computedName,
             email: user.email,
           }))
         );
@@ -162,7 +164,18 @@ export function CreateUserModal({
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.error || "Failed to create user");
+      // Handle different error status codes with appropriate messages
+      if (response.status === 409) {
+        throw new Error(result.error || "User already exists");
+      } else if (response.status === 403) {
+        throw new Error(result.error || "Permission denied");
+      } else if (response.status === 422) {
+        throw new Error(result.error || "Invalid data provided");
+      } else if (response.status === 400) {
+        throw new Error(result.error || "Invalid request");
+      } else {
+        throw new Error(result.error || "Failed to create user");
+      }
     }
 
     return result;
@@ -347,7 +360,7 @@ export function CreateUserModal({
                       {managers.map(manager => (
                         <SelectItem key={manager.id} value={manager.id}>
                           <div>
-                            <div className="font-medium">{manager.name}</div>
+                            <div className="font-medium">{manager.computedName || `${manager.firstName} ${manager.lastName}`}</div>
                             <div className="text-xs text-muted-foreground">
                               {manager.email}
                             </div>

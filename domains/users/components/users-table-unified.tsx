@@ -13,7 +13,9 @@ import {
 // User data type (based on existing user structure)
 interface User {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
+  computedName?: string | null;
   email: string;
   role: string;
   isStaff: boolean;
@@ -22,7 +24,9 @@ interface User {
   updatedAt: string;
   manager?: {
     id: string;
-    name: string;
+    firstName: string;
+    lastName: string;
+    computedName?: string | null;
     email: string;
   };
   imageUrl?: string;
@@ -103,13 +107,13 @@ function UsersTableUnifiedComponent({
   // Column definitions
   const columns: DataTableColumn<User>[] = [
     {
-      key: "name",
+      key: "computedName",
       label: "User",
       sortable: true,
       defaultVisible: true,
       cellRenderer: (value, row) =>
         cellRenderers.avatar({
-          name: value,
+          name: value || `${row.firstName} ${row.lastName}`,
           email: row.email,
           imageUrl: row.imageUrl || "",
         }),
@@ -157,7 +161,7 @@ function UsersTableUnifiedComponent({
       cellRenderer: manager =>
         manager ? (
           <div className="text-sm">
-            <div className="font-medium">{manager.name}</div>
+            <div className="font-medium">{manager.computedName || `${manager.firstName} ${manager.lastName}`}</div>
             <div className="text-muted-foreground">{manager.email}</div>
           </div>
         ) : (

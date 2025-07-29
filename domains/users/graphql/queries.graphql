@@ -4,7 +4,7 @@
 
 # OPTIMIZED: Original query with N+1 problems fixed
 query GetUsers($limit: Int = 50, $offset: Int = 0, $where: usersBoolExp) {
-  users(limit: $limit, offset: $offset, where: $where, orderBy: { name: ASC }) {
+  users(limit: $limit, offset: $offset, where: $where, orderBy: { computedName: ASC }) {
     ...UserBase
     username
     image
@@ -12,7 +12,9 @@ query GetUsers($limit: Int = 50, $offset: Int = 0, $where: usersBoolExp) {
     # ✅ Fetch manager data to avoid N+1
     managerUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
     }
@@ -27,7 +29,7 @@ query GetStaffWithRelationsOptimized(
   $limit: Int = 50, 
   $offset: Int = 0, 
   $where: usersBoolExp = { isStaff: { _eq: true }, isActive: { _eq: true } }
-  $orderBy: [usersOrderBy!] = [{ name: ASC }]
+  $orderBy: [usersOrderBy!] = [{ computedName: ASC }]
 ) {
   users(
     limit: $limit
@@ -36,7 +38,9 @@ query GetStaffWithRelationsOptimized(
     orderBy: $orderBy
   ) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     username
@@ -51,7 +55,9 @@ query GetStaffWithRelationsOptimized(
     # ✅ Manager data fetched in same query (eliminates N+1)
     managerUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
       isActive
@@ -60,7 +66,9 @@ query GetStaffWithRelationsOptimized(
     # ✅ Direct reports fetched in same query (eliminates N+1)
     managedUsers(where: { isActive: { _eq: true } }) {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
       isActive
@@ -139,7 +147,9 @@ query GetStaffWithRelationsOptimized(
 query GetUsersForDropdownDomain {
   users {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
   }
@@ -167,7 +177,7 @@ query GetUserCount {
 }
 
 query GetActiveUsers {
-  users(where: { isActive: { _eq: true } }, orderBy: { name: ASC }) {
+  users(where: { isActive: { _eq: true } }, orderBy: { computedName: ASC }) {
     ...UserBase
   }
 }
@@ -175,7 +185,9 @@ query GetActiveUsers {
 query GetUserById($id: uuid!) {
   userById(id: $id) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     username
@@ -186,7 +198,9 @@ query GetUserById($id: uuid!) {
     clerkUserId
     managerUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
     }
@@ -207,7 +221,9 @@ query GetStaffDetailComplete($id: uuid!) {
   # Main user data
   userById(id: $id) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     username
@@ -222,7 +238,9 @@ query GetStaffDetailComplete($id: uuid!) {
     # Manager relationship
     managerUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
     }
@@ -230,7 +248,9 @@ query GetStaffDetailComplete($id: uuid!) {
     # Direct reports (if this user is a manager)
     managedUsers {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
       isActive
@@ -298,7 +318,9 @@ query GetStaffDetailComplete($id: uuid!) {
 query GetUserByClerkId($clerkUserId: String!) {
   users(where: { clerkUserId: { _eq: $clerkUserId } }, limit: 1) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     username
@@ -313,7 +335,9 @@ query GetUserByClerkId($clerkUserId: String!) {
 query GetUserByEmail($email: String!) {
   users(where: { email: { _eq: $email } }) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     username
@@ -324,7 +348,9 @@ query GetUserByEmail($email: String!) {
     clerkUserId
     managerUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
     }
@@ -338,10 +364,12 @@ query GetStaffList {
       isActive: { _eq: true }
       role: { _in: ["developer", "org_admin", "manager", "consultant"] }
     }
-    orderBy: { name: ASC }
+    orderBy: { computedName: ASC }
   ) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     username
@@ -352,7 +380,9 @@ query GetStaffList {
     clerkUserId
     managerUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
     }
@@ -362,7 +392,9 @@ query GetStaffList {
 query GetStaffById($id: uuid!) {
   userById(id: $id) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     username
@@ -377,9 +409,11 @@ query GetStaffById($id: uuid!) {
 }
 
 query GetAllUsersList {
-  users(where: { isActive: { _eq: true } }, orderBy: { name: ASC }) {
+  users(where: { isActive: { _eq: true } }, orderBy: { computedName: ASC }) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     username
@@ -398,7 +432,7 @@ query GetUserProfile($id: uuid!) {
 }
 
 query GetUsersWithRoles {
-  users(where: { isActive: { _eq: true } }, orderBy: { name: ASC }) {
+  users(where: { isActive: { _eq: true } }, orderBy: { computedName: ASC }) {
     ...UserRoleInfo
   }
 }
@@ -416,14 +450,14 @@ query SearchUsers($searchTerm: String!) {
         { isActive: { _eq: true } }
         {
           _or: [
-            { name: { _ilike: $searchTerm } }
+            { computedName: { _ilike: $searchTerm } }
             { email: { _ilike: $searchTerm } }
             { username: { _ilike: $searchTerm } }
           ]
         }
       ]
     }
-    orderBy: { name: ASC }
+    orderBy: { computedName: ASC }
     limit: 50
   ) {
     ...UserWithProfile
@@ -462,7 +496,9 @@ query GetUserStats {
 query GetUserSessionInfo($id: uuid!) {
   userById(id: $id) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     isActive
@@ -473,7 +509,9 @@ query GetUserSessionInfo($id: uuid!) {
 query GetCurrentUserDomain($currentUserId: uuid!) {
   userById(id: $currentUserId) {
     id
-    name
+    firstName
+    lastName
+    computedName
     role
     isStaff
     isActive
@@ -506,7 +544,9 @@ query GetUserRoleFallback($userId: uuid!) {
 query GetUsersWithLimit($limit: Int = 10) {
   users(limit: $limit) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     isStaff
@@ -517,7 +557,9 @@ query GetUsersWithLimit($limit: Int = 10) {
 query GetUserProfileSettings($id: uuid!) {
   userById(id: $id) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     isStaff
@@ -525,7 +567,9 @@ query GetUserProfileSettings($id: uuid!) {
     clerkUserId
     managerUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
     }
   }
@@ -545,7 +589,9 @@ query GetUsersWithFiltering(
     orderBy: { createdAt: DESC }
   ) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     createdAt
@@ -556,7 +602,9 @@ query GetUsersWithFiltering(
     clerkUserId
     managerUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
     }
   }
@@ -570,10 +618,12 @@ query GetUsersWithFiltering(
 query GetDeveloperManagers {
   users(
     where: { role: { _in: ["developer", "manager"] } }
-    orderBy: { name: ASC }
+    orderBy: { computedName: ASC }
   ) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
   }
@@ -603,7 +653,9 @@ query GetUserRoleFallbackSecure($userId: uuid!) {
 query GetUserProfileComplete($id: uuid!) {
   userById(id: $id) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     username
     image
@@ -618,14 +670,18 @@ query GetUserProfileComplete($id: uuid!) {
     clerkUserId
     managerUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       image
     }
     # Direct reports (users this person manages)
     managedUsers {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
       image
@@ -689,7 +745,9 @@ query GetUserProfileComplete($id: uuid!) {
 query GetUserForDeletion($id: uuid!) {
   userById(id: $id) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     clerkUserId
@@ -698,7 +756,9 @@ query GetUserForDeletion($id: uuid!) {
     createdAt
     managerUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
     }
   }
@@ -722,7 +782,9 @@ query GetUserForDeletion($id: uuid!) {
     where: { managerId: { _eq: $id }, isActive: { _eq: true } }
   ) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
   }
 
@@ -744,7 +806,7 @@ query GetUsersPaginated(
   $limit: Int = 20
   $offset: Int = 0
   $where: usersBoolExp = {}
-  $orderBy: [usersOrderBy!] = [{ name: ASC }]
+  $orderBy: [usersOrderBy!] = [{ computedName: ASC }]
 ) {
   users(
     limit: $limit
@@ -766,7 +828,7 @@ query GetAllUsersPaginated(
   $limit: Int = 20
   $offset: Int = 0
   $where: usersBoolExp = {}
-  $orderBy: [usersOrderBy!] = [{ name: ASC }]
+  $orderBy: [usersOrderBy!] = [{ computedName: ASC }]
 ) {
   users(limit: $limit, offset: $offset, where: $where, orderBy: $orderBy) {
     ...UserTableRow
@@ -794,7 +856,7 @@ query GetStaffPaginated(
         $where
       ]
     }
-    orderBy: { name: ASC }
+    orderBy: { computedName: ASC }
   ) {
     ...UserListItem
     createdAt
@@ -829,14 +891,14 @@ query SearchUsersPaginated(
         { isActive: { _eq: true } }
         {
           _or: [
-            { name: { _ilike: $searchTerm } }
+            { computedName: { _ilike: $searchTerm } }
             { email: { _ilike: $searchTerm } }
             { username: { _ilike: $searchTerm } }
           ]
         }
       ]
     }
-    orderBy: { name: ASC }
+    orderBy: { computedName: ASC }
     limit: $limit
     offset: $offset
   ) {
@@ -853,7 +915,7 @@ query SearchUsersPaginated(
         { isActive: { _eq: true } }
         {
           _or: [
-            { name: { _ilike: $searchTerm } }
+            { computedName: { _ilike: $searchTerm } }
             { email: { _ilike: $searchTerm } }
             { username: { _ilike: $searchTerm } }
           ]
@@ -872,7 +934,9 @@ query SearchUsersPaginated(
 query GetUserByIdComplete($id: uuid!) {
   userById(id: $id) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     createdAt
@@ -882,7 +946,9 @@ query GetUserByIdComplete($id: uuid!) {
     clerkUserId
     managerUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
     }
@@ -893,7 +959,9 @@ query GetUserByIdComplete($id: uuid!) {
 query GetUserByClerkIdComplete($clerkId: String!) {
   users(where: { clerkUserId: { _eq: $clerkId } }) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     createdAt
@@ -903,7 +971,9 @@ query GetUserByClerkIdComplete($clerkId: String!) {
     clerkUserId
     managerUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
     }
@@ -916,7 +986,9 @@ query GetUserByClerkIdComplete($clerkId: String!) {
 query GetUserClerkId($id: uuid!) {
   userById(id: $id) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     clerkUserId
@@ -928,7 +1000,7 @@ query GetUserClerkId($id: uuid!) {
 
 query GetUsersQuickList {
   # Minimal user data for quick lists and dropdowns
-  users(where: { isActive: { _eq: true } }, orderBy: { name: ASC }) {
+  users(where: { isActive: { _eq: true } }, orderBy: { computedName: ASC }) {
     ...UserMinimal
   }
 }
@@ -940,7 +1012,7 @@ query GetStaffQuickList {
       isActive: { _eq: true }
       role: { _in: ["developer", "org_admin", "manager", "consultant"] }
     }
-    orderBy: { name: ASC }
+    orderBy: { computedName: ASC }
   ) {
     ...UserMinimal
   }
@@ -950,7 +1022,7 @@ query GetManagersQuickList {
   # Minimal manager data for hierarchy views
   users(
     where: { isActive: { _eq: true }, role: { _in: ["manager", "org_admin"] } }
-    orderBy: { name: ASC }
+    orderBy: { computedName: ASC }
   ) {
     ...UserMinimal
   }
@@ -1041,7 +1113,9 @@ query GetInvitationsWithStatus(
     revokeReason
     invitedByUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
     }
   }
@@ -1109,7 +1183,9 @@ query GetInvitationDashboardStats {
     createdAt
     expiresAt
     invitedByUser {
-      name
+      firstName
+      lastName
+      computedName
       email
     }
   }
@@ -1135,7 +1211,9 @@ query GetExpiringInvitations($daysUntilExpiry: interval!) {
     lastName
     expiresAt
     invitedByUser {
-      name
+      firstName
+      lastName
+      computedName
       email
     }
   }
@@ -1155,7 +1233,9 @@ query GetUsersByStatus(
   ) {
     id
     email
-    name
+    firstName
+    lastName
+    computedName
     role
     status
     isActive
@@ -1176,7 +1256,9 @@ query GetUserWithStatusDetails($userId: uuid!) {
   userById(id: $userId) {
     id
     email
-    name
+    firstName
+    lastName
+    computedName
     role
     status
     isActive

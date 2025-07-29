@@ -168,19 +168,23 @@ mutation CompleteInvitationAcceptance(
   $invitationId: uuid!
   $clerkUserId: String!
   $userEmail: String!
-  $userName: String!
+  $firstName: String!
+  $lastName: String!
 ) {
   insertUser(
     object: {
       clerkUserId: $clerkUserId
       email: $userEmail
-      name: $userName
+      firstName: $firstName
+      lastName: $lastName
       isActive: true
     }
   ) {
     id
     email
-    name
+    firstName
+    lastName
+    computedName
     clerkUserId
     isActive
     createdAt
@@ -326,7 +330,6 @@ mutation CreateInvitationEnhanced(
       invitationMetadata: $invitationMetadata
       invitedBy: $invitedBy
       expiresAt: $expiresAt
-      invitationStatus: "pending"
     }
   ) {
     ...UserInvitationCore
@@ -401,7 +404,9 @@ mutation DeactivateUser(
   ) {
     id
     email
-    name
+    firstName
+    lastName
+    computedName
     status
     isActive
     deactivatedAt
@@ -431,7 +436,9 @@ mutation LockUser(
   ) {
     id
     email
-    name
+    firstName
+    lastName
+    computedName
     status
     isActive
     statusChangeReason
@@ -459,7 +466,9 @@ mutation UnlockUser(
   ) {
     id
     email
-    name
+    firstName
+    lastName
+    computedName
     status
     isActive
     statusChangeReason
@@ -489,7 +498,9 @@ mutation ReactivateUser(
   ) {
     id
     email
-    name
+    firstName
+    lastName
+    computedName
     status
     isActive
     deactivatedAt
@@ -522,7 +533,9 @@ mutation BulkChangeUserStatus(
     returning {
       id
       email
-      name
+      firstName
+      lastName
+      computedName
       status
       isActive
       statusChangeReason
@@ -554,7 +567,9 @@ mutation UpdateUserStatus(
   ) {
     id
     email
-    name
+    firstName
+    lastName
+    computedName
     status
     isActive
     role
@@ -565,5 +580,60 @@ mutation UpdateUserStatus(
     deactivatedBy
     createdAt
     updatedAt
+  }
+}
+
+# ================================
+# ORPHANED DATA CLEANUP MUTATIONS
+# Focus: Cleaning up orphaned and expired data
+# ================================
+
+# Delete expired invitation
+mutation DeleteExpiredInvitation($invitationId: uuid!) {
+  deleteUserInvitationById(id: $invitationId) {
+    id
+    email
+    invitationStatus
+    expiresAt
+  }
+}
+
+# Delete orphaned user (user without Clerk ID)
+mutation DeleteUser($userId: uuid!) {
+  deleteUserById(id: $userId) {
+    id
+    email
+    firstName
+    lastName
+    role
+    createdAt
+  }
+}
+
+# Bulk delete expired invitations
+mutation BulkDeleteExpiredInvitations($invitationIds: [uuid!]!) {
+  bulkDeleteUserInvitations(where: { id: { _in: $invitationIds } }) {
+    affectedRows
+    returning {
+      id
+      email
+      invitationStatus
+      expiresAt
+    }
+  }
+}
+
+# Bulk delete orphaned users
+mutation BulkDeleteOrphanedUsers($userIds: [uuid!]!) {
+  bulkDeleteUsers(where: { id: { _in: $userIds } }) {
+    affectedRows
+    returning {
+      id
+      email
+      firstName
+      lastName
+      role
+      createdAt
+    }
   }
 }

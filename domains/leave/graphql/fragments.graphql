@@ -24,13 +24,17 @@ fragment LeaveWithUser on leave {
   ...LeaveBasic
   leaveUser {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     position
     managerUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
     }
   }
@@ -40,13 +44,17 @@ fragment LeaveComplete on leave {
   ...LeaveDetailed
   leaveUser {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     position
     managerUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
     }
   }
@@ -67,13 +75,17 @@ fragment LeaveListItem on leave {
   reason
   leaveUser {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     position
     managerUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
     }
   }
@@ -87,7 +99,9 @@ fragment LeaveDashboardCard on leave {
   ...LeaveSummary
   leaveUser {
     id
-    name
+    firstName
+    lastName
+    computedName
   }
 }
 
@@ -99,7 +113,9 @@ fragment LeaveCalendarItem on leave {
   status
   leaveUser {
     id
-    name
+    firstName
+    lastName
+    computedName
     role
     position
   }

@@ -106,11 +106,15 @@ subscription PayrollSystemHealthUpdates {
     ...PayrollListItem
     primaryConsultant {
       id
-      name
+      firstName
+      lastName
+      computedName
     }
     manager {
       id
-      name
+      firstName
+      lastName
+      computedName
     }
   }
 }

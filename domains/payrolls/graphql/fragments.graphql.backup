@@ -1,0 +1,193 @@
+# Payroll Domain Specific Fragments
+
+# Payroll processing info
+fragment PayrollProcessingInfo on payrolls {
+  id
+  name
+  status
+  employeeCount
+  processingTime
+  processingDaysBeforeEft
+  goLiveDate
+}
+
+# Payroll version info - fixing createdBy field
+fragment PayrollVersionInfo on payrolls {
+  id
+  versionNumber
+  versionReason
+  parentPayrollId
+  supersededDate
+  createdAt
+  createdByUserId
+}
+
+# Payroll with all relations - fixing createdBy field
+fragment PayrollWithAllRelations on payrolls {
+  ...PayrollBase
+  client {
+    ...ClientMinimal
+  }
+  primaryConsultant {
+    ...UserMinimal
+  }
+  backupConsultant {
+    ...UserMinimal
+  }
+  manager {
+    ...UserMinimal
+  }
+  createdByUserId
+}
+
+# Payroll for assignment
+fragment PayrollForAssignment on payrolls {
+  id
+  name
+  status
+  clientId
+  employeeCount
+  processingTime
+  processingDaysBeforeEft
+  client {
+    ...ClientMinimal
+  }
+  primaryConsultantUserId
+  backupConsultantUserId
+  managerUserId
+  payrollRequiredSkills {
+    skillName
+    requiredLevel
+  }
+  payrollDates(
+    where: { adjustedEftDate: { _gte: "today()" } }
+    orderBy: { adjustedEftDate: ASC }
+    limit: 3
+  ) {
+    id
+    originalEftDate
+    adjustedEftDate
+    processingDate
+  }
+}
+
+# Payroll basic info
+fragment PayrollBasic on payrolls {
+  id
+  name
+  status
+  employeeCount
+  client {
+    ...ClientMinimal
+  }
+}
+
+# Payroll for audit - fixing createdBy field
+fragment PayrollForAudit on payrolls {
+  id
+  name
+  status
+  versionNumber
+  createdAt
+  updatedAt
+  createdByUserId
+}
+
+# Payroll table row
+fragment PayrollTableRow on payrolls {
+  ...PayrollListItem
+  goLiveDate
+  processingTime
+  versionNumber
+  
+  # Payroll cycle for schedule column
+  cycleId
+  payrollCycle {
+    id
+    name
+    description
+  }
+  
+  # Next EFT date - get the next upcoming payroll date
+  nextPayrollDate: payrollDates(
+    where: { adjustedEftDate: { _gte: "today()" } }
+    orderBy: { adjustedEftDate: ASC }
+    limit: 1
+  ) {
+    originalEftDate
+    adjustedEftDate
+    processingDate
+  }
+}
+
+# Payroll dashboard card
+fragment PayrollDashboardCard on payrolls {
+  ...PayrollMinimal
+  client {
+    ...ClientMinimal
+  }
+  primaryConsultant {
+    ...UserMinimal
+  }
+  goLiveDate
+}
+
+# Payroll date fragment - fixing field names to match schema
+fragment PayrollDate on payrollDates {
+  id
+  payrollId
+  originalEftDate
+  adjustedEftDate
+  processingDate
+  notes
+  createdAt
+  relatedPayroll {
+    id
+    name
+  }
+}
+
+# Payroll detailed  
+fragment PayrollDetailed on payrolls {
+  ...PayrollFullDetail
+  payrollRequiredSkills {
+    skillName
+    requiredLevel
+  }
+}
+
+# Payroll summary
+fragment PayrollSummary on payrolls {
+  ...PayrollBase
+  client {
+    ...ClientMinimal
+  }
+  primaryConsultant {
+    ...UserMinimal
+  }
+}
+
+# Missing fragments that were referenced in queries
+fragment PayrollWithCycle on payrolls {
+  ...PayrollBase
+  cycleId
+  payrollCycle {
+    id
+    name
+  }
+}
+
+fragment PayrollWorkload on payrolls {
+  id
+  name
+  status
+  employeeCount
+  processingTime
+  processingDaysBeforeEft
+  primaryConsultantUserId
+  backupConsultantUserId
+  managerUserId
+  client {
+    ...ClientMinimal
+  }
+}

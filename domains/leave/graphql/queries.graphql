@@ -331,7 +331,7 @@ query SearchLeave($searchTerm: String!, $limit: Int = 50) {
       _or: [
         { reason: { _ilike: $searchTerm } }
         { leaveType: { _ilike: $searchTerm } }
-        { leaveUser: { name: { _ilike: $searchTerm } } }
+        { leaveUser: { computedName: { _ilike: $searchTerm } } }
       ]
     }
     orderBy: { startDate: DESC }
@@ -507,10 +507,12 @@ query GetSubordinateUsers($managerId: uuid!) {
       managerId: { _eq: $managerId }
       isActive: { _eq: true }
     }
-    orderBy: { name: ASC }
+    orderBy: { computedName: ASC }
   ) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     isStaff
@@ -531,10 +533,12 @@ query GetManagerTeamForLeave($managerId: uuid!) {
       ]
       isActive: { _eq: true }
     }
-    orderBy: { name: ASC }
+    orderBy: { computedName: ASC }
   ) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     isStaff
@@ -542,7 +546,9 @@ query GetManagerTeamForLeave($managerId: uuid!) {
     managerId
     managerUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
     }
@@ -555,10 +561,12 @@ query GetAllUsersForLeave {
     where: { 
       isActive: { _eq: true }
     }
-    orderBy: { name: ASC }
+    orderBy: { computedName: ASC }
   ) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     isStaff
@@ -566,7 +574,9 @@ query GetAllUsersForLeave {
     managerId
     managerUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
     }

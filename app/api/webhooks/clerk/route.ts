@@ -3,6 +3,7 @@ import { createClerkClient } from "@clerk/backend";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { Webhook } from "svix";
+import { gql } from "@apollo/client";
 import { UpdateUserRoleFromClerkDocument } from "@/domains/users/graphql/generated/graphql";
 import { syncUserWithDatabase } from "@/domains/users/services/user-sync";
 import type { UserRole } from "@/domains/users/services/user-sync";
@@ -121,21 +122,119 @@ export async function POST(req: NextRequest) {
           const userEmail = clerkUser.emailAddresses.find(email => email.id === clerkUser.primaryEmailAddressId)?.emailAddress || '';
           const userName = `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim() || "New User";
           
-          // SECURITY FIX: Never auto-assign admin roles to OAuth users
-          // Always use invitation metadata first, or default to viewer (least privilege)
+          // ENHANCED: Check for pending invitations for this email
+          let roleFromInvitation: UserRole | null = null;
+          let managerIdFromInvitation: string | undefined = undefined;
+          
+          if (userEmail) {
+            try {
+              console.log(`🔍 Checking for pending invitations for email: ${userEmail}`);
+              
+              const invitationCheck = await adminApolloClient.query({
+                query: gql`
+                  query GetPendingInvitationForWebhook($email: String!) {
+                    userInvitations(
+                      where: {
+                        email: { _eq: $email }
+                        invitationStatus: { _eq: "pending" }
+                        expiresAt: { _gt: "now()" }
+                      }
+                      orderBy: { createdAt: desc }
+                      limit: 1
+                    ) {
+                      id
+                      email
+                      invitedRole
+                      managerId
+                      invitationStatus
+                      expiresAt
+                      createdAt
+                    }
+                  }
+                `,
+                variables: { email: userEmail },
+                fetchPolicy: 'network-only'
+              });
+              
+              const pendingInvitation = invitationCheck.data?.userInvitations?.[0];
+              if (pendingInvitation) {
+                roleFromInvitation = pendingInvitation.invitedRole as UserRole;
+                managerIdFromInvitation = pendingInvitation.managerId;
+                console.log(`✅ Found pending invitation - using role: ${roleFromInvitation}, manager: ${managerIdFromInvitation || 'none'}`);
+              } else {
+                console.log("ℹ️ No pending invitations found for this email");
+              }
+            } catch (invitationError) {
+              console.warn("⚠️ Could not check for pending invitations:", invitationError);
+            }
+          }
+          
+          // SECURITY FIX: Prioritize invitation role > metadata role > viewer (least privilege)
           const invitationRole = clerkUser.publicMetadata?.role as string;
-          const defaultRole = (invitationRole as UserRole) || "viewer";
+          const finalRole = roleFromInvitation || (invitationRole as UserRole) || "viewer";
+          const finalManagerId = managerIdFromInvitation;
 
-          await syncUserWithDatabase(
+          console.log(`📋 Role assignment priority: invitation(${roleFromInvitation}) > metadata(${invitationRole}) > default(viewer) = ${finalRole}`);
+
+          const syncedUser = await syncUserWithDatabase(
             id,
             userName,
             userEmail,
-            defaultRole,
-            undefined,
+            finalRole,
+            finalManagerId,
             clerkUser.imageUrl
           );
 
-          console.log(`✅ User synced with role: ${defaultRole}`);
+          console.log(`✅ User synced with role: ${finalRole}${finalManagerId ? `, manager: ${finalManagerId}` : ''}`);
+          
+          // If user was created from an invitation, automatically accept the invitation
+          if (roleFromInvitation && syncedUser) {
+            try {
+              console.log(`🎫 Auto-accepting invitation for webhook-created user`);
+              
+              const acceptInvitationResult = await adminApolloClient.mutate({
+                mutation: gql`
+                  mutation WebhookAcceptInvitation($email: String!, $acceptedBy: uuid!) {
+                    bulkUpdateUserInvitations(
+                      where: {
+                        email: { _eq: $email }
+                        invitationStatus: { _eq: "pending" }
+                        expiresAt: { _gt: "now()" }
+                      }
+                      _set: {
+                        invitationStatus: "accepted"
+                        acceptedAt: "now()"
+                        acceptedBy: $acceptedBy
+                        updatedAt: "now()"
+                      }
+                    ) {
+                      affectedRows
+                      returning {
+                        id
+                        email
+                        invitationStatus
+                        acceptedAt
+                      }
+                    }
+                  }
+                `,
+                variables: {
+                  email: userEmail,
+                  acceptedBy: syncedUser.id
+                }
+              });
+              
+              const acceptedInvitations = acceptInvitationResult.data?.bulkUpdateUserInvitations?.affectedRows || 0;
+              if (acceptedInvitations > 0) {
+                console.log(`✅ Auto-accepted ${acceptedInvitations} invitation(s) for webhook-created user`);
+              } else {
+                console.log(`⚠️ No invitations were auto-accepted (they may have expired or been accepted already)`);
+              }
+            } catch (invitationAcceptError) {
+              console.error("❌ Failed to auto-accept invitation:", invitationAcceptError);
+              // Don't fail the webhook - user creation was successful
+            }
+          }
         } catch (clerkError) {
           console.error("❌ Failed to validate user in Clerk:", clerkError);
           // Fallback to webhook data

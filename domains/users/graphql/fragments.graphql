@@ -4,7 +4,9 @@
 
 fragment UserCore on users {
   id
-  name
+  firstName
+  lastName
+  computedName
   email
   isActive
   isStaff
@@ -70,7 +72,9 @@ fragment UserWithAllRelations on users {
 
 fragment UserBasicInfo on users {
   id
-  name
+  firstName
+  lastName
+  computedName
   email
   role
   position
@@ -90,7 +94,9 @@ fragment UserForStaff on users {
 
 fragment UserForAuth on users {
   id
-  name
+  firstName
+  lastName
+  computedName
   email
   role
   isActive
@@ -99,7 +105,9 @@ fragment UserForAuth on users {
 
 fragment UserForAudit on users {
   id
-  name
+  firstName
+  lastName
+  computedName
   email
   role
   isActive
@@ -108,7 +116,9 @@ fragment UserForAudit on users {
 
 fragment UserRoleInfo on users {
   id
-  name
+  firstName
+  lastName
+  computedName
   email
   role
   isActive
@@ -117,7 +127,9 @@ fragment UserRoleInfo on users {
 
 fragment UserPermissionsInfo on users {
   id
-  name
+  firstName
+  lastName
+  computedName
   role
   # assignedRoles removed - using simple role field instead
 }
@@ -126,7 +138,9 @@ fragment UserPermissionsInfo on users {
 
 fragment UserSummary on users {
   id
-  name
+  firstName
+  lastName
+  computedName
   role
   position
   isActive
@@ -145,7 +159,9 @@ fragment UserDashboardCard on users {
   ...UserSummary
   managerUser {
     id
-    name
+    firstName
+    lastName
+    computedName
   }
 }
 
@@ -154,7 +170,9 @@ fragment UserTeamSummary on users {
   email
   managerUser {
     id
-    name
+    firstName
+    lastName
+    computedName
   }
   # directReports not available in schema - removed
 }
@@ -163,6 +181,8 @@ fragment UserTableRow on users {
   ...UserListItem
   managerUser {
     id
-    name
+    firstName
+    lastName
+    computedName
   }
 }

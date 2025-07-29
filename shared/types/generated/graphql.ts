@@ -18,7 +18,7 @@
  * ✓ Client Preset v4.8+ for optimal type safety
  * ✓ Zero type conflicts with modern codegen
  * 
- * Generated: 2025-07-26T23:41:39.293Z
+ * Generated: 2025-07-29T04:07:53.666Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Client Preset v4.0
  */
@@ -58,7 +58,7 @@ export type Scalars = {
   timestamp: { input: any; output: any; }
   timestamptz: { input: string; output: string; }
   user_position: { input: any; output: any; }
-  userrole: { input: any; output: any; }
+  user_role: { input: any; output: any; }
   user_status_enum: { input: any; output: any; }
   uuid: { input: string; output: string; }
 };
@@ -683,6 +683,550 @@ export type CursorOrdering =
   /** descending ordering of the cursor */
   | 'DESC'
   | '%future added value';
+
+/** columns and relationships of "data_backups" */
+export type DataBackups = {
+  __typename?: 'DataBackups';
+  backupType?: Maybe<Scalars['String']['output']>;
+  checksum?: Maybe<Scalars['String']['output']>;
+  completedAt?: Maybe<Scalars['timestamptz']['output']>;
+  compressionType?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  encryptionKeyHash?: Maybe<Scalars['String']['output']>;
+  errorMessage?: Maybe<Scalars['String']['output']>;
+  expiresAt?: Maybe<Scalars['timestamptz']['output']>;
+  fileSize?: Maybe<Scalars['bigint']['output']>;
+  id: Scalars['uuid']['output'];
+  metadata?: Maybe<Scalars['jsonb']['output']>;
+  retentionDays?: Maybe<Scalars['Int']['output']>;
+  startedAt?: Maybe<Scalars['timestamptz']['output']>;
+  status?: Maybe<Scalars['String']['output']>;
+  storagePath?: Maybe<Scalars['String']['output']>;
+  tablesIncluded?: Maybe<Array<Scalars['String']['output']>>;
+  /** An object relationship */
+  user?: Maybe<Users>;
+  userId?: Maybe<Scalars['uuid']['output']>;
+};
+
+
+/** columns and relationships of "data_backups" */
+export type DataBackupsMetadataArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** aggregated selection of "data_backups" */
+export type DataBackupsAggregate = {
+  __typename?: 'DataBackupsAggregate';
+  aggregate?: Maybe<DataBackupsAggregateFields>;
+  nodes: Array<DataBackups>;
+};
+
+export type DataBackupsAggregateBoolExp = {
+  count?: InputMaybe<DataBackupsAggregateBoolExpCount>;
+};
+
+/** aggregate fields of "data_backups" */
+export type DataBackupsAggregateFields = {
+  __typename?: 'DataBackupsAggregateFields';
+  avg?: Maybe<DataBackupsAvgFields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<DataBackupsMaxFields>;
+  min?: Maybe<DataBackupsMinFields>;
+  stddev?: Maybe<DataBackupsStddevFields>;
+  stddevPop?: Maybe<DataBackupsStddevPopFields>;
+  stddevSamp?: Maybe<DataBackupsStddevSampFields>;
+  sum?: Maybe<DataBackupsSumFields>;
+  varPop?: Maybe<DataBackupsVarPopFields>;
+  varSamp?: Maybe<DataBackupsVarSampFields>;
+  variance?: Maybe<DataBackupsVarianceFields>;
+};
+
+
+/** aggregate fields of "data_backups" */
+export type DataBackupsAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<DataBackupsSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** order by aggregate values of table "data_backups" */
+export type DataBackupsAggregateOrderBy = {
+  avg?: InputMaybe<DataBackupsAvgOrderBy>;
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<DataBackupsMaxOrderBy>;
+  min?: InputMaybe<DataBackupsMinOrderBy>;
+  stddev?: InputMaybe<DataBackupsStddevOrderBy>;
+  stddevPop?: InputMaybe<DataBackupsStddevPopOrderBy>;
+  stddevSamp?: InputMaybe<DataBackupsStddevSampOrderBy>;
+  sum?: InputMaybe<DataBackupsSumOrderBy>;
+  varPop?: InputMaybe<DataBackupsVarPopOrderBy>;
+  varSamp?: InputMaybe<DataBackupsVarSampOrderBy>;
+  variance?: InputMaybe<DataBackupsVarianceOrderBy>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type DataBackupsAppendInput = {
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** input type for inserting array relation for remote table "data_backups" */
+export type DataBackupsArrRelInsertInput = {
+  data: Array<DataBackupsInsertInput>;
+  /** upsert condition */
+  onConflict?: InputMaybe<DataBackupsOnConflict>;
+};
+
+/** aggregate avg on columns */
+export type DataBackupsAvgFields = {
+  __typename?: 'DataBackupsAvgFields';
+  fileSize?: Maybe<Scalars['Float']['output']>;
+  retentionDays?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by avg() on columns of table "data_backups" */
+export type DataBackupsAvgOrderBy = {
+  fileSize?: InputMaybe<OrderBy>;
+  retentionDays?: InputMaybe<OrderBy>;
+};
+
+/** Boolean expression to filter rows from the table "data_backups". All fields are combined with a logical 'AND'. */
+export type DataBackupsBoolExp = {
+  _and?: InputMaybe<Array<DataBackupsBoolExp>>;
+  _not?: InputMaybe<DataBackupsBoolExp>;
+  _or?: InputMaybe<Array<DataBackupsBoolExp>>;
+  backupType?: InputMaybe<StringComparisonExp>;
+  checksum?: InputMaybe<StringComparisonExp>;
+  completedAt?: InputMaybe<TimestamptzComparisonExp>;
+  compressionType?: InputMaybe<StringComparisonExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  encryptionKeyHash?: InputMaybe<StringComparisonExp>;
+  errorMessage?: InputMaybe<StringComparisonExp>;
+  expiresAt?: InputMaybe<TimestamptzComparisonExp>;
+  fileSize?: InputMaybe<BigintComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  metadata?: InputMaybe<JsonbComparisonExp>;
+  retentionDays?: InputMaybe<IntComparisonExp>;
+  startedAt?: InputMaybe<TimestamptzComparisonExp>;
+  status?: InputMaybe<StringComparisonExp>;
+  storagePath?: InputMaybe<StringComparisonExp>;
+  tablesIncluded?: InputMaybe<StringArrayComparisonExp>;
+  user?: InputMaybe<UsersBoolExp>;
+  userId?: InputMaybe<UuidComparisonExp>;
+};
+
+/** unique or primary key constraints on table "data_backups" */
+export type DataBackupsConstraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'data_backups_pkey'
+  | '%future added value';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type DataBackupsDeleteAtPathInput = {
+  metadata?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type DataBackupsDeleteElemInput = {
+  metadata?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type DataBackupsDeleteKeyInput = {
+  metadata?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** input type for incrementing numeric columns in table "data_backups" */
+export type DataBackupsIncInput = {
+  fileSize?: InputMaybe<Scalars['bigint']['input']>;
+  retentionDays?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** input type for inserting data into table "data_backups" */
+export type DataBackupsInsertInput = {
+  backupType?: InputMaybe<Scalars['String']['input']>;
+  checksum?: InputMaybe<Scalars['String']['input']>;
+  completedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  compressionType?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  encryptionKeyHash?: InputMaybe<Scalars['String']['input']>;
+  errorMessage?: InputMaybe<Scalars['String']['input']>;
+  expiresAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  fileSize?: InputMaybe<Scalars['bigint']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  retentionDays?: InputMaybe<Scalars['Int']['input']>;
+  startedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
+  storagePath?: InputMaybe<Scalars['String']['input']>;
+  tablesIncluded?: InputMaybe<Array<Scalars['String']['input']>>;
+  user?: InputMaybe<UsersObjRelInsertInput>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** aggregate max on columns */
+export type DataBackupsMaxFields = {
+  __typename?: 'DataBackupsMaxFields';
+  backupType?: Maybe<Scalars['String']['output']>;
+  checksum?: Maybe<Scalars['String']['output']>;
+  completedAt?: Maybe<Scalars['timestamptz']['output']>;
+  compressionType?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  encryptionKeyHash?: Maybe<Scalars['String']['output']>;
+  errorMessage?: Maybe<Scalars['String']['output']>;
+  expiresAt?: Maybe<Scalars['timestamptz']['output']>;
+  fileSize?: Maybe<Scalars['bigint']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  retentionDays?: Maybe<Scalars['Int']['output']>;
+  startedAt?: Maybe<Scalars['timestamptz']['output']>;
+  status?: Maybe<Scalars['String']['output']>;
+  storagePath?: Maybe<Scalars['String']['output']>;
+  tablesIncluded?: Maybe<Array<Scalars['String']['output']>>;
+  userId?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** order by max() on columns of table "data_backups" */
+export type DataBackupsMaxOrderBy = {
+  backupType?: InputMaybe<OrderBy>;
+  checksum?: InputMaybe<OrderBy>;
+  completedAt?: InputMaybe<OrderBy>;
+  compressionType?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  encryptionKeyHash?: InputMaybe<OrderBy>;
+  errorMessage?: InputMaybe<OrderBy>;
+  expiresAt?: InputMaybe<OrderBy>;
+  fileSize?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  retentionDays?: InputMaybe<OrderBy>;
+  startedAt?: InputMaybe<OrderBy>;
+  status?: InputMaybe<OrderBy>;
+  storagePath?: InputMaybe<OrderBy>;
+  tablesIncluded?: InputMaybe<OrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** aggregate min on columns */
+export type DataBackupsMinFields = {
+  __typename?: 'DataBackupsMinFields';
+  backupType?: Maybe<Scalars['String']['output']>;
+  checksum?: Maybe<Scalars['String']['output']>;
+  completedAt?: Maybe<Scalars['timestamptz']['output']>;
+  compressionType?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  encryptionKeyHash?: Maybe<Scalars['String']['output']>;
+  errorMessage?: Maybe<Scalars['String']['output']>;
+  expiresAt?: Maybe<Scalars['timestamptz']['output']>;
+  fileSize?: Maybe<Scalars['bigint']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  retentionDays?: Maybe<Scalars['Int']['output']>;
+  startedAt?: Maybe<Scalars['timestamptz']['output']>;
+  status?: Maybe<Scalars['String']['output']>;
+  storagePath?: Maybe<Scalars['String']['output']>;
+  tablesIncluded?: Maybe<Array<Scalars['String']['output']>>;
+  userId?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** order by min() on columns of table "data_backups" */
+export type DataBackupsMinOrderBy = {
+  backupType?: InputMaybe<OrderBy>;
+  checksum?: InputMaybe<OrderBy>;
+  completedAt?: InputMaybe<OrderBy>;
+  compressionType?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  encryptionKeyHash?: InputMaybe<OrderBy>;
+  errorMessage?: InputMaybe<OrderBy>;
+  expiresAt?: InputMaybe<OrderBy>;
+  fileSize?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  retentionDays?: InputMaybe<OrderBy>;
+  startedAt?: InputMaybe<OrderBy>;
+  status?: InputMaybe<OrderBy>;
+  storagePath?: InputMaybe<OrderBy>;
+  tablesIncluded?: InputMaybe<OrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** response of any mutation on the table "data_backups" */
+export type DataBackupsMutationResponse = {
+  __typename?: 'DataBackupsMutationResponse';
+  /** number of rows affected by the mutation */
+  affectedRows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<DataBackups>;
+};
+
+/** on_conflict condition type for table "data_backups" */
+export type DataBackupsOnConflict = {
+  constraint: DataBackupsConstraint;
+  updateColumns?: Array<DataBackupsUpdateColumn>;
+  where?: InputMaybe<DataBackupsBoolExp>;
+};
+
+/** Ordering options when selecting data from "data_backups". */
+export type DataBackupsOrderBy = {
+  backupType?: InputMaybe<OrderBy>;
+  checksum?: InputMaybe<OrderBy>;
+  completedAt?: InputMaybe<OrderBy>;
+  compressionType?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  encryptionKeyHash?: InputMaybe<OrderBy>;
+  errorMessage?: InputMaybe<OrderBy>;
+  expiresAt?: InputMaybe<OrderBy>;
+  fileSize?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  metadata?: InputMaybe<OrderBy>;
+  retentionDays?: InputMaybe<OrderBy>;
+  startedAt?: InputMaybe<OrderBy>;
+  status?: InputMaybe<OrderBy>;
+  storagePath?: InputMaybe<OrderBy>;
+  tablesIncluded?: InputMaybe<OrderBy>;
+  user?: InputMaybe<UsersOrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: data_backups */
+export type DataBackupsPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type DataBackupsPrependInput = {
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** select columns of table "data_backups" */
+export type DataBackupsSelectColumn =
+  /** column name */
+  | 'backupType'
+  /** column name */
+  | 'checksum'
+  /** column name */
+  | 'completedAt'
+  /** column name */
+  | 'compressionType'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'encryptionKeyHash'
+  /** column name */
+  | 'errorMessage'
+  /** column name */
+  | 'expiresAt'
+  /** column name */
+  | 'fileSize'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'metadata'
+  /** column name */
+  | 'retentionDays'
+  /** column name */
+  | 'startedAt'
+  /** column name */
+  | 'status'
+  /** column name */
+  | 'storagePath'
+  /** column name */
+  | 'tablesIncluded'
+  /** column name */
+  | 'userId'
+  | '%future added value';
+
+/** input type for updating data in table "data_backups" */
+export type DataBackupsSetInput = {
+  backupType?: InputMaybe<Scalars['String']['input']>;
+  checksum?: InputMaybe<Scalars['String']['input']>;
+  completedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  compressionType?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  encryptionKeyHash?: InputMaybe<Scalars['String']['input']>;
+  errorMessage?: InputMaybe<Scalars['String']['input']>;
+  expiresAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  fileSize?: InputMaybe<Scalars['bigint']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  retentionDays?: InputMaybe<Scalars['Int']['input']>;
+  startedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
+  storagePath?: InputMaybe<Scalars['String']['input']>;
+  tablesIncluded?: InputMaybe<Array<Scalars['String']['input']>>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** aggregate stddev on columns */
+export type DataBackupsStddevFields = {
+  __typename?: 'DataBackupsStddevFields';
+  fileSize?: Maybe<Scalars['Float']['output']>;
+  retentionDays?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddev() on columns of table "data_backups" */
+export type DataBackupsStddevOrderBy = {
+  fileSize?: InputMaybe<OrderBy>;
+  retentionDays?: InputMaybe<OrderBy>;
+};
+
+/** aggregate stddevPop on columns */
+export type DataBackupsStddevPopFields = {
+  __typename?: 'DataBackupsStddevPopFields';
+  fileSize?: Maybe<Scalars['Float']['output']>;
+  retentionDays?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddevPop() on columns of table "data_backups" */
+export type DataBackupsStddevPopOrderBy = {
+  fileSize?: InputMaybe<OrderBy>;
+  retentionDays?: InputMaybe<OrderBy>;
+};
+
+/** aggregate stddevSamp on columns */
+export type DataBackupsStddevSampFields = {
+  __typename?: 'DataBackupsStddevSampFields';
+  fileSize?: Maybe<Scalars['Float']['output']>;
+  retentionDays?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddevSamp() on columns of table "data_backups" */
+export type DataBackupsStddevSampOrderBy = {
+  fileSize?: InputMaybe<OrderBy>;
+  retentionDays?: InputMaybe<OrderBy>;
+};
+
+/** Streaming cursor of the table "data_backups" */
+export type DataBackupsStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: DataBackupsStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type DataBackupsStreamCursorValueInput = {
+  backupType?: InputMaybe<Scalars['String']['input']>;
+  checksum?: InputMaybe<Scalars['String']['input']>;
+  completedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  compressionType?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  encryptionKeyHash?: InputMaybe<Scalars['String']['input']>;
+  errorMessage?: InputMaybe<Scalars['String']['input']>;
+  expiresAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  fileSize?: InputMaybe<Scalars['bigint']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  retentionDays?: InputMaybe<Scalars['Int']['input']>;
+  startedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
+  storagePath?: InputMaybe<Scalars['String']['input']>;
+  tablesIncluded?: InputMaybe<Array<Scalars['String']['input']>>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** aggregate sum on columns */
+export type DataBackupsSumFields = {
+  __typename?: 'DataBackupsSumFields';
+  fileSize?: Maybe<Scalars['bigint']['output']>;
+  retentionDays?: Maybe<Scalars['Int']['output']>;
+};
+
+/** order by sum() on columns of table "data_backups" */
+export type DataBackupsSumOrderBy = {
+  fileSize?: InputMaybe<OrderBy>;
+  retentionDays?: InputMaybe<OrderBy>;
+};
+
+/** update columns of table "data_backups" */
+export type DataBackupsUpdateColumn =
+  /** column name */
+  | 'backupType'
+  /** column name */
+  | 'checksum'
+  /** column name */
+  | 'completedAt'
+  /** column name */
+  | 'compressionType'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'encryptionKeyHash'
+  /** column name */
+  | 'errorMessage'
+  /** column name */
+  | 'expiresAt'
+  /** column name */
+  | 'fileSize'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'metadata'
+  /** column name */
+  | 'retentionDays'
+  /** column name */
+  | 'startedAt'
+  /** column name */
+  | 'status'
+  /** column name */
+  | 'storagePath'
+  /** column name */
+  | 'tablesIncluded'
+  /** column name */
+  | 'userId'
+  | '%future added value';
+
+export type DataBackupsUpdates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<DataBackupsAppendInput>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _deleteAtPath?: InputMaybe<DataBackupsDeleteAtPathInput>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _deleteElem?: InputMaybe<DataBackupsDeleteElemInput>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _deleteKey?: InputMaybe<DataBackupsDeleteKeyInput>;
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<DataBackupsIncInput>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<DataBackupsPrependInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<DataBackupsSetInput>;
+  /** filter the rows which have to be updated */
+  where: DataBackupsBoolExp;
+};
+
+/** aggregate varPop on columns */
+export type DataBackupsVarPopFields = {
+  __typename?: 'DataBackupsVarPopFields';
+  fileSize?: Maybe<Scalars['Float']['output']>;
+  retentionDays?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by varPop() on columns of table "data_backups" */
+export type DataBackupsVarPopOrderBy = {
+  fileSize?: InputMaybe<OrderBy>;
+  retentionDays?: InputMaybe<OrderBy>;
+};
+
+/** aggregate varSamp on columns */
+export type DataBackupsVarSampFields = {
+  __typename?: 'DataBackupsVarSampFields';
+  fileSize?: Maybe<Scalars['Float']['output']>;
+  retentionDays?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by varSamp() on columns of table "data_backups" */
+export type DataBackupsVarSampOrderBy = {
+  fileSize?: InputMaybe<OrderBy>;
+  retentionDays?: InputMaybe<OrderBy>;
+};
+
+/** aggregate variance on columns */
+export type DataBackupsVarianceFields = {
+  __typename?: 'DataBackupsVarianceFields';
+  fileSize?: Maybe<Scalars['Float']['output']>;
+  retentionDays?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by variance() on columns of table "data_backups" */
+export type DataBackupsVarianceOrderBy = {
+  fileSize?: InputMaybe<OrderBy>;
+  retentionDays?: InputMaybe<OrderBy>;
+};
 
 /** Boolean expression to compare columns of type "date". All fields are combined with logical 'AND'. */
 export type DateComparisonExp = {
@@ -2705,6 +3249,283 @@ export type PositionAdminDefaultsVarianceFields = {
   defaultAdminPercentage?: Maybe<Scalars['Float']['output']>;
 };
 
+/** columns and relationships of "rate_limits" */
+export type RateLimits = {
+  __typename?: 'RateLimits';
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  id: Scalars['uuid']['output'];
+  limitExceededCount: Scalars['Int']['output'];
+  requestCount: Scalars['Int']['output'];
+  serviceId: Scalars['String']['output'];
+  windowDurationMinutes: Scalars['Int']['output'];
+  windowStart: Scalars['timestamptz']['output'];
+};
+
+/** aggregated selection of "rate_limits" */
+export type RateLimitsAggregate = {
+  __typename?: 'RateLimitsAggregate';
+  aggregate?: Maybe<RateLimitsAggregateFields>;
+  nodes: Array<RateLimits>;
+};
+
+/** aggregate fields of "rate_limits" */
+export type RateLimitsAggregateFields = {
+  __typename?: 'RateLimitsAggregateFields';
+  avg?: Maybe<RateLimitsAvgFields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<RateLimitsMaxFields>;
+  min?: Maybe<RateLimitsMinFields>;
+  stddev?: Maybe<RateLimitsStddevFields>;
+  stddevPop?: Maybe<RateLimitsStddevPopFields>;
+  stddevSamp?: Maybe<RateLimitsStddevSampFields>;
+  sum?: Maybe<RateLimitsSumFields>;
+  varPop?: Maybe<RateLimitsVarPopFields>;
+  varSamp?: Maybe<RateLimitsVarSampFields>;
+  variance?: Maybe<RateLimitsVarianceFields>;
+};
+
+
+/** aggregate fields of "rate_limits" */
+export type RateLimitsAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<RateLimitsSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate avg on columns */
+export type RateLimitsAvgFields = {
+  __typename?: 'RateLimitsAvgFields';
+  limitExceededCount?: Maybe<Scalars['Float']['output']>;
+  requestCount?: Maybe<Scalars['Float']['output']>;
+  windowDurationMinutes?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "rate_limits". All fields are combined with a logical 'AND'. */
+export type RateLimitsBoolExp = {
+  _and?: InputMaybe<Array<RateLimitsBoolExp>>;
+  _not?: InputMaybe<RateLimitsBoolExp>;
+  _or?: InputMaybe<Array<RateLimitsBoolExp>>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  limitExceededCount?: InputMaybe<IntComparisonExp>;
+  requestCount?: InputMaybe<IntComparisonExp>;
+  serviceId?: InputMaybe<StringComparisonExp>;
+  windowDurationMinutes?: InputMaybe<IntComparisonExp>;
+  windowStart?: InputMaybe<TimestamptzComparisonExp>;
+};
+
+/** unique or primary key constraints on table "rate_limits" */
+export type RateLimitsConstraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'rate_limits_pkey'
+  /** unique or primary key constraint on columns "window_start", "service_id" */
+  | 'rate_limits_service_id_window_start_key'
+  | '%future added value';
+
+/** input type for incrementing numeric columns in table "rate_limits" */
+export type RateLimitsIncInput = {
+  limitExceededCount?: InputMaybe<Scalars['Int']['input']>;
+  requestCount?: InputMaybe<Scalars['Int']['input']>;
+  windowDurationMinutes?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** input type for inserting data into table "rate_limits" */
+export type RateLimitsInsertInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  limitExceededCount?: InputMaybe<Scalars['Int']['input']>;
+  requestCount?: InputMaybe<Scalars['Int']['input']>;
+  serviceId?: InputMaybe<Scalars['String']['input']>;
+  windowDurationMinutes?: InputMaybe<Scalars['Int']['input']>;
+  windowStart?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** aggregate max on columns */
+export type RateLimitsMaxFields = {
+  __typename?: 'RateLimitsMaxFields';
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  limitExceededCount?: Maybe<Scalars['Int']['output']>;
+  requestCount?: Maybe<Scalars['Int']['output']>;
+  serviceId?: Maybe<Scalars['String']['output']>;
+  windowDurationMinutes?: Maybe<Scalars['Int']['output']>;
+  windowStart?: Maybe<Scalars['timestamptz']['output']>;
+};
+
+/** aggregate min on columns */
+export type RateLimitsMinFields = {
+  __typename?: 'RateLimitsMinFields';
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  limitExceededCount?: Maybe<Scalars['Int']['output']>;
+  requestCount?: Maybe<Scalars['Int']['output']>;
+  serviceId?: Maybe<Scalars['String']['output']>;
+  windowDurationMinutes?: Maybe<Scalars['Int']['output']>;
+  windowStart?: Maybe<Scalars['timestamptz']['output']>;
+};
+
+/** response of any mutation on the table "rate_limits" */
+export type RateLimitsMutationResponse = {
+  __typename?: 'RateLimitsMutationResponse';
+  /** number of rows affected by the mutation */
+  affectedRows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<RateLimits>;
+};
+
+/** on_conflict condition type for table "rate_limits" */
+export type RateLimitsOnConflict = {
+  constraint: RateLimitsConstraint;
+  updateColumns?: Array<RateLimitsUpdateColumn>;
+  where?: InputMaybe<RateLimitsBoolExp>;
+};
+
+/** Ordering options when selecting data from "rate_limits". */
+export type RateLimitsOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  limitExceededCount?: InputMaybe<OrderBy>;
+  requestCount?: InputMaybe<OrderBy>;
+  serviceId?: InputMaybe<OrderBy>;
+  windowDurationMinutes?: InputMaybe<OrderBy>;
+  windowStart?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: rate_limits */
+export type RateLimitsPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** select columns of table "rate_limits" */
+export type RateLimitsSelectColumn =
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'limitExceededCount'
+  /** column name */
+  | 'requestCount'
+  /** column name */
+  | 'serviceId'
+  /** column name */
+  | 'windowDurationMinutes'
+  /** column name */
+  | 'windowStart'
+  | '%future added value';
+
+/** input type for updating data in table "rate_limits" */
+export type RateLimitsSetInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  limitExceededCount?: InputMaybe<Scalars['Int']['input']>;
+  requestCount?: InputMaybe<Scalars['Int']['input']>;
+  serviceId?: InputMaybe<Scalars['String']['input']>;
+  windowDurationMinutes?: InputMaybe<Scalars['Int']['input']>;
+  windowStart?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** aggregate stddev on columns */
+export type RateLimitsStddevFields = {
+  __typename?: 'RateLimitsStddevFields';
+  limitExceededCount?: Maybe<Scalars['Float']['output']>;
+  requestCount?: Maybe<Scalars['Float']['output']>;
+  windowDurationMinutes?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddevPop on columns */
+export type RateLimitsStddevPopFields = {
+  __typename?: 'RateLimitsStddevPopFields';
+  limitExceededCount?: Maybe<Scalars['Float']['output']>;
+  requestCount?: Maybe<Scalars['Float']['output']>;
+  windowDurationMinutes?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddevSamp on columns */
+export type RateLimitsStddevSampFields = {
+  __typename?: 'RateLimitsStddevSampFields';
+  limitExceededCount?: Maybe<Scalars['Float']['output']>;
+  requestCount?: Maybe<Scalars['Float']['output']>;
+  windowDurationMinutes?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "rate_limits" */
+export type RateLimitsStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: RateLimitsStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type RateLimitsStreamCursorValueInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  limitExceededCount?: InputMaybe<Scalars['Int']['input']>;
+  requestCount?: InputMaybe<Scalars['Int']['input']>;
+  serviceId?: InputMaybe<Scalars['String']['input']>;
+  windowDurationMinutes?: InputMaybe<Scalars['Int']['input']>;
+  windowStart?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** aggregate sum on columns */
+export type RateLimitsSumFields = {
+  __typename?: 'RateLimitsSumFields';
+  limitExceededCount?: Maybe<Scalars['Int']['output']>;
+  requestCount?: Maybe<Scalars['Int']['output']>;
+  windowDurationMinutes?: Maybe<Scalars['Int']['output']>;
+};
+
+/** update columns of table "rate_limits" */
+export type RateLimitsUpdateColumn =
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'limitExceededCount'
+  /** column name */
+  | 'requestCount'
+  /** column name */
+  | 'serviceId'
+  /** column name */
+  | 'windowDurationMinutes'
+  /** column name */
+  | 'windowStart'
+  | '%future added value';
+
+export type RateLimitsUpdates = {
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<RateLimitsIncInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<RateLimitsSetInput>;
+  /** filter the rows which have to be updated */
+  where: RateLimitsBoolExp;
+};
+
+/** aggregate varPop on columns */
+export type RateLimitsVarPopFields = {
+  __typename?: 'RateLimitsVarPopFields';
+  limitExceededCount?: Maybe<Scalars['Float']['output']>;
+  requestCount?: Maybe<Scalars['Float']['output']>;
+  windowDurationMinutes?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate varSamp on columns */
+export type RateLimitsVarSampFields = {
+  __typename?: 'RateLimitsVarSampFields';
+  limitExceededCount?: Maybe<Scalars['Float']['output']>;
+  requestCount?: Maybe<Scalars['Float']['output']>;
+  windowDurationMinutes?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type RateLimitsVarianceFields = {
+  __typename?: 'RateLimitsVarianceFields';
+  limitExceededCount?: Maybe<Scalars['Float']['output']>;
+  requestCount?: Maybe<Scalars['Float']['output']>;
+  windowDurationMinutes?: Maybe<Scalars['Float']['output']>;
+};
+
 export type ScheduleResponse = {
   __typename?: 'ScheduleResponse';
   dates?: Maybe<Array<Scalars['String']['output']>>;
@@ -2712,6 +3533,631 @@ export type ScheduleResponse = {
   message?: Maybe<Scalars['String']['output']>;
   scheduleId?: Maybe<Scalars['String']['output']>;
   success: Scalars['Boolean']['output'];
+};
+
+/** columns and relationships of "security_alerts" */
+export type SecurityAlerts = {
+  __typename?: 'SecurityAlerts';
+  alertType: Scalars['String']['output'];
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  description: Scalars['String']['output'];
+  id: Scalars['uuid']['output'];
+  ipAddress?: Maybe<Scalars['inet']['output']>;
+  isResolved?: Maybe<Scalars['Boolean']['output']>;
+  metadata?: Maybe<Scalars['jsonb']['output']>;
+  resolutionNotes?: Maybe<Scalars['String']['output']>;
+  resolvedAt?: Maybe<Scalars['timestamptz']['output']>;
+  resolvedBy?: Maybe<Scalars['uuid']['output']>;
+  /** An object relationship */
+  resolvedByUser?: Maybe<Users>;
+  severity?: Maybe<Scalars['String']['output']>;
+  title: Scalars['String']['output'];
+  /** An object relationship */
+  user?: Maybe<Users>;
+  userAgent?: Maybe<Scalars['String']['output']>;
+  userId?: Maybe<Scalars['uuid']['output']>;
+};
+
+
+/** columns and relationships of "security_alerts" */
+export type SecurityAlertsMetadataArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** aggregated selection of "security_alerts" */
+export type SecurityAlertsAggregate = {
+  __typename?: 'SecurityAlertsAggregate';
+  aggregate?: Maybe<SecurityAlertsAggregateFields>;
+  nodes: Array<SecurityAlerts>;
+};
+
+/** aggregate fields of "security_alerts" */
+export type SecurityAlertsAggregateFields = {
+  __typename?: 'SecurityAlertsAggregateFields';
+  count: Scalars['Int']['output'];
+  max?: Maybe<SecurityAlertsMaxFields>;
+  min?: Maybe<SecurityAlertsMinFields>;
+};
+
+
+/** aggregate fields of "security_alerts" */
+export type SecurityAlertsAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<SecurityAlertsSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type SecurityAlertsAppendInput = {
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** Boolean expression to filter rows from the table "security_alerts". All fields are combined with a logical 'AND'. */
+export type SecurityAlertsBoolExp = {
+  _and?: InputMaybe<Array<SecurityAlertsBoolExp>>;
+  _not?: InputMaybe<SecurityAlertsBoolExp>;
+  _or?: InputMaybe<Array<SecurityAlertsBoolExp>>;
+  alertType?: InputMaybe<StringComparisonExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  description?: InputMaybe<StringComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  ipAddress?: InputMaybe<InetComparisonExp>;
+  isResolved?: InputMaybe<BooleanComparisonExp>;
+  metadata?: InputMaybe<JsonbComparisonExp>;
+  resolutionNotes?: InputMaybe<StringComparisonExp>;
+  resolvedAt?: InputMaybe<TimestamptzComparisonExp>;
+  resolvedBy?: InputMaybe<UuidComparisonExp>;
+  resolvedByUser?: InputMaybe<UsersBoolExp>;
+  severity?: InputMaybe<StringComparisonExp>;
+  title?: InputMaybe<StringComparisonExp>;
+  user?: InputMaybe<UsersBoolExp>;
+  userAgent?: InputMaybe<StringComparisonExp>;
+  userId?: InputMaybe<UuidComparisonExp>;
+};
+
+/** unique or primary key constraints on table "security_alerts" */
+export type SecurityAlertsConstraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'security_alerts_pkey'
+  | '%future added value';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type SecurityAlertsDeleteAtPathInput = {
+  metadata?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type SecurityAlertsDeleteElemInput = {
+  metadata?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type SecurityAlertsDeleteKeyInput = {
+  metadata?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** input type for inserting data into table "security_alerts" */
+export type SecurityAlertsInsertInput = {
+  alertType?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  ipAddress?: InputMaybe<Scalars['inet']['input']>;
+  isResolved?: InputMaybe<Scalars['Boolean']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  resolutionNotes?: InputMaybe<Scalars['String']['input']>;
+  resolvedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  resolvedBy?: InputMaybe<Scalars['uuid']['input']>;
+  resolvedByUser?: InputMaybe<UsersObjRelInsertInput>;
+  severity?: InputMaybe<Scalars['String']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+  user?: InputMaybe<UsersObjRelInsertInput>;
+  userAgent?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** aggregate max on columns */
+export type SecurityAlertsMaxFields = {
+  __typename?: 'SecurityAlertsMaxFields';
+  alertType?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  resolutionNotes?: Maybe<Scalars['String']['output']>;
+  resolvedAt?: Maybe<Scalars['timestamptz']['output']>;
+  resolvedBy?: Maybe<Scalars['uuid']['output']>;
+  severity?: Maybe<Scalars['String']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
+  userAgent?: Maybe<Scalars['String']['output']>;
+  userId?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** aggregate min on columns */
+export type SecurityAlertsMinFields = {
+  __typename?: 'SecurityAlertsMinFields';
+  alertType?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  resolutionNotes?: Maybe<Scalars['String']['output']>;
+  resolvedAt?: Maybe<Scalars['timestamptz']['output']>;
+  resolvedBy?: Maybe<Scalars['uuid']['output']>;
+  severity?: Maybe<Scalars['String']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
+  userAgent?: Maybe<Scalars['String']['output']>;
+  userId?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** response of any mutation on the table "security_alerts" */
+export type SecurityAlertsMutationResponse = {
+  __typename?: 'SecurityAlertsMutationResponse';
+  /** number of rows affected by the mutation */
+  affectedRows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<SecurityAlerts>;
+};
+
+/** on_conflict condition type for table "security_alerts" */
+export type SecurityAlertsOnConflict = {
+  constraint: SecurityAlertsConstraint;
+  updateColumns?: Array<SecurityAlertsUpdateColumn>;
+  where?: InputMaybe<SecurityAlertsBoolExp>;
+};
+
+/** Ordering options when selecting data from "security_alerts". */
+export type SecurityAlertsOrderBy = {
+  alertType?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  description?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  ipAddress?: InputMaybe<OrderBy>;
+  isResolved?: InputMaybe<OrderBy>;
+  metadata?: InputMaybe<OrderBy>;
+  resolutionNotes?: InputMaybe<OrderBy>;
+  resolvedAt?: InputMaybe<OrderBy>;
+  resolvedBy?: InputMaybe<OrderBy>;
+  resolvedByUser?: InputMaybe<UsersOrderBy>;
+  severity?: InputMaybe<OrderBy>;
+  title?: InputMaybe<OrderBy>;
+  user?: InputMaybe<UsersOrderBy>;
+  userAgent?: InputMaybe<OrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: security_alerts */
+export type SecurityAlertsPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type SecurityAlertsPrependInput = {
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** select columns of table "security_alerts" */
+export type SecurityAlertsSelectColumn =
+  /** column name */
+  | 'alertType'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'ipAddress'
+  /** column name */
+  | 'isResolved'
+  /** column name */
+  | 'metadata'
+  /** column name */
+  | 'resolutionNotes'
+  /** column name */
+  | 'resolvedAt'
+  /** column name */
+  | 'resolvedBy'
+  /** column name */
+  | 'severity'
+  /** column name */
+  | 'title'
+  /** column name */
+  | 'userAgent'
+  /** column name */
+  | 'userId'
+  | '%future added value';
+
+/** input type for updating data in table "security_alerts" */
+export type SecurityAlertsSetInput = {
+  alertType?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  ipAddress?: InputMaybe<Scalars['inet']['input']>;
+  isResolved?: InputMaybe<Scalars['Boolean']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  resolutionNotes?: InputMaybe<Scalars['String']['input']>;
+  resolvedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  resolvedBy?: InputMaybe<Scalars['uuid']['input']>;
+  severity?: InputMaybe<Scalars['String']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+  userAgent?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** Streaming cursor of the table "security_alerts" */
+export type SecurityAlertsStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: SecurityAlertsStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type SecurityAlertsStreamCursorValueInput = {
+  alertType?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  ipAddress?: InputMaybe<Scalars['inet']['input']>;
+  isResolved?: InputMaybe<Scalars['Boolean']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  resolutionNotes?: InputMaybe<Scalars['String']['input']>;
+  resolvedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  resolvedBy?: InputMaybe<Scalars['uuid']['input']>;
+  severity?: InputMaybe<Scalars['String']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+  userAgent?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** update columns of table "security_alerts" */
+export type SecurityAlertsUpdateColumn =
+  /** column name */
+  | 'alertType'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'ipAddress'
+  /** column name */
+  | 'isResolved'
+  /** column name */
+  | 'metadata'
+  /** column name */
+  | 'resolutionNotes'
+  /** column name */
+  | 'resolvedAt'
+  /** column name */
+  | 'resolvedBy'
+  /** column name */
+  | 'severity'
+  /** column name */
+  | 'title'
+  /** column name */
+  | 'userAgent'
+  /** column name */
+  | 'userId'
+  | '%future added value';
+
+export type SecurityAlertsUpdates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<SecurityAlertsAppendInput>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _deleteAtPath?: InputMaybe<SecurityAlertsDeleteAtPathInput>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _deleteElem?: InputMaybe<SecurityAlertsDeleteElemInput>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _deleteKey?: InputMaybe<SecurityAlertsDeleteKeyInput>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<SecurityAlertsPrependInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<SecurityAlertsSetInput>;
+  /** filter the rows which have to be updated */
+  where: SecurityAlertsBoolExp;
+};
+
+/** columns and relationships of "security_settings" */
+export type SecuritySettings = {
+  __typename?: 'SecuritySettings';
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  id: Scalars['uuid']['output'];
+  isSystemWide?: Maybe<Scalars['Boolean']['output']>;
+  settingKey: Scalars['String']['output'];
+  settingValue: Scalars['jsonb']['output'];
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  updatedBy?: Maybe<Scalars['uuid']['output']>;
+  /** An object relationship */
+  user?: Maybe<Users>;
+  userId?: Maybe<Scalars['uuid']['output']>;
+};
+
+
+/** columns and relationships of "security_settings" */
+export type SecuritySettingsSettingValueArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** aggregated selection of "security_settings" */
+export type SecuritySettingsAggregate = {
+  __typename?: 'SecuritySettingsAggregate';
+  aggregate?: Maybe<SecuritySettingsAggregateFields>;
+  nodes: Array<SecuritySettings>;
+};
+
+export type SecuritySettingsAggregateBoolExp = {
+  bool_and?: InputMaybe<SecuritySettingsAggregateBoolExpBool_And>;
+  bool_or?: InputMaybe<SecuritySettingsAggregateBoolExpBool_Or>;
+  count?: InputMaybe<SecuritySettingsAggregateBoolExpCount>;
+};
+
+/** aggregate fields of "security_settings" */
+export type SecuritySettingsAggregateFields = {
+  __typename?: 'SecuritySettingsAggregateFields';
+  count: Scalars['Int']['output'];
+  max?: Maybe<SecuritySettingsMaxFields>;
+  min?: Maybe<SecuritySettingsMinFields>;
+};
+
+
+/** aggregate fields of "security_settings" */
+export type SecuritySettingsAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<SecuritySettingsSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** order by aggregate values of table "security_settings" */
+export type SecuritySettingsAggregateOrderBy = {
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<SecuritySettingsMaxOrderBy>;
+  min?: InputMaybe<SecuritySettingsMinOrderBy>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type SecuritySettingsAppendInput = {
+  settingValue?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** input type for inserting array relation for remote table "security_settings" */
+export type SecuritySettingsArrRelInsertInput = {
+  data: Array<SecuritySettingsInsertInput>;
+  /** upsert condition */
+  onConflict?: InputMaybe<SecuritySettingsOnConflict>;
+};
+
+/** Boolean expression to filter rows from the table "security_settings". All fields are combined with a logical 'AND'. */
+export type SecuritySettingsBoolExp = {
+  _and?: InputMaybe<Array<SecuritySettingsBoolExp>>;
+  _not?: InputMaybe<SecuritySettingsBoolExp>;
+  _or?: InputMaybe<Array<SecuritySettingsBoolExp>>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  isSystemWide?: InputMaybe<BooleanComparisonExp>;
+  settingKey?: InputMaybe<StringComparisonExp>;
+  settingValue?: InputMaybe<JsonbComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+  updatedBy?: InputMaybe<UuidComparisonExp>;
+  user?: InputMaybe<UsersBoolExp>;
+  userId?: InputMaybe<UuidComparisonExp>;
+};
+
+/** unique or primary key constraints on table "security_settings" */
+export type SecuritySettingsConstraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'security_settings_pkey'
+  /** unique or primary key constraint on columns "user_id", "setting_key" */
+  | 'security_settings_user_id_setting_key_key'
+  | '%future added value';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type SecuritySettingsDeleteAtPathInput = {
+  settingValue?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type SecuritySettingsDeleteElemInput = {
+  settingValue?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type SecuritySettingsDeleteKeyInput = {
+  settingValue?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** input type for inserting data into table "security_settings" */
+export type SecuritySettingsInsertInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isSystemWide?: InputMaybe<Scalars['Boolean']['input']>;
+  settingKey?: InputMaybe<Scalars['String']['input']>;
+  settingValue?: InputMaybe<Scalars['jsonb']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+  user?: InputMaybe<UsersObjRelInsertInput>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** aggregate max on columns */
+export type SecuritySettingsMaxFields = {
+  __typename?: 'SecuritySettingsMaxFields';
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  settingKey?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  updatedBy?: Maybe<Scalars['uuid']['output']>;
+  userId?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** order by max() on columns of table "security_settings" */
+export type SecuritySettingsMaxOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  settingKey?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  updatedBy?: InputMaybe<OrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** aggregate min on columns */
+export type SecuritySettingsMinFields = {
+  __typename?: 'SecuritySettingsMinFields';
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  settingKey?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  updatedBy?: Maybe<Scalars['uuid']['output']>;
+  userId?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** order by min() on columns of table "security_settings" */
+export type SecuritySettingsMinOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  settingKey?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  updatedBy?: InputMaybe<OrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** response of any mutation on the table "security_settings" */
+export type SecuritySettingsMutationResponse = {
+  __typename?: 'SecuritySettingsMutationResponse';
+  /** number of rows affected by the mutation */
+  affectedRows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<SecuritySettings>;
+};
+
+/** on_conflict condition type for table "security_settings" */
+export type SecuritySettingsOnConflict = {
+  constraint: SecuritySettingsConstraint;
+  updateColumns?: Array<SecuritySettingsUpdateColumn>;
+  where?: InputMaybe<SecuritySettingsBoolExp>;
+};
+
+/** Ordering options when selecting data from "security_settings". */
+export type SecuritySettingsOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  isSystemWide?: InputMaybe<OrderBy>;
+  settingKey?: InputMaybe<OrderBy>;
+  settingValue?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  updatedBy?: InputMaybe<OrderBy>;
+  user?: InputMaybe<UsersOrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: security_settings */
+export type SecuritySettingsPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type SecuritySettingsPrependInput = {
+  settingValue?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** select columns of table "security_settings" */
+export type SecuritySettingsSelectColumn =
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isSystemWide'
+  /** column name */
+  | 'settingKey'
+  /** column name */
+  | 'settingValue'
+  /** column name */
+  | 'updatedAt'
+  /** column name */
+  | 'updatedBy'
+  /** column name */
+  | 'userId'
+  | '%future added value';
+
+/** select "securitySettingsAggregateBoolExpBool_andArgumentsColumns" columns of table "security_settings" */
+export type SecuritySettingsSelectColumnSecuritySettingsAggregateBoolExpBool_AndArgumentsColumns =
+  /** column name */
+  | 'isSystemWide'
+  | '%future added value';
+
+/** select "securitySettingsAggregateBoolExpBool_orArgumentsColumns" columns of table "security_settings" */
+export type SecuritySettingsSelectColumnSecuritySettingsAggregateBoolExpBool_OrArgumentsColumns =
+  /** column name */
+  | 'isSystemWide'
+  | '%future added value';
+
+/** input type for updating data in table "security_settings" */
+export type SecuritySettingsSetInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isSystemWide?: InputMaybe<Scalars['Boolean']['input']>;
+  settingKey?: InputMaybe<Scalars['String']['input']>;
+  settingValue?: InputMaybe<Scalars['jsonb']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** Streaming cursor of the table "security_settings" */
+export type SecuritySettingsStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: SecuritySettingsStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type SecuritySettingsStreamCursorValueInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isSystemWide?: InputMaybe<Scalars['Boolean']['input']>;
+  settingKey?: InputMaybe<Scalars['String']['input']>;
+  settingValue?: InputMaybe<Scalars['jsonb']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** update columns of table "security_settings" */
+export type SecuritySettingsUpdateColumn =
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isSystemWide'
+  /** column name */
+  | 'settingKey'
+  /** column name */
+  | 'settingValue'
+  /** column name */
+  | 'updatedAt'
+  /** column name */
+  | 'updatedBy'
+  /** column name */
+  | 'userId'
+  | '%future added value';
+
+export type SecuritySettingsUpdates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<SecuritySettingsAppendInput>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _deleteAtPath?: InputMaybe<SecuritySettingsDeleteAtPathInput>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _deleteElem?: InputMaybe<SecuritySettingsDeleteElemInput>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _deleteKey?: InputMaybe<SecuritySettingsDeleteKeyInput>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<SecuritySettingsPrependInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<SecuritySettingsSetInput>;
+  /** filter the rows which have to be updated */
+  where: SecuritySettingsBoolExp;
 };
 
 /** Staff performance metrics for billing and time tracking */
@@ -2994,6 +4440,670 @@ export type StringComparisonExp = {
   _regex?: InputMaybe<Scalars['String']['input']>;
   /** does the column match the given SQL regular expression */
   _similar?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** columns and relationships of "system_configuration" */
+export type SystemConfiguration = {
+  __typename?: 'SystemConfiguration';
+  configKey: Scalars['String']['output'];
+  configType: Scalars['String']['output'];
+  configValue: Scalars['jsonb']['output'];
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['uuid']['output'];
+  isActive: Scalars['Boolean']['output'];
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+};
+
+
+/** columns and relationships of "system_configuration" */
+export type SystemConfigurationConfigValueArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** aggregated selection of "system_configuration" */
+export type SystemConfigurationAggregate = {
+  __typename?: 'SystemConfigurationAggregate';
+  aggregate?: Maybe<SystemConfigurationAggregateFields>;
+  nodes: Array<SystemConfiguration>;
+};
+
+/** aggregate fields of "system_configuration" */
+export type SystemConfigurationAggregateFields = {
+  __typename?: 'SystemConfigurationAggregateFields';
+  count: Scalars['Int']['output'];
+  max?: Maybe<SystemConfigurationMaxFields>;
+  min?: Maybe<SystemConfigurationMinFields>;
+};
+
+
+/** aggregate fields of "system_configuration" */
+export type SystemConfigurationAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<SystemConfigurationSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type SystemConfigurationAppendInput = {
+  configValue?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** Boolean expression to filter rows from the table "system_configuration". All fields are combined with a logical 'AND'. */
+export type SystemConfigurationBoolExp = {
+  _and?: InputMaybe<Array<SystemConfigurationBoolExp>>;
+  _not?: InputMaybe<SystemConfigurationBoolExp>;
+  _or?: InputMaybe<Array<SystemConfigurationBoolExp>>;
+  configKey?: InputMaybe<StringComparisonExp>;
+  configType?: InputMaybe<StringComparisonExp>;
+  configValue?: InputMaybe<JsonbComparisonExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  description?: InputMaybe<StringComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  isActive?: InputMaybe<BooleanComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+};
+
+/** unique or primary key constraints on table "system_configuration" */
+export type SystemConfigurationConstraint =
+  /** unique or primary key constraint on columns "config_key" */
+  | 'system_configuration_config_key_key'
+  /** unique or primary key constraint on columns "id" */
+  | 'system_configuration_pkey'
+  | '%future added value';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type SystemConfigurationDeleteAtPathInput = {
+  configValue?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type SystemConfigurationDeleteElemInput = {
+  configValue?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type SystemConfigurationDeleteKeyInput = {
+  configValue?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** input type for inserting data into table "system_configuration" */
+export type SystemConfigurationInsertInput = {
+  configKey?: InputMaybe<Scalars['String']['input']>;
+  configType?: InputMaybe<Scalars['String']['input']>;
+  configValue?: InputMaybe<Scalars['jsonb']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** aggregate max on columns */
+export type SystemConfigurationMaxFields = {
+  __typename?: 'SystemConfigurationMaxFields';
+  configKey?: Maybe<Scalars['String']['output']>;
+  configType?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+};
+
+/** aggregate min on columns */
+export type SystemConfigurationMinFields = {
+  __typename?: 'SystemConfigurationMinFields';
+  configKey?: Maybe<Scalars['String']['output']>;
+  configType?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+};
+
+/** response of any mutation on the table "system_configuration" */
+export type SystemConfigurationMutationResponse = {
+  __typename?: 'SystemConfigurationMutationResponse';
+  /** number of rows affected by the mutation */
+  affectedRows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<SystemConfiguration>;
+};
+
+/** on_conflict condition type for table "system_configuration" */
+export type SystemConfigurationOnConflict = {
+  constraint: SystemConfigurationConstraint;
+  updateColumns?: Array<SystemConfigurationUpdateColumn>;
+  where?: InputMaybe<SystemConfigurationBoolExp>;
+};
+
+/** Ordering options when selecting data from "system_configuration". */
+export type SystemConfigurationOrderBy = {
+  configKey?: InputMaybe<OrderBy>;
+  configType?: InputMaybe<OrderBy>;
+  configValue?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  description?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  isActive?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: system_configuration */
+export type SystemConfigurationPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type SystemConfigurationPrependInput = {
+  configValue?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** select columns of table "system_configuration" */
+export type SystemConfigurationSelectColumn =
+  /** column name */
+  | 'configKey'
+  /** column name */
+  | 'configType'
+  /** column name */
+  | 'configValue'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'updatedAt'
+  | '%future added value';
+
+/** input type for updating data in table "system_configuration" */
+export type SystemConfigurationSetInput = {
+  configKey?: InputMaybe<Scalars['String']['input']>;
+  configType?: InputMaybe<Scalars['String']['input']>;
+  configValue?: InputMaybe<Scalars['jsonb']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** Streaming cursor of the table "system_configuration" */
+export type SystemConfigurationStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: SystemConfigurationStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type SystemConfigurationStreamCursorValueInput = {
+  configKey?: InputMaybe<Scalars['String']['input']>;
+  configType?: InputMaybe<Scalars['String']['input']>;
+  configValue?: InputMaybe<Scalars['jsonb']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** update columns of table "system_configuration" */
+export type SystemConfigurationUpdateColumn =
+  /** column name */
+  | 'configKey'
+  /** column name */
+  | 'configType'
+  /** column name */
+  | 'configValue'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'updatedAt'
+  | '%future added value';
+
+export type SystemConfigurationUpdates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<SystemConfigurationAppendInput>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _deleteAtPath?: InputMaybe<SystemConfigurationDeleteAtPathInput>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _deleteElem?: InputMaybe<SystemConfigurationDeleteElemInput>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _deleteKey?: InputMaybe<SystemConfigurationDeleteKeyInput>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<SystemConfigurationPrependInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<SystemConfigurationSetInput>;
+  /** filter the rows which have to be updated */
+  where: SystemConfigurationBoolExp;
+};
+
+/** columns and relationships of "system_health" */
+export type SystemHealth = {
+  __typename?: 'SystemHealth';
+  activeUsers?: Maybe<Scalars['Int']['output']>;
+  alerts?: Maybe<Scalars['jsonb']['output']>;
+  apiResponseTime?: Maybe<Scalars['Int']['output']>;
+  cpuUsage?: Maybe<Scalars['numeric']['output']>;
+  databaseResponseTime?: Maybe<Scalars['Int']['output']>;
+  diskUsage?: Maybe<Scalars['numeric']['output']>;
+  errorRate?: Maybe<Scalars['numeric']['output']>;
+  id: Scalars['uuid']['output'];
+  memoryUsage?: Maybe<Scalars['numeric']['output']>;
+  metadata?: Maybe<Scalars['jsonb']['output']>;
+  status?: Maybe<Scalars['String']['output']>;
+  timestamp?: Maybe<Scalars['timestamptz']['output']>;
+};
+
+
+/** columns and relationships of "system_health" */
+export type SystemHealthAlertsArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** columns and relationships of "system_health" */
+export type SystemHealthMetadataArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** aggregated selection of "system_health" */
+export type SystemHealthAggregate = {
+  __typename?: 'SystemHealthAggregate';
+  aggregate?: Maybe<SystemHealthAggregateFields>;
+  nodes: Array<SystemHealth>;
+};
+
+/** aggregate fields of "system_health" */
+export type SystemHealthAggregateFields = {
+  __typename?: 'SystemHealthAggregateFields';
+  avg?: Maybe<SystemHealthAvgFields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<SystemHealthMaxFields>;
+  min?: Maybe<SystemHealthMinFields>;
+  stddev?: Maybe<SystemHealthStddevFields>;
+  stddevPop?: Maybe<SystemHealthStddevPopFields>;
+  stddevSamp?: Maybe<SystemHealthStddevSampFields>;
+  sum?: Maybe<SystemHealthSumFields>;
+  varPop?: Maybe<SystemHealthVarPopFields>;
+  varSamp?: Maybe<SystemHealthVarSampFields>;
+  variance?: Maybe<SystemHealthVarianceFields>;
+};
+
+
+/** aggregate fields of "system_health" */
+export type SystemHealthAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<SystemHealthSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type SystemHealthAppendInput = {
+  alerts?: InputMaybe<Scalars['jsonb']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** aggregate avg on columns */
+export type SystemHealthAvgFields = {
+  __typename?: 'SystemHealthAvgFields';
+  activeUsers?: Maybe<Scalars['Float']['output']>;
+  apiResponseTime?: Maybe<Scalars['Float']['output']>;
+  cpuUsage?: Maybe<Scalars['Float']['output']>;
+  databaseResponseTime?: Maybe<Scalars['Float']['output']>;
+  diskUsage?: Maybe<Scalars['Float']['output']>;
+  errorRate?: Maybe<Scalars['Float']['output']>;
+  memoryUsage?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "system_health". All fields are combined with a logical 'AND'. */
+export type SystemHealthBoolExp = {
+  _and?: InputMaybe<Array<SystemHealthBoolExp>>;
+  _not?: InputMaybe<SystemHealthBoolExp>;
+  _or?: InputMaybe<Array<SystemHealthBoolExp>>;
+  activeUsers?: InputMaybe<IntComparisonExp>;
+  alerts?: InputMaybe<JsonbComparisonExp>;
+  apiResponseTime?: InputMaybe<IntComparisonExp>;
+  cpuUsage?: InputMaybe<NumericComparisonExp>;
+  databaseResponseTime?: InputMaybe<IntComparisonExp>;
+  diskUsage?: InputMaybe<NumericComparisonExp>;
+  errorRate?: InputMaybe<NumericComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  memoryUsage?: InputMaybe<NumericComparisonExp>;
+  metadata?: InputMaybe<JsonbComparisonExp>;
+  status?: InputMaybe<StringComparisonExp>;
+  timestamp?: InputMaybe<TimestamptzComparisonExp>;
+};
+
+/** unique or primary key constraints on table "system_health" */
+export type SystemHealthConstraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'system_health_pkey'
+  | '%future added value';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type SystemHealthDeleteAtPathInput = {
+  alerts?: InputMaybe<Array<Scalars['String']['input']>>;
+  metadata?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type SystemHealthDeleteElemInput = {
+  alerts?: InputMaybe<Scalars['Int']['input']>;
+  metadata?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type SystemHealthDeleteKeyInput = {
+  alerts?: InputMaybe<Scalars['String']['input']>;
+  metadata?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** input type for incrementing numeric columns in table "system_health" */
+export type SystemHealthIncInput = {
+  activeUsers?: InputMaybe<Scalars['Int']['input']>;
+  apiResponseTime?: InputMaybe<Scalars['Int']['input']>;
+  cpuUsage?: InputMaybe<Scalars['numeric']['input']>;
+  databaseResponseTime?: InputMaybe<Scalars['Int']['input']>;
+  diskUsage?: InputMaybe<Scalars['numeric']['input']>;
+  errorRate?: InputMaybe<Scalars['numeric']['input']>;
+  memoryUsage?: InputMaybe<Scalars['numeric']['input']>;
+};
+
+/** input type for inserting data into table "system_health" */
+export type SystemHealthInsertInput = {
+  activeUsers?: InputMaybe<Scalars['Int']['input']>;
+  alerts?: InputMaybe<Scalars['jsonb']['input']>;
+  apiResponseTime?: InputMaybe<Scalars['Int']['input']>;
+  cpuUsage?: InputMaybe<Scalars['numeric']['input']>;
+  databaseResponseTime?: InputMaybe<Scalars['Int']['input']>;
+  diskUsage?: InputMaybe<Scalars['numeric']['input']>;
+  errorRate?: InputMaybe<Scalars['numeric']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  memoryUsage?: InputMaybe<Scalars['numeric']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
+  timestamp?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** aggregate max on columns */
+export type SystemHealthMaxFields = {
+  __typename?: 'SystemHealthMaxFields';
+  activeUsers?: Maybe<Scalars['Int']['output']>;
+  apiResponseTime?: Maybe<Scalars['Int']['output']>;
+  cpuUsage?: Maybe<Scalars['numeric']['output']>;
+  databaseResponseTime?: Maybe<Scalars['Int']['output']>;
+  diskUsage?: Maybe<Scalars['numeric']['output']>;
+  errorRate?: Maybe<Scalars['numeric']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  memoryUsage?: Maybe<Scalars['numeric']['output']>;
+  status?: Maybe<Scalars['String']['output']>;
+  timestamp?: Maybe<Scalars['timestamptz']['output']>;
+};
+
+/** aggregate min on columns */
+export type SystemHealthMinFields = {
+  __typename?: 'SystemHealthMinFields';
+  activeUsers?: Maybe<Scalars['Int']['output']>;
+  apiResponseTime?: Maybe<Scalars['Int']['output']>;
+  cpuUsage?: Maybe<Scalars['numeric']['output']>;
+  databaseResponseTime?: Maybe<Scalars['Int']['output']>;
+  diskUsage?: Maybe<Scalars['numeric']['output']>;
+  errorRate?: Maybe<Scalars['numeric']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  memoryUsage?: Maybe<Scalars['numeric']['output']>;
+  status?: Maybe<Scalars['String']['output']>;
+  timestamp?: Maybe<Scalars['timestamptz']['output']>;
+};
+
+/** response of any mutation on the table "system_health" */
+export type SystemHealthMutationResponse = {
+  __typename?: 'SystemHealthMutationResponse';
+  /** number of rows affected by the mutation */
+  affectedRows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<SystemHealth>;
+};
+
+/** on_conflict condition type for table "system_health" */
+export type SystemHealthOnConflict = {
+  constraint: SystemHealthConstraint;
+  updateColumns?: Array<SystemHealthUpdateColumn>;
+  where?: InputMaybe<SystemHealthBoolExp>;
+};
+
+/** Ordering options when selecting data from "system_health". */
+export type SystemHealthOrderBy = {
+  activeUsers?: InputMaybe<OrderBy>;
+  alerts?: InputMaybe<OrderBy>;
+  apiResponseTime?: InputMaybe<OrderBy>;
+  cpuUsage?: InputMaybe<OrderBy>;
+  databaseResponseTime?: InputMaybe<OrderBy>;
+  diskUsage?: InputMaybe<OrderBy>;
+  errorRate?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  memoryUsage?: InputMaybe<OrderBy>;
+  metadata?: InputMaybe<OrderBy>;
+  status?: InputMaybe<OrderBy>;
+  timestamp?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: system_health */
+export type SystemHealthPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type SystemHealthPrependInput = {
+  alerts?: InputMaybe<Scalars['jsonb']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** select columns of table "system_health" */
+export type SystemHealthSelectColumn =
+  /** column name */
+  | 'activeUsers'
+  /** column name */
+  | 'alerts'
+  /** column name */
+  | 'apiResponseTime'
+  /** column name */
+  | 'cpuUsage'
+  /** column name */
+  | 'databaseResponseTime'
+  /** column name */
+  | 'diskUsage'
+  /** column name */
+  | 'errorRate'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'memoryUsage'
+  /** column name */
+  | 'metadata'
+  /** column name */
+  | 'status'
+  /** column name */
+  | 'timestamp'
+  | '%future added value';
+
+/** input type for updating data in table "system_health" */
+export type SystemHealthSetInput = {
+  activeUsers?: InputMaybe<Scalars['Int']['input']>;
+  alerts?: InputMaybe<Scalars['jsonb']['input']>;
+  apiResponseTime?: InputMaybe<Scalars['Int']['input']>;
+  cpuUsage?: InputMaybe<Scalars['numeric']['input']>;
+  databaseResponseTime?: InputMaybe<Scalars['Int']['input']>;
+  diskUsage?: InputMaybe<Scalars['numeric']['input']>;
+  errorRate?: InputMaybe<Scalars['numeric']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  memoryUsage?: InputMaybe<Scalars['numeric']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
+  timestamp?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** aggregate stddev on columns */
+export type SystemHealthStddevFields = {
+  __typename?: 'SystemHealthStddevFields';
+  activeUsers?: Maybe<Scalars['Float']['output']>;
+  apiResponseTime?: Maybe<Scalars['Float']['output']>;
+  cpuUsage?: Maybe<Scalars['Float']['output']>;
+  databaseResponseTime?: Maybe<Scalars['Float']['output']>;
+  diskUsage?: Maybe<Scalars['Float']['output']>;
+  errorRate?: Maybe<Scalars['Float']['output']>;
+  memoryUsage?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddevPop on columns */
+export type SystemHealthStddevPopFields = {
+  __typename?: 'SystemHealthStddevPopFields';
+  activeUsers?: Maybe<Scalars['Float']['output']>;
+  apiResponseTime?: Maybe<Scalars['Float']['output']>;
+  cpuUsage?: Maybe<Scalars['Float']['output']>;
+  databaseResponseTime?: Maybe<Scalars['Float']['output']>;
+  diskUsage?: Maybe<Scalars['Float']['output']>;
+  errorRate?: Maybe<Scalars['Float']['output']>;
+  memoryUsage?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddevSamp on columns */
+export type SystemHealthStddevSampFields = {
+  __typename?: 'SystemHealthStddevSampFields';
+  activeUsers?: Maybe<Scalars['Float']['output']>;
+  apiResponseTime?: Maybe<Scalars['Float']['output']>;
+  cpuUsage?: Maybe<Scalars['Float']['output']>;
+  databaseResponseTime?: Maybe<Scalars['Float']['output']>;
+  diskUsage?: Maybe<Scalars['Float']['output']>;
+  errorRate?: Maybe<Scalars['Float']['output']>;
+  memoryUsage?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "system_health" */
+export type SystemHealthStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: SystemHealthStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type SystemHealthStreamCursorValueInput = {
+  activeUsers?: InputMaybe<Scalars['Int']['input']>;
+  alerts?: InputMaybe<Scalars['jsonb']['input']>;
+  apiResponseTime?: InputMaybe<Scalars['Int']['input']>;
+  cpuUsage?: InputMaybe<Scalars['numeric']['input']>;
+  databaseResponseTime?: InputMaybe<Scalars['Int']['input']>;
+  diskUsage?: InputMaybe<Scalars['numeric']['input']>;
+  errorRate?: InputMaybe<Scalars['numeric']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  memoryUsage?: InputMaybe<Scalars['numeric']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
+  timestamp?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** aggregate sum on columns */
+export type SystemHealthSumFields = {
+  __typename?: 'SystemHealthSumFields';
+  activeUsers?: Maybe<Scalars['Int']['output']>;
+  apiResponseTime?: Maybe<Scalars['Int']['output']>;
+  cpuUsage?: Maybe<Scalars['numeric']['output']>;
+  databaseResponseTime?: Maybe<Scalars['Int']['output']>;
+  diskUsage?: Maybe<Scalars['numeric']['output']>;
+  errorRate?: Maybe<Scalars['numeric']['output']>;
+  memoryUsage?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** update columns of table "system_health" */
+export type SystemHealthUpdateColumn =
+  /** column name */
+  | 'activeUsers'
+  /** column name */
+  | 'alerts'
+  /** column name */
+  | 'apiResponseTime'
+  /** column name */
+  | 'cpuUsage'
+  /** column name */
+  | 'databaseResponseTime'
+  /** column name */
+  | 'diskUsage'
+  /** column name */
+  | 'errorRate'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'memoryUsage'
+  /** column name */
+  | 'metadata'
+  /** column name */
+  | 'status'
+  /** column name */
+  | 'timestamp'
+  | '%future added value';
+
+export type SystemHealthUpdates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<SystemHealthAppendInput>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _deleteAtPath?: InputMaybe<SystemHealthDeleteAtPathInput>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _deleteElem?: InputMaybe<SystemHealthDeleteElemInput>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _deleteKey?: InputMaybe<SystemHealthDeleteKeyInput>;
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<SystemHealthIncInput>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<SystemHealthPrependInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<SystemHealthSetInput>;
+  /** filter the rows which have to be updated */
+  where: SystemHealthBoolExp;
+};
+
+/** aggregate varPop on columns */
+export type SystemHealthVarPopFields = {
+  __typename?: 'SystemHealthVarPopFields';
+  activeUsers?: Maybe<Scalars['Float']['output']>;
+  apiResponseTime?: Maybe<Scalars['Float']['output']>;
+  cpuUsage?: Maybe<Scalars['Float']['output']>;
+  databaseResponseTime?: Maybe<Scalars['Float']['output']>;
+  diskUsage?: Maybe<Scalars['Float']['output']>;
+  errorRate?: Maybe<Scalars['Float']['output']>;
+  memoryUsage?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate varSamp on columns */
+export type SystemHealthVarSampFields = {
+  __typename?: 'SystemHealthVarSampFields';
+  activeUsers?: Maybe<Scalars['Float']['output']>;
+  apiResponseTime?: Maybe<Scalars['Float']['output']>;
+  cpuUsage?: Maybe<Scalars['Float']['output']>;
+  databaseResponseTime?: Maybe<Scalars['Float']['output']>;
+  diskUsage?: Maybe<Scalars['Float']['output']>;
+  errorRate?: Maybe<Scalars['Float']['output']>;
+  memoryUsage?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type SystemHealthVarianceFields = {
+  __typename?: 'SystemHealthVarianceFields';
+  activeUsers?: Maybe<Scalars['Float']['output']>;
+  apiResponseTime?: Maybe<Scalars['Float']['output']>;
+  cpuUsage?: Maybe<Scalars['Float']['output']>;
+  databaseResponseTime?: Maybe<Scalars['Float']['output']>;
+  diskUsage?: Maybe<Scalars['Float']['output']>;
+  errorRate?: Maybe<Scalars['Float']['output']>;
+  memoryUsage?: Maybe<Scalars['Float']['output']>;
 };
 
 /** columns and relationships of "team_capacity_by_position" */
@@ -3455,17 +5565,17 @@ export type UserPositionComparisonExp = {
   _nin?: InputMaybe<Array<Scalars['user_position']['input']>>;
 };
 
-/** Boolean expression to compare columns of type "userrole". All fields are combined with logical 'AND'. */
+/** Boolean expression to compare columns of type "user_role". All fields are combined with logical 'AND'. */
 export type UserRoleComparisonExp = {
-  _eq?: InputMaybe<Scalars['userrole']['input']>;
-  _gt?: InputMaybe<Scalars['userrole']['input']>;
-  _gte?: InputMaybe<Scalars['userrole']['input']>;
-  _in?: InputMaybe<Array<Scalars['userrole']['input']>>;
+  _eq?: InputMaybe<Scalars['user_role']['input']>;
+  _gt?: InputMaybe<Scalars['user_role']['input']>;
+  _gte?: InputMaybe<Scalars['user_role']['input']>;
+  _in?: InputMaybe<Array<Scalars['user_role']['input']>>;
   _isNull?: InputMaybe<Scalars['Boolean']['input']>;
-  _lt?: InputMaybe<Scalars['userrole']['input']>;
-  _lte?: InputMaybe<Scalars['userrole']['input']>;
-  _neq?: InputMaybe<Scalars['userrole']['input']>;
-  _nin?: InputMaybe<Array<Scalars['userrole']['input']>>;
+  _lt?: InputMaybe<Scalars['user_role']['input']>;
+  _lte?: InputMaybe<Scalars['user_role']['input']>;
+  _neq?: InputMaybe<Scalars['user_role']['input']>;
+  _nin?: InputMaybe<Array<Scalars['user_role']['input']>>;
 };
 
 export type UserRoleResponse = {
@@ -3475,6 +5585,346 @@ export type UserRoleResponse = {
   newRole?: Maybe<Scalars['String']['output']>;
   success: Scalars['Boolean']['output'];
   userId?: Maybe<Scalars['String']['output']>;
+};
+
+/** columns and relationships of "user_sessions" */
+export type UserSessions = {
+  __typename?: 'UserSessions';
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  expiresAt: Scalars['timestamptz']['output'];
+  id: Scalars['uuid']['output'];
+  ipAddress?: Maybe<Scalars['inet']['output']>;
+  isActive?: Maybe<Scalars['Boolean']['output']>;
+  lastActivity?: Maybe<Scalars['timestamptz']['output']>;
+  locationData?: Maybe<Scalars['jsonb']['output']>;
+  logoutReason?: Maybe<Scalars['String']['output']>;
+  sessionToken: Scalars['String']['output'];
+  /** An object relationship */
+  user: Users;
+  userAgent?: Maybe<Scalars['String']['output']>;
+  userId: Scalars['uuid']['output'];
+};
+
+
+/** columns and relationships of "user_sessions" */
+export type UserSessionsLocationDataArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** aggregated selection of "user_sessions" */
+export type UserSessionsAggregate = {
+  __typename?: 'UserSessionsAggregate';
+  aggregate?: Maybe<UserSessionsAggregateFields>;
+  nodes: Array<UserSessions>;
+};
+
+export type UserSessionsAggregateBoolExp = {
+  bool_and?: InputMaybe<UserSessionsAggregateBoolExpBool_And>;
+  bool_or?: InputMaybe<UserSessionsAggregateBoolExpBool_Or>;
+  count?: InputMaybe<UserSessionsAggregateBoolExpCount>;
+};
+
+/** aggregate fields of "user_sessions" */
+export type UserSessionsAggregateFields = {
+  __typename?: 'UserSessionsAggregateFields';
+  count: Scalars['Int']['output'];
+  max?: Maybe<UserSessionsMaxFields>;
+  min?: Maybe<UserSessionsMinFields>;
+};
+
+
+/** aggregate fields of "user_sessions" */
+export type UserSessionsAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<UserSessionsSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** order by aggregate values of table "user_sessions" */
+export type UserSessionsAggregateOrderBy = {
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<UserSessionsMaxOrderBy>;
+  min?: InputMaybe<UserSessionsMinOrderBy>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type UserSessionsAppendInput = {
+  locationData?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** input type for inserting array relation for remote table "user_sessions" */
+export type UserSessionsArrRelInsertInput = {
+  data: Array<UserSessionsInsertInput>;
+  /** upsert condition */
+  onConflict?: InputMaybe<UserSessionsOnConflict>;
+};
+
+/** Boolean expression to filter rows from the table "user_sessions". All fields are combined with a logical 'AND'. */
+export type UserSessionsBoolExp = {
+  _and?: InputMaybe<Array<UserSessionsBoolExp>>;
+  _not?: InputMaybe<UserSessionsBoolExp>;
+  _or?: InputMaybe<Array<UserSessionsBoolExp>>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  expiresAt?: InputMaybe<TimestamptzComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  ipAddress?: InputMaybe<InetComparisonExp>;
+  isActive?: InputMaybe<BooleanComparisonExp>;
+  lastActivity?: InputMaybe<TimestamptzComparisonExp>;
+  locationData?: InputMaybe<JsonbComparisonExp>;
+  logoutReason?: InputMaybe<StringComparisonExp>;
+  sessionToken?: InputMaybe<StringComparisonExp>;
+  user?: InputMaybe<UsersBoolExp>;
+  userAgent?: InputMaybe<StringComparisonExp>;
+  userId?: InputMaybe<UuidComparisonExp>;
+};
+
+/** unique or primary key constraints on table "user_sessions" */
+export type UserSessionsConstraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'user_sessions_pkey'
+  /** unique or primary key constraint on columns "session_token" */
+  | 'user_sessions_session_token_key'
+  | '%future added value';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type UserSessionsDeleteAtPathInput = {
+  locationData?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type UserSessionsDeleteElemInput = {
+  locationData?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type UserSessionsDeleteKeyInput = {
+  locationData?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** input type for inserting data into table "user_sessions" */
+export type UserSessionsInsertInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  expiresAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  ipAddress?: InputMaybe<Scalars['inet']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  lastActivity?: InputMaybe<Scalars['timestamptz']['input']>;
+  locationData?: InputMaybe<Scalars['jsonb']['input']>;
+  logoutReason?: InputMaybe<Scalars['String']['input']>;
+  sessionToken?: InputMaybe<Scalars['String']['input']>;
+  user?: InputMaybe<UsersObjRelInsertInput>;
+  userAgent?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** aggregate max on columns */
+export type UserSessionsMaxFields = {
+  __typename?: 'UserSessionsMaxFields';
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  expiresAt?: Maybe<Scalars['timestamptz']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  lastActivity?: Maybe<Scalars['timestamptz']['output']>;
+  logoutReason?: Maybe<Scalars['String']['output']>;
+  sessionToken?: Maybe<Scalars['String']['output']>;
+  userAgent?: Maybe<Scalars['String']['output']>;
+  userId?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** order by max() on columns of table "user_sessions" */
+export type UserSessionsMaxOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
+  expiresAt?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  lastActivity?: InputMaybe<OrderBy>;
+  logoutReason?: InputMaybe<OrderBy>;
+  sessionToken?: InputMaybe<OrderBy>;
+  userAgent?: InputMaybe<OrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** aggregate min on columns */
+export type UserSessionsMinFields = {
+  __typename?: 'UserSessionsMinFields';
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  expiresAt?: Maybe<Scalars['timestamptz']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  lastActivity?: Maybe<Scalars['timestamptz']['output']>;
+  logoutReason?: Maybe<Scalars['String']['output']>;
+  sessionToken?: Maybe<Scalars['String']['output']>;
+  userAgent?: Maybe<Scalars['String']['output']>;
+  userId?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** order by min() on columns of table "user_sessions" */
+export type UserSessionsMinOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
+  expiresAt?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  lastActivity?: InputMaybe<OrderBy>;
+  logoutReason?: InputMaybe<OrderBy>;
+  sessionToken?: InputMaybe<OrderBy>;
+  userAgent?: InputMaybe<OrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** response of any mutation on the table "user_sessions" */
+export type UserSessionsMutationResponse = {
+  __typename?: 'UserSessionsMutationResponse';
+  /** number of rows affected by the mutation */
+  affectedRows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<UserSessions>;
+};
+
+/** on_conflict condition type for table "user_sessions" */
+export type UserSessionsOnConflict = {
+  constraint: UserSessionsConstraint;
+  updateColumns?: Array<UserSessionsUpdateColumn>;
+  where?: InputMaybe<UserSessionsBoolExp>;
+};
+
+/** Ordering options when selecting data from "user_sessions". */
+export type UserSessionsOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
+  expiresAt?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  ipAddress?: InputMaybe<OrderBy>;
+  isActive?: InputMaybe<OrderBy>;
+  lastActivity?: InputMaybe<OrderBy>;
+  locationData?: InputMaybe<OrderBy>;
+  logoutReason?: InputMaybe<OrderBy>;
+  sessionToken?: InputMaybe<OrderBy>;
+  user?: InputMaybe<UsersOrderBy>;
+  userAgent?: InputMaybe<OrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: user_sessions */
+export type UserSessionsPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type UserSessionsPrependInput = {
+  locationData?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** select columns of table "user_sessions" */
+export type UserSessionsSelectColumn =
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'expiresAt'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'ipAddress'
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'lastActivity'
+  /** column name */
+  | 'locationData'
+  /** column name */
+  | 'logoutReason'
+  /** column name */
+  | 'sessionToken'
+  /** column name */
+  | 'userAgent'
+  /** column name */
+  | 'userId'
+  | '%future added value';
+
+/** select "userSessionsAggregateBoolExpBool_andArgumentsColumns" columns of table "user_sessions" */
+export type UserSessionsSelectColumnUserSessionsAggregateBoolExpBool_AndArgumentsColumns =
+  /** column name */
+  | 'isActive'
+  | '%future added value';
+
+/** select "userSessionsAggregateBoolExpBool_orArgumentsColumns" columns of table "user_sessions" */
+export type UserSessionsSelectColumnUserSessionsAggregateBoolExpBool_OrArgumentsColumns =
+  /** column name */
+  | 'isActive'
+  | '%future added value';
+
+/** input type for updating data in table "user_sessions" */
+export type UserSessionsSetInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  expiresAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  ipAddress?: InputMaybe<Scalars['inet']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  lastActivity?: InputMaybe<Scalars['timestamptz']['input']>;
+  locationData?: InputMaybe<Scalars['jsonb']['input']>;
+  logoutReason?: InputMaybe<Scalars['String']['input']>;
+  sessionToken?: InputMaybe<Scalars['String']['input']>;
+  userAgent?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** Streaming cursor of the table "user_sessions" */
+export type UserSessionsStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: UserSessionsStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type UserSessionsStreamCursorValueInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  expiresAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  ipAddress?: InputMaybe<Scalars['inet']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  lastActivity?: InputMaybe<Scalars['timestamptz']['input']>;
+  locationData?: InputMaybe<Scalars['jsonb']['input']>;
+  logoutReason?: InputMaybe<Scalars['String']['input']>;
+  sessionToken?: InputMaybe<Scalars['String']['input']>;
+  userAgent?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** update columns of table "user_sessions" */
+export type UserSessionsUpdateColumn =
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'expiresAt'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'ipAddress'
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'lastActivity'
+  /** column name */
+  | 'locationData'
+  /** column name */
+  | 'logoutReason'
+  /** column name */
+  | 'sessionToken'
+  /** column name */
+  | 'userAgent'
+  /** column name */
+  | 'userId'
+  | '%future added value';
+
+export type UserSessionsUpdates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<UserSessionsAppendInput>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _deleteAtPath?: InputMaybe<UserSessionsDeleteAtPathInput>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _deleteElem?: InputMaybe<UserSessionsDeleteElemInput>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _deleteKey?: InputMaybe<UserSessionsDeleteKeyInput>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<UserSessionsPrependInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<UserSessionsSetInput>;
+  /** filter the rows which have to be updated */
+  where: UserSessionsBoolExp;
 };
 
 /** Boolean expression to compare columns of type "user_status_enum". All fields are combined with logical 'AND'. */
@@ -4716,261 +7166,6 @@ export type AuthEventsUpdates = {
   where: AuthEventsBoolExp;
 };
 
-/** columns and relationships of "neonauth.users_sync" */
-export type AuthUsersSync = {
-  __typename?: 'authUsersSync';
-  /** Timestamp when the user was created in the auth system */
-  createdAt?: Maybe<Scalars['timestamptz']['output']>;
-  /** Timestamp when the user was deleted in the auth system */
-  deletedAt?: Maybe<Scalars['timestamptz']['output']>;
-  /** User's email address from authentication provider */
-  email?: Maybe<Scalars['String']['output']>;
-  /** Unique identifier from the authentication provider */
-  id: Scalars['String']['output'];
-  /** User's full name from authentication provider */
-  name?: Maybe<Scalars['String']['output']>;
-  /** Complete JSON data from the authentication provider */
-  rawJson: Scalars['jsonb']['output'];
-  /** Timestamp when the user was last updated in the auth system */
-  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
-};
-
-
-/** columns and relationships of "neonauth.users_sync" */
-export type AuthUsersSyncRawJsonArgs = {
-  path?: InputMaybe<Scalars['String']['input']>;
-};
-
-/** aggregated selection of "neonauth.users_sync" */
-export type AuthUsersSyncAggregate = {
-  __typename?: 'authUsersSyncAggregate';
-  aggregate?: Maybe<AuthUsersSyncAggregateFields>;
-  nodes: Array<AuthUsersSync>;
-};
-
-/** aggregate fields of "neonauth.users_sync" */
-export type AuthUsersSyncAggregateFields = {
-  __typename?: 'authUsersSyncAggregateFields';
-  count: Scalars['Int']['output'];
-  max?: Maybe<AuthUsersSyncMaxFields>;
-  min?: Maybe<AuthUsersSyncMinFields>;
-};
-
-
-/** aggregate fields of "neonauth.users_sync" */
-export type AuthUsersSyncAggregateFieldsCountArgs = {
-  columns?: InputMaybe<Array<AuthUsersSyncSelectColumn>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** append existing jsonb value of filtered columns with new jsonb value */
-export type AuthUsersSyncAppendInput = {
-  /** Complete JSON data from the authentication provider */
-  rawJson?: InputMaybe<Scalars['jsonb']['input']>;
-};
-
-/** Boolean expression to filter rows from the table "neonauth.users_sync". All fields are combined with a logical 'AND'. */
-export type AuthUsersSyncBoolExp = {
-  _and?: InputMaybe<Array<AuthUsersSyncBoolExp>>;
-  _not?: InputMaybe<AuthUsersSyncBoolExp>;
-  _or?: InputMaybe<Array<AuthUsersSyncBoolExp>>;
-  createdAt?: InputMaybe<TimestamptzComparisonExp>;
-  deletedAt?: InputMaybe<TimestamptzComparisonExp>;
-  email?: InputMaybe<StringComparisonExp>;
-  id?: InputMaybe<StringComparisonExp>;
-  name?: InputMaybe<StringComparisonExp>;
-  rawJson?: InputMaybe<JsonbComparisonExp>;
-  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
-};
-
-/** unique or primary key constraints on table "neonauth.users_sync" */
-export type AuthUsersSyncConstraint =
-  /** unique or primary key constraint on columns "id" */
-  | 'users_sync_pkey'
-  | '%future added value';
-
-/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-export type AuthUsersSyncDeleteAtPathInput = {
-  /** Complete JSON data from the authentication provider */
-  rawJson?: InputMaybe<Array<Scalars['String']['input']>>;
-};
-
-/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-export type AuthUsersSyncDeleteElemInput = {
-  /** Complete JSON data from the authentication provider */
-  rawJson?: InputMaybe<Scalars['Int']['input']>;
-};
-
-/** delete key/value pair or string element. key/value pairs are matched based on their key value */
-export type AuthUsersSyncDeleteKeyInput = {
-  /** Complete JSON data from the authentication provider */
-  rawJson?: InputMaybe<Scalars['String']['input']>;
-};
-
-/** input type for inserting data into table "neonauth.users_sync" */
-export type AuthUsersSyncInsertInput = {
-  /** Timestamp when the user was deleted in the auth system */
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  /** Complete JSON data from the authentication provider */
-  rawJson?: InputMaybe<Scalars['jsonb']['input']>;
-  /** Timestamp when the user was last updated in the auth system */
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
-
-/** aggregate max on columns */
-export type AuthUsersSyncMaxFields = {
-  __typename?: 'authUsersSyncMaxFields';
-  /** Timestamp when the user was created in the auth system */
-  createdAt?: Maybe<Scalars['timestamptz']['output']>;
-  /** Timestamp when the user was deleted in the auth system */
-  deletedAt?: Maybe<Scalars['timestamptz']['output']>;
-  /** User's email address from authentication provider */
-  email?: Maybe<Scalars['String']['output']>;
-  /** Unique identifier from the authentication provider */
-  id?: Maybe<Scalars['String']['output']>;
-  /** User's full name from authentication provider */
-  name?: Maybe<Scalars['String']['output']>;
-  /** Timestamp when the user was last updated in the auth system */
-  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
-};
-
-/** aggregate min on columns */
-export type AuthUsersSyncMinFields = {
-  __typename?: 'authUsersSyncMinFields';
-  /** Timestamp when the user was created in the auth system */
-  createdAt?: Maybe<Scalars['timestamptz']['output']>;
-  /** Timestamp when the user was deleted in the auth system */
-  deletedAt?: Maybe<Scalars['timestamptz']['output']>;
-  /** User's email address from authentication provider */
-  email?: Maybe<Scalars['String']['output']>;
-  /** Unique identifier from the authentication provider */
-  id?: Maybe<Scalars['String']['output']>;
-  /** User's full name from authentication provider */
-  name?: Maybe<Scalars['String']['output']>;
-  /** Timestamp when the user was last updated in the auth system */
-  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
-};
-
-/** response of any mutation on the table "neonauth.users_sync" */
-export type AuthUsersSyncMutationResponse = {
-  __typename?: 'authUsersSyncMutationResponse';
-  /** number of rows affected by the mutation */
-  affectedRows: Scalars['Int']['output'];
-  /** data from the rows affected by the mutation */
-  returning: Array<AuthUsersSync>;
-};
-
-/** on_conflict condition type for table "neonauth.users_sync" */
-export type AuthUsersSyncOnConflict = {
-  constraint: AuthUsersSyncConstraint;
-  updateColumns?: Array<AuthUsersSyncUpdateColumn>;
-  where?: InputMaybe<AuthUsersSyncBoolExp>;
-};
-
-/** Ordering options when selecting data from "neonauth.users_sync". */
-export type AuthUsersSyncOrderBy = {
-  createdAt?: InputMaybe<OrderBy>;
-  deletedAt?: InputMaybe<OrderBy>;
-  email?: InputMaybe<OrderBy>;
-  id?: InputMaybe<OrderBy>;
-  name?: InputMaybe<OrderBy>;
-  rawJson?: InputMaybe<OrderBy>;
-  updatedAt?: InputMaybe<OrderBy>;
-};
-
-/** primary key columns input for table: neonauth.users_sync */
-export type AuthUsersSyncPkColumnsInput = {
-  /** Unique identifier from the authentication provider */
-  id: Scalars['String']['input'];
-};
-
-/** prepend existing jsonb value of filtered columns with new jsonb value */
-export type AuthUsersSyncPrependInput = {
-  /** Complete JSON data from the authentication provider */
-  rawJson?: InputMaybe<Scalars['jsonb']['input']>;
-};
-
-/** select columns of table "neonauth.users_sync" */
-export type AuthUsersSyncSelectColumn =
-  /** column name */
-  | 'createdAt'
-  /** column name */
-  | 'deletedAt'
-  /** column name */
-  | 'email'
-  /** column name */
-  | 'id'
-  /** column name */
-  | 'name'
-  /** column name */
-  | 'rawJson'
-  /** column name */
-  | 'updatedAt'
-  | '%future added value';
-
-/** input type for updating data in table "neonauth.users_sync" */
-export type AuthUsersSyncSetInput = {
-  /** Timestamp when the user was deleted in the auth system */
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  /** Complete JSON data from the authentication provider */
-  rawJson?: InputMaybe<Scalars['jsonb']['input']>;
-  /** Timestamp when the user was last updated in the auth system */
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
-
-/** Streaming cursor of the table "authUsersSync" */
-export type AuthUsersSyncStreamCursorInput = {
-  /** Stream column input with initial value */
-  initialValue: AuthUsersSyncStreamCursorValueInput;
-  /** cursor ordering */
-  ordering?: InputMaybe<CursorOrdering>;
-};
-
-/** Initial value of the column from where the streaming should start */
-export type AuthUsersSyncStreamCursorValueInput = {
-  /** Timestamp when the user was created in the auth system */
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  /** Timestamp when the user was deleted in the auth system */
-  deletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  /** User's email address from authentication provider */
-  email?: InputMaybe<Scalars['String']['input']>;
-  /** Unique identifier from the authentication provider */
-  id?: InputMaybe<Scalars['String']['input']>;
-  /** User's full name from authentication provider */
-  name?: InputMaybe<Scalars['String']['input']>;
-  /** Complete JSON data from the authentication provider */
-  rawJson?: InputMaybe<Scalars['jsonb']['input']>;
-  /** Timestamp when the user was last updated in the auth system */
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
-
-/** update columns of table "neonauth.users_sync" */
-export type AuthUsersSyncUpdateColumn =
-  /** column name */
-  | 'deletedAt'
-  /** column name */
-  | 'rawJson'
-  /** column name */
-  | 'updatedAt'
-  | '%future added value';
-
-export type AuthUsersSyncUpdates = {
-  /** append existing jsonb value of filtered columns with new jsonb value */
-  _append?: InputMaybe<AuthUsersSyncAppendInput>;
-  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
-  _deleteAtPath?: InputMaybe<AuthUsersSyncDeleteAtPathInput>;
-  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
-  _deleteElem?: InputMaybe<AuthUsersSyncDeleteElemInput>;
-  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
-  _deleteKey?: InputMaybe<AuthUsersSyncDeleteKeyInput>;
-  /** prepend existing jsonb value of filtered columns with new jsonb value */
-  _prepend?: InputMaybe<AuthUsersSyncPrependInput>;
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<AuthUsersSyncSetInput>;
-  /** filter the rows which have to be updated */
-  where: AuthUsersSyncBoolExp;
-};
-
 /** columns and relationships of "billing_event_log" */
 export type BillingEventLogs = {
   __typename?: 'billingEventLogs';
@@ -5212,9 +7407,15 @@ export type BillingEventLogsUpdates = {
 export type BillingInvoice = {
   __typename?: 'billingInvoice';
   /** An array relationship */
+  billingEventLogs: Array<BillingEventLogs>;
+  /** An aggregate relationship */
+  billingEventLogsAggregate: BillingEventLogsAggregate;
+  /** An array relationship */
   billingInvoiceItems: Array<BillingInvoiceItem>;
   /** An aggregate relationship */
   billingInvoiceItemsAggregate: BillingInvoiceItemAggregate;
+  /** An object relationship */
+  billingPeriod?: Maybe<BillingPeriods>;
   billingPeriodEnd: Scalars['date']['output'];
   /** Reference to billing period this invoice covers */
   billingPeriodId?: Maybe<Scalars['uuid']['output']>;
@@ -5237,6 +7438,26 @@ export type BillingInvoice = {
   /** Total hours spent on services in this invoice */
   totalHours?: Maybe<Scalars['numeric']['output']>;
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+};
+
+
+/** columns and relationships of "billing_invoice" */
+export type BillingInvoiceBillingEventLogsArgs = {
+  distinctOn?: InputMaybe<Array<BillingEventLogsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingEventLogsOrderBy>>;
+  where?: InputMaybe<BillingEventLogsBoolExp>;
+};
+
+
+/** columns and relationships of "billing_invoice" */
+export type BillingInvoiceBillingEventLogsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<BillingEventLogsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingEventLogsOrderBy>>;
+  where?: InputMaybe<BillingEventLogsBoolExp>;
 };
 
 
@@ -5346,8 +7567,11 @@ export type BillingInvoiceBoolExp = {
   _and?: InputMaybe<Array<BillingInvoiceBoolExp>>;
   _not?: InputMaybe<BillingInvoiceBoolExp>;
   _or?: InputMaybe<Array<BillingInvoiceBoolExp>>;
+  billingEventLogs?: InputMaybe<BillingEventLogsBoolExp>;
+  billingEventLogsAggregate?: InputMaybe<BillingEventLogsAggregateBoolExp>;
   billingInvoiceItems?: InputMaybe<BillingInvoiceItemBoolExp>;
   billingInvoiceItemsAggregate?: InputMaybe<BillingInvoiceItemAggregateBoolExp>;
+  billingPeriod?: InputMaybe<BillingPeriodsBoolExp>;
   billingPeriodEnd?: InputMaybe<DateComparisonExp>;
   billingPeriodId?: InputMaybe<UuidComparisonExp>;
   billingPeriodStart?: InputMaybe<DateComparisonExp>;
@@ -5386,7 +7610,9 @@ export type BillingInvoiceIncInput = {
 
 /** input type for inserting data into table "billing_invoice" */
 export type BillingInvoiceInsertInput = {
+  billingEventLogs?: InputMaybe<BillingEventLogsArrRelInsertInput>;
   billingInvoiceItems?: InputMaybe<BillingInvoiceItemArrRelInsertInput>;
+  billingPeriod?: InputMaybe<BillingPeriodsObjRelInsertInput>;
   billingPeriodEnd?: InputMaybe<Scalars['date']['input']>;
   /** Reference to billing period this invoice covers */
   billingPeriodId?: InputMaybe<Scalars['uuid']['input']>;
@@ -6056,7 +8282,9 @@ export type BillingInvoiceOnConflict = {
 
 /** Ordering options when selecting data from "billing_invoice". */
 export type BillingInvoiceOrderBy = {
+  billingEventLogsAggregate?: InputMaybe<BillingEventLogsAggregateOrderBy>;
   billingInvoiceItemsAggregate?: InputMaybe<BillingInvoiceItemAggregateOrderBy>;
+  billingPeriod?: InputMaybe<BillingPeriodsOrderBy>;
   billingPeriodEnd?: InputMaybe<OrderBy>;
   billingPeriodId?: InputMaybe<OrderBy>;
   billingPeriodStart?: InputMaybe<OrderBy>;
@@ -6359,6 +8587,10 @@ export type BillingItems = {
   approvedBy?: Maybe<Scalars['uuid']['output']>;
   /** An object relationship */
   approver?: Maybe<Users>;
+  /** An array relationship */
+  billingInvoiceItems: Array<BillingInvoiceItem>;
+  /** An aggregate relationship */
+  billingInvoiceItemsAggregate: BillingInvoiceItemAggregate;
   billingPlanId?: Maybe<Scalars['uuid']['output']>;
   /** An object relationship */
   billingPlanItems?: Maybe<BillingPlans>;
@@ -6401,6 +8633,26 @@ export type BillingItems = {
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
   /** An object relationship */
   user?: Maybe<Users>;
+};
+
+
+/** columns and relationships of "billing_items" */
+export type BillingItemsBillingInvoiceItemsArgs = {
+  distinctOn?: InputMaybe<Array<BillingInvoiceItemSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingInvoiceItemOrderBy>>;
+  where?: InputMaybe<BillingInvoiceItemBoolExp>;
+};
+
+
+/** columns and relationships of "billing_items" */
+export type BillingItemsBillingInvoiceItemsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<BillingInvoiceItemSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingInvoiceItemOrderBy>>;
+  where?: InputMaybe<BillingInvoiceItemBoolExp>;
 };
 
 
@@ -6530,6 +8782,8 @@ export type BillingItemsBoolExp = {
   approvalDate?: InputMaybe<TimestamptzComparisonExp>;
   approvedBy?: InputMaybe<UuidComparisonExp>;
   approver?: InputMaybe<UsersBoolExp>;
+  billingInvoiceItems?: InputMaybe<BillingInvoiceItemBoolExp>;
+  billingInvoiceItemsAggregate?: InputMaybe<BillingInvoiceItemAggregateBoolExp>;
   billingPlanId?: InputMaybe<UuidComparisonExp>;
   billingPlanItems?: InputMaybe<BillingPlansBoolExp>;
   billingServicePlan?: InputMaybe<BillingPlansBoolExp>;
@@ -6579,6 +8833,7 @@ export type BillingItemsInsertInput = {
   approvalDate?: InputMaybe<Scalars['timestamptz']['input']>;
   approvedBy?: InputMaybe<Scalars['uuid']['input']>;
   approver?: InputMaybe<UsersObjRelInsertInput>;
+  billingInvoiceItems?: InputMaybe<BillingInvoiceItemArrRelInsertInput>;
   billingPlanId?: InputMaybe<Scalars['uuid']['input']>;
   billingPlanItems?: InputMaybe<BillingPlansObjRelInsertInput>;
   billingServicePlan?: InputMaybe<BillingPlansObjRelInsertInput>;
@@ -6773,6 +9028,7 @@ export type BillingItemsOrderBy = {
   approvalDate?: InputMaybe<OrderBy>;
   approvedBy?: InputMaybe<OrderBy>;
   approver?: InputMaybe<UsersOrderBy>;
+  billingInvoiceItemsAggregate?: InputMaybe<BillingInvoiceItemAggregateOrderBy>;
   billingPlanId?: InputMaybe<OrderBy>;
   billingPlanItems?: InputMaybe<BillingPlansOrderBy>;
   billingServicePlan?: InputMaybe<BillingPlansOrderBy>;
@@ -7332,6 +9588,13 @@ export type BillingPeriodsMutationResponse = {
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
   returning: Array<BillingPeriods>;
+};
+
+/** input type for inserting object relation for remote table "billing_periods" */
+export type BillingPeriodsObjRelInsertInput = {
+  data: BillingPeriodsInsertInput;
+  /** upsert condition */
+  onConflict?: InputMaybe<BillingPeriodsOnConflict>;
 };
 
 /** on_conflict condition type for table "billing_periods" */
@@ -9851,6 +12114,13 @@ export type DataAccessLogsVarianceFields = {
   rowCount?: Maybe<Scalars['Float']['output']>;
 };
 
+export type DataBackupsAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<DataBackupsSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<DataBackupsBoolExp>;
+  predicate: IntComparisonExp;
+};
+
 export type EmailDraftsAggregateBoolExpCount = {
   arguments?: InputMaybe<Array<EmailDraftsSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
@@ -11414,7 +13684,7 @@ export type LeaveUpdates = {
 /** mutation root */
 export type Mutation_Root = {
   __typename?: 'mutation_root';
-  approve_leaverequest: LeaveResponse;
+  approve_leave_request: LeaveResponse;
   audit_event: AuditEventResponse;
   /** delete data from the table: "adjustment_rules" */
   bulkDeleteAdjustmentRules?: Maybe<AdjustmentRulesMutationResponse>;
@@ -11492,16 +13762,14 @@ export type Mutation_Root = {
   bulkDeleteUserAccessSummaries?: Maybe<UserAccessSummariesMutationResponse>;
   /** delete data from the table: "user_invitations" */
   bulkDeleteUserInvitations?: Maybe<UserInvitationsMutationResponse>;
-  /** delete data from the table: "userroles" */
+  /** delete data from the table: "user_roles" */
   bulkDeleteUserRoles?: Maybe<UserRolesMutationResponse>;
   /** delete data from the table: "user_skills" */
   bulkDeleteUserSkill?: Maybe<UserSkillMutationResponse>;
   /** delete data from the table: "users" */
   bulkDeleteUsers?: Maybe<UsersMutationResponse>;
-  /** delete data from the table: "usersrole_backup" */
+  /** delete data from the table: "users_role_backup" */
   bulkDeleteUsersRoleBackups?: Maybe<UsersRoleBackupMutationResponse>;
-  /** delete data from the table: "neonauth.users_sync" */
-  bulkDeleteUsersSync?: Maybe<AuthUsersSyncMutationResponse>;
   /** delete data from the table: "work_schedule" */
   bulkDeleteWorkSchedule?: Maybe<WorkScheduleMutationResponse>;
   /** insert data into the table: "adjustment_rules" */
@@ -11580,16 +13848,14 @@ export type Mutation_Root = {
   bulkInsertUserAccessSummaries?: Maybe<UserAccessSummariesMutationResponse>;
   /** insert data into the table: "user_invitations" */
   bulkInsertUserInvitations?: Maybe<UserInvitationsMutationResponse>;
-  /** insert data into the table: "userroles" */
+  /** insert data into the table: "user_roles" */
   bulkInsertUserRoles?: Maybe<UserRolesMutationResponse>;
   /** insert data into the table: "user_skills" */
   bulkInsertUserSkill?: Maybe<UserSkillMutationResponse>;
   /** insert data into the table: "users" */
   bulkInsertUsers?: Maybe<UsersMutationResponse>;
-  /** insert data into the table: "usersrole_backup" */
+  /** insert data into the table: "users_role_backup" */
   bulkInsertUsersRoleBackups?: Maybe<UsersRoleBackupMutationResponse>;
-  /** insert data into the table: "neonauth.users_sync" */
-  bulkInsertUsersSync?: Maybe<AuthUsersSyncMutationResponse>;
   /** insert data into the table: "work_schedule" */
   bulkInsertWorkSchedule?: Maybe<WorkScheduleMutationResponse>;
   /** update data of the table: "adjustment_rules" */
@@ -11668,19 +13934,17 @@ export type Mutation_Root = {
   bulkUpdateUserAccessSummaries?: Maybe<UserAccessSummariesMutationResponse>;
   /** update data of the table: "user_invitations" */
   bulkUpdateUserInvitations?: Maybe<UserInvitationsMutationResponse>;
-  /** update data of the table: "userroles" */
+  /** update data of the table: "user_roles" */
   bulkUpdateUserRoles?: Maybe<UserRolesMutationResponse>;
   /** update data of the table: "user_skills" */
   bulkUpdateUserSkill?: Maybe<UserSkillMutationResponse>;
   /** update data of the table: "users" */
   bulkUpdateUsers?: Maybe<UsersMutationResponse>;
-  /** update data of the table: "usersrole_backup" */
+  /** update data of the table: "users_role_backup" */
   bulkUpdateUsersRoleBackups?: Maybe<UsersRoleBackupMutationResponse>;
-  /** update data of the table: "neonauth.users_sync" */
-  bulkUpdateUsersSync?: Maybe<AuthUsersSyncMutationResponse>;
   /** update data of the table: "work_schedule" */
   bulkUpdateWorkSchedule?: Maybe<WorkScheduleMutationResponse>;
-  create_leaverequest: LeaveResponse;
+  create_leave_request: LeaveResponse;
   create_payroll: PayrollResponse;
   create_staff_member: StaffResponse;
   /** delete single row from the table: "adjustment_rules" */
@@ -11715,6 +13979,10 @@ export type Mutation_Root = {
   deleteClientExternalSystemById?: Maybe<ClientExternalSystems>;
   /** delete single row from the table: "audit.data_access_log" */
   deleteDataAccessLogById?: Maybe<DataAccessLogs>;
+  /** delete data from the table: "data_backups" */
+  deleteDataBackups?: Maybe<DataBackupsMutationResponse>;
+  /** delete single row from the table: "data_backups" */
+  deleteDataBackupsByPk?: Maybe<DataBackups>;
   /** delete data from the table: "email_drafts" */
   deleteEmailDrafts?: Maybe<EmailDraftsMutationResponse>;
   /** delete single row from the table: "email_drafts" */
@@ -11769,14 +14037,34 @@ export type Mutation_Root = {
   deletePositionAdminDefaults?: Maybe<PositionAdminDefaultsMutationResponse>;
   /** delete single row from the table: "position_admin_defaults" */
   deletePositionAdminDefaultsByPk?: Maybe<PositionAdminDefaults>;
+  /** delete data from the table: "rate_limits" */
+  deleteRateLimits?: Maybe<RateLimitsMutationResponse>;
+  /** delete single row from the table: "rate_limits" */
+  deleteRateLimitsByPk?: Maybe<RateLimits>;
   /** delete single row from the table: "resources" */
   deleteResourceById?: Maybe<Resources>;
   /** delete single row from the table: "roles" */
   deleteRoleById?: Maybe<Roles>;
   /** delete single row from the table: "role_permissions" */
   deleteRolePermissionById?: Maybe<RolePermissions>;
+  /** delete data from the table: "security_alerts" */
+  deleteSecurityAlerts?: Maybe<SecurityAlertsMutationResponse>;
+  /** delete single row from the table: "security_alerts" */
+  deleteSecurityAlertsByPk?: Maybe<SecurityAlerts>;
+  /** delete data from the table: "security_settings" */
+  deleteSecuritySettings?: Maybe<SecuritySettingsMutationResponse>;
+  /** delete single row from the table: "security_settings" */
+  deleteSecuritySettingsByPk?: Maybe<SecuritySettings>;
   /** delete single row from the table: "audit.slow_queries" */
   deleteSlowQueryById?: Maybe<SlowQueries>;
+  /** delete data from the table: "system_configuration" */
+  deleteSystemConfiguration?: Maybe<SystemConfigurationMutationResponse>;
+  /** delete single row from the table: "system_configuration" */
+  deleteSystemConfigurationByPk?: Maybe<SystemConfiguration>;
+  /** delete data from the table: "system_health" */
+  deleteSystemHealth?: Maybe<SystemHealthMutationResponse>;
+  /** delete single row from the table: "system_health" */
+  deleteSystemHealthByPk?: Maybe<SystemHealth>;
   /** delete data from the table: "time_entries" */
   deleteTimeEntries?: Maybe<TimeEntriesMutationResponse>;
   /** delete single row from the table: "time_entries" */
@@ -11789,10 +14077,12 @@ export type Mutation_Root = {
   deleteUserEmailTemplateFavoritesByPk?: Maybe<UserEmailTemplateFavorites>;
   /** delete single row from the table: "user_invitations" */
   deleteUserInvitationById?: Maybe<UserInvitations>;
-  /** delete single row from the table: "userroles" */
+  /** delete single row from the table: "user_roles" */
   deleteUserRoleById?: Maybe<UserRoles>;
-  /** delete single row from the table: "neonauth.users_sync" */
-  deleteUserSyncById?: Maybe<AuthUsersSync>;
+  /** delete data from the table: "user_sessions" */
+  deleteUserSessions?: Maybe<UserSessionsMutationResponse>;
+  /** delete single row from the table: "user_sessions" */
+  deleteUserSessionsByPk?: Maybe<UserSessions>;
   /** delete single row from the table: "work_schedule" */
   deleteWorkScheduleById?: Maybe<WorkSchedule>;
   generate_payroll_schedule: ScheduleResponse;
@@ -11828,6 +14118,10 @@ export type Mutation_Root = {
   insertClientExternalSystem?: Maybe<ClientExternalSystems>;
   /** insert a single row into the table: "audit.data_access_log" */
   insertDataAccessLog?: Maybe<DataAccessLogs>;
+  /** insert data into the table: "data_backups" */
+  insertDataBackups?: Maybe<DataBackupsMutationResponse>;
+  /** insert a single row into the table: "data_backups" */
+  insertDataBackupsOne?: Maybe<DataBackups>;
   /** insert data into the table: "email_drafts" */
   insertEmailDrafts?: Maybe<EmailDraftsMutationResponse>;
   /** insert a single row into the table: "email_drafts" */
@@ -11884,14 +14178,34 @@ export type Mutation_Root = {
   insertPositionAdminDefaults?: Maybe<PositionAdminDefaultsMutationResponse>;
   /** insert a single row into the table: "position_admin_defaults" */
   insertPositionAdminDefaultsOne?: Maybe<PositionAdminDefaults>;
+  /** insert data into the table: "rate_limits" */
+  insertRateLimits?: Maybe<RateLimitsMutationResponse>;
+  /** insert a single row into the table: "rate_limits" */
+  insertRateLimitsOne?: Maybe<RateLimits>;
   /** insert a single row into the table: "resources" */
   insertResource?: Maybe<Resources>;
   /** insert a single row into the table: "roles" */
   insertRole?: Maybe<Roles>;
   /** insert a single row into the table: "role_permissions" */
   insertRolePermission?: Maybe<RolePermissions>;
+  /** insert data into the table: "security_alerts" */
+  insertSecurityAlerts?: Maybe<SecurityAlertsMutationResponse>;
+  /** insert a single row into the table: "security_alerts" */
+  insertSecurityAlertsOne?: Maybe<SecurityAlerts>;
+  /** insert data into the table: "security_settings" */
+  insertSecuritySettings?: Maybe<SecuritySettingsMutationResponse>;
+  /** insert a single row into the table: "security_settings" */
+  insertSecuritySettingsOne?: Maybe<SecuritySettings>;
   /** insert a single row into the table: "audit.slow_queries" */
   insertSlowQuery?: Maybe<SlowQueries>;
+  /** insert data into the table: "system_configuration" */
+  insertSystemConfiguration?: Maybe<SystemConfigurationMutationResponse>;
+  /** insert a single row into the table: "system_configuration" */
+  insertSystemConfigurationOne?: Maybe<SystemConfiguration>;
+  /** insert data into the table: "system_health" */
+  insertSystemHealth?: Maybe<SystemHealthMutationResponse>;
+  /** insert a single row into the table: "system_health" */
+  insertSystemHealthOne?: Maybe<SystemHealth>;
   /** insert data into the table: "time_entries" */
   insertTimeEntry?: Maybe<TimeEntriesMutationResponse>;
   /** insert a single row into the table: "time_entries" */
@@ -11906,13 +14220,15 @@ export type Mutation_Root = {
   insertUserEmailTemplateFavoritesOne?: Maybe<UserEmailTemplateFavorites>;
   /** insert a single row into the table: "user_invitations" */
   insertUserInvitation?: Maybe<UserInvitations>;
-  /** insert a single row into the table: "userroles" */
+  /** insert a single row into the table: "user_roles" */
   insertUserRole?: Maybe<UserRoles>;
+  /** insert data into the table: "user_sessions" */
+  insertUserSessions?: Maybe<UserSessionsMutationResponse>;
+  /** insert a single row into the table: "user_sessions" */
+  insertUserSessionsOne?: Maybe<UserSessions>;
   /** insert a single row into the table: "user_skills" */
   insertUserSkill?: Maybe<UserSkill>;
-  /** insert a single row into the table: "neonauth.users_sync" */
-  insertUserSync?: Maybe<AuthUsersSync>;
-  /** insert a single row into the table: "usersrole_backup" */
+  /** insert a single row into the table: "users_role_backup" */
   insertUsersRoleBackup?: Maybe<UsersRoleBackup>;
   /** insert a single row into the table: "work_schedule" */
   insertWorkSchedule?: Maybe<WorkSchedule>;
@@ -11932,8 +14248,6 @@ export type Mutation_Root = {
   updateAuthEventById?: Maybe<AuthEvents>;
   /** update multiples rows of table: "audit.auth_events" */
   updateAuthEventsMany?: Maybe<Array<Maybe<AuthEventsMutationResponse>>>;
-  /** update multiples rows of table: "neonauth.users_sync" */
-  updateAuthUsersSyncMany?: Maybe<Array<Maybe<AuthUsersSyncMutationResponse>>>;
   /** update single row of the table: "billing_event_log" */
   updateBillingEventLogById?: Maybe<BillingEventLogs>;
   /** update multiples rows of table: "billing_event_log" */
@@ -11978,6 +14292,12 @@ export type Mutation_Root = {
   updateDataAccessLogById?: Maybe<DataAccessLogs>;
   /** update multiples rows of table: "audit.data_access_log" */
   updateDataAccessLogsMany?: Maybe<Array<Maybe<DataAccessLogsMutationResponse>>>;
+  /** update data of the table: "data_backups" */
+  updateDataBackups?: Maybe<DataBackupsMutationResponse>;
+  /** update single row of the table: "data_backups" */
+  updateDataBackupsByPk?: Maybe<DataBackups>;
+  /** update multiples rows of table: "data_backups" */
+  updateDataBackupsMany?: Maybe<Array<Maybe<DataBackupsMutationResponse>>>;
   /** update data of the table: "email_drafts" */
   updateEmailDrafts?: Maybe<EmailDraftsMutationResponse>;
   /** update single row of the table: "email_drafts" */
@@ -12080,6 +14400,12 @@ export type Mutation_Root = {
   updatePositionAdminDefaultsByPk?: Maybe<PositionAdminDefaults>;
   /** update multiples rows of table: "position_admin_defaults" */
   updatePositionAdminDefaultsMany?: Maybe<Array<Maybe<PositionAdminDefaultsMutationResponse>>>;
+  /** update data of the table: "rate_limits" */
+  updateRateLimits?: Maybe<RateLimitsMutationResponse>;
+  /** update single row of the table: "rate_limits" */
+  updateRateLimitsByPk?: Maybe<RateLimits>;
+  /** update multiples rows of table: "rate_limits" */
+  updateRateLimitsMany?: Maybe<Array<Maybe<RateLimitsMutationResponse>>>;
   /** update single row of the table: "resources" */
   updateResourceById?: Maybe<Resources>;
   /** update multiples rows of table: "resources" */
@@ -12092,10 +14418,34 @@ export type Mutation_Root = {
   updateRolePermissionsMany?: Maybe<Array<Maybe<RolePermissionsMutationResponse>>>;
   /** update multiples rows of table: "roles" */
   updateRolesMany?: Maybe<Array<Maybe<RolesMutationResponse>>>;
+  /** update data of the table: "security_alerts" */
+  updateSecurityAlerts?: Maybe<SecurityAlertsMutationResponse>;
+  /** update single row of the table: "security_alerts" */
+  updateSecurityAlertsByPk?: Maybe<SecurityAlerts>;
+  /** update multiples rows of table: "security_alerts" */
+  updateSecurityAlertsMany?: Maybe<Array<Maybe<SecurityAlertsMutationResponse>>>;
+  /** update data of the table: "security_settings" */
+  updateSecuritySettings?: Maybe<SecuritySettingsMutationResponse>;
+  /** update single row of the table: "security_settings" */
+  updateSecuritySettingsByPk?: Maybe<SecuritySettings>;
+  /** update multiples rows of table: "security_settings" */
+  updateSecuritySettingsMany?: Maybe<Array<Maybe<SecuritySettingsMutationResponse>>>;
   /** update multiples rows of table: "audit.slow_queries" */
   updateSlowQueriesMany?: Maybe<Array<Maybe<SlowQueriesMutationResponse>>>;
   /** update single row of the table: "audit.slow_queries" */
   updateSlowQueryById?: Maybe<SlowQueries>;
+  /** update data of the table: "system_configuration" */
+  updateSystemConfiguration?: Maybe<SystemConfigurationMutationResponse>;
+  /** update single row of the table: "system_configuration" */
+  updateSystemConfigurationByPk?: Maybe<SystemConfiguration>;
+  /** update multiples rows of table: "system_configuration" */
+  updateSystemConfigurationMany?: Maybe<Array<Maybe<SystemConfigurationMutationResponse>>>;
+  /** update data of the table: "system_health" */
+  updateSystemHealth?: Maybe<SystemHealthMutationResponse>;
+  /** update single row of the table: "system_health" */
+  updateSystemHealthByPk?: Maybe<SystemHealth>;
+  /** update multiples rows of table: "system_health" */
+  updateSystemHealthMany?: Maybe<Array<Maybe<SystemHealthMutationResponse>>>;
   /** update data of the table: "time_entries" */
   updateTimeEntries?: Maybe<TimeEntriesMutationResponse>;
   /** update multiples rows of table: "time_entries" */
@@ -12116,17 +14466,21 @@ export type Mutation_Root = {
   updateUserInvitationById?: Maybe<UserInvitations>;
   /** update multiples rows of table: "user_invitations" */
   updateUserInvitationsMany?: Maybe<Array<Maybe<UserInvitationsMutationResponse>>>;
-  /** update single row of the table: "userroles" */
+  /** update single row of the table: "user_roles" */
   updateUserRoleById?: Maybe<UserRoles>;
-  /** update multiples rows of table: "userroles" */
+  /** update multiples rows of table: "user_roles" */
   updateUserRolesMany?: Maybe<Array<Maybe<UserRolesMutationResponse>>>;
+  /** update data of the table: "user_sessions" */
+  updateUserSessions?: Maybe<UserSessionsMutationResponse>;
+  /** update single row of the table: "user_sessions" */
+  updateUserSessionsByPk?: Maybe<UserSessions>;
+  /** update multiples rows of table: "user_sessions" */
+  updateUserSessionsMany?: Maybe<Array<Maybe<UserSessionsMutationResponse>>>;
   /** update multiples rows of table: "user_skills" */
   updateUserSkillMany?: Maybe<Array<Maybe<UserSkillMutationResponse>>>;
-  /** update single row of the table: "neonauth.users_sync" */
-  updateUserSyncById?: Maybe<AuthUsersSync>;
   /** update multiples rows of table: "users" */
   updateUsersMany?: Maybe<Array<Maybe<UsersMutationResponse>>>;
-  /** update multiples rows of table: "usersrole_backup" */
+  /** update multiples rows of table: "users_role_backup" */
   updateUsersRoleBackupMany?: Maybe<Array<Maybe<UsersRoleBackupMutationResponse>>>;
   /** update single row of the table: "work_schedule" */
   updateWorkScheduleById?: Maybe<WorkSchedule>;
@@ -12134,7 +14488,7 @@ export type Mutation_Root = {
   updateWorkScheduleMany?: Maybe<Array<Maybe<WorkScheduleMutationResponse>>>;
   update_payroll: PayrollResponse;
   update_staff_member: StaffResponse;
-  update_userrole: UserRoleResponse;
+  update_user_role: UserRoleResponse;
 };
 
 
@@ -12401,12 +14755,6 @@ export type Mutation_RootBulkDeleteUsersArgs = {
 /** mutation root */
 export type Mutation_RootBulkDeleteUsersRoleBackupsArgs = {
   where: UsersRoleBackupBoolExp;
-};
-
-
-/** mutation root */
-export type Mutation_RootBulkDeleteUsersSyncArgs = {
-  where: AuthUsersSyncBoolExp;
 };
 
 
@@ -12703,13 +15051,6 @@ export type Mutation_RootBulkInsertUsersArgs = {
 /** mutation root */
 export type Mutation_RootBulkInsertUsersRoleBackupsArgs = {
   objects: Array<UsersRoleBackupInsertInput>;
-};
-
-
-/** mutation root */
-export type Mutation_RootBulkInsertUsersSyncArgs = {
-  objects: Array<AuthUsersSyncInsertInput>;
-  onConflict?: InputMaybe<AuthUsersSyncOnConflict>;
 };
 
 
@@ -13078,18 +15419,6 @@ export type Mutation_RootBulkUpdateUsersRoleBackupsArgs = {
 
 
 /** mutation root */
-export type Mutation_RootBulkUpdateUsersSyncArgs = {
-  _append?: InputMaybe<AuthUsersSyncAppendInput>;
-  _deleteAtPath?: InputMaybe<AuthUsersSyncDeleteAtPathInput>;
-  _deleteElem?: InputMaybe<AuthUsersSyncDeleteElemInput>;
-  _deleteKey?: InputMaybe<AuthUsersSyncDeleteKeyInput>;
-  _prepend?: InputMaybe<AuthUsersSyncPrependInput>;
-  _set?: InputMaybe<AuthUsersSyncSetInput>;
-  where: AuthUsersSyncBoolExp;
-};
-
-
-/** mutation root */
 export type Mutation_RootBulkUpdateWorkScheduleArgs = {
   _inc?: InputMaybe<WorkScheduleIncInput>;
   _set?: InputMaybe<WorkScheduleSetInput>;
@@ -13217,6 +15546,18 @@ export type Mutation_RootDeleteClientExternalSystemByIdArgs = {
 
 /** mutation root */
 export type Mutation_RootDeleteDataAccessLogByIdArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteDataBackupsArgs = {
+  where: DataBackupsBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteDataBackupsByPkArgs = {
   id: Scalars['uuid']['input'];
 };
 
@@ -13384,6 +15725,18 @@ export type Mutation_RootDeletePositionAdminDefaultsByPkArgs = {
 
 
 /** mutation root */
+export type Mutation_RootDeleteRateLimitsArgs = {
+  where: RateLimitsBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteRateLimitsByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+/** mutation root */
 export type Mutation_RootDeleteResourceByIdArgs = {
   id: Scalars['uuid']['input'];
 };
@@ -13402,7 +15755,55 @@ export type Mutation_RootDeleteRolePermissionByIdArgs = {
 
 
 /** mutation root */
+export type Mutation_RootDeleteSecurityAlertsArgs = {
+  where: SecurityAlertsBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteSecurityAlertsByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteSecuritySettingsArgs = {
+  where: SecuritySettingsBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteSecuritySettingsByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+/** mutation root */
 export type Mutation_RootDeleteSlowQueryByIdArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteSystemConfigurationArgs = {
+  where: SystemConfigurationBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteSystemConfigurationByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteSystemHealthArgs = {
+  where: SystemHealthBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteSystemHealthByPkArgs = {
   id: Scalars['uuid']['input'];
 };
 
@@ -13450,8 +15851,14 @@ export type Mutation_RootDeleteUserRoleByIdArgs = {
 
 
 /** mutation root */
-export type Mutation_RootDeleteUserSyncByIdArgs = {
-  id: Scalars['String']['input'];
+export type Mutation_RootDeleteUserSessionsArgs = {
+  where: UserSessionsBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteUserSessionsByPkArgs = {
+  id: Scalars['uuid']['input'];
 };
 
 
@@ -13578,6 +15985,20 @@ export type Mutation_RootInsertClientExternalSystemArgs = {
 export type Mutation_RootInsertDataAccessLogArgs = {
   object: DataAccessLogsInsertInput;
   onConflict?: InputMaybe<DataAccessLogsOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertDataBackupsArgs = {
+  objects: Array<DataBackupsInsertInput>;
+  onConflict?: InputMaybe<DataBackupsOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertDataBackupsOneArgs = {
+  object: DataBackupsInsertInput;
+  onConflict?: InputMaybe<DataBackupsOnConflict>;
 };
 
 
@@ -13777,6 +16198,20 @@ export type Mutation_RootInsertPositionAdminDefaultsOneArgs = {
 
 
 /** mutation root */
+export type Mutation_RootInsertRateLimitsArgs = {
+  objects: Array<RateLimitsInsertInput>;
+  onConflict?: InputMaybe<RateLimitsOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertRateLimitsOneArgs = {
+  object: RateLimitsInsertInput;
+  onConflict?: InputMaybe<RateLimitsOnConflict>;
+};
+
+
+/** mutation root */
 export type Mutation_RootInsertResourceArgs = {
   object: ResourcesInsertInput;
   onConflict?: InputMaybe<ResourcesOnConflict>;
@@ -13798,9 +16233,65 @@ export type Mutation_RootInsertRolePermissionArgs = {
 
 
 /** mutation root */
+export type Mutation_RootInsertSecurityAlertsArgs = {
+  objects: Array<SecurityAlertsInsertInput>;
+  onConflict?: InputMaybe<SecurityAlertsOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertSecurityAlertsOneArgs = {
+  object: SecurityAlertsInsertInput;
+  onConflict?: InputMaybe<SecurityAlertsOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertSecuritySettingsArgs = {
+  objects: Array<SecuritySettingsInsertInput>;
+  onConflict?: InputMaybe<SecuritySettingsOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertSecuritySettingsOneArgs = {
+  object: SecuritySettingsInsertInput;
+  onConflict?: InputMaybe<SecuritySettingsOnConflict>;
+};
+
+
+/** mutation root */
 export type Mutation_RootInsertSlowQueryArgs = {
   object: SlowQueriesInsertInput;
   onConflict?: InputMaybe<SlowQueriesOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertSystemConfigurationArgs = {
+  objects: Array<SystemConfigurationInsertInput>;
+  onConflict?: InputMaybe<SystemConfigurationOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertSystemConfigurationOneArgs = {
+  object: SystemConfigurationInsertInput;
+  onConflict?: InputMaybe<SystemConfigurationOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertSystemHealthArgs = {
+  objects: Array<SystemHealthInsertInput>;
+  onConflict?: InputMaybe<SystemHealthOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertSystemHealthOneArgs = {
+  object: SystemHealthInsertInput;
+  onConflict?: InputMaybe<SystemHealthOnConflict>;
 };
 
 
@@ -13860,15 +16351,22 @@ export type Mutation_RootInsertUserRoleArgs = {
 
 
 /** mutation root */
-export type Mutation_RootInsertUserSkillArgs = {
-  object: UserSkillInsertInput;
+export type Mutation_RootInsertUserSessionsArgs = {
+  objects: Array<UserSessionsInsertInput>;
+  onConflict?: InputMaybe<UserSessionsOnConflict>;
 };
 
 
 /** mutation root */
-export type Mutation_RootInsertUserSyncArgs = {
-  object: AuthUsersSyncInsertInput;
-  onConflict?: InputMaybe<AuthUsersSyncOnConflict>;
+export type Mutation_RootInsertUserSessionsOneArgs = {
+  object: UserSessionsInsertInput;
+  onConflict?: InputMaybe<UserSessionsOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertUserSkillArgs = {
+  object: UserSkillInsertInput;
 };
 
 
@@ -13949,12 +16447,6 @@ export type Mutation_RootUpdateAuthEventByIdArgs = {
 /** mutation root */
 export type Mutation_RootUpdateAuthEventsManyArgs = {
   updates: Array<AuthEventsUpdates>;
-};
-
-
-/** mutation root */
-export type Mutation_RootUpdateAuthUsersSyncManyArgs = {
-  updates: Array<AuthUsersSyncUpdates>;
 };
 
 
@@ -14111,6 +16603,38 @@ export type Mutation_RootUpdateDataAccessLogByIdArgs = {
 /** mutation root */
 export type Mutation_RootUpdateDataAccessLogsManyArgs = {
   updates: Array<DataAccessLogsUpdates>;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateDataBackupsArgs = {
+  _append?: InputMaybe<DataBackupsAppendInput>;
+  _deleteAtPath?: InputMaybe<DataBackupsDeleteAtPathInput>;
+  _deleteElem?: InputMaybe<DataBackupsDeleteElemInput>;
+  _deleteKey?: InputMaybe<DataBackupsDeleteKeyInput>;
+  _inc?: InputMaybe<DataBackupsIncInput>;
+  _prepend?: InputMaybe<DataBackupsPrependInput>;
+  _set?: InputMaybe<DataBackupsSetInput>;
+  where: DataBackupsBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateDataBackupsByPkArgs = {
+  _append?: InputMaybe<DataBackupsAppendInput>;
+  _deleteAtPath?: InputMaybe<DataBackupsDeleteAtPathInput>;
+  _deleteElem?: InputMaybe<DataBackupsDeleteElemInput>;
+  _deleteKey?: InputMaybe<DataBackupsDeleteKeyInput>;
+  _inc?: InputMaybe<DataBackupsIncInput>;
+  _prepend?: InputMaybe<DataBackupsPrependInput>;
+  _set?: InputMaybe<DataBackupsSetInput>;
+  pkColumns: DataBackupsPkColumnsInput;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateDataBackupsManyArgs = {
+  updates: Array<DataBackupsUpdates>;
 };
 
 
@@ -14506,6 +17030,28 @@ export type Mutation_RootUpdatePositionAdminDefaultsManyArgs = {
 
 
 /** mutation root */
+export type Mutation_RootUpdateRateLimitsArgs = {
+  _inc?: InputMaybe<RateLimitsIncInput>;
+  _set?: InputMaybe<RateLimitsSetInput>;
+  where: RateLimitsBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateRateLimitsByPkArgs = {
+  _inc?: InputMaybe<RateLimitsIncInput>;
+  _set?: InputMaybe<RateLimitsSetInput>;
+  pkColumns: RateLimitsPkColumnsInput;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateRateLimitsManyArgs = {
+  updates: Array<RateLimitsUpdates>;
+};
+
+
+/** mutation root */
 export type Mutation_RootUpdateResourceByIdArgs = {
   _set?: InputMaybe<ResourcesSetInput>;
   pkColumns: ResourcesPkColumnsInput;
@@ -14551,6 +17097,66 @@ export type Mutation_RootUpdateRolesManyArgs = {
 
 
 /** mutation root */
+export type Mutation_RootUpdateSecurityAlertsArgs = {
+  _append?: InputMaybe<SecurityAlertsAppendInput>;
+  _deleteAtPath?: InputMaybe<SecurityAlertsDeleteAtPathInput>;
+  _deleteElem?: InputMaybe<SecurityAlertsDeleteElemInput>;
+  _deleteKey?: InputMaybe<SecurityAlertsDeleteKeyInput>;
+  _prepend?: InputMaybe<SecurityAlertsPrependInput>;
+  _set?: InputMaybe<SecurityAlertsSetInput>;
+  where: SecurityAlertsBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateSecurityAlertsByPkArgs = {
+  _append?: InputMaybe<SecurityAlertsAppendInput>;
+  _deleteAtPath?: InputMaybe<SecurityAlertsDeleteAtPathInput>;
+  _deleteElem?: InputMaybe<SecurityAlertsDeleteElemInput>;
+  _deleteKey?: InputMaybe<SecurityAlertsDeleteKeyInput>;
+  _prepend?: InputMaybe<SecurityAlertsPrependInput>;
+  _set?: InputMaybe<SecurityAlertsSetInput>;
+  pkColumns: SecurityAlertsPkColumnsInput;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateSecurityAlertsManyArgs = {
+  updates: Array<SecurityAlertsUpdates>;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateSecuritySettingsArgs = {
+  _append?: InputMaybe<SecuritySettingsAppendInput>;
+  _deleteAtPath?: InputMaybe<SecuritySettingsDeleteAtPathInput>;
+  _deleteElem?: InputMaybe<SecuritySettingsDeleteElemInput>;
+  _deleteKey?: InputMaybe<SecuritySettingsDeleteKeyInput>;
+  _prepend?: InputMaybe<SecuritySettingsPrependInput>;
+  _set?: InputMaybe<SecuritySettingsSetInput>;
+  where: SecuritySettingsBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateSecuritySettingsByPkArgs = {
+  _append?: InputMaybe<SecuritySettingsAppendInput>;
+  _deleteAtPath?: InputMaybe<SecuritySettingsDeleteAtPathInput>;
+  _deleteElem?: InputMaybe<SecuritySettingsDeleteElemInput>;
+  _deleteKey?: InputMaybe<SecuritySettingsDeleteKeyInput>;
+  _prepend?: InputMaybe<SecuritySettingsPrependInput>;
+  _set?: InputMaybe<SecuritySettingsSetInput>;
+  pkColumns: SecuritySettingsPkColumnsInput;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateSecuritySettingsManyArgs = {
+  updates: Array<SecuritySettingsUpdates>;
+};
+
+
+/** mutation root */
 export type Mutation_RootUpdateSlowQueriesManyArgs = {
   updates: Array<SlowQueriesUpdates>;
 };
@@ -14560,6 +17166,68 @@ export type Mutation_RootUpdateSlowQueriesManyArgs = {
 export type Mutation_RootUpdateSlowQueryByIdArgs = {
   _set?: InputMaybe<SlowQueriesSetInput>;
   pkColumns: SlowQueriesPkColumnsInput;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateSystemConfigurationArgs = {
+  _append?: InputMaybe<SystemConfigurationAppendInput>;
+  _deleteAtPath?: InputMaybe<SystemConfigurationDeleteAtPathInput>;
+  _deleteElem?: InputMaybe<SystemConfigurationDeleteElemInput>;
+  _deleteKey?: InputMaybe<SystemConfigurationDeleteKeyInput>;
+  _prepend?: InputMaybe<SystemConfigurationPrependInput>;
+  _set?: InputMaybe<SystemConfigurationSetInput>;
+  where: SystemConfigurationBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateSystemConfigurationByPkArgs = {
+  _append?: InputMaybe<SystemConfigurationAppendInput>;
+  _deleteAtPath?: InputMaybe<SystemConfigurationDeleteAtPathInput>;
+  _deleteElem?: InputMaybe<SystemConfigurationDeleteElemInput>;
+  _deleteKey?: InputMaybe<SystemConfigurationDeleteKeyInput>;
+  _prepend?: InputMaybe<SystemConfigurationPrependInput>;
+  _set?: InputMaybe<SystemConfigurationSetInput>;
+  pkColumns: SystemConfigurationPkColumnsInput;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateSystemConfigurationManyArgs = {
+  updates: Array<SystemConfigurationUpdates>;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateSystemHealthArgs = {
+  _append?: InputMaybe<SystemHealthAppendInput>;
+  _deleteAtPath?: InputMaybe<SystemHealthDeleteAtPathInput>;
+  _deleteElem?: InputMaybe<SystemHealthDeleteElemInput>;
+  _deleteKey?: InputMaybe<SystemHealthDeleteKeyInput>;
+  _inc?: InputMaybe<SystemHealthIncInput>;
+  _prepend?: InputMaybe<SystemHealthPrependInput>;
+  _set?: InputMaybe<SystemHealthSetInput>;
+  where: SystemHealthBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateSystemHealthByPkArgs = {
+  _append?: InputMaybe<SystemHealthAppendInput>;
+  _deleteAtPath?: InputMaybe<SystemHealthDeleteAtPathInput>;
+  _deleteElem?: InputMaybe<SystemHealthDeleteElemInput>;
+  _deleteKey?: InputMaybe<SystemHealthDeleteKeyInput>;
+  _inc?: InputMaybe<SystemHealthIncInput>;
+  _prepend?: InputMaybe<SystemHealthPrependInput>;
+  _set?: InputMaybe<SystemHealthSetInput>;
+  pkColumns: SystemHealthPkColumnsInput;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateSystemHealthManyArgs = {
+  updates: Array<SystemHealthUpdates>;
 };
 
 
@@ -14651,20 +17319,38 @@ export type Mutation_RootUpdateUserRolesManyArgs = {
 
 
 /** mutation root */
-export type Mutation_RootUpdateUserSkillManyArgs = {
-  updates: Array<UserSkillUpdates>;
+export type Mutation_RootUpdateUserSessionsArgs = {
+  _append?: InputMaybe<UserSessionsAppendInput>;
+  _deleteAtPath?: InputMaybe<UserSessionsDeleteAtPathInput>;
+  _deleteElem?: InputMaybe<UserSessionsDeleteElemInput>;
+  _deleteKey?: InputMaybe<UserSessionsDeleteKeyInput>;
+  _prepend?: InputMaybe<UserSessionsPrependInput>;
+  _set?: InputMaybe<UserSessionsSetInput>;
+  where: UserSessionsBoolExp;
 };
 
 
 /** mutation root */
-export type Mutation_RootUpdateUserSyncByIdArgs = {
-  _append?: InputMaybe<AuthUsersSyncAppendInput>;
-  _deleteAtPath?: InputMaybe<AuthUsersSyncDeleteAtPathInput>;
-  _deleteElem?: InputMaybe<AuthUsersSyncDeleteElemInput>;
-  _deleteKey?: InputMaybe<AuthUsersSyncDeleteKeyInput>;
-  _prepend?: InputMaybe<AuthUsersSyncPrependInput>;
-  _set?: InputMaybe<AuthUsersSyncSetInput>;
-  pkColumns: AuthUsersSyncPkColumnsInput;
+export type Mutation_RootUpdateUserSessionsByPkArgs = {
+  _append?: InputMaybe<UserSessionsAppendInput>;
+  _deleteAtPath?: InputMaybe<UserSessionsDeleteAtPathInput>;
+  _deleteElem?: InputMaybe<UserSessionsDeleteElemInput>;
+  _deleteKey?: InputMaybe<UserSessionsDeleteKeyInput>;
+  _prepend?: InputMaybe<UserSessionsPrependInput>;
+  _set?: InputMaybe<UserSessionsSetInput>;
+  pkColumns: UserSessionsPkColumnsInput;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateUserSessionsManyArgs = {
+  updates: Array<UserSessionsUpdates>;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateUserSkillManyArgs = {
+  updates: Array<UserSkillUpdates>;
 };
 
 
@@ -20890,7 +23576,7 @@ export type Query_Root = {
   __typename?: 'query_root';
   /** query _Entity union */
   _entities?: Maybe<_Entity>;
-  _service: Service;
+  _service: _Service;
   /** execute function "activate_payroll_versions" which returns "payroll_activation_results" */
   activatePayrollVersions: Array<PayrollActivationResults>;
   /** execute function "activate_payroll_versions" and query aggregates on result of table type "payroll_activation_results" */
@@ -20921,9 +23607,9 @@ export type Query_Root = {
   authEventsAggregate: AuthEventsAggregate;
   /** fetch data from the table: "billing_event_log" using primary key columns */
   billingEventLogById?: Maybe<BillingEventLogs>;
-  /** fetch data from the table: "billing_event_log" */
+  /** An array relationship */
   billingEventLogs: Array<BillingEventLogs>;
-  /** fetch aggregated fields from the table: "billing_event_log" */
+  /** An aggregate relationship */
   billingEventLogsAggregate: BillingEventLogsAggregate;
   /** fetch data from the table: "billing_invoice" */
   billingInvoice: Array<BillingInvoice>;
@@ -21000,6 +23686,12 @@ export type Query_Root = {
   dataAccessLogs: Array<DataAccessLogs>;
   /** fetch aggregated fields from the table: "audit.data_access_log" */
   dataAccessLogsAggregate: DataAccessLogsAggregate;
+  /** An array relationship */
+  dataBackups: Array<DataBackups>;
+  /** An aggregate relationship */
+  dataBackupsAggregate: DataBackupsAggregate;
+  /** fetch data from the table: "data_backups" using primary key columns */
+  dataBackupsByPk?: Maybe<DataBackups>;
   /** An array relationship */
   emailDrafts: Array<EmailDrafts>;
   /** An aggregate relationship */
@@ -21173,6 +23865,12 @@ export type Query_Root = {
   positionAdminDefaultsAggregate: PositionAdminDefaultsAggregate;
   /** fetch data from the table: "position_admin_defaults" using primary key columns */
   positionAdminDefaultsByPk?: Maybe<PositionAdminDefaults>;
+  /** fetch data from the table: "rate_limits" */
+  rateLimits: Array<RateLimits>;
+  /** fetch aggregated fields from the table: "rate_limits" */
+  rateLimitsAggregate: RateLimitsAggregate;
+  /** fetch data from the table: "rate_limits" using primary key columns */
+  rateLimitsByPk?: Maybe<RateLimits>;
   /** fetch data from the table: "resources" using primary key columns */
   resourceById?: Maybe<Resources>;
   /** fetch data from the table: "resources" */
@@ -21191,6 +23889,18 @@ export type Query_Root = {
   roles: Array<Roles>;
   /** fetch aggregated fields from the table: "roles" */
   rolesAggregate: RolesAggregate;
+  /** fetch data from the table: "security_alerts" */
+  securityAlerts: Array<SecurityAlerts>;
+  /** fetch aggregated fields from the table: "security_alerts" */
+  securityAlertsAggregate: SecurityAlertsAggregate;
+  /** fetch data from the table: "security_alerts" using primary key columns */
+  securityAlertsByPk?: Maybe<SecurityAlerts>;
+  /** An array relationship */
+  securitySettings: Array<SecuritySettings>;
+  /** An aggregate relationship */
+  securitySettingsAggregate: SecuritySettingsAggregate;
+  /** fetch data from the table: "security_settings" using primary key columns */
+  securitySettingsByPk?: Maybe<SecuritySettings>;
   /** fetch data from the table: "audit.slow_queries" */
   slowQueries: Array<SlowQueries>;
   /** fetch aggregated fields from the table: "audit.slow_queries" */
@@ -21201,6 +23911,18 @@ export type Query_Root = {
   staffBillingPerformance: Array<StaffBillingPerformance>;
   /** fetch aggregated fields from the table: "staff_billing_performance" */
   staffBillingPerformanceAggregate: StaffBillingPerformanceAggregate;
+  /** fetch data from the table: "system_configuration" */
+  systemConfiguration: Array<SystemConfiguration>;
+  /** fetch aggregated fields from the table: "system_configuration" */
+  systemConfigurationAggregate: SystemConfigurationAggregate;
+  /** fetch data from the table: "system_configuration" using primary key columns */
+  systemConfigurationByPk?: Maybe<SystemConfiguration>;
+  /** fetch data from the table: "system_health" */
+  systemHealth: Array<SystemHealth>;
+  /** fetch aggregated fields from the table: "system_health" */
+  systemHealthAggregate: SystemHealthAggregate;
+  /** fetch data from the table: "system_health" using primary key columns */
+  systemHealthByPk?: Maybe<SystemHealth>;
   /** fetch data from the table: "team_capacity_by_position" */
   teamCapacityByPosition: Array<TeamCapacityByPosition>;
   /** fetch aggregated fields from the table: "team_capacity_by_position" */
@@ -21229,30 +23951,30 @@ export type Query_Root = {
   userInvitations: Array<UserInvitations>;
   /** An aggregate relationship */
   userInvitationsAggregate: UserInvitationsAggregate;
-  /** fetch data from the table: "userroles" using primary key columns */
+  /** fetch data from the table: "user_roles" using primary key columns */
   userRoleById?: Maybe<UserRoles>;
-  /** fetch data from the table: "userroles" */
+  /** fetch data from the table: "user_roles" */
   userRoles: Array<UserRoles>;
-  /** fetch aggregated fields from the table: "userroles" */
+  /** fetch aggregated fields from the table: "user_roles" */
   userRolesAggregate: UserRolesAggregate;
+  /** An array relationship */
+  userSessions: Array<UserSessions>;
+  /** An aggregate relationship */
+  userSessionsAggregate: UserSessionsAggregate;
+  /** fetch data from the table: "user_sessions" using primary key columns */
+  userSessionsByPk?: Maybe<UserSessions>;
   /** fetch data from the table: "user_skills" */
   userSkill: Array<UserSkill>;
   /** fetch aggregated fields from the table: "user_skills" */
   userSkillAggregate: UserSkillAggregate;
-  /** fetch data from the table: "neonauth.users_sync" using primary key columns */
-  userSyncById?: Maybe<AuthUsersSync>;
   /** fetch data from the table: "users" */
   users: Array<Users>;
   /** fetch aggregated fields from the table: "users" */
   usersAggregate: UsersAggregate;
-  /** fetch data from the table: "usersrole_backup" */
+  /** fetch data from the table: "users_role_backup" */
   usersRoleBackups: Array<UsersRoleBackup>;
-  /** fetch aggregated fields from the table: "usersrole_backup" */
+  /** fetch aggregated fields from the table: "users_role_backup" */
   usersRoleBackupsAggregate: UsersRoleBackupAggregate;
-  /** fetch data from the table: "neonauth.users_sync" */
-  usersSync: Array<AuthUsersSync>;
-  /** fetch aggregated fields from the table: "neonauth.users_sync" */
-  usersSyncAggregate: AuthUsersSyncAggregate;
   /** fetch data from the table: "work_schedule" */
   workSchedule: Array<WorkSchedule>;
   /** fetch aggregated fields from the table: "work_schedule" */
@@ -21703,6 +24425,29 @@ export type Query_RootDataAccessLogsAggregateArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<DataAccessLogsOrderBy>>;
   where?: InputMaybe<DataAccessLogsBoolExp>;
+};
+
+
+export type Query_RootDataBackupsArgs = {
+  distinctOn?: InputMaybe<Array<DataBackupsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<DataBackupsOrderBy>>;
+  where?: InputMaybe<DataBackupsBoolExp>;
+};
+
+
+export type Query_RootDataBackupsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<DataBackupsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<DataBackupsOrderBy>>;
+  where?: InputMaybe<DataBackupsBoolExp>;
+};
+
+
+export type Query_RootDataBackupsByPkArgs = {
+  id: Scalars['uuid']['input'];
 };
 
 
@@ -22400,6 +25145,29 @@ export type Query_RootPositionAdminDefaultsByPkArgs = {
 };
 
 
+export type Query_RootRateLimitsArgs = {
+  distinctOn?: InputMaybe<Array<RateLimitsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<RateLimitsOrderBy>>;
+  where?: InputMaybe<RateLimitsBoolExp>;
+};
+
+
+export type Query_RootRateLimitsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<RateLimitsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<RateLimitsOrderBy>>;
+  where?: InputMaybe<RateLimitsBoolExp>;
+};
+
+
+export type Query_RootRateLimitsByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
 export type Query_RootResourceByIdArgs = {
   id: Scalars['uuid']['input'];
 };
@@ -22469,6 +25237,52 @@ export type Query_RootRolesAggregateArgs = {
 };
 
 
+export type Query_RootSecurityAlertsArgs = {
+  distinctOn?: InputMaybe<Array<SecurityAlertsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SecurityAlertsOrderBy>>;
+  where?: InputMaybe<SecurityAlertsBoolExp>;
+};
+
+
+export type Query_RootSecurityAlertsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<SecurityAlertsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SecurityAlertsOrderBy>>;
+  where?: InputMaybe<SecurityAlertsBoolExp>;
+};
+
+
+export type Query_RootSecurityAlertsByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Query_RootSecuritySettingsArgs = {
+  distinctOn?: InputMaybe<Array<SecuritySettingsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SecuritySettingsOrderBy>>;
+  where?: InputMaybe<SecuritySettingsBoolExp>;
+};
+
+
+export type Query_RootSecuritySettingsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<SecuritySettingsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SecuritySettingsOrderBy>>;
+  where?: InputMaybe<SecuritySettingsBoolExp>;
+};
+
+
+export type Query_RootSecuritySettingsByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
 export type Query_RootSlowQueriesArgs = {
   distinctOn?: InputMaybe<Array<SlowQueriesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -22507,6 +25321,52 @@ export type Query_RootStaffBillingPerformanceAggregateArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<StaffBillingPerformanceOrderBy>>;
   where?: InputMaybe<StaffBillingPerformanceBoolExp>;
+};
+
+
+export type Query_RootSystemConfigurationArgs = {
+  distinctOn?: InputMaybe<Array<SystemConfigurationSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SystemConfigurationOrderBy>>;
+  where?: InputMaybe<SystemConfigurationBoolExp>;
+};
+
+
+export type Query_RootSystemConfigurationAggregateArgs = {
+  distinctOn?: InputMaybe<Array<SystemConfigurationSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SystemConfigurationOrderBy>>;
+  where?: InputMaybe<SystemConfigurationBoolExp>;
+};
+
+
+export type Query_RootSystemConfigurationByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Query_RootSystemHealthArgs = {
+  distinctOn?: InputMaybe<Array<SystemHealthSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SystemHealthOrderBy>>;
+  where?: InputMaybe<SystemHealthBoolExp>;
+};
+
+
+export type Query_RootSystemHealthAggregateArgs = {
+  distinctOn?: InputMaybe<Array<SystemHealthSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SystemHealthOrderBy>>;
+  where?: InputMaybe<SystemHealthBoolExp>;
+};
+
+
+export type Query_RootSystemHealthByPkArgs = {
+  id: Scalars['uuid']['input'];
 };
 
 
@@ -22643,6 +25503,29 @@ export type Query_RootUserRolesAggregateArgs = {
 };
 
 
+export type Query_RootUserSessionsArgs = {
+  distinctOn?: InputMaybe<Array<UserSessionsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UserSessionsOrderBy>>;
+  where?: InputMaybe<UserSessionsBoolExp>;
+};
+
+
+export type Query_RootUserSessionsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<UserSessionsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UserSessionsOrderBy>>;
+  where?: InputMaybe<UserSessionsBoolExp>;
+};
+
+
+export type Query_RootUserSessionsByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
 export type Query_RootUserSkillArgs = {
   distinctOn?: InputMaybe<Array<UserSkillSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -22658,11 +25541,6 @@ export type Query_RootUserSkillAggregateArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<UserSkillOrderBy>>;
   where?: InputMaybe<UserSkillBoolExp>;
-};
-
-
-export type Query_RootUserSyncByIdArgs = {
-  id: Scalars['String']['input'];
 };
 
 
@@ -22699,24 +25577,6 @@ export type Query_RootUsersRoleBackupsAggregateArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<UsersRoleBackupOrderBy>>;
   where?: InputMaybe<UsersRoleBackupBoolExp>;
-};
-
-
-export type Query_RootUsersSyncArgs = {
-  distinctOn?: InputMaybe<Array<AuthUsersSyncSelectColumn>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Array<AuthUsersSyncOrderBy>>;
-  where?: InputMaybe<AuthUsersSyncBoolExp>;
-};
-
-
-export type Query_RootUsersSyncAggregateArgs = {
-  distinctOn?: InputMaybe<Array<AuthUsersSyncSelectColumn>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Array<AuthUsersSyncOrderBy>>;
-  where?: InputMaybe<AuthUsersSyncBoolExp>;
 };
 
 
@@ -23054,7 +25914,7 @@ export type RolePermissionsConstraint =
   /** unique or primary key constraint on columns "id" */
   | 'role_permissions_pkey'
   /** unique or primary key constraint on columns "role_id", "permission_id" */
-  | 'role_permissionsrole_id_permission_id_key'
+  | 'role_permissions_role_id_permission_id_key'
   | '%future added value';
 
 /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
@@ -23569,6 +26429,27 @@ export type RolesVarianceFields = {
   priority?: Maybe<Scalars['Float']['output']>;
 };
 
+export type SecuritySettingsAggregateBoolExpBool_And = {
+  arguments: SecuritySettingsSelectColumnSecuritySettingsAggregateBoolExpBool_AndArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<SecuritySettingsBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type SecuritySettingsAggregateBoolExpBool_Or = {
+  arguments: SecuritySettingsSelectColumnSecuritySettingsAggregateBoolExpBool_OrArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<SecuritySettingsBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type SecuritySettingsAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<SecuritySettingsSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<SecuritySettingsBoolExp>;
+  predicate: IntComparisonExp;
+};
+
 /** columns and relationships of "audit.slow_queries" */
 export type SlowQueries = {
   __typename?: 'slowQueries';
@@ -23809,13 +26690,11 @@ export type Subscription_Root = {
   authEventsAggregate: AuthEventsAggregate;
   /** fetch data from the table in a streaming manner: "audit.auth_events" */
   authEventsStream: Array<AuthEvents>;
-  /** fetch data from the table in a streaming manner: "neonauth.users_sync" */
-  authUsersSyncStream: Array<AuthUsersSync>;
   /** fetch data from the table: "billing_event_log" using primary key columns */
   billingEventLogById?: Maybe<BillingEventLogs>;
-  /** fetch data from the table: "billing_event_log" */
+  /** An array relationship */
   billingEventLogs: Array<BillingEventLogs>;
-  /** fetch aggregated fields from the table: "billing_event_log" */
+  /** An aggregate relationship */
   billingEventLogsAggregate: BillingEventLogsAggregate;
   /** fetch data from the table in a streaming manner: "billing_event_log" */
   billingEventLogsStream: Array<BillingEventLogs>;
@@ -23917,6 +26796,14 @@ export type Subscription_Root = {
   dataAccessLogsAggregate: DataAccessLogsAggregate;
   /** fetch data from the table in a streaming manner: "audit.data_access_log" */
   dataAccessLogsStream: Array<DataAccessLogs>;
+  /** An array relationship */
+  dataBackups: Array<DataBackups>;
+  /** An aggregate relationship */
+  dataBackupsAggregate: DataBackupsAggregate;
+  /** fetch data from the table: "data_backups" using primary key columns */
+  dataBackupsByPk?: Maybe<DataBackups>;
+  /** fetch data from the table in a streaming manner: "data_backups" */
+  dataBackupsStream: Array<DataBackups>;
   /** An array relationship */
   emailDrafts: Array<EmailDrafts>;
   /** An aggregate relationship */
@@ -24143,6 +27030,14 @@ export type Subscription_Root = {
   positionAdminDefaultsByPk?: Maybe<PositionAdminDefaults>;
   /** fetch data from the table in a streaming manner: "position_admin_defaults" */
   positionAdminDefaultsStream: Array<PositionAdminDefaults>;
+  /** fetch data from the table: "rate_limits" */
+  rateLimits: Array<RateLimits>;
+  /** fetch aggregated fields from the table: "rate_limits" */
+  rateLimitsAggregate: RateLimitsAggregate;
+  /** fetch data from the table: "rate_limits" using primary key columns */
+  rateLimitsByPk?: Maybe<RateLimits>;
+  /** fetch data from the table in a streaming manner: "rate_limits" */
+  rateLimitsStream: Array<RateLimits>;
   /** fetch data from the table: "resources" using primary key columns */
   resourceById?: Maybe<Resources>;
   /** fetch data from the table: "resources" */
@@ -24167,6 +27062,22 @@ export type Subscription_Root = {
   rolesAggregate: RolesAggregate;
   /** fetch data from the table in a streaming manner: "roles" */
   rolesStream: Array<Roles>;
+  /** fetch data from the table: "security_alerts" */
+  securityAlerts: Array<SecurityAlerts>;
+  /** fetch aggregated fields from the table: "security_alerts" */
+  securityAlertsAggregate: SecurityAlertsAggregate;
+  /** fetch data from the table: "security_alerts" using primary key columns */
+  securityAlertsByPk?: Maybe<SecurityAlerts>;
+  /** fetch data from the table in a streaming manner: "security_alerts" */
+  securityAlertsStream: Array<SecurityAlerts>;
+  /** An array relationship */
+  securitySettings: Array<SecuritySettings>;
+  /** An aggregate relationship */
+  securitySettingsAggregate: SecuritySettingsAggregate;
+  /** fetch data from the table: "security_settings" using primary key columns */
+  securitySettingsByPk?: Maybe<SecuritySettings>;
+  /** fetch data from the table in a streaming manner: "security_settings" */
+  securitySettingsStream: Array<SecuritySettings>;
   /** fetch data from the table: "audit.slow_queries" */
   slowQueries: Array<SlowQueries>;
   /** fetch aggregated fields from the table: "audit.slow_queries" */
@@ -24181,6 +27092,22 @@ export type Subscription_Root = {
   staffBillingPerformanceAggregate: StaffBillingPerformanceAggregate;
   /** fetch data from the table in a streaming manner: "staff_billing_performance" */
   staffBillingPerformanceStream: Array<StaffBillingPerformance>;
+  /** fetch data from the table: "system_configuration" */
+  systemConfiguration: Array<SystemConfiguration>;
+  /** fetch aggregated fields from the table: "system_configuration" */
+  systemConfigurationAggregate: SystemConfigurationAggregate;
+  /** fetch data from the table: "system_configuration" using primary key columns */
+  systemConfigurationByPk?: Maybe<SystemConfiguration>;
+  /** fetch data from the table in a streaming manner: "system_configuration" */
+  systemConfigurationStream: Array<SystemConfiguration>;
+  /** fetch data from the table: "system_health" */
+  systemHealth: Array<SystemHealth>;
+  /** fetch aggregated fields from the table: "system_health" */
+  systemHealthAggregate: SystemHealthAggregate;
+  /** fetch data from the table: "system_health" using primary key columns */
+  systemHealthByPk?: Maybe<SystemHealth>;
+  /** fetch data from the table in a streaming manner: "system_health" */
+  systemHealthStream: Array<SystemHealth>;
   /** fetch data from the table: "team_capacity_by_position" */
   teamCapacityByPosition: Array<TeamCapacityByPosition>;
   /** fetch aggregated fields from the table: "team_capacity_by_position" */
@@ -24219,38 +27146,40 @@ export type Subscription_Root = {
   userInvitationsAggregate: UserInvitationsAggregate;
   /** fetch data from the table in a streaming manner: "user_invitations" */
   userInvitationsStream: Array<UserInvitations>;
-  /** fetch data from the table: "userroles" using primary key columns */
+  /** fetch data from the table: "user_roles" using primary key columns */
   userRoleById?: Maybe<UserRoles>;
-  /** fetch data from the table: "userroles" */
+  /** fetch data from the table: "user_roles" */
   userRoles: Array<UserRoles>;
-  /** fetch aggregated fields from the table: "userroles" */
+  /** fetch aggregated fields from the table: "user_roles" */
   userRolesAggregate: UserRolesAggregate;
-  /** fetch data from the table in a streaming manner: "userroles" */
+  /** fetch data from the table in a streaming manner: "user_roles" */
   userRolesStream: Array<UserRoles>;
+  /** An array relationship */
+  userSessions: Array<UserSessions>;
+  /** An aggregate relationship */
+  userSessionsAggregate: UserSessionsAggregate;
+  /** fetch data from the table: "user_sessions" using primary key columns */
+  userSessionsByPk?: Maybe<UserSessions>;
+  /** fetch data from the table in a streaming manner: "user_sessions" */
+  userSessionsStream: Array<UserSessions>;
   /** fetch data from the table: "user_skills" */
   userSkill: Array<UserSkill>;
   /** fetch aggregated fields from the table: "user_skills" */
   userSkillAggregate: UserSkillAggregate;
   /** fetch data from the table in a streaming manner: "user_skills" */
   userSkillStream: Array<UserSkill>;
-  /** fetch data from the table: "neonauth.users_sync" using primary key columns */
-  userSyncById?: Maybe<AuthUsersSync>;
   /** fetch data from the table: "users" */
   users: Array<Users>;
   /** fetch aggregated fields from the table: "users" */
   usersAggregate: UsersAggregate;
-  /** fetch data from the table in a streaming manner: "usersrole_backup" */
+  /** fetch data from the table in a streaming manner: "users_role_backup" */
   usersRoleBackupStream: Array<UsersRoleBackup>;
-  /** fetch data from the table: "usersrole_backup" */
+  /** fetch data from the table: "users_role_backup" */
   usersRoleBackups: Array<UsersRoleBackup>;
-  /** fetch aggregated fields from the table: "usersrole_backup" */
+  /** fetch aggregated fields from the table: "users_role_backup" */
   usersRoleBackupsAggregate: UsersRoleBackupAggregate;
   /** fetch data from the table in a streaming manner: "users" */
   usersStream: Array<Users>;
-  /** fetch data from the table: "neonauth.users_sync" */
-  usersSync: Array<AuthUsersSync>;
-  /** fetch aggregated fields from the table: "neonauth.users_sync" */
-  usersSyncAggregate: AuthUsersSyncAggregate;
   /** fetch data from the table: "work_schedule" */
   workSchedule: Array<WorkSchedule>;
   /** fetch aggregated fields from the table: "work_schedule" */
@@ -24397,13 +27326,6 @@ export type Subscription_RootAuthEventsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<AuthEventsStreamCursorInput>>;
   where?: InputMaybe<AuthEventsBoolExp>;
-};
-
-
-export type Subscription_RootAuthUsersSyncStreamArgs = {
-  batchSize: Scalars['Int']['input'];
-  cursor: Array<InputMaybe<AuthUsersSyncStreamCursorInput>>;
-  where?: InputMaybe<AuthUsersSyncBoolExp>;
 };
 
 
@@ -24819,6 +27741,36 @@ export type Subscription_RootDataAccessLogsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<DataAccessLogsStreamCursorInput>>;
   where?: InputMaybe<DataAccessLogsBoolExp>;
+};
+
+
+export type Subscription_RootDataBackupsArgs = {
+  distinctOn?: InputMaybe<Array<DataBackupsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<DataBackupsOrderBy>>;
+  where?: InputMaybe<DataBackupsBoolExp>;
+};
+
+
+export type Subscription_RootDataBackupsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<DataBackupsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<DataBackupsOrderBy>>;
+  where?: InputMaybe<DataBackupsBoolExp>;
+};
+
+
+export type Subscription_RootDataBackupsByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootDataBackupsStreamArgs = {
+  batchSize: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<DataBackupsStreamCursorInput>>;
+  where?: InputMaybe<DataBackupsBoolExp>;
 };
 
 
@@ -25697,6 +28649,36 @@ export type Subscription_RootPositionAdminDefaultsStreamArgs = {
 };
 
 
+export type Subscription_RootRateLimitsArgs = {
+  distinctOn?: InputMaybe<Array<RateLimitsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<RateLimitsOrderBy>>;
+  where?: InputMaybe<RateLimitsBoolExp>;
+};
+
+
+export type Subscription_RootRateLimitsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<RateLimitsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<RateLimitsOrderBy>>;
+  where?: InputMaybe<RateLimitsBoolExp>;
+};
+
+
+export type Subscription_RootRateLimitsByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootRateLimitsStreamArgs = {
+  batchSize: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<RateLimitsStreamCursorInput>>;
+  where?: InputMaybe<RateLimitsBoolExp>;
+};
+
+
 export type Subscription_RootResourceByIdArgs = {
   id: Scalars['uuid']['input'];
 };
@@ -25787,6 +28769,66 @@ export type Subscription_RootRolesStreamArgs = {
 };
 
 
+export type Subscription_RootSecurityAlertsArgs = {
+  distinctOn?: InputMaybe<Array<SecurityAlertsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SecurityAlertsOrderBy>>;
+  where?: InputMaybe<SecurityAlertsBoolExp>;
+};
+
+
+export type Subscription_RootSecurityAlertsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<SecurityAlertsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SecurityAlertsOrderBy>>;
+  where?: InputMaybe<SecurityAlertsBoolExp>;
+};
+
+
+export type Subscription_RootSecurityAlertsByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootSecurityAlertsStreamArgs = {
+  batchSize: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<SecurityAlertsStreamCursorInput>>;
+  where?: InputMaybe<SecurityAlertsBoolExp>;
+};
+
+
+export type Subscription_RootSecuritySettingsArgs = {
+  distinctOn?: InputMaybe<Array<SecuritySettingsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SecuritySettingsOrderBy>>;
+  where?: InputMaybe<SecuritySettingsBoolExp>;
+};
+
+
+export type Subscription_RootSecuritySettingsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<SecuritySettingsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SecuritySettingsOrderBy>>;
+  where?: InputMaybe<SecuritySettingsBoolExp>;
+};
+
+
+export type Subscription_RootSecuritySettingsByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootSecuritySettingsStreamArgs = {
+  batchSize: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<SecuritySettingsStreamCursorInput>>;
+  where?: InputMaybe<SecuritySettingsBoolExp>;
+};
+
+
 export type Subscription_RootSlowQueriesArgs = {
   distinctOn?: InputMaybe<Array<SlowQueriesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -25839,6 +28881,66 @@ export type Subscription_RootStaffBillingPerformanceStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<StaffBillingPerformanceStreamCursorInput>>;
   where?: InputMaybe<StaffBillingPerformanceBoolExp>;
+};
+
+
+export type Subscription_RootSystemConfigurationArgs = {
+  distinctOn?: InputMaybe<Array<SystemConfigurationSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SystemConfigurationOrderBy>>;
+  where?: InputMaybe<SystemConfigurationBoolExp>;
+};
+
+
+export type Subscription_RootSystemConfigurationAggregateArgs = {
+  distinctOn?: InputMaybe<Array<SystemConfigurationSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SystemConfigurationOrderBy>>;
+  where?: InputMaybe<SystemConfigurationBoolExp>;
+};
+
+
+export type Subscription_RootSystemConfigurationByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootSystemConfigurationStreamArgs = {
+  batchSize: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<SystemConfigurationStreamCursorInput>>;
+  where?: InputMaybe<SystemConfigurationBoolExp>;
+};
+
+
+export type Subscription_RootSystemHealthArgs = {
+  distinctOn?: InputMaybe<Array<SystemHealthSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SystemHealthOrderBy>>;
+  where?: InputMaybe<SystemHealthBoolExp>;
+};
+
+
+export type Subscription_RootSystemHealthAggregateArgs = {
+  distinctOn?: InputMaybe<Array<SystemHealthSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SystemHealthOrderBy>>;
+  where?: InputMaybe<SystemHealthBoolExp>;
+};
+
+
+export type Subscription_RootSystemHealthByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootSystemHealthStreamArgs = {
+  batchSize: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<SystemHealthStreamCursorInput>>;
+  where?: InputMaybe<SystemHealthBoolExp>;
 };
 
 
@@ -26017,6 +29119,36 @@ export type Subscription_RootUserRolesStreamArgs = {
 };
 
 
+export type Subscription_RootUserSessionsArgs = {
+  distinctOn?: InputMaybe<Array<UserSessionsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UserSessionsOrderBy>>;
+  where?: InputMaybe<UserSessionsBoolExp>;
+};
+
+
+export type Subscription_RootUserSessionsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<UserSessionsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UserSessionsOrderBy>>;
+  where?: InputMaybe<UserSessionsBoolExp>;
+};
+
+
+export type Subscription_RootUserSessionsByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootUserSessionsStreamArgs = {
+  batchSize: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<UserSessionsStreamCursorInput>>;
+  where?: InputMaybe<UserSessionsBoolExp>;
+};
+
+
 export type Subscription_RootUserSkillArgs = {
   distinctOn?: InputMaybe<Array<UserSkillSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -26039,11 +29171,6 @@ export type Subscription_RootUserSkillStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<UserSkillStreamCursorInput>>;
   where?: InputMaybe<UserSkillBoolExp>;
-};
-
-
-export type Subscription_RootUserSyncByIdArgs = {
-  id: Scalars['String']['input'];
 };
 
 
@@ -26094,24 +29221,6 @@ export type Subscription_RootUsersStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<UsersStreamCursorInput>>;
   where?: InputMaybe<UsersBoolExp>;
-};
-
-
-export type Subscription_RootUsersSyncArgs = {
-  distinctOn?: InputMaybe<Array<AuthUsersSyncSelectColumn>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Array<AuthUsersSyncOrderBy>>;
-  where?: InputMaybe<AuthUsersSyncBoolExp>;
-};
-
-
-export type Subscription_RootUsersSyncAggregateArgs = {
-  distinctOn?: InputMaybe<Array<AuthUsersSyncSelectColumn>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Array<AuthUsersSyncOrderBy>>;
-  where?: InputMaybe<AuthUsersSyncBoolExp>;
 };
 
 
@@ -26640,7 +29749,7 @@ export type UserAccessSummaries = {
   isActive?: Maybe<Scalars['Boolean']['output']>;
   isStaff?: Maybe<Scalars['Boolean']['output']>;
   name?: Maybe<Scalars['String']['output']>;
-  role?: Maybe<Scalars['userrole']['output']>;
+  role?: Maybe<Scalars['user_role']['output']>;
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
 };
 
@@ -26689,7 +29798,7 @@ export type UserAccessSummariesInsertInput = {
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   isStaff?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
-  role?: InputMaybe<Scalars['userrole']['input']>;
+  role?: InputMaybe<Scalars['user_role']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
 
@@ -26700,7 +29809,7 @@ export type UserAccessSummariesMaxFields = {
   email?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['uuid']['output']>;
   name?: Maybe<Scalars['String']['output']>;
-  role?: Maybe<Scalars['userrole']['output']>;
+  role?: Maybe<Scalars['user_role']['output']>;
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
 };
 
@@ -26711,7 +29820,7 @@ export type UserAccessSummariesMinFields = {
   email?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['uuid']['output']>;
   name?: Maybe<Scalars['String']['output']>;
-  role?: Maybe<Scalars['userrole']['output']>;
+  role?: Maybe<Scalars['user_role']['output']>;
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
 };
 
@@ -26764,7 +29873,7 @@ export type UserAccessSummariesSetInput = {
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   isStaff?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
-  role?: InputMaybe<Scalars['userrole']['input']>;
+  role?: InputMaybe<Scalars['user_role']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
 
@@ -26784,7 +29893,7 @@ export type UserAccessSummariesStreamCursorValueInput = {
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   isStaff?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
-  role?: InputMaybe<Scalars['userrole']['input']>;
+  role?: InputMaybe<Scalars['user_role']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
 
@@ -27301,7 +30410,7 @@ export type UserInvitationsUpdates = {
   where: UserInvitationsBoolExp;
 };
 
-/** columns and relationships of "userroles" */
+/** columns and relationships of "user_roles" */
 export type UserRoles = {
   __typename?: 'userRoles';
   /** An object relationship */
@@ -27315,7 +30424,7 @@ export type UserRoles = {
   userId: Scalars['uuid']['output'];
 };
 
-/** aggregated selection of "userroles" */
+/** aggregated selection of "user_roles" */
 export type UserRolesAggregate = {
   __typename?: 'userRolesAggregate';
   aggregate?: Maybe<UserRolesAggregateFields>;
@@ -27333,7 +30442,7 @@ export type UserRolesAggregateBoolExpCount = {
   predicate: IntComparisonExp;
 };
 
-/** aggregate fields of "userroles" */
+/** aggregate fields of "user_roles" */
 export type UserRolesAggregateFields = {
   __typename?: 'userRolesAggregateFields';
   count: Scalars['Int']['output'];
@@ -27342,27 +30451,27 @@ export type UserRolesAggregateFields = {
 };
 
 
-/** aggregate fields of "userroles" */
+/** aggregate fields of "user_roles" */
 export type UserRolesAggregateFieldsCountArgs = {
   columns?: InputMaybe<Array<UserRolesSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-/** order by aggregate values of table "userroles" */
+/** order by aggregate values of table "user_roles" */
 export type UserRolesAggregateOrderBy = {
   count?: InputMaybe<OrderBy>;
   max?: InputMaybe<UserRolesMaxOrderBy>;
   min?: InputMaybe<UserRolesMinOrderBy>;
 };
 
-/** input type for inserting array relation for remote table "userroles" */
+/** input type for inserting array relation for remote table "user_roles" */
 export type UserRolesArrRelInsertInput = {
   data: Array<UserRolesInsertInput>;
   /** upsert condition */
   onConflict?: InputMaybe<UserRolesOnConflict>;
 };
 
-/** Boolean expression to filter rows from the table "userroles". All fields are combined with a logical 'AND'. */
+/** Boolean expression to filter rows from the table "user_roles". All fields are combined with a logical 'AND'. */
 export type UserRolesBoolExp = {
   _and?: InputMaybe<Array<UserRolesBoolExp>>;
   _not?: InputMaybe<UserRolesBoolExp>;
@@ -27376,15 +30485,15 @@ export type UserRolesBoolExp = {
   userId?: InputMaybe<UuidComparisonExp>;
 };
 
-/** unique or primary key constraints on table "userroles" */
+/** unique or primary key constraints on table "user_roles" */
 export type UserRolesConstraint =
   /** unique or primary key constraint on columns "id" */
-  | 'userroles_pkey'
+  | 'user_roles_pkey'
   /** unique or primary key constraint on columns "role_id", "user_id" */
-  | 'userroles_user_idrole_id_key'
+  | 'user_roles_user_id_role_id_key'
   | '%future added value';
 
-/** input type for inserting data into table "userroles" */
+/** input type for inserting data into table "user_roles" */
 export type UserRolesInsertInput = {
   assignedRole?: InputMaybe<RolesObjRelInsertInput>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
@@ -27405,7 +30514,7 @@ export type UserRolesMaxFields = {
   userId?: Maybe<Scalars['uuid']['output']>;
 };
 
-/** order by max() on columns of table "userroles" */
+/** order by max() on columns of table "user_roles" */
 export type UserRolesMaxOrderBy = {
   createdAt?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
@@ -27424,7 +30533,7 @@ export type UserRolesMinFields = {
   userId?: Maybe<Scalars['uuid']['output']>;
 };
 
-/** order by min() on columns of table "userroles" */
+/** order by min() on columns of table "user_roles" */
 export type UserRolesMinOrderBy = {
   createdAt?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
@@ -27433,7 +30542,7 @@ export type UserRolesMinOrderBy = {
   userId?: InputMaybe<OrderBy>;
 };
 
-/** response of any mutation on the table "userroles" */
+/** response of any mutation on the table "user_roles" */
 export type UserRolesMutationResponse = {
   __typename?: 'userRolesMutationResponse';
   /** number of rows affected by the mutation */
@@ -27442,14 +30551,14 @@ export type UserRolesMutationResponse = {
   returning: Array<UserRoles>;
 };
 
-/** on_conflict condition type for table "userroles" */
+/** on_conflict condition type for table "user_roles" */
 export type UserRolesOnConflict = {
   constraint: UserRolesConstraint;
   updateColumns?: Array<UserRolesUpdateColumn>;
   where?: InputMaybe<UserRolesBoolExp>;
 };
 
-/** Ordering options when selecting data from "userroles". */
+/** Ordering options when selecting data from "user_roles". */
 export type UserRolesOrderBy = {
   assignedRole?: InputMaybe<RolesOrderBy>;
   createdAt?: InputMaybe<OrderBy>;
@@ -27460,12 +30569,12 @@ export type UserRolesOrderBy = {
   userId?: InputMaybe<OrderBy>;
 };
 
-/** primary key columns input for table: userroles */
+/** primary key columns input for table: user_roles */
 export type UserRolesPkColumnsInput = {
   id: Scalars['uuid']['input'];
 };
 
-/** select columns of table "userroles" */
+/** select columns of table "user_roles" */
 export type UserRolesSelectColumn =
   /** column name */
   | 'createdAt'
@@ -27479,7 +30588,7 @@ export type UserRolesSelectColumn =
   | 'userId'
   | '%future added value';
 
-/** input type for updating data in table "userroles" */
+/** input type for updating data in table "user_roles" */
 export type UserRolesSetInput = {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
@@ -27505,7 +30614,7 @@ export type UserRolesStreamCursorValueInput = {
   userId?: InputMaybe<Scalars['uuid']['input']>;
 };
 
-/** update columns of table "userroles" */
+/** update columns of table "user_roles" */
 export type UserRolesUpdateColumn =
   /** column name */
   | 'createdAt'
@@ -27524,6 +30633,27 @@ export type UserRolesUpdates = {
   _set?: InputMaybe<UserRolesSetInput>;
   /** filter the rows which have to be updated */
   where: UserRolesBoolExp;
+};
+
+export type UserSessionsAggregateBoolExpBool_And = {
+  arguments: UserSessionsSelectColumnUserSessionsAggregateBoolExpBool_AndArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<UserSessionsBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type UserSessionsAggregateBoolExpBool_Or = {
+  arguments: UserSessionsSelectColumnUserSessionsAggregateBoolExpBool_OrArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<UserSessionsBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type UserSessionsAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<UserSessionsSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<UserSessionsBoolExp>;
+  predicate: IntComparisonExp;
 };
 
 /** columns and relationships of "user_skills" */
@@ -27719,6 +30849,7 @@ export type Users = {
   bio?: Maybe<Scalars['String']['output']>;
   /** External identifier from Clerk authentication service */
   clerkUserId?: Maybe<Scalars['String']['output']>;
+  computedName?: Maybe<Scalars['String']['output']>;
   /** An array relationship */
   consultantAssignments: Array<PayrollAssignments>;
   /** An aggregate relationship */
@@ -27741,6 +30872,10 @@ export type Users = {
   createdPermissionOverrides: Array<PermissionOverrides>;
   /** An aggregate relationship */
   createdPermissionOverridesAggregate: PermissionOverridesAggregate;
+  /** An array relationship */
+  dataBackups: Array<DataBackups>;
+  /** An aggregate relationship */
+  dataBackupsAggregate: DataBackupsAggregate;
   deactivatedAt?: Maybe<Scalars['timestamptz']['output']>;
   deactivatedBy?: Maybe<Scalars['String']['output']>;
   /** Default admin time percentage for this user */
@@ -27763,6 +30898,7 @@ export type Users = {
   emailTemplatesCreatedByUserId: Array<EmailTemplates>;
   /** An aggregate relationship */
   emailTemplatesCreatedByUserIdAggregate: EmailTemplatesAggregate;
+  firstName: Scalars['String']['output'];
   /** Unique identifier for the user */
   id: Scalars['uuid']['output'];
   /** URL to the user's profile image */
@@ -27770,6 +30906,7 @@ export type Users = {
   isActive?: Maybe<Scalars['Boolean']['output']>;
   /** Whether the user is a staff member (vs. external user) */
   isStaff?: Maybe<Scalars['Boolean']['output']>;
+  lastName: Scalars['String']['output'];
   /** An array relationship */
   managedPayrolls: Array<Payrolls>;
   /** An aggregate relationship */
@@ -27809,7 +30946,11 @@ export type Users = {
   /** An aggregate relationship */
   primaryConsultantPayrollsAggregate: PayrollsAggregate;
   /** User's system role (viewer, consultant, manager, org_admin) */
-  role: Scalars['userrole']['output'];
+  role: Scalars['user_role']['output'];
+  /** An array relationship */
+  securitySettings: Array<SecuritySettings>;
+  /** An aggregate relationship */
+  securitySettingsAggregate: SecuritySettingsAggregate;
   /** Current user status - must be consistent with isActive field */
   status: Scalars['user_status_enum']['output'];
   /** Reason for the status change (for audit purposes) */
@@ -27862,6 +31003,10 @@ export type Users = {
   userPermissionOverrides: Array<PermissionOverrides>;
   /** An aggregate relationship */
   userPermissionOverridesAggregate: PermissionOverridesAggregate;
+  /** An array relationship */
+  userSessions: Array<UserSessions>;
+  /** An aggregate relationship */
+  userSessionsAggregate: UserSessionsAggregate;
   /** An array relationship */
   userSkills: Array<UserSkill>;
   /** An aggregate relationship */
@@ -28100,6 +31245,26 @@ export type UsersCreatedPermissionOverridesAggregateArgs = {
 
 
 /** columns and relationships of "users" */
+export type UsersDataBackupsArgs = {
+  distinctOn?: InputMaybe<Array<DataBackupsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<DataBackupsOrderBy>>;
+  where?: InputMaybe<DataBackupsBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersDataBackupsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<DataBackupsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<DataBackupsOrderBy>>;
+  where?: InputMaybe<DataBackupsBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
 export type UsersEmailDraftsArgs = {
   distinctOn?: InputMaybe<Array<EmailDraftsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -28320,6 +31485,26 @@ export type UsersPrimaryConsultantPayrollsAggregateArgs = {
 
 
 /** columns and relationships of "users" */
+export type UsersSecuritySettingsArgs = {
+  distinctOn?: InputMaybe<Array<SecuritySettingsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SecuritySettingsOrderBy>>;
+  where?: InputMaybe<SecuritySettingsBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersSecuritySettingsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<SecuritySettingsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<SecuritySettingsOrderBy>>;
+  where?: InputMaybe<SecuritySettingsBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
 export type UsersTargetedPermissionAuditsArgs = {
   distinctOn?: InputMaybe<Array<PermissionAuditLogsSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -28520,6 +31705,26 @@ export type UsersUserPermissionOverridesAggregateArgs = {
 
 
 /** columns and relationships of "users" */
+export type UsersUserSessionsArgs = {
+  distinctOn?: InputMaybe<Array<UserSessionsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UserSessionsOrderBy>>;
+  where?: InputMaybe<UserSessionsBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersUserSessionsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<UserSessionsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<UserSessionsOrderBy>>;
+  where?: InputMaybe<UserSessionsBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
 export type UsersUserSkillsArgs = {
   distinctOn?: InputMaybe<Array<UserSkillSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -28690,6 +31895,7 @@ export type UsersBoolExp = {
   billingItemsUserIdAggregate?: InputMaybe<BillingItemsAggregateBoolExp>;
   bio?: InputMaybe<StringComparisonExp>;
   clerkUserId?: InputMaybe<StringComparisonExp>;
+  computedName?: InputMaybe<StringComparisonExp>;
   consultantAssignments?: InputMaybe<PayrollAssignmentsBoolExp>;
   consultantAssignmentsAggregate?: InputMaybe<PayrollAssignmentsAggregateBoolExp>;
   createdAssignmentAudits?: InputMaybe<PayrollAssignmentAuditsBoolExp>;
@@ -28701,6 +31907,8 @@ export type UsersBoolExp = {
   createdBillingEventsAggregate?: InputMaybe<BillingEventLogsAggregateBoolExp>;
   createdPermissionOverrides?: InputMaybe<PermissionOverridesBoolExp>;
   createdPermissionOverridesAggregate?: InputMaybe<PermissionOverridesAggregateBoolExp>;
+  dataBackups?: InputMaybe<DataBackupsBoolExp>;
+  dataBackupsAggregate?: InputMaybe<DataBackupsAggregateBoolExp>;
   deactivatedAt?: InputMaybe<TimestamptzComparisonExp>;
   deactivatedBy?: InputMaybe<StringComparisonExp>;
   defaultAdminTimePercentage?: InputMaybe<NumericComparisonExp>;
@@ -28713,10 +31921,12 @@ export type UsersBoolExp = {
   emailTemplatesAggregate?: InputMaybe<EmailTemplatesAggregateBoolExp>;
   emailTemplatesCreatedByUserId?: InputMaybe<EmailTemplatesBoolExp>;
   emailTemplatesCreatedByUserIdAggregate?: InputMaybe<EmailTemplatesAggregateBoolExp>;
+  firstName?: InputMaybe<StringComparisonExp>;
   id?: InputMaybe<UuidComparisonExp>;
   image?: InputMaybe<StringComparisonExp>;
   isActive?: InputMaybe<BooleanComparisonExp>;
   isStaff?: InputMaybe<BooleanComparisonExp>;
+  lastName?: InputMaybe<StringComparisonExp>;
   managedPayrolls?: InputMaybe<PayrollsBoolExp>;
   managedPayrollsAggregate?: InputMaybe<PayrollsAggregateBoolExp>;
   managedTeamMembers?: InputMaybe<UsersBoolExp>;
@@ -28737,6 +31947,8 @@ export type UsersBoolExp = {
   primaryConsultantPayrolls?: InputMaybe<PayrollsBoolExp>;
   primaryConsultantPayrollsAggregate?: InputMaybe<PayrollsAggregateBoolExp>;
   role?: InputMaybe<UserRoleComparisonExp>;
+  securitySettings?: InputMaybe<SecuritySettingsBoolExp>;
+  securitySettingsAggregate?: InputMaybe<SecuritySettingsAggregateBoolExp>;
   status?: InputMaybe<UserStatusEnumComparisonExp>;
   statusChangeReason?: InputMaybe<StringComparisonExp>;
   statusChangedAt?: InputMaybe<TimestamptzComparisonExp>;
@@ -28763,6 +31975,8 @@ export type UsersBoolExp = {
   userPermissionAuditsAggregate?: InputMaybe<PermissionAuditLogsAggregateBoolExp>;
   userPermissionOverrides?: InputMaybe<PermissionOverridesBoolExp>;
   userPermissionOverridesAggregate?: InputMaybe<PermissionOverridesAggregateBoolExp>;
+  userSessions?: InputMaybe<UserSessionsBoolExp>;
+  userSessionsAggregate?: InputMaybe<UserSessionsAggregateBoolExp>;
   userSkills?: InputMaybe<UserSkillBoolExp>;
   userSkillsAggregate?: InputMaybe<UserSkillAggregateBoolExp>;
   userWorkSchedules?: InputMaybe<WorkScheduleBoolExp>;
@@ -28811,6 +32025,7 @@ export type UsersInsertInput = {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   createdBillingEvents?: InputMaybe<BillingEventLogsArrRelInsertInput>;
   createdPermissionOverrides?: InputMaybe<PermissionOverridesArrRelInsertInput>;
+  dataBackups?: InputMaybe<DataBackupsArrRelInsertInput>;
   deactivatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   deactivatedBy?: InputMaybe<Scalars['String']['input']>;
   /** Default admin time percentage for this user */
@@ -28821,6 +32036,7 @@ export type UsersInsertInput = {
   emailSendLogs?: InputMaybe<EmailSendLogsArrRelInsertInput>;
   emailTemplates?: InputMaybe<EmailTemplatesArrRelInsertInput>;
   emailTemplatesCreatedByUserId?: InputMaybe<EmailTemplatesArrRelInsertInput>;
+  firstName?: InputMaybe<Scalars['String']['input']>;
   /** Unique identifier for the user */
   id?: InputMaybe<Scalars['uuid']['input']>;
   /** URL to the user's profile image */
@@ -28828,6 +32044,7 @@ export type UsersInsertInput = {
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether the user is a staff member (vs. external user) */
   isStaff?: InputMaybe<Scalars['Boolean']['input']>;
+  lastName?: InputMaybe<Scalars['String']['input']>;
   managedPayrolls?: InputMaybe<PayrollsArrRelInsertInput>;
   managedTeamMembers?: InputMaybe<UsersArrRelInsertInput>;
   managedUsers?: InputMaybe<UsersArrRelInsertInput>;
@@ -28845,7 +32062,8 @@ export type UsersInsertInput = {
   position?: InputMaybe<Scalars['user_position']['input']>;
   primaryConsultantPayrolls?: InputMaybe<PayrollsArrRelInsertInput>;
   /** User's system role (viewer, consultant, manager, org_admin) */
-  role?: InputMaybe<Scalars['userrole']['input']>;
+  role?: InputMaybe<Scalars['user_role']['input']>;
+  securitySettings?: InputMaybe<SecuritySettingsArrRelInsertInput>;
   /** Current user status - must be consistent with isActive field */
   status?: InputMaybe<Scalars['user_status_enum']['input']>;
   /** Reason for the status change (for audit purposes) */
@@ -28867,6 +32085,7 @@ export type UsersInsertInput = {
   userLeaveRecords?: InputMaybe<LeaveArrRelInsertInput>;
   userPermissionAudits?: InputMaybe<PermissionAuditLogsArrRelInsertInput>;
   userPermissionOverrides?: InputMaybe<PermissionOverridesArrRelInsertInput>;
+  userSessions?: InputMaybe<UserSessionsArrRelInsertInput>;
   userSkills?: InputMaybe<UserSkillArrRelInsertInput>;
   userWorkSchedules?: InputMaybe<WorkScheduleArrRelInsertInput>;
   /** User's unique username for login */
@@ -28883,6 +32102,7 @@ export type UsersMaxFields = {
   bio?: Maybe<Scalars['String']['output']>;
   /** External identifier from Clerk authentication service */
   clerkUserId?: Maybe<Scalars['String']['output']>;
+  computedName?: Maybe<Scalars['String']['output']>;
   /** Timestamp when the user was created */
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
   deactivatedAt?: Maybe<Scalars['timestamptz']['output']>;
@@ -28891,10 +32111,12 @@ export type UsersMaxFields = {
   defaultAdminTimePercentage?: Maybe<Scalars['numeric']['output']>;
   /** User's email address (unique) */
   email?: Maybe<Scalars['String']['output']>;
+  firstName?: Maybe<Scalars['String']['output']>;
   /** Unique identifier for the user */
   id?: Maybe<Scalars['uuid']['output']>;
   /** URL to the user's profile image */
   image?: Maybe<Scalars['String']['output']>;
+  lastName?: Maybe<Scalars['String']['output']>;
   /** Reference to the user's manager */
   managerId?: Maybe<Scalars['uuid']['output']>;
   /** User's full name */
@@ -28904,7 +32126,7 @@ export type UsersMaxFields = {
   /** Organizational position affecting admin time allocation */
   position?: Maybe<Scalars['user_position']['output']>;
   /** User's system role (viewer, consultant, manager, org_admin) */
-  role?: Maybe<Scalars['userrole']['output']>;
+  role?: Maybe<Scalars['user_role']['output']>;
   /** Current user status - must be consistent with isActive field */
   status?: Maybe<Scalars['user_status_enum']['output']>;
   /** Reason for the status change (for audit purposes) */
@@ -28927,6 +32149,7 @@ export type UsersMaxOrderBy = {
   bio?: InputMaybe<OrderBy>;
   /** External identifier from Clerk authentication service */
   clerkUserId?: InputMaybe<OrderBy>;
+  computedName?: InputMaybe<OrderBy>;
   /** Timestamp when the user was created */
   createdAt?: InputMaybe<OrderBy>;
   deactivatedAt?: InputMaybe<OrderBy>;
@@ -28935,10 +32158,12 @@ export type UsersMaxOrderBy = {
   defaultAdminTimePercentage?: InputMaybe<OrderBy>;
   /** User's email address (unique) */
   email?: InputMaybe<OrderBy>;
+  firstName?: InputMaybe<OrderBy>;
   /** Unique identifier for the user */
   id?: InputMaybe<OrderBy>;
   /** URL to the user's profile image */
   image?: InputMaybe<OrderBy>;
+  lastName?: InputMaybe<OrderBy>;
   /** Reference to the user's manager */
   managerId?: InputMaybe<OrderBy>;
   /** User's full name */
@@ -28972,6 +32197,7 @@ export type UsersMinFields = {
   bio?: Maybe<Scalars['String']['output']>;
   /** External identifier from Clerk authentication service */
   clerkUserId?: Maybe<Scalars['String']['output']>;
+  computedName?: Maybe<Scalars['String']['output']>;
   /** Timestamp when the user was created */
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
   deactivatedAt?: Maybe<Scalars['timestamptz']['output']>;
@@ -28980,10 +32206,12 @@ export type UsersMinFields = {
   defaultAdminTimePercentage?: Maybe<Scalars['numeric']['output']>;
   /** User's email address (unique) */
   email?: Maybe<Scalars['String']['output']>;
+  firstName?: Maybe<Scalars['String']['output']>;
   /** Unique identifier for the user */
   id?: Maybe<Scalars['uuid']['output']>;
   /** URL to the user's profile image */
   image?: Maybe<Scalars['String']['output']>;
+  lastName?: Maybe<Scalars['String']['output']>;
   /** Reference to the user's manager */
   managerId?: Maybe<Scalars['uuid']['output']>;
   /** User's full name */
@@ -28993,7 +32221,7 @@ export type UsersMinFields = {
   /** Organizational position affecting admin time allocation */
   position?: Maybe<Scalars['user_position']['output']>;
   /** User's system role (viewer, consultant, manager, org_admin) */
-  role?: Maybe<Scalars['userrole']['output']>;
+  role?: Maybe<Scalars['user_role']['output']>;
   /** Current user status - must be consistent with isActive field */
   status?: Maybe<Scalars['user_status_enum']['output']>;
   /** Reason for the status change (for audit purposes) */
@@ -29016,6 +32244,7 @@ export type UsersMinOrderBy = {
   bio?: InputMaybe<OrderBy>;
   /** External identifier from Clerk authentication service */
   clerkUserId?: InputMaybe<OrderBy>;
+  computedName?: InputMaybe<OrderBy>;
   /** Timestamp when the user was created */
   createdAt?: InputMaybe<OrderBy>;
   deactivatedAt?: InputMaybe<OrderBy>;
@@ -29024,10 +32253,12 @@ export type UsersMinOrderBy = {
   defaultAdminTimePercentage?: InputMaybe<OrderBy>;
   /** User's email address (unique) */
   email?: InputMaybe<OrderBy>;
+  firstName?: InputMaybe<OrderBy>;
   /** Unique identifier for the user */
   id?: InputMaybe<OrderBy>;
   /** URL to the user's profile image */
   image?: InputMaybe<OrderBy>;
+  lastName?: InputMaybe<OrderBy>;
   /** Reference to the user's manager */
   managerId?: InputMaybe<OrderBy>;
   /** User's full name */
@@ -29086,12 +32317,14 @@ export type UsersOrderBy = {
   billingItemsUserIdAggregate?: InputMaybe<BillingItemsAggregateOrderBy>;
   bio?: InputMaybe<OrderBy>;
   clerkUserId?: InputMaybe<OrderBy>;
+  computedName?: InputMaybe<OrderBy>;
   consultantAssignmentsAggregate?: InputMaybe<PayrollAssignmentsAggregateOrderBy>;
   createdAssignmentAuditsAggregate?: InputMaybe<PayrollAssignmentAuditsAggregateOrderBy>;
   createdAssignmentsAggregate?: InputMaybe<PayrollAssignmentsAggregateOrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   createdBillingEventsAggregate?: InputMaybe<BillingEventLogsAggregateOrderBy>;
   createdPermissionOverridesAggregate?: InputMaybe<PermissionOverridesAggregateOrderBy>;
+  dataBackupsAggregate?: InputMaybe<DataBackupsAggregateOrderBy>;
   deactivatedAt?: InputMaybe<OrderBy>;
   deactivatedBy?: InputMaybe<OrderBy>;
   defaultAdminTimePercentage?: InputMaybe<OrderBy>;
@@ -29100,10 +32333,12 @@ export type UsersOrderBy = {
   emailSendLogsAggregate?: InputMaybe<EmailSendLogsAggregateOrderBy>;
   emailTemplatesAggregate?: InputMaybe<EmailTemplatesAggregateOrderBy>;
   emailTemplatesCreatedByUserIdAggregate?: InputMaybe<EmailTemplatesAggregateOrderBy>;
+  firstName?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   image?: InputMaybe<OrderBy>;
   isActive?: InputMaybe<OrderBy>;
   isStaff?: InputMaybe<OrderBy>;
+  lastName?: InputMaybe<OrderBy>;
   managedPayrollsAggregate?: InputMaybe<PayrollsAggregateOrderBy>;
   managedTeamMembersAggregate?: InputMaybe<UsersAggregateOrderBy>;
   managedUsersAggregate?: InputMaybe<UsersAggregateOrderBy>;
@@ -29117,6 +32352,7 @@ export type UsersOrderBy = {
   position?: InputMaybe<OrderBy>;
   primaryConsultantPayrollsAggregate?: InputMaybe<PayrollsAggregateOrderBy>;
   role?: InputMaybe<OrderBy>;
+  securitySettingsAggregate?: InputMaybe<SecuritySettingsAggregateOrderBy>;
   status?: InputMaybe<OrderBy>;
   statusChangeReason?: InputMaybe<OrderBy>;
   statusChangedAt?: InputMaybe<OrderBy>;
@@ -29133,6 +32369,7 @@ export type UsersOrderBy = {
   userLeaveRecordsAggregate?: InputMaybe<LeaveAggregateOrderBy>;
   userPermissionAuditsAggregate?: InputMaybe<PermissionAuditLogsAggregateOrderBy>;
   userPermissionOverridesAggregate?: InputMaybe<PermissionOverridesAggregateOrderBy>;
+  userSessionsAggregate?: InputMaybe<UserSessionsAggregateOrderBy>;
   userSkillsAggregate?: InputMaybe<UserSkillAggregateOrderBy>;
   userWorkSchedulesAggregate?: InputMaybe<WorkScheduleAggregateOrderBy>;
   username?: InputMaybe<OrderBy>;
@@ -29145,23 +32382,23 @@ export type UsersPkColumnsInput = {
   id: Scalars['uuid']['input'];
 };
 
-/** columns and relationships of "usersrole_backup" */
+/** columns and relationships of "users_role_backup" */
 export type UsersRoleBackup = {
   __typename?: 'usersRoleBackup';
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
   email?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['uuid']['output']>;
-  role?: Maybe<Scalars['userrole']['output']>;
+  role?: Maybe<Scalars['user_role']['output']>;
 };
 
-/** aggregated selection of "usersrole_backup" */
+/** aggregated selection of "users_role_backup" */
 export type UsersRoleBackupAggregate = {
   __typename?: 'usersRoleBackupAggregate';
   aggregate?: Maybe<UsersRoleBackupAggregateFields>;
   nodes: Array<UsersRoleBackup>;
 };
 
-/** aggregate fields of "usersrole_backup" */
+/** aggregate fields of "users_role_backup" */
 export type UsersRoleBackupAggregateFields = {
   __typename?: 'usersRoleBackupAggregateFields';
   count: Scalars['Int']['output'];
@@ -29170,13 +32407,13 @@ export type UsersRoleBackupAggregateFields = {
 };
 
 
-/** aggregate fields of "usersrole_backup" */
+/** aggregate fields of "users_role_backup" */
 export type UsersRoleBackupAggregateFieldsCountArgs = {
   columns?: InputMaybe<Array<UsersRoleBackupSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-/** Boolean expression to filter rows from the table "usersrole_backup". All fields are combined with a logical 'AND'. */
+/** Boolean expression to filter rows from the table "users_role_backup". All fields are combined with a logical 'AND'. */
 export type UsersRoleBackupBoolExp = {
   _and?: InputMaybe<Array<UsersRoleBackupBoolExp>>;
   _not?: InputMaybe<UsersRoleBackupBoolExp>;
@@ -29187,12 +32424,12 @@ export type UsersRoleBackupBoolExp = {
   role?: InputMaybe<UserRoleComparisonExp>;
 };
 
-/** input type for inserting data into table "usersrole_backup" */
+/** input type for inserting data into table "users_role_backup" */
 export type UsersRoleBackupInsertInput = {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
-  role?: InputMaybe<Scalars['userrole']['input']>;
+  role?: InputMaybe<Scalars['user_role']['input']>;
 };
 
 /** aggregate max on columns */
@@ -29201,7 +32438,7 @@ export type UsersRoleBackupMaxFields = {
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
   email?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['uuid']['output']>;
-  role?: Maybe<Scalars['userrole']['output']>;
+  role?: Maybe<Scalars['user_role']['output']>;
 };
 
 /** aggregate min on columns */
@@ -29210,10 +32447,10 @@ export type UsersRoleBackupMinFields = {
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
   email?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['uuid']['output']>;
-  role?: Maybe<Scalars['userrole']['output']>;
+  role?: Maybe<Scalars['user_role']['output']>;
 };
 
-/** response of any mutation on the table "usersrole_backup" */
+/** response of any mutation on the table "users_role_backup" */
 export type UsersRoleBackupMutationResponse = {
   __typename?: 'usersRoleBackupMutationResponse';
   /** number of rows affected by the mutation */
@@ -29222,7 +32459,7 @@ export type UsersRoleBackupMutationResponse = {
   returning: Array<UsersRoleBackup>;
 };
 
-/** Ordering options when selecting data from "usersrole_backup". */
+/** Ordering options when selecting data from "users_role_backup". */
 export type UsersRoleBackupOrderBy = {
   createdAt?: InputMaybe<OrderBy>;
   email?: InputMaybe<OrderBy>;
@@ -29230,7 +32467,7 @@ export type UsersRoleBackupOrderBy = {
   role?: InputMaybe<OrderBy>;
 };
 
-/** select columns of table "usersrole_backup" */
+/** select columns of table "users_role_backup" */
 export type UsersRoleBackupSelectColumn =
   /** column name */
   | 'createdAt'
@@ -29242,12 +32479,12 @@ export type UsersRoleBackupSelectColumn =
   | 'role'
   | '%future added value';
 
-/** input type for updating data in table "usersrole_backup" */
+/** input type for updating data in table "users_role_backup" */
 export type UsersRoleBackupSetInput = {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
-  role?: InputMaybe<Scalars['userrole']['input']>;
+  role?: InputMaybe<Scalars['user_role']['input']>;
 };
 
 /** Streaming cursor of the table "usersRoleBackup" */
@@ -29263,7 +32500,7 @@ export type UsersRoleBackupStreamCursorValueInput = {
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
-  role?: InputMaybe<Scalars['userrole']['input']>;
+  role?: InputMaybe<Scalars['user_role']['input']>;
 };
 
 export type UsersRoleBackupUpdates = {
@@ -29282,6 +32519,8 @@ export type UsersSelectColumn =
   /** column name */
   | 'clerkUserId'
   /** column name */
+  | 'computedName'
+  /** column name */
   | 'createdAt'
   /** column name */
   | 'deactivatedAt'
@@ -29292,6 +32531,8 @@ export type UsersSelectColumn =
   /** column name */
   | 'email'
   /** column name */
+  | 'firstName'
+  /** column name */
   | 'id'
   /** column name */
   | 'image'
@@ -29299,6 +32540,8 @@ export type UsersSelectColumn =
   | 'isActive'
   /** column name */
   | 'isStaff'
+  /** column name */
+  | 'lastName'
   /** column name */
   | 'managerId'
   /** column name */
@@ -29355,6 +32598,7 @@ export type UsersSetInput = {
   defaultAdminTimePercentage?: InputMaybe<Scalars['numeric']['input']>;
   /** User's email address (unique) */
   email?: InputMaybe<Scalars['String']['input']>;
+  firstName?: InputMaybe<Scalars['String']['input']>;
   /** Unique identifier for the user */
   id?: InputMaybe<Scalars['uuid']['input']>;
   /** URL to the user's profile image */
@@ -29362,6 +32606,7 @@ export type UsersSetInput = {
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether the user is a staff member (vs. external user) */
   isStaff?: InputMaybe<Scalars['Boolean']['input']>;
+  lastName?: InputMaybe<Scalars['String']['input']>;
   /** Reference to the user's manager */
   managerId?: InputMaybe<Scalars['uuid']['input']>;
   /** User's full name */
@@ -29371,7 +32616,7 @@ export type UsersSetInput = {
   /** Organizational position affecting admin time allocation */
   position?: InputMaybe<Scalars['user_position']['input']>;
   /** User's system role (viewer, consultant, manager, org_admin) */
-  role?: InputMaybe<Scalars['userrole']['input']>;
+  role?: InputMaybe<Scalars['user_role']['input']>;
   /** Current user status - must be consistent with isActive field */
   status?: InputMaybe<Scalars['user_status_enum']['input']>;
   /** Reason for the status change (for audit purposes) */
@@ -29441,6 +32686,7 @@ export type UsersStreamCursorValueInput = {
   bio?: InputMaybe<Scalars['String']['input']>;
   /** External identifier from Clerk authentication service */
   clerkUserId?: InputMaybe<Scalars['String']['input']>;
+  computedName?: InputMaybe<Scalars['String']['input']>;
   /** Timestamp when the user was created */
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   deactivatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
@@ -29449,6 +32695,7 @@ export type UsersStreamCursorValueInput = {
   defaultAdminTimePercentage?: InputMaybe<Scalars['numeric']['input']>;
   /** User's email address (unique) */
   email?: InputMaybe<Scalars['String']['input']>;
+  firstName?: InputMaybe<Scalars['String']['input']>;
   /** Unique identifier for the user */
   id?: InputMaybe<Scalars['uuid']['input']>;
   /** URL to the user's profile image */
@@ -29456,6 +32703,7 @@ export type UsersStreamCursorValueInput = {
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether the user is a staff member (vs. external user) */
   isStaff?: InputMaybe<Scalars['Boolean']['input']>;
+  lastName?: InputMaybe<Scalars['String']['input']>;
   /** Reference to the user's manager */
   managerId?: InputMaybe<Scalars['uuid']['input']>;
   /** User's full name */
@@ -29465,7 +32713,7 @@ export type UsersStreamCursorValueInput = {
   /** Organizational position affecting admin time allocation */
   position?: InputMaybe<Scalars['user_position']['input']>;
   /** User's system role (viewer, consultant, manager, org_admin) */
-  role?: InputMaybe<Scalars['userrole']['input']>;
+  role?: InputMaybe<Scalars['user_role']['input']>;
   /** Current user status - must be consistent with isActive field */
   status?: InputMaybe<Scalars['user_status_enum']['input']>;
   /** Reason for the status change (for audit purposes) */
@@ -29512,6 +32760,8 @@ export type UsersUpdateColumn =
   /** column name */
   | 'email'
   /** column name */
+  | 'firstName'
+  /** column name */
   | 'id'
   /** column name */
   | 'image'
@@ -29519,6 +32769,8 @@ export type UsersUpdateColumn =
   | 'isActive'
   /** column name */
   | 'isStaff'
+  /** column name */
+  | 'lastName'
   /** column name */
   | 'managerId'
   /** column name */
@@ -30156,19 +33408,19 @@ export type WorkScheduleVarianceOrderBy = {
   workHours?: InputMaybe<OrderBy>;
 };
 
-export type UserMinimalFragment = { __typename?: 'users', id: string, name: string, email: string };
+export type UserMinimalFragment = { __typename?: 'users', id: string, firstName: string, lastName: string, computedName?: string | null, email: string };
 
-export type UserCoreSharedFragment = { __typename?: 'users', role: any, isActive?: boolean | null, id: string, name: string, email: string };
+export type UserCoreSharedFragment = { __typename?: 'users', role: any, isActive?: boolean | null, id: string, firstName: string, lastName: string, computedName?: string | null, email: string };
 
-export type UserBasicFragment = { __typename?: 'users', createdAt?: string | null, updatedAt?: string | null, role: any, isActive?: boolean | null, id: string, name: string, email: string };
+export type UserBasicFragment = { __typename?: 'users', clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null, role: any, isActive?: boolean | null, id: string, firstName: string, lastName: string, computedName?: string | null, email: string };
 
-export type UserBaseFragment = { __typename?: 'users', createdAt?: string | null, updatedAt?: string | null, role: any, isActive?: boolean | null, id: string, name: string, email: string };
+export type UserBaseFragment = { __typename?: 'users', clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null, role: any, isActive?: boolean | null, id: string, firstName: string, lastName: string, computedName?: string | null, email: string };
 
-export type UserWithRoleFragment = { __typename?: 'users', username?: string | null, isStaff?: boolean | null, createdAt?: string | null, updatedAt?: string | null, role: any, isActive?: boolean | null, id: string, name: string, email: string };
+export type UserWithRoleFragment = { __typename?: 'users', username?: string | null, isStaff?: boolean | null, clerkUserId?: string | null, createdAt?: string | null, updatedAt?: string | null, role: any, isActive?: boolean | null, id: string, firstName: string, lastName: string, computedName?: string | null, email: string };
 
-export type UserProfileFragment = { __typename?: 'users', clerkUserId?: string | null, image?: string | null, managerId?: string | null, deactivatedAt?: string | null, deactivatedBy?: string | null, username?: string | null, isStaff?: boolean | null, createdAt?: string | null, updatedAt?: string | null, role: any, isActive?: boolean | null, id: string, name: string, email: string, managerUser?: { __typename?: 'users', id: string, name: string, email: string } | null };
+export type UserProfileFragment = { __typename?: 'users', clerkUserId?: string | null, image?: string | null, managerId?: string | null, deactivatedAt?: string | null, deactivatedBy?: string | null, username?: string | null, isStaff?: boolean | null, createdAt?: string | null, updatedAt?: string | null, role: any, isActive?: boolean | null, id: string, firstName: string, lastName: string, computedName?: string | null, email: string, managerUser?: { __typename?: 'users', id: string, firstName: string, lastName: string, computedName?: string | null, email: string } | null };
 
-export type UserSearchResultFragment = { __typename?: 'users', username?: string | null, isStaff?: boolean | null, role: any, isActive?: boolean | null, id: string, name: string, email: string };
+export type UserSearchResultFragment = { __typename?: 'users', username?: string | null, isStaff?: boolean | null, role: any, isActive?: boolean | null, id: string, firstName: string, lastName: string, computedName?: string | null, email: string };
 
 export type ClientMinimalFragment = { __typename?: 'clients', id: string, name: string };
 
@@ -30184,13 +33436,13 @@ export type PayrollBaseFragment = { __typename?: 'payrolls', id: string, name: s
 
 export type PayrollWithClientFragment = { __typename?: 'payrolls', clientId: string, id: string, name: string, employeeCount?: number | null, status: any, payrollSystem?: string | null, processingTime: number, processingDaysBeforeEft: number, versionNumber?: number | null, supersededDate?: string | null, createdAt?: string | null, updatedAt?: string | null, client: { __typename?: 'clients', id: string, name: string, active?: boolean | null } };
 
-export type PayrollListItemFragment = { __typename?: 'payrolls', primaryConsultantUserId?: string | null, backupConsultantUserId?: string | null, managerUserId?: string | null, createdByUserId?: string | null, cycleId: string, dateTypeId: string, dateValue?: number | null, clientId: string, id: string, name: string, employeeCount?: number | null, status: any, payrollSystem?: string | null, processingTime: number, processingDaysBeforeEft: number, versionNumber?: number | null, supersededDate?: string | null, createdAt?: string | null, updatedAt?: string | null, payrollCycle: { __typename?: 'payrollCycles', id: string, name: any, description?: string | null }, payrollDateType: { __typename?: 'payrollDateTypes', id: string, name: any, description?: string | null }, primaryConsultant?: { __typename?: 'users', id: string, name: string, email: string } | null, backupConsultant?: { __typename?: 'users', id: string, name: string, email: string } | null, manager?: { __typename?: 'users', id: string, name: string, email: string } | null, client: { __typename?: 'clients', id: string, name: string, active?: boolean | null } };
+export type PayrollListItemFragment = { __typename?: 'payrolls', primaryConsultantUserId?: string | null, backupConsultantUserId?: string | null, managerUserId?: string | null, createdByUserId?: string | null, cycleId: string, dateTypeId: string, dateValue?: number | null, clientId: string, id: string, name: string, employeeCount?: number | null, status: any, payrollSystem?: string | null, processingTime: number, processingDaysBeforeEft: number, versionNumber?: number | null, supersededDate?: string | null, createdAt?: string | null, updatedAt?: string | null, payrollCycle: { __typename?: 'payrollCycles', id: string, name: any, description?: string | null }, payrollDateType: { __typename?: 'payrollDateTypes', id: string, name: any, description?: string | null }, primaryConsultant?: { __typename?: 'users', id: string, firstName: string, lastName: string, computedName?: string | null, email: string } | null, backupConsultant?: { __typename?: 'users', id: string, firstName: string, lastName: string, computedName?: string | null, email: string } | null, manager?: { __typename?: 'users', id: string, firstName: string, lastName: string, computedName?: string | null, email: string } | null, client: { __typename?: 'clients', id: string, name: string, active?: boolean | null } };
 
 export type PayrollWithDatesFragment = { __typename?: 'payrolls', goLiveDate?: string | null, id: string, name: string, employeeCount?: number | null, status: any, payrollSystem?: string | null, processingTime: number, processingDaysBeforeEft: number, versionNumber?: number | null, supersededDate?: string | null, createdAt?: string | null, updatedAt?: string | null, payrollDates: Array<{ __typename?: 'payrollDates', id: string, originalEftDate: string, adjustedEftDate: string, notes?: string | null }> };
 
-export type PayrollFullDetailFragment = { __typename?: 'payrolls', dateTypeId: string, cycleId: string, dateValue?: number | null, versionReason?: string | null, supersededDate?: string | null, parentPayrollId?: string | null, goLiveDate?: string | null, clientId: string, id: string, name: string, employeeCount?: number | null, status: any, payrollSystem?: string | null, processingTime: number, processingDaysBeforeEft: number, versionNumber?: number | null, createdAt?: string | null, updatedAt?: string | null, parentPayroll?: { __typename?: 'payrolls', id: string, versionNumber?: number | null } | null, childPayrolls: Array<{ __typename?: 'payrolls', id: string, versionNumber?: number | null, versionReason?: string | null, createdAt?: string | null }>, primaryConsultant?: { __typename?: 'users', id: string, name: string, email: string } | null, backupConsultant?: { __typename?: 'users', id: string, name: string, email: string } | null, manager?: { __typename?: 'users', id: string, name: string, email: string } | null, payrollDates: Array<{ __typename?: 'payrollDates', id: string, originalEftDate: string, adjustedEftDate: string, notes?: string | null }>, client: { __typename?: 'clients', id: string, name: string, active?: boolean | null } };
+export type PayrollFullDetailFragment = { __typename?: 'payrolls', dateTypeId: string, cycleId: string, dateValue?: number | null, versionReason?: string | null, supersededDate?: string | null, parentPayrollId?: string | null, goLiveDate?: string | null, clientId: string, id: string, name: string, employeeCount?: number | null, status: any, payrollSystem?: string | null, processingTime: number, processingDaysBeforeEft: number, versionNumber?: number | null, createdAt?: string | null, updatedAt?: string | null, parentPayroll?: { __typename?: 'payrolls', id: string, versionNumber?: number | null } | null, childPayrolls: Array<{ __typename?: 'payrolls', id: string, versionNumber?: number | null, versionReason?: string | null, createdAt?: string | null }>, primaryConsultant?: { __typename?: 'users', id: string, firstName: string, lastName: string, computedName?: string | null, email: string } | null, backupConsultant?: { __typename?: 'users', id: string, firstName: string, lastName: string, computedName?: string | null, email: string } | null, manager?: { __typename?: 'users', id: string, firstName: string, lastName: string, computedName?: string | null, email: string } | null, payrollDates: Array<{ __typename?: 'payrollDates', id: string, originalEftDate: string, adjustedEftDate: string, notes?: string | null }>, client: { __typename?: 'clients', id: string, name: string, active?: boolean | null } };
 
-export type NoteWithAuthorFragment = { __typename?: 'notes', id: string, content: string, isImportant?: boolean | null, createdAt?: any | null, entityId: string, entityType: string, authorUser?: { __typename?: 'users', id: string, name: string, email: string } | null };
+export type NoteWithAuthorFragment = { __typename?: 'notes', id: string, content: string, isImportant?: boolean | null, createdAt?: any | null, entityId: string, entityType: string, authorUser?: { __typename?: 'users', id: string, firstName: string, lastName: string, computedName?: string | null, email: string } | null };
 
 export type PermissionBaseFragment = { __typename?: 'permissions', id: string, resourceId: string, description?: string | null, legacyPermissionName?: string | null, action: any };
 
@@ -30244,14 +33496,14 @@ export type GetCurrentUserQueryVariables = Exact<{
 }>;
 
 
-export type GetCurrentUserQuery = { __typename?: 'query_root', user?: { __typename?: 'users', clerkUserId?: string | null, image?: string | null, managerId?: string | null, deactivatedAt?: string | null, deactivatedBy?: string | null, username?: string | null, isStaff?: boolean | null, createdAt?: string | null, updatedAt?: string | null, role: any, isActive?: boolean | null, id: string, name: string, email: string, managerUser?: { __typename?: 'users', id: string, name: string, email: string } | null } | null };
+export type GetCurrentUserQuery = { __typename?: 'query_root', user?: { __typename?: 'users', clerkUserId?: string | null, image?: string | null, managerId?: string | null, deactivatedAt?: string | null, deactivatedBy?: string | null, username?: string | null, isStaff?: boolean | null, createdAt?: string | null, updatedAt?: string | null, role: any, isActive?: boolean | null, id: string, firstName: string, lastName: string, computedName?: string | null, email: string, managerUser?: { __typename?: 'users', id: string, firstName: string, lastName: string, computedName?: string | null, email: string } | null } | null };
 
 export type GetUsersForDropdownQueryVariables = Exact<{
-  role?: InputMaybe<Scalars['userrole']['input']>;
+  role?: InputMaybe<Scalars['user_role']['input']>;
 }>;
 
 
-export type GetUsersForDropdownQuery = { __typename?: 'query_root', users: Array<{ __typename?: 'users', id: string, name: string, email: string }> };
+export type GetUsersForDropdownQuery = { __typename?: 'query_root', users: Array<{ __typename?: 'users', id: string, firstName: string, lastName: string, computedName?: string | null, email: string }> };
 
 export type GetSystemHealthQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -30263,7 +33515,7 @@ export type GlobalSearchQueryVariables = Exact<{
 }>;
 
 
-export type GlobalSearchQuery = { __typename?: 'query_root', clients: Array<{ __typename?: 'clients', id: string, name: string }>, users: Array<{ __typename?: 'users', id: string, name: string, email: string }>, payrolls: Array<{ __typename?: 'payrolls', id: string, name: string, employeeCount?: number | null, status: any, client: { __typename?: 'clients', id: string, name: string } }> };
+export type GlobalSearchQuery = { __typename?: 'query_root', clients: Array<{ __typename?: 'clients', id: string, name: string }>, users: Array<{ __typename?: 'users', id: string, firstName: string, lastName: string, computedName?: string | null, email: string }>, payrolls: Array<{ __typename?: 'payrolls', id: string, name: string, employeeCount?: number | null, status: any, client: { __typename?: 'clients', id: string, name: string } }> };
 
 export type RecentActivitySubscriptionVariables = Exact<{
   resourceTypes?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
@@ -30291,13 +33543,13 @@ export type PermissionChangeStreamSubscriptionVariables = Exact<{ [key: string]:
 
 export type PermissionChangeStreamSubscription = { __typename?: 'subscription_root', permissionChanges: Array<{ __typename?: 'permissionChanges', id: string, changedAt: string, changedByUserId: string, targetUserId?: string | null, targetRoleId?: string | null, changeType: string, permissionType?: string | null, oldPermissions?: any | null, newPermissions?: any | null, reason?: string | null, approvedByUserId?: string | null }> };
 
-export const UserMinimalFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<UserMinimalFragment, unknown>;
-export const UserCoreSharedFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<UserCoreSharedFragment, unknown>;
-export const UserBasicFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]} as unknown as DocumentNode<UserBasicFragment, unknown>;
-export const UserBaseFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserBaseFragment, unknown>;
-export const UserWithRoleFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithRole"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserWithRoleFragment, unknown>;
-export const UserProfileFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserProfile"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserWithRole"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedBy"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithRole"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}}]} as unknown as DocumentNode<UserProfileFragment, unknown>;
-export const UserSearchResultFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSearchResult"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]} as unknown as DocumentNode<UserSearchResultFragment, unknown>;
+export const UserMinimalFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<UserMinimalFragment, unknown>;
+export const UserCoreSharedFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<UserCoreSharedFragment, unknown>;
+export const UserBasicFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]} as unknown as DocumentNode<UserBasicFragment, unknown>;
+export const UserBaseFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserBaseFragment, unknown>;
+export const UserWithRoleFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithRole"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UserWithRoleFragment, unknown>;
+export const UserProfileFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserProfile"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserWithRole"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedBy"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithRole"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}}]} as unknown as DocumentNode<UserProfileFragment, unknown>;
+export const UserSearchResultFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserSearchResult"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]} as unknown as DocumentNode<UserSearchResultFragment, unknown>;
 export const ClientMinimalFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]} as unknown as DocumentNode<ClientMinimalFragment, unknown>;
 export const ClientBaseFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"contactEmail"}},{"kind":"Field","name":{"kind":"Name","value":"contactPerson"}},{"kind":"Field","name":{"kind":"Name","value":"contactPhone"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<ClientBaseFragment, unknown>;
 export const ClientWithStatsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientWithStats"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ClientBase"}},{"kind":"Field","alias":{"kind":"Name","value":"currentEmployeeCount"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}}]}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"activePayrollCount"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"Active","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"contactEmail"}},{"kind":"Field","name":{"kind":"Name","value":"contactPerson"}},{"kind":"Field","name":{"kind":"Name","value":"contactPhone"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<ClientWithStatsFragment, unknown>;
@@ -30305,10 +33557,10 @@ export const ClientListBaseFragmentDoc = {"kind":"Document","definitions":[{"kin
 export const PayrollMinimalFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]} as unknown as DocumentNode<PayrollMinimalFragment, unknown>;
 export const PayrollBaseFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"payrollSystem"}},{"kind":"Field","name":{"kind":"Name","value":"processingTime"}},{"kind":"Field","name":{"kind":"Name","value":"processingDaysBeforeEft"}},{"kind":"Field","name":{"kind":"Name","value":"versionNumber"}},{"kind":"Field","name":{"kind":"Name","value":"supersededDate"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<PayrollBaseFragment, unknown>;
 export const PayrollWithClientFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollWithClient"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollBase"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"payrollSystem"}},{"kind":"Field","name":{"kind":"Name","value":"processingTime"}},{"kind":"Field","name":{"kind":"Name","value":"processingDaysBeforeEft"}},{"kind":"Field","name":{"kind":"Name","value":"versionNumber"}},{"kind":"Field","name":{"kind":"Name","value":"supersededDate"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<PayrollWithClientFragment, unknown>;
-export const PayrollListItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollListItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollWithClient"}},{"kind":"Field","name":{"kind":"Name","value":"primaryConsultantUserId"}},{"kind":"Field","name":{"kind":"Name","value":"backupConsultantUserId"}},{"kind":"Field","name":{"kind":"Name","value":"managerUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdByUserId"}},{"kind":"Field","name":{"kind":"Name","value":"cycleId"}},{"kind":"Field","name":{"kind":"Name","value":"dateTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"dateValue"}},{"kind":"Field","name":{"kind":"Name","value":"payrollCycle"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollDateType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryConsultant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}},{"kind":"Field","name":{"kind":"Name","value":"backupConsultant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}},{"kind":"Field","name":{"kind":"Name","value":"manager"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"payrollSystem"}},{"kind":"Field","name":{"kind":"Name","value":"processingTime"}},{"kind":"Field","name":{"kind":"Name","value":"processingDaysBeforeEft"}},{"kind":"Field","name":{"kind":"Name","value":"versionNumber"}},{"kind":"Field","name":{"kind":"Name","value":"supersededDate"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollWithClient"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollBase"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<PayrollListItemFragment, unknown>;
+export const PayrollListItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollListItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollWithClient"}},{"kind":"Field","name":{"kind":"Name","value":"primaryConsultantUserId"}},{"kind":"Field","name":{"kind":"Name","value":"backupConsultantUserId"}},{"kind":"Field","name":{"kind":"Name","value":"managerUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdByUserId"}},{"kind":"Field","name":{"kind":"Name","value":"cycleId"}},{"kind":"Field","name":{"kind":"Name","value":"dateTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"dateValue"}},{"kind":"Field","name":{"kind":"Name","value":"payrollCycle"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollDateType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryConsultant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}},{"kind":"Field","name":{"kind":"Name","value":"backupConsultant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}},{"kind":"Field","name":{"kind":"Name","value":"manager"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"payrollSystem"}},{"kind":"Field","name":{"kind":"Name","value":"processingTime"}},{"kind":"Field","name":{"kind":"Name","value":"processingDaysBeforeEft"}},{"kind":"Field","name":{"kind":"Name","value":"versionNumber"}},{"kind":"Field","name":{"kind":"Name","value":"supersededDate"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollWithClient"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollBase"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<PayrollListItemFragment, unknown>;
 export const PayrollWithDatesFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollWithDates"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollBase"}},{"kind":"Field","name":{"kind":"Name","value":"goLiveDate"}},{"kind":"Field","name":{"kind":"Name","value":"payrollDates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"originalEftDate"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"originalEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"adjustedEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"payrollSystem"}},{"kind":"Field","name":{"kind":"Name","value":"processingTime"}},{"kind":"Field","name":{"kind":"Name","value":"processingDaysBeforeEft"}},{"kind":"Field","name":{"kind":"Name","value":"versionNumber"}},{"kind":"Field","name":{"kind":"Name","value":"supersededDate"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<PayrollWithDatesFragment, unknown>;
-export const PayrollFullDetailFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollFullDetail"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollWithDates"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollWithClient"}},{"kind":"Field","name":{"kind":"Name","value":"dateTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"cycleId"}},{"kind":"Field","name":{"kind":"Name","value":"dateValue"}},{"kind":"Field","name":{"kind":"Name","value":"versionReason"}},{"kind":"Field","name":{"kind":"Name","value":"supersededDate"}},{"kind":"Field","name":{"kind":"Name","value":"parentPayrollId"}},{"kind":"Field","name":{"kind":"Name","value":"parentPayroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"versionNumber"}}]}},{"kind":"Field","name":{"kind":"Name","value":"childPayrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"versionNumber"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"versionNumber"}},{"kind":"Field","name":{"kind":"Name","value":"versionReason"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryConsultant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}},{"kind":"Field","name":{"kind":"Name","value":"backupConsultant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}},{"kind":"Field","name":{"kind":"Name","value":"manager"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"payrollSystem"}},{"kind":"Field","name":{"kind":"Name","value":"processingTime"}},{"kind":"Field","name":{"kind":"Name","value":"processingDaysBeforeEft"}},{"kind":"Field","name":{"kind":"Name","value":"versionNumber"}},{"kind":"Field","name":{"kind":"Name","value":"supersededDate"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollWithDates"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollBase"}},{"kind":"Field","name":{"kind":"Name","value":"goLiveDate"}},{"kind":"Field","name":{"kind":"Name","value":"payrollDates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"originalEftDate"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"originalEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"adjustedEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollWithClient"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollBase"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<PayrollFullDetailFragment, unknown>;
-export const NoteWithAuthorFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NoteWithAuthor"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"notes"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"isImportant"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"entityId"}},{"kind":"Field","name":{"kind":"Name","value":"entityType"}},{"kind":"Field","name":{"kind":"Name","value":"authorUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<NoteWithAuthorFragment, unknown>;
+export const PayrollFullDetailFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollFullDetail"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollWithDates"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollWithClient"}},{"kind":"Field","name":{"kind":"Name","value":"dateTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"cycleId"}},{"kind":"Field","name":{"kind":"Name","value":"dateValue"}},{"kind":"Field","name":{"kind":"Name","value":"versionReason"}},{"kind":"Field","name":{"kind":"Name","value":"supersededDate"}},{"kind":"Field","name":{"kind":"Name","value":"parentPayrollId"}},{"kind":"Field","name":{"kind":"Name","value":"parentPayroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"versionNumber"}}]}},{"kind":"Field","name":{"kind":"Name","value":"childPayrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"versionNumber"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"versionNumber"}},{"kind":"Field","name":{"kind":"Name","value":"versionReason"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryConsultant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}},{"kind":"Field","name":{"kind":"Name","value":"backupConsultant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}},{"kind":"Field","name":{"kind":"Name","value":"manager"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"payrollSystem"}},{"kind":"Field","name":{"kind":"Name","value":"processingTime"}},{"kind":"Field","name":{"kind":"Name","value":"processingDaysBeforeEft"}},{"kind":"Field","name":{"kind":"Name","value":"versionNumber"}},{"kind":"Field","name":{"kind":"Name","value":"supersededDate"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollWithDates"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollBase"}},{"kind":"Field","name":{"kind":"Name","value":"goLiveDate"}},{"kind":"Field","name":{"kind":"Name","value":"payrollDates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"originalEftDate"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"originalEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"adjustedEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollWithClient"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollBase"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<PayrollFullDetailFragment, unknown>;
+export const NoteWithAuthorFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NoteWithAuthor"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"notes"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"isImportant"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"entityId"}},{"kind":"Field","name":{"kind":"Name","value":"entityType"}},{"kind":"Field","name":{"kind":"Name","value":"authorUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<NoteWithAuthorFragment, unknown>;
 export const PermissionBaseFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"legacyPermissionName"}},{"kind":"Field","name":{"kind":"Name","value":"action"}}]}}]} as unknown as DocumentNode<PermissionBaseFragment, unknown>;
 export const RoleWithPermissionsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleWithPermissions"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"roles"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemRole"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}},{"kind":"Field","name":{"kind":"Name","value":"assignedPermissions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"grantedPermission"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PermissionBase"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionBase"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"permissions"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"legacyPermissionName"}},{"kind":"Field","name":{"kind":"Name","value":"action"}}]}}]} as unknown as DocumentNode<RoleWithPermissionsFragment, unknown>;
 export const AuditLogEntryFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AuditLogEntry"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"auditLogs"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"userEmail"}},{"kind":"Field","name":{"kind":"Name","value":"userRole"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"resourceType"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"eventTime"}},{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"errorMessage"}},{"kind":"Field","name":{"kind":"Name","value":"ipAddress"}},{"kind":"Field","name":{"kind":"Name","value":"userAgent"}},{"kind":"Field","name":{"kind":"Name","value":"requestId"}},{"kind":"Field","name":{"kind":"Name","value":"sessionId"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"}},{"kind":"Field","name":{"kind":"Name","value":"oldValues"}},{"kind":"Field","name":{"kind":"Name","value":"newValues"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<AuditLogEntryFragment, unknown>;
@@ -30322,10 +33574,10 @@ export const RefreshDataDocument = {"kind":"Document","definitions":[{"kind":"Op
 export const GetDashboardMetricsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetDashboardMetrics"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clientsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"active"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"activePayrollsAggregate"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_nin"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"Completed","block":false},{"kind":"StringValue","value":"Failed","block":false}]}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"totalEmployeesAggregate"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}}]}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"upcomingPayrolls"},"name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_nin"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"Completed","block":false},{"kind":"StringValue","value":"Failed","block":false},{"kind":"StringValue","value":"Cancelled","block":false}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ClientMinimal"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]} as unknown as DocumentNode<GetDashboardMetricsQuery, GetDashboardMetricsQueryVariables>;
 export const GetDashboardStatsOptimizedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetDashboardStatsOptimized"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"10"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clientsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"totalPayrolls"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"activePayrolls"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"Active","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"upcomingPayrolls"},"name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"Active","block":false}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GetDashboardStatsOptimizedQuery, GetDashboardStatsOptimizedQueryVariables>;
 export const GetClientsDashboardStatsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetClientsDashboardStats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"activeClientsCount"},"name":{"kind":"Name","value":"clientsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"active"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"totalPayrollsCount"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"totalEmployeesSum"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}}]}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"clientsNeedingAttention"},"name":{"kind":"Name","value":"clients"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"active"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"_not"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrolls"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ClientMinimal"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]} as unknown as DocumentNode<GetClientsDashboardStatsQuery, GetClientsDashboardStatsQueryVariables>;
-export const GetCurrentUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCurrentUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"user"},"name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserProfile"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithRole"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserProfile"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserWithRole"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedBy"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}}]} as unknown as DocumentNode<GetCurrentUserQuery, GetCurrentUserQueryVariables>;
-export const GetUsersForDropdownDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUsersForDropdown"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"role"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"userrole"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"role"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"role"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<GetUsersForDropdownQuery, GetUsersForDropdownQueryVariables>;
+export const GetCurrentUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCurrentUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"user"},"name":{"kind":"Name","value":"userById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserProfile"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserCoreShared"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserBasic"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserCoreShared"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserWithRole"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserBasic"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"isStaff"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserProfile"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserWithRole"}},{"kind":"Field","name":{"kind":"Name","value":"clerkUserId"}},{"kind":"Field","name":{"kind":"Name","value":"image"}},{"kind":"Field","name":{"kind":"Name","value":"managerId"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"deactivatedBy"}},{"kind":"Field","name":{"kind":"Name","value":"managerUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}}]} as unknown as DocumentNode<GetCurrentUserQuery, GetCurrentUserQueryVariables>;
+export const GetUsersForDropdownDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUsersForDropdown"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"role"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"user_role"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"role"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"role"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"computedName"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<GetUsersForDropdownQuery, GetUsersForDropdownQueryVariables>;
 export const GetSystemHealthDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetSystemHealth"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"databaseHealth"},"name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"1"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"recentActivity"},"name":{"kind":"Name","value":"auditLogsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"eventTime"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"StringValue","value":"now() - interval '1 hour'","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<GetSystemHealthQuery, GetSystemHealthQueryVariables>;
-export const GlobalSearchDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GlobalSearch"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clients"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"contactEmail"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ClientMinimal"}}]}},{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"email"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"client"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ClientMinimal"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]} as unknown as DocumentNode<GlobalSearchQuery, GlobalSearchQueryVariables>;
+export const GlobalSearchDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GlobalSearch"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clients"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"contactEmail"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ClientMinimal"}}]}},{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"computedName"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"firstName"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"lastName"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"email"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"client"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ClientMinimal"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]} as unknown as DocumentNode<GlobalSearchQuery, GlobalSearchQueryVariables>;
 export const RecentActivityDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"RecentActivity"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"resourceTypes"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"auditLogs"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"resourceType"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"Variable","name":{"kind":"Name","value":"resourceTypes"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"eventTime"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"StringValue","value":"now() - interval '5 minutes'","block":false}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"eventTime"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"20"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AuditLogEntry"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AuditLogEntry"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"auditLogs"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"userEmail"}},{"kind":"Field","name":{"kind":"Name","value":"userRole"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"resourceType"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"eventTime"}},{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"errorMessage"}},{"kind":"Field","name":{"kind":"Name","value":"ipAddress"}},{"kind":"Field","name":{"kind":"Name","value":"userAgent"}},{"kind":"Field","name":{"kind":"Name","value":"requestId"}},{"kind":"Field","name":{"kind":"Name","value":"sessionId"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"}},{"kind":"Field","name":{"kind":"Name","value":"oldValues"}},{"kind":"Field","name":{"kind":"Name","value":"newValues"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<RecentActivitySubscription, RecentActivitySubscriptionVariables>;
 export const AuthenticationEventsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"AuthenticationEvents"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"authEvents"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"eventTime"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"StringValue","value":"now() - interval '10 minutes'","block":false}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"eventTime"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AuthEvent"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AuthEvent"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"authEvents"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"userEmail"}},{"kind":"Field","name":{"kind":"Name","value":"eventType"}},{"kind":"Field","name":{"kind":"Name","value":"eventTime"}},{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"failureReason"}},{"kind":"Field","name":{"kind":"Name","value":"ipAddress"}},{"kind":"Field","name":{"kind":"Name","value":"userAgent"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"}}]}}]} as unknown as DocumentNode<AuthenticationEventsSubscription, AuthenticationEventsSubscriptionVariables>;
 export const SensitiveDataAccessDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"SensitiveDataAccess"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"resourceTypes"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dataAccessLogs"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"resourceType"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"Variable","name":{"kind":"Name","value":"resourceTypes"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"accessedAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"StringValue","value":"now() - interval '10 minutes'","block":false}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"accessedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DataAccessLog"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DataAccessLog"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"dataAccessLogs"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"resourceType"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"accessType"}},{"kind":"Field","name":{"kind":"Name","value":"accessedAt"}},{"kind":"Field","name":{"kind":"Name","value":"dataClassification"}},{"kind":"Field","name":{"kind":"Name","value":"fieldsAccessed"}},{"kind":"Field","name":{"kind":"Name","value":"rowCount"}},{"kind":"Field","name":{"kind":"Name","value":"ipAddress"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"}}]}}]} as unknown as DocumentNode<SensitiveDataAccessSubscription, SensitiveDataAccessSubscriptionVariables>;

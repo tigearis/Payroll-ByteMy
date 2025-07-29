@@ -244,12 +244,10 @@ query GetInvitationHistory($email: String!, $limit: Int = 10) {
     acceptedAt
     expiresAt
     invitedByUser {
-      name
-      email
+      ...UserMinimal
     }
     acceptedByUser {
-      name
-      email
+      ...UserMinimal
       clerkUserId
     }
   }
@@ -272,7 +270,9 @@ query GetInvitationsBySender($invitedBy: uuid!, $limit: Int = 50) {
     acceptedAt
     expiresAt
     acceptedByUser {
-      name
+      firstName
+      lastName
+      computedName
       email
     }
   }
@@ -282,7 +282,7 @@ query GetInvitationsBySender($invitedBy: uuid!, $limit: Int = 50) {
 query GetExpiredInvitations($now: timestamptz!) {
   userInvitations(
     where: {
-      _or: [{ status: { _eq: "expired" } }, { expiresAt: { _lt: $now } }]
+      _or: [{ invitationStatus: { _eq: "expired" } }, { expiresAt: { _lt: $now } }]
     }
     orderBy: { expiresAt: DESC }
   ) {
@@ -424,7 +424,9 @@ query GetInvitationDashboardStats($now: timestamptz!, $sevenDaysFromNow: timesta
     expiresAt
     invitedByUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
     }
   }
@@ -529,7 +531,9 @@ query GetUsersByStatus(
   ) {
     id
     email
-    name
+    firstName
+    lastName
+    computedName
     role
     status
     isActive
@@ -585,7 +589,9 @@ query GetUserStatusDashboardStats($thirtyDaysAgo: timestamptz = "2024-01-01T00:0
   ) {
     id
     email
-    name
+    firstName
+    lastName
+    computedName
     role
     status
     statusChangedAt
@@ -612,7 +618,9 @@ query GetUsersRequiringAttention($limit: Int = 20) {
   ) {
     id
     email
-    name
+    firstName
+    lastName
+    computedName
     role
     status
     statusChangedAt
@@ -626,7 +634,9 @@ query GetUsersRequiringAttention($limit: Int = 20) {
   ) {
     id
     email
-    name
+    firstName
+    lastName
+    computedName
     role
     status
     deactivatedAt
@@ -640,7 +650,9 @@ query GetUsersRequiringAttention($limit: Int = 20) {
   ) {
     id
     email
-    name
+    firstName
+    lastName
+    computedName
     role
     status
     createdAt
@@ -658,7 +670,9 @@ query GetUserStatusHistory(
   user: userById(id: $userId) {
     id
     email
-    name
+    firstName
+    lastName
+    computedName
     role
     status
     isActive
@@ -688,7 +702,7 @@ query SearchUsersAdvanced(
         {
           _or: [
             { email: { _ilike: "%${searchTerm}%" } }
-            { name: { _ilike: "%${searchTerm}%" } }
+            { computedName: { _ilike: "%${searchTerm}%" } }
           ]
         }
         { status: { _in: $statuses } }
@@ -701,7 +715,9 @@ query SearchUsersAdvanced(
   ) {
     id
     email
-    name
+    firstName
+    lastName
+    computedName
     role
     status
     isActive
@@ -718,7 +734,9 @@ query GetUserWithStatusDetails($userId: uuid!) {
   userById(id: $userId) {
     id
     email
-    name
+    firstName
+    lastName
+    computedName
     role
     status
     isActive
@@ -736,6 +754,80 @@ query GetUserWithStatusDetails($userId: uuid!) {
 
 # NOTE: API key management queries removed - api_keys table not found in schema
 # File: lib/security/persistent-api-keys.ts still uses inline GraphQL
+
+# ================================
+# ORPHANED DATA CLEANUP QUERIES
+# Focus: Identifying and cleaning up orphaned data
+# ================================
+
+# Get invitations that reference non-existent users (simplified)
+query GetOrphanedInvitations {
+  userInvitations(
+    where: {
+      invitationStatus: { _eq: "accepted" }
+    }
+    orderBy: { createdAt: DESC }
+  ) {
+    id
+    email
+    firstName
+    lastName
+    invitationStatus
+    acceptedBy
+    createdAt
+    invitedBy
+    invitedByUser {
+      id
+      firstName
+      lastName
+      email
+    }
+  }
+}
+
+# Get users without Clerk IDs (orphaned database users)
+query GetUsersWithoutClerkId {
+  users(
+    where: {
+      _or: [
+        { clerkUserId: { _isNull: true } }
+        { clerkUserId: { _eq: "" } }
+      ]
+    }
+    orderBy: { createdAt: DESC }
+  ) {
+    id
+    email
+    firstName
+    lastName
+    role
+    createdAt
+    updatedAt
+    isActive
+  }
+}
+
+# Get expired invitations without parameters (for cleanup operations)
+query GetExpiredInvitationsForCleanup {
+  userInvitations(
+    where: {
+      _or: [
+        { invitationStatus: { _eq: "expired" } }
+        { expiresAt: { _lt: "now()" } }
+      ]
+    }
+    orderBy: { expiresAt: DESC }
+  ) {
+    id
+    email
+    firstName
+    lastName
+    invitationStatus
+    expiresAt
+    createdAt
+    clerkInvitationId
+  }
+}
 
 # User invitation fragments
 fragment UserInvitationDetail on userInvitations {

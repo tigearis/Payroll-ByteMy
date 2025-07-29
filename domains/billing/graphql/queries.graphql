@@ -11,7 +11,9 @@ query GetStaffBillingPerformance($staffId: uuid, $dateFrom: date, $dateTo: date)
     }
   ) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     totalBilledHours: primaryConsultantPayrollsAggregate {
       aggregate {

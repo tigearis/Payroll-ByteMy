@@ -5,7 +5,9 @@
 
 fragment AuthUserCore on users {
   id
-  name
+  firstName
+  lastName
+  computedName
   email
   role
   isActive
@@ -59,7 +61,9 @@ fragment AuthUserRoleWithDetails on userRoles {
   updatedAt
   roleUser {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     isActive
   }
@@ -116,19 +120,25 @@ fragment UserInvitationWithDetails on userInvitations {
   ...UserInvitationCore
   invitedByUser {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
   }
   managerUser {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
   }
   acceptedByUser {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     clerkUserId
     isActive

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClerkClient } from "@clerk/backend";
+import { gql } from "@apollo/client";
 import {
   GetInvitationByTicketDocument,
   type GetInvitationByTicketQuery,
@@ -18,6 +19,12 @@ import {
 } from "@/domains/users/graphql/generated/graphql";
 import { executeTypedMutation, executeTypedQuery } from "@/lib/apollo/query-helpers";
 import { withAuth } from "@/lib/auth/api-auth";
+import { 
+  extractClerkTicketData, 
+  getReliableNameFromTicket, 
+  getReliableEmailFromTicket,
+  logTicketData 
+} from "@/lib/clerk-ticket-utils";
 
 const clerkClient = createClerkClient({
   secretKey: process.env.CLERK_SECRET_KEY!,
@@ -58,23 +65,30 @@ export const POST = withAuth(async (req: NextRequest, session) => {
     console.log("🔍 Looking up invitation with ticket:", clerkTicket.substring(0, 20) + "...");
     console.log("🔍 Full request details:", { clerkUserId, userEmail, userName });
 
-    // Decode the JWT ticket to extract invitation details
-    let clerkInvitationId = null;
-    try {
-      const base64Payload = clerkTicket.split(".")[1];
-      const decodedPayload = JSON.parse(atob(base64Payload));
-      console.log("🔍 Decoded JWT payload:", decodedPayload);
-      clerkInvitationId = decodedPayload.sid; // Clerk uses 'sid' (session ID) for invitation ID
-    } catch (decodeError) {
-      console.error("❌ Failed to decode JWT ticket:", decodeError);
+    // ENHANCED: Extract invitation details and user data using ticket-first strategy
+    console.log("🎫 Extracting data from Clerk invitation ticket...");
+    const ticketValidation = extractClerkTicketData(clerkTicket);
+    
+    if (!ticketValidation.isValid) {
+      console.error("❌ Invalid Clerk ticket:", ticketValidation.error);
       return NextResponse.json<AcceptInvitationResponse>(
         {
           success: false,
-          error: "Invalid invitation ticket format",
+          error: `Invalid invitation ticket: ${ticketValidation.error}`,
         },
         { status: 400 }
       );
     }
+    
+    const clerkInvitationId = ticketValidation.invitationId!;
+    const ticketUserData = ticketValidation.userData!;
+    
+    // Log extracted ticket data for debugging
+    logTicketData("invitation-acceptance", ticketUserData, {
+      clerkUserId,
+      requestUserEmail: userEmail,
+      requestUserName: userName
+    });
 
     if (!clerkInvitationId) {
       console.error("❌ No invitation ID found in JWT ticket");
@@ -200,6 +214,37 @@ export const POST = withAuth(async (req: NextRequest, session) => {
       );
     }
 
+    // ENHANCED: Ticket-first email validation using utility functions
+    const emailValidation = getReliableEmailFromTicket(ticketUserData, invitation.email);
+    const authorizedEmail = emailValidation.email;
+    const emailsMatch = authorizedEmail.toLowerCase() === userEmail.toLowerCase();
+    
+    console.log("📧 Email validation (ticket-first):", {
+      authorizedEmail,
+      userEmail,
+      source: emailValidation.source,
+      match: emailsMatch,
+      invitationEmail: invitation.email,
+      ticketEmail: ticketUserData.email || 'Not available'
+    });
+    
+    if (!emailsMatch) {
+      console.error("❌ EMAIL MISMATCH DETECTED:");
+      console.error("   - Authorized email:", authorizedEmail);
+      console.error("   - Source:", emailValidation.source);
+      console.error("   - Clerk user email:", userEmail);
+      
+      return NextResponse.json<AcceptInvitationResponse>(
+        {
+          success: false,
+          error: `Email mismatch: you are authorized for ${authorizedEmail} but your account uses ${userEmail}. Please contact support.`,
+        },
+        { status: 400 }
+      );
+    }
+    
+    console.log("✅ Email validation passed using", emailValidation.source, "source");
+
     // Check if user already exists by Clerk ID
     let existingUser = null;
     try {
@@ -214,67 +259,193 @@ export const POST = withAuth(async (req: NextRequest, session) => {
         console.log("👤 User already exists:", {
           id: existingUser.id,
           email: existingUser.email,
-          name: existingUser.name,
+          firstName: existingUser.firstName,
+          lastName: existingUser.lastName,
+          computedName: existingUser.computedName,
           role: existingUser.role,
           isActive: existingUser.isActive
         });
+        
+        // CRITICAL: Verify the existing user's email matches the invitation email
+        if (existingUser.email.toLowerCase() !== invitation.email.toLowerCase()) {
+          console.error("❌ EXISTING USER EMAIL MISMATCH:");
+          console.error("   - Invitation email:", invitation.email);
+          console.error("   - Existing user email:", existingUser.email);
+          console.error("   - This should not happen with proper email validation");
+          
+          return NextResponse.json<AcceptInvitationResponse>(
+            {
+              success: false,
+              error: "User account email does not match invitation. Please contact support.",
+            },
+            { status: 400 }
+          );
+        }
       }
     } catch (userCheckError) {
       console.warn("⚠️ Could not check for existing user:", userCheckError);
     }
 
-    // If user doesn't exist by Clerk ID, check by email as backup
-    if (!existingUser) {
-      try {
-        console.log("🔍 Checking if user exists with email:", userEmail);
-        const existingUserByEmailData = await executeTypedQuery<GetUserByEmailQuery>(
-          GetUserByEmailDocument,
-          { email: userEmail }
-        );
-        const userByEmail = existingUserByEmailData.users?.[0] || null;
-        
-        if (userByEmail) {
-          console.log("📧 User exists with same email but different Clerk ID:", {
-            id: userByEmail.id,
-            email: userByEmail.email,
-            existingClerkId: userByEmail.clerkUserId,
-            newClerkId: clerkUserId
-          });
-          // Could be a user who had a previous Clerk account
-          existingUser = userByEmail;
-        }
-      } catch (emailCheckError) {
-        console.warn("⚠️ Could not check for existing user by email:", emailCheckError);
-      }
-    }
+    // REMOVED: Email-based fallback lookup to prevent incorrect matching
+    // The old code here would find users by normalized email, causing the bug
+    // Now we only allow exact Clerk ID matches or create new users
 
     let newUser;
     if (existingUser) {
-      // User already exists, just use the existing user
+      // User already exists with matching Clerk ID and verified email
       console.log("✅ Using existing user for invitation acceptance");
+      console.log("   - Email match confirmed:", existingUser.email, "===", invitation.email);
       newUser = existingUser;
       
-      // Optionally update the Clerk ID if it's different
+      // Check if user role needs to be updated to match invitation
+      if (existingUser.role !== invitation.invitedRole) {
+        console.log(`🔄 Updating user role from ${existingUser.role} to ${invitation.invitedRole} to match invitation`);
+        
+        try {
+          const updateUserRoleData = await executeTypedMutation(
+            gql`
+              mutation UpdateUserRoleForInvitation($userId: uuid!, $role: user_role!, $managerId: uuid) {
+                updateUserById(
+                  pkColumns: { id: $userId }
+                  _set: { 
+                    role: $role
+                    managerId: $managerId
+                    updatedAt: "now()" 
+                  }
+                ) {
+                  id
+                  firstName
+                  lastName
+                  computedName
+                  email
+                  role
+                  clerkUserId
+                  isStaff
+                  managerId
+                  isActive
+                }
+              }
+            `,
+            {
+              userId: existingUser.id,
+              role: invitation.invitedRole,
+              managerId: invitation.managerId,
+            }
+          );
+          
+          newUser = updateUserRoleData.updateUserById;
+          console.log("✅ Updated existing user role to match invitation:", newUser.role);
+        } catch (roleUpdateError) {
+          console.error("❌ Failed to update user role:", roleUpdateError);
+          // Continue with existing user - don't fail the invitation acceptance
+        }
+      }
+      
+      // Sanity check: Clerk ID should match since we found by Clerk ID
       if (existingUser.clerkUserId !== clerkUserId) {
-        console.log("🔄 Updating Clerk ID for existing user");
-        // We might want to add a mutation to update the Clerk ID, but for now just proceed
+        console.warn("⚠️ Clerk ID mismatch detected - this should not happen");
+        console.warn("   - Expected:", clerkUserId);
+        console.warn("   - Found:", existingUser.clerkUserId);
       }
     } else {
-      // Create user record in database
+      // Create user record in database with validated email
       console.log("🔨 Creating new user record in database");
-      const userData = await executeTypedMutation<CreateUserByEmailMutation>(
-        CreateUserByEmailDocument,
-        {
-          name: userName,
-          email: userEmail,
-          role: invitation.invitedRole,
-          managerId: invitation.managerId,
-          isStaff: true, // Users from invitations are staff by default
-          clerkUserId: clerkUserId,
-        }
-      );
+      console.log("   - User will be created with invitation email:", invitation.email);
+      console.log("   - Clerk user email:", userEmail);
+      console.log("   - Using invitation email for consistency");
+      
+      // ENHANCED: Ticket-first name parsing using utility function
+      const nameValidation = getReliableNameFromTicket(ticketUserData, userName);
+      const firstName = nameValidation.firstName;
+      const lastName = nameValidation.lastName;
+      
+      console.log("👤 Name validation (ticket-first):", { 
+        firstName, 
+        lastName, 
+        source: nameValidation.source,
+        ticketFirstName: ticketUserData.firstName,
+        ticketLastName: ticketUserData.lastName,
+        ticketFullName: ticketUserData.fullName,
+        requestUserName: userName
+      });
+      
+      // CRITICAL: Use the invitation email, not the Clerk email, to ensure exact match
+      try {
+        const userData = await executeTypedMutation<CreateUserByEmailMutation>(
+          CreateUserByEmailDocument,
+          {
+            firstName: firstName,
+            lastName: lastName,
+            email: invitation.email, // Use invitation email for exact match
+            role: invitation.invitedRole,
+            managerId: invitation.managerId,
+            isStaff: true, // Users from invitations are staff by default
+            clerkUserId: clerkUserId,
+          }
+        );
 
-      newUser = userData.insertUser;
+        newUser = userData.insertUser;
+      } catch (createUserError: any) {
+        console.error("❌ Failed to create user:", createUserError);
+        
+        // Check if the error is due to user already existing (constraint violation)
+        if (createUserError.message?.includes('duplicate') || 
+            createUserError.message?.includes('constraint') ||
+            createUserError.message?.includes('unique')) {
+          console.log("🔍 User creation failed due to duplicate - checking if webhook created user");
+          
+          // Try to find user by email (webhook might have created with different Clerk ID sync timing)
+          try {
+            const existingByEmailData = await executeTypedQuery<GetUserByEmailQuery>(
+              GetUserByEmailDocument,
+              { email: invitation.email }
+            );
+            
+            if (existingByEmailData.users?.[0]) {
+              console.log("✅ Found user created by webhook, using existing user");
+              newUser = existingByEmailData.users[0];
+              
+              // Update the user with correct Clerk ID if missing
+              if (!newUser.clerkUserId || newUser.clerkUserId !== clerkUserId) {
+                console.log("🔄 Updating user with correct Clerk ID");
+                const updateClerkIdData = await executeTypedMutation(
+                  gql`
+                    mutation UpdateUserClerkId($userId: uuid!, $clerkUserId: String!) {
+                      updateUserById(
+                        pkColumns: { id: $userId }
+                        _set: { clerkUserId: $clerkUserId, updatedAt: "now()" }
+                      ) {
+                        id
+                        firstName
+                        lastName
+                        computedName
+                        email
+                        role
+                        clerkUserId
+                        isStaff
+                        managerId
+                        isActive
+                      }
+                    }
+                  `,
+                  {
+                    userId: newUser.id,
+                    clerkUserId: clerkUserId,
+                  }
+                );
+                newUser = updateClerkIdData.updateUserById;
+              }
+            } else {
+              throw createUserError; // Re-throw original error if no existing user found
+            }
+          } catch (findUserError) {
+            console.error("❌ Could not find existing user either:", findUserError);
+            throw createUserError; // Re-throw original creation error
+          }
+        } else {
+          throw createUserError; // Re-throw for other types of errors
+        }
+      }
 
       if (!newUser) {
         return NextResponse.json<AcceptInvitationResponse>(
@@ -286,13 +457,37 @@ export const POST = withAuth(async (req: NextRequest, session) => {
         );
       }
       
-      console.log("✅ New user created:", {
+      console.log("✅ User ready for invitation acceptance:", {
         id: newUser.id,
         email: newUser.email,
-        name: newUser.name,
+        computedName: newUser.computedName,
         role: newUser.role
       });
+      
+      // Verify the user has the correct email
+      if (newUser.email.toLowerCase() !== invitation.email.toLowerCase()) {
+        console.error("❌ CRITICAL: User has wrong email!");
+        console.error("   - Expected:", invitation.email);
+        console.error("   - Got:", newUser.email);
+        
+        return NextResponse.json<AcceptInvitationResponse>(
+          {
+            success: false,
+            error: "User created with incorrect email. Please contact support.",
+          },
+          { status: 500 }
+        );
+      }
     }
+
+    // Final validation before accepting invitation
+    console.log("🔍 Final validation before accepting invitation:");
+    console.log("   - Invitation ID:", invitation.id);
+    console.log("   - Invitation Email:", invitation.email);
+    console.log("   - User ID:", newUser.id);
+    console.log("   - User Email:", newUser.email);
+    console.log("   - User Clerk ID:", newUser.clerkUserId || 'None');
+    console.log("   - Request Clerk ID:", clerkUserId);
 
     // Accept the invitation
     const acceptedInvitation = await executeTypedMutation<AcceptInvitationEnhancedMutation>(
@@ -303,8 +498,20 @@ export const POST = withAuth(async (req: NextRequest, session) => {
       }
     );
 
+    if (!acceptedInvitation.updateUserInvitationById) {
+      console.error("❌ Failed to update invitation status in database");
+      return NextResponse.json<AcceptInvitationResponse>(
+        {
+          success: false,
+          error: "Failed to complete invitation acceptance",
+        },
+        { status: 500 }
+      );
+    }
+
     console.log(`✅ Invitation accepted successfully: ${invitation.id}`);
-    console.log(`✅ User created: ${newUser.id} (${newUser.email})`);
+    console.log(`✅ User linked: ${newUser.id} (${newUser.email})`);
+    console.log(`✅ Email match verified: ${invitation.email} === ${newUser.email}`);
 
     return NextResponse.json<AcceptInvitationResponse>({
       success: true,

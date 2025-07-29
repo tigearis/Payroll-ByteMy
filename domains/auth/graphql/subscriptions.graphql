@@ -189,7 +189,9 @@ subscription PermissionChangesUpdates {
     timestamp
     userId
     performedByUser {
-      name
+      firstName
+      lastName
+      computedName
       email
       role
     }
@@ -205,7 +207,9 @@ subscription RoleAssignmentUpdates {
     updatedAt
     roleUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
     }
     assignedRole {
@@ -289,7 +293,9 @@ subscription UserDeactivationUpdates {
     orderBy: { deactivatedAt: DESC }
   ) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     deactivatedAt
@@ -307,7 +313,9 @@ subscription PrivilegeChangesUpdates {
     orderBy: { updatedAt: DESC }
   ) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     updatedAt
@@ -344,7 +352,9 @@ subscription ComplianceEventsUpdates {
     timestamp
     userId
     performedByUser {
-      name
+      firstName
+      lastName
+      computedName
       email
       role
     }

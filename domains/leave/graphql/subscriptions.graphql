@@ -384,7 +384,9 @@ subscription LeaveRecentActivityUpdates {
     leaveType
     startDate
     leaveUser {
-      name
+      firstName
+      lastName
+      computedName
     }
   }
 }

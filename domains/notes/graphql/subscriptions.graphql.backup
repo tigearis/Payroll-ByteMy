@@ -1,0 +1,300 @@
+# Notes Domain Subscriptions
+# Security Classification: MEDIUM - Contains business communication data
+# SOC2 Compliance: Real-time access controls with audit logging
+
+# Core note subscriptions
+subscription NoteUpdates($entityType: String!, $entityId: uuid!) {
+  notes(
+    where: {
+      entityType: { _eq: $entityType }
+      entityId: { _eq: $entityId }
+    }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...NoteListItem
+  }
+}
+
+subscription NotesByEntityUpdates($entityType: String!, $entityId: uuid!) {
+  notes(
+    where: {
+      entityType: { _eq: $entityType }
+      entityId: { _eq: $entityId }
+    }
+    orderBy: { updatedAt: DESC }
+  ) {
+    ...NoteListItem
+  }
+}
+
+subscription SingleNoteUpdates($id: uuid!) {
+  notes(where: { id: { _eq: $id } }) {
+    ...NoteDetailed
+  }
+}
+
+# Entity-specific subscriptions
+subscription PayrollNotesUpdates($payrollId: uuid!) {
+  notes(
+    where: {
+      entityType: { _eq: "payroll" }
+      entityId: { _eq: $payrollId }
+    }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...PayrollNote
+  }
+}
+
+subscription ClientNotesUpdates($clientId: uuid!) {
+  notes(
+    where: {
+      entityType: { _eq: "client" }
+      entityId: { _eq: $clientId }
+    }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...ClientNote
+  }
+}
+
+subscription UserNotesUpdates($userId: uuid!) {
+  notes(
+    where: {
+      entityType: { _eq: "user" }
+      entityId: { _eq: $userId }
+    }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...UserNote
+  }
+}
+
+# Activity and monitoring subscriptions
+subscription MyNotesUpdates($authorUserId: uuid!) {
+  notes(
+    where: { userId: { _eq: $authorUserId } }
+    orderBy: { updatedAt: DESC }
+  ) {
+    ...NoteListItem
+  }
+}
+
+subscription RecentNotesUpdates {
+  notes(
+    orderBy: { createdAt: DESC }
+    limit: 20
+  ) {
+    ...RecentNote
+  }
+}
+
+subscription ImportantNotesUpdates($limit: Int = 10) {
+  notes(
+    where: { isImportant: { _eq: true } }
+    orderBy: { createdAt: DESC }
+    limit: $limit
+  ) {
+    ...ImportantNote
+  }
+}
+
+subscription ImportantNotesByEntityUpdates($entityType: String!, $entityId: uuid!) {
+  notes(
+    where: {
+      entityType: { _eq: $entityType }
+      entityId: { _eq: $entityId }
+      isImportant: { _eq: true }
+    }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...ImportantNote
+  }
+}
+
+# Dashboard subscriptions
+subscription NoteActivityUpdates {
+  notes(
+    orderBy: { updatedAt: DESC }
+    limit: 15
+  ) {
+    ...NoteCard
+  }
+}
+
+subscription TotalNotesUpdates {
+  notesAggregate {
+    aggregate {
+      count
+    }
+  }
+}
+
+subscription ImportantNotesCountUpdates {
+  notesAggregate(where: { isImportant: { _eq: true } }) {
+    aggregate {
+      count
+    }
+  }
+}
+
+subscription TodaysNotesUpdates {
+  notesAggregate(where: { createdAt: { _gte: "today" } }) {
+    aggregate {
+      count
+    }
+  }
+}
+
+subscription EntityNotesUpdates($entityType: String!, $entityId: uuid!) {
+  notesAggregate(
+    where: {
+      entityType: { _eq: $entityType }
+      entityId: { _eq: $entityId }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+subscription EntityImportantNotesUpdates($entityType: String!, $entityId: uuid!) {
+  notesAggregate(
+    where: {
+      entityType: { _eq: $entityType }
+      entityId: { _eq: $entityId }
+      isImportant: { _eq: true }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# User activity subscriptions
+subscription UserNoteActivityUpdates($authorUserId: uuid!) {
+  notes(
+    where: { userId: { _eq: $authorUserId } }
+    orderBy: { updatedAt: DESC }
+    limit: 10
+  ) {
+    ...NoteCard
+  }
+}
+
+subscription NotesByDateRangeUpdates(
+  $startDate: timestamp!
+  $endDate: timestamp!
+) {
+  notes(
+    where: {
+      createdAt: { _gte: $startDate, _lte: $endDate }
+    }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...NoteListItem
+  }
+}
+
+# Search and filtering subscriptions
+subscription NoteSearchUpdates($searchTerm: String!) {
+  notes(
+    where: {
+      _or: [
+        { content: { _ilike: $searchTerm } }
+        { authorUser: { name: { _ilike: $searchTerm } } }
+      ]
+    }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...NoteListItem
+  }
+}
+
+# Team and collaboration subscriptions
+subscription TeamNotesUpdates($teamUserIds: [uuid!]!) {
+  notes(
+    where: { userId: { _in: $teamUserIds } }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...NoteListItem
+  }
+}
+
+subscription EntityTypeNotesUpdates($entityType: String!) {
+  notes(
+    where: { entityType: { _eq: $entityType } }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...NoteListItem
+  }
+}
+
+# Real-time collaboration subscriptions
+subscription NoteChangesUpdates($noteId: uuid!) {
+  notes(where: { id: { _eq: $noteId } }) {
+    id
+    content
+    isImportant
+    updatedAt
+    authorUser {
+      id
+      name
+    }
+  }
+}
+
+subscription NewNotesUpdates {
+  notes(
+    where: { createdAt: { _gte: "now() - interval '5 minutes'" } }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...NoteCard
+    createdAt
+  }
+}
+
+# System monitoring subscriptions
+subscription RecentNotesListUpdates {
+  notes(
+    orderBy: { createdAt: DESC }
+    limit: 5
+  ) {
+    id
+    content
+    createdAt
+    authorUser {
+      name
+    }
+    entityType
+  }
+}
+
+subscription NotesCountUpdates {
+  notesAggregate {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Audit and compliance subscriptions
+subscription NoteAuditUpdates {
+  notes(
+    orderBy: { updatedAt: DESC }
+    limit: 50
+  ) {
+    ...NoteForAudit
+  }
+}
+
+subscription ImportantNoteChangesUpdates {
+  notes(
+    where: { isImportant: { _eq: true } }
+    orderBy: { updatedAt: DESC }
+  ) {
+    ...ImportantNote
+  }
+}

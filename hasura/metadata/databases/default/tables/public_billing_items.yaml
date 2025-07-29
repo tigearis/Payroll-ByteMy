@@ -77,6 +77,13 @@ object_relationships:
     using:
       foreign_key_constraint_on: confirmed_by
 array_relationships:
+  - name: billingInvoiceItems
+    using:
+      foreign_key_constraint_on:
+        column: item_id
+        table:
+          name: billing_invoice_item
+          schema: public
   - name: timeEntries
     using:
       foreign_key_constraint_on:

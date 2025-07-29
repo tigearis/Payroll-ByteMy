@@ -53,19 +53,25 @@ query GetPayrollForEdit($id: uuid!) {
     managerUserId
     primaryConsultant {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
     }
     backupConsultant {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
     }
     manager {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
     }
@@ -222,7 +228,9 @@ query GetPayrollDashboardComplete(
     # ✅ All consultants fetched in same query (eliminates N+1)
     primaryConsultant {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
       isActive
@@ -230,7 +238,9 @@ query GetPayrollDashboardComplete(
     
     backupConsultant {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
       isActive
@@ -238,7 +248,9 @@ query GetPayrollDashboardComplete(
     
     manager {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
       isActive
@@ -356,7 +368,7 @@ query SearchPayrolls($searchTerm: String!, $limit: Int = 50) {
           _or: [
             { name: { _ilike: $searchTerm } }
             { client: { name: { _ilike: $searchTerm } } }
-            { primaryConsultant: { name: { _ilike: $searchTerm } } }
+            { primaryConsultant: { computedName: { _ilike: $searchTerm } } }
           ]
         }
       ]
@@ -485,19 +497,25 @@ query GetPayrollDetailComplete($id: uuid!) {
     # Additional relations for complete detail view
     primaryConsultant {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
     }
     backupConsultant {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
     }
     manager {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
     }
@@ -512,9 +530,11 @@ query GetPayrollDetailComplete($id: uuid!) {
   }
 
   # All users for consultant/manager assignments (combines GetAllUsersList)
-  users(where: { isActive: { _eq: true } }, orderBy: { name: ASC }) {
+  users(where: { isActive: { _eq: true } }, orderBy: { computedName: ASC }) {
     id
-    name
+    firstName
+    lastName
+    computedName
     email
     role
     isStaff
@@ -639,11 +659,15 @@ query GetPayrollsNeedingAttention {
     ...PayrollListItem
     primaryConsultant {
       id
-      name
+      firstName
+      lastName
+      computedName
     }
     manager {
       id
-      name
+      firstName
+      lastName
+      computedName
     }
   }
 }
@@ -732,8 +756,8 @@ query SearchPayrollsPaginated(
           _or: [
             { name: { _ilike: $searchTerm } }
             { client: { name: { _ilike: $searchTerm } } }
-            { primaryConsultant: { name: { _ilike: $searchTerm } } }
-            { backupConsultant: { name: { _ilike: $searchTerm } } }
+            { primaryConsultant: { computedName: { _ilike: $searchTerm } } }
+            { backupConsultant: { computedName: { _ilike: $searchTerm } } }
           ]
         }
       ]
@@ -753,8 +777,8 @@ query SearchPayrollsPaginated(
           _or: [
             { name: { _ilike: $searchTerm } }
             { client: { name: { _ilike: $searchTerm } } }
-            { primaryConsultant: { name: { _ilike: $searchTerm } } }
-            { backupConsultant: { name: { _ilike: $searchTerm } } }
+            { primaryConsultant: { computedName: { _ilike: $searchTerm } } }
+            { backupConsultant: { computedName: { _ilike: $searchTerm } } }
           ]
         }
       ]
@@ -891,21 +915,27 @@ query GetPayrollsByMonth($startDate: date!, $endDate: date!) {
     }
     primaryConsultant {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
       isActive
     }
     backupConsultant {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
       isActive
     }
     manager {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
       isActive
@@ -1011,7 +1041,9 @@ query GetPayrollsTableEnhanced(
     # Primary consultant information
     primaryConsultant {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
     }
@@ -1019,7 +1051,9 @@ query GetPayrollsTableEnhanced(
     # Backup consultant (optional)
     backupConsultant {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
     }
@@ -1069,15 +1103,21 @@ query GeneratePayrollReport($startDate: date!, $endDate: date!) {
     }
     primaryConsultant {
       id
-      name
+      firstName
+      lastName
+      computedName
     }
     backupConsultant {
       id
-      name
+      firstName
+      lastName
+      computedName
     }
     manager {
       id
-      name
+      firstName
+      lastName
+      computedName
     }
     payrollDates(
       where: { originalEftDate: { _gte: $startDate, _lte: $endDate } }

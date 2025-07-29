@@ -21,11 +21,15 @@ mutation CreatePayroll($object: payrollsInsertInput!) {
     }
     primaryConsultant {
       id
-      name
+      firstName
+      lastName
+      computedName
     }
     manager {
       id
-      name
+      firstName
+      lastName
+      computedName
     }
   }
 }
@@ -39,15 +43,21 @@ mutation UpdatePayroll($id: uuid!, $set: payrollsSetInput!) {
     }
     primaryConsultant {
       id
-      name
+      firstName
+      lastName
+      computedName
     }
     backupConsultant {
       id
-      name
+      firstName
+      lastName
+      computedName
     }
     manager {
       id
-      name
+      firstName
+      lastName
+      computedName
     }
   }
 }
@@ -111,7 +121,9 @@ mutation AssignPrimaryConsultant($id: uuid!, $userId: uuid!) {
     ...PayrollBasic
     primaryConsultant {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
     }
   }
@@ -125,7 +137,9 @@ mutation AssignBackupConsultant($id: uuid!, $userId: uuid!) {
     ...PayrollBasic
     backupConsultant {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
     }
   }
@@ -139,7 +153,9 @@ mutation AssignManager($id: uuid!, $userId: uuid!) {
     ...PayrollBasic
     manager {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
     }
   }
@@ -163,17 +179,23 @@ mutation UpdatePayrollAssignments(
     ...PayrollBasic
     primaryConsultant {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
     }
     backupConsultant {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
     }
     manager {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
     }
   }
@@ -236,7 +258,9 @@ mutation BulkAssignConsultant(
       ...PayrollBasic
       primaryConsultant {
         id
-        name
+        firstName
+        lastName
+        computedName
       }
     }
     affectedRows
@@ -258,7 +282,9 @@ mutation BulkAssignManager(
       ...PayrollBasic
       manager {
         id
-        name
+        firstName
+        lastName
+        computedName
       }
     }
     affectedRows

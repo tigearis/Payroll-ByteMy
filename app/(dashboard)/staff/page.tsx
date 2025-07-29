@@ -53,7 +53,9 @@ type ViewMode = "cards" | "table" | "list";
 
 interface StaffMember {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
+  computedName?: string | null;
   email: string;
   role: string;
   isActive: boolean;
@@ -64,7 +66,9 @@ interface StaffMember {
   updatedAt: string;
   managerUser?: {
     id: string;
-    name: string;
+    firstName: string;
+    lastName: string;
+    computedName?: string | null;
     email: string;
     role: string;
   } | null;
@@ -80,7 +84,9 @@ interface StaffStats {
   };
   recentChanges: Array<{
     id: string;
-    name: string;
+    firstName: string;
+    lastName: string;
+    computedName?: string | null;
     email: string;
     role: string;
     status: string;
@@ -1070,7 +1076,7 @@ function StaffCard({
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <CardTitle className="text-lg">{member.name}</CardTitle>
+              <CardTitle className="text-lg">{member.computedName || `${member.firstName} ${member.lastName}`}</CardTitle>
               {member.isStaff ? (
                 <Badge className="bg-blue-100 text-blue-800">Staff</Badge>
               ) : (
@@ -1135,7 +1141,7 @@ function StaffCard({
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-500">Manager</span>
               <span className="text-sm font-medium">
-                {member.managerUser.name}
+                {member.managerUser.computedName || `${member.managerUser.firstName} ${member.managerUser.lastName}`}
               </span>
             </div>
           )}
@@ -1183,7 +1189,7 @@ function StaffTable({
                   className="border-b last:border-b-0 hover:bg-gray-50"
                 >
                   <td className="p-4">
-                    <div className="font-medium">{member.name}</div>
+                    <div className="font-medium">{member.computedName || `${member.firstName} ${member.lastName}`}</div>
                   </td>
                   <td className="p-4 text-gray-600">{member.email}</td>
                   <td className="p-4">
@@ -1197,7 +1203,7 @@ function StaffTable({
                     </Badge>
                   </td>
                   <td className="p-4 text-gray-600">
-                    {member.managerUser?.name || "No manager"}
+                    {member.managerUser?.computedName || (member.managerUser ? `${member.managerUser.firstName} ${member.managerUser.lastName}` : "No manager")}
                   </td>
                   <td className="p-4">
                     <DropdownMenu>
@@ -1248,7 +1254,7 @@ function StaffListItem({
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div>
-              <div className="font-medium">{member.name}</div>
+              <div className="font-medium">{member.computedName || `${member.firstName} ${member.lastName}`}</div>
               <div className="text-sm text-gray-500">{member.email}</div>
             </div>
             <Badge className={getRoleColor(member.role)}>{getRoleDisplayName(member.role)}</Badge>

@@ -1,0 +1,1297 @@
+pg_restore: connecting to database for restore
+pg_restore: dropping POLICY users users_select_policy
+pg_restore: dropping POLICY time_entries time_entries_update_policy
+pg_restore: dropping POLICY time_entries time_entries_select_policy
+pg_restore: dropping POLICY time_entries time_entries_insert_policy
+pg_restore: dropping POLICY time_entries time_entries_delete_policy
+pg_restore: dropping POLICY payrolls payrolls_select_policy
+pg_restore: dropping POLICY user_invitations org_admin_full_access_user_invitations
+pg_restore: dropping POLICY user_invitations manager_access_user_invitations
+pg_restore: dropping POLICY user_invitations developer_full_access_user_invitations
+pg_restore: dropping POLICY user_invitations consultant_viewer_read_user_invitations
+pg_restore: dropping POLICY billing_periods billing_periods_update_policy
+pg_restore: dropping POLICY billing_periods billing_periods_select_policy
+pg_restore: dropping POLICY billing_periods billing_periods_insert_policy
+pg_restore: dropping POLICY billing_periods billing_periods_delete_policy
+pg_restore: dropping FK CONSTRAINT users users_status_changed_by_fkey
+pg_restore: dropping FK CONSTRAINT user_skills user_skills_user_id_fkey
+pg_restore: dropping FK CONSTRAINT user_sessions user_sessions_user_id_fkey
+pg_restore: dropping FK CONSTRAINT user_roles user_roles_user_id_fkey
+pg_restore: dropping FK CONSTRAINT user_roles user_roles_role_id_fkey
+pg_restore: dropping FK CONSTRAINT user_invitations user_invitations_revoked_by_fkey
+pg_restore: dropping FK CONSTRAINT user_invitations user_invitations_manager_id_fkey
+pg_restore: dropping FK CONSTRAINT user_invitations user_invitations_invited_by_fkey
+pg_restore: dropping FK CONSTRAINT user_invitations user_invitations_accepted_by_fkey
+pg_restore: dropping FK CONSTRAINT user_email_template_favorites user_email_template_favorites_user_id_fkey
+pg_restore: dropping FK CONSTRAINT user_email_template_favorites user_email_template_favorites_template_id_fkey
+pg_restore: dropping FK CONSTRAINT time_entries time_entries_staff_user_id_fkey
+pg_restore: dropping FK CONSTRAINT time_entries time_entries_payroll_id_fkey
+pg_restore: dropping FK CONSTRAINT time_entries time_entries_client_id_fkey
+pg_restore: dropping FK CONSTRAINT time_entries time_entries_billing_item_id_fkey
+pg_restore: dropping FK CONSTRAINT security_settings security_settings_user_id_fkey
+pg_restore: dropping FK CONSTRAINT security_settings security_settings_updated_by_fkey
+pg_restore: dropping FK CONSTRAINT security_alerts security_alerts_user_id_fkey
+pg_restore: dropping FK CONSTRAINT security_alerts security_alerts_resolved_by_fkey
+pg_restore: dropping FK CONSTRAINT role_permissions role_permissions_role_id_fkey
+pg_restore: dropping FK CONSTRAINT role_permissions role_permissions_permission_id_fkey
+pg_restore: dropping FK CONSTRAINT permissions permissions_resource_id_fkey
+pg_restore: dropping FK CONSTRAINT permission_overrides permission_overrides_user_id_fkey
+pg_restore: dropping FK CONSTRAINT permission_overrides permission_overrides_created_by_fkey
+pg_restore: dropping FK CONSTRAINT permission_audit_log permission_audit_log_user_id_fkey
+pg_restore: dropping FK CONSTRAINT permission_audit_log permission_audit_log_target_user_id_fkey
+pg_restore: dropping FK CONSTRAINT payrolls payrolls_parent_payroll_id_fkey
+pg_restore: dropping FK CONSTRAINT payrolls payrolls_date_type_id_fkey
+pg_restore: dropping FK CONSTRAINT payrolls payrolls_cycle_id_fkey
+pg_restore: dropping FK CONSTRAINT payrolls payrolls_client_id_fkey
+pg_restore: dropping FK CONSTRAINT payroll_required_skills payroll_required_skills_payroll_id_fkey
+pg_restore: dropping FK CONSTRAINT payroll_dates payroll_dates_payroll_id_fkey
+pg_restore: dropping FK CONSTRAINT notes notes_user_id_fkey
+pg_restore: dropping FK CONSTRAINT users manager_id
+pg_restore: dropping FK CONSTRAINT work_schedule fk_work_schedule_user
+pg_restore: dropping FK CONSTRAINT payrolls fk_primary_consultant_user
+pg_restore: dropping FK CONSTRAINT payroll_assignments fk_payroll_assignment_payroll_date
+pg_restore: dropping FK CONSTRAINT payroll_assignments fk_payroll_assignment_original_consultant
+pg_restore: dropping FK CONSTRAINT payroll_assignments fk_payroll_assignment_consultant
+pg_restore: dropping FK CONSTRAINT payroll_assignments fk_payroll_assignment_assigned_by
+pg_restore: dropping FK CONSTRAINT payrolls fk_manager_user
+pg_restore: dropping FK CONSTRAINT leave fk_leave_user
+pg_restore: dropping FK CONSTRAINT payrolls fk_backup_consultant_user
+pg_restore: dropping FK CONSTRAINT payroll_assignment_audit fk_audit_to_consultant
+pg_restore: dropping FK CONSTRAINT payroll_assignment_audit fk_audit_payroll_date
+pg_restore: dropping FK CONSTRAINT payroll_assignment_audit fk_audit_from_consultant
+pg_restore: dropping FK CONSTRAINT payroll_assignment_audit fk_audit_changed_by
+pg_restore: dropping FK CONSTRAINT payroll_assignment_audit fk_audit_assignment
+pg_restore: dropping FK CONSTRAINT email_templates email_templates_created_by_user_id_fkey
+pg_restore: dropping FK CONSTRAINT email_templates email_templates_approved_by_user_id_fkey
+pg_restore: dropping FK CONSTRAINT email_send_logs email_send_logs_template_id_fkey
+pg_restore: dropping FK CONSTRAINT email_send_logs email_send_logs_sender_user_id_fkey
+pg_restore: dropping FK CONSTRAINT email_drafts email_drafts_user_id_fkey
+pg_restore: dropping FK CONSTRAINT email_drafts email_drafts_template_id_fkey
+pg_restore: dropping FK CONSTRAINT data_backups data_backups_user_id_fkey
+pg_restore: dropping FK CONSTRAINT client_external_systems client_external_systems_system_id_fkey
+pg_restore: dropping FK CONSTRAINT client_external_systems client_external_systems_client_id_fkey
+pg_restore: dropping FK CONSTRAINT client_billing_assignment client_billing_assignment_client_id_fkey
+pg_restore: dropping FK CONSTRAINT client_billing_assignment client_billing_assignment_billing_plan_id_fkey
+pg_restore: dropping FK CONSTRAINT billing_periods billing_periods_client_id_fkey
+pg_restore: dropping FK CONSTRAINT billing_items billing_items_staff_user_id_fkey
+pg_restore: dropping FK CONSTRAINT billing_items billing_items_service_id_fkey
+pg_restore: dropping FK CONSTRAINT billing_items billing_items_payroll_id_fkey
+pg_restore: dropping FK CONSTRAINT billing_items billing_items_confirmed_by_fkey
+pg_restore: dropping FK CONSTRAINT billing_items billing_items_client_id_fkey
+pg_restore: dropping FK CONSTRAINT billing_items billing_items_billing_plan_id_fkey
+pg_restore: dropping FK CONSTRAINT billing_items billing_items_approved_by_fkey
+pg_restore: dropping FK CONSTRAINT billing_invoice_item billing_invoice_item_item_id_fkey
+pg_restore: dropping FK CONSTRAINT billing_invoice_item billing_invoice_item_invoice_id_fkey
+pg_restore: dropping FK CONSTRAINT billing_invoice billing_invoice_client_id_fkey
+pg_restore: dropping FK CONSTRAINT billing_invoice billing_invoice_billing_period_id_fkey
+pg_restore: dropping FK CONSTRAINT billing_event_log billing_event_log_invoice_id_fkey
+pg_restore: dropping FK CONSTRAINT billing_event_log billing_event_log_created_by_fkey
+pg_restore: dropping FK CONSTRAINT audit_log audit_log_user_id_fkey
+pg_restore: dropping FK CONSTRAINT adjustment_rules adjustment_rules_date_type_id_fkey
+pg_restore: dropping FK CONSTRAINT adjustment_rules adjustment_rules_cycle_id_fkey
+pg_restore: dropping FK CONSTRAINT hdb_scheduled_event_invocation_logs hdb_scheduled_event_invocation_logs_event_id_fkey
+pg_restore: dropping FK CONSTRAINT hdb_cron_event_invocation_logs hdb_cron_event_invocation_logs_event_id_fkey
+pg_restore: dropping TRIGGER users update_users_updated_at
+pg_restore: dropping TRIGGER users update_user_status_trigger
+pg_restore: dropping TRIGGER user_roles update_user_roles_timestamp
+pg_restore: dropping TRIGGER user_invitations update_user_invitations_updated_at
+pg_restore: dropping TRIGGER time_entries update_time_entries_updated_at
+pg_restore: dropping TRIGGER system_configuration update_system_configuration_updated_at
+pg_restore: dropping TRIGGER security_settings update_security_settings_updated_at
+pg_restore: dropping TRIGGER roles update_roles_timestamp
+pg_restore: dropping TRIGGER role_permissions update_role_permissions_timestamp
+pg_restore: dropping TRIGGER resources update_resources_timestamp
+pg_restore: dropping TRIGGER permissions update_permissions_timestamp
+pg_restore: dropping TRIGGER permission_overrides update_permission_overrides_updated_at
+pg_restore: dropping TRIGGER leave update_leave_updated_at_trigger
+pg_restore: dropping TRIGGER user_invitations update_invitation_status_metadata_trigger
+pg_restore: dropping TRIGGER feature_flags update_feature_flags_modtime
+pg_restore: dropping TRIGGER billing_periods update_billing_periods_updated_at
+pg_restore: dropping TRIGGER billing_items update_billing_items_updated_at
+pg_restore: dropping TRIGGER billing_invoice_item update_billing_invoice_item_updated_at
+pg_restore: dropping TRIGGER work_schedule trigger_update_admin_time_from_position
+pg_restore: dropping TRIGGER work_schedule trigger_prevent_duplicate_insert
+pg_restore: dropping TRIGGER work_schedule trigger_calculate_payroll_capacity
+pg_restore: dropping TRIGGER payrolls trigger_auto_regenerate_dates
+pg_restore: dropping TRIGGER payrolls trigger_auto_generate_dates
+pg_restore: dropping TRIGGER payrolls trigger_auto_delete_future_dates
+pg_restore: dropping TRIGGER payroll_assignments set_timestamp
+pg_restore: dropping TRIGGER payrolls enforce_staff_on_payrolls
+pg_restore: dropping TRIGGER notes check_entity_relation
+pg_restore: dropping TRIGGER users audit_users_changes
+pg_restore: dropping TRIGGER users audit_user_status_change_trigger
+pg_restore: dropping TRIGGER user_roles audit_user_roles_changes
+pg_restore: dropping TRIGGER role_permissions audit_role_permissions_changes
+pg_restore: dropping TRIGGER payrolls audit_payrolls_changes
+pg_restore: dropping TRIGGER user_invitations audit_invitation_status_change_trigger
+pg_restore: dropping TRIGGER clients audit_clients_changes
+pg_restore: dropping INDEX only_one_current_version_per_family
+pg_restore: dropping INDEX idx_work_schedule_user_id
+pg_restore: dropping INDEX idx_work_schedule_user_capacity
+pg_restore: dropping INDEX idx_work_schedule_capacity
+pg_restore: dropping INDEX idx_work_schedule_admin_time
+pg_restore: dropping INDEX idx_users_status_changed_at
+pg_restore: dropping INDEX idx_users_status
+pg_restore: dropping INDEX idx_users_role
+pg_restore: dropping INDEX idx_users_position
+pg_restore: dropping INDEX idx_users_last_name
+pg_restore: dropping INDEX idx_users_is_active
+pg_restore: dropping INDEX idx_users_full_name
+pg_restore: dropping INDEX idx_users_first_name
+pg_restore: dropping INDEX idx_users_deactivated_at
+pg_restore: dropping INDEX idx_users_computed_name
+pg_restore: dropping INDEX idx_users_clerk_composite
+pg_restore: dropping INDEX idx_users_active_staff
+pg_restore: dropping INDEX idx_user_template_favorites_user
+pg_restore: dropping INDEX idx_user_sessions_user_id
+pg_restore: dropping INDEX idx_user_sessions_token
+pg_restore: dropping INDEX idx_user_sessions_last_activity
+pg_restore: dropping INDEX idx_user_sessions_active
+pg_restore: dropping INDEX idx_user_roles_user_id
+pg_restore: dropping INDEX idx_user_invitations_status
+pg_restore: dropping INDEX idx_user_invitations_revoked_by
+pg_restore: dropping INDEX idx_user_invitations_revoked_at
+pg_restore: dropping INDEX idx_user_invitations_invited_by
+pg_restore: dropping INDEX idx_user_invitations_invitation_status
+pg_restore: dropping INDEX idx_user_invitations_expires_at
+pg_restore: dropping INDEX idx_user_invitations_email
+pg_restore: dropping INDEX idx_user_invitations_clerk_ticket
+pg_restore: dropping INDEX idx_unique_payroll_date
+pg_restore: dropping INDEX idx_time_entries_work_date
+pg_restore: dropping INDEX idx_time_entries_staff_user_id
+pg_restore: dropping INDEX idx_time_entries_payroll_id
+pg_restore: dropping INDEX idx_time_entries_client_id
+pg_restore: dropping INDEX idx_time_entries_billing_item_id
+pg_restore: dropping INDEX idx_system_health_timestamp
+pg_restore: dropping INDEX idx_system_health_status
+pg_restore: dropping INDEX idx_security_settings_user_id
+pg_restore: dropping INDEX idx_security_settings_key
+pg_restore: dropping INDEX idx_security_alerts_user_id
+pg_restore: dropping INDEX idx_security_alerts_unresolved
+pg_restore: dropping INDEX idx_security_alerts_type
+pg_restore: dropping INDEX idx_security_alerts_severity
+pg_restore: dropping INDEX idx_role_permissions_role_id
+pg_restore: dropping INDEX idx_role_permissions_permission_id
+pg_restore: dropping INDEX idx_rate_limits_service_window
+pg_restore: dropping INDEX idx_position_admin_defaults_position
+pg_restore: dropping INDEX idx_permissions_resource_action
+pg_restore: dropping INDEX idx_permission_overrides_user_id
+pg_restore: dropping INDEX idx_permission_overrides_role
+pg_restore: dropping INDEX idx_permission_overrides_resource
+pg_restore: dropping INDEX idx_permission_overrides_operation
+pg_restore: dropping INDEX idx_permission_overrides_expires_at
+pg_restore: dropping INDEX idx_permission_overrides_created_by
+pg_restore: dropping INDEX idx_permission_audit_log_user_id
+pg_restore: dropping INDEX idx_permission_audit_log_timestamp
+pg_restore: dropping INDEX idx_permission_audit_log_target_user_id
+pg_restore: dropping INDEX idx_permission_audit_log_resource
+pg_restore: dropping INDEX idx_permission_audit_log_action
+pg_restore: dropping INDEX idx_payrolls_versioning
+pg_restore: dropping INDEX idx_payrolls_status_client
+pg_restore: dropping INDEX idx_payrolls_staff_composite
+pg_restore: dropping INDEX idx_payrolls_manager
+pg_restore: dropping INDEX idx_payrolls_go_live_date
+pg_restore: dropping INDEX idx_payrolls_current_version
+pg_restore: dropping INDEX idx_payrolls_consultant
+pg_restore: dropping INDEX idx_payrolls_client_id
+pg_restore: dropping INDEX idx_payrolls_client_billing
+pg_restore: dropping INDEX idx_payrolls_billing_status
+pg_restore: dropping INDEX idx_payrolls_active_dates
+pg_restore: dropping INDEX idx_payroll_version_results_created_at
+pg_restore: dropping INDEX idx_payroll_version_history_results_queried_at
+pg_restore: dropping INDEX idx_payroll_version_history_results_payroll_id
+pg_restore: dropping INDEX idx_payroll_dates_processing
+pg_restore: dropping INDEX idx_payroll_dates_payroll_id
+pg_restore: dropping INDEX idx_payroll_dates_notes
+pg_restore: dropping INDEX idx_payroll_dates_date_range
+pg_restore: dropping INDEX idx_payroll_dates_composite
+pg_restore: dropping INDEX idx_payroll_dashboard_stats_status
+pg_restore: dropping INDEX idx_payroll_dashboard_stats_consultants
+pg_restore: dropping INDEX idx_payroll_assignments_payroll_date
+pg_restore: dropping INDEX idx_payroll_assignments_consultant
+pg_restore: dropping INDEX idx_payroll_assignments_assigned_date
+pg_restore: dropping INDEX idx_payroll_assignments_assigned_by
+pg_restore: dropping INDEX idx_notes_user_id
+pg_restore: dropping INDEX idx_notes_important
+pg_restore: dropping INDEX idx_notes_entity
+pg_restore: dropping INDEX idx_notes_created_at
+pg_restore: dropping INDEX idx_leave_user_id
+pg_restore: dropping INDEX idx_leave_dates
+pg_restore: dropping INDEX idx_latest_payroll_version_results_queried_at
+pg_restore: dropping INDEX idx_latest_payroll_version_results_payroll_id
+pg_restore: dropping INDEX idx_holidays_date_country_region
+pg_restore: dropping INDEX idx_email_templates_created_by
+pg_restore: dropping INDEX idx_email_templates_category
+pg_restore: dropping INDEX idx_email_templates_active
+pg_restore: dropping INDEX idx_email_send_logs_template
+pg_restore: dropping INDEX idx_email_send_logs_status
+pg_restore: dropping INDEX idx_email_send_logs_sender
+pg_restore: dropping INDEX idx_email_send_logs_created_at
+pg_restore: dropping INDEX idx_email_drafts_user
+pg_restore: dropping INDEX idx_data_backups_user_id
+pg_restore: dropping INDEX idx_data_backups_status
+pg_restore: dropping INDEX idx_data_backups_created_at
+pg_restore: dropping INDEX idx_client_billing_assignment_service
+pg_restore: dropping INDEX idx_client_billing_assignment_client_active
+pg_restore: dropping INDEX idx_billing_periods_status
+pg_restore: dropping INDEX idx_billing_periods_dates
+pg_restore: dropping INDEX idx_billing_periods_client_id
+pg_restore: dropping INDEX idx_billing_items_status
+pg_restore: dropping INDEX idx_billing_items_staff_user_id
+pg_restore: dropping INDEX idx_billing_items_service_id
+pg_restore: dropping INDEX idx_billing_items_payroll_id
+pg_restore: dropping INDEX idx_billing_items_client_id
+pg_restore: dropping INDEX idx_billing_items_billing_plan_id
+pg_restore: dropping INDEX idx_billing_invoice_item_item_id
+pg_restore: dropping INDEX idx_billing_invoice_item_invoice_id
+pg_restore: dropping INDEX idx_billing_invoice_item_created_at
+pg_restore: dropping INDEX idx_billing_invoice_item_billing_period
+pg_restore: dropping INDEX idx_billing_invoice_client_id
+pg_restore: dropping INDEX idx_audit_payroll_date
+pg_restore: dropping INDEX idx_audit_log_user_id
+pg_restore: dropping INDEX idx_audit_log_timestamp_new
+pg_restore: dropping INDEX idx_audit_log_severity_new
+pg_restore: dropping INDEX idx_audit_log_entity
+pg_restore: dropping INDEX idx_audit_log_created_at
+pg_restore: dropping INDEX idx_audit_log_category_new
+pg_restore: dropping INDEX idx_audit_log_action
+pg_restore: dropping INDEX idx_audit_date
+pg_restore: dropping INDEX idx_audit_changed_by
+pg_restore: dropping INDEX idx_audit_assignment
+pg_restore: dropping INDEX hdb_version_one_row
+pg_restore: dropping INDEX hdb_scheduled_event_status
+pg_restore: dropping INDEX hdb_cron_events_unique_scheduled
+pg_restore: dropping INDEX hdb_cron_event_status
+pg_restore: dropping INDEX hdb_cron_event_invocation_event_id
+pg_restore: dropping INDEX idx_slow_queries_start
+pg_restore: dropping INDEX idx_slow_queries_duration
+pg_restore: dropping INDEX idx_permission_changes_time
+pg_restore: dropping INDEX idx_permission_changes_target_user
+pg_restore: dropping INDEX idx_permission_changes_changed_by
+pg_restore: dropping INDEX idx_data_access_user
+pg_restore: dropping INDEX idx_data_access_time
+pg_restore: dropping INDEX idx_data_access_resource
+pg_restore: dropping INDEX idx_data_access_classification
+pg_restore: dropping INDEX idx_auth_events_user
+pg_restore: dropping INDEX idx_auth_events_type
+pg_restore: dropping INDEX idx_auth_events_time
+pg_restore: dropping INDEX idx_audit_log_user_id
+pg_restore: dropping INDEX idx_audit_log_session
+pg_restore: dropping INDEX idx_audit_log_resource
+pg_restore: dropping INDEX idx_audit_log_event_time
+pg_restore: dropping INDEX idx_audit_log_action
+pg_restore: dropping CONSTRAINT work_schedule work_schedule_pkey
+pg_restore: dropping CONSTRAINT users users_username_key
+pg_restore: dropping CONSTRAINT users users_pkey
+pg_restore: dropping CONSTRAINT users users_email_key
+pg_restore: dropping CONSTRAINT users users_clerk_user_id_key
+pg_restore: dropping CONSTRAINT user_sessions user_sessions_session_token_key
+pg_restore: dropping CONSTRAINT user_sessions user_sessions_pkey
+pg_restore: dropping CONSTRAINT user_roles user_roles_user_id_role_id_key
+pg_restore: dropping CONSTRAINT user_roles user_roles_pkey
+pg_restore: dropping CONSTRAINT user_invitations user_invitations_pkey
+pg_restore: dropping CONSTRAINT user_email_template_favorites user_email_template_favorites_user_id_template_id_key
+pg_restore: dropping CONSTRAINT user_email_template_favorites user_email_template_favorites_pkey
+pg_restore: dropping CONSTRAINT payroll_assignments uq_payroll_assignment_payroll_date
+pg_restore: dropping CONSTRAINT work_schedule unique_user_work_day
+pg_restore: dropping CONSTRAINT time_entries time_entries_pkey
+pg_restore: dropping CONSTRAINT system_health system_health_pkey
+pg_restore: dropping CONSTRAINT system_configuration system_configuration_pkey
+pg_restore: dropping CONSTRAINT system_configuration system_configuration_config_key_key
+pg_restore: dropping CONSTRAINT security_settings security_settings_user_id_setting_key_key
+pg_restore: dropping CONSTRAINT security_settings security_settings_pkey
+pg_restore: dropping CONSTRAINT security_alerts security_alerts_pkey
+pg_restore: dropping CONSTRAINT roles roles_pkey
+pg_restore: dropping CONSTRAINT roles roles_name_key
+pg_restore: dropping CONSTRAINT role_permissions role_permissions_role_id_permission_id_key
+pg_restore: dropping CONSTRAINT role_permissions role_permissions_pkey
+pg_restore: dropping CONSTRAINT resources resources_pkey
+pg_restore: dropping CONSTRAINT resources resources_name_key
+pg_restore: dropping CONSTRAINT rate_limits rate_limits_service_id_window_start_key
+pg_restore: dropping CONSTRAINT rate_limits rate_limits_pkey
+pg_restore: dropping CONSTRAINT position_admin_defaults position_admin_defaults_pkey
+pg_restore: dropping CONSTRAINT permissions permissions_resource_id_action_key
+pg_restore: dropping CONSTRAINT permissions permissions_pkey
+pg_restore: dropping CONSTRAINT permission_overrides permission_overrides_pkey
+pg_restore: dropping CONSTRAINT permission_audit_log permission_audit_log_pkey
+pg_restore: dropping CONSTRAINT payrolls payrolls_pkey
+pg_restore: dropping CONSTRAINT payroll_version_results payroll_version_results_pkey
+pg_restore: dropping CONSTRAINT payroll_version_history_results payroll_version_history_results_pkey
+pg_restore: dropping CONSTRAINT payroll_dates payroll_dates_pkey
+pg_restore: dropping CONSTRAINT payroll_date_types payroll_date_types_pkey
+pg_restore: dropping CONSTRAINT payroll_date_types payroll_date_types_name_key
+pg_restore: dropping CONSTRAINT payroll_cycles payroll_cycles_pkey
+pg_restore: dropping CONSTRAINT payroll_cycles payroll_cycles_name_key
+pg_restore: dropping CONSTRAINT payroll_assignments payroll_assignments_pkey
+pg_restore: dropping CONSTRAINT payroll_assignment_audit payroll_assignment_audit_pkey
+pg_restore: dropping CONSTRAINT payroll_activation_results payroll_activation_results_pkey
+pg_restore: dropping CONSTRAINT notes notes_pkey
+pg_restore: dropping CONSTRAINT leave leave_pkey
+pg_restore: dropping CONSTRAINT latest_payroll_version_results latest_payroll_version_results_pkey
+pg_restore: dropping CONSTRAINT holidays holidays_pkey
+pg_restore: dropping CONSTRAINT feature_flags feature_flags_pkey
+pg_restore: dropping CONSTRAINT feature_flags feature_flags_feature_name_key
+pg_restore: dropping CONSTRAINT external_systems external_systems_pkey
+pg_restore: dropping CONSTRAINT email_templates email_templates_pkey
+pg_restore: dropping CONSTRAINT email_send_logs email_send_logs_pkey
+pg_restore: dropping CONSTRAINT email_drafts email_drafts_pkey
+pg_restore: dropping CONSTRAINT data_backups data_backups_pkey
+pg_restore: dropping CONSTRAINT clients clients_pkey
+pg_restore: dropping CONSTRAINT client_external_systems client_external_systems_pkey
+pg_restore: dropping CONSTRAINT client_external_systems client_external_systems_client_id_system_id_key
+pg_restore: dropping CONSTRAINT client_billing_assignment client_billing_assignment_pkey
+pg_restore: dropping CONSTRAINT billing_plan billing_plan_pkey
+pg_restore: dropping CONSTRAINT billing_periods billing_periods_pkey
+pg_restore: dropping CONSTRAINT billing_periods billing_periods_client_id_period_start_period_end_key
+pg_restore: dropping CONSTRAINT billing_items billing_items_pkey
+pg_restore: dropping CONSTRAINT billing_invoice billing_invoice_pkey
+pg_restore: dropping CONSTRAINT billing_invoice_item billing_invoice_item_pkey
+pg_restore: dropping CONSTRAINT billing_invoice billing_invoice_invoice_number_key
+pg_restore: dropping CONSTRAINT billing_event_log billing_event_log_pkey
+pg_restore: dropping CONSTRAINT audit_log audit_log_pkey
+pg_restore: dropping CONSTRAINT app_settings app_settings_pkey
+pg_restore: dropping CONSTRAINT adjustment_rules adjustment_rules_pkey
+pg_restore: dropping CONSTRAINT adjustment_rules adjustment_rules_cycle_id_date_type_id_key
+pg_restore: dropping CONSTRAINT hdb_version hdb_version_pkey
+pg_restore: dropping CONSTRAINT hdb_schema_notifications hdb_schema_notifications_pkey
+pg_restore: dropping CONSTRAINT hdb_scheduled_events hdb_scheduled_events_pkey
+pg_restore: dropping CONSTRAINT hdb_scheduled_event_invocation_logs hdb_scheduled_event_invocation_logs_pkey
+pg_restore: dropping CONSTRAINT hdb_metadata hdb_metadata_resource_version_key
+pg_restore: dropping CONSTRAINT hdb_metadata hdb_metadata_pkey
+pg_restore: dropping CONSTRAINT hdb_cron_events hdb_cron_events_pkey
+pg_restore: dropping CONSTRAINT hdb_cron_event_invocation_logs hdb_cron_event_invocation_logs_pkey
+pg_restore: dropping CONSTRAINT hdb_action_log hdb_action_log_pkey
+pg_restore: dropping CONSTRAINT slow_queries slow_queries_pkey
+pg_restore: dropping CONSTRAINT permission_changes permission_changes_pkey
+pg_restore: dropping CONSTRAINT data_access_log data_access_log_pkey
+pg_restore: dropping CONSTRAINT auth_events auth_events_pkey
+pg_restore: dropping CONSTRAINT audit_log audit_log_pkey
+pg_restore: dropping TABLE users_role_backup
+pg_restore: dropping TABLE user_skills
+pg_restore: dropping TABLE user_sessions
+pg_restore: dropping TABLE user_invitations
+pg_restore: dropping TABLE user_email_template_favorites
+pg_restore: dropping VIEW team_capacity_by_position
+pg_restore: dropping TABLE system_health
+pg_restore: dropping TABLE system_configuration
+pg_restore: dropping VIEW staff_billing_performance
+pg_restore: dropping TABLE security_settings
+pg_restore: dropping TABLE security_alerts
+pg_restore: dropping TABLE rate_limits
+pg_restore: dropping TABLE position_admin_defaults
+pg_restore: dropping TABLE permission_overrides
+pg_restore: dropping TABLE permission_audit_log
+pg_restore: dropping VIEW payroll_triggers_status
+pg_restore: dropping TABLE payroll_required_skills
+pg_restore: dropping VIEW payroll_profitability
+pg_restore: dropping TABLE time_entries
+pg_restore: dropping MATERIALIZED VIEW payroll_dashboard_stats
+pg_restore: dropping TABLE payroll_assignments
+pg_restore: dropping TABLE payroll_assignment_audit
+pg_restore: dropping TABLE notes
+pg_restore: dropping TABLE leave
+pg_restore: dropping TABLE holidays
+pg_restore: dropping TABLE feature_flags
+pg_restore: dropping TABLE external_systems
+pg_restore: dropping TABLE email_templates
+pg_restore: dropping TABLE email_send_logs
+pg_restore: dropping TABLE email_drafts
+pg_restore: dropping TABLE data_backups
+pg_restore: dropping VIEW current_payrolls
+pg_restore: dropping TABLE payrolls
+pg_restore: dropping TABLE payroll_date_types
+pg_restore: dropping TABLE payroll_cycles
+pg_restore: dropping VIEW consultant_capacity_overview
+pg_restore: dropping TABLE work_schedule
+pg_restore: dropping VIEW client_services_with_rates
+pg_restore: dropping TABLE clients
+pg_restore: dropping TABLE client_external_systems
+pg_restore: dropping TABLE client_billing_assignment
+pg_restore: dropping TABLE billing_plan
+pg_restore: dropping TABLE billing_periods
+pg_restore: dropping TABLE billing_items
+pg_restore: dropping TABLE billing_invoice_item
+pg_restore: dropping TABLE billing_invoice
+pg_restore: dropping TABLE billing_event_log
+pg_restore: dropping TABLE audit_log
+pg_restore: dropping TABLE app_settings
+pg_restore: dropping TABLE adjustment_rules
+pg_restore: dropping TABLE hdb_version
+pg_restore: dropping TABLE hdb_schema_notifications
+pg_restore: dropping TABLE hdb_scheduled_events
+pg_restore: dropping TABLE hdb_scheduled_event_invocation_logs
+pg_restore: dropping TABLE hdb_metadata
+pg_restore: dropping TABLE hdb_cron_events
+pg_restore: dropping TABLE hdb_cron_event_invocation_logs
+pg_restore: dropping TABLE hdb_action_log
+pg_restore: dropping VIEW user_access_summary
+pg_restore: dropping TABLE users
+pg_restore: dropping TABLE slow_queries
+pg_restore: dropping VIEW permission_usage_report
+pg_restore: dropping TABLE user_roles
+pg_restore: dropping TABLE roles
+pg_restore: dropping TABLE role_permissions
+pg_restore: dropping TABLE resources
+pg_restore: dropping TABLE permissions
+pg_restore: dropping TABLE permission_changes
+pg_restore: dropping TABLE data_access_log
+pg_restore: dropping TABLE auth_events
+pg_restore: dropping TABLE audit_log
+pg_restore: dropping FUNCTION users_computed_full_name(text, text)
+pg_restore: dropping FUNCTION user_can_perform_action(uuid, text, text)
+pg_restore: dropping FUNCTION update_user_status_changed_at()
+pg_restore: dropping FUNCTION update_updated_at_column()
+pg_restore: dropping FUNCTION update_timestamp()
+pg_restore: dropping FUNCTION update_payroll_dates()
+pg_restore: dropping FUNCTION update_modified_column()
+pg_restore: dropping FUNCTION update_leave_updated_at()
+pg_restore: dropping FUNCTION update_invoice_total()
+pg_restore: dropping FUNCTION update_invitation_status_metadata()
+pg_restore: dropping FUNCTION update_admin_time_from_position()
+pg_restore: dropping FUNCTION unpair_transfers(uuid, uuid)
+pg_restore: dropping FUNCTION unmark_transfer_pair(uuid[])
+pg_restore: dropping FUNCTION trigger_set_timestamp()
+pg_restore: dropping FUNCTION subtract_business_days(date, integer)
+pg_restore: dropping FUNCTION regenerate_all_payroll_dates(date, date, integer, boolean)
+pg_restore: dropping FUNCTION prevent_duplicate_workday_insert()
+pg_restore: dropping FUNCTION pair_transfers(uuid, uuid, uuid)
+pg_restore: dropping FUNCTION mark_transfer_pair(uuid, uuid, uuid)
+pg_restore: dropping FUNCTION is_business_day(date)
+pg_restore: dropping FUNCTION get_user_effective_permissions(uuid)
+pg_restore: dropping FUNCTION get_payroll_version_history(uuid)
+pg_restore: dropping TABLE payroll_version_history_results
+pg_restore: dropping FUNCTION get_latest_payroll_version(uuid)
+pg_restore: dropping TABLE latest_payroll_version_results
+pg_restore: dropping FUNCTION get_hasura_claims(text)
+pg_restore: dropping FUNCTION generate_payroll_dates(uuid, date, date, integer)
+pg_restore: dropping TABLE payroll_dates
+pg_restore: dropping FUNCTION generate_invoice_number()
+pg_restore: dropping FUNCTION enforce_staff_roles()
+pg_restore: dropping FUNCTION enforce_entity_relation()
+pg_restore: dropping FUNCTION encrypt_sensitive(text)
+pg_restore: dropping FUNCTION detect_potential_transfers(uuid, integer, numeric)
+pg_restore: dropping FUNCTION decrypt_sensitive(text)
+pg_restore: dropping FUNCTION create_payroll_version_simple(uuid, text)
+pg_restore: dropping FUNCTION create_payroll_version(uuid, date, text, uuid, text, uuid, uuid, uuid, integer, uuid, uuid, uuid)
+pg_restore: dropping TABLE payroll_version_results
+pg_restore: dropping FUNCTION calculate_payroll_capacity()
+pg_restore: dropping FUNCTION calculate_billing_quantity(text, jsonb)
+pg_restore: dropping FUNCTION auto_regenerate_dates_on_schedule_change()
+pg_restore: dropping FUNCTION auto_generate_dates_on_payroll_insert()
+pg_restore: dropping FUNCTION auto_delete_future_dates_on_supersede()
+pg_restore: dropping FUNCTION audit_user_status_change()
+pg_restore: dropping FUNCTION audit_invitation_status_change()
+pg_restore: dropping FUNCTION adjust_for_non_business_day(date, text[], text)
+pg_restore: dropping FUNCTION adjust_for_non_business_day(date, text)
+pg_restore: dropping FUNCTION adjust_date_with_reason(date, text)
+pg_restore: dropping FUNCTION activate_payroll_versions()
+pg_restore: dropping TABLE payroll_activation_results
+pg_restore: dropping FUNCTION gen_hasura_uuid()
+pg_restore: dropping FUNCTION log_changes()
+pg_restore: dropping FUNCTION archive_old_logs()
+pg_restore: dropping TYPE user_status_enum
+pg_restore: dropping TYPE user_role
+pg_restore: dropping TYPE user_position
+pg_restore: dropping TYPE transfer_candidate_type
+pg_restore: dropping TYPE status
+pg_restore: dropping TYPE permission_action
+pg_restore: dropping TYPE payroll_version_reason
+pg_restore: dropping TYPE payroll_status_new
+pg_restore: dropping TYPE payroll_status
+pg_restore: dropping TYPE payroll_dates_result
+pg_restore: dropping TYPE payroll_date_type
+pg_restore: dropping TYPE payroll_date_result
+pg_restore: dropping TYPE payroll_cycle_type
+pg_restore: dropping TYPE leave_status_enum
+pg_restore: dropping TYPE invitation_status_enum
+pg_restore: dropping EXTENSION uuid-ossp
+pg_restore: dropping EXTENSION pgcrypto
+pg_restore: dropping EXTENSION pg_trgm
+pg_restore: dropping SCHEMA public
+pg_restore: dropping SCHEMA neon_auth
+pg_restore: dropping SCHEMA hdb_catalog
+pg_restore: dropping SCHEMA audit
+pg_restore: creating SCHEMA "audit"
+pg_restore: creating SCHEMA "hdb_catalog"
+pg_restore: creating SCHEMA "neon_auth"
+pg_restore: creating SCHEMA "public"
+pg_restore: creating COMMENT "SCHEMA public"
+pg_restore: creating EXTENSION "pg_trgm"
+pg_restore: creating COMMENT "EXTENSION pg_trgm"
+pg_restore: creating EXTENSION "pgcrypto"
+pg_restore: creating COMMENT "EXTENSION pgcrypto"
+pg_restore: creating EXTENSION "uuid-ossp"
+pg_restore: creating COMMENT "EXTENSION "uuid-ossp""
+pg_restore: creating TYPE "public.invitation_status_enum"
+pg_restore: creating TYPE "public.leave_status_enum"
+pg_restore: creating TYPE "public.payroll_cycle_type"
+pg_restore: creating TYPE "public.payroll_date_result"
+pg_restore: creating TYPE "public.payroll_date_type"
+pg_restore: creating TYPE "public.payroll_dates_result"
+pg_restore: creating TYPE "public.payroll_status"
+pg_restore: creating TYPE "public.payroll_status_new"
+pg_restore: creating TYPE "public.payroll_version_reason"
+pg_restore: creating TYPE "public.permission_action"
+pg_restore: creating TYPE "public.status"
+pg_restore: creating TYPE "public.transfer_candidate_type"
+pg_restore: creating TYPE "public.user_position"
+pg_restore: creating TYPE "public.user_role"
+pg_restore: creating TYPE "public.user_status_enum"
+pg_restore: creating COMMENT "public.TYPE user_status_enum"
+pg_restore: creating FUNCTION "audit.archive_old_logs()"
+pg_restore: creating FUNCTION "audit.log_changes()"
+pg_restore: creating FUNCTION "hdb_catalog.gen_hasura_uuid()"
+pg_restore: creating TABLE "public.payroll_activation_results"
+pg_restore: creating FUNCTION "public.activate_payroll_versions()"
+pg_restore: creating COMMENT "public.FUNCTION activate_payroll_versions()"
+pg_restore: creating FUNCTION "public.adjust_date_with_reason(date, text)"
+pg_restore: creating FUNCTION "public.adjust_for_non_business_day(date, text)"
+pg_restore: creating FUNCTION "public.adjust_for_non_business_day(date, text[], text)"
+pg_restore: creating FUNCTION "public.audit_invitation_status_change()"
+pg_restore: creating COMMENT "public.FUNCTION audit_invitation_status_change()"
+pg_restore: creating FUNCTION "public.audit_user_status_change()"
+pg_restore: creating COMMENT "public.FUNCTION audit_user_status_change()"
+pg_restore: creating FUNCTION "public.auto_delete_future_dates_on_supersede()"
+pg_restore: creating FUNCTION "public.auto_generate_dates_on_payroll_insert()"
+pg_restore: creating FUNCTION "public.auto_regenerate_dates_on_schedule_change()"
+pg_restore: creating FUNCTION "public.calculate_billing_quantity(text, jsonb)"
+pg_restore: creating COMMENT "public.FUNCTION calculate_billing_quantity(service_billing_unit text, payroll_data jsonb)"
+pg_restore: creating FUNCTION "public.calculate_payroll_capacity()"
+pg_restore: creating TABLE "public.payroll_version_results"
+pg_restore: creating FUNCTION "public.create_payroll_version(uuid, date, text, uuid, text, uuid, uuid, uuid, integer, uuid, uuid, uuid)"
+pg_restore: creating FUNCTION "public.create_payroll_version_simple(uuid, text)"
+pg_restore: creating COMMENT "public.FUNCTION create_payroll_version_simple(payroll_id uuid, version_reason text)"
+pg_restore: creating FUNCTION "public.decrypt_sensitive(text)"
+pg_restore: creating FUNCTION "public.detect_potential_transfers(uuid, integer, numeric)"
+pg_restore: creating COMMENT "public.FUNCTION detect_potential_transfers(p_user_id uuid, p_days_threshold integer, p_amount_threshold numeric)"
+pg_restore: creating FUNCTION "public.encrypt_sensitive(text)"
+pg_restore: creating FUNCTION "public.enforce_entity_relation()"
+pg_restore: creating FUNCTION "public.enforce_staff_roles()"
+pg_restore: creating FUNCTION "public.generate_invoice_number()"
+pg_restore: creating COMMENT "public.FUNCTION generate_invoice_number()"
+pg_restore: creating TABLE "public.payroll_dates"
+pg_restore: creating COMMENT "public.COLUMN payroll_dates.id"
+pg_restore: creating COMMENT "public.COLUMN payroll_dates.payroll_id"
+pg_restore: creating COMMENT "public.COLUMN payroll_dates.original_eft_date"
+pg_restore: creating COMMENT "public.COLUMN payroll_dates.adjusted_eft_date"
+pg_restore: creating COMMENT "public.COLUMN payroll_dates.processing_date"
+pg_restore: creating COMMENT "public.COLUMN payroll_dates.notes"
+pg_restore: creating COMMENT "public.COLUMN payroll_dates.created_at"
+pg_restore: creating COMMENT "public.COLUMN payroll_dates.updated_at"
+pg_restore: creating FUNCTION "public.generate_payroll_dates(uuid, date, date, integer)"
+pg_restore: creating COMMENT "public.FUNCTION generate_payroll_dates(p_payroll_id uuid, p_start_date date, p_end_date date, p_max_dates integer)"
+pg_restore: creating FUNCTION "public.get_hasura_claims(text)"
+pg_restore: creating TABLE "public.latest_payroll_version_results"
+pg_restore: creating FUNCTION "public.get_latest_payroll_version(uuid)"
+pg_restore: creating COMMENT "public.FUNCTION get_latest_payroll_version(payroll_id uuid)"
+pg_restore: creating TABLE "public.payroll_version_history_results"
+pg_restore: creating FUNCTION "public.get_payroll_version_history(uuid)"
+pg_restore: creating COMMENT "public.FUNCTION get_payroll_version_history(payroll_id uuid)"
+pg_restore: creating FUNCTION "public.get_user_effective_permissions(uuid)"
+pg_restore: creating FUNCTION "public.is_business_day(date)"
+pg_restore: creating FUNCTION "public.mark_transfer_pair(uuid, uuid, uuid)"
+pg_restore: creating COMMENT "public.FUNCTION mark_transfer_pair(p_outgoing_id uuid, p_incoming_id uuid, p_user_id uuid)"
+pg_restore: creating FUNCTION "public.pair_transfers(uuid, uuid, uuid)"
+pg_restore: creating COMMENT "public.FUNCTION pair_transfers(p_outgoing_id uuid, p_incoming_id uuid, p_user_id uuid)"
+pg_restore: creating FUNCTION "public.prevent_duplicate_workday_insert()"
+pg_restore: creating FUNCTION "public.regenerate_all_payroll_dates(date, date, integer, boolean)"
+pg_restore: creating FUNCTION "public.subtract_business_days(date, integer)"
+pg_restore: creating FUNCTION "public.trigger_set_timestamp()"
+pg_restore: creating FUNCTION "public.unmark_transfer_pair(uuid[])"
+pg_restore: creating COMMENT "public.FUNCTION unmark_transfer_pair(p_transaction_ids uuid[])"
+pg_restore: creating FUNCTION "public.unpair_transfers(uuid, uuid)"
+pg_restore: creating COMMENT "public.FUNCTION unpair_transfers(p_transaction_id uuid, p_user_id uuid)"
+pg_restore: creating FUNCTION "public.update_admin_time_from_position()"
+pg_restore: creating FUNCTION "public.update_invitation_status_metadata()"
+pg_restore: creating FUNCTION "public.update_invoice_total()"
+pg_restore: creating FUNCTION "public.update_leave_updated_at()"
+pg_restore: creating FUNCTION "public.update_modified_column()"
+pg_restore: creating FUNCTION "public.update_payroll_dates()"
+pg_restore: creating FUNCTION "public.update_timestamp()"
+pg_restore: creating FUNCTION "public.update_updated_at_column()"
+pg_restore: creating FUNCTION "public.update_user_status_changed_at()"
+pg_restore: creating FUNCTION "public.user_can_perform_action(uuid, text, text)"
+pg_restore: creating FUNCTION "public.users_computed_full_name(text, text)"
+pg_restore: creating TABLE "audit.audit_log"
+pg_restore: creating TABLE "audit.auth_events"
+pg_restore: creating TABLE "audit.data_access_log"
+pg_restore: creating TABLE "audit.permission_changes"
+pg_restore: creating TABLE "public.permissions"
+pg_restore: creating TABLE "public.resources"
+pg_restore: creating TABLE "public.role_permissions"
+pg_restore: creating TABLE "public.roles"
+pg_restore: creating TABLE "public.user_roles"
+pg_restore: creating VIEW "audit.permission_usage_report"
+pg_restore: creating TABLE "audit.slow_queries"
+pg_restore: creating TABLE "public.users"
+pg_restore: creating COMMENT "public.COLUMN users.id"
+pg_restore: creating COMMENT "public.COLUMN users.name"
+pg_restore: creating COMMENT "public.COLUMN users.email"
+pg_restore: creating COMMENT "public.COLUMN users.role"
+pg_restore: creating COMMENT "public.COLUMN users.created_at"
+pg_restore: creating COMMENT "public.COLUMN users.updated_at"
+pg_restore: creating COMMENT "public.COLUMN users.username"
+pg_restore: creating COMMENT "public.COLUMN users.image"
+pg_restore: creating COMMENT "public.COLUMN users.is_staff"
+pg_restore: creating COMMENT "public.COLUMN users.manager_id"
+pg_restore: creating COMMENT "public.COLUMN users.clerk_user_id"
+pg_restore: creating COMMENT "public.COLUMN users.status"
+pg_restore: creating COMMENT "public.COLUMN users.status_changed_at"
+pg_restore: creating COMMENT "public.COLUMN users.status_changed_by"
+pg_restore: creating COMMENT "public.COLUMN users.status_change_reason"
+pg_restore: creating COMMENT "public.COLUMN users."position""
+pg_restore: creating COMMENT "public.COLUMN users.default_admin_time_percentage"
+pg_restore: creating COMMENT "public.COLUMN users.phone"
+pg_restore: creating COMMENT "public.COLUMN users.address"
+pg_restore: creating COMMENT "public.COLUMN users.bio"
+pg_restore: creating VIEW "audit.user_access_summary"
+pg_restore: creating TABLE "hdb_catalog.hdb_action_log"
+pg_restore: creating TABLE "hdb_catalog.hdb_cron_event_invocation_logs"
+pg_restore: creating TABLE "hdb_catalog.hdb_cron_events"
+pg_restore: creating TABLE "hdb_catalog.hdb_metadata"
+pg_restore: creating TABLE "hdb_catalog.hdb_scheduled_event_invocation_logs"
+pg_restore: creating TABLE "hdb_catalog.hdb_scheduled_events"
+pg_restore: creating TABLE "hdb_catalog.hdb_schema_notifications"
+pg_restore: creating TABLE "hdb_catalog.hdb_version"
+pg_restore: creating TABLE "public.adjustment_rules"
+pg_restore: creating COMMENT "public.COLUMN adjustment_rules.id"
+pg_restore: creating COMMENT "public.COLUMN adjustment_rules.cycle_id"
+pg_restore: creating COMMENT "public.COLUMN adjustment_rules.date_type_id"
+pg_restore: creating COMMENT "public.COLUMN adjustment_rules.rule_description"
+pg_restore: creating COMMENT "public.COLUMN adjustment_rules.rule_code"
+pg_restore: creating COMMENT "public.COLUMN adjustment_rules.created_at"
+pg_restore: creating COMMENT "public.COLUMN adjustment_rules.updated_at"
+pg_restore: creating TABLE "public.app_settings"
+pg_restore: creating COMMENT "public.COLUMN app_settings.id"
+pg_restore: creating COMMENT "public.COLUMN app_settings.permissions"
+pg_restore: creating TABLE "public.audit_log"
+pg_restore: creating TABLE "public.billing_event_log"
+pg_restore: creating TABLE "public.billing_invoice"
+pg_restore: creating COMMENT "public.COLUMN billing_invoice.payroll_count"
+pg_restore: creating COMMENT "public.COLUMN billing_invoice.total_hours"
+pg_restore: creating COMMENT "public.COLUMN billing_invoice.invoice_number"
+pg_restore: creating COMMENT "public.COLUMN billing_invoice.billing_period_id"
+pg_restore: creating TABLE "public.billing_invoice_item"
+pg_restore: creating TABLE "public.billing_items"
+pg_restore: creating COMMENT "public.COLUMN billing_items.service_id"
+pg_restore: creating COMMENT "public.COLUMN billing_items.staff_user_id"
+pg_restore: creating COMMENT "public.COLUMN billing_items.notes"
+pg_restore: creating COMMENT "public.COLUMN billing_items.status"
+pg_restore: creating COMMENT "public.COLUMN billing_items.confirmed_at"
+pg_restore: creating COMMENT "public.COLUMN billing_items.confirmed_by"
+pg_restore: creating TABLE "public.billing_periods"
+pg_restore: creating COMMENT "public.TABLE billing_periods"
+pg_restore: creating COMMENT "public.COLUMN billing_periods.client_id"
+pg_restore: creating COMMENT "public.COLUMN billing_periods.period_start"
+pg_restore: creating COMMENT "public.COLUMN billing_periods.period_end"
+pg_restore: creating COMMENT "public.COLUMN billing_periods.status"
+pg_restore: creating TABLE "public.billing_plan"
+pg_restore: creating COMMENT "public.COLUMN billing_plan.standard_rate"
+pg_restore: creating COMMENT "public.COLUMN billing_plan.billing_unit"
+pg_restore: creating COMMENT "public.COLUMN billing_plan.category"
+pg_restore: creating COMMENT "public.COLUMN billing_plan.is_active"
+pg_restore: creating TABLE "public.client_billing_assignment"
+pg_restore: creating COMMENT "public.COLUMN client_billing_assignment.custom_rate"
+pg_restore: creating COMMENT "public.COLUMN client_billing_assignment.billing_frequency"
+pg_restore: creating COMMENT "public.COLUMN client_billing_assignment.effective_date"
+pg_restore: creating COMMENT "public.COLUMN client_billing_assignment.is_enabled"
+pg_restore: creating TABLE "public.client_external_systems"
+pg_restore: creating COMMENT "public.COLUMN client_external_systems.id"
+pg_restore: creating COMMENT "public.COLUMN client_external_systems.client_id"
+pg_restore: creating COMMENT "public.COLUMN client_external_systems.system_id"
+pg_restore: creating COMMENT "public.COLUMN client_external_systems.system_client_id"
+pg_restore: creating COMMENT "public.COLUMN client_external_systems.created_at"
+pg_restore: creating COMMENT "public.COLUMN client_external_systems.updated_at"
+pg_restore: creating TABLE "public.clients"
+pg_restore: creating COMMENT "public.COLUMN clients.id"
+pg_restore: creating COMMENT "public.COLUMN clients.name"
+pg_restore: creating COMMENT "public.COLUMN clients.contact_person"
+pg_restore: creating COMMENT "public.COLUMN clients.contact_email"
+pg_restore: creating COMMENT "public.COLUMN clients.contact_phone"
+pg_restore: creating COMMENT "public.COLUMN clients.active"
+pg_restore: creating COMMENT "public.COLUMN clients.created_at"
+pg_restore: creating COMMENT "public.COLUMN clients.updated_at"
+pg_restore: creating VIEW "public.client_services_with_rates"
+pg_restore: creating COMMENT "public.VIEW client_services_with_rates"
+pg_restore: creating TABLE "public.work_schedule"
+pg_restore: creating COMMENT "public.COLUMN work_schedule.id"
+pg_restore: creating COMMENT "public.COLUMN work_schedule.user_id"
+pg_restore: creating COMMENT "public.COLUMN work_schedule.work_day"
+pg_restore: creating COMMENT "public.COLUMN work_schedule.work_hours"
+pg_restore: creating COMMENT "public.COLUMN work_schedule.created_at"
+pg_restore: creating COMMENT "public.COLUMN work_schedule.updated_at"
+pg_restore: creating COMMENT "public.COLUMN work_schedule.admin_time_hours"
+pg_restore: creating COMMENT "public.COLUMN work_schedule.payroll_capacity_hours"
+pg_restore: creating COMMENT "public.COLUMN work_schedule.uses_default_admin_time"
+pg_restore: creating VIEW "public.consultant_capacity_overview"
+pg_restore: creating TABLE "public.payroll_cycles"
+pg_restore: creating COMMENT "public.COLUMN payroll_cycles.id"
+pg_restore: creating COMMENT "public.COLUMN payroll_cycles.name"
+pg_restore: creating COMMENT "public.COLUMN payroll_cycles.description"
+pg_restore: creating COMMENT "public.COLUMN payroll_cycles.created_at"
+pg_restore: creating COMMENT "public.COLUMN payroll_cycles.updated_at"
+pg_restore: creating TABLE "public.payroll_date_types"
+pg_restore: creating COMMENT "public.COLUMN payroll_date_types.id"
+pg_restore: creating COMMENT "public.COLUMN payroll_date_types.name"
+pg_restore: creating COMMENT "public.COLUMN payroll_date_types.description"
+pg_restore: creating COMMENT "public.COLUMN payroll_date_types.created_at"
+pg_restore: creating COMMENT "public.COLUMN payroll_date_types.updated_at"
+pg_restore: creating TABLE "public.payrolls"
+pg_restore: creating COMMENT "public.COLUMN payrolls.id"
+pg_restore: creating COMMENT "public.COLUMN payrolls.client_id"
+pg_restore: creating COMMENT "public.COLUMN payrolls.name"
+pg_restore: creating COMMENT "public.COLUMN payrolls.cycle_id"
+pg_restore: creating COMMENT "public.COLUMN payrolls.date_type_id"
+pg_restore: creating COMMENT "public.COLUMN payrolls.date_value"
+pg_restore: creating COMMENT "public.COLUMN payrolls.primary_consultant_user_id"
+pg_restore: creating COMMENT "public.COLUMN payrolls.backup_consultant_user_id"
+pg_restore: creating COMMENT "public.COLUMN payrolls.manager_user_id"
+pg_restore: creating COMMENT "public.COLUMN payrolls.processing_days_before_eft"
+pg_restore: creating COMMENT "public.COLUMN payrolls.created_at"
+pg_restore: creating COMMENT "public.COLUMN payrolls.updated_at"
+pg_restore: creating COMMENT "public.COLUMN payrolls.payroll_system"
+pg_restore: creating COMMENT "public.COLUMN payrolls.status"
+pg_restore: creating COMMENT "public.COLUMN payrolls.processing_time"
+pg_restore: creating COMMENT "public.COLUMN payrolls.employee_count"
+pg_restore: creating COMMENT "public.COLUMN payrolls.go_live_date"
+pg_restore: creating COMMENT "public.COLUMN payrolls.payslip_count"
+pg_restore: creating COMMENT "public.COLUMN payrolls.new_employees"
+pg_restore: creating COMMENT "public.COLUMN payrolls.terminated_employees"
+pg_restore: creating COMMENT "public.COLUMN payrolls.billing_status"
+pg_restore: creating VIEW "public.current_payrolls"
+pg_restore: creating TABLE "public.data_backups"
+pg_restore: creating TABLE "public.email_drafts"
+pg_restore: creating COMMENT "public.TABLE email_drafts"
+pg_restore: creating TABLE "public.email_send_logs"
+pg_restore: creating COMMENT "public.TABLE email_send_logs"
+pg_restore: creating TABLE "public.email_templates"
+pg_restore: creating COMMENT "public.TABLE email_templates"
+pg_restore: creating TABLE "public.external_systems"
+pg_restore: creating COMMENT "public.COLUMN external_systems.id"
+pg_restore: creating COMMENT "public.COLUMN external_systems.name"
+pg_restore: creating COMMENT "public.COLUMN external_systems.url"
+pg_restore: creating COMMENT "public.COLUMN external_systems.description"
+pg_restore: creating COMMENT "public.COLUMN external_systems.icon"
+pg_restore: creating COMMENT "public.COLUMN external_systems.created_at"
+pg_restore: creating COMMENT "public.COLUMN external_systems.updated_at"
+pg_restore: creating TABLE "public.feature_flags"
+pg_restore: creating COMMENT "public.COLUMN feature_flags.id"
+pg_restore: creating COMMENT "public.COLUMN feature_flags.feature_name"
+pg_restore: creating COMMENT "public.COLUMN feature_flags.is_enabled"
+pg_restore: creating COMMENT "public.COLUMN feature_flags.allowed_roles"
+pg_restore: creating COMMENT "public.COLUMN feature_flags.updated_at"
+pg_restore: creating TABLE "public.holidays"
+pg_restore: creating COMMENT "public.COLUMN holidays.id"
+pg_restore: creating COMMENT "public.COLUMN holidays.date"
+pg_restore: creating COMMENT "public.COLUMN holidays.local_name"
+pg_restore: creating COMMENT "public.COLUMN holidays.name"
+pg_restore: creating COMMENT "public.COLUMN holidays.country_code"
+pg_restore: creating COMMENT "public.COLUMN holidays.region"
+pg_restore: creating COMMENT "public.COLUMN holidays.is_fixed"
+pg_restore: creating COMMENT "public.COLUMN holidays.is_global"
+pg_restore: creating COMMENT "public.COLUMN holidays.launch_year"
+pg_restore: creating COMMENT "public.COLUMN holidays.types"
+pg_restore: creating COMMENT "public.COLUMN holidays.created_at"
+pg_restore: creating COMMENT "public.COLUMN holidays.updated_at"
+pg_restore: creating TABLE "public.leave"
+pg_restore: creating COMMENT "public.COLUMN leave.id"
+pg_restore: creating COMMENT "public.COLUMN leave.user_id"
+pg_restore: creating COMMENT "public.COLUMN leave.start_date"
+pg_restore: creating COMMENT "public.COLUMN leave.end_date"
+pg_restore: creating COMMENT "public.COLUMN leave.leave_type"
+pg_restore: creating COMMENT "public.COLUMN leave.reason"
+pg_restore: creating COMMENT "public.COLUMN leave.status"
+pg_restore: creating COMMENT "public.COLUMN leave.created_at"
+pg_restore: creating COMMENT "public.COLUMN leave.updated_at"
+pg_restore: creating TABLE "public.notes"
+pg_restore: creating COMMENT "public.COLUMN notes.id"
+pg_restore: creating COMMENT "public.COLUMN notes.entity_type"
+pg_restore: creating COMMENT "public.COLUMN notes.entity_id"
+pg_restore: creating COMMENT "public.COLUMN notes.user_id"
+pg_restore: creating COMMENT "public.COLUMN notes.content"
+pg_restore: creating COMMENT "public.COLUMN notes.is_important"
+pg_restore: creating COMMENT "public.COLUMN notes.created_at"
+pg_restore: creating COMMENT "public.COLUMN notes.updated_at"
+pg_restore: creating TABLE "public.payroll_assignment_audit"
+pg_restore: creating TABLE "public.payroll_assignments"
+pg_restore: creating MATERIALIZED VIEW "public.payroll_dashboard_stats"
+pg_restore: creating TABLE "public.time_entries"
+pg_restore: creating COMMENT "public.TABLE time_entries"
+pg_restore: creating COMMENT "public.COLUMN time_entries.staff_user_id"
+pg_restore: creating COMMENT "public.COLUMN time_entries.client_id"
+pg_restore: creating COMMENT "public.COLUMN time_entries.payroll_id"
+pg_restore: creating COMMENT "public.COLUMN time_entries.billing_item_id"
+pg_restore: creating COMMENT "public.COLUMN time_entries.work_date"
+pg_restore: creating COMMENT "public.COLUMN time_entries.hours_spent"
+pg_restore: creating COMMENT "public.COLUMN time_entries.description"
+pg_restore: creating VIEW "public.payroll_profitability"
+pg_restore: creating COMMENT "public.VIEW payroll_profitability"
+pg_restore: creating TABLE "public.payroll_required_skills"
+pg_restore: creating VIEW "public.payroll_triggers_status"
+pg_restore: creating TABLE "public.permission_audit_log"
+pg_restore: creating COMMENT "public.TABLE permission_audit_log"
+pg_restore: creating TABLE "public.permission_overrides"
+pg_restore: creating COMMENT "public.TABLE permission_overrides"
+pg_restore: creating COMMENT "public.COLUMN permission_overrides.user_id"
+pg_restore: creating COMMENT "public.COLUMN permission_overrides.role"
+pg_restore: creating COMMENT "public.COLUMN permission_overrides.granted"
+pg_restore: creating COMMENT "public.COLUMN permission_overrides.conditions"
+pg_restore: creating COMMENT "public.COLUMN permission_overrides.expires_at"
+pg_restore: creating TABLE "public.position_admin_defaults"
+pg_restore: creating TABLE "public.rate_limits"
+pg_restore: creating TABLE "public.security_alerts"
+pg_restore: creating TABLE "public.security_settings"
+pg_restore: creating VIEW "public.staff_billing_performance"
+pg_restore: creating COMMENT "public.VIEW staff_billing_performance"
+pg_restore: creating TABLE "public.system_configuration"
+pg_restore: creating TABLE "public.system_health"
+pg_restore: creating VIEW "public.team_capacity_by_position"
+pg_restore: creating TABLE "public.user_email_template_favorites"
+pg_restore: creating COMMENT "public.TABLE user_email_template_favorites"
+pg_restore: creating TABLE "public.user_invitations"
+pg_restore: creating COMMENT "public.TABLE user_invitations"
+pg_restore: creating TABLE "public.user_sessions"
+pg_restore: creating TABLE "public.user_skills"
+pg_restore: creating TABLE "public.users_role_backup"
+pg_restore: processing data for table "audit.audit_log"
+pg_restore: processing data for table "audit.auth_events"
+pg_restore: processing data for table "audit.data_access_log"
+pg_restore: processing data for table "audit.permission_changes"
+pg_restore: processing data for table "audit.slow_queries"
+pg_restore: processing data for table "hdb_catalog.hdb_action_log"
+pg_restore: processing data for table "hdb_catalog.hdb_cron_event_invocation_logs"
+pg_restore: processing data for table "hdb_catalog.hdb_cron_events"
+pg_restore: processing data for table "hdb_catalog.hdb_metadata"
+pg_restore: processing data for table "hdb_catalog.hdb_scheduled_event_invocation_logs"
+pg_restore: processing data for table "hdb_catalog.hdb_scheduled_events"
+pg_restore: processing data for table "hdb_catalog.hdb_schema_notifications"
+pg_restore: processing data for table "hdb_catalog.hdb_version"
+pg_restore: processing data for table "public.adjustment_rules"
+pg_restore: processing data for table "public.app_settings"
+pg_restore: processing data for table "public.audit_log"
+pg_restore: processing data for table "public.billing_event_log"
+pg_restore: processing data for table "public.billing_invoice"
+pg_restore: processing data for table "public.billing_invoice_item"
+pg_restore: processing data for table "public.billing_items"
+pg_restore: processing data for table "public.billing_periods"
+pg_restore: processing data for table "public.billing_plan"
+pg_restore: processing data for table "public.client_billing_assignment"
+pg_restore: processing data for table "public.client_external_systems"
+pg_restore: processing data for table "public.clients"
+pg_restore: processing data for table "public.data_backups"
+pg_restore: processing data for table "public.email_drafts"
+pg_restore: processing data for table "public.email_send_logs"
+pg_restore: processing data for table "public.email_templates"
+pg_restore: processing data for table "public.external_systems"
+pg_restore: processing data for table "public.feature_flags"
+pg_restore: processing data for table "public.holidays"
+pg_restore: processing data for table "public.latest_payroll_version_results"
+pg_restore: processing data for table "public.leave"
+pg_restore: processing data for table "public.notes"
+pg_restore: processing data for table "public.payroll_activation_results"
+pg_restore: processing data for table "public.payroll_assignment_audit"
+pg_restore: processing data for table "public.payroll_assignments"
+pg_restore: processing data for table "public.payroll_cycles"
+pg_restore: processing data for table "public.payroll_date_types"
+pg_restore: processing data for table "public.payroll_dates"
+pg_restore: processing data for table "public.payroll_required_skills"
+pg_restore: processing data for table "public.payroll_version_history_results"
+pg_restore: processing data for table "public.payroll_version_results"
+pg_restore: processing data for table "public.payrolls"
+pg_restore: processing data for table "public.permission_audit_log"
+pg_restore: processing data for table "public.permission_overrides"
+pg_restore: processing data for table "public.permissions"
+pg_restore: processing data for table "public.position_admin_defaults"
+pg_restore: processing data for table "public.rate_limits"
+pg_restore: processing data for table "public.resources"
+pg_restore: processing data for table "public.role_permissions"
+pg_restore: processing data for table "public.roles"
+pg_restore: processing data for table "public.security_alerts"
+pg_restore: processing data for table "public.security_settings"
+pg_restore: processing data for table "public.system_configuration"
+pg_restore: processing data for table "public.system_health"
+pg_restore: processing data for table "public.time_entries"
+pg_restore: processing data for table "public.user_email_template_favorites"
+pg_restore: processing data for table "public.user_invitations"
+pg_restore: processing data for table "public.user_roles"
+pg_restore: processing data for table "public.user_sessions"
+pg_restore: processing data for table "public.user_skills"
+pg_restore: processing data for table "public.users"
+pg_restore: processing data for table "public.users_role_backup"
+pg_restore: processing data for table "public.work_schedule"
+pg_restore: creating CONSTRAINT "audit.audit_log audit_log_pkey"
+pg_restore: creating CONSTRAINT "audit.auth_events auth_events_pkey"
+pg_restore: creating CONSTRAINT "audit.data_access_log data_access_log_pkey"
+pg_restore: creating CONSTRAINT "audit.permission_changes permission_changes_pkey"
+pg_restore: creating CONSTRAINT "audit.slow_queries slow_queries_pkey"
+pg_restore: creating CONSTRAINT "hdb_catalog.hdb_action_log hdb_action_log_pkey"
+pg_restore: creating CONSTRAINT "hdb_catalog.hdb_cron_event_invocation_logs hdb_cron_event_invocation_logs_pkey"
+pg_restore: creating CONSTRAINT "hdb_catalog.hdb_cron_events hdb_cron_events_pkey"
+pg_restore: creating CONSTRAINT "hdb_catalog.hdb_metadata hdb_metadata_pkey"
+pg_restore: creating CONSTRAINT "hdb_catalog.hdb_metadata hdb_metadata_resource_version_key"
+pg_restore: creating CONSTRAINT "hdb_catalog.hdb_scheduled_event_invocation_logs hdb_scheduled_event_invocation_logs_pkey"
+pg_restore: creating CONSTRAINT "hdb_catalog.hdb_scheduled_events hdb_scheduled_events_pkey"
+pg_restore: creating CONSTRAINT "hdb_catalog.hdb_schema_notifications hdb_schema_notifications_pkey"
+pg_restore: creating CONSTRAINT "hdb_catalog.hdb_version hdb_version_pkey"
+pg_restore: creating CONSTRAINT "public.adjustment_rules adjustment_rules_cycle_id_date_type_id_key"
+pg_restore: creating CONSTRAINT "public.adjustment_rules adjustment_rules_pkey"
+pg_restore: creating CONSTRAINT "public.app_settings app_settings_pkey"
+pg_restore: creating CONSTRAINT "public.audit_log audit_log_pkey"
+pg_restore: creating CONSTRAINT "public.billing_event_log billing_event_log_pkey"
+pg_restore: creating CONSTRAINT "public.billing_invoice billing_invoice_invoice_number_key"
+pg_restore: creating CONSTRAINT "public.billing_invoice_item billing_invoice_item_pkey"
+pg_restore: creating CONSTRAINT "public.billing_invoice billing_invoice_pkey"
+pg_restore: creating CONSTRAINT "public.billing_items billing_items_pkey"
+pg_restore: creating CONSTRAINT "public.billing_periods billing_periods_client_id_period_start_period_end_key"
+pg_restore: creating CONSTRAINT "public.billing_periods billing_periods_pkey"
+pg_restore: creating CONSTRAINT "public.billing_plan billing_plan_pkey"
+pg_restore: creating CONSTRAINT "public.client_billing_assignment client_billing_assignment_pkey"
+pg_restore: creating CONSTRAINT "public.client_external_systems client_external_systems_client_id_system_id_key"
+pg_restore: creating CONSTRAINT "public.client_external_systems client_external_systems_pkey"
+pg_restore: creating CONSTRAINT "public.clients clients_pkey"
+pg_restore: creating CONSTRAINT "public.data_backups data_backups_pkey"
+pg_restore: creating CONSTRAINT "public.email_drafts email_drafts_pkey"
+pg_restore: creating CONSTRAINT "public.email_send_logs email_send_logs_pkey"
+pg_restore: creating CONSTRAINT "public.email_templates email_templates_pkey"
+pg_restore: creating CONSTRAINT "public.external_systems external_systems_pkey"
+pg_restore: creating CONSTRAINT "public.feature_flags feature_flags_feature_name_key"
+pg_restore: creating CONSTRAINT "public.feature_flags feature_flags_pkey"
+pg_restore: creating CONSTRAINT "public.holidays holidays_pkey"
+pg_restore: creating CONSTRAINT "public.latest_payroll_version_results latest_payroll_version_results_pkey"
+pg_restore: creating CONSTRAINT "public.leave leave_pkey"
+pg_restore: creating CONSTRAINT "public.notes notes_pkey"
+pg_restore: creating CONSTRAINT "public.payroll_activation_results payroll_activation_results_pkey"
+pg_restore: creating CONSTRAINT "public.payroll_assignment_audit payroll_assignment_audit_pkey"
+pg_restore: creating CONSTRAINT "public.payroll_assignments payroll_assignments_pkey"
+pg_restore: creating CONSTRAINT "public.payroll_cycles payroll_cycles_name_key"
+pg_restore: creating CONSTRAINT "public.payroll_cycles payroll_cycles_pkey"
+pg_restore: creating CONSTRAINT "public.payroll_date_types payroll_date_types_name_key"
+pg_restore: creating CONSTRAINT "public.payroll_date_types payroll_date_types_pkey"
+pg_restore: creating CONSTRAINT "public.payroll_dates payroll_dates_pkey"
+pg_restore: creating CONSTRAINT "public.payroll_version_history_results payroll_version_history_results_pkey"
+pg_restore: creating CONSTRAINT "public.payroll_version_results payroll_version_results_pkey"
+pg_restore: creating CONSTRAINT "public.payrolls payrolls_pkey"
+pg_restore: creating CONSTRAINT "public.permission_audit_log permission_audit_log_pkey"
+pg_restore: creating CONSTRAINT "public.permission_overrides permission_overrides_pkey"
+pg_restore: creating CONSTRAINT "public.permissions permissions_pkey"
+pg_restore: creating CONSTRAINT "public.permissions permissions_resource_id_action_key"
+pg_restore: creating CONSTRAINT "public.position_admin_defaults position_admin_defaults_pkey"
+pg_restore: creating CONSTRAINT "public.rate_limits rate_limits_pkey"
+pg_restore: creating CONSTRAINT "public.rate_limits rate_limits_service_id_window_start_key"
+pg_restore: creating CONSTRAINT "public.resources resources_name_key"
+pg_restore: creating CONSTRAINT "public.resources resources_pkey"
+pg_restore: creating CONSTRAINT "public.role_permissions role_permissions_pkey"
+pg_restore: creating CONSTRAINT "public.role_permissions role_permissions_role_id_permission_id_key"
+pg_restore: creating CONSTRAINT "public.roles roles_name_key"
+pg_restore: creating CONSTRAINT "public.roles roles_pkey"
+pg_restore: creating CONSTRAINT "public.security_alerts security_alerts_pkey"
+pg_restore: creating CONSTRAINT "public.security_settings security_settings_pkey"
+pg_restore: creating CONSTRAINT "public.security_settings security_settings_user_id_setting_key_key"
+pg_restore: creating CONSTRAINT "public.system_configuration system_configuration_config_key_key"
+pg_restore: creating CONSTRAINT "public.system_configuration system_configuration_pkey"
+pg_restore: creating CONSTRAINT "public.system_health system_health_pkey"
+pg_restore: creating CONSTRAINT "public.time_entries time_entries_pkey"
+pg_restore: creating CONSTRAINT "public.work_schedule unique_user_work_day"
+pg_restore: creating CONSTRAINT "public.payroll_assignments uq_payroll_assignment_payroll_date"
+pg_restore: creating CONSTRAINT "public.user_email_template_favorites user_email_template_favorites_pkey"
+pg_restore: creating CONSTRAINT "public.user_email_template_favorites user_email_template_favorites_user_id_template_id_key"
+pg_restore: creating CONSTRAINT "public.user_invitations user_invitations_pkey"
+pg_restore: creating CONSTRAINT "public.user_roles user_roles_pkey"
+pg_restore: creating CONSTRAINT "public.user_roles user_roles_user_id_role_id_key"
+pg_restore: creating CONSTRAINT "public.user_sessions user_sessions_pkey"
+pg_restore: creating CONSTRAINT "public.user_sessions user_sessions_session_token_key"
+pg_restore: creating CONSTRAINT "public.users users_clerk_user_id_key"
+pg_restore: creating CONSTRAINT "public.users users_email_key"
+pg_restore: creating CONSTRAINT "public.users users_pkey"
+pg_restore: creating CONSTRAINT "public.users users_username_key"
+pg_restore: creating CONSTRAINT "public.work_schedule work_schedule_pkey"
+pg_restore: creating INDEX "audit.idx_audit_log_action"
+pg_restore: creating INDEX "audit.idx_audit_log_event_time"
+pg_restore: creating INDEX "audit.idx_audit_log_resource"
+pg_restore: creating INDEX "audit.idx_audit_log_session"
+pg_restore: creating INDEX "audit.idx_audit_log_user_id"
+pg_restore: creating INDEX "audit.idx_auth_events_time"
+pg_restore: creating INDEX "audit.idx_auth_events_type"
+pg_restore: creating INDEX "audit.idx_auth_events_user"
+pg_restore: creating INDEX "audit.idx_data_access_classification"
+pg_restore: creating INDEX "audit.idx_data_access_resource"
+pg_restore: creating INDEX "audit.idx_data_access_time"
+pg_restore: creating INDEX "audit.idx_data_access_user"
+pg_restore: creating INDEX "audit.idx_permission_changes_changed_by"
+pg_restore: creating INDEX "audit.idx_permission_changes_target_user"
+pg_restore: creating INDEX "audit.idx_permission_changes_time"
+pg_restore: creating INDEX "audit.idx_slow_queries_duration"
+pg_restore: creating INDEX "audit.idx_slow_queries_start"
+pg_restore: creating INDEX "hdb_catalog.hdb_cron_event_invocation_event_id"
+pg_restore: creating INDEX "hdb_catalog.hdb_cron_event_status"
+pg_restore: creating INDEX "hdb_catalog.hdb_cron_events_unique_scheduled"
+pg_restore: creating INDEX "hdb_catalog.hdb_scheduled_event_status"
+pg_restore: creating INDEX "hdb_catalog.hdb_version_one_row"
+pg_restore: creating INDEX "public.idx_audit_assignment"
+pg_restore: creating INDEX "public.idx_audit_changed_by"
+pg_restore: creating INDEX "public.idx_audit_date"
+pg_restore: creating INDEX "public.idx_audit_log_action"
+pg_restore: creating INDEX "public.idx_audit_log_category_new"
+pg_restore: creating INDEX "public.idx_audit_log_created_at"
+pg_restore: creating INDEX "public.idx_audit_log_entity"
+pg_restore: creating INDEX "public.idx_audit_log_severity_new"
+pg_restore: creating INDEX "public.idx_audit_log_timestamp_new"
+pg_restore: creating INDEX "public.idx_audit_log_user_id"
+pg_restore: creating INDEX "public.idx_audit_payroll_date"
+pg_restore: creating INDEX "public.idx_billing_invoice_client_id"
+pg_restore: creating INDEX "public.idx_billing_invoice_item_billing_period"
+pg_restore: creating INDEX "public.idx_billing_invoice_item_created_at"
+pg_restore: creating INDEX "public.idx_billing_invoice_item_invoice_id"
+pg_restore: creating INDEX "public.idx_billing_invoice_item_item_id"
+pg_restore: creating INDEX "public.idx_billing_items_billing_plan_id"
+pg_restore: creating INDEX "public.idx_billing_items_client_id"
+pg_restore: creating INDEX "public.idx_billing_items_payroll_id"
+pg_restore: creating INDEX "public.idx_billing_items_service_id"
+pg_restore: creating INDEX "public.idx_billing_items_staff_user_id"
+pg_restore: creating INDEX "public.idx_billing_items_status"
+pg_restore: creating INDEX "public.idx_billing_periods_client_id"
+pg_restore: creating INDEX "public.idx_billing_periods_dates"
+pg_restore: creating INDEX "public.idx_billing_periods_status"
+pg_restore: creating INDEX "public.idx_client_billing_assignment_client_active"
+pg_restore: creating INDEX "public.idx_client_billing_assignment_service"
+pg_restore: creating INDEX "public.idx_data_backups_created_at"
+pg_restore: creating INDEX "public.idx_data_backups_status"
+pg_restore: creating INDEX "public.idx_data_backups_user_id"
+pg_restore: creating INDEX "public.idx_email_drafts_user"
+pg_restore: creating INDEX "public.idx_email_send_logs_created_at"
+pg_restore: creating INDEX "public.idx_email_send_logs_sender"
+pg_restore: creating INDEX "public.idx_email_send_logs_status"
+pg_restore: creating INDEX "public.idx_email_send_logs_template"
+pg_restore: creating INDEX "public.idx_email_templates_active"
+pg_restore: creating INDEX "public.idx_email_templates_category"
+pg_restore: creating INDEX "public.idx_email_templates_created_by"
+pg_restore: creating INDEX "public.idx_holidays_date_country_region"
+pg_restore: creating INDEX "public.idx_latest_payroll_version_results_payroll_id"
+pg_restore: creating INDEX "public.idx_latest_payroll_version_results_queried_at"
+pg_restore: creating INDEX "public.idx_leave_dates"
+pg_restore: creating INDEX "public.idx_leave_user_id"
+pg_restore: creating INDEX "public.idx_notes_created_at"
+pg_restore: creating INDEX "public.idx_notes_entity"
+pg_restore: creating INDEX "public.idx_notes_important"
+pg_restore: creating INDEX "public.idx_notes_user_id"
+pg_restore: creating INDEX "public.idx_payroll_assignments_assigned_by"
+pg_restore: creating INDEX "public.idx_payroll_assignments_assigned_date"
+pg_restore: creating INDEX "public.idx_payroll_assignments_consultant"
+pg_restore: creating INDEX "public.idx_payroll_assignments_payroll_date"
+pg_restore: creating INDEX "public.idx_payroll_dashboard_stats_consultants"
+pg_restore: creating INDEX "public.idx_payroll_dashboard_stats_status"
+pg_restore: creating INDEX "public.idx_payroll_dates_composite"
+pg_restore: creating INDEX "public.idx_payroll_dates_date_range"
+pg_restore: creating INDEX "public.idx_payroll_dates_notes"
+pg_restore: creating INDEX "public.idx_payroll_dates_payroll_id"
+pg_restore: creating INDEX "public.idx_payroll_dates_processing"
+pg_restore: creating INDEX "public.idx_payroll_version_history_results_payroll_id"
+pg_restore: creating INDEX "public.idx_payroll_version_history_results_queried_at"
+pg_restore: creating INDEX "public.idx_payroll_version_results_created_at"
+pg_restore: creating INDEX "public.idx_payrolls_active_dates"
+pg_restore: creating INDEX "public.idx_payrolls_billing_status"
+pg_restore: creating INDEX "public.idx_payrolls_client_billing"
+pg_restore: creating INDEX "public.idx_payrolls_client_id"
+pg_restore: creating INDEX "public.idx_payrolls_consultant"
+pg_restore: creating INDEX "public.idx_payrolls_current_version"
+pg_restore: creating INDEX "public.idx_payrolls_go_live_date"
+pg_restore: creating INDEX "public.idx_payrolls_manager"
+pg_restore: creating INDEX "public.idx_payrolls_staff_composite"
+pg_restore: creating INDEX "public.idx_payrolls_status_client"
+pg_restore: creating INDEX "public.idx_payrolls_versioning"
+pg_restore: creating INDEX "public.idx_permission_audit_log_action"
+pg_restore: creating INDEX "public.idx_permission_audit_log_resource"
+pg_restore: creating INDEX "public.idx_permission_audit_log_target_user_id"
+pg_restore: creating INDEX "public.idx_permission_audit_log_timestamp"
+pg_restore: creating INDEX "public.idx_permission_audit_log_user_id"
+pg_restore: creating INDEX "public.idx_permission_overrides_created_by"
+pg_restore: creating INDEX "public.idx_permission_overrides_expires_at"
+pg_restore: creating INDEX "public.idx_permission_overrides_operation"
+pg_restore: creating INDEX "public.idx_permission_overrides_resource"
+pg_restore: creating INDEX "public.idx_permission_overrides_role"
+pg_restore: creating INDEX "public.idx_permission_overrides_user_id"
+pg_restore: creating INDEX "public.idx_permissions_resource_action"
+pg_restore: creating INDEX "public.idx_position_admin_defaults_position"
+pg_restore: creating INDEX "public.idx_rate_limits_service_window"
+pg_restore: creating INDEX "public.idx_role_permissions_permission_id"
+pg_restore: creating INDEX "public.idx_role_permissions_role_id"
+pg_restore: creating INDEX "public.idx_security_alerts_severity"
+pg_restore: creating INDEX "public.idx_security_alerts_type"
+pg_restore: creating INDEX "public.idx_security_alerts_unresolved"
+pg_restore: creating INDEX "public.idx_security_alerts_user_id"
+pg_restore: creating INDEX "public.idx_security_settings_key"
+pg_restore: creating INDEX "public.idx_security_settings_user_id"
+pg_restore: creating INDEX "public.idx_system_health_status"
+pg_restore: creating INDEX "public.idx_system_health_timestamp"
+pg_restore: creating INDEX "public.idx_time_entries_billing_item_id"
+pg_restore: creating INDEX "public.idx_time_entries_client_id"
+pg_restore: creating INDEX "public.idx_time_entries_payroll_id"
+pg_restore: creating INDEX "public.idx_time_entries_staff_user_id"
+pg_restore: creating INDEX "public.idx_time_entries_work_date"
+pg_restore: creating INDEX "public.idx_unique_payroll_date"
+pg_restore: creating INDEX "public.idx_user_invitations_clerk_ticket"
+pg_restore: creating INDEX "public.idx_user_invitations_email"
+pg_restore: creating INDEX "public.idx_user_invitations_expires_at"
+pg_restore: creating INDEX "public.idx_user_invitations_invitation_status"
+pg_restore: creating INDEX "public.idx_user_invitations_invited_by"
+pg_restore: creating INDEX "public.idx_user_invitations_revoked_at"
+pg_restore: creating INDEX "public.idx_user_invitations_revoked_by"
+pg_restore: creating INDEX "public.idx_user_invitations_status"
+pg_restore: creating INDEX "public.idx_user_roles_user_id"
+pg_restore: creating INDEX "public.idx_user_sessions_active"
+pg_restore: creating INDEX "public.idx_user_sessions_last_activity"
+pg_restore: creating INDEX "public.idx_user_sessions_token"
+pg_restore: creating INDEX "public.idx_user_sessions_user_id"
+pg_restore: creating INDEX "public.idx_user_template_favorites_user"
+pg_restore: creating INDEX "public.idx_users_active_staff"
+pg_restore: creating INDEX "public.idx_users_clerk_composite"
+pg_restore: creating INDEX "public.idx_users_computed_name"
+pg_restore: creating INDEX "public.idx_users_deactivated_at"
+pg_restore: creating INDEX "public.idx_users_first_name"
+pg_restore: creating INDEX "public.idx_users_full_name"
+pg_restore: creating INDEX "public.idx_users_is_active"
+pg_restore: creating INDEX "public.idx_users_last_name"
+pg_restore: creating INDEX "public.idx_users_position"
+pg_restore: creating INDEX "public.idx_users_role"
+pg_restore: creating INDEX "public.idx_users_status"
+pg_restore: creating INDEX "public.idx_users_status_changed_at"
+pg_restore: creating INDEX "public.idx_work_schedule_admin_time"
+pg_restore: creating INDEX "public.idx_work_schedule_capacity"
+pg_restore: creating INDEX "public.idx_work_schedule_user_capacity"
+pg_restore: creating INDEX "public.idx_work_schedule_user_id"
+pg_restore: creating INDEX "public.only_one_current_version_per_family"
+pg_restore: creating TRIGGER "public.clients audit_clients_changes"
+pg_restore: creating TRIGGER "public.user_invitations audit_invitation_status_change_trigger"
+pg_restore: creating TRIGGER "public.payrolls audit_payrolls_changes"
+pg_restore: creating TRIGGER "public.role_permissions audit_role_permissions_changes"
+pg_restore: creating TRIGGER "public.user_roles audit_user_roles_changes"
+pg_restore: creating TRIGGER "public.users audit_user_status_change_trigger"
+pg_restore: creating TRIGGER "public.users audit_users_changes"
+pg_restore: creating TRIGGER "public.notes check_entity_relation"
+pg_restore: creating TRIGGER "public.payrolls enforce_staff_on_payrolls"
+pg_restore: creating TRIGGER "public.payroll_assignments set_timestamp"
+pg_restore: creating TRIGGER "public.payrolls trigger_auto_delete_future_dates"
+pg_restore: creating TRIGGER "public.payrolls trigger_auto_generate_dates"
+pg_restore: creating TRIGGER "public.payrolls trigger_auto_regenerate_dates"
+pg_restore: creating TRIGGER "public.work_schedule trigger_calculate_payroll_capacity"
+pg_restore: creating TRIGGER "public.work_schedule trigger_prevent_duplicate_insert"
+pg_restore: creating TRIGGER "public.work_schedule trigger_update_admin_time_from_position"
+pg_restore: creating TRIGGER "public.billing_invoice_item update_billing_invoice_item_updated_at"
+pg_restore: creating TRIGGER "public.billing_items update_billing_items_updated_at"
+pg_restore: creating TRIGGER "public.billing_periods update_billing_periods_updated_at"
+pg_restore: creating TRIGGER "public.feature_flags update_feature_flags_modtime"
+pg_restore: creating TRIGGER "public.user_invitations update_invitation_status_metadata_trigger"
+pg_restore: creating TRIGGER "public.leave update_leave_updated_at_trigger"
+pg_restore: creating TRIGGER "public.permission_overrides update_permission_overrides_updated_at"
+pg_restore: creating TRIGGER "public.permissions update_permissions_timestamp"
+pg_restore: creating TRIGGER "public.resources update_resources_timestamp"
+pg_restore: creating TRIGGER "public.role_permissions update_role_permissions_timestamp"
+pg_restore: creating TRIGGER "public.roles update_roles_timestamp"
+pg_restore: creating TRIGGER "public.security_settings update_security_settings_updated_at"
+pg_restore: creating TRIGGER "public.system_configuration update_system_configuration_updated_at"
+pg_restore: creating TRIGGER "public.time_entries update_time_entries_updated_at"
+pg_restore: creating TRIGGER "public.user_invitations update_user_invitations_updated_at"
+pg_restore: creating TRIGGER "public.user_roles update_user_roles_timestamp"
+pg_restore: creating TRIGGER "public.users update_user_status_trigger"
+pg_restore: creating TRIGGER "public.users update_users_updated_at"
+pg_restore: creating FK CONSTRAINT "hdb_catalog.hdb_cron_event_invocation_logs hdb_cron_event_invocation_logs_event_id_fkey"
+pg_restore: creating FK CONSTRAINT "hdb_catalog.hdb_scheduled_event_invocation_logs hdb_scheduled_event_invocation_logs_event_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.adjustment_rules adjustment_rules_cycle_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.adjustment_rules adjustment_rules_date_type_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.audit_log audit_log_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.billing_event_log billing_event_log_created_by_fkey"
+pg_restore: creating FK CONSTRAINT "public.billing_event_log billing_event_log_invoice_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.billing_invoice billing_invoice_billing_period_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.billing_invoice billing_invoice_client_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.billing_invoice_item billing_invoice_item_invoice_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.billing_invoice_item billing_invoice_item_item_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.billing_items billing_items_approved_by_fkey"
+pg_restore: creating FK CONSTRAINT "public.billing_items billing_items_billing_plan_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.billing_items billing_items_client_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.billing_items billing_items_confirmed_by_fkey"
+pg_restore: creating FK CONSTRAINT "public.billing_items billing_items_payroll_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.billing_items billing_items_service_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.billing_items billing_items_staff_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.billing_periods billing_periods_client_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.client_billing_assignment client_billing_assignment_billing_plan_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.client_billing_assignment client_billing_assignment_client_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.client_external_systems client_external_systems_client_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.client_external_systems client_external_systems_system_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.data_backups data_backups_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.email_drafts email_drafts_template_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.email_drafts email_drafts_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.email_send_logs email_send_logs_sender_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.email_send_logs email_send_logs_template_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.email_templates email_templates_approved_by_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.email_templates email_templates_created_by_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.payroll_assignment_audit fk_audit_assignment"
+pg_restore: creating FK CONSTRAINT "public.payroll_assignment_audit fk_audit_changed_by"
+pg_restore: creating FK CONSTRAINT "public.payroll_assignment_audit fk_audit_from_consultant"
+pg_restore: creating FK CONSTRAINT "public.payroll_assignment_audit fk_audit_payroll_date"
+pg_restore: creating FK CONSTRAINT "public.payroll_assignment_audit fk_audit_to_consultant"
+pg_restore: creating FK CONSTRAINT "public.payrolls fk_backup_consultant_user"
+pg_restore: creating FK CONSTRAINT "public.leave fk_leave_user"
+pg_restore: creating FK CONSTRAINT "public.payrolls fk_manager_user"
+pg_restore: creating FK CONSTRAINT "public.payroll_assignments fk_payroll_assignment_assigned_by"
+pg_restore: creating FK CONSTRAINT "public.payroll_assignments fk_payroll_assignment_consultant"
+pg_restore: creating FK CONSTRAINT "public.payroll_assignments fk_payroll_assignment_original_consultant"
+pg_restore: creating FK CONSTRAINT "public.payroll_assignments fk_payroll_assignment_payroll_date"
+pg_restore: creating FK CONSTRAINT "public.payrolls fk_primary_consultant_user"
+pg_restore: creating FK CONSTRAINT "public.work_schedule fk_work_schedule_user"
+pg_restore: creating FK CONSTRAINT "public.users manager_id"
+pg_restore: creating FK CONSTRAINT "public.notes notes_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.payroll_dates payroll_dates_payroll_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.payroll_required_skills payroll_required_skills_payroll_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.payrolls payrolls_client_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.payrolls payrolls_cycle_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.payrolls payrolls_date_type_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.payrolls payrolls_parent_payroll_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.permission_audit_log permission_audit_log_target_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.permission_audit_log permission_audit_log_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.permission_overrides permission_overrides_created_by_fkey"
+pg_restore: creating FK CONSTRAINT "public.permission_overrides permission_overrides_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.permissions permissions_resource_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.role_permissions role_permissions_permission_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.role_permissions role_permissions_role_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.security_alerts security_alerts_resolved_by_fkey"
+pg_restore: creating FK CONSTRAINT "public.security_alerts security_alerts_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.security_settings security_settings_updated_by_fkey"
+pg_restore: creating FK CONSTRAINT "public.security_settings security_settings_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.time_entries time_entries_billing_item_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.time_entries time_entries_client_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.time_entries time_entries_payroll_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.time_entries time_entries_staff_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.user_email_template_favorites user_email_template_favorites_template_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.user_email_template_favorites user_email_template_favorites_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.user_invitations user_invitations_accepted_by_fkey"
+pg_restore: creating FK CONSTRAINT "public.user_invitations user_invitations_invited_by_fkey"
+pg_restore: creating FK CONSTRAINT "public.user_invitations user_invitations_manager_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.user_invitations user_invitations_revoked_by_fkey"
+pg_restore: creating FK CONSTRAINT "public.user_roles user_roles_role_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.user_roles user_roles_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.user_sessions user_sessions_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.user_skills user_skills_user_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.users users_status_changed_by_fkey"
+pg_restore: creating ROW SECURITY "public.billing_periods"
+pg_restore: creating POLICY "public.billing_periods billing_periods_delete_policy"
+pg_restore: creating POLICY "public.billing_periods billing_periods_insert_policy"
+pg_restore: creating POLICY "public.billing_periods billing_periods_select_policy"
+pg_restore: creating POLICY "public.billing_periods billing_periods_update_policy"
+pg_restore: creating ROW SECURITY "public.clients"
+pg_restore: creating POLICY "public.user_invitations consultant_viewer_read_user_invitations"
+pg_restore: creating POLICY "public.user_invitations developer_full_access_user_invitations"
+pg_restore: creating POLICY "public.user_invitations manager_access_user_invitations"
+pg_restore: creating ROW SECURITY "public.notes"
+pg_restore: creating POLICY "public.user_invitations org_admin_full_access_user_invitations"
+pg_restore: creating ROW SECURITY "public.payroll_dates"
+pg_restore: creating ROW SECURITY "public.payrolls"
+pg_restore: creating POLICY "public.payrolls payrolls_select_policy"
+pg_restore: creating ROW SECURITY "public.time_entries"
+pg_restore: creating POLICY "public.time_entries time_entries_delete_policy"
+pg_restore: creating POLICY "public.time_entries time_entries_insert_policy"
+pg_restore: creating POLICY "public.time_entries time_entries_select_policy"
+pg_restore: creating POLICY "public.time_entries time_entries_update_policy"
+pg_restore: creating ROW SECURITY "public.user_invitations"
+pg_restore: creating ROW SECURITY "public.users"
+pg_restore: creating POLICY "public.users users_select_policy"
+pg_restore: creating MATERIALIZED VIEW DATA "public.payroll_dashboard_stats"

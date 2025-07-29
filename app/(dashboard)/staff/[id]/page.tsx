@@ -231,7 +231,8 @@ export default function StaffDetailsPage() {
   const handleSave = async () => {
     try {
       const updateData: any = {
-        name: editedUser.name,
+        firstName: editedUser.firstName,
+        lastName: editedUser.lastName,
         email: editedUser.email,
         username: editedUser.username || null,
         image: editedUser.image || null,
@@ -309,7 +310,7 @@ export default function StaffDetailsPage() {
       const result = await response.json();
 
       if (result.success) {
-        toast.success(`User "${user.name}" has been deleted successfully`);
+        toast.success(`User "${user.computedName || `${user.firstName} ${user.lastName}`}" has been deleted successfully`);
         // Redirect to staff page after successful deletion
         window.location.href = '/staff';
       } else {
@@ -473,7 +474,7 @@ export default function StaffDetailsPage() {
             </Link>
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-3xl font-bold">{user.name}</h1>
+                <h1 className="text-3xl font-bold">{user.computedName || `${user.firstName} ${user.lastName}`}</h1>
                 <Badge className={statusConfig.color}>
                   <StatusIcon className="w-3 h-3 mr-1" />
                   {statusConfig.label}
@@ -581,7 +582,7 @@ export default function StaffDetailsPage() {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Manager</p>
                   <p className="text-2xl font-bold text-gray-900">
-                    {user.managerUser?.name || "None"}
+                    {user.managerUser?.computedName || `${user.managerUser?.firstName} ${user.managerUser?.lastName}` || "None"}
                   </p>
                 </div>
                 <UserCheck className="w-8 h-8 text-purple-600" />
@@ -639,7 +640,7 @@ export default function StaffDetailsPage() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-500">Full Name</p>
-                      <p className="text-sm text-gray-900">{user.name}</p>
+                      <p className="text-sm text-gray-900">{user.computedName || `${user.firstName} ${user.lastName}`}</p>
                     </div>
                   </div>
 
@@ -768,7 +769,7 @@ export default function StaffDetailsPage() {
                     <div>
                       <p className="text-sm font-medium text-gray-500">Manager</p>
                       <p className="text-sm text-gray-900">
-                        {user.managerUser?.name || "No manager assigned"}
+                        {user.managerUser?.computedName || `${user.managerUser?.firstName} ${user.managerUser?.lastName}` || "No manager assigned"}
                       </p>
                     </div>
                   </div>
@@ -1075,8 +1076,13 @@ export default function StaffDetailsPage() {
                 <Label htmlFor="name">Full Name *</Label>
                 <Input
                   id="name"
-                  value={editedUser.name || ""}
-                  onChange={(e) => handleInputChange("name", e.target.value)}
+                  value={editedUser.computedName || `${editedUser.firstName || ''} ${editedUser.lastName || ''}` || ""}
+                  onChange={(e) => {
+                    const fullName = e.target.value;
+                    const [firstName, ...lastNameParts] = fullName.split(' ');
+                    handleInputChange("firstName", firstName || '');
+                    handleInputChange("lastName", lastNameParts.join(' '));
+                  }}
                   placeholder="Enter full name..."
                 />
               </div>
@@ -1115,7 +1121,7 @@ export default function StaffDetailsPage() {
                     <SelectItem value="none">No manager</SelectItem>
                     {managerOptions.map((manager: any) => (
                       <SelectItem key={manager.id} value={manager.id}>
-                        {manager.name}
+                        {manager.computedName || `${manager.firstName} ${manager.lastName}`}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -1332,7 +1338,7 @@ export default function StaffDetailsPage() {
                     </div>
                     <div>
                       <p className="font-medium text-destructive">
-                        {user.name}
+                        {user.computedName || `${user.firstName} ${user.lastName}`}
                       </p>
                       <p className="text-sm text-destructive/80">
                         {user.email}
@@ -1394,7 +1400,7 @@ export default function StaffDetailsPage() {
           onClose={() => setShowSkillsModal(false)}
           type="user"
           entityId={id}
-          entityName={user.name || ""}
+          entityName={user.computedName || `${user.firstName} ${user.lastName}` || ""}
         />
       </div>
       </PermissionGuard>

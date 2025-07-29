@@ -62,7 +62,6 @@ const FORBIDDEN_TABLES = [
   "userroles",
   "role_permissions",
   "usersrole_backup",
-  "neon_auth_users_sync",
   // Financial tables
   "billing_invoice_item",
   "billing_event_log",

@@ -1,0 +1,22 @@
+table:
+  name: validation_results
+  schema: public
+object_relationships:
+  - name: validationService
+    using:
+      foreign_key_constraint_on: service_id
+array_relationships:
+  - name: addressChanges
+    using:
+      foreign_key_constraint_on:
+        column: result_id
+        table:
+          name: address_changes
+          schema: public
+  - name: serviceLimitations
+    using:
+      foreign_key_constraint_on:
+        column: result_id
+        table:
+          name: service_limitations
+          schema: public

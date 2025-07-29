@@ -139,7 +139,7 @@ export default function ProfilePage() {
         const user = data.userById;
         if (user) {
           setFormData({
-            name: user.name || "",
+            name: user.computedName || "",
             email: user.email || "",
             phone: user.phone || "",
             address: user.address || "",
@@ -170,7 +170,7 @@ export default function ProfilePage() {
   const user = data?.userById;
   
   // If we have partial data but an error, still show what we can
-  const hasPartialData = user && user.id && user.name;
+  const hasPartialData = user && user.id && user.computedName;
 
   const handleSaveProfile = async () => {
     if (!user) return;
@@ -189,7 +189,7 @@ export default function ProfilePage() {
       });
 
       // Update Clerk user if name changed
-      if (clerkUser && formData.name !== user.name) {
+      if (clerkUser && formData.name !== user.computedName) {
         await clerkUser.update({
           firstName: formData.name.split(" ")[0],
           lastName: formData.name.split(" ").slice(1).join(" "),
@@ -204,7 +204,7 @@ export default function ProfilePage() {
   const handleCancel = () => {
     if (user) {
       setFormData({
-        name: user.name || "",
+        name: user.computedName || "",
         email: user.email || "",
         phone: user.phone || "",
         address: user.address || "",
@@ -360,7 +360,7 @@ export default function ProfilePage() {
             <div className="flex-shrink-0">
               <AvatarUpload
                 currentImageUrl={getAvatarImage()}
-                userName={user?.name || "User"}
+                userName={user?.computedName || "User"}
                 isEditing={isEditing}
                 onImageUpdate={newImageUrl => {
                   console.log("Avatar updated:", newImageUrl);
@@ -372,7 +372,7 @@ export default function ProfilePage() {
               {/* Basic Information */}
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">
-                  {user.name}
+                  {user.computedName}
                 </h2>
                 <p className="text-gray-600">{user.email}</p>
                 {user.username && (
@@ -557,10 +557,10 @@ export default function ProfilePage() {
                     <Avatar className="w-10 h-10">
                       <AvatarImage
                         src={user.managerUser.image || undefined}
-                        alt={user.managerUser.name}
+                        alt={user.managerUser.computedName || `${user.managerUser.firstName} ${user.managerUser.lastName}`}
                       />
                       <AvatarFallback>
-                        {user.managerUser.name
+                        {(user.managerUser.computedName || `${user.managerUser.firstName} ${user.managerUser.lastName}`)
                           .split(" ")
                           .map((n: string) => n?.[0] || "")
                           .join("")
@@ -568,7 +568,7 @@ export default function ProfilePage() {
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-medium">{user.managerUser.name}</p>
+                      <p className="font-medium">{user.managerUser.computedName}</p>
                       <p className="text-sm text-gray-500">
                         {user.managerUser.email}
                       </p>
@@ -801,7 +801,7 @@ export default function ProfilePage() {
           ) : (
             <PayrollWorkloadVisualization
               userId={user.id}
-              userName={user.name}
+              userName={user.computedName || `${user.firstName} ${user.lastName}`}
               userRole={user.role}
               workSchedule={workSchedule}
               viewMode="consultant"

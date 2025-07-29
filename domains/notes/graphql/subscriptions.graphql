@@ -204,7 +204,7 @@ subscription NoteSearchUpdates($searchTerm: String!) {
     where: {
       _or: [
         { content: { _ilike: $searchTerm } }
-        { authorUser: { name: { _ilike: $searchTerm } } }
+        { authorUser: { computedName: { _ilike: $searchTerm } } }
       ]
     }
     orderBy: { createdAt: DESC }
@@ -241,7 +241,9 @@ subscription NoteChangesUpdates($noteId: uuid!) {
     updatedAt
     authorUser {
       id
-      name
+      firstName
+      lastName
+      computedName
     }
   }
 }
@@ -266,7 +268,9 @@ subscription RecentNotesListUpdates {
     content
     createdAt
     authorUser {
-      name
+      firstName
+      lastName
+      computedName
     }
     entityType
   }

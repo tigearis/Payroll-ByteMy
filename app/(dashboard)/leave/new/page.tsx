@@ -420,7 +420,7 @@ function NewLeaveRequestPage() {
                             })()
                           ) : (
                             <>
-                              <p className="font-medium">{currentUser.name}</p>
+                              <p className="font-medium">{currentUser.computedName || `${currentUser.firstName} ${currentUser.lastName}`}</p>
                               <p className="text-sm text-gray-500">{currentUser.email}</p>
                             </>
                           )}
@@ -605,7 +605,7 @@ function NewLeaveRequestPage() {
                     <User className="h-4 w-4 text-gray-500" />
                   </div>
                   <div>
-                    <p className="font-medium text-sm">{currentUser.managerUser.name}</p>
+                    <p className="font-medium text-sm">{currentUser.managerUser.computedName || `${currentUser.managerUser.firstName} ${currentUser.managerUser.lastName}`}</p>
                     <p className="text-xs text-gray-500">{currentUser.managerUser.email}</p>
                   </div>
                 </div>

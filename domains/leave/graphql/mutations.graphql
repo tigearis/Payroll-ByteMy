@@ -8,11 +8,15 @@ mutation CreateLeave($object: leaveInsertInput!) {
     ...LeaveDetailed
     leaveUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       managerUser {
         id
-        name
+        firstName
+        lastName
+        computedName
         email
       }
     }
@@ -24,7 +28,9 @@ mutation UpdateLeave($id: uuid!, $set: leaveSetInput!) {
     ...LeaveDetailed
     leaveUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
     }
   }
@@ -59,7 +65,9 @@ mutation CreateAnnualLeave(
     ...LeaveBasic
     leaveUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
     }
   }
@@ -84,7 +92,9 @@ mutation CreateSickLeave(
     ...LeaveBasic
     leaveUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
     }
   }
@@ -109,7 +119,9 @@ mutation CreateUnpaidLeave(
     ...LeaveBasic
     leaveUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
     }
   }
@@ -134,7 +146,9 @@ mutation CreateOtherLeave(
     ...LeaveBasic
     leaveUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
     }
   }
@@ -149,7 +163,9 @@ mutation ApproveLeave($id: uuid!) {
     ...LeaveBasic
     leaveUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
     }
   }
@@ -163,7 +179,9 @@ mutation RejectLeave($id: uuid!) {
     ...LeaveBasic
     leaveUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
     }
   }
@@ -235,7 +253,9 @@ mutation UpdateLeaveDetails(
     ...LeaveBasic
     leaveUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
     }
   }
@@ -284,7 +304,9 @@ mutation CancelLeave($id: uuid!) {
     endDate
     leaveUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
     }
   }
@@ -298,7 +320,9 @@ mutation TransferLeave($id: uuid!, $newUserId: uuid!) {
     ...LeaveBasic
     leaveUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
     }
   }
@@ -323,7 +347,9 @@ mutation CreateMyLeave(
     ...LeaveBasic
     leaveUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
     }
   }
@@ -379,12 +405,16 @@ mutation CreateLeaveForEmployee(
     ...LeaveDetailed
     leaveUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
       managerUser {
         id
-        name
+        firstName
+        lastName
+        computedName
         email
         role
       }
@@ -412,12 +442,16 @@ mutation CreatePendingLeaveForEmployee(
     ...LeaveDetailed
     leaveUser {
       id
-      name
+      firstName
+      lastName
+      computedName
       email
       role
       managerUser {
         id
-        name
+        firstName
+        lastName
+        computedName
         email
         role
       }

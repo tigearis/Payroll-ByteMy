@@ -1,0 +1,533 @@
+# Payrolls Domain Mutations
+# Security Classification: MEDIUM - Business operational data
+# SOC2 Compliance: All mutations logged with audit trail
+
+# CreatePayroll
+# Creates a new payroll record with full client and consultant relationships
+# Domain: payrolls | Security: MEDIUM | Complexity: MEDIUM
+# Param object: Complete payroll data (name, clientId, consultants, manager, status, cycle, etc.)
+# Returns: Created payroll record with populated relationships (client, consultants, manager)
+# Usage: Creating new payroll implementations from clients or payrolls pages
+# Validation: Client must exist and be active, consultant/manager must have appropriate roles
+# Audit: All payroll creations automatically logged for SOC2 compliance
+# Side effects: Triggers audit log, may notify consultants, updates client dashboard stats
+# Since: Initial payroll system implementation | Classification: SOC2_COMPLIANT
+mutation CreatePayroll($object: payrollsInsertInput!) {
+  insertPayroll(object: $object) {
+    ...PayrollDetailed
+    client {
+      id
+      name
+    }
+    primaryConsultant {
+      id
+      name
+    }
+    manager {
+      id
+      name
+    }
+  }
+}
+
+mutation UpdatePayroll($id: uuid!, $set: payrollsSetInput!) {
+  updatePayrollById(pkColumns: { id: $id }, _set: $set) {
+    ...PayrollDetailed
+    client {
+      id
+      name
+    }
+    primaryConsultant {
+      id
+      name
+    }
+    backupConsultant {
+      id
+      name
+    }
+    manager {
+      id
+      name
+    }
+  }
+}
+
+mutation DeletePayroll($id: uuid!) {
+  updatePayrollById(
+    pkColumns: { id: $id }
+    _set: { supersededDate: "now()" }
+  ) {
+    ...PayrollBasic
+  }
+}
+
+mutation ReactivatePayroll($id: uuid!) {
+  updatePayrollById(
+    pkColumns: { id: $id }
+    _set: { supersededDate: null }
+  ) {
+    ...PayrollBasic
+  }
+}
+
+# Status management
+mutation UpdatePayrollStatus($id: uuid!, $status: payroll_status!) {
+  updatePayrollById(
+    pkColumns: { id: $id }
+    _set: { status: $status, updatedAt: "now()" }
+  ) {
+    ...PayrollBasic
+    client {
+      id
+      name
+    }
+  }
+}
+
+mutation ActivatePayroll($id: uuid!) {
+  updatePayrollById(
+    pkColumns: { id: $id }
+    _set: { status: "Active", updatedAt: "now()" }
+  ) {
+    ...PayrollBasic
+  }
+}
+
+mutation DeactivatePayroll($id: uuid!) {
+  updatePayrollById(
+    pkColumns: { id: $id }
+    _set: { status: "Inactive", updatedAt: "now()" }
+  ) {
+    ...PayrollBasic
+  }
+}
+
+# Assignment operations
+mutation AssignPrimaryConsultant($id: uuid!, $userId: uuid!) {
+  updatePayrollById(
+    pkColumns: { id: $id }
+    _set: { primaryConsultantUserId: $userId, updatedAt: "now()" }
+  ) {
+    ...PayrollBasic
+    primaryConsultant {
+      id
+      name
+      email
+    }
+  }
+}
+
+mutation AssignBackupConsultant($id: uuid!, $userId: uuid!) {
+  updatePayrollById(
+    pkColumns: { id: $id }
+    _set: { backupConsultantUserId: $userId, updatedAt: "now()" }
+  ) {
+    ...PayrollBasic
+    backupConsultant {
+      id
+      name
+      email
+    }
+  }
+}
+
+mutation AssignManager($id: uuid!, $userId: uuid!) {
+  updatePayrollById(
+    pkColumns: { id: $id }
+    _set: { managerUserId: $userId, updatedAt: "now()" }
+  ) {
+    ...PayrollBasic
+    manager {
+      id
+      name
+      email
+    }
+  }
+}
+
+mutation UpdatePayrollAssignments(
+  $id: uuid!
+  $primaryConsultantUserId: uuid
+  $backupConsultantUserId: uuid
+  $managerUserId: uuid
+) {
+  updatePayrollById(
+    pkColumns: { id: $id }
+    _set: {
+      primaryConsultantUserId: $primaryConsultantUserId
+      backupConsultantUserId: $backupConsultantUserId
+      managerUserId: $managerUserId
+      updatedAt: "now()"
+    }
+  ) {
+    ...PayrollBasic
+    primaryConsultant {
+      id
+      name
+      email
+    }
+    backupConsultant {
+      id
+      name
+      email
+    }
+    manager {
+      id
+      name
+      email
+    }
+  }
+}
+
+# Version management
+mutation CreatePayrollVersion(
+  $parentPayrollId: uuid!
+  $versionReason: String!
+  $object: payrollsInsertInput!
+) {
+  # First supersede the current version
+  updatePayrollById(
+    pkColumns: { id: $parentPayrollId }
+    _set: { supersededDate: "now()" }
+  ) {
+    id
+    supersededDate
+  }
+  
+  # Then create the new version
+  insertPayroll(
+    object: $object
+  ) {
+    ...PayrollWithAllRelations
+  }
+}
+
+mutation SupersedePayroll($id: uuid!) {
+  updatePayrollById(
+    pkColumns: { id: $id }
+    _set: { supersededDate: "now()" }
+  ) {
+    ...PayrollBasic
+  }
+}
+
+# Bulk operations
+mutation BulkUpdatePayrolls($where: payrollsBoolExp!, $set: payrollsSetInput!) {
+  bulkUpdatePayrolls(where: $where, _set: $set) {
+    returning {
+      ...PayrollBasic
+    }
+    affectedRows
+  }
+}
+
+mutation BulkAssignConsultant(
+  $payrollIds: [uuid!]!
+  $primaryConsultantUserId: uuid!
+) {
+  bulkUpdatePayrolls(
+    where: { id: { _in: $payrollIds } }
+    _set: {
+      primaryConsultantUserId: $primaryConsultantUserId
+      updatedAt: "now()"
+    }
+  ) {
+    returning {
+      ...PayrollBasic
+      primaryConsultant {
+        id
+        name
+      }
+    }
+    affectedRows
+  }
+}
+
+mutation BulkAssignManager(
+  $payrollIds: [uuid!]!
+  $managerUserId: uuid!
+) {
+  bulkUpdatePayrolls(
+    where: { id: { _in: $payrollIds } }
+    _set: {
+      managerUserId: $managerUserId
+      updatedAt: "now()"
+    }
+  ) {
+    returning {
+      ...PayrollBasic
+      manager {
+        id
+        name
+      }
+    }
+    affectedRows
+  }
+}
+
+mutation BulkUpdatePayrollStatus(
+  $payrollIds: [uuid!]!
+  $status: payroll_status!
+) {
+  bulkUpdatePayrolls(
+    where: { id: { _in: $payrollIds } }
+    _set: {
+      status: $status
+      updatedAt: "now()"
+    }
+  ) {
+    returning {
+      ...PayrollBasic
+    }
+    affectedRows
+  }
+}
+
+# Configuration updates
+mutation UpdatePayrollConfiguration(
+  $id: uuid!
+  $payrollSystem: String
+  $processingTime: Int
+  $processingDaysBeforeEft: Int
+  $cycleId: uuid
+  $dateTypeId: uuid
+) {
+  updatePayrollById(
+    pkColumns: { id: $id }
+    _set: {
+      payrollSystem: $payrollSystem
+      processingTime: $processingTime
+      processingDaysBeforeEft: $processingDaysBeforeEft
+      cycleId: $cycleId
+      dateTypeId: $dateTypeId
+      updatedAt: "now()"
+    }
+  ) {
+    ...PayrollWithCycle
+  }
+}
+
+mutation UpdatePayrollDetails(
+  $id: uuid!
+  $name: String
+  $employeeCount: Int
+  $goLiveDate: date
+) {
+  updatePayrollById(
+    pkColumns: { id: $id }
+    _set: {
+      name: $name
+      employeeCount: $employeeCount
+      goLiveDate: $goLiveDate
+      updatedAt: "now()"
+    }
+  ) {
+    ...PayrollBasic
+  }
+}
+
+# Payroll dates management
+mutation CreatePayrollDate($object: payrollDatesInsertInput!) {
+  insertPayrollDate(object: $object) {
+    id
+    originalEftDate
+    adjustedEftDate
+    processingDate
+    notes
+    payrollId
+    createdAt
+    updatedAt
+  }
+}
+
+mutation UpdatePayrollDate($id: uuid!, $set: payrollDatesSetInput!) {
+  updatePayrollDateById(pkColumns: { id: $id }, _set: $set) {
+    id
+    originalEftDate
+    adjustedEftDate
+    processingDate
+    notes
+    payrollId
+    updatedAt
+  }
+}
+
+mutation DeletePayrollDate($id: uuid!) {
+  deletePayrollDateById(id: $id) {
+    id
+    originalEftDate
+    adjustedEftDate
+    payrollId
+  }
+}
+
+mutation UpdatePayrollDateNotes($id: uuid!, $notes: String) {
+  updatePayrollDateById(
+    pkColumns: { id: $id }
+    _set: { notes: $notes, updatedAt: "now()" }
+  ) {
+    id
+    originalEftDate
+    adjustedEftDate
+    notes
+    payrollId
+  }
+}
+
+mutation BulkCreatePayrollDates($objects: [payrollDatesInsertInput!]!) {
+  bulkInsertPayrollDates(objects: $objects) {
+    returning {
+      id
+      originalEftDate
+      adjustedEftDate
+      processingDate
+      payrollId
+    }
+    affectedRows
+  }
+}
+
+mutation BulkDeletePayrollDates($payrollId: uuid!) {
+  bulkDeletePayrollDates(where: { payrollId: { _eq: $payrollId } }) {
+    affectedRows
+  }
+}
+
+# Payroll cycle management
+mutation CreatePayrollCycle($object: payrollCyclesInsertInput!) {
+  insertPayrollCycle(object: $object) {
+    id
+    name
+    description
+    createdAt
+  }
+}
+
+mutation UpdatePayrollCycle($id: uuid!, $set: payrollCyclesSetInput!) {
+  updatePayrollCycleById(pkColumns: { id: $id }, _set: $set) {
+    id
+    name
+    description
+    updatedAt
+  }
+}
+
+mutation DeletePayrollCycle($id: uuid!) {
+  deletePayrollCycleById(id: $id) {
+    id
+    name
+  }
+}
+
+# Payroll date type management
+mutation CreatePayrollDateType($object: payrollDateTypesInsertInput!) {
+  insertPayrollDateType(object: $object) {
+    id
+    name
+    description
+    createdAt
+  }
+}
+
+mutation UpdatePayrollDateType($id: uuid!, $set: payrollDateTypesSetInput!) {
+  updatePayrollDateTypeById(pkColumns: { id: $id }, _set: $set) {
+    id
+    name
+    description
+    updatedAt
+  }
+}
+
+mutation DeletePayrollDateType($id: uuid!) {
+  deletePayrollDateTypeById(id: $id) {
+    id
+    name
+  }
+}
+
+# Special operations
+# NOTE: generatePayrollDates is available as a query function, not a mutation
+
+# Action mutations for payroll assignments (commented out until Hasura actions are configured)
+# mutation CommitPayrollAssignments($changes: [PayrollAssignmentInput!]!) {
+#   commitPayrollAssignments(changes: $changes) {
+#     success
+#     message
+#     errors
+#     affectedAssignments {
+#       id
+#       payrollDateId
+#       originalConsultantId
+#       newConsultantId
+#       adjustedEftDate
+#     }
+#   }
+# }
+
+# Batch processing operations
+mutation ProcessPayrollBatch(
+  $payrollIds: [uuid!]!
+  $processedBy: uuid!
+) {
+  bulkUpdatePayrolls(
+    where: { id: { _in: $payrollIds } }
+    _set: {
+      status: "Processing"
+      updatedAt: "now()"
+    }
+  ) {
+    returning {
+      ...PayrollBasic
+      client {
+        id
+        name
+      }
+    }
+    affectedRows
+  }
+}
+
+mutation ApprovePayrollBatch(
+  $payrollIds: [uuid!]!
+  $approvedBy: uuid!
+) {
+  bulkUpdatePayrolls(
+    where: { 
+      id: { _in: $payrollIds }
+      status: { _eq: "Processing" }
+    }
+    _set: {
+      status: "Approved"
+      updatedAt: "now()"
+    }
+  ) {
+    returning {
+      ...PayrollBasic
+      client {
+        id
+        name
+      }
+    }
+    affectedRows
+  }
+}
+
+# Report generation - returns payroll data for report building
+query GeneratePayrollsByIds(
+  $payrollIds: [uuid!]!
+  $reportType: String!
+) {
+  payrolls(
+    where: { id: { _in: $payrollIds } }
+    orderBy: { name: ASC }
+  ) {
+    ...PayrollWithAllRelations
+    payrollDates(orderBy: { originalEftDate: ASC }) {
+      id
+      originalEftDate
+      adjustedEftDate
+      processingDate
+      notes
+    }
+  }
+}

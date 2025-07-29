@@ -1,0 +1,7 @@
+table:
+  name: service_api_keys
+  schema: public
+object_relationships:
+  - name: validationService
+    using:
+      foreign_key_constraint_on: service_id

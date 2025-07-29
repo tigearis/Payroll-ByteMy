@@ -154,7 +154,7 @@ query GetCurrentUser($userId: uuid!) {
 query GetUsersForDropdown($role: user_role) {
   users(
     where: { isActive: { _eq: true }, role: { _eq: $role } }
-    orderBy: { name: ASC }
+    orderBy: { computedName: ASC }
   ) {
     ...UserMinimal
   }
@@ -204,7 +204,9 @@ query GlobalSearch($searchTerm: String!) {
   users(
     where: {
       _or: [
-        { name: { _ilike: $searchTerm } }
+        { computedName: { _ilike: $searchTerm } }
+        { firstName: { _ilike: $searchTerm } }
+        { lastName: { _ilike: $searchTerm } }
         { email: { _ilike: $searchTerm } }
       ]
     }
