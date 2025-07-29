@@ -47,7 +47,9 @@ import { CapacityDashboardSkeleton, SmartLoadingSpinner } from "./loading-states
 
 interface TeamMember {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
+  computedName?: string;
   email: string;
   position: UserPosition;
   defaultAdminTimePercentage: number;
@@ -171,11 +173,11 @@ export function ConsultantCapacityCard({
             <Avatar className="w-10 h-10">
               <AvatarImage src={`/avatars/${member.id}.jpg`} />
               <AvatarFallback>
-                {member.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                {(member.computedName || `${member.firstName} ${member.lastName}`.trim()).split(' ').map(n => n[0]).join('').toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div>
-              <h4 className="font-semibold text-sm">{member.name}</h4>
+              <h4 className="font-semibold text-sm">{member.computedName || `${member.firstName} ${member.lastName}`.trim()}</h4>
               <Badge className={`${getPositionColor(member.position)} text-xs`}>
                 {getPositionDisplayName(member.position)}
               </Badge>
@@ -469,11 +471,11 @@ function MemberDetailsView({
               <Avatar className="w-12 h-12">
                 <AvatarImage src={`/avatars/${member.id}.jpg`} />
                 <AvatarFallback>
-                  {member.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                  {(member.computedName || `${member.firstName} ${member.lastName}`.trim()).split(' ').map(n => n[0]).join('').toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h3 className="text-xl font-semibold">{member.name}</h3>
+                <h3 className="text-xl font-semibold">{member.computedName || `${member.firstName} ${member.lastName}`.trim()}</h3>
                 <div className="flex items-center space-x-2">
                   <Badge className={`${getPositionColor(member.position)}`}>
                     {getPositionDisplayName(member.position)}
@@ -983,10 +985,10 @@ export function CapacityDashboard({
                           <div className="flex items-center space-x-2">
                             <Avatar className="w-6 h-6">
                               <AvatarFallback className="text-xs">
-                                {member.name.split(' ').map(n => n[0]).join('')}
+                                {(member.computedName || `${member.firstName} ${member.lastName}`.trim()).split(' ').map(n => n[0]).join('')}
                               </AvatarFallback>
                             </Avatar>
-                            <span className="font-medium">{member.name}</span>
+                            <span className="font-medium">{member.computedName || `${member.firstName} ${member.lastName}`.trim()}</span>
                           </div>
                         </td>
                         <td className="p-2">

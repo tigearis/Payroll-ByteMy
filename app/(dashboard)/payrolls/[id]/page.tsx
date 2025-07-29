@@ -1340,7 +1340,7 @@ export default function PayrollPage() {
                 <Progress value={statusConfig.progress} className="h-2" />
                 <div className="flex justify-between text-xs text-gray-500 mt-2">
                   <span>
-                    Manager: {(payroll as any).manager?.name || "Not assigned"}
+                    Manager: {(payroll as any).manager?.computedName || (payroll as any).manager ? `${(payroll as any).manager.firstName} ${(payroll as any).manager.lastName}`.trim() : "Not assigned"}
                   </span>
                   <span>
                     Status: {(payroll as any).status || "Implementation"}
@@ -1491,7 +1491,7 @@ export default function PayrollPage() {
                       <div className="p-4 bg-blue-50 rounded-lg">
                         <div className="text-sm text-blue-600 font-medium">Primary Consultant</div>
                         <div className="text-lg font-semibold text-blue-900">
-                          {(payroll as any).primaryConsultant?.name || "Not assigned"}
+                          {(payroll as any).primaryConsultant?.computedName || (payroll as any).primaryConsultant ? `${(payroll as any).primaryConsultant.firstName} ${(payroll as any).primaryConsultant.lastName}`.trim() : "Not assigned"}
                         </div>
                         {(payroll as any).primaryConsultant?.email && (
                           <div className="text-sm text-blue-700">
@@ -1502,7 +1502,7 @@ export default function PayrollPage() {
                       <div className="p-4 bg-green-50 rounded-lg">
                         <div className="text-sm text-green-600 font-medium">Backup Consultant</div>
                         <div className="text-lg font-semibold text-green-900">
-                          {(payroll as any).backupConsultant?.name || "Not assigned"}
+                          {(payroll as any).backupConsultant?.computedName || (payroll as any).backupConsultant ? `${(payroll as any).backupConsultant.firstName} ${(payroll as any).backupConsultant.lastName}`.trim() : "Not assigned"}
                         </div>
                         {(payroll as any).backupConsultant?.email && (
                           <div className="text-sm text-green-700">
@@ -1513,7 +1513,7 @@ export default function PayrollPage() {
                       <div className="p-4 bg-purple-50 rounded-lg">
                         <div className="text-sm text-purple-600 font-medium">Manager</div>
                         <div className="text-lg font-semibold text-purple-900">
-                          {(payroll as any).manager?.name || "Not assigned"}
+                          {(payroll as any).manager?.computedName || (payroll as any).manager ? `${(payroll as any).manager.firstName} ${(payroll as any).manager.lastName}`.trim() : "Not assigned"}
                         </div>
                         {(payroll as any).manager?.email && (
                           <div className="text-sm text-purple-700">
