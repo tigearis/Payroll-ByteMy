@@ -36,7 +36,7 @@ export const GET = withAuth(async (req) => {
       whereClause._or = [
         { reason: { _ilike: `%${search}%` } },
         { leaveType: { _ilike: `%${search}%` } },
-        { leaveUser: { name: { _ilike: `%${search}%` } } }
+        { leaveUser: { computedName: { _ilike: `%${search}%` } } }
       ];
     }
 

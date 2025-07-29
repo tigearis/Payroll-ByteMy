@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
-import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
-import { clientApolloClient } from "@/lib/apollo/unified-client";
+import { executeQuery } from "@/lib/apollo/query-helpers";
+import { withAuth } from "@/lib/auth/api-auth";
 
 // Introspection query to get schema information
 const INTROSPECTION_QUERY = gql`
@@ -98,32 +98,23 @@ const EXCLUDED_FIELDS = [
   "__typename",
 ];
 
-export async function GET(request: NextRequest) {
+export const GET = withAuth(async (request: NextRequest, session) => {
   try {
-    // Authentication check
-    const { userId, sessionClaims } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     // Authorization check - require manager or higher
-    const userRole = request.headers.get('x-user-role') || 'viewer';
-    if (
-      !userRole ||
-      !["manager", "org_admin", "developer"].includes(userRole)
-    ) {
+    const userRole = session.role || session.defaultRole;
+    const hasSchemaAccess = userRole && ["manager", "org_admin", "developer"].includes(userRole);
+    
+    if (!hasSchemaAccess) {
       return NextResponse.json(
         { error: "Insufficient permissions for schema access" },
         { status: 403 }
       );
     }
 
-    // Get schema via introspection
-    const response = await clientApolloClient.query({
-      query: INTROSPECTION_QUERY,
-    });
+    // Get schema via introspection using authenticated query helper
+    const response = await executeQuery(INTROSPECTION_QUERY);
 
-    const schema = response.data.__schema;
+    const schema = response.__schema;
 
     // Extract available fields and relationships
     const availableFields: Record<string, string[]> = {};
@@ -210,7 +201,7 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 function getFieldType(type: any): string {
   if (type.kind === "NON_NULL") {
@@ -226,13 +217,8 @@ function getFieldType(type: any): string {
 }
 
 // POST endpoint to validate a specific query
-export async function POST(request: NextRequest) {
+export const POST = withAuth(async (request: NextRequest, session) => {
   try {
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const body = await request.json();
     const { query, variables } = body;
 
@@ -242,20 +228,16 @@ export async function POST(request: NextRequest) {
         ${query}
       `;
 
-      // Try to execute the query to see if it's valid
-      const response = await clientApolloClient.query({
-        query: parsedQuery,
-        variables: variables || {},
-        errorPolicy: "all", // Don't throw on GraphQL errors
-      });
+      // Try to execute the query to see if it's valid using authenticated query helper
+      const response = await executeQuery(parsedQuery, variables || {});
 
       return NextResponse.json({
         success: true,
         data: {
           isValid: true,
-          hasErrors: !!response.errors,
-          errors: response.errors || [],
-          resultCount: response.data ? Object.keys(response.data).length : 0,
+          hasErrors: false, // executeQuery throws on errors
+          errors: [],
+          resultCount: response ? Object.keys(response).length : 0,
         },
       });
     } catch (parseError) {
@@ -280,4 +262,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
