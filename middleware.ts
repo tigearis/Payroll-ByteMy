@@ -14,7 +14,7 @@ import { nanoid } from "nanoid";
 
 // ── ROUTE DEFINITIONS ─────────────────────────────────────────────────────
 const PUBLIC_ROUTES = ["/", "/sign-in", "/sign-up", "/accept-invitation"];
-const SYSTEM_ROUTES = ["/api/webhooks", "/api/cron", "/api/debug-auth", "/api/simple-test"];
+const SYSTEM_ROUTES = ["/api/webhooks", "/api/cron", "/api/debug-auth"];
 const OAUTH_CALLBACK_PREFIXES = [
   "/sso-callback",
   "/sign-in/sso-callback", 
