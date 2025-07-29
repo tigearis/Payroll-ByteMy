@@ -1,7 +1,7 @@
 import "server-only";
 import { DocumentNode } from '@apollo/client';
 import { auth } from '@clerk/nextjs/server';
-import { adminApolloClient } from './unified-client';
+import { serverApolloClient } from './unified-client';
 
 /**
  * Apollo Query Helpers for Server-Side Operations
@@ -40,14 +40,24 @@ export async function executeQuery<TData = any, TVariables = any>(
   options: QueryOptions = {}
 ): Promise<TData> {
   try {
-    // Use admin client for server-side operations instead of manual token handling
-    const { data, errors } = await adminApolloClient.query({
+    // Get JWT token for user-scoped Hasura queries
+    const { getToken } = await auth();
+    const jwtToken = await getToken({ template: "hasura" });
+    
+    if (!jwtToken) {
+      throw new Error('No JWT token available for Hasura authentication');
+    }
+
+    // Use server client with JWT token for user-scoped operations
+    const { data, errors } = await serverApolloClient.query({
       query: document,
       variables,
       fetchPolicy: options.fetchPolicy || 'no-cache', // Default to fresh data for API routes
       context: {
-        // Use admin context for server operations
-        context: "admin",
+        // Pass JWT token for Hasura authentication
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+        },
         // Merge any additional context
         ...options.context,
       },
@@ -79,13 +89,23 @@ export async function executeMutation<TData = any, TVariables = any>(
   options: MutationOptions = {}
 ): Promise<TData> {
   try {
-    // Use admin client for server-side operations instead of manual token handling
-    const { data, errors } = await adminApolloClient.mutate({
+    // Get JWT token for user-scoped Hasura mutations
+    const { getToken } = await auth();
+    const jwtToken = await getToken({ template: "hasura" });
+    
+    if (!jwtToken) {
+      throw new Error('No JWT token available for Hasura authentication');
+    }
+
+    // Use server client with JWT token for user-scoped operations
+    const { data, errors } = await serverApolloClient.mutate({
       mutation: document,
       variables,
       context: {
-        // Use admin context for server operations
-        context: "admin",
+        // Pass JWT token for Hasura authentication
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+        },
         // Merge any additional context
         ...options.context,
       },
