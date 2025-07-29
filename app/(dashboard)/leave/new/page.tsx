@@ -192,7 +192,7 @@ function NewLeaveRequestPage() {
 
       if (data.success) {
         const requestType = formData.isForSomeoneElse ? "for" : "submitted";
-        const employeeName = formData.isForSomeoneElse ? selectedEmployee?.name : "your";
+        const employeeName = formData.isForSomeoneElse ? (selectedEmployee?.computedName || `${selectedEmployee?.firstName} ${selectedEmployee?.lastName}`.trim()) : "your";
         const statusText = formData.autoApprove ? "has been approved" : "is pending approval";
         
         toast({
@@ -349,7 +349,7 @@ function NewLeaveRequestPage() {
                               {subordinateUsers.map((user) => (
                                 <SelectItem key={user.id} value={user.id}>
                                   <div className="flex items-center space-x-2">
-                                    <span>{user.name}</span>
+                                    <span>{user.computedName || `${user.firstName} ${user.lastName}`.trim()}</span>
                                     <Badge variant="outline" className="text-xs">
                                       {user.role}
                                     </Badge>
@@ -411,7 +411,7 @@ function NewLeaveRequestPage() {
                               const selectedEmployee = subordinateUsers.find(u => u.id === formData.selectedEmployeeId);
                               return selectedEmployee ? (
                                 <>
-                                  <p className="font-medium">{selectedEmployee.name}</p>
+                                  <p className="font-medium">{selectedEmployee.computedName || `${selectedEmployee.firstName} ${selectedEmployee.lastName}`.trim()}</p>
                                   <p className="text-sm text-gray-500">{selectedEmployee.email}</p>
                                 </>
                               ) : (

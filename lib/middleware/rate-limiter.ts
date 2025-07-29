@@ -240,7 +240,7 @@ export class RateLimiter {
   }
 
   private getRouteConfig(route: string): RateLimitConfig {
-    return this.ROUTE_LIMITS[route] || this.ROUTELIMITS.default;
+    return this.ROUTE_LIMITS[route] || this.ROUTE_LIMITS.default;
   }
 
   private generateKey(
@@ -272,13 +272,6 @@ export class RateLimiter {
 
     // Log rate limit violation
     console.warn(`Rate limit exceeded: ${route} for ${identifier || ip}`);
-
-    // Notify enhanced route monitor
-    await this.monitor.monitorRequest(request, identifier, Date.now(), false, {
-      rateLimitExceeded: true,
-      limit: config.requests,
-      window: config.window,
-    });
   }
 
   private cleanup(): void {

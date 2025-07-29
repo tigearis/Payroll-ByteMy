@@ -13,7 +13,7 @@ import { withAuth } from "@/lib/auth/api-auth";
 // Bulk Work Schedule Operations API Route
 // Handles batch creation, updates, and deletion of work schedules
 
-export const POST = withAuth<any>(async (req, session) => {
+export const POST = withAuth(async (req, session) => {
   try {
     const body = await req.json();
     const { action, schedules, userIds, workDay, workHours, adminTimeHours, payrollCapacityHours, scheduleIds } = body;
@@ -80,9 +80,9 @@ async function handleBulkCreate(schedules: any[], defaultUserId: string) {
   );
 
   return NextResponse.json({
-    schedules: data.bulkInsertWorkSchedules?.returning || [],
-    created: data.bulkInsertWorkSchedules?.affectedRows || 0,
-    message: `Created ${data.bulkInsertWorkSchedules?.affectedRows || 0} work schedules`
+    schedules: data.bulkInsertWorkSchedule?.returning || [],
+    created: data.bulkInsertWorkSchedule?.affectedRows || 0,
+    message: `Created ${data.bulkInsertWorkSchedule?.affectedRows || 0} work schedules`
   });
 }
 
@@ -120,9 +120,9 @@ async function handleBulkUpdate(userIds: string[], workDay: string, workHours: n
   );
 
   return NextResponse.json({
-    schedules: data.bulkUpdateWorkSchedules?.returning || [],
-    updated: data.bulkUpdateWorkSchedules?.affectedRows || 0,
-    message: `Updated ${data.bulkUpdateWorkSchedules?.affectedRows || 0} work schedules`
+    schedules: data.bulkUpdateWorkSchedule?.returning || [],
+    updated: data.bulkUpdateWorkSchedule?.affectedRows || 0,
+    message: `Updated ${data.bulkUpdateWorkSchedule?.affectedRows || 0} work schedules`
   });
 }
 

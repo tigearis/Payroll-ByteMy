@@ -2,6 +2,8 @@
 
 import { useMemo } from "react";
 
+const WEEKDAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
 interface EnhancedCalendarProps {
   mode: "fortnightly" | "fixed";
   selectedWeek?: string; // 'A' | 'B' (for fortnightly)
@@ -143,7 +145,6 @@ export function calculateFortnightlyWeeks() {
 }
 // --- End helpers ---
 
-export const WEEKDAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export default function EnhancedCalendar({
   mode,
@@ -239,7 +240,7 @@ export default function EnhancedCalendar({
       )}
 
       <div className="grid grid-cols-7 gap-1 text-center text-sm">
-        {WEEKDAYNAMES.map(dayName => (
+        {WEEKDAY_NAMES.map(dayName => (
           <div key={dayName} className="p-2 font-medium text-gray-500">
             {dayName}
           </div>

@@ -80,3 +80,18 @@ export function useLogoutState(): LogoutState {
     return context;
   }, [context]);
 }
+
+export function useNavigationGuard() {
+  const { isLoggingOut } = useLogoutState();
+  
+  const canNavigate = useCallback((href: string) => {
+    if (isLoggingOut) {
+      // Allow navigation to sign-in and root during logout
+      const allowedDuringLogout = ['/sign-in', '/', '/sign-out'];
+      return allowedDuringLogout.some(path => href.startsWith(path));
+    }
+    return true;
+  }, [isLoggingOut]);
+
+  return { canNavigate };
+}

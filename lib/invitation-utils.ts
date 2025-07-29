@@ -55,8 +55,8 @@ export function extractInvitationParams(searchParams: URLSearchParams): Invitati
   return {
     ticket,
     status: status || 'sign_up', // Default to sign_up if status not provided
-    redirectUrl: redirectUrl || undefined,
-    userData, // Include extracted user data
+    redirectUrl: redirectUrl ?? '',
+    userData: userData ?? undefined, // Include extracted user data
   };
 }
 

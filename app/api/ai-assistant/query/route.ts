@@ -266,7 +266,9 @@ export async function POST(request: NextRequest) {
         );
 
         response.data = enhancedResult.data;
-        response.summary = enhancedResult.summary || undefined;
+        if (enhancedResult.summary) {
+          response.summary = enhancedResult.summary;
+        }
 
         // Use enhanced explanation if available
         if (enhancedResult.summary) {

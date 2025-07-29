@@ -64,7 +64,7 @@ export const POST = withAuthParams(async (req: NextRequest, { params }, session)
       );
     }
 
-    console.log(`🔄 Restoring user: ${user.name} (${user.email})`);
+    console.log(`🔄 Restoring user: ${user.computedName || `${user.firstName} ${user.lastName}`.trim()} (${user.email})`);
 
     try {
       // Reactivate user in database
@@ -126,7 +126,7 @@ export const POST = withAuthParams(async (req: NextRequest, { params }, session)
             success: true,
             user: {
               id: restoredUser.id,
-              name: restoredUser.name,
+              name: restoredUser.computedName || `${restoredUser.firstName} ${restoredUser.lastName}`.trim(),
               email: restoredUser.email,
               isActive: restoredUser.isActive,
             },
@@ -138,7 +138,7 @@ export const POST = withAuthParams(async (req: NextRequest, { params }, session)
       // Log the restoration for audit purposes
       console.log(`✅ User restored successfully:`, {
         userId: user.id,
-        userName: user.name,
+        userName: user.computedName || `${user.firstName} ${user.lastName}`.trim(),
         userEmail: user.email,
         userRole: user.role,
         reason,
@@ -151,11 +151,11 @@ export const POST = withAuthParams(async (req: NextRequest, { params }, session)
         success: true,
         user: {
           id: restoredUser.id,
-          name: restoredUser.name,
+          name: restoredUser.computedName || `${restoredUser.firstName} ${restoredUser.lastName}`.trim(),
           email: restoredUser.email,
           isActive: restoredUser.isActive,
         },
-        message: `Successfully restored user account: ${user.name}`,
+        message: `Successfully restored user account: ${user.computedName || `${user.firstName} ${user.lastName}`.trim()}`,
       });
 
     } catch (restoreError: any) {

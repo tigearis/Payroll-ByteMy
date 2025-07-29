@@ -167,7 +167,7 @@ export function OllamaSetup({ onConfigSave }: OllamaSetupProps) {
                   <SelectValue placeholder="Choose a model" />
                 </SelectTrigger>
                 <SelectContent>
-                  {AVAILABLEMODELS.map((model) => (
+                  {AVAILABLE_MODELS.map((model) => (
                     <SelectItem key={model} value={model}>
                       <div className="flex items-center justify-between w-full">
                         <span>{model}</span>

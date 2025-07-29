@@ -311,7 +311,7 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {BILLINGFREQUENCIES.map(frequency => (
+                          {BILLING_FREQUENCIES.map(frequency => (
                             <SelectItem key={frequency} value={frequency}>
                               {frequency}
                             </SelectItem>

@@ -170,7 +170,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
             invitation: {
               existingUser: {
                 id: existingUser.id,
-                name: existingUser.name,
+                name: existingUser.computedName || `${existingUser.firstName} ${existingUser.lastName}`,
                 email: existingUser.email,
                 role: existingUser.role,
                 isActive: existingUser.isActive
@@ -194,7 +194,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
 
       const existingInvitations = invitationHistoryData.userInvitations || [];
       const pendingInvitations = existingInvitations.filter(inv => 
-        inv.status === "pending" && new Date(inv.expiresAt) > new Date()
+        inv.invitationStatus === "pending" && new Date(inv.expiresAt) > new Date()
       );
 
       if (pendingInvitations.length > 0) {
@@ -208,7 +208,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
                 id: latestPending.id,
                 email: latestPending.email,
                 role: latestPending.invitedRole,
-                status: latestPending.status,
+                status: latestPending.invitationStatus,
                 expiresAt: latestPending.expiresAt,
                 invitedAt: latestPending.invitedAt
               }

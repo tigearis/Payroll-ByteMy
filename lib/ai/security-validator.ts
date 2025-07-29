@@ -254,24 +254,24 @@ class SecurityValidator {
    * Validate query limits (depth, complexity, field count)
    */
   private validateQueryLimits(metrics: QueryMetrics, result: SecurityValidationResult): void {
-    if (metrics.depth > SECURITYCONFIG.maxQueryDepth) {
-      result.errors.push(`Query depth ${metrics.depth} exceeds maximum allowed depth of ${SECURITYCONFIG.maxQueryDepth}`);
+    if (metrics.depth > SECURITY_CONFIG.maxQueryDepth) {
+      result.errors.push(`Query depth ${metrics.depth} exceeds maximum allowed depth of ${SECURITY_CONFIG.maxQueryDepth}`);
     }
 
-    if (metrics.complexity > SECURITYCONFIG.maxQueryComplexity) {
-      result.errors.push(`Query complexity ${metrics.complexity} exceeds maximum allowed complexity of ${SECURITYCONFIG.maxQueryComplexity}`);
+    if (metrics.complexity > SECURITY_CONFIG.maxQueryComplexity) {
+      result.errors.push(`Query complexity ${metrics.complexity} exceeds maximum allowed complexity of ${SECURITY_CONFIG.maxQueryComplexity}`);
     }
 
-    if (metrics.fieldCount > SECURITYCONFIG.maxFieldCount) {
-      result.errors.push(`Query field count ${metrics.fieldCount} exceeds maximum allowed fields of ${SECURITYCONFIG.maxFieldCount}`);
+    if (metrics.fieldCount > SECURITY_CONFIG.maxFieldCount) {
+      result.errors.push(`Query field count ${metrics.fieldCount} exceeds maximum allowed fields of ${SECURITY_CONFIG.maxFieldCount}`);
     }
 
     // Warnings for high but acceptable values
-    if (metrics.complexity > SECURITYCONFIG.maxQueryComplexity * 0.8) {
+    if (metrics.complexity > SECURITY_CONFIG.maxQueryComplexity * 0.8) {
       result.warnings.push("Query complexity is high and may impact performance");
     }
 
-    if (metrics.depth > SECURITYCONFIG.maxQueryDepth * 0.8) {
+    if (metrics.depth > SECURITY_CONFIG.maxQueryDepth * 0.8) {
       result.warnings.push("Query depth is high and may impact performance");
     }
   }
@@ -408,9 +408,9 @@ class SecurityValidator {
     return `
 Security Validation Report:
 - Status: ${validationResult.isValid ? "APPROVED" : "REJECTED"}
-- Complexity: ${metrics.complexity}/${SECURITYCONFIG.maxQueryComplexity}
-- Depth: ${metrics.depth}/${SECURITYCONFIG.maxQueryDepth}
-- Fields: ${metrics.fieldCount}/${SECURITYCONFIG.maxFieldCount}
+- Complexity: ${metrics.complexity}/${SECURITY_CONFIG.maxQueryComplexity}
+- Depth: ${metrics.depth}/${SECURITY_CONFIG.maxQueryDepth}
+- Fields: ${metrics.fieldCount}/${SECURITY_CONFIG.maxFieldCount}
 - Tables: ${metrics.tablesAccessed.join(", ")}
 ${validationResult.errors.length > 0 ? `\nErrors:\n${validationResult.errors.map(e => `- ${e}`).join("\n")}` : ""}
 ${validationResult.warnings.length > 0 ? `\nWarnings:\n${validationResult.warnings.map(w => `- ${w}`).join("\n")}` : ""}

@@ -95,7 +95,7 @@ export class AppError extends Error {
     this.name = 'AppError';
     this.code = code;
     this.statusCode = statusCode;
-    this.details = details;
+    this.details = details ?? {};
     this.isOperational = isOperational;
 
     Error.captureStackTrace(this, this.constructor);
@@ -178,10 +178,10 @@ export function createErrorResponse(
       error: error.name,
       message: error.message,
       code: error.code,
-      details: error.details,
+      details: error.details || {},
       timestamp: new Date().toISOString(),
-      requestId,
-      path
+      requestId: requestId || '',
+      path: path || ''
     };
     statusCode = error.statusCode;
   } else if (error instanceof ZodError) {
@@ -198,8 +198,8 @@ export function createErrorResponse(
       code: ErrorCode.VALIDATION_FAILED,
       details: { validationErrors },
       timestamp: new Date().toISOString(),
-      requestId,
-      path
+      requestId: requestId || '',
+      path: path || ''
     };
     statusCode = 400;
   } else {
@@ -211,12 +211,12 @@ export function createErrorResponse(
       message: isProduction ? 'An internal error occurred' : error.message,
       code: ErrorCode.INTERNAL_SERVER_ERROR,
       details: isProduction ? undefined : { 
-        stack: error.stack,
+        stack: error.stack ?? undefined,
         originalMessage: error.message 
       },
       timestamp: new Date().toISOString(),
-      requestId,
-      path
+      requestId: requestId || '',
+      path: path || ''
     };
     statusCode = 500;
   }
@@ -226,7 +226,7 @@ export function createErrorResponse(
     level: statusCode >= 500 ? 'error' : 'warn',
     error: standardError,
     originalError: error,
-    stack: error.stack
+    stack: error.stack || ''
   });
 
   return NextResponse.json(standardError, { status: statusCode });

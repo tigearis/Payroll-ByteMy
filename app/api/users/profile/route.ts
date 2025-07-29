@@ -43,7 +43,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
       success: true,
       user: {
         id: user.id,
-        name: user.name,
+        name: user.computedName || `${user.firstName} ${user.lastName}`.trim(),
         email: user.email,
         phone: (user as any).phone || null,
         address: (user as any).address || null,
@@ -96,10 +96,10 @@ export const PUT = withAuth(async (req: NextRequest, session) => {
       {
         id: user.id,
         input: {
-          name: body.name || user.name,
-          phone: body.phone !== undefined ? body.phone : user.phone,
-          address: body.address !== undefined ? body.address : user.address,
-          bio: body.bio !== undefined ? body.bio : user.bio,
+          name: body.name || user.computedName || `${user.firstName} ${user.lastName}`.trim(),
+          phone: body.phone !== undefined ? body.phone : (user as any).phone,
+          address: body.address !== undefined ? body.address : (user as any).address,
+          bio: body.bio !== undefined ? body.bio : (user as any).bio,
         },
       }
     );
@@ -119,7 +119,7 @@ export const PUT = withAuth(async (req: NextRequest, session) => {
       success: true,
       user: {
         id: updatedUser.id,
-        name: updatedUser.name,
+        name: updatedUser.computedName || `${updatedUser.firstName} ${updatedUser.lastName}`.trim(),
         email: updatedUser.email,
         phone: updatedUser.phone,
         address: updatedUser.address,

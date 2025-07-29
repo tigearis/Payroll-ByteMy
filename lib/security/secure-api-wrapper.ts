@@ -95,9 +95,11 @@ export function secureApiRoute(config: SecurityConfig = {}) {
       const ipAddress = getClientIP(request);
       const userAgent = request.headers.get('user-agent') || 'unknown';
 
+      // Initialize secure context
+      let secureContext: SecureHandlerContext | undefined;
+      
       try {
-        // Initialize secure context
-        const secureContext: SecureHandlerContext = {
+        secureContext = {
           metadata: {
             requestId,
             timestamp,
@@ -124,7 +126,7 @@ export function secureApiRoute(config: SecurityConfig = {}) {
             );
             return authResult.response!;
           }
-          secureContext.auth = authResult.auth;
+          secureContext.auth = authResult.auth ?? { userId: '', role: '', permissions: [] };
         }
 
         // 3. Authorization Check
@@ -184,7 +186,7 @@ export function secureApiRoute(config: SecurityConfig = {}) {
             );
             return validationResult.response!;
           }
-          secureContext.validated = validationResult.data;
+          secureContext.validated = validationResult.data ?? { body: {}, query: {}, params: {} };
         }
 
         // 6. Rate Limiting
@@ -268,7 +270,7 @@ export function secureApiRoute(config: SecurityConfig = {}) {
         );
 
         if (config.auditLog?.enabled) {
-          await logAuditEvent('request_error', request, secureContext, config.auditLog, undefined, error);
+          secureContext && await logAuditEvent('request_error', request, secureContext, config.auditLog, undefined, error as Error);
         }
 
         return createErrorResponse(error as Error, requestId, request.url);
@@ -344,7 +346,7 @@ async function checkAuthentication(request: NextRequest): Promise<{
 
     return {
       success: true,
-      auth: { userId } // This would be expanded with actual user data
+      auth: { userId, role: 'user', permissions: [] } // This would be expanded with actual user data
     };
 
   } catch (error) {

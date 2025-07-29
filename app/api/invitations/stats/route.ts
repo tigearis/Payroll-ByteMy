@@ -96,18 +96,18 @@ export const GET = withAuth(async (req: NextRequest, session) => {
         firstName: invitation.firstName,
         lastName: invitation.lastName,
         fullName: `${invitation.firstName} ${invitation.lastName}`.trim(),
-        invitationStatus: invitation.status,
+        invitationStatus: invitation.invitationStatus,
         createdAt: invitation.createdAt,
         expiresAt: invitation.expiresAt,
         invitedByUser: invitation.invitedByUser ? {
-          name: invitation.invitedByUser.name,
+          name: invitation.invitedByUser.computedName || `${invitation.invitedByUser.firstName} ${invitation.invitedByUser.lastName}`.trim(),
           email: invitation.invitedByUser.email,
         } : null,
-        isExpired: invitation.status === "expired" || 
+        isExpired: invitation.invitationStatus === "expired" || 
                   new Date(invitation.expiresAt) < new Date(),
-        isPending: invitation.status === "pending" && 
+        isPending: invitation.invitationStatus === "pending" && 
                   new Date(invitation.expiresAt) > new Date(),
-        daysUntilExpiry: invitation.status === "pending" ? 
+        daysUntilExpiry: invitation.invitationStatus === "pending" ? 
                         Math.ceil((new Date(invitation.expiresAt).getTime() - Date.now()) / (24 * 60 * 60 * 1000)) : 
                         null,
       })) || [],
@@ -164,7 +164,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
           fullName: `${invitation.firstName} ${invitation.lastName}`.trim(),
           expiresAt: invitation.expiresAt,
           invitedByUser: invitation.invitedByUser ? {
-            name: invitation.invitedByUser.name,
+            name: invitation.invitedByUser.computedName || `${invitation.invitedByUser.firstName} ${invitation.invitedByUser.lastName}`.trim(),
             email: invitation.invitedByUser.email,
           } : null,
           daysUntilExpiry: Math.ceil((new Date(invitation.expiresAt).getTime() - Date.now()) / (24 * 60 * 60 * 1000)),

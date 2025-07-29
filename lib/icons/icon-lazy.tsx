@@ -2,7 +2,7 @@
 "use client";
 
 import { LucideProps } from "lucide-react";
-import { Suspense, lazy } from "react";
+import React, { Suspense, lazy, ComponentType } from "react";
 
 // ============================================================================
 // CODE SPLITTING: LAZY LOAD ICON SETS
@@ -32,90 +32,27 @@ export {
 } from "lucide-react";
 
 /**
- * Business/Dashboard icons (lazy loaded)
+ * Icon categories with their respective icon sets
  */
-const LazyBusinessIcons = lazy(async () => {
-  const icons = await import("lucide-react");
-  
-  return {
-    DollarSign: icons.DollarSign,
-    TrendingUp: icons.TrendingUp,
-    TrendingDown: icons.TrendingDown,
-    BarChart: icons.BarChart,
-    LineChart: icons.LineChart,
-    PieChart: icons.PieChart,
-    Calendar: icons.Calendar,
-    Clock: icons.Clock,
-    FileText: icons.FileText,
-    Briefcase: icons.Briefcase,
-    Building: icons.Building,
-    CreditCard: icons.CreditCard,
-    Receipt: icons.Receipt,
-    Calculator: icons.Calculator,
-  };
-});
-
-/**
- * Action icons (lazy loaded)
- */
-const LazyActionIcons = lazy(async () => {
-  const icons = await import("lucide-react");
-  
-  return {
-    Edit: icons.Edit,
-    Trash: icons.Trash,
-    Copy: icons.Copy,
-    Download: icons.Download,
-    Upload: icons.Upload,
-    Share: icons.Share,
-    Send: icons.Send,
-    Save: icons.Save,
-    RefreshCw: icons.RefreshCw,
-    MoreHorizontal: icons.MoreHorizontal,
-    MoreVertical: icons.MoreVertical,
-    ExternalLink: icons.ExternalLink,
-    Eye: icons.Eye,
-    EyeOff: icons.EyeOff,
-  };
-});
-
-/**
- * File & Document icons (lazy loaded)
- */
-const LazyFileIcons = lazy(async () => {
-  const icons = await import("lucide-react");
-  
-  return {
-    File: icons.File,
-    FileSpreadsheet: icons.FileSpreadsheet,
-    FileImage: icons.FileImage,
-    FilePdf: icons.FilePdf,
-    FileVideo: icons.FileVideo,
-    FileAudio: icons.FileAudio,
-    Folder: icons.Folder,
-    FolderOpen: icons.FolderOpen,
-    Archive: icons.Archive,
-    Package: icons.Package,
-  };
-});
-
-/**
- * Communication icons (lazy loaded)
- */
-const LazyCommunicationIcons = lazy(async () => {
-  const icons = await import("lucide-react");
-  
-  return {
-    Mail: icons.Mail,
-    MessageSquare: icons.MessageSquare,
-    Phone: icons.Phone,
-    Video: icons.Video,
-    Mic: icons.Mic,
-    MicOff: icons.MicOff,
-    Bell: icons.Bell,
-    BellOff: icons.BellOff,
-  };
-});
+const ICON_SETS = {
+  business: [
+    'DollarSign', 'TrendingUp', 'TrendingDown', 'BarChart', 'LineChart', 
+    'PieChart', 'Calendar', 'Clock', 'FileText', 'Briefcase', 'Building', 
+    'CreditCard', 'Receipt', 'Calculator'
+  ],
+  action: [
+    'Edit', 'Trash', 'Copy', 'Download', 'Upload', 'Share', 'Send', 
+    'Save', 'RefreshCw', 'MoreHorizontal', 'MoreVertical', 'ExternalLink', 
+    'Eye', 'EyeOff'
+  ],
+  file: [
+    'File', 'FileSpreadsheet', 'FileImage', 'FileText', 'FileVideo', 
+    'FileAudio', 'Folder', 'FolderOpen', 'Archive', 'Package'
+  ],
+  communication: [
+    'Mail', 'MessageSquare', 'Phone', 'Video', 'Mic', 'MicOff', 'Bell', 'BellOff'
+  ]
+} as const;
 
 // ============================================================================
 // LAZY ICON WRAPPER COMPONENT
@@ -133,6 +70,9 @@ export function LazyIcon({
   fallback: Fallback,
   ...props 
 }: LazyIconProps) {
+  const [IconComponent, setIconComponent] = React.useState<ComponentType<LucideProps> | null>(null);
+  const [isLoading, setIsLoading] = React.useState(true);
+
   // Default fallback icon
   const DefaultFallback = () => (
     <div 
@@ -143,62 +83,47 @@ export function LazyIcon({
 
   const IconFallback = Fallback || DefaultFallback;
 
-  const renderIcon = () => {
-    switch (category) {
-      case "business":
-        return (
-          <Suspense fallback={<IconFallback />}>
-            <LazyBusinessIcons>
-              {(icons) => {
-                const IconComponent = icons[name as keyof typeof icons];
-                return IconComponent ? <IconComponent {...props} /> : <IconFallback />;
-              }}
-            </LazyBusinessIcons>
-          </Suspense>
-        );
-        
-      case "action":
-        return (
-          <Suspense fallback={<IconFallback />}>
-            <LazyActionIcons>
-              {(icons) => {
-                const IconComponent = icons[name as keyof typeof icons];
-                return IconComponent ? <IconComponent {...props} /> : <IconFallback />;
-              }}
-            </LazyActionIcons>
-          </Suspense>
-        );
-        
-      case "file":
-        return (
-          <Suspense fallback={<IconFallback />}>
-            <LazyFileIcons>
-              {(icons) => {
-                const IconComponent = icons[name as keyof typeof icons];
-                return IconComponent ? <IconComponent {...props} /> : <IconFallback />;
-              }}
-            </LazyFileIcons>
-          </Suspense>
-        );
-        
-      case "communication":
-        return (
-          <Suspense fallback={<IconFallback />}>
-            <LazyCommunicationIcons>
-              {(icons) => {
-                const IconComponent = icons[name as keyof typeof icons];
-                return IconComponent ? <IconComponent {...props} /> : <IconFallback />;
-              }}
-            </LazyCommunicationIcons>
-          </Suspense>
-        );
-        
-      default:
-        return <IconFallback />;
-    }
-  };
+  React.useEffect(() => {
+    let mounted = true;
 
-  return renderIcon();
+    const loadIcon = async () => {
+      try {
+        // Validate icon exists in category
+        const iconSet = ICON_SETS[category];
+        if (!iconSet.includes(name as string)) {
+          if (mounted) setIsLoading(false);
+          return;
+        }
+
+        const icons = await import("lucide-react");
+        const icon = (icons as any)[name];
+        
+        if (mounted && icon) {
+          setIconComponent(() => icon);
+        }
+      } catch (error) {
+        console.warn(`Failed to load icon: ${name}`, error);
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
+    };
+
+    loadIcon();
+
+    return () => {
+      mounted = false;
+    };
+  }, [name, category]);
+
+  if (isLoading) {
+    return <IconFallback />;
+  }
+
+  if (!IconComponent) {
+    return <IconFallback />;
+  }
+
+  return <IconComponent {...props} />;
 }
 
 // ============================================================================

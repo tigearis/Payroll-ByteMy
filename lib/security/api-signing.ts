@@ -259,7 +259,4 @@ export const APISigning = {
   createSignatureVerificationMiddleware,
 };
 
-/**
- * Types for API signing
- */
-export type { SignedRequest, SigningOptions, VerificationResult };
+// Types are already exported above at their definitions

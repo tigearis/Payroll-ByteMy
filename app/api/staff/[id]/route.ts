@@ -139,7 +139,7 @@ export const DELETE = withAuthParams(async (req: NextRequest, { params }, sessio
         dependencies,
         user: {
           id: user.id,
-          name: user.name,
+          name: user.computedName || `${user.firstName} ${user.lastName}`.trim(),
           email: user.email,
           role: user.role,
         },
@@ -256,7 +256,7 @@ export const DELETE = withAuthParams(async (req: NextRequest, { params }, sessio
       );
     }
 
-    console.log(`🗑️ Deleting user: ${user.name} (${user.email})`);
+    console.log(`🗑️ Deleting user: ${user.computedName || `${user.firstName} ${user.lastName}`.trim()} (${user.email})`);
 
     try {
       // Soft delete user (deactivate with deletion reason)
@@ -315,10 +315,10 @@ export const DELETE = withAuthParams(async (req: NextRequest, { params }, sessio
             success: true,
             user: {
               id: deactivatedUser.id,
-              name: deactivatedUser.name,
+              name: deactivatedUser.computedName || `${deactivatedUser.firstName} ${deactivatedUser.lastName}`.trim(),
               email: deactivatedUser.email,
               status: deactivatedUser.status,
-              isActive: deactivatedUser.isActive,
+              ...(deactivatedUser.isActive !== null && { isActive: deactivatedUser.isActive }),
             },
             dependencies,
             message: `User deleted from database but Clerk deletion failed: ${errorMessage}. User account may still exist in authentication system.`,
@@ -329,7 +329,7 @@ export const DELETE = withAuthParams(async (req: NextRequest, { params }, sessio
       // Log the deletion for audit purposes
       console.log(`✅ User deleted successfully:`, {
         userId: user.id,
-        userName: user.name,
+        userName: user.computedName || `${user.firstName} ${user.lastName}`.trim(),
         userEmail: user.email,
         userRole: user.role,
         reason,
@@ -342,14 +342,14 @@ export const DELETE = withAuthParams(async (req: NextRequest, { params }, sessio
         success: true,
         user: {
           id: deactivatedUser.id,
-          name: deactivatedUser.name,
+          name: deactivatedUser.computedName || `${deactivatedUser.firstName} ${deactivatedUser.lastName}`.trim(),
           email: deactivatedUser.email,
           status: deactivatedUser.status,
-          isActive: deactivatedUser.isActive,
-          deactivatedAt: deactivatedUser.deactivatedAt,
+          ...(deactivatedUser.isActive !== null && { isActive: deactivatedUser.isActive }),
+          ...(deactivatedUser.deactivatedAt && { deactivatedAt: deactivatedUser.deactivatedAt }),
         },
         dependencies,
-        message: `Successfully deleted user account: ${user.name}`,
+        message: `Successfully deleted user account: ${user.computedName || `${user.firstName} ${user.lastName}`.trim()}`,
       });
 
     } catch (deleteError: unknown) {
@@ -412,15 +412,15 @@ export const GET = withAuthParams(async (req: NextRequest, { params }, session) 
       success: true,
       user: {
         id: user.id,
-        name: user.name,
+        name: user.computedName || `${user.firstName} ${user.lastName}`.trim(),
         email: user.email,
         role: user.role,
-        isActive: user.isActive,
-        clerkUserId: user.clerkUserId,
-        createdAt: user.createdAt,
+        ...(user.isActive !== null && { isActive: user.isActive }),
+        ...(user.clerkUserId && { clerkUserId: user.clerkUserId }),
+        ...(user.createdAt && { createdAt: user.createdAt }),
         managerUser: user.managerUser ? {
           id: user.managerUser.id,
-          name: user.managerUser.name,
+          name: user.managerUser?.computedName || `${user.managerUser?.firstName} ${user.managerUser?.lastName}`.trim(),
           email: user.managerUser.email,
         } : null,
       },
