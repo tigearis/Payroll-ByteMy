@@ -89,7 +89,7 @@ export function ReportBuilder() {
   const loadMetadata = async () => {
     setLoading(true);
     try {
-      const response = await fetch("/api/reports/generate");
+      const response = await fetch("/api/reports/schema");
       if (!response.ok) {
         const errorData = await response.json();
         console.error("Report metadata error response:", response.status, errorData);

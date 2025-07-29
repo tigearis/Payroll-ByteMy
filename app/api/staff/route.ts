@@ -12,6 +12,7 @@ import {
   type SearchUsersPaginatedQuery
 } from "@/domains/users/graphql/generated/graphql";
 import { executeTypedQuery } from "@/lib/apollo/query-helpers";
+import { withAuth } from "@/lib/auth/api-auth";
 
 interface StaffFilters {
   search?: string;
@@ -44,10 +45,7 @@ interface StaffListResponse {
 }
 
 export async function GET(req: NextRequest) {
-  // Use unified auth system
-  const { withAuth } = await import("@/lib/auth/api-auth");
-  
-  return withAuth(async (request: NextRequest, session) => {
+  return withAuth(async (_request: NextRequest, session) => {
     try {
       const { searchParams } = new URL(req.url);
       
