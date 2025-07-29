@@ -1,7 +1,7 @@
 import "server-only";
 import { DocumentNode } from '@apollo/client';
 import { auth } from '@clerk/nextjs/server';
-import { serverApolloClient } from './unified-client';
+import { serverApolloClient, adminApolloClient } from './unified-client';
 
 /**
  * Apollo Query Helpers for Server-Side Operations
@@ -40,30 +40,54 @@ export async function executeQuery<TData = any, TVariables = any>(
   options: QueryOptions = {}
 ): Promise<TData> {
   try {
-    // Get JWT token for user-scoped Hasura queries
-    const { getToken } = await auth();
+    // Get authentication data
+    const { sessionClaims, getToken } = await auth();
+    
+    // Check if user is developer - developers get admin access
+    const hasuraClaims = sessionClaims?.['https://hasura.io/jwt/claims'] as any;
+    const userRole = hasuraClaims?.['x-hasura-default-role'] || hasuraClaims?.['x-hasura-role'];
+    const isDeveloper = userRole === 'developer';
+    
+    if (isDeveloper) {
+      // Developers use admin client to bypass all permission checks
+      console.log('🔓 Developer detected - using admin access for GraphQL query');
+      
+      const { data, errors } = await adminApolloClient.query({
+        query: document,
+        variables,
+        fetchPolicy: options.fetchPolicy || 'no-cache',
+        context: {
+          context: "admin",
+          ...options.context,
+        },
+      });
+
+      if (errors && errors.length > 0) {
+        throw new Error(`GraphQL error: ${errors[0].message}`);
+      }
+
+      return data;
+    }
+    
+    // Non-developers use JWT token for user-scoped queries
     const jwtToken = await getToken({ template: "hasura" });
     
     if (!jwtToken) {
       throw new Error('No JWT token available for Hasura authentication');
     }
 
-    // Use server client with JWT token for user-scoped operations
     const { data, errors } = await serverApolloClient.query({
       query: document,
       variables,
-      fetchPolicy: options.fetchPolicy || 'no-cache', // Default to fresh data for API routes
+      fetchPolicy: options.fetchPolicy || 'no-cache',
       context: {
-        // Pass JWT token for Hasura authentication
         headers: {
           Authorization: `Bearer ${jwtToken}`,
         },
-        // Merge any additional context
         ...options.context,
       },
     });
 
-    // Handle GraphQL errors
     if (errors && errors.length > 0) {
       throw new Error(`GraphQL error: ${errors[0].message}`);
     }
@@ -89,29 +113,52 @@ export async function executeMutation<TData = any, TVariables = any>(
   options: MutationOptions = {}
 ): Promise<TData> {
   try {
-    // Get JWT token for user-scoped Hasura mutations
-    const { getToken } = await auth();
+    // Get authentication data
+    const { sessionClaims, getToken } = await auth();
+    
+    // Check if user is developer - developers get admin access
+    const hasuraClaims = sessionClaims?.['https://hasura.io/jwt/claims'] as any;
+    const userRole = hasuraClaims?.['x-hasura-default-role'] || hasuraClaims?.['x-hasura-role'];
+    const isDeveloper = userRole === 'developer';
+    
+    if (isDeveloper) {
+      // Developers use admin client to bypass all permission checks
+      console.log('🔓 Developer detected - using admin access for GraphQL mutation');
+      
+      const { data, errors } = await adminApolloClient.mutate({
+        mutation: document,
+        variables,
+        context: {
+          context: "admin",
+          ...options.context,
+        },
+      });
+
+      if (errors && errors.length > 0) {
+        throw new Error(`GraphQL error: ${errors[0].message}`);
+      }
+
+      return data;
+    }
+    
+    // Non-developers use JWT token for user-scoped mutations
     const jwtToken = await getToken({ template: "hasura" });
     
     if (!jwtToken) {
       throw new Error('No JWT token available for Hasura authentication');
     }
 
-    // Use server client with JWT token for user-scoped operations
     const { data, errors } = await serverApolloClient.mutate({
       mutation: document,
       variables,
       context: {
-        // Pass JWT token for Hasura authentication
         headers: {
           Authorization: `Bearer ${jwtToken}`,
         },
-        // Merge any additional context
         ...options.context,
       },
     });
 
-    // Handle GraphQL errors
     if (errors && errors.length > 0) {
       throw new Error(`GraphQL error: ${errors[0].message}`);
     }
