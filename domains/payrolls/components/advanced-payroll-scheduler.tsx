@@ -352,7 +352,8 @@ export default function AdvancedPayrollScheduler() {
         const backupConsultant = payroll.backupConsultant;
 
         let finalConsultantId = primaryConsultant?.id || "unassigned";
-        let finalConsultantName = primaryConsultant?.name || "Unassigned";
+        let finalConsultantName = primaryConsultant?.computedName || 
+          `${primaryConsultant?.firstName} ${primaryConsultant?.lastName}`.trim() || "Unassigned";
         let isBackup = false;
         let originalConsultantId: string | undefined;
         let originalConsultantName: string | undefined;
@@ -364,9 +365,11 @@ export default function AdvancedPayrollScheduler() {
         ) {
           if (backupConsultant) {
             originalConsultantId = primaryConsultant.id;
-            originalConsultantName = primaryConsultant.name;
+            originalConsultantName = primaryConsultant.computedName || 
+              `${primaryConsultant.firstName} ${primaryConsultant.lastName}`.trim();
             finalConsultantId = backupConsultant.id;
-            finalConsultantName = backupConsultant.name;
+            finalConsultantName = backupConsultant.computedName || 
+              `${backupConsultant.firstName} ${backupConsultant.lastName}`.trim();
             isBackup = true;
           }
         }
@@ -466,7 +469,7 @@ export default function AdvancedPayrollScheduler() {
 
     const consultants = consultantUsers.map(user => ({
       id: user.id,
-      name: user.name,
+      name: user.computedName || `${user.firstName} ${user.lastName}`.trim(),
       email: user.email,
       role: user.role,
       workSchedules: user.userWorkSchedules || [],
