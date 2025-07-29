@@ -94,6 +94,13 @@ const allRoutes = [
     action: "read",
   },
   {
+    href: "/billing",
+    label: "Billing",
+    icon: DollarSign,
+    resource: "billing",
+    action: "read",
+  },
+  {
     href: "/ai-assistant",
     label: "AI Assistant",
     icon: Bot,
