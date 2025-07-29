@@ -260,7 +260,7 @@ export default clerkMiddleware(
   },
   {
     signInUrl: "/sign-in",
-    debug: process.env.NODE_ENV === "production",
+    debug: process.env.NODE_ENV === "development",
   }
 );
 
