@@ -180,7 +180,7 @@ export async function POST(req: NextRequest) {
                         invitationStatus: { _eq: "pending" }
                         expiresAt: { _gt: "now()" }
                       }
-                      orderBy: { createdAt: desc }
+                      orderBy: { createdAt: DESC }
                       limit: 1
                     ) {
                       id
