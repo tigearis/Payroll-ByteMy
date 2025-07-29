@@ -548,7 +548,7 @@ query QueryName {
     });
 
     // Check for forbidden tables
-    FORBIDDENTABLES.forEach(table => {
+    FORBIDDEN_TABLES.forEach(table => {
       if (queryString.includes(table)) {
         throw new Error(
           `Access to table '${table}' is forbidden for AI assistant`
@@ -668,20 +668,20 @@ query QueryName {
   private validateTableAccess(tables: string[], userRole: string): void {
     for (const table of tables) {
       // Check if table is forbidden
-      if (FORBIDDENTABLES.includes(table as ForbiddenTable)) {
+      if (FORBIDDEN_TABLES.includes(table as ForbiddenTable)) {
         throw new Error(
           `Access denied: Table '${table}' is not accessible to AI assistant`
         );
       }
 
       // For restricted tables, additional validation could be added here
-      if (RESTRICTEDTABLES.includes(table as RestrictedTable)) {
+      if (RESTRICTED_TABLES.includes(table as RestrictedTable)) {
         // Currently allowing restricted tables with field-level filtering in Hasura
         continue;
       }
 
       // Safe tables are always allowed
-      if (SAFETABLES.includes(table as SafeTable)) {
+      if (SAFE_TABLES.includes(table as SafeTable)) {
         continue;
       }
 

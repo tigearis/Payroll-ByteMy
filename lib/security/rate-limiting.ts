@@ -14,7 +14,7 @@ import { NextRequest, NextResponse } from 'next/server';
 // Rate Limiting Configuration
 // ============================================================================
 
-interface RateLimitConfig {
+export interface RateLimitConfig {
   windowMs: number;     // Time window in milliseconds
   maxRequests: number;  // Maximum requests per window
   message?: string;     // Custom error message
@@ -302,42 +302,42 @@ export function withRateLimit(config: RateLimitConfig) {
  * Strict rate limiting for sensitive operations
  */
 export function withStrictRateLimit() {
-  return withRateLimit(RATELIMITPRESETS.STRICT);
+  return withRateLimit(RATE_LIMIT_PRESETS.STRICT);
 }
 
 /**
  * Authentication rate limiting
  */
 export function withAuthRateLimit() {
-  return withRateLimit(RATELIMITPRESETS.AUTH);
+  return withRateLimit(RATE_LIMIT_PRESETS.AUTH);
 }
 
 /**
  * Standard API rate limiting
  */
 export function withStandardRateLimit() {
-  return withRateLimit(RATELIMITPRESETS.STANDARD);
+  return withRateLimit(RATE_LIMIT_PRESETS.STANDARD);
 }
 
 /**
  * High frequency endpoint rate limiting
  */
 export function withHighFrequencyRateLimit() {
-  return withRateLimit(RATELIMITPRESETS.HIGH_FREQUENCY);
+  return withRateLimit(RATE_LIMIT_PRESETS.HIGH_FREQUENCY);
 }
 
 /**
  * File upload rate limiting
  */
 export function withUploadRateLimit() {
-  return withRateLimit(RATELIMITPRESETS.UPLOAD);
+  return withRateLimit(RATE_LIMIT_PRESETS.UPLOAD);
 }
 
 /**
  * Database mutation rate limiting
  */
 export function withMutationRateLimit() {
-  return withRateLimit(RATELIMITPRESETS.MUTATION);
+  return withRateLimit(RATE_LIMIT_PRESETS.MUTATION);
 }
 
 // ============================================================================

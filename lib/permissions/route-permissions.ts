@@ -178,14 +178,14 @@ export function roleHasMinimumLevel(userRole: UserRole, requiredRole: UserRole):
  */
 export function getRoutePermissionConfig(pathname: string): RoutePermissionConfig | null {
   // Find exact match first
-  let config = ROUTEPERMISSIONS.find(config => config.route === pathname);
+  let config = ROUTE_PERMISSIONS.find(config => config.route === pathname);
   
   if (config) {
     return config;
   }
 
   // Find wildcard/prefix matches
-  config = ROUTEPERMISSIONS.find(config => {
+  config = ROUTE_PERMISSIONS.find(config => {
     if (config.route.endsWith('/*')) {
       const baseRoute = config.route.replace('/*', '');
       return pathname.startsWith(baseRoute);

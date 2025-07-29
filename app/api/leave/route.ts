@@ -180,7 +180,7 @@ export const POST = withAuth(async (req, session) => {
     // Handle manager-created requests
     if (managerCreateRequest && managerId) {
       // Verify the manager has permission to create leave for this user
-      const canManageTeamLeave = ["manager", "org_admin", "developer"].includes(session.role);
+      const canManageTeamLeave = session.role ? ["manager", "org_admin", "developer"].includes(session.role) : false;
       
       if (!canManageTeamLeave) {
         return NextResponse.json(

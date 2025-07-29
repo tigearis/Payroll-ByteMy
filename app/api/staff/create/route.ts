@@ -133,10 +133,10 @@ export const POST = withAuth(async (req: NextRequest, session) => {
                 id: existingUser.id,
                 firstName: existingUser.firstName,
                 lastName: existingUser.lastName,
-                computedName: existingUser.computedName,
+                computedName: existingUser.computedName ?? null,
                 email: existingUser.email,
                 role: existingUser.role,
-                isActive: existingUser.isActive,
+                ...(existingUser.isActive !== null && { isActive: existingUser.isActive }),
               },
             },
             { status: 409 }
@@ -227,7 +227,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
 
         return NextResponse.json<CreateStaffResponse>({
           success: true,
-          invitation,
+          invitation: invitation ?? undefined,
           invitationSent: true,
           message: `Invitation sent to ${email} for role ${role}`,
         });
@@ -315,7 +315,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
 
         return NextResponse.json<CreateStaffResponse>({
           success: true,
-          user,
+          user: user ?? undefined,
           invitationSent: false,
           message: `User ${fullName} created with role ${role}`,
         });

@@ -15,7 +15,7 @@ import { withAuth } from "@/lib/auth/api-auth";
 // Work Schedule CRUD API Route
 // Handles work schedule creation, retrieval, updates for authenticated users
 
-export const GET = withAuth<{schedules: any[], count: number} | {error: string}>(async (req, session) => {
+export const GET = withAuth(async (req, session) => {
   try {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get('userId') || session.userId;
@@ -26,8 +26,8 @@ export const GET = withAuth<{schedules: any[], count: number} | {error: string}>
     );
 
     return NextResponse.json({
-      schedules: data.workSchedules || [],
-      count: data.workSchedules?.length || 0
+      schedules: data.workSchedule || [],
+      count: data.workSchedule?.length || 0
     });
 
   } catch (error) {

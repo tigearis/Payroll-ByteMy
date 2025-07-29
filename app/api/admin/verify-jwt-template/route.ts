@@ -130,7 +130,7 @@ export const GET = withAuth(async (request: NextRequest, session) => {
         results.usersWithCompleteJWT++;
         
         // Store a sample user for JWT structure demo
-        if (!results.sampleUser && metadata.permissions?.length > 0) {
+        if (!results.sampleUser && Array.isArray(metadata.permissions) && metadata.permissions.length > 0) {
           results.sampleUser = {
             email,
             jwtClaims: {
@@ -140,8 +140,8 @@ export const GET = withAuth(async (request: NextRequest, session) => {
               "x-hasura-clerk-id": clerkUser.id,
               "x-hasura-manager-id": metadata.managerId || null,
               "x-hasura-is-staff": metadata.isStaff || false,
-              "x-hasura-permissions": `Array(${metadata.permissions?.length || 0})`,
-              "x-hasura-permission-hash": metadata.permissionHash?.substring(0, 16) + '...',
+              "x-hasura-permissions": `Array(${Array.isArray(metadata.permissions) ? metadata.permissions.length : 0})`,
+              "x-hasura-permission-hash": typeof metadata.permissionHash === 'string' ? metadata.permissionHash.substring(0, 16) + '...' : metadata.permissionHash,
               "x-hasura-permission-version": metadata.permissionVersion,
               "x-hasura-org-id": metadata.organizationId || null
             }
@@ -173,11 +173,11 @@ export const GET = withAuth(async (request: NextRequest, session) => {
 
     return NextResponse.json(summary);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('JWT Template verification error:', error);
     return NextResponse.json({
       error: "Verification failed",
-      details: error.message
+      details: error?.message || 'Unknown error occurred'
     }, { status: 500 });
   }
 });

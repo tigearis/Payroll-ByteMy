@@ -15,7 +15,20 @@ import { Button } from "@/components/ui/button";
  */
 const LazyExcelExporter = lazy(async () => {
   // Dynamic import of heavy SheetJS dependency
-  const XLSX = await import("xlsx");
+  let XLSX: any;
+  try {
+    XLSX = await import("xlsx");
+  } catch (error) {
+    console.warn("xlsx package not installed, Excel export not available");
+    // Return a fallback component
+    return {
+      default: () => (
+        <div className="text-red-500 p-2 border border-red-200 rounded">
+          Excel export not available - xlsx package not installed
+        </div>
+      )
+    };
+  }
 
   const ExcelExporter = ({ data, filename, sheetName = "Data" }: {
     data: any[];

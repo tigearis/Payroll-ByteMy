@@ -97,7 +97,7 @@ export const PUT = withAuthParams(async (req: NextRequest, { params }, session) 
           success: true, 
           user: {
             id: user.id,
-            name: user.name,
+            name: user.computedName || `${user.firstName} ${user.lastName}`.trim(),
             email: user.email,
             status: user.status,
             isActive: user.isActive,
@@ -107,7 +107,7 @@ export const PUT = withAuthParams(async (req: NextRequest, { params }, session) 
       );
     }
 
-    console.log(`🔄 Updating user status: ${user.name} (${user.email}) from ${user.status} to ${status}`);
+    console.log(`🔄 Updating user status: ${user.computedName || `${user.firstName} ${user.lastName}`.trim()} (${user.email}) from ${user.status} to ${status}`);
 
     let updatedUser;
 
@@ -212,7 +212,7 @@ export const PUT = withAuthParams(async (req: NextRequest, { params }, session) 
             success: true,
             user: {
               id: updatedUser.id,
-              name: updatedUser.name,
+              name: updatedUser.computedName || `${updatedUser.firstName} ${updatedUser.lastName}`.trim(),
               email: updatedUser.email,
               status: updatedUser.status,
               isActive: updatedUser.isActive,
@@ -227,7 +227,7 @@ export const PUT = withAuthParams(async (req: NextRequest, { params }, session) 
       // Log the status change for audit purposes
       console.log(`✅ Status updated successfully:`, {
         userId: user.id,
-        userName: user.name,
+        userName: user.computedName || `${user.firstName} ${user.lastName}`.trim(),
         userEmail: user.email,
         previousStatus: user.status,
         newStatus: status,
@@ -236,13 +236,13 @@ export const PUT = withAuthParams(async (req: NextRequest, { params }, session) 
         hasClerkAccount: !!user.clerkUserId,
       });
 
-      const statusMessage = getStatusChangeMessage(user.status, status, user.name!);
+      const statusMessage = getStatusChangeMessage(user.status, status, user.computedName || `${user.firstName} ${user.lastName}`.trim());
 
       return NextResponse.json<UpdateStatusResponse>({
         success: true,
         user: {
           id: updatedUser.id,
-          name: updatedUser.name,
+          name: updatedUser.computedName || `${updatedUser.firstName} ${updatedUser.lastName}`.trim(),
           email: updatedUser.email,
           status: updatedUser.status,
           isActive: updatedUser.isActive,
@@ -299,7 +299,7 @@ export const GET = withAuthParams(async (req: NextRequest, { params }, session) 
       success: true,
       user: {
         id: user.id,
-        name: user.name,
+        name: user.computedName || `${user.firstName} ${user.lastName}`.trim(),
         email: user.email,
         status: user.status,
         isActive: user.isActive,

@@ -179,9 +179,9 @@ export const POST = withAuth(async (req: NextRequest, session) => {
           console.warn("⚠️ Clerk invitation not found in invitation list");
           clerkInvitationStatus = { error: "Invitation not found in Clerk" };
         }
-      } catch (clerkError) {
-        console.warn("⚠️ Could not fetch Clerk invitation:", clerkError.message);
-        clerkInvitationStatus = { error: clerkError.message };
+      } catch (clerkError: any) {
+        console.warn("⚠️ Could not fetch Clerk invitation:", clerkError?.message || 'Unknown error');
+        clerkInvitationStatus = { error: clerkError?.message || 'Unknown error' };
       }
     } else {
       console.log("⚠️ No Clerk invitation ID in database record");
@@ -333,7 +333,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
             }
           );
           
-          newUser = updateUserRoleData.updateUserById;
+          newUser = (updateUserRoleData as any)?.updateUserById;
           console.log("✅ Updated existing user role to match invitation:", newUser.role);
         } catch (roleUpdateError) {
           console.error("❌ Failed to update user role:", roleUpdateError);
@@ -433,7 +433,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
                     clerkUserId: clerkUserId,
                   }
                 );
-                newUser = updateClerkIdData.updateUserById;
+                newUser = (updateClerkIdData as any)?.updateUserById;
               }
             } else {
               throw createUserError; // Re-throw original error if no existing user found

@@ -40,6 +40,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { User } from "@/domains/users/types";
+import { deleteUser, canEditUser, canDeleteUser } from "@/domains/users/services/user-management";
 
 interface UserTableProps {
   users: User[];

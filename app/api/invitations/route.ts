@@ -186,7 +186,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
           fullName: `${invitation.firstName} ${invitation.lastName}`.trim(),
           invitedRole: invitation.invitedRole,
           invitationStatus: invitation.invitationStatus,
-          status: invitation.status, // Legacy field
+          status: invitation.invitationStatus, // Legacy field mapped from invitationStatus
           invitedAt: invitation.createdAt,
           expiresAt: invitation.expiresAt,
           revokedAt: invitation.revokedAt,
@@ -195,7 +195,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
           clerkInvitationId: invitation.clerkInvitationId,
           invitedByUser: invitation.invitedByUser ? {
             id: invitation.invitedByUser.id,
-            name: invitation.invitedByUser.name,
+            name: invitation.invitedByUser.computedName || `${invitation.invitedByUser.firstName} ${invitation.invitedByUser.lastName}`.trim(),
             email: invitation.invitedByUser.email,
           } : null,
           
@@ -275,7 +275,7 @@ function formatInvitationStatsData(statsData: GetInvitationDashboardStatsQuery) 
       createdAt: invitation.createdAt,
       expiresAt: invitation.expiresAt,
       invitedByUser: invitation.invitedByUser ? {
-        name: invitation.invitedByUser.name,
+        name: invitation.invitedByUser.computedName || `${invitation.invitedByUser.firstName} ${invitation.invitedByUser.lastName}`.trim(),
         email: invitation.invitedByUser.email,
       } : null,
       isExpired: invitation.invitationStatus === "expired" || 

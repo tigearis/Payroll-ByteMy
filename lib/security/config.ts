@@ -123,33 +123,33 @@ export const SECURITY_CONFIGS = {
   development: {
     ...DEFAULT_SECURITY_CONFIG,
     mfa: {
-      ...DEFAULTSECURITYCONFIG.mfa,
+      ...DEFAULT_SECURITY_CONFIG.mfa,
       required: false,
     },
     rateLimit: {
-      ...DEFAULTSECURITYCONFIG.rateLimit,
+      ...DEFAULT_SECURITY_CONFIG.rateLimit,
       enabled: false, // Disabled in development
     },
   },
   staging: {
     ...DEFAULT_SECURITY_CONFIG,
     audit: {
-      ...DEFAULTSECURITYCONFIG.audit,
+      ...DEFAULT_SECURITY_CONFIG.audit,
       logLevel: 'detailed' as const,
     },
   },
   production: {
     ...DEFAULT_SECURITY_CONFIG,
     mfa: {
-      ...DEFAULTSECURITYCONFIG.mfa,
+      ...DEFAULT_SECURITY_CONFIG.mfa,
       required: true, // MFA required in production
     },
     session: {
-      ...DEFAULTSECURITYCONFIG.session,
+      ...DEFAULT_SECURITY_CONFIG.session,
       maxAge: 43200, // 12 hours in production
     },
     audit: {
-      ...DEFAULTSECURITYCONFIG.audit,
+      ...DEFAULT_SECURITY_CONFIG.audit,
       logLevel: 'detailed' as const,
       retentionDays: 365, // 1 year retention in production
     },
@@ -183,17 +183,17 @@ export function isSecurityFeatureEnabled(feature: string): boolean {
   const config = getSecurityConfig();
   
   switch (feature) {
-    case SECURITYFEATURES.MFA_ENFORCEMENT:
+    case SECURITY_FEATURES.MFA_ENFORCEMENT:
       return config.mfa.enabled && config.mfa.required;
-    case SECURITYFEATURES.AUDIT_LOGGING:
+    case SECURITY_FEATURES.AUDIT_LOGGING:
       return config.audit.enabled;
-    case SECURITYFEATURES.RATE_LIMITING:
+    case SECURITY_FEATURES.RATE_LIMITING:
       return config.rateLimit.enabled;
-    case SECURITYFEATURES.SESSION_MONITORING:
+    case SECURITY_FEATURES.SESSION_MONITORING:
       return config.session.maxConcurrentSessions > 0;
-    case SECURITYFEATURES.ENCRYPTION_AT_REST:
+    case SECURITY_FEATURES.ENCRYPTION_AT_REST:
       return true; // Always enabled
-    case SECURITYFEATURES.STEP_UP_AUTH:
+    case SECURITY_FEATURES.STEP_UP_AUTH:
       return config.session.requireReauthForSensitive;
     default:
       return false;

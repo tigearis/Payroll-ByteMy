@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
       const { searchParams } = new URL(req.url);
       
       // Check if user has staff access permissions
-      const hasStaffAccess = ['developer', 'org_admin', 'manager'].includes(session.role);
+      const hasStaffAccess = session.role && ['developer', 'org_admin', 'manager'].includes(session.role);
       
       if (!hasStaffAccess) {
         return NextResponse.json({ error: "Insufficient permissions" }, { status: 403 });
@@ -205,7 +205,7 @@ export async function GET(req: NextRequest) {
             firstName: user.managerUser.firstName,
             lastName: user.managerUser.lastName,
             computedName: user.managerUser.computedName,
-            email: user.managerUser.email,
+            email: (user.managerUser as any).email || null,
             role: (user.managerUser as any).role || null,
           } : null,
         })),
@@ -245,7 +245,7 @@ function formatStatsData(statsData: GetUserStatusDashboardStatsQuery) {
     },
     recentChanges: statsData.recentStatusChanges?.map(user => ({
       id: user.id,
-      name: user.name,
+      name: user.computedName || `${user.firstName} ${user.lastName}`.trim(),
       email: user.email,
       role: user.role,
       status: user.status,

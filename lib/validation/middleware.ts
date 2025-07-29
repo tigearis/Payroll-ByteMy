@@ -16,7 +16,7 @@ import { validateRequestBody, validateQueryParams, ApiErrorSchema } from './sche
 // Validation Middleware Types
 // ============================================================================
 
-interface ValidationOptions {
+export interface ValidationOptions {
   body?: z.ZodSchema<any>;
   query?: z.ZodSchema<any>;
   params?: z.ZodSchema<any>;

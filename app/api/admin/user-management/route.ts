@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClerkClient } from "@clerk/backend";
+import { gql } from "@apollo/client";
 import { executeTypedQuery, executeTypedMutation } from "@/lib/apollo/query-helpers";
 import { withAuth } from "@/lib/auth/api-auth";
 
@@ -39,7 +40,7 @@ interface UserReassignmentPlan {
 }
 
 // Comprehensive user dependency analysis query
-const ANALYZE_USER_DEPENDENCIES = `
+const ANALYZE_USER_DEPENDENCIES = gql`
   query AnalyzeUserDependencies($userId: uuid!) {
     user: userById(id: $userId) {
       id
@@ -111,7 +112,7 @@ const ANALYZE_USER_DEPENDENCIES = `
   }
 `;
 
-const GET_USERS_FOR_REASSIGNMENT = `
+const GET_USERS_FOR_REASSIGNMENT = gql`
   query GetUsersForReassignment($excludeUserId: uuid!) {
     users(
       where: { 
@@ -159,7 +160,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
     let targetUser;
     if (email) {
       const userByEmailData = await executeTypedQuery(
-        `query GetUserByEmail($email: String!) {
+        gql`query GetUserByEmail($email: String!) {
           users(where: { email: { _eq: $email } }) {
             id
             email
@@ -173,10 +174,10 @@ export const GET = withAuth(async (req: NextRequest, session) => {
         }`,
         { email }
       );
-      targetUser = userByEmailData.users?.[0];
+      targetUser = (userByEmailData as any).users?.[0];
     } else {
       const userByIdData = await executeTypedQuery(
-        `query GetUserById($userId: uuid!) {
+        gql`query GetUserById($userId: uuid!) {
           userById(id: $userId) {
             id
             email
@@ -190,7 +191,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
         }`,
         { userId }
       );
-      targetUser = userByIdData.userById;
+      targetUser = (userByIdData as any).userById;
     }
 
     if (!targetUser) {
@@ -206,7 +207,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
         userId: targetUser.id
       });
 
-      const user = analysisData.user;
+      const user = (analysisData as any).user;
       if (!user) {
         return NextResponse.json(
           { error: "User not found during analysis" },
@@ -276,7 +277,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
       });
 
       return NextResponse.json({
-        candidates: candidatesData.users || []
+        candidates: (candidatesData as any).users || []
       });
     }
 
@@ -288,7 +289,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
   } catch (error: any) {
     console.error("❌ User management operation failed:", error);
     return NextResponse.json(
-      { error: `User management failed: ${error.message}` },
+      { error: `User management failed: ${error?.message || 'Unknown error'}` },
       { status: 500 }
     );
   }
@@ -327,7 +328,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
 
       // 1. Reassign managed users
       await executeTypedMutation(
-        `mutation ReassignManagedUsers($fromUserId: uuid!, $toUserId: uuid!) {
+        gql`mutation ReassignManagedUsers($fromUserId: uuid!, $toUserId: uuid!) {
           updateUsers(
             where: { managerId: { _eq: $fromUserId } }
             _set: { managerId: $toUserId }
@@ -340,7 +341,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
 
       // 2. Reassign payroll backup consultant roles
       await executeTypedMutation(
-        `mutation ReassignBackupConsultant($fromUserId: uuid!, $toUserId: uuid!) {
+        gql`mutation ReassignBackupConsultant($fromUserId: uuid!, $toUserId: uuid!) {
           updatePayrolls(
             where: { backupConsultantId: { _eq: $fromUserId } }
             _set: { backupConsultantId: $toUserId }
@@ -353,7 +354,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
 
       // 3. Reassign consultant assignments
       await executeTypedMutation(
-        `mutation ReassignConsultantAssignments($fromUserId: uuid!, $toUserId: uuid!) {
+        gql`mutation ReassignConsultantAssignments($fromUserId: uuid!, $toUserId: uuid!) {
           updatePayrollAssignments(
             where: { consultantId: { _eq: $fromUserId } }
             _set: { consultantId: $toUserId }
@@ -366,7 +367,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
 
       // 4. Reassign invitations sent by user
       await executeTypedMutation(
-        `mutation ReassignSentInvitations($fromUserId: uuid!, $toUserId: uuid!) {
+        gql`mutation ReassignSentInvitations($fromUserId: uuid!, $toUserId: uuid!) {
           updateUserInvitations(
             where: { invitedBy: { _eq: $fromUserId } }
             _set: { invitedBy: $toUserId }
@@ -379,7 +380,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
 
       // 5. Get user data for Clerk deletion
       const userData = await executeTypedQuery(
-        `query GetUserForDeletion($userId: uuid!) {
+        gql`query GetUserForDeletion($userId: uuid!) {
           userById(id: $userId) {
             clerkUserId
             email
@@ -389,18 +390,18 @@ export const POST = withAuth(async (req: NextRequest, session) => {
       );
 
       // 6. Delete from Clerk if Clerk user exists
-      if (userData.userById?.clerkUserId) {
+      if ((userData as any).userById?.clerkUserId) {
         try {
-          await clerkClient.users.deleteUser(userData.userById.clerkUserId);
-          console.log(`✅ Deleted Clerk user: ${userData.userById.clerkUserId}`);
-        } catch (clerkError) {
-          console.warn(`⚠️ Could not delete Clerk user: ${clerkError}`);
+          await clerkClient.users.deleteUser((userData as any).userById.clerkUserId);
+          console.log(`✅ Deleted Clerk user: ${(userData as any).userById.clerkUserId}`);
+        } catch (clerkError: any) {
+          console.warn(`⚠️ Could not delete Clerk user: ${clerkError?.message || 'Unknown error'}`);
         }
       }
 
       // 7. Delete user from database
       const deletionResult = await executeTypedMutation(
-        `mutation DeleteUser($userId: uuid!) {
+        gql`mutation DeleteUser($userId: uuid!) {
           deleteUserById(id: $userId) {
             id
             email
@@ -409,12 +410,12 @@ export const POST = withAuth(async (req: NextRequest, session) => {
         { userId: fromUserId }
       );
 
-      console.log(`✅ User deletion completed: ${userData.userById?.email}`);
+      console.log(`✅ User deletion completed: ${(userData as any).userById?.email}`);
 
       return NextResponse.json({
         success: true,
-        message: `User ${userData.userById?.email} successfully deleted and data reassigned to new user`,
-        deletedUser: deletionResult.deleteUserById,
+        message: `User ${(userData as any).userById?.email} successfully deleted and data reassigned to new user`,
+        deletedUser: (deletionResult as any).deleteUserById,
       });
     }
 
@@ -426,7 +427,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
   } catch (error: any) {
     console.error("❌ User reassignment/deletion failed:", error);
     return NextResponse.json(
-      { error: `Operation failed: ${error.message}` },
+      { error: `Operation failed: ${error?.message || 'Unknown error'}` },
       { status: 500 }
     );
   }

@@ -8,7 +8,7 @@ type PayrollResponse =
   | { error: string }
   | NonNullable<GetPayrollByIdQuery['payrollById']>;
 
-export const GET = withAuthParams<PayrollResponse>(
+export const GET = withAuthParams(
   async (
     _req: NextRequest,
     { params }: { params: Promise<{ id: string }> },

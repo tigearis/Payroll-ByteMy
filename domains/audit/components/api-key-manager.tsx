@@ -393,7 +393,7 @@ function APIKeyManagerInner() {
             <div>
               <Label>Permissions</Label>
               <div className="grid grid-cols-2 gap-2 mt-2">
-                {AVAILABLEPERMISSIONS.map(permission => (
+                {AVAILABLE_PERMISSIONS.map(permission => (
                   <div key={permission} className="flex items-center space-x-2">
                     <input
                       type="checkbox"

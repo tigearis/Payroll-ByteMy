@@ -253,7 +253,7 @@ export default function WorkSchedulePage() {
   // Enhanced debug logging for work schedule data
   if (teamWorkloadData?.users && teamWorkloadData.users.length > 0) {
     console.log("Debug - First user work schedules:", {
-      userName: teamWorkloadData.users[0].name,
+      userName: teamWorkloadData.users[0].computedName || `${teamWorkloadData.users[0].firstName} ${teamWorkloadData.users[0].lastName}`.trim(),
       userWorkSchedules: teamWorkloadData.users[0].userWorkSchedules,
       workScheduleCount:
         teamWorkloadData.users[0].userWorkSchedules?.length || 0,
@@ -564,7 +564,7 @@ export default function WorkSchedulePage() {
 
       return {
         id: user.id,
-        name: user.name,
+        name: user.computedName || `${user.firstName} ${user.lastName}`.trim(),
         email: user.email,
         position: user.role,
         defaultAdminTimePercentage: user.defaultAdminTimePercentage || 12.5,
@@ -663,7 +663,7 @@ export default function WorkSchedulePage() {
 
       return {
         id: user.id,
-        name: user.name,
+        name: user.computedName || `${user.firstName} ${user.lastName}`.trim(),
         email: user.email,
         position: user.role,
         defaultAdminTimePercentage: user.defaultAdminTimePercentage || 12.5,

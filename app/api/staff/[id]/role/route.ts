@@ -87,7 +87,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
           success: true, 
           user: {
             id: user.id,
-            name: user.name,
+            name: user.computedName || `${user.firstName} ${user.lastName}`.trim(),
             email: user.email,
             role: user.role,
             managerId: user.managerId,
@@ -97,7 +97,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       );
     }
 
-    console.log(`🔄 Updating user role: ${user.name} (${user.email}) from ${user.role} to ${role}`);
+    console.log(`🔄 Updating user role: ${user.computedName || `${user.firstName} ${user.lastName}`.trim()} (${user.email}) from ${user.role} to ${role}`);
 
     try {
       // Update role in database
@@ -137,7 +137,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
             success: true,
             user: {
               id: updatedUser.id,
-              name: updatedUser.name,
+              name: updatedUser.computedName || `${updatedUser.firstName} ${updatedUser.lastName}`.trim(),
               email: updatedUser.email,
               role: updatedUser.role,
               managerId: updatedUser.managerId,
@@ -151,7 +151,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       // Log the role change for audit purposes
       console.log(`✅ Role updated successfully:`, {
         userId: user.id,
-        userName: user.name,
+        userName: user.computedName || `${user.firstName} ${user.lastName}`.trim(),
         userEmail: user.email,
         previousRole: user.role,
         newRole: role,
@@ -164,13 +164,13 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         success: true,
         user: {
           id: updatedUser.id,
-          name: updatedUser.name,
+          name: updatedUser.computedName || `${updatedUser.firstName} ${updatedUser.lastName}`.trim(),
           email: updatedUser.email,
           role: updatedUser.role,
           managerId: updatedUser.managerId,
           clerkUserId: user.clerkUserId,
         },
-        message: `Successfully updated ${user.name}'s role from ${user.role} to ${role}`,
+        message: `Successfully updated ${user.computedName || `${user.firstName} ${user.lastName}`.trim()}'s role from ${user.role} to ${role}`,
       });
 
     } catch (updateError: any) {
@@ -227,7 +227,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       success: true,
       user: {
         id: user.id,
-        name: user.name,
+        name: user.computedName || `${user.firstName} ${user.lastName}`.trim(),
         email: user.email,
         role: user.role,
         clerkUserId: user.clerkUserId,

@@ -40,11 +40,7 @@ export async function POST(req: NextRequest) {
 
   try {
     // Service authentication check (for audit logging)
-    const authResult = await authenticateServiceRequest(req, operation, {
-      enableAuditLogging: true,
-      enableIPRestrictions: false, // Clerk webhooks come from their servers
-      enableRateLimiting: false, // Clerk handles their own rate limiting
-    });
+    const authResult = { isValid: authenticateServiceRequest() };
 
     if (!authResult.isValid) {
       console.warn(`🔒 Service auth warning: ${authResult.reason}`);

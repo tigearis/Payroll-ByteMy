@@ -37,10 +37,10 @@ function validateFile(file: File): { isValid: boolean; error?: string } {
 
   // Check file extension
   const extension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
-  if (!ALLOWEDEXTENSIONS.includes(extension)) {
+  if (!ALLOWED_EXTENSIONS.includes(extension)) {
     return {
       isValid: false,
-      error: `Invalid file extension. Allowed extensions: ${ALLOWEDEXTENSIONS.join(', ')}`
+      error: `Invalid file extension. Allowed extensions: ${ALLOWED_EXTENSIONS.join(', ')}`
     };
   }
 
