@@ -58,7 +58,7 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: https: blob:",
               "font-src 'self' data: https://fonts.gstatic.com", // Added for Geist fonts
-              "connect-src 'self' https://api.clerk.com https://clerk.com https://clerk-telemetry.com https://*.clerk-telemetry.com https://accounts.bytemy.com.au https://clerk.bytemy.com.au https://*.clerk.accounts.dev wss://accounts.bytemy.com.au wss://clerk.bytemy.com.au wss://*.clerk.accounts.dev https://*.neon.tech wss://*.neon.tech https://bytemy.hasura.app wss://bytemy.hasura.app https://hasura.bytemy.com.au wss://hasura.bytemy.com.au https://payroll.app.bytemy.com.au https://*.vercel.app https://*.vercel-insights.com https://*.vercel-analytics.com https://challenges.cloudflare.com https://*.cloudflare.com https://api.stripe.com https://maps.googleapis.com",
+              "connect-src 'self' https://api.clerk.com https://clerk.com https://clerk-telemetry.com https://*.clerk-telemetry.com https://accounts.bytemy.com.au https://clerk.bytemy.com.au https://*.clerk.accounts.dev wss://accounts.bytemy.com.au wss://clerk.bytemy.com.au wss://*.clerk.accounts.dev https://*.neon.tech wss://*.neon.tech https://bytemy.hasura.app wss://bytemy.hasura.app https://hasura.bytemy.com.au wss://hasura.bytemy.com.au https://payroll.bytemy.com.au https://*.vercel.app https://*.vercel-insights.com https://*.vercel-analytics.com https://challenges.cloudflare.com https://*.cloudflare.com https://api.stripe.com https://maps.googleapis.com",
               "worker-src 'self' blob:",
               "frame-src 'self' https://clerk.com https://accounts.bytemy.com.au https://clerk.bytemy.com.au https://*.clerk.accounts.dev https://challenges.cloudflare.com https://*.cloudflare.com",
               "object-src 'none'",
@@ -82,7 +82,7 @@ const nextConfig = {
             key: "Access-Control-Allow-Origin",
             value:
               process.env.NODE_ENV === "production"
-                ? (process.env.NEXT_PUBLIC_APP_URL || "https://payroll.app.bytemy.com.au").trim()
+                ? (process.env.NEXT_PUBLIC_APP_URL || "https://payroll.bytemy.com.au").trim()
                 : "http://localhost:3000",
           },
           {
@@ -176,7 +176,7 @@ const nextConfig = {
     serverActions: {
       allowedOrigins: [
         "localhost:3000",
-        "payroll.app.bytemy.com.au",
+        "payroll.bytemy.com.au",
         "*.vercel.app",
       ],
       bodySizeLimit: "2mb",
