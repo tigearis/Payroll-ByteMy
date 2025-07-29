@@ -31,8 +31,18 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# Environment files - CRITICAL: These contain secrets and should NEVER be committed
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test.local
+.env.production
+.env.production.local
+.env.staging
+.env.staging.local
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -45,3 +55,26 @@ next-env.d.ts
 /.clerk/
 .env*.local
 .claude/
+
+# Secure scripts directory - contains database passwords and development secrets
+scripts-secure/
+
+# Development/migration scripts that may contain secrets
+analyze-invitation-state.cjs
+audit-hasura-tracking.cjs
+test-name-migration.cjs
+run-migration.cjs
+migrate-*.sh
+*-migration*.cjs
+*migration*.js
+
+# Database dumps and backups
+*.dump
+*.sql
+neondb.dump
+data.sql
+schema_migrate.sql
+payroll_export.sql
+
+# Development log files
+dev_test.log
