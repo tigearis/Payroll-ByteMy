@@ -100,13 +100,13 @@ const EXCLUDED_FIELDS = [
 
 export const GET = withAuth(async (request: NextRequest, session) => {
   try {
-    // Authorization check - require manager or higher
+    // Authorization check - require developer role only
     const userRole = session.role || session.defaultRole;
-    const hasSchemaAccess = userRole && ["manager", "org_admin", "developer"].includes(userRole);
+    const isDeveloper = userRole === 'developer';
     
-    if (!hasSchemaAccess) {
+    if (!isDeveloper) {
       return NextResponse.json(
-        { error: "Insufficient permissions for schema access" },
+        { error: "Developer access required for reports schema" },
         { status: 403 }
       );
     }
