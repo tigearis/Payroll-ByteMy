@@ -95,7 +95,8 @@ export default clerkMiddleware(
           return res;
         }
         // Redirect to sign-in for web routes
-        return auth().redirectToSignIn();
+        const signInUrl = new URL('/sign-in', req.url);
+        return NextResponse.redirect(signInUrl);
       }
 
       // Basic role extraction for route protection (complex logic moved to API routes)
@@ -164,7 +165,8 @@ export default clerkMiddleware(
         return res;
       }
 
-      return auth().redirectToSignIn();
+      const signInUrl = new URL('/sign-in', req.url);
+      return NextResponse.redirect(signInUrl);
     }
   },
   {
