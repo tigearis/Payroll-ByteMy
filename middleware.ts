@@ -61,28 +61,46 @@ export default clerkMiddleware(
     const { pathname } = req.nextUrl;
     const requestId = nanoid();
 
-    // Bypass system routes, static assets, and OAuth callbacks
-    if (
-      isStaticAsset(pathname) ||
-      isSystemRoute(pathname) ||
-      isOAuthCallback(pathname) ||
-      isBrowserSystemRoute(pathname)
-    ) {
-      const res = NextResponse.next();
-      res.headers.set("X-Request-Id", requestId);
-      return res;
-    }
-
-    // Public routes - no auth required
-    if (isPublicRoute(req)) {
-      const res = NextResponse.next();
-      res.headers.set("X-Request-Id", requestId);
-      return res;
-    }
-
-    // Protected routes - require authentication
     try {
-      const { userId, sessionClaims } = await auth();
+      // Bypass system routes, static assets, and OAuth callbacks
+      if (
+        isStaticAsset(pathname) ||
+        isSystemRoute(pathname) ||
+        isOAuthCallback(pathname) ||
+        isBrowserSystemRoute(pathname)
+      ) {
+        const res = NextResponse.next();
+        res.headers.set("X-Request-Id", requestId);
+        return res;
+      }
+
+      // Public routes - no auth required
+      if (isPublicRoute(req)) {
+        const res = NextResponse.next();
+        res.headers.set("X-Request-Id", requestId);
+        return res;
+      }
+
+      // Protected routes - require authentication
+      let authResult;
+      try {
+        authResult = await auth();
+      } catch (authError) {
+        console.error("Clerk auth() call failed:", authError);
+        // Return 401 for API routes, redirect for web routes
+        if (pathname.startsWith("/api/")) {
+          const res = NextResponse.json(
+            { error: "Authentication service error" },
+            { status: 401 }
+          );
+          res.headers.set("X-Request-Id", requestId);
+          return res;
+        }
+        const signInUrl = new URL('/sign-in', req.url);
+        return NextResponse.redirect(signInUrl);
+      }
+
+      const { userId, sessionClaims } = authResult;
 
       // Basic authentication check
       if (!userId) {
@@ -104,16 +122,18 @@ export default clerkMiddleware(
       
       try {
         // Simple role extraction from session claims (no complex JWT processing)
-        const hasuraClaims = sessionClaims?.['https://hasura.io/jwt/claims'] as any;
-        if (hasuraClaims?.['x-hasura-default-role']) {
-          const rolePriority = ['developer', 'org_admin', 'manager', 'consultant', 'viewer'];
-          const claimRole = hasuraClaims['x-hasura-default-role'];
-          if (rolePriority.includes(claimRole)) {
-            userRole = claimRole;
+        if (sessionClaims && typeof sessionClaims === 'object') {
+          const hasuraClaims = sessionClaims['https://hasura.io/jwt/claims'] as any;
+          if (hasuraClaims && typeof hasuraClaims === 'object' && hasuraClaims['x-hasura-default-role']) {
+            const rolePriority = ['developer', 'org_admin', 'manager', 'consultant', 'viewer'];
+            const claimRole = hasuraClaims['x-hasura-default-role'];
+            if (typeof claimRole === 'string' && rolePriority.includes(claimRole)) {
+              userRole = claimRole;
+            }
           }
         }
       } catch (roleError) {
-        console.warn("Could not extract role from session claims, using viewer");
+        console.warn("Could not extract role from session claims:", roleError);
         userRole = 'viewer';
       }
 
@@ -154,12 +174,12 @@ export default clerkMiddleware(
       return res;
 
     } catch (error) {
-      console.error("Auth error:", error);
+      console.error("Middleware error:", error);
 
       if (pathname.startsWith("/api/")) {
         const res = NextResponse.json(
-          { error: "Authentication failed" },
-          { status: 401 }
+          { error: "Internal server error" },
+          { status: 500 }
         );
         res.headers.set("X-Request-Id", requestId);
         return res;
