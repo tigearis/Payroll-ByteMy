@@ -538,3 +538,160 @@ export async function syncUserRoleAssignmentsHierarchical(
     throw error;
   }
 }
+
+/**
+ * Sync user permission overrides with Clerk metadata
+ * This ensures the frontend permission system stays in sync with database changes
+ */
+export async function syncPermissionOverridesToClerk(
+  userId: string,
+  clerkUserId: string,
+  userRole: UserRole
+): Promise<void> {
+  try {
+    console.log(`🔄 Syncing permission overrides to Clerk for user ${userId}`);
+
+    // Get fresh hierarchical permission data from database
+    const hierarchicalData = await getHierarchicalPermissionsFromDatabase(userId);
+
+    // Update Clerk user metadata
+    const clerkResponse = await fetch(`https://api.clerk.com/v1/users/${clerkUserId}`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${process.env.CLERK_SECRET_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        public_metadata: {
+          role: hierarchicalData.role,
+          allowedRoles: hierarchicalData.allowedRoles,
+          excludedPermissions: hierarchicalData.excludedPermissions,
+          permissionHash: hierarchicalData.permissionHash,
+          permissionVersion: hierarchicalData.permissionVersion,
+        }
+      }),
+    });
+
+    if (!clerkResponse.ok) {
+      const errorData = await clerkResponse.text();
+      throw new Error(`Clerk API error: ${clerkResponse.status} - ${errorData}`);
+    }
+
+    console.log(`✅ Successfully synced permission overrides to Clerk for user ${userId}`);
+    
+    // Create audit log for sync
+    await adminApolloClient.mutate({
+      mutation: gql`
+        mutation LogPermissionClerkSync($input: permissionAuditLogsInsertInput!) {
+          insertPermissionAuditLog(object: $input) {
+            id
+          }
+        }
+      `,
+      variables: {
+        input: {
+          action: 'CLERK_METADATA_SYNC',
+          resource: 'clerk_metadata',
+          targetUserId: userId,
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error(`❌ Error syncing permission overrides to Clerk:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Handle permission override creation with Clerk sync
+ */
+export async function createPermissionOverrideWithSync(
+  userId: string,
+  clerkUserId: string,
+  userRole: UserRole,
+  resource: string,
+  operation: string,
+  granted: boolean,
+  reason: string,
+  expiresAt?: string
+): Promise<string> {
+  try {
+    console.log(`🔄 Creating permission override: ${resource}.${operation} = ${granted}`);
+
+    // Create the override in database
+    const { data: overrideData } = await adminApolloClient.mutate({
+      mutation: gql`
+        mutation CreatePermissionOverride($input: permissionOverridesInsertInput!) {
+          insertPermissionOverride(object: $input) {
+            id
+            resource
+            operation
+            granted
+          }
+        }
+      `,
+      variables: {
+        input: {
+          userId,
+          resource,
+          operation,
+          granted,
+          reason,
+          expiresAt: expiresAt || null,
+        }
+      }
+    });
+
+    const overrideId = overrideData?.insertPermissionOverride?.id;
+    
+    if (!overrideId) {
+      throw new Error("Failed to create permission override");
+    }
+
+    // Sync with Clerk metadata
+    await syncPermissionOverridesToClerk(userId, clerkUserId, userRole);
+
+    console.log(`✅ Created permission override ${overrideId} and synced to Clerk`);
+    return overrideId;
+
+  } catch (error) {
+    console.error("Error creating permission override with sync:", error);
+    throw error;
+  }
+}
+
+/**
+ * Handle permission override deletion with Clerk sync
+ */
+export async function deletePermissionOverrideWithSync(
+  overrideId: string,
+  userId: string,
+  clerkUserId: string,
+  userRole: UserRole
+): Promise<void> {
+  try {
+    console.log(`🔄 Deleting permission override: ${overrideId}`);
+
+    // Delete the override from database
+    await adminApolloClient.mutate({
+      mutation: gql`
+        mutation DeletePermissionOverride($id: uuid!) {
+          deletePermissionOverrideById(id: $id) {
+            id
+          }
+        }
+      `,
+      variables: { id: overrideId }
+    });
+
+    // Sync with Clerk metadata
+    await syncPermissionOverridesToClerk(userId, clerkUserId, userRole);
+
+    console.log(`✅ Deleted permission override ${overrideId} and synced to Clerk`);
+
+  } catch (error) {
+    console.error("Error deleting permission override with sync:", error);
+    throw error;
+  }
+}

@@ -1,0 +1,180 @@
+# Permission Management GraphQL Operations
+
+# Get all resources with their available permissions
+query GetAllResourcesWithPermissions {
+  resources(orderBy: { name: ASC }) {
+    id
+    name
+    displayName
+    description
+    availablePermissions(orderBy: { action: ASC }) {
+      id
+      action
+      description
+      legacyPermissionName
+      relatedResource {
+        id
+        name
+        displayName
+      }
+    }
+  }
+}
+
+# Get user's current effective permissions (role + overrides)
+query GetUserEffectivePermissions($userId: uuid!) {
+  # Get user's role assignments
+  userRoles(where: { userId: { _eq: $userId } }) {
+    id
+    roleId
+    assignedRole {
+      id
+      name
+      displayName
+      priority
+      assignedPermissions {
+        id
+        grantedPermission {
+          id
+          action
+          description
+          relatedResource {
+            id
+            name
+            displayName
+          }
+        }
+      }
+    }
+  }
+  
+  # Get user's permission overrides
+  permissionOverrides(where: { userId: { _eq: $userId } }) {
+    id
+    granted
+    reason
+    expiresAt
+    createdAt
+    operation
+    resource
+    createdByUser {
+      id
+      firstName
+      lastName
+      computedName
+    }
+  }
+}
+
+# Get permission audit history for a user
+query GetUserPermissionHistory($userId: uuid!, $limit: Int = 50) {
+  permissionAuditLogs(
+    where: { 
+      _or: [
+        { targetUserId: { _eq: $userId } }
+        { performedByUser: { id: { _eq: $userId } } }
+      ]
+    }
+    orderBy: { timestamp: DESC }
+    limit: $limit
+  ) {
+    id
+    action
+    resource
+    targetUserId
+    timestamp
+    targetUser {
+      id
+      firstName
+      lastName
+      computedName
+    }
+    performedByUser {
+      id
+      firstName
+      lastName
+      computedName
+    }
+  }
+}
+
+# Create a permission override
+mutation CreatePermissionOverride($input: permissionOverridesInsertInput!) {
+  insertPermissionOverride(object: $input) {
+    id
+    granted
+    reason
+    expiresAt
+    operation
+    resource
+  }
+}
+
+# Update a permission override
+mutation UpdatePermissionOverride(
+  $id: uuid!
+  $updates: permissionOverridesSetInput!
+) {
+  updatePermissionOverrideById(
+    pkColumns: { id: $id }
+    _set: $updates
+  ) {
+    id
+    granted
+    reason
+    expiresAt
+    updatedAt
+  }
+}
+
+# Delete a permission override
+mutation DeletePermissionOverride($id: uuid!) {
+  deletePermissionOverrideById(id: $id) {
+    id
+  }
+}
+
+# Create permission audit log entry
+mutation CreatePermissionAuditLog($input: permissionAuditLogsInsertInput!) {
+  insertPermissionAuditLog(object: $input) {
+    id
+    timestamp
+  }
+}
+
+# Get all roles with their default permissions (for reference)
+query GetRolesWithPermissions {
+  roles(orderBy: { priority: ASC }) {
+    id
+    name
+    displayName
+    description
+    priority
+    assignedPermissions {
+      id
+      grantedPermission {
+        id
+        action
+        description
+        relatedResource {
+          id
+          name
+          displayName
+        }
+      }
+    }
+  }
+}
+
+# Bulk create permission overrides
+mutation BulkCreatePermissionOverrides($overrides: [permissionOverridesInsertInput!]!) {
+  bulkInsertPermissionOverrides(objects: $overrides) {
+    affectedRows
+    returning {
+      id
+      granted
+      operation
+      resource
+    }
+  }
+}
