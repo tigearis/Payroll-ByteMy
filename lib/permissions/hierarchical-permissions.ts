@@ -546,61 +546,117 @@ export async function syncUserRoleAssignmentsHierarchical(
 export async function syncPermissionOverridesToClerk(
   userId: string,
   clerkUserId: string,
-  userRole: UserRole
+  userRole: UserRole,
+  maxRetries: number = 3
 ): Promise<void> {
-  try {
-    console.log(`🔄 Syncing permission overrides to Clerk for user ${userId}`);
+  let lastError: Error | null = null;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`🔄 Syncing permission overrides to Clerk for user ${userId} (attempt ${attempt}/${maxRetries})`);
 
-    // Get fresh hierarchical permission data from database
-    const hierarchicalData = await getHierarchicalPermissionsFromDatabase(userId);
-
-    // Update Clerk user metadata
-    const clerkResponse = await fetch(`https://api.clerk.com/v1/users/${clerkUserId}`, {
-      method: 'PATCH',
-      headers: {
-        'Authorization': `Bearer ${process.env.CLERK_SECRET_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        public_metadata: {
-          role: hierarchicalData.role,
-          allowedRoles: hierarchicalData.allowedRoles,
-          excludedPermissions: hierarchicalData.excludedPermissions,
-          permissionHash: hierarchicalData.permissionHash,
-          permissionVersion: hierarchicalData.permissionVersion,
-        }
-      }),
-    });
-
-    if (!clerkResponse.ok) {
-      const errorData = await clerkResponse.text();
-      throw new Error(`Clerk API error: ${clerkResponse.status} - ${errorData}`);
-    }
-
-    console.log(`✅ Successfully synced permission overrides to Clerk for user ${userId}`);
-    
-    // Create audit log for sync
-    await adminApolloClient.mutate({
-      mutation: gql`
-        mutation LogPermissionClerkSync($input: permissionAuditLogsInsertInput!) {
-          insertPermissionAuditLog(object: $input) {
-            id
-          }
-        }
-      `,
-      variables: {
-        input: {
-          action: 'CLERK_METADATA_SYNC',
-          resource: 'clerk_metadata',
-          targetUserId: userId,
-        }
+      // Get fresh hierarchical permission data from database
+      let hierarchicalData;
+      try {
+        hierarchicalData = await getHierarchicalPermissionsFromDatabase(userId);
+        console.log(`📊 Retrieved hierarchical data: ${hierarchicalData.excludedPermissions.length} exclusions, ${hierarchicalData.allowedRoles.length} roles`);
+      } catch (dataError: any) {
+        throw new Error(`Failed to get hierarchical permissions: ${dataError.message}`);
       }
-    });
 
-  } catch (error) {
-    console.error(`❌ Error syncing permission overrides to Clerk:`, error);
-    throw error;
+      // Validate Clerk secret key
+      if (!process.env.CLERK_SECRET_KEY) {
+        throw new Error('CLERK_SECRET_KEY environment variable is not set');
+      }
+
+      // Update Clerk user metadata
+      const clerkResponse = await fetch(`https://api.clerk.com/v1/users/${clerkUserId}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${process.env.CLERK_SECRET_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          public_metadata: {
+            role: hierarchicalData.role,
+            allowedRoles: hierarchicalData.allowedRoles,
+            excludedPermissions: hierarchicalData.excludedPermissions,
+            permissionHash: hierarchicalData.permissionHash,
+            permissionVersion: hierarchicalData.permissionVersion,
+            lastSyncAt: new Date().toISOString(),
+          }
+        }),
+      });
+
+      if (!clerkResponse.ok) {
+        const errorData = await clerkResponse.text();
+        const error = new Error(`Clerk API error (${clerkResponse.status}): ${errorData}`);
+        
+        // Determine if this is a retryable error
+        const isRetryable = clerkResponse.status >= 500 || clerkResponse.status === 429;
+        
+        if (!isRetryable || attempt === maxRetries) {
+          throw error;
+        }
+        
+        lastError = error;
+        const delayMs = Math.min(1000 * Math.pow(2, attempt - 1), 5000); // Exponential backoff, max 5s
+        console.log(`⏳ Retryable error, waiting ${delayMs}ms before retry: ${error.message}`);
+        await new Promise(resolve => setTimeout(resolve, delayMs));
+        continue;
+      }
+
+      console.log(`✅ Successfully synced permission overrides to Clerk for user ${userId} on attempt ${attempt}`);
+      
+      // Create audit log for successful sync
+      try {
+        await adminApolloClient.mutate({
+          mutation: gql`
+            mutation LogPermissionClerkSync($input: permissionAuditLogsInsertInput!) {
+              insertPermissionAuditLog(object: $input) {
+                id
+              }
+            }
+          `,
+          variables: {
+            input: {
+              action: 'CLERK_METADATA_SYNC',
+              resource: 'clerk_metadata',
+              targetUserId: userId,
+            }
+          }
+        });
+      } catch (auditError) {
+        console.warn('Failed to create audit log for Clerk sync:', auditError);
+        // Don't fail the entire operation for audit log failures
+      }
+
+      return; // Success - exit retry loop
+
+    } catch (error: any) {
+      lastError = error;
+      console.error(`❌ Attempt ${attempt}/${maxRetries} failed:`, error.message);
+      
+      if (attempt === maxRetries) {
+        console.error(`❌ All ${maxRetries} attempts failed for Clerk sync`);
+        break;
+      }
+      
+      // Wait before retry (if it's not the last attempt)
+      if (attempt < maxRetries) {
+        const delayMs = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
+        console.log(`⏳ Waiting ${delayMs}ms before retry...`);
+        await new Promise(resolve => setTimeout(resolve, delayMs));
+      }
+    }
   }
+  
+  // If we get here, all retries failed
+  const contextualError = new Error(
+    `Failed to sync permissions to Clerk after ${maxRetries} attempts: ${lastError?.message || 'Unknown error'}`
+  );
+  contextualError.cause = lastError;
+  throw contextualError;
 }
 
 /**
@@ -616,48 +672,92 @@ export async function createPermissionOverrideWithSync(
   reason: string,
   expiresAt?: string
 ): Promise<string> {
+  let overrideId: string | null = null;
+  
   try {
     console.log(`🔄 Creating permission override: ${resource}.${operation} = ${granted}`);
 
-    // Create the override in database
-    const { data: overrideData } = await adminApolloClient.mutate({
-      mutation: gql`
-        mutation CreatePermissionOverride($input: permissionOverridesInsertInput!) {
-          insertPermissionOverride(object: $input) {
-            id
-            resource
-            operation
-            granted
+    // Step 1: Create the override in database
+    try {
+      const { data: overrideData, errors } = await adminApolloClient.mutate({
+        mutation: gql`
+          mutation CreatePermissionOverride($input: permissionOverridesInsertInput!) {
+            insertPermissionOverride(object: $input) {
+              id
+              resource
+              operation
+              granted
+            }
+          }
+        `,
+        variables: {
+          input: {
+            userId,
+            resource,
+            operation,
+            granted,
+            reason,
+            expiresAt: expiresAt || null,
           }
         }
-      `,
-      variables: {
-        input: {
-          userId,
-          resource,
-          operation,
-          granted,
-          reason,
-          expiresAt: expiresAt || null,
-        }
-      }
-    });
+      });
 
-    const overrideId = overrideData?.insertPermissionOverride?.id;
-    
-    if (!overrideId) {
-      throw new Error("Failed to create permission override");
+      if (errors && errors.length > 0) {
+        throw new Error(`Database error: ${errors.map(e => e.message).join(', ')}`);
+      }
+
+      overrideId = overrideData?.insertPermissionOverride?.id;
+      
+      if (!overrideId) {
+        throw new Error("Failed to create permission override - no ID returned from database");
+      }
+
+      console.log(`✅ Created permission override ${overrideId} in database`);
+    } catch (dbError: any) {
+      console.error(`❌ Database operation failed for ${resource}.${operation}:`, dbError);
+      throw new Error(`Database operation failed: ${dbError.message}`);
     }
 
-    // Sync with Clerk metadata
-    await syncPermissionOverridesToClerk(userId, clerkUserId, userRole);
+    // Step 2: Sync with Clerk metadata (with retry)
+    try {
+      await syncPermissionOverridesToClerk(userId, clerkUserId, userRole);
+      console.log(`✅ Successfully synced permission override ${overrideId} to Clerk`);
+    } catch (clerkError: any) {
+      console.error(`❌ Clerk sync failed for override ${overrideId}:`, clerkError);
+      
+      // Rollback: Delete the database record if Clerk sync fails
+      try {
+        console.log(`🔄 Rolling back database override ${overrideId} due to Clerk sync failure`);
+        await adminApolloClient.mutate({
+          mutation: gql`
+            mutation RollbackPermissionOverride($id: uuid!) {
+              deletePermissionOverrideById(id: $id) {
+                id
+              }
+            }
+          `,
+          variables: { id: overrideId }
+        });
+        console.log(`✅ Successfully rolled back override ${overrideId}`);
+      } catch (rollbackError) {
+        console.error(`❌ Failed to rollback override ${overrideId}:`, rollbackError);
+        // Don't throw rollback error - the original Clerk error is more important
+      }
+      
+      throw new Error(`Clerk synchronization failed: ${clerkError.message}. Database changes have been rolled back.`);
+    }
 
-    console.log(`✅ Created permission override ${overrideId} and synced to Clerk`);
     return overrideId;
 
-  } catch (error) {
-    console.error("Error creating permission override with sync:", error);
-    throw error;
+  } catch (error: any) {
+    console.error(`❌ Error creating permission override for ${resource}.${operation}:`, error);
+    
+    // Enhance error message with context
+    const contextualError = new Error(
+      `Failed to create permission override for ${resource}.${operation} (${granted ? 'granted' : 'denied'}): ${error.message}`
+    );
+    contextualError.cause = error;
+    throw contextualError;
   }
 }
 
@@ -670,28 +770,119 @@ export async function deletePermissionOverrideWithSync(
   clerkUserId: string,
   userRole: UserRole
 ): Promise<void> {
+  let overrideBackup: any = null;
+  
   try {
     console.log(`🔄 Deleting permission override: ${overrideId}`);
 
-    // Delete the override from database
-    await adminApolloClient.mutate({
-      mutation: gql`
-        mutation DeletePermissionOverride($id: uuid!) {
-          deletePermissionOverrideById(id: $id) {
-            id
+    // Step 1: Get override details for potential rollback
+    try {
+      const { data: backupData } = await adminApolloClient.query({
+        query: gql`
+          query GetOverrideForBackup($id: uuid!) {
+            permissionOverrideById(id: $id) {
+              id
+              userId
+              resource
+              operation
+              granted
+              reason
+              expiresAt
+            }
           }
+        `,
+        variables: { id: overrideId },
+        fetchPolicy: 'network-only'
+      });
+
+      overrideBackup = backupData?.permissionOverrideById;
+      
+      if (!overrideBackup) {
+        throw new Error(`Permission override ${overrideId} not found - may have been already deleted`);
+      }
+
+      console.log(`📋 Backed up override data for ${overrideBackup.resource}.${overrideBackup.operation}`);
+    } catch (backupError: any) {
+      console.error(`❌ Failed to backup override ${overrideId}:`, backupError);
+      throw new Error(`Failed to backup override data: ${backupError.message}`);
+    }
+
+    // Step 2: Delete the override from database
+    try {
+      const { data: deleteData, errors } = await adminApolloClient.mutate({
+        mutation: gql`
+          mutation DeletePermissionOverride($id: uuid!) {
+            deletePermissionOverrideById(id: $id) {
+              id
+            }
+          }
+        `,
+        variables: { id: overrideId }
+      });
+
+      if (errors && errors.length > 0) {
+        throw new Error(`Database error: ${errors.map(e => e.message).join(', ')}`);
+      }
+
+      if (!deleteData?.deletePermissionOverrideById?.id) {
+        throw new Error("Failed to delete permission override - no confirmation from database");
+      }
+
+      console.log(`✅ Deleted permission override ${overrideId} from database`);
+    } catch (dbError: any) {
+      console.error(`❌ Database deletion failed for override ${overrideId}:`, dbError);
+      throw new Error(`Database deletion failed: ${dbError.message}`);
+    }
+
+    // Step 3: Sync with Clerk metadata
+    try {
+      await syncPermissionOverridesToClerk(userId, clerkUserId, userRole);
+      console.log(`✅ Successfully synced override deletion to Clerk`);
+    } catch (clerkError: any) {
+      console.error(`❌ Clerk sync failed after deleting override ${overrideId}:`, clerkError);
+      
+      // Rollback: Recreate the database record if Clerk sync fails
+      if (overrideBackup) {
+        try {
+          console.log(`🔄 Rolling back deletion - recreating override ${overrideId}`);
+          await adminApolloClient.mutate({
+            mutation: gql`
+              mutation RestorePermissionOverride($input: permissionOverridesInsertInput!) {
+                insertPermissionOverride(object: $input) {
+                  id
+                }
+              }
+            `,
+            variables: {
+              input: {
+                id: overrideBackup.id,
+                userId: overrideBackup.userId,
+                resource: overrideBackup.resource,
+                operation: overrideBackup.operation,
+                granted: overrideBackup.granted,
+                reason: overrideBackup.reason,
+                expiresAt: overrideBackup.expiresAt,
+              }
+            }
+          });
+          console.log(`✅ Successfully restored override ${overrideId}`);
+        } catch (rollbackError) {
+          console.error(`❌ Failed to restore override ${overrideId}:`, rollbackError);
+          // Don't throw rollback error - the original Clerk error is more important
         }
-      `,
-      variables: { id: overrideId }
-    });
+      }
+      
+      throw new Error(`Clerk synchronization failed: ${clerkError.message}. Database changes have been rolled back.`);
+    }
 
-    // Sync with Clerk metadata
-    await syncPermissionOverridesToClerk(userId, clerkUserId, userRole);
-
-    console.log(`✅ Deleted permission override ${overrideId} and synced to Clerk`);
-
-  } catch (error) {
-    console.error("Error deleting permission override with sync:", error);
-    throw error;
+  } catch (error: any) {
+    console.error(`❌ Error deleting permission override ${overrideId}:`, error);
+    
+    // Enhance error message with context
+    const contextualError = new Error(
+      `Failed to delete permission override ${overrideId}: ${error.message}`
+    );
+    contextualError.cause = error;
+    throw contextualError;
   }
 }
