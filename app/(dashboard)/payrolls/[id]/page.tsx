@@ -129,7 +129,7 @@ import {
 } from "@/hooks/use-payroll-versioning";
 import { useFreshQuery } from "@/hooks/use-strategic-query";
 import { QueryOptimizer } from "@/lib/apollo/query-optimization";
-import { useAuthContext } from "@/lib/auth/simple-auth-hook";
+import { PermissionGuard, CanUpdate, CanDelete } from "@/components/auth/permission-guard";
 import { PayrollCycleType, PayrollDateType } from "@/types/enums";
 import { QuickEmailDialog } from "@/domains/email/components/quick-email-dialog";
 
@@ -283,36 +283,11 @@ export default function PayrollPage() {
   const searchParams = useSearchParams();
   const returnTo = searchParams.get('returnTo');
   const editMode = searchParams.get('edit') === 'true';
-  const { } = useAuthContext(); // Simplified auth - no permission checking
   const apolloClient = useApolloClient(); // For QueryOptimizer
 
   console.log("📋 Payroll ID:", id);
 
-  // Permission checks (simplified - always allow if authenticated)
-  const canEditPayroll = true;
-  const canDeletePayroll = true;
-  const canAssignPayroll = true;
-  const canViewPayroll = true;
-
-  // Check if user has permission to view payrolls
-  if (!canViewPayroll) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] p-8 space-y-6">
-        <Shield className="w-16 h-16 text-red-500" />
-        <div className="text-center space-y-2">
-          <h2 className="text-2xl font-bold">Access Denied</h2>
-          <p className="text-gray-600">
-            You don't have permission to view payroll details
-          </p>
-          <div className="mt-6">
-            <Button onClick={() => router.push("/dashboard")} variant="outline">
-              Back to Dashboard
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Permission checks now handled by PermissionGuard components
 
   const [loadingToastShown, setLoadingToastShown] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
@@ -1143,8 +1118,17 @@ export default function PayrollPage() {
   const possibleStatuses = ["Implementation", "Active", "Inactive"];
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      <ErrorBoundary>
+    <PermissionGuard permission="payrolls.read" fallback={
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center space-y-4">
+          <AlertTriangle className="w-8 h-8 mx-auto text-amber-500" />
+          <h3 className="text-lg font-medium text-amber-800">Access Restricted</h3>
+          <p className="text-amber-600">You don't have permission to view this payroll.</p>
+        </div>
+      </div>
+    }>
+      <div className="container mx-auto py-6 space-y-6">
+        <ErrorBoundary>
         <div className="space-y-6">
         {/* Version Warning Banner */}
         {(currentPayroll as any)?.supersededDate && (
@@ -1246,12 +1230,12 @@ export default function PayrollPage() {
                   </>
                 ) : (
                   <>
-                    {canEditPayroll && (
+                    <CanUpdate resource="payrolls">
                       <DropdownMenuItem onClick={() => setIsEditing(true)}>
                         <Pencil className="w-4 h-4 mr-2" />
                         Edit Payroll
                       </DropdownMenuItem>
-                    )}
+                    </CanUpdate>
                     <DropdownMenuSeparator />
                   </>
                 )}
@@ -1866,6 +1850,7 @@ export default function PayrollPage() {
         />
       </div>
       </ErrorBoundary>
-    </div>
+      </div>
+    </PermissionGuard>
   );
 }

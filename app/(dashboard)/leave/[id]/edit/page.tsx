@@ -42,13 +42,17 @@ interface LeaveRequest {
   status: "Pending" | "Approved" | "Rejected";
   leaveUser: {
     id: string;
-    name: string;
+    firstName: string;
+    lastName: string;
+    computedName: string;
     email: string;
     role: string;
     position?: string;
     managerUser?: {
       id: string;
-      name: string;
+      firstName: string;
+      lastName: string;
+      computedName: string;
       email: string;
     } | null;
   };
@@ -430,7 +434,7 @@ function EditLeaveRequestPage({ params }: { params: { id: string } }) {
                         <div className="flex items-center">
                           <User className="h-4 w-4 mr-2 text-gray-500" />
                           <div>
-                            <p className="font-medium">{leaveRequest.leaveUser.computedName || `${leaveRequest.leaveUser.firstName || ''} ${leaveRequest.leaveUser.lastName || ''}`.trim() || 'Unknown User'}</p>
+                            <p className="font-medium">{leaveRequest.leaveUser.computedName}</p>
                             <p className="text-sm text-gray-500">{leaveRequest.leaveUser.email}</p>
                           </div>
                         </div>

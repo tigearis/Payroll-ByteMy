@@ -42,16 +42,20 @@ fragment BillingItemFragment on billingItems {
   description
   quantity
   amount
+  totalAmount
   payrollId
   billingPlanId
   clientId
-  staffUserId
   serviceName
   hourlyRate
   isApproved
   approvalDate
   approvedBy
+  confirmedAt
+  confirmedBy
+  notes
   createdAt
+  updatedAt
 }
 
 # Time Entry Fragment

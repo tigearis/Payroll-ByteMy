@@ -10,8 +10,7 @@ import { auth } from "@clerk/nextjs/server";
 // Re-export Clerk hooks for convenience
 export { useAuth, useUser } from "@clerk/nextjs";
 
-// Export simple auth hooks
-export { useAuthContext, useSimpleAuth } from "./simple-auth-hook";
+// Simple auth hooks removed - use useHierarchicalPermissions instead
 
 // Export API auth utilities
 export { withAuth, withAuthParams, authenticateApiRequest, type AuthSession } from "./api-auth";

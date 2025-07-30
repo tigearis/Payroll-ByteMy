@@ -2,8 +2,8 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { PermissionGuard } from "@/components/auth/permission-guard";
+import { useQuery } from "@apollo/client";
 import {
   DollarSign,
   FileText,
@@ -16,35 +16,56 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { BillingDashboard } from "@/domains/billing/components/dashboard";
+import { GetAllBillingItemsDocument } from "@/domains/billing/graphql/generated/graphql";
 
 export default function BillingPage() {
-  // Quick stats data (normally would come from API)
+  // Fetch real billing data
+  const { data: allItemsData, loading: allItemsLoading } = useQuery(GetAllBillingItemsDocument, {
+    variables: { searchTerm: null, isApproved: null, limit: 100, offset: 0 },
+    fetchPolicy: 'cache-and-network'
+  });
+
+  const billingItems = allItemsData?.billingItems || [];
+
+  // Calculate real stats
+  const totalRevenue = billingItems.reduce((sum, item) => sum + (item.totalAmount || item.amount || 0), 0);
+  const pendingItems = billingItems.filter(item => !item.isApproved);
+  const uniqueClients = new Set(billingItems.map(item => item.clientId)).size;
+  const avgItemValue = billingItems.length > 0 ? totalRevenue / billingItems.length : 0;
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-AU', {
+      style: 'currency',
+      currency: 'AUD'
+    }).format(amount);
+  };
+
   const stats = [
     {
-      title: "Monthly Revenue",
-      value: "$24,890",
-      change: "+12.5%",
+      title: "Total Revenue",
+      value: allItemsLoading ? "Loading..." : formatCurrency(totalRevenue),
+      change: `${billingItems.length} items`,
       icon: DollarSign,
       positive: true,
     },
     {
-      title: "Outstanding Invoices",
-      value: "8",
-      change: "-3",
+      title: "Pending Approval",
+      value: allItemsLoading ? "..." : pendingItems.length.toString(),
+      change: formatCurrency(pendingItems.reduce((sum, item) => sum + (item.totalAmount || item.amount || 0), 0)),
       icon: FileText,
       positive: true,
     },
     {
       title: "Active Clients",
-      value: "42",
-      change: "+2",
+      value: allItemsLoading ? "..." : uniqueClients.toString(),
+      change: "with billing items",
       icon: Users,
       positive: true,
     },
     {
-      title: "Avg. Invoice Value",
-      value: "$3,112",
-      change: "+8.2%",
+      title: "Avg. Item Value",
+      value: allItemsLoading ? "..." : formatCurrency(avgItemValue),
+      change: "per billing item",
       icon: TrendingUp,
       positive: true,
     },
@@ -113,13 +134,7 @@ export default function BillingPage() {
               <CardContent>
                 <div className="text-2xl font-bold">{stat.value}</div>
                 <p className="text-xs text-muted-foreground">
-                  <Badge
-                    variant={stat.positive ? "default" : "destructive"}
-                    className="text-xs"
-                  >
-                    {stat.change}
-                  </Badge>
-                  {" from last month"}
+                  {stat.change}
                 </p>
               </CardContent>
             </Card>

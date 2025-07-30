@@ -27,7 +27,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useAuthContext } from "@/lib/auth";
+import { useHierarchicalPermissions } from "@/hooks/use-hierarchical-permissions";
 
 interface APIKey {
   apiKey: string;
@@ -62,7 +62,8 @@ export function APIKeyManager() {
 }
 
 function APIKeyManagerInner() {
-  const { hasAdminAccess } = useAuthContext();
+  const { hasPermission } = useHierarchicalPermissions();
+  const hasAdminAccess = hasPermission("admin.manage");
   const [apiKeys, setApiKeys] = useState<APIKey[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);

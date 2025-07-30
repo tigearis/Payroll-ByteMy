@@ -12,6 +12,7 @@ import { contextExtractor } from "../../../../lib/ai/context-extractor";
 import { hasuraQueryGenerator } from "../../../../lib/ai/hasura-query-generator";
 import { langChainService } from "../../../../lib/ai/langchain-service";
 import { securityValidator } from "../../../../lib/ai/security-validator";
+import { auditLogger } from "../../../../lib/audit/audit-logger";
 
 // Rate limiting for direct answers (more permissive than raw queries)
 const answerRateLimits = new Map<string, { count: number; resetTime: number }>();
@@ -496,7 +497,40 @@ async function logDataAnswer(data: {
   error?: string;
 }) {
   try {
-    console.log("Data Answer Interaction:", {
+    // Log to audit database
+    await auditLogger.log({
+      userId: data.userId,
+      action: data.success ? 'AI_DATA_QUERY_SUCCESS' : 'AI_DATA_QUERY_FAILED',
+      entityType: 'ai_data_query',
+      entityId: undefined,
+      success: data.success,
+      metadata: {
+        userRole: data.userRole,
+        questionLength: data.question.length,
+        answerLength: data.answer.length,
+        recordCount: data.recordCount,
+        executionTime: data.executionTime,
+        businessContext: data.businessContext,
+        error: data.error,
+        question: data.question.substring(0, 500), // First 500 chars for audit
+        answer: data.answer.substring(0, 1000), // First 1000 chars for review
+        timestamp: new Date().toISOString(),
+      }
+    });
+
+    console.log("✅ Data Answer Interaction logged to audit database:", {
+      userId: data.userId,
+      userRole: data.userRole,
+      success: data.success,
+      businessContext: data.businessContext,
+      recordCount: data.recordCount,
+      executionTime: data.executionTime,
+    });
+  } catch (error) {
+    console.error("❌ Failed to log data answer interaction to audit database:", error);
+    
+    // Fallback to console logging
+    console.log("Data Answer Interaction (fallback):", {
       userId: data.userId,
       userRole: data.userRole,
       questionLength: data.question.length,
@@ -508,9 +542,5 @@ async function logDataAnswer(data: {
       error: data.error,
       timestamp: new Date().toISOString(),
     });
-
-    // TODO: Store in audit.aidata_answer_log table when available
-  } catch (error) {
-    console.error("Failed to log data answer interaction:", error);
   }
 }

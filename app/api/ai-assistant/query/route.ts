@@ -14,6 +14,7 @@ import {
 import { langChainService } from "../../../../lib/ai/langchain-service";
 import { securityValidator } from "../../../../lib/ai/security-validator";
 import { checkFeatureFlag } from "../../../../lib/feature-flags/api-guard";
+import { auditLogger } from "../../../../lib/audit/audit-logger";
 
 // Rate limiting for queries (stricter than chat)
 const queryRateLimits = new Map<string, { count: number; resetTime: number }>();
@@ -475,8 +476,38 @@ async function logQueryExecution(data: {
   context: any;
 }) {
   try {
-    // Enhanced logging for queries
-    console.log("AI Query Execution:", {
+    // Log to audit database
+    await auditLogger.log({
+      userId: data.userId,
+      action: data.success ? 'AI_QUERY_SUCCESS' : 'AI_QUERY_FAILED',
+      entityType: 'ai_query',
+      entityId: undefined,
+      success: data.success,
+      metadata: {
+        userRole: data.userRole,
+        requestLength: data.request.length,
+        queryLength: data.query.length,
+        tablesAccessed: data.tablesAccessed,
+        page: data.context.title,
+        error: data.error,
+        securityViolations: data.securityViolations,
+        originalRequest: data.request.substring(0, 500), // First 500 chars for audit
+        generatedQuery: data.query.substring(0, 1000), // First 1000 chars for review
+      }
+    });
+
+    console.log("✅ AI Query Execution logged to audit database:", {
+      userId: data.userId,
+      userRole: data.userRole,
+      success: data.success,
+      tablesAccessed: data.tablesAccessed.length,
+      page: data.context.title,
+    });
+  } catch (error) {
+    console.error("❌ Failed to log query execution to audit database:", error);
+    
+    // Fallback to console logging
+    console.log("AI Query Execution (fallback):", {
       userId: data.userId,
       userRole: data.userRole,
       requestLength: data.request.length,
@@ -488,16 +519,7 @@ async function logQueryExecution(data: {
       page: data.context.title,
       timestamp: new Date().toISOString(),
     });
-
-    // TODO: Store in audit.ai_query_log table when available
-    // This should include:
-    // - Full query text (for security review)
-    // - Tables accessed
-    // - Success/failure status
-    // - Security violations if any
-    // - User context
-  } catch (error) {
-    console.error("Failed to log query execution:", error);
+    
     // Don't throw - logging failure shouldn't break the main flow
   }
 }

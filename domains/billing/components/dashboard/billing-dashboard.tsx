@@ -26,6 +26,7 @@ import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
+  GetAllBillingItemsDocument,
   GetBillingItemsByClientDocument,
   GetPayrollProfitabilityDocument,
   UpdateBillingItemDocument,
@@ -40,10 +41,12 @@ interface BillingItem {
   serviceName: string;
   quantity: number;
   amount: number;
+  totalAmount?: number;
   hourlyRate?: number;
   isApproved: boolean;
-  staffUserId?: string;
-  status: string;
+  approvalDate?: string;
+  confirmedAt?: string;
+  notes?: string;
   createdAt: string;
   client?: {
     id: string;
@@ -53,10 +56,16 @@ interface BillingItem {
     id: string;
     name: string;
   };
+  user?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    computedName: string;
+  };
 }
 
 interface DashboardFilters {
-  status: string;
+  isApproved?: boolean;
   clientId: string;
   dateRange: string;
   approvalStatus: string;
@@ -74,7 +83,7 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState('overview');
   const [filters, setFilters] = useState<DashboardFilters>({
-    status: '',
+    isApproved: undefined,
     clientId: '',
     dateRange: '30',
     approvalStatus: ''
@@ -88,12 +97,16 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
     return { startDate, endDate };
   }, [filters.dateRange]);
 
-  // Get billing items (we'll use client billing items as a base)
+  // Get billing items (get all items, then filter)
   const { data: billingData, loading: billingLoading, refetch } = useQuery(
-    GetBillingItemsByClientDocument,
+    GetAllBillingItemsDocument,
     {
-      variables: { clientId: filters.clientId || '' },
-      skip: !filters.clientId,
+      variables: { 
+        searchTerm: null,
+        isApproved: null,
+        limit: 500,
+        offset: 0
+      },
       fetchPolicy: 'cache-and-network'
     }
   );
@@ -119,27 +132,27 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
   // Filter billing items
   const filteredItems = useMemo(() => {
     return billingItems.filter(item => {
-      if (filters.status && item.status !== filters.status) return false;
-      if (filters.approvalStatus === 'approved' && !item.isApproved) return false;
-      if (filters.approvalStatus === 'pending' && item.isApproved) return false;
+      if (filters.isApproved !== undefined && item.isApproved !== filters.isApproved) return false;
+      if (filters.approvalStatus === 'confirmed' && !item.confirmedAt) return false;
+      if (filters.approvalStatus === 'unconfirmed' && item.confirmedAt) return false;
       return true;
     });
   }, [billingItems, filters]);
 
   // Calculate metrics
   const metrics = useMemo(() => {
-    const total = filteredItems.reduce((sum, item) => sum + item.amount, 0);
+    const total = filteredItems.reduce((sum, item) => sum + (item.totalAmount || item.amount || 0), 0);
     const pending = filteredItems.filter(item => !item.isApproved);
     const approved = filteredItems.filter(item => item.isApproved);
-    const draft = filteredItems.filter(item => item.status === 'draft');
+    const confirmed = filteredItems.filter(item => item.confirmedAt);
     
     return {
       totalAmount: total,
       pendingCount: pending.length,
-      pendingAmount: pending.reduce((sum, item) => sum + item.amount, 0),
+      pendingAmount: pending.reduce((sum, item) => sum + (item.totalAmount || item.amount || 0), 0),
       approvedCount: approved.length,
-      approvedAmount: approved.reduce((sum, item) => sum + item.amount, 0),
-      draftCount: draft.length,
+      approvedAmount: approved.reduce((sum, item) => sum + (item.totalAmount || item.amount || 0), 0),
+      confirmedCount: confirmed.length,
       totalItems: filteredItems.length
     };
   }, [filteredItems]);
@@ -175,8 +188,7 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
             id: itemId,
             updates: {
               isApproved: true,
-              approvalDate: new Date().toISOString(),
-              status: 'approved'
+              approvalDate: new Date().toISOString()
             }
           }
         })
@@ -210,14 +222,24 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
     }
   };
 
-  const getStatusColor = (status: string) => {
-    const colors = {
-      'draft': 'bg-gray-100 text-gray-800',
-      'approved': 'bg-green-100 text-green-800',
-      'billed': 'bg-blue-100 text-blue-800',
-      'paid': 'bg-purple-100 text-purple-800'
-    };
-    return colors[status as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+  const getStatusColor = (isApproved: boolean, confirmedAt?: string) => {
+    if (isApproved) {
+      return 'bg-green-100 text-green-800';
+    } else if (confirmedAt) {
+      return 'bg-blue-100 text-blue-800';
+    } else {
+      return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusLabel = (isApproved: boolean, confirmedAt?: string) => {
+    if (isApproved) {
+      return 'Approved';
+    } else if (confirmedAt) {
+      return 'Confirmed';
+    } else {
+      return 'Draft';
+    }
   };
 
   const formatCurrency = (amount: number) => {
@@ -294,13 +316,13 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
         
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Draft Items</CardTitle>
+            <CardTitle className="text-sm font-medium">Confirmed Items</CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{metrics.draftCount}</div>
+            <div className="text-2xl font-bold">{metrics.confirmedCount}</div>
             <p className="text-xs text-muted-foreground">
-              Needs review
+              Manager confirmed
             </p>
           </CardContent>
         </Card>
@@ -333,8 +355,8 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
                           <div className="font-medium">{item.serviceName}</div>
                           <div className="text-sm text-gray-600">{item.description}</div>
                         </div>
-                        <Badge className={getStatusColor(item.status)}>
-                          {item.status}
+                        <Badge className={getStatusColor(item.isApproved, item.confirmedAt)}>
+                          {getStatusLabel(item.isApproved, item.confirmedAt)}
                         </Badge>
                       </div>
                       <div className="text-right">
@@ -361,26 +383,30 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
-                  <Label htmlFor="status">Status</Label>
+                  <Label htmlFor="approval-filter">Approval Status</Label>
                   <Select
-                    value={filters.status}
-                    onValueChange={(value) => setFilters(prev => ({ ...prev, status: value }))}
+                    value={filters.isApproved === undefined ? 'all' : filters.isApproved ? 'approved' : 'pending'}
+                    onValueChange={(value) => {
+                      let isApproved: boolean | undefined;
+                      if (value === 'approved') isApproved = true;
+                      else if (value === 'pending') isApproved = false;
+                      else isApproved = undefined;
+                      setFilters(prev => ({ ...prev, isApproved }));
+                    }}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="All Statuses" />
+                      <SelectValue placeholder="All Items" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Statuses</SelectItem>
-                      <SelectItem value="draft">Draft</SelectItem>
+                      <SelectItem value="all">All Items</SelectItem>
+                      <SelectItem value="pending">Pending Approval</SelectItem>
                       <SelectItem value="approved">Approved</SelectItem>
-                      <SelectItem value="billed">Billed</SelectItem>
-                      <SelectItem value="paid">Paid</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 
                 <div>
-                  <Label htmlFor="approval">Approval Status</Label>
+                  <Label htmlFor="confirmed">Confirmation Status</Label>
                   <Select
                     value={filters.approvalStatus}
                     onValueChange={(value) => setFilters(prev => ({ ...prev, approvalStatus: value }))}
@@ -390,8 +416,8 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="">All</SelectItem>
-                      <SelectItem value="pending">Pending Approval</SelectItem>
-                      <SelectItem value="approved">Approved</SelectItem>
+                      <SelectItem value="confirmed">Confirmed by Manager</SelectItem>
+                      <SelectItem value="unconfirmed">Not Confirmed</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -517,14 +543,14 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
                         )}
                       </TableCell>
                       <TableCell>
-                        <div className="font-semibold">{formatCurrency(item.amount)}</div>
+                        <div className="font-semibold">{formatCurrency(item.totalAmount || item.amount)}</div>
                         {item.quantity > 1 && (
-                          <div className="text-sm text-gray-600">{item.quantity} × {formatCurrency(item.amount / item.quantity)}</div>
+                          <div className="text-sm text-gray-600">{item.quantity} × {formatCurrency((item.totalAmount || item.amount) / item.quantity)}</div>
                         )}
                       </TableCell>
                       <TableCell>
-                        <Badge className={getStatusColor(item.status)}>
-                          {item.status}
+                        <Badge className={getStatusColor(item.isApproved, item.confirmedAt)}>
+                          {getStatusLabel(item.isApproved, item.confirmedAt)}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -595,7 +621,7 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
                           }
                         </TableCell>
                         <TableCell>
-                          <Badge className={getStatusColor(item.billingStatus || 'draft')}>
+                          <Badge className={getStatusColor(false, undefined)}>
                             {item.billingStatus || 'Not Started'}
                           </Badge>
                         </TableCell>

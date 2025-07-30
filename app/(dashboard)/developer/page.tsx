@@ -17,6 +17,7 @@ import { ByteMySpinner } from "@/components/ui/bytemy-loading-icon";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FeatureFlagGuard } from "@/lib/feature-flags";
 import { HolidaySyncPanel } from "@/domains/external-systems/components/holiday-sync-panel";
+import { FeatureFlagManagement } from "@/domains/external-systems/components/feature-flag-management";
 
 const developerTools = [
   {
@@ -261,12 +262,15 @@ export default function DeveloperPage() {
       {/* Holiday Sync */}
       <div className="space-y-4">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900">External Systems</h2>
+          <h2 className="text-xl font-semibold text-gray-900">External Systems & Configuration</h2>
           <p className="text-gray-500 text-sm">
-            Manage integrations with external data sources and APIs
+            Manage integrations, feature flags, and system configurations
           </p>
         </div>
-        <HolidaySyncPanel />
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <HolidaySyncPanel />
+          <FeatureFlagManagement />
+        </div>
       </div>
 
       {/* Developer Notes */}

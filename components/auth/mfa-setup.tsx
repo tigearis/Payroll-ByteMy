@@ -21,8 +21,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useAuthContext } from "@/lib/auth";
+import { useHierarchicalPermissions } from "@/hooks/use-hierarchical-permissions";
 import { securityConfig } from "@/lib/security/config";
+import { auditLogger } from "@/lib/audit/audit-logger";
 
 interface MFAStatus {
   enabled: boolean;
@@ -32,7 +33,7 @@ interface MFAStatus {
 
 export function MFASetup() {
   const { user } = useUser();
-  const { userRole } = useAuthContext();
+  const { userRole } = useHierarchicalPermissions();
   const [mfaStatus, setMfaStatus] = useState<MFAStatus>({
     enabled: false,
     verified: false,
@@ -87,6 +88,21 @@ export function MFASetup() {
       // This will open Clerk's MFA setup flow
       await user.createTOTP();
 
+      // Log MFA enable event to audit database
+      await auditLogger.log({
+        userId: user.id,
+        action: 'MFA_ENABLE',
+        entityType: 'user_security',
+        entityId: user.id,
+        success: true,
+        metadata: {
+          userRole,
+          email: user.emailAddresses[0]?.emailAddress,
+          mfaMethod: 'totp',
+          timestamp: new Date().toISOString(),
+        }
+      });
+
       toast.success("MFA setup initiated. Please follow the instructions.");
 
       // Refresh status after a delay
@@ -95,6 +111,26 @@ export function MFASetup() {
       }, 2000);
     } catch (error) {
       console.error("Error enabling MFA:", error);
+      
+      // Log failed MFA enable attempt
+      try {
+        await auditLogger.log({
+          userId: user.id,
+          action: 'MFA_ENABLE_FAILED',
+          entityType: 'user_security',
+          entityId: user.id,
+          success: false,
+          metadata: {
+            userRole,
+            email: user.emailAddresses[0]?.emailAddress,
+            error: error instanceof Error ? error.message : 'Unknown error',
+            timestamp: new Date().toISOString(),
+          }
+        });
+      } catch (auditError) {
+        console.error('Failed to log MFA enable failure:', auditError);
+      }
+      
       toast.error("Failed to enable MFA. Please try again.");
     } finally {
       setIsEnabling(false);
@@ -107,6 +143,21 @@ export function MFASetup() {
     }
 
     if (requiresMFA) {
+      // Log attempt to disable required MFA
+      await auditLogger.log({
+        userId: user.id,
+        action: 'MFA_DISABLE_BLOCKED',
+        entityType: 'user_security',
+        entityId: user.id,
+        success: false,
+        metadata: {
+          userRole,
+          email: user.emailAddresses[0]?.emailAddress,
+          reason: 'MFA required for admin accounts',
+          timestamp: new Date().toISOString(),
+        }
+      });
+      
       toast.error("MFA cannot be disabled for admin accounts");
       return;
     }
@@ -117,10 +168,44 @@ export function MFASetup() {
       // Disable MFA through Clerk
       // await user.deleteTOTP();
 
+      // Log MFA disable event to audit database
+      await auditLogger.log({
+        userId: user.id,
+        action: 'MFA_DISABLE',
+        entityType: 'user_security',
+        entityId: user.id,
+        success: true,
+        metadata: {
+          userRole,
+          email: user.emailAddresses[0]?.emailAddress,
+          timestamp: new Date().toISOString(),
+        }
+      });
+
       toast.success("MFA has been disabled");
       await checkMFAStatus();
     } catch (error) {
       console.error("Error disabling MFA:", error);
+      
+      // Log failed MFA disable attempt
+      try {
+        await auditLogger.log({
+          userId: user.id,
+          action: 'MFA_DISABLE_FAILED',
+          entityType: 'user_security',
+          entityId: user.id,
+          success: false,
+          metadata: {
+            userRole,
+            email: user.emailAddresses[0]?.emailAddress,
+            error: error instanceof Error ? error.message : 'Unknown error',
+            timestamp: new Date().toISOString(),
+          }
+        });
+      } catch (auditError) {
+        console.error('Failed to log MFA disable failure:', auditError);
+      }
+      
       toast.error("Failed to disable MFA. Please try again.");
     } finally {
       setIsEnabling(false);

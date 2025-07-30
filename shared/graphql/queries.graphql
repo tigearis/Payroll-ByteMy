@@ -229,3 +229,87 @@ query GlobalSearch($searchTerm: String!) {
     }
   }
 }
+
+# ============================================
+# File Operations Queries
+# ============================================
+
+# Get file by ID
+query GetFileById($id: uuid!) {
+  fileById(id: $id) {
+    id
+    filename
+    bucket
+    objectKey
+    size
+    mimetype
+    url
+    clientId
+    payrollId
+    uploadedBy
+    category
+    isPublic
+    metadata
+    fileType
+    createdAt
+    client {
+      name
+    }
+    payroll {
+      name
+    }
+    uploader {
+      firstName
+      lastName
+      computedName
+    }
+  }
+}
+
+# List files with filtering
+query ListFiles(
+  $where: filesBoolExp
+  $limit: Int
+  $offset: Int
+  $orderBy: [filesOrderBy!]
+) {
+  files(
+    where: $where
+    limit: $limit
+    offset: $offset
+    orderBy: $orderBy
+  ) {
+    id
+    filename
+    bucket
+    objectKey
+    size
+    mimetype
+    url
+    clientId
+    payrollId
+    uploadedBy
+    category
+    isPublic
+    metadata
+    fileType
+    createdAt
+    client {
+      name
+    }
+    payroll {
+      name
+    }
+    uploader {
+      firstName
+      lastName
+      computedName
+    }
+  }
+  
+  filesAggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+}
