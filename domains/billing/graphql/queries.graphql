@@ -405,6 +405,37 @@ query GetBillingItemsByClient($clientId: uuid!) {
   }
 }
 
+# Get billing item by ID with full details
+query GetBillingItemById($id: uuid!) {
+  billingItemById(id: $id) {
+    ...BillingItemFragment
+    client {
+      id
+      name
+      contactEmail
+    }
+    user {
+      id
+      firstName
+      lastName
+      computedName
+      email
+    }
+    approver {
+      id
+      firstName
+      lastName
+      computedName
+      email
+    }
+    relatedPayroll {
+      id
+      name
+      status
+    }
+  }
+}
+
 # Time Entries Queries
 query GetTimeEntriesByPayroll($payrollId: uuid!) {
   timeEntries(
