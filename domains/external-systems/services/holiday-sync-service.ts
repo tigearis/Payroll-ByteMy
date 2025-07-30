@@ -69,32 +69,32 @@ const CHECK_EXISTING_HOLIDAYS_QUERY = gql`
 
 // GraphQL mutation to insert holidays with better conflict resolution
 const INSERT_HOLIDAYS_MUTATION = gql`
-  mutation InsertHolidays($objects: [holidays_insert_input!]!) {
-    insert_holidays(
+  mutation InsertHolidays($objects: [holidaysInsertInput!]!) {
+    bulkInsertHolidays(
       objects: $objects
-      on_conflict: {
+      onConflict: {
         constraint: holidays_pkey
-        update_columns: [
+        updateColumns: [
           date
-          local_name
+          localName
           name
-          country_code
+          countryCode
           region
-          is_fixed
-          is_global
-          launch_year
+          isFixed
+          isGlobal
+          launchYear
           types
-          updated_at
+          updatedAt
         ]
       }
     ) {
-      affected_rows
+      affectedRows
       returning {
         id
         date
-        local_name
+        localName
         name
-        country_code
+        countryCode
         region
       }
     }
@@ -103,32 +103,32 @@ const INSERT_HOLIDAYS_MUTATION = gql`
 
 // Enhanced mutation with isEftRelevant field
 const INSERT_HOLIDAYS_ENHANCED_MUTATION = gql`
-  mutation InsertHolidaysEnhanced($objects: [holidays_insert_input!]!) {
-    insert_holidays(
+  mutation InsertHolidaysEnhanced($objects: [holidaysInsertInput!]!) {
+    bulkInsertHolidays(
       objects: $objects
-      on_conflict: {
+      onConflict: {
         constraint: holidays_pkey
-        update_columns: [
+        updateColumns: [
           date
-          local_name
+          localName
           name
-          country_code
+          countryCode
           region
-          is_fixed
-          is_global
-          launch_year
+          isFixed
+          isGlobal
+          launchYear
           types
-          updated_at
+          updatedAt
         ]
       }
     ) {
-      affected_rows
+      affectedRows
       returning {
         id
         date
-        local_name
+        localName
         name
-        country_code
+        countryCode
         region
       }
     }
@@ -137,32 +137,32 @@ const INSERT_HOLIDAYS_ENHANCED_MUTATION = gql`
 
 // Fallback mutation if the unique constraint doesn't exist yet
 const INSERT_HOLIDAYS_FALLBACK_MUTATION = gql`
-  mutation InsertHolidaysFallback($objects: [holidays_insert_input!]!) {
-    insert_holidays(
+  mutation InsertHolidaysFallback($objects: [holidaysInsertInput!]!) {
+    bulkInsertHolidays(
       objects: $objects
-      on_conflict: {
+      onConflict: {
         constraint: holidays_pkey
-        update_columns: [
+        updateColumns: [
           date
-          local_name
+          localName
           name
-          country_code
+          countryCode
           region
-          is_fixed
-          is_global
-          launch_year
+          isFixed
+          isGlobal
+          launchYear
           types
-          updated_at
+          updatedAt
         ]
       }
     ) {
-      affected_rows
+      affectedRows
       returning {
         id
         date
-        local_name
+        localName
         name
-        country_code
+        countryCode
       }
     }
   }
@@ -287,15 +287,15 @@ export function transformDataGovAuHolidays(holidays: DataGovAuHoliday[]) {
       
       return {
         date: isoDate,
-        local_name: holiday["Holiday Name"],
+        localName: holiday["Holiday Name"],
         name: holiday["Holiday Name"],
-        country_code: 'AU',
+        countryCode: 'AU',
         region: [regionName],
-        is_fixed: true, // Most public holidays are fixed dates
-        is_global: false, // State-specific holidays are not global
-        launch_year: null, // Not provided by data.gov.au
+        isFixed: true, // Most public holidays are fixed dates
+        isGlobal: false, // State-specific holidays are not global
+        launchYear: null, // Not provided by data.gov.au
         types: ['public'], // Assume all are public holidays
-        updated_at: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
     } catch (error) {
       console.error(`❌ Error transforming holiday:`, {
@@ -326,11 +326,11 @@ export async function checkExistingHolidays(
         query CheckExistingHolidays(
           $startDate: date!
           $endDate: date!
-          $countryCode: bpchar!
+          $countryCode: String!
         ) {
-          holidays_aggregate(
+          holidaysAggregate(
             where: {
-              country_code: { _eq: $countryCode }
+              countryCode: { _eq: $countryCode }
               date: { _gte: $startDate, _lt: $endDate }
             }
           ) {
@@ -340,15 +340,15 @@ export async function checkExistingHolidays(
           }
           holidays(
             where: {
-              country_code: { _eq: $countryCode }
+              countryCode: { _eq: $countryCode }
               date: { _gte: $startDate, _lt: $endDate }
             }
             limit: 3
-            order_by: { date: asc }
+            orderBy: { date: asc }
           ) {
             date
             name
-            country_code
+            countryCode
           }
         }
       `,
@@ -366,8 +366,8 @@ export async function checkExistingHolidays(
       console.warn("But continuing with partial data if available...");
     }
 
-    if (data && data.holidays_aggregate) {
-      const count = data.holidays_aggregate.aggregate.count;
+    if (data && data.holidaysAggregate) {
+      const count = data.holidaysAggregate.aggregate.count;
       const samples = data.holidays || [];
 
       console.log(
@@ -440,17 +440,17 @@ export async function syncHolidaysForCountry(
     // Transform data for database insertion
     const holidaysToInsert = publicHolidays.map(holiday => ({
       date: holiday.date,
-      local_name: holiday.localName,
+      localName: holiday.localName,
       name: holiday.name,
-      country_code: holiday.countryCode,
+      countryCode: holiday.countryCode,
       region: holiday.counties
         ? holiday.counties.map(c => c.replace(`${holiday.countryCode}-`, ""))
         : ["National"],
-      is_fixed: holiday.fixed,
-      is_global: holiday.global,
-      launch_year: holiday.launchYear,
+      isFixed: holiday.fixed,
+      isGlobal: holiday.global,
+      launchYear: holiday.launchYear,
       types: holiday.types,
-      updated_at: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     }));
 
     console.log(
@@ -474,14 +474,14 @@ export async function syncHolidaysForCountry(
         }
 
         console.log(
-          `✅ Successfully synced ${data.insertholidays.affected_rows} holidays for ${countryCode} ${year}`
+          `✅ Successfully synced ${data.bulkInsertHolidays.affectedRows} holidays for ${countryCode} ${year}`
         );
 
         return {
           success: true,
-          affectedRows: data.insertholidays.affected_rows,
+          affectedRows: data.bulkInsertHolidays.affectedRows,
           newHolidays: holidaysToInsert.length,
-          message: `Synced ${data.insertholidays.affected_rows} holidays for ${countryCode} ${year}`,
+          message: `Synced ${data.bulkInsertHolidays.affectedRows} holidays for ${countryCode} ${year}`,
         };
       } catch (error) {
         // If unique constraint doesn't exist, fall back to primary key constraint
@@ -501,14 +501,14 @@ export async function syncHolidaysForCountry(
         }
 
         console.log(
-          `✅ Successfully synced ${data.insertholidays.affected_rows} holidays for ${countryCode} ${year} (fallback)`
+          `✅ Successfully synced ${data.bulkInsertHolidays.affectedRows} holidays for ${countryCode} ${year} (fallback)`
         );
 
         return {
           success: true,
-          affectedRows: data.insertholidays.affected_rows,
+          affectedRows: data.bulkInsertHolidays.affectedRows,
           newHolidays: holidaysToInsert.length,
-          message: `Synced ${data.insertholidays.affected_rows} holidays for ${countryCode} ${year} (fallback)`,
+          message: `Synced ${data.bulkInsertHolidays.affectedRows} holidays for ${countryCode} ${year} (fallback)`,
         };
       }
     }
@@ -585,19 +585,20 @@ export async function syncComprehensiveAustralianHolidays(
       });
 
       if (errors) {
-        console.error("GraphQL errors during comprehensive holiday sync:", errors);
-        throw new Error("Failed to sync comprehensive holidays");
+        console.error("GraphQL errors during comprehensive holiday sync:", JSON.stringify(errors, null, 2));
+        console.error("Variables used:", JSON.stringify({ objects: holidaysToInsert.slice(0, 2) }, null, 2));
+        throw new Error(`Failed to sync comprehensive holidays: ${errors.map(e => e.message).join(', ')}`);
       }
 
-      console.log(`✅ Successfully synced ${data.insert_holidays.affected_rows} holidays for AU ${year}`);
+      console.log(`✅ Successfully synced ${data.bulkInsertHolidays.affectedRows} holidays for AU ${year}`);
       
       return {
         success: true,
-        affectedRows: data.insert_holidays.affected_rows,
+        affectedRows: data.bulkInsertHolidays.affectedRows,
         totalHolidays: holidaysToInsert.length,
         eftRelevantHolidays: eftRelevantCount,
         jurisdictionBreakdown: byJurisdiction,
-        message: `Synced ${data.insert_holidays.affected_rows} comprehensive Australian holidays for ${year}`,
+        message: `Synced ${data.bulkInsertHolidays.affectedRows} comprehensive Australian holidays for ${year}`,
       };
     } catch (error) {
       // Fallback to basic mutation if main mutation fails
@@ -609,19 +610,20 @@ export async function syncComprehensiveAustralianHolidays(
       });
 
       if (errors) {
-        console.error("GraphQL errors during fallback comprehensive holiday sync:", errors);
-        throw new Error("Failed to sync comprehensive holidays with fallback method");
+        console.error("GraphQL errors during fallback comprehensive holiday sync:", JSON.stringify(errors, null, 2));
+        console.error("Fallback variables used:", JSON.stringify({ objects: holidaysToInsert.slice(0, 2) }, null, 2));
+        throw new Error(`Failed to sync comprehensive holidays with fallback method: ${errors.map(e => e.message).join(', ')}`);
       }
 
-      console.log(`✅ Successfully synced ${data.insert_holidays.affected_rows} holidays for AU ${year} (fallback)`);
+      console.log(`✅ Successfully synced ${data.bulkInsertHolidays.affectedRows} holidays for AU ${year} (fallback)`);
       
       return {
         success: true,
-        affectedRows: data.insert_holidays.affected_rows,
+        affectedRows: data.bulkInsertHolidays.affectedRows,
         totalHolidays: holidaysToInsert.length,
         eftRelevantHolidays: eftRelevantCount,
         jurisdictionBreakdown: byJurisdiction,
-        message: `Synced ${data.insert_holidays.affected_rows} comprehensive Australian holidays for ${year} (fallback)`,
+        message: `Synced ${data.bulkInsertHolidays.affectedRows} comprehensive Australian holidays for ${year} (fallback)`,
       };
     }
   } catch (error) {
