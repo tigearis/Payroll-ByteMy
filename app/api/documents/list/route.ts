@@ -61,7 +61,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
       // Consultants can only see their own uploads or public documents
       // This will be enhanced with proper payroll assignment checking
       if (!filters.uploadedBy) {
-        filters.uploadedBy = session.userId;
+        filters.uploadedBy = session.databaseId || session.userId;
       }
     } else if (userRole === 'viewer') {
       // Viewers can only see public documents
@@ -72,7 +72,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
     console.log(`🔍 Filters:`, filters);
 
     // Get documents
-    const result = await listDocuments(filters, session.userId);
+    const result = await listDocuments(filters, session.databaseId || session.userId);
 
     const hasMore = result.totalCount > (filters.offset + result.documents.length);
 

@@ -44,7 +44,7 @@ export const GET = withAuth(async (req: NextRequest, session, { params }) => {
     console.log(`📄 Getting document: ${id} for user: ${session.userId} (${userRole})`);
 
     // Get document
-    const document = await getDocument(id, session.userId);
+    const document = await getDocument(id, session.databaseId || session.userId);
 
     if (!document) {
       return NextResponse.json<DocumentResponse>(
@@ -61,7 +61,7 @@ export const GET = withAuth(async (req: NextRequest, session, { params }) => {
       );
     }
 
-    if (userRole === 'consultant' && document.uploadedBy !== session.userId && !document.isPublic) {
+    if (userRole === 'consultant' && document.uploadedBy !== (session.databaseId || session.userId) && !document.isPublic) {
       // This will be enhanced with proper payroll assignment checking
       return NextResponse.json<DocumentResponse>(
         { success: false, error: 'Document not accessible' },
@@ -116,7 +116,7 @@ export const PUT = withAuth(async (req: NextRequest, session, { params }) => {
     }
 
     // First get the document to check ownership for consultants
-    const existingDocument = await getDocument(id, session.userId);
+    const existingDocument = await getDocument(id, session.databaseId || session.userId);
     if (!existingDocument) {
       return NextResponse.json<DocumentResponse>(
         { success: false, error: 'Document not found' },
@@ -125,7 +125,7 @@ export const PUT = withAuth(async (req: NextRequest, session, { params }) => {
     }
 
     // Additional permission checks for consultants
-    if (userRole === 'consultant' && existingDocument.uploadedBy !== session.userId) {
+    if (userRole === 'consultant' && existingDocument.uploadedBy !== (session.databaseId || session.userId)) {
       return NextResponse.json<DocumentResponse>(
         { success: false, error: 'You can only update documents you uploaded' },
         { status: 403 }
@@ -140,7 +140,7 @@ export const PUT = withAuth(async (req: NextRequest, session, { params }) => {
     const updatedDocument = await updateDocumentMetadata(
       id,
       { filename, category, isPublic, metadata },
-      session.userId
+      session.databaseId || session.userId
     );
 
     return NextResponse.json<DocumentResponse>({
@@ -192,7 +192,7 @@ export const DELETE = withAuth(async (req: NextRequest, session, { params }) => 
     console.log(`🗑️ Deleting document: ${id} by user: ${session.userId} (${userRole})`);
 
     // Delete document
-    await deleteDocument(id, session.userId);
+    await deleteDocument(id, session.databaseId || session.userId);
 
     return NextResponse.json<DocumentResponse>({
       success: true,
