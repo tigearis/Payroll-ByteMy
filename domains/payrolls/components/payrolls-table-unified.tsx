@@ -129,11 +129,11 @@ export function PayrollsTableUnified({
   // Create cell renderers with status config
   const cellRenderers = createCellRenderers<any>(payrollStatusConfig);
 
-  // Column definitions - matching client payrolls tab format: Payroll | Status | Payroll Schedule | Employees | Consultant
+  // Column definitions - matching user requirements: Payroll name, status, client name, schedule (formatted), employees, primary consultant
   const columns: DataTableColumn<any>[] = [
     {
       key: "name",
-      label: "Payroll",
+      label: "Payroll Name",
       sortable: true,
       defaultVisible: true,
       cellRenderer: (value, row) => (
@@ -153,8 +153,15 @@ export function PayrollsTableUnified({
       cellRenderer: value => cellRenderers.badge(value),
     },
     {
+      key: "client",
+      label: "Client Name",
+      sortable: true,
+      defaultVisible: true,
+      cellRenderer: client => client?.name || "—",
+    },
+    {
       key: "payroll_schedule",
-      label: "Payroll Schedule",
+      label: "Schedule",
       sortable: false,
       defaultVisible: true,
       cellRenderer: (value, row) => {
@@ -179,7 +186,7 @@ export function PayrollsTableUnified({
     },
     {
       key: "primary_consultant_user",
-      label: "Consultant",
+      label: "Primary Consultant",
       sortable: false,
       defaultVisible: true,
       cellRenderer: consultant =>
@@ -191,13 +198,6 @@ export function PayrollsTableUnified({
           : "—",
     },
     // Hidden columns that can be toggled on if needed
-    {
-      key: "client",
-      label: "Client",
-      sortable: true,
-      defaultVisible: false,
-      cellRenderer: client => client?.name || "—",
-    },
     {
       key: "manager_user",
       label: "Manager",

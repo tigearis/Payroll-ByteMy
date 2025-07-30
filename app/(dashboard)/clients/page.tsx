@@ -19,6 +19,8 @@ import {
   X,
   Download,
   ChevronDown,
+  Mail,
+  Phone,
 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
@@ -418,9 +420,21 @@ function ClientsPage() {
                 </span>
               </div>
               <div className="flex items-center space-x-2">
+                <Mail className="w-4 h-4 text-gray-400" />
+                <span className="text-gray-600">
+                  {client.contactEmail || "No email"}
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Phone className="w-4 h-4 text-gray-400" />
+                <span className="text-gray-600">
+                  {client.contactPhone || "No phone"}
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
                 <Users className="w-4 h-4 text-gray-400" />
                 <span className="text-gray-600">
-                  {client.payrollCount || 0} payrolls
+                  {client.payrollCount || 0} active payrolls
                 </span>
               </div>
             </div>
@@ -483,13 +497,23 @@ function ClientsPage() {
                   <p className="text-sm text-gray-500">
                     {client.contactPerson || "No contact person"}
                   </p>
+                  <div className="flex items-center gap-4 text-xs text-gray-400 mt-1">
+                    <div className="flex items-center gap-1">
+                      <Mail className="w-3 h-3" />
+                      <span>{client.contactEmail || "No email"}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Phone className="w-3 h-3" />
+                      <span>{client.contactPhone || "No phone"}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
               <div className="flex items-center space-x-4">
                 <div className="text-right text-sm">
                   <p className="font-medium text-gray-900">
-                    {client.payrollCount || 0} payrolls
+                    {client.payrollCount || 0} active payrolls
                   </p>
                   <p className="text-gray-500">
                     {client.active ? "Active" : "Inactive"} client

@@ -67,27 +67,27 @@ import { useDynamicLoading } from "@/lib/hooks/use-dynamic-loading";
 
 type ViewMode = "cards" | "table" | "list";
 
-// Column definitions
+// Column definitions - matching user requirements: Payroll name, status, client name, schedule (formatted), employees, primary consultant
 const COLUMN_DEFINITIONS = [
   { key: "name", label: "Payroll Name", sortable: true, defaultVisible: true },
-  { key: "client", label: "Client", sortable: true, defaultVisible: true },
-  {
-    key: "payrollCycle",
-    label: "Payroll Schedule",
-    sortable: true,
-    defaultVisible: true,
-  },
   { key: "status", label: "Status", sortable: true, defaultVisible: true },
+  { key: "client", label: "Client Name", sortable: true, defaultVisible: true },
   {
-    key: "consultant",
-    label: "Consultant",
-    sortable: true,
+    key: "payroll_schedule",
+    label: "Schedule",
+    sortable: false,
     defaultVisible: true,
   },
   {
-    key: "employees",
+    key: "employee_count",
     label: "Employees",
     sortable: true,
+    defaultVisible: true,
+  },
+  {
+    key: "primary_consultant_user",
+    label: "Primary Consultant",
+    sortable: false,
     defaultVisible: true,
   },
   {
@@ -100,7 +100,7 @@ const COLUMN_DEFINITIONS = [
     key: "nextEftDate",
     label: "Next EFT Date",
     sortable: true,
-    defaultVisible: true,
+    defaultVisible: false,
   },
 ];
 
