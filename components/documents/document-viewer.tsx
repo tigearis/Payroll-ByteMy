@@ -13,6 +13,8 @@ import {
   Minimize,
   AlertCircle,
   Loader2,
+  Upload,
+  RefreshCw,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
@@ -26,6 +28,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { usePermissions } from "@/hooks/use-permissions";
 
 interface Document {
   id: string;
@@ -46,6 +49,7 @@ interface DocumentViewerProps {
   document: Document | null;
   isOpen: boolean;
   onClose: () => void;
+  onDocumentUpdated?: (document: Document) => void;
   className?: string;
 }
 
@@ -58,6 +62,7 @@ interface ViewerState {
   rotation: number;
   isFullscreen: boolean;
   officeViewerFailed: boolean;
+  isReplacing: boolean;
 }
 
 function getFileIcon(mimetype: string, className?: string) {
@@ -116,6 +121,7 @@ export function DocumentViewer({
   document,
   isOpen,
   onClose,
+  onDocumentUpdated,
   className,
 }: DocumentViewerProps) {
   const [viewerState, setViewerState] = useState<ViewerState>({
@@ -127,9 +133,12 @@ export function DocumentViewer({
     rotation: 0,
     isFullscreen: false,
     officeViewerFailed: false,
+    isReplacing: false,
   });
 
   const viewerRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { can } = usePermissions();
 
   // Load document view URL when opened
   useEffect(() => {
@@ -148,6 +157,7 @@ export function DocumentViewer({
           rotation: 0,
           isFullscreen: false,
           officeViewerFailed: false,
+          isReplacing: false,
         });
       }
     };
@@ -281,6 +291,64 @@ export function DocumentViewer({
       ...prev,
       isFullscreen: !prev.isFullscreen,
     }));
+  };
+
+  const handleReplaceDocument = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileReplace = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !document) return;
+
+    // Validate file type matches original
+    const originalExt = document.filename.split('.').pop()?.toLowerCase();
+    const newExt = file.name.split('.').pop()?.toLowerCase();
+    
+    if (originalExt !== newExt) {
+      toast.error(`File type mismatch. Expected .${originalExt} file.`);
+      return;
+    }
+
+    setViewerState(prev => ({ ...prev, isReplacing: true }));
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('category', document.category);
+      formData.append('isPublic', document.isPublic.toString());
+      formData.append('replaceDocumentId', document.id);
+
+      const response = await fetch('/api/documents/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast.success('Document updated successfully');
+        // Notify parent component of the updated document
+        if (onDocumentUpdated && result.document) {
+          onDocumentUpdated(result.document);
+        }
+        // Reload the document view
+        await loadViewUrl();
+        // Reset file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      } else {
+        toast.error('Failed to update document', {
+          description: result.error,
+        });
+      }
+    } catch (error) {
+      console.error('Error replacing document:', error);
+      toast.error('Failed to update document');
+    } finally {
+      setViewerState(prev => ({ ...prev, isReplacing: false }));
+    }
   };
 
   if (!document) return null;
@@ -576,31 +644,86 @@ export function DocumentViewer({
                       </div>
                     </>
                   )}
-                  <div className="flex justify-center gap-2 mt-4 px-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleDownload}
-                    >
-                      <Download className="w-4 h-4 mr-2" />
-                      Download for full features
-                    </Button>
-                    {viewerState.viewUrl && (
+                  <div className="space-y-4 mt-4 px-4">
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <div className="flex items-start space-x-3">
+                        <div className="flex-shrink-0">
+                          <svg className="w-5 h-5 text-blue-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="text-sm font-medium text-blue-900 mb-1">
+                            Want to edit this document?
+                          </h4>
+                          <p className="text-sm text-blue-700 mb-2">
+                            To make changes to this {document.mimetype.includes('word') ? 'Word document' : 
+                            document.mimetype.includes('excel') || document.mimetype.includes('spreadsheet') ? 'Excel spreadsheet' :
+                            document.mimetype.includes('powerpoint') || document.mimetype.includes('presentation') ? 'PowerPoint presentation' : 'Office document'}:
+                          </p>
+                          <ol className="text-sm text-blue-700 space-y-1 ml-4">
+                            <li>1. Download the document using the button below</li>
+                            <li>2. Open it in Microsoft Office or compatible software</li>
+                            <li>3. Make your changes and save the file</li>
+                            <li>4. Upload the updated version to replace this document</li>
+                          </ol>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-center gap-2">
                       <Button
-                        variant="outline"
+                        variant="default"
                         size="sm"
-                        onClick={handleOpenInNewTab}
+                        onClick={handleDownload}
+                        className="bg-blue-600 hover:bg-blue-700"
                       >
-                        <ExternalLink className="w-4 h-4 mr-2" />
-                        Open in new tab
+                        <Download className="w-4 h-4 mr-2" />
+                        Download to Edit
                       </Button>
-                    )}
+                      {can('documents', 'update') && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleReplaceDocument}
+                          disabled={viewerState.isReplacing}
+                        >
+                          {viewerState.isReplacing ? (
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          ) : (
+                            <RefreshCw className="w-4 h-4 mr-2" />
+                          )}
+                          {viewerState.isReplacing ? 'Uploading...' : 'Replace Document'}
+                        </Button>
+                      )}
+                      {viewerState.viewUrl && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleOpenInNewTab}
+                        >
+                          <ExternalLink className="w-4 h-4 mr-2" />
+                          Open in new tab
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </div>
               ) : null}
             </div>
           )}
         </div>
+
+        {/* Hidden file input for document replacement */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept={isOfficeDocument(document.mimetype) 
+            ? ".doc,.docx,.xls,.xlsx,.ppt,.pptx" 
+            : document.mimetype}
+          onChange={handleFileReplace}
+          className="hidden"
+        />
       </DialogContent>
     </Dialog>
   );

@@ -73,19 +73,19 @@ const COLUMN_DEFINITIONS = [
   { key: "status", label: "Status", sortable: true, defaultVisible: true },
   { key: "client", label: "Client Name", sortable: true, defaultVisible: true },
   {
-    key: "payroll_schedule",
+    key: "payrollSchedule",
     label: "Schedule",
     sortable: false,
     defaultVisible: true,
   },
   {
-    key: "employee_count",
+    key: "employeeCount",
     label: "Employees",
     sortable: true,
     defaultVisible: true,
   },
   {
-    key: "primary_consultant_user",
+    key: "primaryConsultantUser",
     label: "Primary Consultant",
     sortable: false,
     defaultVisible: true,
