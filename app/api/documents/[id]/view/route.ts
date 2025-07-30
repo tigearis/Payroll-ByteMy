@@ -46,7 +46,7 @@ export const GET = withAuth(async (req: NextRequest, session, { params }) => {
     console.log(`👁️ Getting view URL for document: ${id} (expires in ${safeExpiryMinutes}min)`);
 
     // Get document with fresh presigned URL
-    const document = await getDocument(id, session.userId);
+    const document = await getDocument(id, session.databaseId || session.userId);
 
     if (!document) {
       return NextResponse.json<DocumentViewResponse>(
@@ -63,7 +63,7 @@ export const GET = withAuth(async (req: NextRequest, session, { params }) => {
       );
     }
 
-    if (userRole === 'consultant' && document.uploadedBy !== session.userId && !document.isPublic) {
+    if (userRole === 'consultant' && document.uploadedBy !== (session.databaseId || session.userId) && !document.isPublic) {
       // This will be enhanced with proper payroll assignment checking
       return NextResponse.json<DocumentViewResponse>(
         { success: false, error: 'Document not accessible' },

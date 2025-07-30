@@ -83,7 +83,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
       // This will be enhanced with proper payroll assignment checking
       if (!whereClause.uploadedBy) {
         whereClause._or = [
-          { uploadedBy: { _eq: session.userId } },
+          { uploadedBy: { _eq: session.databaseId || session.userId } },
           { isPublic: { _eq: true } }
         ];
       }

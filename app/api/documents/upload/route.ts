@@ -97,7 +97,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
       category: (category as any) || 'other',
       isPublic,
       metadata,
-      uploadedBy: session.userId,
+      uploadedBy: session.databaseId || session.userId,
     });
 
     return NextResponse.json<DocumentUploadResponse>({
