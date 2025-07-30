@@ -185,7 +185,9 @@ export function HolidaySyncPanel() {
                         Holiday sync failed
                       </div>
                       <div className="text-sm">
-                        {lastResult.error || lastResult.details || "Unknown error occurred"}
+                        {lastResult.error || 
+                         (typeof lastResult.details === 'string' ? lastResult.details : JSON.stringify(lastResult.details)) || 
+                         "Unknown error occurred"}
                       </div>
                     </div>
                   )}

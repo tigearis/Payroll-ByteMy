@@ -144,7 +144,7 @@ function UrgentAlertsInner() {
     <div className="space-y-4">
       {payrolls.map(payroll => {
         // Get the next upcoming payroll date - handle both data structures
-        const nextDate = payroll.payrollDates?.[0] || payroll.nextEftDate?.[0];
+        const nextDate = payroll.payrollDates?.[0] || payroll.nextEftDate?.[0] || payroll.nextPayDate?.[0];
         const userRole = getUserRole(payroll, currentUserId);
         const effectiveDate = nextDate?.adjustedEftDate || nextDate?.originalEftDate;
         const daysUntil = effectiveDate

@@ -42,6 +42,11 @@ export interface UserUpcomingPayroll {
     adjustedEftDate: string;
     processingDate: string;
   }>;
+  nextPayDate?: Array<{
+    originalEftDate: string;
+    adjustedEftDate: string;
+    processingDate: string;
+  }>;
 }
 
 export interface UserUpcomingPayrollsData {

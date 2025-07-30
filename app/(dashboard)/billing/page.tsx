@@ -21,7 +21,7 @@ import { GetAllBillingItemsDocument } from "@/domains/billing/graphql/generated/
 export default function BillingPage() {
   // Fetch real billing data
   const { data: allItemsData, loading: allItemsLoading } = useQuery(GetAllBillingItemsDocument, {
-    variables: { searchTerm: null, isApproved: null, limit: 100, offset: 0 },
+    variables: { limit: 100, offset: 0 },
     fetchPolicy: 'cache-and-network'
   });
 

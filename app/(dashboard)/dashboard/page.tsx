@@ -116,9 +116,9 @@ export default function DashboardPage() {
             )}
             <p className="text-xs text-gray-600">
               {nextPayroll && effectiveDate
-                ? `Next: ${nextPayroll.client.name} - ${new Date(effectiveDate).toLocaleDateString('en-AU')}${nextEftDate?.adjustedEftDate !== nextEftDate?.originalEftDate ? ' (Adjusted)' : ''}`
+                ? `Next: ${nextPayroll.client.name} - ${nextPayroll.name} - ${new Date(effectiveDate).toLocaleDateString('en-AU')}${nextEftDate?.adjustedEftDate !== nextEftDate?.originalEftDate ? ' (Adjusted)' : ''}`
                 : nextPayroll 
-                ? `Next: ${nextPayroll.client.name} (${nextPayroll.name}) - Date TBD`
+                ? `Next: ${nextPayroll.client.name} - ${nextPayroll.name} - Date TBD`
                 : "No upcoming payrolls"}
             </p>
           </CardContent>
