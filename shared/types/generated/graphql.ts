@@ -18,7 +18,7 @@
  * ✓ Client Preset v4.8+ for optimal type safety
  * ✓ Zero type conflicts with modern codegen
  * 
- * Generated: 2025-07-30T00:41:48.027Z
+ * Generated: 2025-07-30T03:08:39.845Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Client Preset v4.0
  */
@@ -6151,7 +6151,7 @@ export type WorkloadPeriodData = {
 };
 
 /** A union of all types that use the @key directive */
-export type _Entity = PositionAdminDefaults | AdjustmentRules | AppSettings | AuditLogs | AuthEvents | BillingEventLogs | BillingInvoice | BillingItems | BillingPlans | ClientBillingAssignments | ClientExternalSystems | Clients | DataAccessLogs | ExternalSystems | FeatureFlags | Holidays | LatestPayrollVersionResults | Leave | Notes | PayrollActivationResults | PayrollAssignmentAudits | PayrollAssignments | PayrollCycles | PayrollDateTypes | PayrollDates | PayrollVersionHistoryResults | PayrollVersionResults | Payrolls | PermissionAuditLogs | PermissionChanges | PermissionOverrides | Permissions | Resources | RolePermissions | Roles | SlowQueries | TimeEntries | UserInvitations | UserRoles | Users;
+export type _Entity = PositionAdminDefaults | AdjustmentRules | AppSettings | AuditLogs | AuthEvents | BillingEventLogs | BillingInvoice | BillingItems | BillingPlans | ClientBillingAssignments | ClientExternalSystems | Clients | DataAccessLogs | ExternalSystems | FeatureFlags | Files | Holidays | LatestPayrollVersionResults | Leave | Notes | PayrollActivationResults | PayrollAssignmentAudits | PayrollAssignments | PayrollCycles | PayrollDateTypes | PayrollDates | PayrollVersionHistoryResults | PayrollVersionResults | Payrolls | PermissionAuditLogs | PermissionChanges | PermissionOverrides | Permissions | Resources | RolePermissions | Roles | SlowQueries | TimeEntries | UserInvitations | UserRoles | Users;
 
 export type _Service = {
   __typename?: '_Service';
@@ -12817,6 +12817,454 @@ export type FeatureFlagsUpdates = {
   where: FeatureFlagsBoolExp;
 };
 
+/** columns and relationships of "files" */
+export type Files = {
+  __typename?: 'files';
+  bucket: Scalars['String']['output'];
+  /** Document category: contract, invoice, report, timesheet, correspondence, other */
+  category?: Maybe<Scalars['String']['output']>;
+  /** An object relationship */
+  client?: Maybe<Clients>;
+  /** Links document to a specific client */
+  clientId?: Maybe<Scalars['uuid']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  /** Type of file: document (MinIO) or avatar (Clerk) */
+  fileType?: Maybe<Scalars['String']['output']>;
+  filename: Scalars['String']['output'];
+  id: Scalars['uuid']['output'];
+  /** Whether document is publicly accessible within permissions */
+  isPublic?: Maybe<Scalars['Boolean']['output']>;
+  /** Additional document metadata as JSON */
+  metadata?: Maybe<Scalars['jsonb']['output']>;
+  mimetype?: Maybe<Scalars['String']['output']>;
+  objectKey: Scalars['String']['output'];
+  /** An object relationship */
+  payroll?: Maybe<Payrolls>;
+  /** Links document to a specific payroll */
+  payrollId?: Maybe<Scalars['uuid']['output']>;
+  size?: Maybe<Scalars['Int']['output']>;
+  /** User who uploaded the document */
+  uploadedBy?: Maybe<Scalars['uuid']['output']>;
+  /** An object relationship */
+  uploader?: Maybe<Users>;
+  url?: Maybe<Scalars['String']['output']>;
+};
+
+
+/** columns and relationships of "files" */
+export type FilesMetadataArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** aggregated selection of "files" */
+export type FilesAggregate = {
+  __typename?: 'filesAggregate';
+  aggregate?: Maybe<FilesAggregateFields>;
+  nodes: Array<Files>;
+};
+
+/** aggregate fields of "files" */
+export type FilesAggregateFields = {
+  __typename?: 'filesAggregateFields';
+  avg?: Maybe<FilesAvgFields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<FilesMaxFields>;
+  min?: Maybe<FilesMinFields>;
+  stddev?: Maybe<FilesStddevFields>;
+  stddevPop?: Maybe<FilesStddevPopFields>;
+  stddevSamp?: Maybe<FilesStddevSampFields>;
+  sum?: Maybe<FilesSumFields>;
+  varPop?: Maybe<FilesVarPopFields>;
+  varSamp?: Maybe<FilesVarSampFields>;
+  variance?: Maybe<FilesVarianceFields>;
+};
+
+
+/** aggregate fields of "files" */
+export type FilesAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<FilesSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type FilesAppendInput = {
+  /** Additional document metadata as JSON */
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** aggregate avg on columns */
+export type FilesAvgFields = {
+  __typename?: 'filesAvgFields';
+  size?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "files". All fields are combined with a logical 'AND'. */
+export type FilesBoolExp = {
+  _and?: InputMaybe<Array<FilesBoolExp>>;
+  _not?: InputMaybe<FilesBoolExp>;
+  _or?: InputMaybe<Array<FilesBoolExp>>;
+  bucket?: InputMaybe<StringComparisonExp>;
+  category?: InputMaybe<StringComparisonExp>;
+  client?: InputMaybe<ClientsBoolExp>;
+  clientId?: InputMaybe<UuidComparisonExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  fileType?: InputMaybe<StringComparisonExp>;
+  filename?: InputMaybe<StringComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  isPublic?: InputMaybe<BooleanComparisonExp>;
+  metadata?: InputMaybe<JsonbComparisonExp>;
+  mimetype?: InputMaybe<StringComparisonExp>;
+  objectKey?: InputMaybe<StringComparisonExp>;
+  payroll?: InputMaybe<PayrollsBoolExp>;
+  payrollId?: InputMaybe<UuidComparisonExp>;
+  size?: InputMaybe<IntComparisonExp>;
+  uploadedBy?: InputMaybe<UuidComparisonExp>;
+  uploader?: InputMaybe<UsersBoolExp>;
+  url?: InputMaybe<StringComparisonExp>;
+};
+
+/** unique or primary key constraints on table "files" */
+export type FilesConstraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'files_pkey'
+  | '%future added value';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type FilesDeleteAtPathInput = {
+  /** Additional document metadata as JSON */
+  metadata?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type FilesDeleteElemInput = {
+  /** Additional document metadata as JSON */
+  metadata?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type FilesDeleteKeyInput = {
+  /** Additional document metadata as JSON */
+  metadata?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** input type for incrementing numeric columns in table "files" */
+export type FilesIncInput = {
+  size?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** input type for inserting data into table "files" */
+export type FilesInsertInput = {
+  bucket?: InputMaybe<Scalars['String']['input']>;
+  /** Document category: contract, invoice, report, timesheet, correspondence, other */
+  category?: InputMaybe<Scalars['String']['input']>;
+  client?: InputMaybe<ClientsObjRelInsertInput>;
+  /** Links document to a specific client */
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Type of file: document (MinIO) or avatar (Clerk) */
+  fileType?: InputMaybe<Scalars['String']['input']>;
+  filename?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  /** Whether document is publicly accessible within permissions */
+  isPublic?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Additional document metadata as JSON */
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  mimetype?: InputMaybe<Scalars['String']['input']>;
+  objectKey?: InputMaybe<Scalars['String']['input']>;
+  payroll?: InputMaybe<PayrollsObjRelInsertInput>;
+  /** Links document to a specific payroll */
+  payrollId?: InputMaybe<Scalars['uuid']['input']>;
+  size?: InputMaybe<Scalars['Int']['input']>;
+  /** User who uploaded the document */
+  uploadedBy?: InputMaybe<Scalars['uuid']['input']>;
+  uploader?: InputMaybe<UsersObjRelInsertInput>;
+  url?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** aggregate max on columns */
+export type FilesMaxFields = {
+  __typename?: 'filesMaxFields';
+  bucket?: Maybe<Scalars['String']['output']>;
+  /** Document category: contract, invoice, report, timesheet, correspondence, other */
+  category?: Maybe<Scalars['String']['output']>;
+  /** Links document to a specific client */
+  clientId?: Maybe<Scalars['uuid']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  /** Type of file: document (MinIO) or avatar (Clerk) */
+  fileType?: Maybe<Scalars['String']['output']>;
+  filename?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  mimetype?: Maybe<Scalars['String']['output']>;
+  objectKey?: Maybe<Scalars['String']['output']>;
+  /** Links document to a specific payroll */
+  payrollId?: Maybe<Scalars['uuid']['output']>;
+  size?: Maybe<Scalars['Int']['output']>;
+  /** User who uploaded the document */
+  uploadedBy?: Maybe<Scalars['uuid']['output']>;
+  url?: Maybe<Scalars['String']['output']>;
+};
+
+/** aggregate min on columns */
+export type FilesMinFields = {
+  __typename?: 'filesMinFields';
+  bucket?: Maybe<Scalars['String']['output']>;
+  /** Document category: contract, invoice, report, timesheet, correspondence, other */
+  category?: Maybe<Scalars['String']['output']>;
+  /** Links document to a specific client */
+  clientId?: Maybe<Scalars['uuid']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  /** Type of file: document (MinIO) or avatar (Clerk) */
+  fileType?: Maybe<Scalars['String']['output']>;
+  filename?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  mimetype?: Maybe<Scalars['String']['output']>;
+  objectKey?: Maybe<Scalars['String']['output']>;
+  /** Links document to a specific payroll */
+  payrollId?: Maybe<Scalars['uuid']['output']>;
+  size?: Maybe<Scalars['Int']['output']>;
+  /** User who uploaded the document */
+  uploadedBy?: Maybe<Scalars['uuid']['output']>;
+  url?: Maybe<Scalars['String']['output']>;
+};
+
+/** response of any mutation on the table "files" */
+export type FilesMutationResponse = {
+  __typename?: 'filesMutationResponse';
+  /** number of rows affected by the mutation */
+  affectedRows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<Files>;
+};
+
+/** on_conflict condition type for table "files" */
+export type FilesOnConflict = {
+  constraint: FilesConstraint;
+  updateColumns?: Array<FilesUpdateColumn>;
+  where?: InputMaybe<FilesBoolExp>;
+};
+
+/** Ordering options when selecting data from "files". */
+export type FilesOrderBy = {
+  bucket?: InputMaybe<OrderBy>;
+  category?: InputMaybe<OrderBy>;
+  client?: InputMaybe<ClientsOrderBy>;
+  clientId?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  fileType?: InputMaybe<OrderBy>;
+  filename?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  isPublic?: InputMaybe<OrderBy>;
+  metadata?: InputMaybe<OrderBy>;
+  mimetype?: InputMaybe<OrderBy>;
+  objectKey?: InputMaybe<OrderBy>;
+  payroll?: InputMaybe<PayrollsOrderBy>;
+  payrollId?: InputMaybe<OrderBy>;
+  size?: InputMaybe<OrderBy>;
+  uploadedBy?: InputMaybe<OrderBy>;
+  uploader?: InputMaybe<UsersOrderBy>;
+  url?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: files */
+export type FilesPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type FilesPrependInput = {
+  /** Additional document metadata as JSON */
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** select columns of table "files" */
+export type FilesSelectColumn =
+  /** column name */
+  | 'bucket'
+  /** column name */
+  | 'category'
+  /** column name */
+  | 'clientId'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'fileType'
+  /** column name */
+  | 'filename'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isPublic'
+  /** column name */
+  | 'metadata'
+  /** column name */
+  | 'mimetype'
+  /** column name */
+  | 'objectKey'
+  /** column name */
+  | 'payrollId'
+  /** column name */
+  | 'size'
+  /** column name */
+  | 'uploadedBy'
+  /** column name */
+  | 'url'
+  | '%future added value';
+
+/** input type for updating data in table "files" */
+export type FilesSetInput = {
+  bucket?: InputMaybe<Scalars['String']['input']>;
+  /** Document category: contract, invoice, report, timesheet, correspondence, other */
+  category?: InputMaybe<Scalars['String']['input']>;
+  /** Links document to a specific client */
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Type of file: document (MinIO) or avatar (Clerk) */
+  fileType?: InputMaybe<Scalars['String']['input']>;
+  filename?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  /** Whether document is publicly accessible within permissions */
+  isPublic?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Additional document metadata as JSON */
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  mimetype?: InputMaybe<Scalars['String']['input']>;
+  objectKey?: InputMaybe<Scalars['String']['input']>;
+  /** Links document to a specific payroll */
+  payrollId?: InputMaybe<Scalars['uuid']['input']>;
+  size?: InputMaybe<Scalars['Int']['input']>;
+  /** User who uploaded the document */
+  uploadedBy?: InputMaybe<Scalars['uuid']['input']>;
+  url?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** aggregate stddev on columns */
+export type FilesStddevFields = {
+  __typename?: 'filesStddevFields';
+  size?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddevPop on columns */
+export type FilesStddevPopFields = {
+  __typename?: 'filesStddevPopFields';
+  size?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddevSamp on columns */
+export type FilesStddevSampFields = {
+  __typename?: 'filesStddevSampFields';
+  size?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "files" */
+export type FilesStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: FilesStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type FilesStreamCursorValueInput = {
+  bucket?: InputMaybe<Scalars['String']['input']>;
+  /** Document category: contract, invoice, report, timesheet, correspondence, other */
+  category?: InputMaybe<Scalars['String']['input']>;
+  /** Links document to a specific client */
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Type of file: document (MinIO) or avatar (Clerk) */
+  fileType?: InputMaybe<Scalars['String']['input']>;
+  filename?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  /** Whether document is publicly accessible within permissions */
+  isPublic?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Additional document metadata as JSON */
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  mimetype?: InputMaybe<Scalars['String']['input']>;
+  objectKey?: InputMaybe<Scalars['String']['input']>;
+  /** Links document to a specific payroll */
+  payrollId?: InputMaybe<Scalars['uuid']['input']>;
+  size?: InputMaybe<Scalars['Int']['input']>;
+  /** User who uploaded the document */
+  uploadedBy?: InputMaybe<Scalars['uuid']['input']>;
+  url?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** aggregate sum on columns */
+export type FilesSumFields = {
+  __typename?: 'filesSumFields';
+  size?: Maybe<Scalars['Int']['output']>;
+};
+
+/** update columns of table "files" */
+export type FilesUpdateColumn =
+  /** column name */
+  | 'bucket'
+  /** column name */
+  | 'category'
+  /** column name */
+  | 'clientId'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'fileType'
+  /** column name */
+  | 'filename'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isPublic'
+  /** column name */
+  | 'metadata'
+  /** column name */
+  | 'mimetype'
+  /** column name */
+  | 'objectKey'
+  /** column name */
+  | 'payrollId'
+  /** column name */
+  | 'size'
+  /** column name */
+  | 'uploadedBy'
+  /** column name */
+  | 'url'
+  | '%future added value';
+
+export type FilesUpdates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<FilesAppendInput>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _deleteAtPath?: InputMaybe<FilesDeleteAtPathInput>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _deleteElem?: InputMaybe<FilesDeleteElemInput>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _deleteKey?: InputMaybe<FilesDeleteKeyInput>;
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<FilesIncInput>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<FilesPrependInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<FilesSetInput>;
+  /** filter the rows which have to be updated */
+  where: FilesBoolExp;
+};
+
+/** aggregate varPop on columns */
+export type FilesVarPopFields = {
+  __typename?: 'filesVarPopFields';
+  size?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate varSamp on columns */
+export type FilesVarSampFields = {
+  __typename?: 'filesVarSampFields';
+  size?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type FilesVarianceFields = {
+  __typename?: 'filesVarianceFields';
+  size?: Maybe<Scalars['Float']['output']>;
+};
+
 export type GeneratePayrollDatesArgs = {
   p_end_date?: InputMaybe<Scalars['date']['input']>;
   p_max_dates?: InputMaybe<Scalars['Int']['input']>;
@@ -13862,6 +14310,8 @@ export type Mutation_Root = {
   bulkDeleteExternalSystems?: Maybe<ExternalSystemsMutationResponse>;
   /** delete data from the table: "feature_flags" */
   bulkDeleteFeatureFlags?: Maybe<FeatureFlagsMutationResponse>;
+  /** delete data from the table: "files" */
+  bulkDeleteFiles?: Maybe<FilesMutationResponse>;
   /** delete data from the table: "holidays" */
   bulkDeleteHolidays?: Maybe<HolidaysMutationResponse>;
   /** delete data from the table: "latest_payroll_version_results" */
@@ -13946,6 +14396,8 @@ export type Mutation_Root = {
   bulkInsertExternalSystems?: Maybe<ExternalSystemsMutationResponse>;
   /** insert data into the table: "feature_flags" */
   bulkInsertFeatureFlags?: Maybe<FeatureFlagsMutationResponse>;
+  /** insert data into the table: "files" */
+  bulkInsertFiles?: Maybe<FilesMutationResponse>;
   /** insert data into the table: "holidays" */
   bulkInsertHolidays?: Maybe<HolidaysMutationResponse>;
   /** insert data into the table: "latest_payroll_version_results" */
@@ -14030,6 +14482,8 @@ export type Mutation_Root = {
   bulkUpdateExternalSystems?: Maybe<ExternalSystemsMutationResponse>;
   /** update data of the table: "feature_flags" */
   bulkUpdateFeatureFlags?: Maybe<FeatureFlagsMutationResponse>;
+  /** update data of the table: "files" */
+  bulkUpdateFiles?: Maybe<FilesMutationResponse>;
   /** update data of the table: "holidays" */
   bulkUpdateHolidays?: Maybe<HolidaysMutationResponse>;
   /** update data of the table: "latest_payroll_version_results" */
@@ -14143,6 +14597,8 @@ export type Mutation_Root = {
   deleteExternalSystemById?: Maybe<ExternalSystems>;
   /** delete single row from the table: "feature_flags" */
   deleteFeatureFlagById?: Maybe<FeatureFlags>;
+  /** delete single row from the table: "files" */
+  deleteFileById?: Maybe<Files>;
   /** delete single row from the table: "holidays" */
   deleteHolidayById?: Maybe<Holidays>;
   /** delete single row from the table: "latest_payroll_version_results" */
@@ -14286,6 +14742,8 @@ export type Mutation_Root = {
   insertExternalSystem?: Maybe<ExternalSystems>;
   /** insert a single row into the table: "feature_flags" */
   insertFeatureFlag?: Maybe<FeatureFlags>;
+  /** insert a single row into the table: "files" */
+  insertFile?: Maybe<Files>;
   /** insert a single row into the table: "holidays" */
   insertHoliday?: Maybe<Holidays>;
   /** insert a single row into the table: "latest_payroll_version_results" */
@@ -14474,6 +14932,10 @@ export type Mutation_Root = {
   updateFeatureFlagById?: Maybe<FeatureFlags>;
   /** update multiples rows of table: "feature_flags" */
   updateFeatureFlagsMany?: Maybe<Array<Maybe<FeatureFlagsMutationResponse>>>;
+  /** update single row of the table: "files" */
+  updateFileById?: Maybe<Files>;
+  /** update multiples rows of table: "files" */
+  updateFilesMany?: Maybe<Array<Maybe<FilesMutationResponse>>>;
   /** update single row of the table: "holidays" */
   updateHolidayById?: Maybe<Holidays>;
   /** update multiples rows of table: "holidays" */
@@ -14735,6 +15197,12 @@ export type Mutation_RootBulkDeleteExternalSystemsArgs = {
 /** mutation root */
 export type Mutation_RootBulkDeleteFeatureFlagsArgs = {
   where: FeatureFlagsBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootBulkDeleteFilesArgs = {
+  where: FilesBoolExp;
 };
 
 
@@ -15001,6 +15469,13 @@ export type Mutation_RootBulkInsertExternalSystemsArgs = {
 export type Mutation_RootBulkInsertFeatureFlagsArgs = {
   objects: Array<FeatureFlagsInsertInput>;
   onConflict?: InputMaybe<FeatureFlagsOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootBulkInsertFilesArgs = {
+  objects: Array<FilesInsertInput>;
+  onConflict?: InputMaybe<FilesOnConflict>;
 };
 
 
@@ -15322,6 +15797,19 @@ export type Mutation_RootBulkUpdateFeatureFlagsArgs = {
   _prepend?: InputMaybe<FeatureFlagsPrependInput>;
   _set?: InputMaybe<FeatureFlagsSetInput>;
   where: FeatureFlagsBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootBulkUpdateFilesArgs = {
+  _append?: InputMaybe<FilesAppendInput>;
+  _deleteAtPath?: InputMaybe<FilesDeleteAtPathInput>;
+  _deleteElem?: InputMaybe<FilesDeleteElemInput>;
+  _deleteKey?: InputMaybe<FilesDeleteKeyInput>;
+  _inc?: InputMaybe<FilesIncInput>;
+  _prepend?: InputMaybe<FilesPrependInput>;
+  _set?: InputMaybe<FilesSetInput>;
+  where: FilesBoolExp;
 };
 
 
@@ -15741,6 +16229,12 @@ export type Mutation_RootDeleteExternalSystemByIdArgs = {
 
 /** mutation root */
 export type Mutation_RootDeleteFeatureFlagByIdArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteFileByIdArgs = {
   id: Scalars['uuid']['input'];
 };
 
@@ -16202,6 +16696,13 @@ export type Mutation_RootInsertExternalSystemArgs = {
 export type Mutation_RootInsertFeatureFlagArgs = {
   object: FeatureFlagsInsertInput;
   onConflict?: InputMaybe<FeatureFlagsOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertFileArgs = {
+  object: FilesInsertInput;
+  onConflict?: InputMaybe<FilesOnConflict>;
 };
 
 
@@ -16910,6 +17411,25 @@ export type Mutation_RootUpdateFeatureFlagByIdArgs = {
 /** mutation root */
 export type Mutation_RootUpdateFeatureFlagsManyArgs = {
   updates: Array<FeatureFlagsUpdates>;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateFileByIdArgs = {
+  _append?: InputMaybe<FilesAppendInput>;
+  _deleteAtPath?: InputMaybe<FilesDeleteAtPathInput>;
+  _deleteElem?: InputMaybe<FilesDeleteElemInput>;
+  _deleteKey?: InputMaybe<FilesDeleteKeyInput>;
+  _inc?: InputMaybe<FilesIncInput>;
+  _prepend?: InputMaybe<FilesPrependInput>;
+  _set?: InputMaybe<FilesSetInput>;
+  pkColumns: FilesPkColumnsInput;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateFilesManyArgs = {
+  updates: Array<FilesUpdates>;
 };
 
 
@@ -23874,6 +24394,12 @@ export type Query_Root = {
   featureFlags: Array<FeatureFlags>;
   /** fetch aggregated fields from the table: "feature_flags" */
   featureFlagsAggregate: FeatureFlagsAggregate;
+  /** fetch data from the table: "files" using primary key columns */
+  fileById?: Maybe<Files>;
+  /** fetch data from the table: "files" */
+  files: Array<Files>;
+  /** fetch aggregated fields from the table: "files" */
+  filesAggregate: FilesAggregate;
   /** execute function "generate_payroll_dates" which returns "payroll_dates" */
   generatePayrollDates: Array<PayrollDates>;
   /** execute function "generate_payroll_dates" and query aggregates on result of table type "payroll_dates" */
@@ -24729,6 +25255,29 @@ export type Query_RootFeatureFlagsAggregateArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<FeatureFlagsOrderBy>>;
   where?: InputMaybe<FeatureFlagsBoolExp>;
+};
+
+
+export type Query_RootFileByIdArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Query_RootFilesArgs = {
+  distinctOn?: InputMaybe<Array<FilesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<FilesOrderBy>>;
+  where?: InputMaybe<FilesBoolExp>;
+};
+
+
+export type Query_RootFilesAggregateArgs = {
+  distinctOn?: InputMaybe<Array<FilesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<FilesOrderBy>>;
+  where?: InputMaybe<FilesBoolExp>;
 };
 
 
@@ -26998,6 +27547,14 @@ export type Subscription_Root = {
   featureFlagsAggregate: FeatureFlagsAggregate;
   /** fetch data from the table in a streaming manner: "feature_flags" */
   featureFlagsStream: Array<FeatureFlags>;
+  /** fetch data from the table: "files" using primary key columns */
+  fileById?: Maybe<Files>;
+  /** fetch data from the table: "files" */
+  files: Array<Files>;
+  /** fetch aggregated fields from the table: "files" */
+  filesAggregate: FilesAggregate;
+  /** fetch data from the table in a streaming manner: "files" */
+  filesStream: Array<Files>;
   /** execute function "generate_payroll_dates" which returns "payroll_dates" */
   generatePayrollDates: Array<PayrollDates>;
   /** execute function "generate_payroll_dates" and query aggregates on result of table type "payroll_dates" */
@@ -28094,6 +28651,36 @@ export type Subscription_RootFeatureFlagsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<FeatureFlagsStreamCursorInput>>;
   where?: InputMaybe<FeatureFlagsBoolExp>;
+};
+
+
+export type Subscription_RootFileByIdArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootFilesArgs = {
+  distinctOn?: InputMaybe<Array<FilesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<FilesOrderBy>>;
+  where?: InputMaybe<FilesBoolExp>;
+};
+
+
+export type Subscription_RootFilesAggregateArgs = {
+  distinctOn?: InputMaybe<Array<FilesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<FilesOrderBy>>;
+  where?: InputMaybe<FilesBoolExp>;
+};
+
+
+export type Subscription_RootFilesStreamArgs = {
+  batchSize: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<FilesStreamCursorInput>>;
+  where?: InputMaybe<FilesBoolExp>;
 };
 
 

@@ -71,7 +71,6 @@ import { useRole } from "@/hooks/use-permissions";
 import {
   GetStaffDetailCompleteDocument,
   UpdateUserDocument,
-  UpdateUserRoleDocument,
   GetAllUsersListDocument,
 } from "@/domains/users/graphql/generated/graphql";
 // Note: Complex permissions system simplified - using role-based access control
@@ -196,16 +195,7 @@ export default function StaffDetailsPage() {
     },
   });
 
-  const [updateUserRole] = useMutation(UpdateUserRoleDocument, {
-    onCompleted: () => {
-      toast.success("User role updated successfully");
-      refetch();
-    },
-    onError: (error) => {
-      console.error("Error updating user role:", error);
-      toast.error(`Failed to update user role: ${error.message}`);
-    },
-  });
+  // updateUserRole GraphQL mutation removed - now using API route for Clerk sync
 
   // Permission mutations removed - using simplified auth system
 
@@ -274,17 +264,31 @@ export default function StaffDetailsPage() {
         return;
       }
 
-      await updateUserRole({
-        variables: {
-          id,
-          role: newRole,
+      // Call the API route instead of GraphQL mutation to ensure Clerk sync
+      const response = await fetch(`/api/staff/${id}/role`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ 
+          role: newRole,
+          reason: `Role updated to ${newRole.replace('_', ' ')} via staff management interface`
+        }),
       });
 
-      toast.success(`User role updated to ${newRole.replace('_', ' ')}`);
-    } catch (error) {
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to update role');
+      }
+
+      // Refetch the user data to reflect changes
+      await refetch();
+      
+      toast.success(result.message || `User role updated to ${newRole.replace('_', ' ')}`);
+    } catch (error: any) {
       console.error("Error updating role:", error);
-      toast.error("Failed to update user role. Please try again.");
+      toast.error(error.message || "Failed to update user role. Please try again.");
     }
   };
 

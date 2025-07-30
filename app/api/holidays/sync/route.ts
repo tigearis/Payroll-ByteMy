@@ -1,6 +1,6 @@
 // app/api/holidays/sync/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { syncAustralianHolidays } from "@/domains/external-systems/services/holiday-sync-service";
+import { syncComprehensiveAustralianHolidays } from "@/domains/external-systems/services/holiday-sync-service";
 import { withAuth } from "@/lib/auth/api-auth";
 
 export const POST = withAuth(
@@ -25,8 +25,11 @@ export const POST = withAuth(
       `🚀 Manual holiday sync started by user ${session.userId} (force: ${forceSync})`
     );
 
-    // Trigger holiday sync with duplicate checking
-    const result = await syncAustralianHolidays(forceSync);
+    // Trigger comprehensive Australian holiday sync from data.gov.au
+    const result = await syncComprehensiveAustralianHolidays(
+      new Date().getFullYear(), // Current year
+      forceSync
+    );
 
     console.log(`✅ Manual holiday sync completed:`, result);
 

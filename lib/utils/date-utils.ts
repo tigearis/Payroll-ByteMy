@@ -44,7 +44,7 @@ export interface Holiday {
   date: Date;
   name: string;
   recurring: boolean;
-  region: string;
+  region: string | string[]; // Can be single region or array
 }
 
 export interface PayrollDate {
@@ -281,6 +281,41 @@ export function isValidDate(date: Date | string | null | undefined): boolean {
 // =============================================================================
 
 /**
+ * Filters holidays to only include those relevant for NSW EFT adjustments
+ * @param allHolidays Complete list of holidays from all Australian states
+ * @returns Filtered list containing only NSW and National holidays
+ */
+export function getEftRelevantHolidays(allHolidays: Holiday[]): Holiday[] {
+  const eftRelevantRegions = ['NSW', 'nsw', 'National', 'Australia', 'AU'];
+  
+  return allHolidays.filter(holiday => {
+    const regions = Array.isArray(holiday.region) ? holiday.region : [holiday.region];
+    return regions.some(region => 
+      eftRelevantRegions.some(relevantRegion => 
+        region.toLowerCase().includes(relevantRegion.toLowerCase())
+      )
+    );
+  });
+}
+
+/**
+ * Filters holidays by specific regions
+ * @param allHolidays Complete list of holidays
+ * @param targetRegions Array of regions to include (e.g., ['NSW', 'VIC'])
+ * @returns Filtered list containing only holidays from specified regions
+ */
+export function filterHolidaysByRegion(allHolidays: Holiday[], targetRegions: string[]): Holiday[] {
+  return allHolidays.filter(holiday => {
+    const regions = Array.isArray(holiday.region) ? holiday.region : [holiday.region];
+    return regions.some(region => 
+      targetRegions.some(target => 
+        region.toLowerCase().includes(target.toLowerCase())
+      )
+    );
+  });
+}
+
+/**
  * Checks if a date falls on a holiday
  */
 export function isHoliday(date: Date, holidays: Holiday[]): boolean {
@@ -467,6 +502,7 @@ export function calculateNextEftDate(
 
 /**
  * Calculates payroll dates based on payroll configuration
+ * Automatically filters holidays to only NSW + National for EFT adjustments
  */
 export function calculatePayrollDates(
   baseDate: Date,
@@ -485,17 +521,20 @@ export function calculatePayrollDates(
     dateValue
   );
 
-  // Adjust EFT date if it falls on weekend or holiday
-  const adjustedEftDate = adjustDate(originalEftDate, adjustmentRule, holidays);
+  // Filter holidays to only include NSW + National for EFT adjustments
+  const eftRelevantHolidays = getEftRelevantHolidays(holidays);
+
+  // Adjust EFT date if it falls on weekend or holiday (NSW + National only)
+  const adjustedEftDate = adjustDate(originalEftDate, adjustmentRule, eftRelevantHolidays);
 
   // Calculate processing date by subtracting days from adjusted EFT date
   const rawProcessingDate = addDays(adjustedEftDate, -processingDaysBeforeEft);
 
-  // Adjust processing date if it falls on weekend or holiday
+  // Adjust processing date if it falls on weekend or holiday (NSW + National only)
   const processingDate = adjustDate(
     rawProcessingDate,
     adjustmentRule,
-    holidays
+    eftRelevantHolidays
   );
 
   return {
@@ -507,6 +546,7 @@ export function calculatePayrollDates(
 
 /**
  * Generates a series of payroll dates for a given configuration
+ * Automatically filters holidays to only NSW + National for EFT adjustments
  */
 export function generatePayrollSchedule(
   startDate: Date,
@@ -521,6 +561,9 @@ export function generatePayrollSchedule(
   const schedule: PayrollDate[] = [];
   let currentDate = new Date(startDate);
 
+  // Filter holidays once for the entire schedule generation
+  const eftRelevantHolidays = getEftRelevantHolidays(holidays);
+
   for (let i = 0; i < periodsToGenerate; i++) {
     const dates = calculatePayrollDates(
       currentDate,
@@ -529,7 +572,7 @@ export function generatePayrollSchedule(
       dateValue,
       processingDaysBeforeEft,
       adjustmentRule,
-      holidays
+      eftRelevantHolidays // Use pre-filtered holidays
     );
 
     schedule.push(dates);
@@ -564,6 +607,9 @@ const defaultExport = {
   calculateNextEftDate,
   calculatePayrollDates,
   generatePayrollSchedule,
+  // Holiday filtering utilities
+  getEftRelevantHolidays,
+  filterHolidaysByRegion,
 };
 
 export default defaultExport;
