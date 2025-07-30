@@ -20,6 +20,7 @@ import {
   StatusConfig,
   createCellRenderers,
 } from "@/components/ui/unified-data-table";
+import { getScheduleSummary } from "@/domains/payrolls/utils/schedule-helpers";
 
 // Payroll data type (based on existing payroll structure)
 interface Payroll {
@@ -128,11 +129,11 @@ export function PayrollsTableUnified({
   // Create cell renderers with status config
   const cellRenderers = createCellRenderers<any>(payrollStatusConfig);
 
-  // Column definitions
+  // Column definitions - matching client payrolls tab format: Payroll | Status | Payroll Schedule | Employees | Consultant
   const columns: DataTableColumn<any>[] = [
     {
       key: "name",
-      label: "Payroll Name",
+      label: "Payroll",
       sortable: true,
       defaultVisible: true,
       cellRenderer: (value, row) => (
@@ -152,37 +153,20 @@ export function PayrollsTableUnified({
       cellRenderer: value => cellRenderers.badge(value),
     },
     {
-      key: "client",
-      label: "Client",
-      sortable: true,
-      defaultVisible: true,
-      cellRenderer: client => client?.name || "—",
-    },
-    {
-      key: "primary_consultant_user",
-      label: "Primary Consultant",
+      key: "payroll_schedule",
+      label: "Payroll Schedule",
       sortable: false,
       defaultVisible: true,
-      cellRenderer: consultant =>
-        consultant
-          ? cellRenderers.avatar({
-              name: consultant.name,
-              email: consultant.email,
-            })
-          : "—",
-    },
-    {
-      key: "manager_user",
-      label: "Manager",
-      sortable: false,
-      defaultVisible: true,
-      cellRenderer: manager =>
-        manager
-          ? cellRenderers.avatar({
-              name: manager.name,
-              email: manager.email,
-            })
-          : "—",
+      cellRenderer: (value, row) => {
+        // Generate schedule summary from payroll data
+        const schedule = getScheduleSummary(row);
+        return (
+          <div className="flex items-center gap-2">
+            <Clock className="w-4 h-4 text-gray-500" />
+            <span className="font-medium">{schedule}</span>
+          </div>
+        );
+      },
     },
     {
       key: "employee_count",
@@ -192,6 +176,40 @@ export function PayrollsTableUnified({
       align: "center",
       cellRenderer: count =>
         count ? cellRenderers.count(count, "employee") : "—",
+    },
+    {
+      key: "primary_consultant_user",
+      label: "Consultant",
+      sortable: false,
+      defaultVisible: true,
+      cellRenderer: consultant =>
+        consultant
+          ? cellRenderers.avatar({
+              name: consultant.computedName || `${consultant.firstName || ''} ${consultant.lastName || ''}`.trim() || "Unknown User",
+              email: consultant.email,
+            })
+          : "—",
+    },
+    // Hidden columns that can be toggled on if needed
+    {
+      key: "client",
+      label: "Client",
+      sortable: true,
+      defaultVisible: false,
+      cellRenderer: client => client?.name || "—",
+    },
+    {
+      key: "manager_user",
+      label: "Manager",
+      sortable: false,
+      defaultVisible: false,
+      cellRenderer: manager =>
+        manager
+          ? cellRenderers.avatar({
+              name: manager.computedName || `${manager.firstName || ''} ${manager.lastName || ''}`.trim() || "Unknown User",
+              email: manager.email,
+            })
+          : "—",
     },
     {
       key: "processing_days_before_eft",
@@ -220,7 +238,7 @@ export function PayrollsTableUnified({
       key: "updated_at",
       label: "Last Updated",
       sortable: true,
-      defaultVisible: true,
+      defaultVisible: false,
       cellRenderer: date => cellRenderers.date(date),
     },
   ];
