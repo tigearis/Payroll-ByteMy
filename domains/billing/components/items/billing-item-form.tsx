@@ -12,12 +12,17 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { 
+  CreateBillingItemDocument, 
+  UpdateBillingItemDocument, 
+  GetClientsForBillingDocument,
+  GetBillingItemsByPayrollDocument
+} from '../../graphql/generated/graphql';
 
 const billingItemSchema = z.object({
   description: z.string().min(3, 'Description must be at least 3 characters'),
-  amount: z.number().min(0.01, 'Amount must be greater than 0'),
+  unitPrice: z.number().min(0.01, 'Amount must be greater than 0'),
   quantity: z.number().min(1, 'Quantity must be at least 1'),
-  unit: z.string().min(1, 'Unit is required'),
   clientId: z.string().min(1, 'Client is required'),
   notes: z.string().optional(),
 });
@@ -27,25 +32,6 @@ type BillingItemFormData = z.infer<typeof billingItemSchema>;
 interface BillingItemFormProps {
   itemId?: string;
 }
-
-// Mock clients data - will be replaced with GraphQL query
-const mockClients = [
-  { id: '1', name: 'Acme Corp' },
-  { id: '2', name: 'Tech Solutions Ltd' },
-  { id: '3', name: 'Growth Partners' },
-  { id: '4', name: 'Digital Dynamics' },
-];
-
-// Mock existing item data for editing
-const mockBillingItem = {
-  id: '1',
-  description: 'Web Development Services - Q1 2024',
-  amount: 4500.00,
-  quantity: 1,
-  unit: 'project',
-  clientId: '1',
-  notes: 'Complete redesign of company website',
-};
 
 const commonUnits = [
   'hour',
@@ -66,28 +52,51 @@ export function BillingItemForm({ itemId }: BillingItemFormProps) {
   
   const [formData, setFormData] = useState<BillingItemFormData>({
     description: '',
-    amount: 0,
+    unitPrice: 0,
     quantity: 1,
-    unit: 'hour',
     clientId: '',
     notes: '',
   });
 
-  // Load existing item data if editing
-  useEffect(() => {
-    if (itemId) {
-      // In real implementation, this would be a GraphQL query
-      const existingItem = mockBillingItem;
-      setFormData({
-        description: existingItem.description,
-        amount: existingItem.amount,
-        quantity: existingItem.quantity,
-        unit: existingItem.unit,
-        clientId: existingItem.clientId,
-        notes: existingItem.notes || '',
+  // Get clients for dropdown
+  const { data: clientsData, loading: clientsLoading } = useQuery(GetClientsForBillingDocument);
+  
+  // GraphQL mutations
+  const [createBillingItem] = useMutation(CreateBillingItemDocument, {
+    onCompleted: () => {
+      toast({
+        title: 'Success',
+        description: 'Billing item created successfully.',
+      });
+      router.push('/billing/items');
+    },
+    onError: (error) => {
+      toast({
+        title: 'Error',
+        description: `Failed to create billing item: ${error.message}`,
+        variant: 'destructive',
       });
     }
-  }, [itemId]);
+  });
+
+  const [updateBillingItem] = useMutation(UpdateBillingItemDocument, {
+    onCompleted: () => {
+      toast({
+        title: 'Success',
+        description: 'Billing item updated successfully.',
+      });
+      router.push('/billing/items');
+    },
+    onError: (error) => {
+      toast({
+        title: 'Error',
+        description: `Failed to update billing item: ${error.message}`,
+        variant: 'destructive',
+      });
+    }
+  });
+
+  const clients = clientsData?.clients || [];
 
   const handleInputChange = (field: keyof BillingItemFormData, value: string | number) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -121,36 +130,38 @@ export function BillingItemForm({ itemId }: BillingItemFormProps) {
     e.preventDefault();
     
     if (!validateForm()) {
-      toast({
-        title: 'Validation Error',
-        description: 'Please fix the errors below and try again.',
-        variant: 'destructive',
-      });
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      // In real implementation, this would be a GraphQL mutation
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-      
-      toast({
-        title: itemId ? 'Item Updated' : 'Item Created',
-        description: itemId 
-          ? 'Billing item has been updated successfully.' 
-          : 'New billing item has been created successfully.',
-      });
-      
-      router.push('/billing/items');
+      const inputData = {
+        description: formData.description,
+        unitPrice: formData.unitPrice,
+        quantity: formData.quantity,
+        clientId: formData.clientId,
+        notes: formData.notes || null,
+        status: 'draft',
+      };
+
+      if (itemId) {
+        await updateBillingItem({
+          variables: {
+            id: itemId,
+            updates: inputData
+          }
+        });
+      } else {
+        await createBillingItem({
+          variables: {
+            input: inputData
+          }
+        });
+      }
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: itemId 
-          ? 'Failed to update billing item. Please try again.' 
-          : 'Failed to create billing item. Please try again.',
-        variant: 'destructive',
-      });
+      // Error handling is done in the mutation's onError callback
+      console.error('Form submission error:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -191,12 +202,13 @@ export function BillingItemForm({ itemId }: BillingItemFormProps) {
             <Select
               value={formData.clientId}
               onValueChange={(value) => handleInputChange('clientId', value)}
+              disabled={clientsLoading}
             >
               <SelectTrigger className={errors.clientId ? 'border-red-500' : ''}>
-                <SelectValue placeholder="Select a client..." />
+                <SelectValue placeholder={clientsLoading ? "Loading clients..." : "Select a client..."} />
               </SelectTrigger>
               <SelectContent>
-                {mockClients.map((client) => (
+                {clients.map((client) => (
                   <SelectItem key={client.id} value={client.id}>
                     {client.name}
                   </SelectItem>
@@ -209,21 +221,21 @@ export function BillingItemForm({ itemId }: BillingItemFormProps) {
           </div>
 
           {/* Amount and Quantity */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="amount">Amount (AUD) *</Label>
+              <Label htmlFor="unitPrice">Unit Price (AUD) *</Label>
               <Input
-                id="amount"
+                id="unitPrice"
                 type="number"
                 step="0.01"
                 min="0"
-                value={formData.amount || ''}
-                onChange={(e) => handleInputChange('amount', parseFloat(e.target.value) || 0)}
+                value={formData.unitPrice || ''}
+                onChange={(e) => handleInputChange('unitPrice', parseFloat(e.target.value) || 0)}
                 placeholder="0.00"
-                className={errors.amount ? 'border-red-500' : ''}
+                className={errors.unitPrice ? 'border-red-500' : ''}
               />
-              {errors.amount && (
-                <p className="text-sm text-red-600">{errors.amount}</p>
+              {errors.unitPrice && (
+                <p className="text-sm text-red-600">{errors.unitPrice}</p>
               )}
             </div>
 
@@ -242,28 +254,6 @@ export function BillingItemForm({ itemId }: BillingItemFormProps) {
                 <p className="text-sm text-red-600">{errors.quantity}</p>
               )}
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="unit">Unit *</Label>
-              <Select
-                value={formData.unit}
-                onValueChange={(value) => handleInputChange('unit', value)}
-              >
-                <SelectTrigger className={errors.unit ? 'border-red-500' : ''}>
-                  <SelectValue placeholder="Select unit..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {commonUnits.map((unit) => (
-                    <SelectItem key={unit} value={unit}>
-                      {unit}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.unit && (
-                <p className="text-sm text-red-600">{errors.unit}</p>
-              )}
-            </div>
           </div>
 
           {/* Calculated Total */}
@@ -271,11 +261,11 @@ export function BillingItemForm({ itemId }: BillingItemFormProps) {
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-700">Total Amount:</span>
               <span className="text-lg font-bold text-gray-900">
-                ${(formData.amount * formData.quantity).toFixed(2)} AUD
+                ${(formData.unitPrice * formData.quantity).toFixed(2)} AUD
               </span>
             </div>
             <div className="text-xs text-gray-500 mt-1">
-              {formData.quantity} {formData.unit}{formData.quantity !== 1 ? 's' : ''} × ${formData.amount.toFixed(2)} each
+              {formData.quantity} item{formData.quantity !== 1 ? 's' : ''} × ${formData.unitPrice.toFixed(2)} each
             </div>
           </div>
         </CardContent>

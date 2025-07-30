@@ -13,94 +13,46 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/utils';
+import { GetAllBillingItemsDocument, GetBillingItemsStatsDocument } from '../../graphql/generated/graphql';
 
 interface BillingItemsDashboardProps {
-  status?: 'pending' | 'approved' | 'rejected';
+  status?: 'draft' | 'confirmed' | 'billed';
 }
-
-// Mock data for now - will be replaced with GraphQL query
-const mockBillingItems = [
-  {
-    id: '1',
-    description: 'Web Development Services - Q1 2024',
-    amount: 4500.00,
-    quantity: 1,
-    unit: 'project',
-    status: 'pending',
-    client: { id: '1', name: 'Acme Corp' },
-    createdBy: { id: '1', firstName: 'John', lastName: 'Doe' },
-    createdAt: '2024-01-15T10:30:00Z',
-    approvedAt: null,
-    approvedBy: null,
-    notes: 'Complete redesign of company website',
-  },
-  {
-    id: '2',
-    description: 'Monthly Payroll Processing - January 2024',
-    amount: 850.00,
-    quantity: 1,
-    unit: 'month',
-    status: 'approved',
-    client: { id: '2', name: 'Tech Solutions Ltd' },
-    createdBy: { id: '2', firstName: 'Jane', lastName: 'Smith' },
-    createdAt: '2024-01-10T14:20:00Z',
-    approvedAt: '2024-01-12T09:15:00Z',
-    approvedBy: { id: '3', firstName: 'Mike', lastName: 'Johnson' },
-    notes: 'Standard monthly processing for 25 employees',
-  },
-  {
-    id: '3',
-    description: 'Consulting Services - Strategy Review',
-    amount: 2200.00,
-    quantity: 8,
-    unit: 'hours',
-    status: 'pending',
-    client: { id: '3', name: 'Growth Partners' },
-    createdBy: { id: '1', firstName: 'John', lastName: 'Doe' },
-    createdAt: '2024-01-20T16:45:00Z',
-    approvedAt: null,
-    approvedBy: null,
-    notes: 'Strategic review of payroll processes and recommendations',
-  },
-];
 
 export function BillingItemsDashboard({ status }: BillingItemsDashboardProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('createdAt');
   
-  // Filter items based on status and search
-  const filteredItems = mockBillingItems.filter(item => {
-    const matchesStatus = !status || item.status === status;
-    const matchesSearch = !searchTerm || 
-      item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      `${item.createdBy.firstName} ${item.createdBy.lastName}`.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    return matchesStatus && matchesSearch;
+  // GraphQL queries for billing items
+  const { data: billingItemsData, loading: itemsLoading, error: itemsError, refetch } = useQuery(GetAllBillingItemsDocument, {
+    variables: {
+      searchTerm: searchTerm ? `%${searchTerm}%` : null,
+      status: status || null,
+      limit: 100,
+      offset: 0
+    },
+    skip: false
   });
 
-  // Sort items
-  const sortedItems = [...filteredItems].sort((a, b) => {
-    switch (sortBy) {
-      case 'amount':
-        return b.amount - a.amount;
-      case 'client':
-        return a.client.name.localeCompare(b.client.name);
-      case 'status':
-        return a.status.localeCompare(b.status);
-      default:
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  // GraphQL query for stats
+  const { data: statsData, loading: statsLoading } = useQuery(GetBillingItemsStatsDocument, {
+    variables: {
+      status: status || null,
+      clientId: null
     }
   });
 
+  const billingItems = billingItemsData?.billingItems || [];
+  const stats = statsData?.billingItemsAggregate?.aggregate;
+
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'pending':
-        return <Badge variant="outline" className="text-orange-600 border-orange-200"><Clock className="w-3 h-3 mr-1" />Pending</Badge>;
-      case 'approved':
-        return <Badge variant="outline" className="text-green-600 border-green-200"><CheckCircle className="w-3 h-3 mr-1" />Approved</Badge>;
-      case 'rejected':
-        return <Badge variant="outline" className="text-red-600 border-red-200"><AlertTriangle className="w-3 h-3 mr-1" />Rejected</Badge>;
+      case 'draft':
+        return <Badge variant="outline" className="text-orange-600 border-orange-200"><Clock className="w-3 h-3 mr-1" />Draft</Badge>;
+      case 'confirmed':
+        return <Badge variant="outline" className="text-green-600 border-green-200"><CheckCircle className="w-3 h-3 mr-1" />Confirmed</Badge>;
+      case 'billed':
+        return <Badge variant="outline" className="text-blue-600 border-blue-200"><DollarSign className="w-3 h-3 mr-1" />Billed</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -151,11 +103,21 @@ export function BillingItemsDashboard({ status }: BillingItemsDashboardProps) {
       {/* Results Summary */}
       <div className="flex items-center justify-between">
         <div className="text-sm text-gray-600">
-          Showing {sortedItems.length} of {mockBillingItems.length} billing items
-          {status && ` with status: ${status}`}
+          {itemsLoading ? (
+            <Skeleton className="h-4 w-48" />
+          ) : (
+            <>
+              Showing {billingItems.length} billing items
+              {status && ` with status: ${status}`}
+            </>
+          )}
         </div>
         <div className="text-sm font-medium text-gray-900">
-          Total Value: {formatCurrency(sortedItems.reduce((sum, item) => sum + item.amount, 0))}
+          {statsLoading ? (
+            <Skeleton className="h-4 w-32" />
+          ) : (
+            <>Total Value: {formatCurrency(stats?.sum?.totalAmount || 0)}</>
+          )}
         </div>
       </div>
 
@@ -175,14 +137,37 @@ export function BillingItemsDashboard({ status }: BillingItemsDashboardProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sortedItems.length === 0 ? (
+              {itemsLoading ? (
+                // Loading skeleton rows
+                Array.from({ length: 5 }).map((_, index) => (
+                  <TableRow key={index}>
+                    <TableCell><Skeleton className="h-4 w-64" /></TableCell>
+                    <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                    <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                    <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                    <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                    <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                    <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                  </TableRow>
+                ))
+              ) : itemsError ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8 text-red-500">
+                    <AlertTriangle className="w-8 h-8 mx-auto mb-2" />
+                    Error loading billing items: {itemsError.message}
+                    <Button onClick={() => refetch()} variant="outline" size="sm" className="mt-2 ml-2">
+                      Retry
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ) : billingItems.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center py-8 text-gray-500">
                     {searchTerm || status ? 'No billing items match your filters' : 'No billing items found'}
                   </TableCell>
                 </TableRow>
               ) : (
-                sortedItems.map((item) => (
+                billingItems.map((item) => (
                   <TableRow key={item.id}>
                     <TableCell>
                       <div className="space-y-1">
@@ -202,21 +187,21 @@ export function BillingItemsDashboard({ status }: BillingItemsDashboardProps) {
                     <TableCell>
                       <div className="flex items-center space-x-2">
                         <Building className="w-4 h-4 text-gray-400" />
-                        <span className="font-medium">{item.client.name}</span>
+                        <span className="font-medium">{item.client?.name || 'Unknown Client'}</span>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="font-mono font-medium">
-                        {formatCurrency(item.amount)}
+                        {formatCurrency(item.totalAmount || item.amount || 0)}
                       </div>
-                      {item.quantity !== 1 && (
+                      {item.quantity && item.quantity !== 1 && (
                         <div className="text-xs text-gray-500">
-                          {item.quantity} {item.unit}{item.quantity !== 1 ? 's' : ''}
+                          {item.quantity} items
                         </div>
                       )}
                     </TableCell>
                     <TableCell>
-                      {getStatusBadge(item.status)}
+                      {getStatusBadge(item.status || 'draft')}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-2">
@@ -228,7 +213,9 @@ export function BillingItemsDashboard({ status }: BillingItemsDashboardProps) {
                       <div className="flex items-center space-x-2">
                         <User className="w-4 h-4 text-gray-400" />
                         <span className="text-sm">
-                          {item.createdBy.firstName} {item.createdBy.lastName}
+                          {item.staffUser?.computedName || 
+                           `${item.staffUser?.firstName || ''} ${item.staffUser?.lastName || ''}`.trim() || 
+                           'Unknown User'}
                         </span>
                       </div>
                     </TableCell>
