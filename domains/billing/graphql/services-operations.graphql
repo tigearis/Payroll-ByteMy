@@ -1,0 +1,234 @@
+# Enhanced Service Operations for new service structure
+# Updated to match actual Hasura schema (2025-07-30)
+
+# Service Fragment
+fragment ServiceFragment on services {
+  id
+  name
+  description
+  category
+  billingUnit
+  defaultRate
+  currency
+  serviceType
+  isActive
+  isTemplate
+  metadata
+  pricingRules
+  dependencies
+  createdAt
+  updatedAt
+  createdBy
+  updatedBy
+}
+
+# Service Template Fragment
+fragment ServiceTemplateFragment on serviceTemplates {
+  id
+  name
+  description
+  category
+  services
+  pricingStrategy
+  bundleDiscountPercentage
+  isPublic
+  targetClientTypes
+  createdAt
+  updatedAt
+  createdBy
+  updatedBy
+}
+
+# Client Service Agreement Fragment (New Services)
+fragment ClientServiceAgreementNewFragment on clientServiceAgreements {
+  id
+  clientId
+  serviceId
+  customRate
+  billingFrequency
+  contractStartDate
+  contractEndDate
+  serviceConfiguration
+  autoBillingEnabled
+  autoBillingTriggers
+  isActive
+  isEnabled
+  createdAt
+  updatedAt
+  createdBy
+}
+
+# Enhanced service fragment with relationships
+fragment ServiceWithRelationshipsFragment on services {
+  ...ServiceFragment
+  billingItems {
+    id
+    description
+    quantity
+    unitPrice
+    amount
+  }
+  clientServiceAgreements {
+    id
+    clientId
+    customRate
+    isActive
+  }
+}
+
+# Service catalog query
+query GetNewServiceCatalog($limit: Int = 50, $offset: Int = 0, $category: String) {
+  services(
+    limit: $limit
+    offset: $offset
+    where: { 
+      isActive: { _eq: true }
+      category: { _eq: $category }
+    }
+    orderBy: [{ name: ASC }]
+  ) {
+    ...ServiceFragment
+  }
+  servicesAggregate(
+    where: { 
+      isActive: { _eq: true }
+      category: { _eq: $category }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Get service by ID
+query GetNewServiceById($id: uuid!) {
+  serviceById(id: $id) {
+    ...ServiceWithRelationshipsFragment
+  }
+}
+
+# Get all service templates
+query GetServiceTemplates($isPublic: Boolean) {
+  serviceTemplates(
+    where: { isPublic: { _eq: $isPublic } }
+    orderBy: [{ name: ASC }]
+  ) {
+    ...ServiceTemplateFragment
+  }
+}
+
+# Get client service agreements
+query GetNewClientServiceAgreements($clientId: uuid, $serviceId: uuid) {
+  clientServiceAgreements(
+    where: { 
+      clientId: { _eq: $clientId }
+      serviceId: { _eq: $serviceId }
+      isActive: { _eq: true }
+    }
+  ) {
+    ...ClientServiceAgreementNewFragment
+    client {
+      id
+      name
+    }
+    service {
+      id
+      name
+    }
+  }
+}
+
+# Service usage analytics
+query GetServiceUsageAnalytics($serviceIds: [uuid!], $startDate: timestamp, $endDate: timestamp) {
+  services(where: { id: { _in: $serviceIds } }) {
+    id
+    name
+    billingItems(
+      where: {
+        createdAt: { _gte: $startDate, _lte: $endDate }
+      }
+    ) {
+      id
+      amount
+      quantity
+      createdAt
+    }
+    clientServiceAgreementsAggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+}
+
+# Create a new service
+mutation CreateNewService($input: servicesInsertInput!) {
+  insertService(object: $input) {
+    ...ServiceFragment
+  }
+}
+
+# Update service
+mutation UpdateNewService($id: uuid!, $input: servicesSetInput) {
+  updateServiceById(pkColumns: { id: $id }, _set: $input) {
+    ...ServiceFragment
+  }
+}
+
+# Create service template
+mutation CreateNewServiceTemplate($input: serviceTemplatesInsertInput!) {
+  insertServiceTemplate(object: $input) {
+    ...ServiceTemplateFragment
+  }
+}
+
+# Create client service agreement
+mutation CreateClientServiceAgreement($input: clientServiceAgreementsInsertInput!) {
+  insertClientServiceAgreement(object: $input) {
+    ...ClientServiceAgreementNewFragment
+  }
+}
+
+# Update client service agreement
+mutation UpdateClientServiceAgreement($id: uuid!, $input: clientServiceAgreementsSetInput) {
+  updateClientServiceAgreementById(pkColumns: { id: $id }, _set: $input) {
+    ...ClientServiceAgreementNewFragment
+  }
+}
+
+# Deactivate service (soft delete)
+mutation DeactivateService($id: uuid!) {
+  updateServiceById(pkColumns: { id: $id }, _set: { isActive: false }) {
+    id
+    isActive
+  }
+}
+
+# Search services
+query SearchServices($searchTerm: String!, $limit: Int = 20) {
+  services(
+    where: {
+      _or: [
+        { name: { _ilike: $searchTerm } }
+        { description: { _ilike: $searchTerm } }
+        { category: { _ilike: $searchTerm } }
+      ]
+      isActive: { _eq: true }
+    }
+    limit: $limit
+    orderBy: [{ name: ASC }]
+  ) {
+    ...ServiceFragment
+  }
+}
+
+# Service categories query
+query GetServiceCategories {
+  services(
+    distinctOn: [category]
+    where: { isActive: { _eq: true } }
+  ) {
+    category
+  }
+}

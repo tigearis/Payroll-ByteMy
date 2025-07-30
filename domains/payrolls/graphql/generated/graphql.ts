@@ -18,7 +18,7 @@
  * ✓ Client Preset v4.8+ for optimal type safety
  * ✓ Zero type conflicts with modern codegen
  * 
- * Generated: 2025-07-30T05:55:58.375Z
+ * Generated: 2025-07-30T09:00:32.484Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Client Preset v4.0
  */
@@ -5612,7 +5612,6 @@ export type BillingItemsBoolExp = {
   billingInvoiceItemsAggregate?: InputMaybe<BillingInvoiceItemAggregateBoolExp>;
   billingPlanId?: InputMaybe<UuidComparisonExp>;
   billingPlanItems?: InputMaybe<BillingPlansBoolExp>;
-  billingServicePlan?: InputMaybe<BillingPlansBoolExp>;
   client?: InputMaybe<ClientsBoolExp>;
   clientId?: InputMaybe<UuidComparisonExp>;
   confirmedAt?: InputMaybe<TimestamptzComparisonExp>;
@@ -5662,7 +5661,6 @@ export type BillingItemsInsertInput = {
   billingInvoiceItems?: InputMaybe<BillingInvoiceItemArrRelInsertInput>;
   billingPlanId?: InputMaybe<Scalars['uuid']['input']>;
   billingPlanItems?: InputMaybe<BillingPlansObjRelInsertInput>;
-  billingServicePlan?: InputMaybe<BillingPlansObjRelInsertInput>;
   client?: InputMaybe<ClientsObjRelInsertInput>;
   clientId?: InputMaybe<Scalars['uuid']['input']>;
   /** When this item was confirmed by manager */
@@ -5782,7 +5780,6 @@ export type BillingItemsOrderBy = {
   billingInvoiceItemsAggregate?: InputMaybe<BillingInvoiceItemAggregateOrderBy>;
   billingPlanId?: InputMaybe<OrderBy>;
   billingPlanItems?: InputMaybe<BillingPlansOrderBy>;
-  billingServicePlan?: InputMaybe<BillingPlansOrderBy>;
   client?: InputMaybe<ClientsOrderBy>;
   clientId?: InputMaybe<OrderBy>;
   confirmedAt?: InputMaybe<OrderBy>;
@@ -7017,6 +7014,400 @@ export type ClientExternalSystemsUpdates = {
   _set?: InputMaybe<ClientExternalSystemsSetInput>;
   /** filter the rows which have to be updated */
   where: ClientExternalSystemsBoolExp;
+};
+
+export type ClientServiceAgreementsAggregateBoolExp = {
+  bool_and?: InputMaybe<ClientServiceAgreementsAggregateBoolExpBool_And>;
+  bool_or?: InputMaybe<ClientServiceAgreementsAggregateBoolExpBool_Or>;
+  count?: InputMaybe<ClientServiceAgreementsAggregateBoolExpCount>;
+};
+
+export type ClientServiceAgreementsAggregateBoolExpBool_And = {
+  arguments: ClientServiceAgreementsSelectColumnClientServiceAgreementsAggregateBoolExpBool_AndArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<ClientServiceAgreementsBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type ClientServiceAgreementsAggregateBoolExpBool_Or = {
+  arguments: ClientServiceAgreementsSelectColumnClientServiceAgreementsAggregateBoolExpBool_OrArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<ClientServiceAgreementsBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type ClientServiceAgreementsAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<ClientServiceAgreementsSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<ClientServiceAgreementsBoolExp>;
+  predicate: IntComparisonExp;
+};
+
+/** order by aggregate values of table "client_service_agreements" */
+export type ClientServiceAgreementsAggregateOrderBy = {
+  avg?: InputMaybe<ClientServiceAgreementsAvgOrderBy>;
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<ClientServiceAgreementsMaxOrderBy>;
+  min?: InputMaybe<ClientServiceAgreementsMinOrderBy>;
+  stddev?: InputMaybe<ClientServiceAgreementsStddevOrderBy>;
+  stddevPop?: InputMaybe<ClientServiceAgreementsStddevPopOrderBy>;
+  stddevSamp?: InputMaybe<ClientServiceAgreementsStddevSampOrderBy>;
+  sum?: InputMaybe<ClientServiceAgreementsSumOrderBy>;
+  varPop?: InputMaybe<ClientServiceAgreementsVarPopOrderBy>;
+  varSamp?: InputMaybe<ClientServiceAgreementsVarSampOrderBy>;
+  variance?: InputMaybe<ClientServiceAgreementsVarianceOrderBy>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type ClientServiceAgreementsAppendInput = {
+  autoBillingTriggers?: InputMaybe<Scalars['jsonb']['input']>;
+  serviceConfiguration?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** input type for inserting array relation for remote table "client_service_agreements" */
+export type ClientServiceAgreementsArrRelInsertInput = {
+  data: Array<ClientServiceAgreementsInsertInput>;
+  /** upsert condition */
+  onConflict?: InputMaybe<ClientServiceAgreementsOnConflict>;
+};
+
+/** order by avg() on columns of table "client_service_agreements" */
+export type ClientServiceAgreementsAvgOrderBy = {
+  customRate?: InputMaybe<OrderBy>;
+};
+
+/** Boolean expression to filter rows from the table "client_service_agreements". All fields are combined with a logical 'AND'. */
+export type ClientServiceAgreementsBoolExp = {
+  _and?: InputMaybe<Array<ClientServiceAgreementsBoolExp>>;
+  _not?: InputMaybe<ClientServiceAgreementsBoolExp>;
+  _or?: InputMaybe<Array<ClientServiceAgreementsBoolExp>>;
+  autoBillingEnabled?: InputMaybe<BooleanComparisonExp>;
+  autoBillingTriggers?: InputMaybe<JsonbComparisonExp>;
+  billingFrequency?: InputMaybe<StringComparisonExp>;
+  client?: InputMaybe<ClientsBoolExp>;
+  clientId?: InputMaybe<UuidComparisonExp>;
+  contractEndDate?: InputMaybe<DateComparisonExp>;
+  contractStartDate?: InputMaybe<DateComparisonExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  createdBy?: InputMaybe<UuidComparisonExp>;
+  createdByUser?: InputMaybe<UsersBoolExp>;
+  customRate?: InputMaybe<NumericComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  isActive?: InputMaybe<BooleanComparisonExp>;
+  isEnabled?: InputMaybe<BooleanComparisonExp>;
+  service?: InputMaybe<ServicesBoolExp>;
+  serviceConfiguration?: InputMaybe<JsonbComparisonExp>;
+  serviceId?: InputMaybe<UuidComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+};
+
+/** unique or primary key constraints on table "client_service_agreements" */
+export type ClientServiceAgreementsConstraint =
+  /** unique or primary key constraint on columns "client_id", "service_id" */
+  | 'client_service_agreements_client_id_service_id_key'
+  /** unique or primary key constraint on columns "id" */
+  | 'client_service_agreements_pkey'
+  | '%future added value';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type ClientServiceAgreementsDeleteAtPathInput = {
+  autoBillingTriggers?: InputMaybe<Array<Scalars['String']['input']>>;
+  serviceConfiguration?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type ClientServiceAgreementsDeleteElemInput = {
+  autoBillingTriggers?: InputMaybe<Scalars['Int']['input']>;
+  serviceConfiguration?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type ClientServiceAgreementsDeleteKeyInput = {
+  autoBillingTriggers?: InputMaybe<Scalars['String']['input']>;
+  serviceConfiguration?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** input type for incrementing numeric columns in table "client_service_agreements" */
+export type ClientServiceAgreementsIncInput = {
+  customRate?: InputMaybe<Scalars['numeric']['input']>;
+};
+
+/** input type for inserting data into table "client_service_agreements" */
+export type ClientServiceAgreementsInsertInput = {
+  autoBillingEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  autoBillingTriggers?: InputMaybe<Scalars['jsonb']['input']>;
+  billingFrequency?: InputMaybe<Scalars['String']['input']>;
+  client?: InputMaybe<ClientsObjRelInsertInput>;
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  contractEndDate?: InputMaybe<Scalars['date']['input']>;
+  contractStartDate?: InputMaybe<Scalars['date']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  createdByUser?: InputMaybe<UsersObjRelInsertInput>;
+  customRate?: InputMaybe<Scalars['numeric']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  isEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  service?: InputMaybe<ServicesObjRelInsertInput>;
+  serviceConfiguration?: InputMaybe<Scalars['jsonb']['input']>;
+  serviceId?: InputMaybe<Scalars['uuid']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** order by max() on columns of table "client_service_agreements" */
+export type ClientServiceAgreementsMaxOrderBy = {
+  billingFrequency?: InputMaybe<OrderBy>;
+  clientId?: InputMaybe<OrderBy>;
+  contractEndDate?: InputMaybe<OrderBy>;
+  contractStartDate?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  createdBy?: InputMaybe<OrderBy>;
+  customRate?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  serviceId?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** order by min() on columns of table "client_service_agreements" */
+export type ClientServiceAgreementsMinOrderBy = {
+  billingFrequency?: InputMaybe<OrderBy>;
+  clientId?: InputMaybe<OrderBy>;
+  contractEndDate?: InputMaybe<OrderBy>;
+  contractStartDate?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  createdBy?: InputMaybe<OrderBy>;
+  customRate?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  serviceId?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** on_conflict condition type for table "client_service_agreements" */
+export type ClientServiceAgreementsOnConflict = {
+  constraint: ClientServiceAgreementsConstraint;
+  updateColumns?: Array<ClientServiceAgreementsUpdateColumn>;
+  where?: InputMaybe<ClientServiceAgreementsBoolExp>;
+};
+
+/** Ordering options when selecting data from "client_service_agreements". */
+export type ClientServiceAgreementsOrderBy = {
+  autoBillingEnabled?: InputMaybe<OrderBy>;
+  autoBillingTriggers?: InputMaybe<OrderBy>;
+  billingFrequency?: InputMaybe<OrderBy>;
+  client?: InputMaybe<ClientsOrderBy>;
+  clientId?: InputMaybe<OrderBy>;
+  contractEndDate?: InputMaybe<OrderBy>;
+  contractStartDate?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  createdBy?: InputMaybe<OrderBy>;
+  createdByUser?: InputMaybe<UsersOrderBy>;
+  customRate?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  isActive?: InputMaybe<OrderBy>;
+  isEnabled?: InputMaybe<OrderBy>;
+  service?: InputMaybe<ServicesOrderBy>;
+  serviceConfiguration?: InputMaybe<OrderBy>;
+  serviceId?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: client_service_agreements */
+export type ClientServiceAgreementsPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type ClientServiceAgreementsPrependInput = {
+  autoBillingTriggers?: InputMaybe<Scalars['jsonb']['input']>;
+  serviceConfiguration?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** select columns of table "client_service_agreements" */
+export type ClientServiceAgreementsSelectColumn =
+  /** column name */
+  | 'autoBillingEnabled'
+  /** column name */
+  | 'autoBillingTriggers'
+  /** column name */
+  | 'billingFrequency'
+  /** column name */
+  | 'clientId'
+  /** column name */
+  | 'contractEndDate'
+  /** column name */
+  | 'contractStartDate'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'createdBy'
+  /** column name */
+  | 'customRate'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isEnabled'
+  /** column name */
+  | 'serviceConfiguration'
+  /** column name */
+  | 'serviceId'
+  /** column name */
+  | 'updatedAt'
+  | '%future added value';
+
+/** select "clientServiceAgreementsAggregateBoolExpBool_andArgumentsColumns" columns of table "client_service_agreements" */
+export type ClientServiceAgreementsSelectColumnClientServiceAgreementsAggregateBoolExpBool_AndArgumentsColumns =
+  /** column name */
+  | 'autoBillingEnabled'
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isEnabled'
+  | '%future added value';
+
+/** select "clientServiceAgreementsAggregateBoolExpBool_orArgumentsColumns" columns of table "client_service_agreements" */
+export type ClientServiceAgreementsSelectColumnClientServiceAgreementsAggregateBoolExpBool_OrArgumentsColumns =
+  /** column name */
+  | 'autoBillingEnabled'
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isEnabled'
+  | '%future added value';
+
+/** input type for updating data in table "client_service_agreements" */
+export type ClientServiceAgreementsSetInput = {
+  autoBillingEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  autoBillingTriggers?: InputMaybe<Scalars['jsonb']['input']>;
+  billingFrequency?: InputMaybe<Scalars['String']['input']>;
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  contractEndDate?: InputMaybe<Scalars['date']['input']>;
+  contractStartDate?: InputMaybe<Scalars['date']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  customRate?: InputMaybe<Scalars['numeric']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  isEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  serviceConfiguration?: InputMaybe<Scalars['jsonb']['input']>;
+  serviceId?: InputMaybe<Scalars['uuid']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** order by stddev() on columns of table "client_service_agreements" */
+export type ClientServiceAgreementsStddevOrderBy = {
+  customRate?: InputMaybe<OrderBy>;
+};
+
+/** order by stddevPop() on columns of table "client_service_agreements" */
+export type ClientServiceAgreementsStddevPopOrderBy = {
+  customRate?: InputMaybe<OrderBy>;
+};
+
+/** order by stddevSamp() on columns of table "client_service_agreements" */
+export type ClientServiceAgreementsStddevSampOrderBy = {
+  customRate?: InputMaybe<OrderBy>;
+};
+
+/** Streaming cursor of the table "clientServiceAgreements" */
+export type ClientServiceAgreementsStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: ClientServiceAgreementsStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type ClientServiceAgreementsStreamCursorValueInput = {
+  autoBillingEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  autoBillingTriggers?: InputMaybe<Scalars['jsonb']['input']>;
+  billingFrequency?: InputMaybe<Scalars['String']['input']>;
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  contractEndDate?: InputMaybe<Scalars['date']['input']>;
+  contractStartDate?: InputMaybe<Scalars['date']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  customRate?: InputMaybe<Scalars['numeric']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  isEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  serviceConfiguration?: InputMaybe<Scalars['jsonb']['input']>;
+  serviceId?: InputMaybe<Scalars['uuid']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** order by sum() on columns of table "client_service_agreements" */
+export type ClientServiceAgreementsSumOrderBy = {
+  customRate?: InputMaybe<OrderBy>;
+};
+
+/** update columns of table "client_service_agreements" */
+export type ClientServiceAgreementsUpdateColumn =
+  /** column name */
+  | 'autoBillingEnabled'
+  /** column name */
+  | 'autoBillingTriggers'
+  /** column name */
+  | 'billingFrequency'
+  /** column name */
+  | 'clientId'
+  /** column name */
+  | 'contractEndDate'
+  /** column name */
+  | 'contractStartDate'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'createdBy'
+  /** column name */
+  | 'customRate'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isEnabled'
+  /** column name */
+  | 'serviceConfiguration'
+  /** column name */
+  | 'serviceId'
+  /** column name */
+  | 'updatedAt'
+  | '%future added value';
+
+export type ClientServiceAgreementsUpdates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<ClientServiceAgreementsAppendInput>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _deleteAtPath?: InputMaybe<ClientServiceAgreementsDeleteAtPathInput>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _deleteElem?: InputMaybe<ClientServiceAgreementsDeleteElemInput>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _deleteKey?: InputMaybe<ClientServiceAgreementsDeleteKeyInput>;
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<ClientServiceAgreementsIncInput>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<ClientServiceAgreementsPrependInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<ClientServiceAgreementsSetInput>;
+  /** filter the rows which have to be updated */
+  where: ClientServiceAgreementsBoolExp;
+};
+
+/** order by varPop() on columns of table "client_service_agreements" */
+export type ClientServiceAgreementsVarPopOrderBy = {
+  customRate?: InputMaybe<OrderBy>;
+};
+
+/** order by varSamp() on columns of table "client_service_agreements" */
+export type ClientServiceAgreementsVarSampOrderBy = {
+  customRate?: InputMaybe<OrderBy>;
+};
+
+/** order by variance() on columns of table "client_service_agreements" */
+export type ClientServiceAgreementsVarianceOrderBy = {
+  customRate?: InputMaybe<OrderBy>;
 };
 
 export type ClientsAggregateBoolExp = {
@@ -13233,6 +13624,544 @@ export type SecuritySettingsAggregateBoolExpCount = {
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<SecuritySettingsBoolExp>;
   predicate: IntComparisonExp;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type ServiceTemplatesAppendInput = {
+  services?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** Boolean expression to filter rows from the table "service_templates". All fields are combined with a logical 'AND'. */
+export type ServiceTemplatesBoolExp = {
+  _and?: InputMaybe<Array<ServiceTemplatesBoolExp>>;
+  _not?: InputMaybe<ServiceTemplatesBoolExp>;
+  _or?: InputMaybe<Array<ServiceTemplatesBoolExp>>;
+  bundleDiscountPercentage?: InputMaybe<NumericComparisonExp>;
+  category?: InputMaybe<StringComparisonExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  createdBy?: InputMaybe<UuidComparisonExp>;
+  createdByUser?: InputMaybe<UsersBoolExp>;
+  description?: InputMaybe<StringComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  isPublic?: InputMaybe<BooleanComparisonExp>;
+  name?: InputMaybe<StringComparisonExp>;
+  pricingStrategy?: InputMaybe<StringComparisonExp>;
+  services?: InputMaybe<JsonbComparisonExp>;
+  targetClientTypes?: InputMaybe<StringArrayComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+  updatedBy?: InputMaybe<UuidComparisonExp>;
+  updatedByUser?: InputMaybe<UsersBoolExp>;
+};
+
+/** unique or primary key constraints on table "service_templates" */
+export type ServiceTemplatesConstraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'service_templates_pkey'
+  | '%future added value';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type ServiceTemplatesDeleteAtPathInput = {
+  services?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type ServiceTemplatesDeleteElemInput = {
+  services?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type ServiceTemplatesDeleteKeyInput = {
+  services?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** input type for incrementing numeric columns in table "service_templates" */
+export type ServiceTemplatesIncInput = {
+  bundleDiscountPercentage?: InputMaybe<Scalars['numeric']['input']>;
+};
+
+/** input type for inserting data into table "service_templates" */
+export type ServiceTemplatesInsertInput = {
+  bundleDiscountPercentage?: InputMaybe<Scalars['numeric']['input']>;
+  category?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  createdByUser?: InputMaybe<UsersObjRelInsertInput>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isPublic?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  /** How to calculate template price: sum (add all), fixed (set price), tiered (based on rules) */
+  pricingStrategy?: InputMaybe<Scalars['String']['input']>;
+  services?: InputMaybe<Scalars['jsonb']['input']>;
+  targetClientTypes?: InputMaybe<Array<Scalars['String']['input']>>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+  updatedByUser?: InputMaybe<UsersObjRelInsertInput>;
+};
+
+/** on_conflict condition type for table "service_templates" */
+export type ServiceTemplatesOnConflict = {
+  constraint: ServiceTemplatesConstraint;
+  updateColumns?: Array<ServiceTemplatesUpdateColumn>;
+  where?: InputMaybe<ServiceTemplatesBoolExp>;
+};
+
+/** Ordering options when selecting data from "service_templates". */
+export type ServiceTemplatesOrderBy = {
+  bundleDiscountPercentage?: InputMaybe<OrderBy>;
+  category?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  createdBy?: InputMaybe<OrderBy>;
+  createdByUser?: InputMaybe<UsersOrderBy>;
+  description?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  isPublic?: InputMaybe<OrderBy>;
+  name?: InputMaybe<OrderBy>;
+  pricingStrategy?: InputMaybe<OrderBy>;
+  services?: InputMaybe<OrderBy>;
+  targetClientTypes?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  updatedBy?: InputMaybe<OrderBy>;
+  updatedByUser?: InputMaybe<UsersOrderBy>;
+};
+
+/** primary key columns input for table: service_templates */
+export type ServiceTemplatesPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type ServiceTemplatesPrependInput = {
+  services?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** select columns of table "service_templates" */
+export type ServiceTemplatesSelectColumn =
+  /** column name */
+  | 'bundleDiscountPercentage'
+  /** column name */
+  | 'category'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'createdBy'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isPublic'
+  /** column name */
+  | 'name'
+  /** column name */
+  | 'pricingStrategy'
+  /** column name */
+  | 'services'
+  /** column name */
+  | 'targetClientTypes'
+  /** column name */
+  | 'updatedAt'
+  /** column name */
+  | 'updatedBy'
+  | '%future added value';
+
+/** input type for updating data in table "service_templates" */
+export type ServiceTemplatesSetInput = {
+  bundleDiscountPercentage?: InputMaybe<Scalars['numeric']['input']>;
+  category?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isPublic?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  /** How to calculate template price: sum (add all), fixed (set price), tiered (based on rules) */
+  pricingStrategy?: InputMaybe<Scalars['String']['input']>;
+  services?: InputMaybe<Scalars['jsonb']['input']>;
+  targetClientTypes?: InputMaybe<Array<Scalars['String']['input']>>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** Streaming cursor of the table "serviceTemplates" */
+export type ServiceTemplatesStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: ServiceTemplatesStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type ServiceTemplatesStreamCursorValueInput = {
+  bundleDiscountPercentage?: InputMaybe<Scalars['numeric']['input']>;
+  category?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isPublic?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  /** How to calculate template price: sum (add all), fixed (set price), tiered (based on rules) */
+  pricingStrategy?: InputMaybe<Scalars['String']['input']>;
+  services?: InputMaybe<Scalars['jsonb']['input']>;
+  targetClientTypes?: InputMaybe<Array<Scalars['String']['input']>>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** update columns of table "service_templates" */
+export type ServiceTemplatesUpdateColumn =
+  /** column name */
+  | 'bundleDiscountPercentage'
+  /** column name */
+  | 'category'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'createdBy'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isPublic'
+  /** column name */
+  | 'name'
+  /** column name */
+  | 'pricingStrategy'
+  /** column name */
+  | 'services'
+  /** column name */
+  | 'targetClientTypes'
+  /** column name */
+  | 'updatedAt'
+  /** column name */
+  | 'updatedBy'
+  | '%future added value';
+
+export type ServiceTemplatesUpdates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<ServiceTemplatesAppendInput>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _deleteAtPath?: InputMaybe<ServiceTemplatesDeleteAtPathInput>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _deleteElem?: InputMaybe<ServiceTemplatesDeleteElemInput>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _deleteKey?: InputMaybe<ServiceTemplatesDeleteKeyInput>;
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<ServiceTemplatesIncInput>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<ServiceTemplatesPrependInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<ServiceTemplatesSetInput>;
+  /** filter the rows which have to be updated */
+  where: ServiceTemplatesBoolExp;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type ServicesAppendInput = {
+  dependencies?: InputMaybe<Scalars['jsonb']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  /** JSONB field for complex pricing logic */
+  pricingRules?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** Boolean expression to filter rows from the table "services". All fields are combined with a logical 'AND'. */
+export type ServicesBoolExp = {
+  _and?: InputMaybe<Array<ServicesBoolExp>>;
+  _not?: InputMaybe<ServicesBoolExp>;
+  _or?: InputMaybe<Array<ServicesBoolExp>>;
+  billingItems?: InputMaybe<BillingItemsBoolExp>;
+  billingItemsAggregate?: InputMaybe<BillingItemsAggregateBoolExp>;
+  billingUnit?: InputMaybe<StringComparisonExp>;
+  category?: InputMaybe<StringComparisonExp>;
+  clientServiceAgreements?: InputMaybe<ClientServiceAgreementsBoolExp>;
+  clientServiceAgreementsAggregate?: InputMaybe<ClientServiceAgreementsAggregateBoolExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  createdBy?: InputMaybe<UuidComparisonExp>;
+  createdByUser?: InputMaybe<UsersBoolExp>;
+  currency?: InputMaybe<StringComparisonExp>;
+  defaultRate?: InputMaybe<NumericComparisonExp>;
+  dependencies?: InputMaybe<JsonbComparisonExp>;
+  description?: InputMaybe<StringComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  isActive?: InputMaybe<BooleanComparisonExp>;
+  isTemplate?: InputMaybe<BooleanComparisonExp>;
+  metadata?: InputMaybe<JsonbComparisonExp>;
+  name?: InputMaybe<StringComparisonExp>;
+  pricingRules?: InputMaybe<JsonbComparisonExp>;
+  serviceType?: InputMaybe<StringComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+  updatedBy?: InputMaybe<UuidComparisonExp>;
+  updatedByUser?: InputMaybe<UsersBoolExp>;
+};
+
+/** unique or primary key constraints on table "services" */
+export type ServicesConstraint =
+  /** unique or primary key constraint on columns "name" */
+  | 'services_name_key'
+  /** unique or primary key constraint on columns "id" */
+  | 'services_pkey'
+  | '%future added value';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type ServicesDeleteAtPathInput = {
+  dependencies?: InputMaybe<Array<Scalars['String']['input']>>;
+  metadata?: InputMaybe<Array<Scalars['String']['input']>>;
+  /** JSONB field for complex pricing logic */
+  pricingRules?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type ServicesDeleteElemInput = {
+  dependencies?: InputMaybe<Scalars['Int']['input']>;
+  metadata?: InputMaybe<Scalars['Int']['input']>;
+  /** JSONB field for complex pricing logic */
+  pricingRules?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type ServicesDeleteKeyInput = {
+  dependencies?: InputMaybe<Scalars['String']['input']>;
+  metadata?: InputMaybe<Scalars['String']['input']>;
+  /** JSONB field for complex pricing logic */
+  pricingRules?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** input type for incrementing numeric columns in table "services" */
+export type ServicesIncInput = {
+  defaultRate?: InputMaybe<Scalars['numeric']['input']>;
+};
+
+/** input type for inserting data into table "services" */
+export type ServicesInsertInput = {
+  billingItems?: InputMaybe<BillingItemsArrRelInsertInput>;
+  /** How this service is billed: Per Payroll, Per Employee, Per Hour, etc. */
+  billingUnit?: InputMaybe<Scalars['String']['input']>;
+  category?: InputMaybe<Scalars['String']['input']>;
+  clientServiceAgreements?: InputMaybe<ClientServiceAgreementsArrRelInsertInput>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  createdByUser?: InputMaybe<UsersObjRelInsertInput>;
+  currency?: InputMaybe<Scalars['String']['input']>;
+  defaultRate?: InputMaybe<Scalars['numeric']['input']>;
+  dependencies?: InputMaybe<Scalars['jsonb']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  isTemplate?: InputMaybe<Scalars['Boolean']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  /** JSONB field for complex pricing logic */
+  pricingRules?: InputMaybe<Scalars['jsonb']['input']>;
+  /** standard: regular service, template: reusable template, custom: client-specific */
+  serviceType?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+  updatedByUser?: InputMaybe<UsersObjRelInsertInput>;
+};
+
+/** input type for inserting object relation for remote table "services" */
+export type ServicesObjRelInsertInput = {
+  data: ServicesInsertInput;
+  /** upsert condition */
+  onConflict?: InputMaybe<ServicesOnConflict>;
+};
+
+/** on_conflict condition type for table "services" */
+export type ServicesOnConflict = {
+  constraint: ServicesConstraint;
+  updateColumns?: Array<ServicesUpdateColumn>;
+  where?: InputMaybe<ServicesBoolExp>;
+};
+
+/** Ordering options when selecting data from "services". */
+export type ServicesOrderBy = {
+  billingItemsAggregate?: InputMaybe<BillingItemsAggregateOrderBy>;
+  billingUnit?: InputMaybe<OrderBy>;
+  category?: InputMaybe<OrderBy>;
+  clientServiceAgreementsAggregate?: InputMaybe<ClientServiceAgreementsAggregateOrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  createdBy?: InputMaybe<OrderBy>;
+  createdByUser?: InputMaybe<UsersOrderBy>;
+  currency?: InputMaybe<OrderBy>;
+  defaultRate?: InputMaybe<OrderBy>;
+  dependencies?: InputMaybe<OrderBy>;
+  description?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  isActive?: InputMaybe<OrderBy>;
+  isTemplate?: InputMaybe<OrderBy>;
+  metadata?: InputMaybe<OrderBy>;
+  name?: InputMaybe<OrderBy>;
+  pricingRules?: InputMaybe<OrderBy>;
+  serviceType?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  updatedBy?: InputMaybe<OrderBy>;
+  updatedByUser?: InputMaybe<UsersOrderBy>;
+};
+
+/** primary key columns input for table: services */
+export type ServicesPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type ServicesPrependInput = {
+  dependencies?: InputMaybe<Scalars['jsonb']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  /** JSONB field for complex pricing logic */
+  pricingRules?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** select columns of table "services" */
+export type ServicesSelectColumn =
+  /** column name */
+  | 'billingUnit'
+  /** column name */
+  | 'category'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'createdBy'
+  /** column name */
+  | 'currency'
+  /** column name */
+  | 'defaultRate'
+  /** column name */
+  | 'dependencies'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isTemplate'
+  /** column name */
+  | 'metadata'
+  /** column name */
+  | 'name'
+  /** column name */
+  | 'pricingRules'
+  /** column name */
+  | 'serviceType'
+  /** column name */
+  | 'updatedAt'
+  /** column name */
+  | 'updatedBy'
+  | '%future added value';
+
+/** input type for updating data in table "services" */
+export type ServicesSetInput = {
+  /** How this service is billed: Per Payroll, Per Employee, Per Hour, etc. */
+  billingUnit?: InputMaybe<Scalars['String']['input']>;
+  category?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  currency?: InputMaybe<Scalars['String']['input']>;
+  defaultRate?: InputMaybe<Scalars['numeric']['input']>;
+  dependencies?: InputMaybe<Scalars['jsonb']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  isTemplate?: InputMaybe<Scalars['Boolean']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  /** JSONB field for complex pricing logic */
+  pricingRules?: InputMaybe<Scalars['jsonb']['input']>;
+  /** standard: regular service, template: reusable template, custom: client-specific */
+  serviceType?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** Streaming cursor of the table "services" */
+export type ServicesStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: ServicesStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type ServicesStreamCursorValueInput = {
+  /** How this service is billed: Per Payroll, Per Employee, Per Hour, etc. */
+  billingUnit?: InputMaybe<Scalars['String']['input']>;
+  category?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  currency?: InputMaybe<Scalars['String']['input']>;
+  defaultRate?: InputMaybe<Scalars['numeric']['input']>;
+  dependencies?: InputMaybe<Scalars['jsonb']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  isTemplate?: InputMaybe<Scalars['Boolean']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  /** JSONB field for complex pricing logic */
+  pricingRules?: InputMaybe<Scalars['jsonb']['input']>;
+  /** standard: regular service, template: reusable template, custom: client-specific */
+  serviceType?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** update columns of table "services" */
+export type ServicesUpdateColumn =
+  /** column name */
+  | 'billingUnit'
+  /** column name */
+  | 'category'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'createdBy'
+  /** column name */
+  | 'currency'
+  /** column name */
+  | 'defaultRate'
+  /** column name */
+  | 'dependencies'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isTemplate'
+  /** column name */
+  | 'metadata'
+  /** column name */
+  | 'name'
+  /** column name */
+  | 'pricingRules'
+  /** column name */
+  | 'serviceType'
+  /** column name */
+  | 'updatedAt'
+  /** column name */
+  | 'updatedBy'
+  | '%future added value';
+
+export type ServicesUpdates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<ServicesAppendInput>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _deleteAtPath?: InputMaybe<ServicesDeleteAtPathInput>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _deleteElem?: InputMaybe<ServicesDeleteElemInput>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _deleteKey?: InputMaybe<ServicesDeleteKeyInput>;
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<ServicesIncInput>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<ServicesPrependInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<ServicesSetInput>;
+  /** filter the rows which have to be updated */
+  where: ServicesBoolExp;
 };
 
 /** Boolean expression to filter rows from the table "audit.slow_queries". All fields are combined with a logical 'AND'. */

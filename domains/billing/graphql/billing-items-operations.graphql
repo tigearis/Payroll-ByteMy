@@ -51,14 +51,7 @@ fragment BillingItemWithRelations on billingItems {
     name
     status
   }
-  billingServicePlan {
-    id
-    name
-    description
-    standardRate
-    billingUnit
-    category
-  }
+  # Service relationship temporarily removed due to multiple foreign key constraints
 }
 
 fragment BillingItemStats on billingItemsAggregate {

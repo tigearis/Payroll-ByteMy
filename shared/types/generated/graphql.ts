@@ -18,7 +18,7 @@
  * ✓ Client Preset v4.8+ for optimal type safety
  * ✓ Zero type conflicts with modern codegen
  * 
- * Generated: 2025-07-30T05:55:58.367Z
+ * Generated: 2025-07-30T09:00:32.456Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Client Preset v4.0
  */
@@ -8743,8 +8743,6 @@ export type BillingItems = {
   /** An object relationship */
   billingPlanItems?: Maybe<BillingPlans>;
   /** An object relationship */
-  billingServicePlan?: Maybe<BillingPlans>;
-  /** An object relationship */
   client?: Maybe<Clients>;
   clientId?: Maybe<Scalars['uuid']['output']>;
   /** When this item was confirmed by manager */
@@ -8934,7 +8932,6 @@ export type BillingItemsBoolExp = {
   billingInvoiceItemsAggregate?: InputMaybe<BillingInvoiceItemAggregateBoolExp>;
   billingPlanId?: InputMaybe<UuidComparisonExp>;
   billingPlanItems?: InputMaybe<BillingPlansBoolExp>;
-  billingServicePlan?: InputMaybe<BillingPlansBoolExp>;
   client?: InputMaybe<ClientsBoolExp>;
   clientId?: InputMaybe<UuidComparisonExp>;
   confirmedAt?: InputMaybe<TimestamptzComparisonExp>;
@@ -8984,7 +8981,6 @@ export type BillingItemsInsertInput = {
   billingInvoiceItems?: InputMaybe<BillingInvoiceItemArrRelInsertInput>;
   billingPlanId?: InputMaybe<Scalars['uuid']['input']>;
   billingPlanItems?: InputMaybe<BillingPlansObjRelInsertInput>;
-  billingServicePlan?: InputMaybe<BillingPlansObjRelInsertInput>;
   client?: InputMaybe<ClientsObjRelInsertInput>;
   clientId?: InputMaybe<Scalars['uuid']['input']>;
   /** When this item was confirmed by manager */
@@ -9179,7 +9175,6 @@ export type BillingItemsOrderBy = {
   billingInvoiceItemsAggregate?: InputMaybe<BillingInvoiceItemAggregateOrderBy>;
   billingPlanId?: InputMaybe<OrderBy>;
   billingPlanItems?: InputMaybe<BillingPlansOrderBy>;
-  billingServicePlan?: InputMaybe<BillingPlansOrderBy>;
   client?: InputMaybe<ClientsOrderBy>;
   clientId?: InputMaybe<OrderBy>;
   confirmedAt?: InputMaybe<OrderBy>;
@@ -11051,6 +11046,555 @@ export type ClientExternalSystemsUpdates = {
   _set?: InputMaybe<ClientExternalSystemsSetInput>;
   /** filter the rows which have to be updated */
   where: ClientExternalSystemsBoolExp;
+};
+
+/** Client-specific service agreements and configurations */
+export type ClientServiceAgreements = {
+  __typename?: 'clientServiceAgreements';
+  autoBillingEnabled?: Maybe<Scalars['Boolean']['output']>;
+  autoBillingTriggers?: Maybe<Scalars['jsonb']['output']>;
+  billingFrequency?: Maybe<Scalars['String']['output']>;
+  /** An object relationship */
+  client: Clients;
+  clientId: Scalars['uuid']['output'];
+  contractEndDate?: Maybe<Scalars['date']['output']>;
+  contractStartDate?: Maybe<Scalars['date']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  createdBy?: Maybe<Scalars['uuid']['output']>;
+  /** An object relationship */
+  createdByUser?: Maybe<Users>;
+  customRate?: Maybe<Scalars['numeric']['output']>;
+  id: Scalars['uuid']['output'];
+  isActive?: Maybe<Scalars['Boolean']['output']>;
+  isEnabled?: Maybe<Scalars['Boolean']['output']>;
+  /** An object relationship */
+  service: Services;
+  serviceConfiguration?: Maybe<Scalars['jsonb']['output']>;
+  serviceId: Scalars['uuid']['output'];
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+};
+
+
+/** Client-specific service agreements and configurations */
+export type ClientServiceAgreementsAutoBillingTriggersArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** Client-specific service agreements and configurations */
+export type ClientServiceAgreementsServiceConfigurationArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** aggregated selection of "client_service_agreements" */
+export type ClientServiceAgreementsAggregate = {
+  __typename?: 'clientServiceAgreementsAggregate';
+  aggregate?: Maybe<ClientServiceAgreementsAggregateFields>;
+  nodes: Array<ClientServiceAgreements>;
+};
+
+export type ClientServiceAgreementsAggregateBoolExp = {
+  bool_and?: InputMaybe<ClientServiceAgreementsAggregateBoolExpBool_And>;
+  bool_or?: InputMaybe<ClientServiceAgreementsAggregateBoolExpBool_Or>;
+  count?: InputMaybe<ClientServiceAgreementsAggregateBoolExpCount>;
+};
+
+export type ClientServiceAgreementsAggregateBoolExpBool_And = {
+  arguments: ClientServiceAgreementsSelectColumnClientServiceAgreementsAggregateBoolExpBool_AndArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<ClientServiceAgreementsBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type ClientServiceAgreementsAggregateBoolExpBool_Or = {
+  arguments: ClientServiceAgreementsSelectColumnClientServiceAgreementsAggregateBoolExpBool_OrArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<ClientServiceAgreementsBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type ClientServiceAgreementsAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<ClientServiceAgreementsSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<ClientServiceAgreementsBoolExp>;
+  predicate: IntComparisonExp;
+};
+
+/** aggregate fields of "client_service_agreements" */
+export type ClientServiceAgreementsAggregateFields = {
+  __typename?: 'clientServiceAgreementsAggregateFields';
+  avg?: Maybe<ClientServiceAgreementsAvgFields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<ClientServiceAgreementsMaxFields>;
+  min?: Maybe<ClientServiceAgreementsMinFields>;
+  stddev?: Maybe<ClientServiceAgreementsStddevFields>;
+  stddevPop?: Maybe<ClientServiceAgreementsStddevPopFields>;
+  stddevSamp?: Maybe<ClientServiceAgreementsStddevSampFields>;
+  sum?: Maybe<ClientServiceAgreementsSumFields>;
+  varPop?: Maybe<ClientServiceAgreementsVarPopFields>;
+  varSamp?: Maybe<ClientServiceAgreementsVarSampFields>;
+  variance?: Maybe<ClientServiceAgreementsVarianceFields>;
+};
+
+
+/** aggregate fields of "client_service_agreements" */
+export type ClientServiceAgreementsAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<ClientServiceAgreementsSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** order by aggregate values of table "client_service_agreements" */
+export type ClientServiceAgreementsAggregateOrderBy = {
+  avg?: InputMaybe<ClientServiceAgreementsAvgOrderBy>;
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<ClientServiceAgreementsMaxOrderBy>;
+  min?: InputMaybe<ClientServiceAgreementsMinOrderBy>;
+  stddev?: InputMaybe<ClientServiceAgreementsStddevOrderBy>;
+  stddevPop?: InputMaybe<ClientServiceAgreementsStddevPopOrderBy>;
+  stddevSamp?: InputMaybe<ClientServiceAgreementsStddevSampOrderBy>;
+  sum?: InputMaybe<ClientServiceAgreementsSumOrderBy>;
+  varPop?: InputMaybe<ClientServiceAgreementsVarPopOrderBy>;
+  varSamp?: InputMaybe<ClientServiceAgreementsVarSampOrderBy>;
+  variance?: InputMaybe<ClientServiceAgreementsVarianceOrderBy>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type ClientServiceAgreementsAppendInput = {
+  autoBillingTriggers?: InputMaybe<Scalars['jsonb']['input']>;
+  serviceConfiguration?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** input type for inserting array relation for remote table "client_service_agreements" */
+export type ClientServiceAgreementsArrRelInsertInput = {
+  data: Array<ClientServiceAgreementsInsertInput>;
+  /** upsert condition */
+  onConflict?: InputMaybe<ClientServiceAgreementsOnConflict>;
+};
+
+/** aggregate avg on columns */
+export type ClientServiceAgreementsAvgFields = {
+  __typename?: 'clientServiceAgreementsAvgFields';
+  customRate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by avg() on columns of table "client_service_agreements" */
+export type ClientServiceAgreementsAvgOrderBy = {
+  customRate?: InputMaybe<OrderBy>;
+};
+
+/** Boolean expression to filter rows from the table "client_service_agreements". All fields are combined with a logical 'AND'. */
+export type ClientServiceAgreementsBoolExp = {
+  _and?: InputMaybe<Array<ClientServiceAgreementsBoolExp>>;
+  _not?: InputMaybe<ClientServiceAgreementsBoolExp>;
+  _or?: InputMaybe<Array<ClientServiceAgreementsBoolExp>>;
+  autoBillingEnabled?: InputMaybe<BooleanComparisonExp>;
+  autoBillingTriggers?: InputMaybe<JsonbComparisonExp>;
+  billingFrequency?: InputMaybe<StringComparisonExp>;
+  client?: InputMaybe<ClientsBoolExp>;
+  clientId?: InputMaybe<UuidComparisonExp>;
+  contractEndDate?: InputMaybe<DateComparisonExp>;
+  contractStartDate?: InputMaybe<DateComparisonExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  createdBy?: InputMaybe<UuidComparisonExp>;
+  createdByUser?: InputMaybe<UsersBoolExp>;
+  customRate?: InputMaybe<NumericComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  isActive?: InputMaybe<BooleanComparisonExp>;
+  isEnabled?: InputMaybe<BooleanComparisonExp>;
+  service?: InputMaybe<ServicesBoolExp>;
+  serviceConfiguration?: InputMaybe<JsonbComparisonExp>;
+  serviceId?: InputMaybe<UuidComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+};
+
+/** unique or primary key constraints on table "client_service_agreements" */
+export type ClientServiceAgreementsConstraint =
+  /** unique or primary key constraint on columns "client_id", "service_id" */
+  | 'client_service_agreements_client_id_service_id_key'
+  /** unique or primary key constraint on columns "id" */
+  | 'client_service_agreements_pkey'
+  | '%future added value';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type ClientServiceAgreementsDeleteAtPathInput = {
+  autoBillingTriggers?: InputMaybe<Array<Scalars['String']['input']>>;
+  serviceConfiguration?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type ClientServiceAgreementsDeleteElemInput = {
+  autoBillingTriggers?: InputMaybe<Scalars['Int']['input']>;
+  serviceConfiguration?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type ClientServiceAgreementsDeleteKeyInput = {
+  autoBillingTriggers?: InputMaybe<Scalars['String']['input']>;
+  serviceConfiguration?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** input type for incrementing numeric columns in table "client_service_agreements" */
+export type ClientServiceAgreementsIncInput = {
+  customRate?: InputMaybe<Scalars['numeric']['input']>;
+};
+
+/** input type for inserting data into table "client_service_agreements" */
+export type ClientServiceAgreementsInsertInput = {
+  autoBillingEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  autoBillingTriggers?: InputMaybe<Scalars['jsonb']['input']>;
+  billingFrequency?: InputMaybe<Scalars['String']['input']>;
+  client?: InputMaybe<ClientsObjRelInsertInput>;
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  contractEndDate?: InputMaybe<Scalars['date']['input']>;
+  contractStartDate?: InputMaybe<Scalars['date']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  createdByUser?: InputMaybe<UsersObjRelInsertInput>;
+  customRate?: InputMaybe<Scalars['numeric']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  isEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  service?: InputMaybe<ServicesObjRelInsertInput>;
+  serviceConfiguration?: InputMaybe<Scalars['jsonb']['input']>;
+  serviceId?: InputMaybe<Scalars['uuid']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** aggregate max on columns */
+export type ClientServiceAgreementsMaxFields = {
+  __typename?: 'clientServiceAgreementsMaxFields';
+  billingFrequency?: Maybe<Scalars['String']['output']>;
+  clientId?: Maybe<Scalars['uuid']['output']>;
+  contractEndDate?: Maybe<Scalars['date']['output']>;
+  contractStartDate?: Maybe<Scalars['date']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  createdBy?: Maybe<Scalars['uuid']['output']>;
+  customRate?: Maybe<Scalars['numeric']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  serviceId?: Maybe<Scalars['uuid']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+};
+
+/** order by max() on columns of table "client_service_agreements" */
+export type ClientServiceAgreementsMaxOrderBy = {
+  billingFrequency?: InputMaybe<OrderBy>;
+  clientId?: InputMaybe<OrderBy>;
+  contractEndDate?: InputMaybe<OrderBy>;
+  contractStartDate?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  createdBy?: InputMaybe<OrderBy>;
+  customRate?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  serviceId?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** aggregate min on columns */
+export type ClientServiceAgreementsMinFields = {
+  __typename?: 'clientServiceAgreementsMinFields';
+  billingFrequency?: Maybe<Scalars['String']['output']>;
+  clientId?: Maybe<Scalars['uuid']['output']>;
+  contractEndDate?: Maybe<Scalars['date']['output']>;
+  contractStartDate?: Maybe<Scalars['date']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  createdBy?: Maybe<Scalars['uuid']['output']>;
+  customRate?: Maybe<Scalars['numeric']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  serviceId?: Maybe<Scalars['uuid']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+};
+
+/** order by min() on columns of table "client_service_agreements" */
+export type ClientServiceAgreementsMinOrderBy = {
+  billingFrequency?: InputMaybe<OrderBy>;
+  clientId?: InputMaybe<OrderBy>;
+  contractEndDate?: InputMaybe<OrderBy>;
+  contractStartDate?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  createdBy?: InputMaybe<OrderBy>;
+  customRate?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  serviceId?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** response of any mutation on the table "client_service_agreements" */
+export type ClientServiceAgreementsMutationResponse = {
+  __typename?: 'clientServiceAgreementsMutationResponse';
+  /** number of rows affected by the mutation */
+  affectedRows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<ClientServiceAgreements>;
+};
+
+/** on_conflict condition type for table "client_service_agreements" */
+export type ClientServiceAgreementsOnConflict = {
+  constraint: ClientServiceAgreementsConstraint;
+  updateColumns?: Array<ClientServiceAgreementsUpdateColumn>;
+  where?: InputMaybe<ClientServiceAgreementsBoolExp>;
+};
+
+/** Ordering options when selecting data from "client_service_agreements". */
+export type ClientServiceAgreementsOrderBy = {
+  autoBillingEnabled?: InputMaybe<OrderBy>;
+  autoBillingTriggers?: InputMaybe<OrderBy>;
+  billingFrequency?: InputMaybe<OrderBy>;
+  client?: InputMaybe<ClientsOrderBy>;
+  clientId?: InputMaybe<OrderBy>;
+  contractEndDate?: InputMaybe<OrderBy>;
+  contractStartDate?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  createdBy?: InputMaybe<OrderBy>;
+  createdByUser?: InputMaybe<UsersOrderBy>;
+  customRate?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  isActive?: InputMaybe<OrderBy>;
+  isEnabled?: InputMaybe<OrderBy>;
+  service?: InputMaybe<ServicesOrderBy>;
+  serviceConfiguration?: InputMaybe<OrderBy>;
+  serviceId?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: client_service_agreements */
+export type ClientServiceAgreementsPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type ClientServiceAgreementsPrependInput = {
+  autoBillingTriggers?: InputMaybe<Scalars['jsonb']['input']>;
+  serviceConfiguration?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** select columns of table "client_service_agreements" */
+export type ClientServiceAgreementsSelectColumn =
+  /** column name */
+  | 'autoBillingEnabled'
+  /** column name */
+  | 'autoBillingTriggers'
+  /** column name */
+  | 'billingFrequency'
+  /** column name */
+  | 'clientId'
+  /** column name */
+  | 'contractEndDate'
+  /** column name */
+  | 'contractStartDate'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'createdBy'
+  /** column name */
+  | 'customRate'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isEnabled'
+  /** column name */
+  | 'serviceConfiguration'
+  /** column name */
+  | 'serviceId'
+  /** column name */
+  | 'updatedAt'
+  | '%future added value';
+
+/** select "clientServiceAgreementsAggregateBoolExpBool_andArgumentsColumns" columns of table "client_service_agreements" */
+export type ClientServiceAgreementsSelectColumnClientServiceAgreementsAggregateBoolExpBool_AndArgumentsColumns =
+  /** column name */
+  | 'autoBillingEnabled'
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isEnabled'
+  | '%future added value';
+
+/** select "clientServiceAgreementsAggregateBoolExpBool_orArgumentsColumns" columns of table "client_service_agreements" */
+export type ClientServiceAgreementsSelectColumnClientServiceAgreementsAggregateBoolExpBool_OrArgumentsColumns =
+  /** column name */
+  | 'autoBillingEnabled'
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isEnabled'
+  | '%future added value';
+
+/** input type for updating data in table "client_service_agreements" */
+export type ClientServiceAgreementsSetInput = {
+  autoBillingEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  autoBillingTriggers?: InputMaybe<Scalars['jsonb']['input']>;
+  billingFrequency?: InputMaybe<Scalars['String']['input']>;
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  contractEndDate?: InputMaybe<Scalars['date']['input']>;
+  contractStartDate?: InputMaybe<Scalars['date']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  customRate?: InputMaybe<Scalars['numeric']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  isEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  serviceConfiguration?: InputMaybe<Scalars['jsonb']['input']>;
+  serviceId?: InputMaybe<Scalars['uuid']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** aggregate stddev on columns */
+export type ClientServiceAgreementsStddevFields = {
+  __typename?: 'clientServiceAgreementsStddevFields';
+  customRate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddev() on columns of table "client_service_agreements" */
+export type ClientServiceAgreementsStddevOrderBy = {
+  customRate?: InputMaybe<OrderBy>;
+};
+
+/** aggregate stddevPop on columns */
+export type ClientServiceAgreementsStddevPopFields = {
+  __typename?: 'clientServiceAgreementsStddevPopFields';
+  customRate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddevPop() on columns of table "client_service_agreements" */
+export type ClientServiceAgreementsStddevPopOrderBy = {
+  customRate?: InputMaybe<OrderBy>;
+};
+
+/** aggregate stddevSamp on columns */
+export type ClientServiceAgreementsStddevSampFields = {
+  __typename?: 'clientServiceAgreementsStddevSampFields';
+  customRate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddevSamp() on columns of table "client_service_agreements" */
+export type ClientServiceAgreementsStddevSampOrderBy = {
+  customRate?: InputMaybe<OrderBy>;
+};
+
+/** Streaming cursor of the table "clientServiceAgreements" */
+export type ClientServiceAgreementsStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: ClientServiceAgreementsStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type ClientServiceAgreementsStreamCursorValueInput = {
+  autoBillingEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  autoBillingTriggers?: InputMaybe<Scalars['jsonb']['input']>;
+  billingFrequency?: InputMaybe<Scalars['String']['input']>;
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  contractEndDate?: InputMaybe<Scalars['date']['input']>;
+  contractStartDate?: InputMaybe<Scalars['date']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  customRate?: InputMaybe<Scalars['numeric']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  isEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  serviceConfiguration?: InputMaybe<Scalars['jsonb']['input']>;
+  serviceId?: InputMaybe<Scalars['uuid']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** aggregate sum on columns */
+export type ClientServiceAgreementsSumFields = {
+  __typename?: 'clientServiceAgreementsSumFields';
+  customRate?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** order by sum() on columns of table "client_service_agreements" */
+export type ClientServiceAgreementsSumOrderBy = {
+  customRate?: InputMaybe<OrderBy>;
+};
+
+/** update columns of table "client_service_agreements" */
+export type ClientServiceAgreementsUpdateColumn =
+  /** column name */
+  | 'autoBillingEnabled'
+  /** column name */
+  | 'autoBillingTriggers'
+  /** column name */
+  | 'billingFrequency'
+  /** column name */
+  | 'clientId'
+  /** column name */
+  | 'contractEndDate'
+  /** column name */
+  | 'contractStartDate'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'createdBy'
+  /** column name */
+  | 'customRate'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isEnabled'
+  /** column name */
+  | 'serviceConfiguration'
+  /** column name */
+  | 'serviceId'
+  /** column name */
+  | 'updatedAt'
+  | '%future added value';
+
+export type ClientServiceAgreementsUpdates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<ClientServiceAgreementsAppendInput>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _deleteAtPath?: InputMaybe<ClientServiceAgreementsDeleteAtPathInput>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _deleteElem?: InputMaybe<ClientServiceAgreementsDeleteElemInput>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _deleteKey?: InputMaybe<ClientServiceAgreementsDeleteKeyInput>;
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<ClientServiceAgreementsIncInput>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<ClientServiceAgreementsPrependInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<ClientServiceAgreementsSetInput>;
+  /** filter the rows which have to be updated */
+  where: ClientServiceAgreementsBoolExp;
+};
+
+/** aggregate varPop on columns */
+export type ClientServiceAgreementsVarPopFields = {
+  __typename?: 'clientServiceAgreementsVarPopFields';
+  customRate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by varPop() on columns of table "client_service_agreements" */
+export type ClientServiceAgreementsVarPopOrderBy = {
+  customRate?: InputMaybe<OrderBy>;
+};
+
+/** aggregate varSamp on columns */
+export type ClientServiceAgreementsVarSampFields = {
+  __typename?: 'clientServiceAgreementsVarSampFields';
+  customRate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by varSamp() on columns of table "client_service_agreements" */
+export type ClientServiceAgreementsVarSampOrderBy = {
+  customRate?: InputMaybe<OrderBy>;
+};
+
+/** aggregate variance on columns */
+export type ClientServiceAgreementsVarianceFields = {
+  __typename?: 'clientServiceAgreementsVarianceFields';
+  customRate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by variance() on columns of table "client_service_agreements" */
+export type ClientServiceAgreementsVarianceOrderBy = {
+  customRate?: InputMaybe<OrderBy>;
 };
 
 /** columns and relationships of "clients" */
@@ -14575,6 +15119,10 @@ export type Mutation_Root = {
   deleteClientById?: Maybe<Clients>;
   /** delete single row from the table: "client_external_systems" */
   deleteClientExternalSystemById?: Maybe<ClientExternalSystems>;
+  /** delete single row from the table: "client_service_agreements" */
+  deleteClientServiceAgreementById?: Maybe<ClientServiceAgreements>;
+  /** delete data from the table: "client_service_agreements" */
+  deleteClientServiceAgreements?: Maybe<ClientServiceAgreementsMutationResponse>;
   /** delete single row from the table: "audit.data_access_log" */
   deleteDataAccessLogById?: Maybe<DataAccessLogs>;
   /** delete data from the table: "data_backups" */
@@ -14655,6 +15203,14 @@ export type Mutation_Root = {
   deleteSecuritySettings?: Maybe<SecuritySettingsMutationResponse>;
   /** delete single row from the table: "security_settings" */
   deleteSecuritySettingsByPk?: Maybe<SecuritySettings>;
+  /** delete single row from the table: "services" */
+  deleteServiceById?: Maybe<Services>;
+  /** delete single row from the table: "service_templates" */
+  deleteServiceTemplateById?: Maybe<ServiceTemplates>;
+  /** delete data from the table: "service_templates" */
+  deleteServiceTemplates?: Maybe<ServiceTemplatesMutationResponse>;
+  /** delete data from the table: "services" */
+  deleteServices?: Maybe<ServicesMutationResponse>;
   /** delete single row from the table: "audit.slow_queries" */
   deleteSlowQueryById?: Maybe<SlowQueries>;
   /** delete data from the table: "system_configuration" */
@@ -14720,6 +15276,10 @@ export type Mutation_Root = {
   insertClientBillingAssignment?: Maybe<ClientBillingAssignments>;
   /** insert a single row into the table: "client_external_systems" */
   insertClientExternalSystem?: Maybe<ClientExternalSystems>;
+  /** insert a single row into the table: "client_service_agreements" */
+  insertClientServiceAgreement?: Maybe<ClientServiceAgreements>;
+  /** insert data into the table: "client_service_agreements" */
+  insertClientServiceAgreements?: Maybe<ClientServiceAgreementsMutationResponse>;
   /** insert a single row into the table: "audit.data_access_log" */
   insertDataAccessLog?: Maybe<DataAccessLogs>;
   /** insert data into the table: "data_backups" */
@@ -14802,6 +15362,14 @@ export type Mutation_Root = {
   insertSecuritySettings?: Maybe<SecuritySettingsMutationResponse>;
   /** insert a single row into the table: "security_settings" */
   insertSecuritySettingsOne?: Maybe<SecuritySettings>;
+  /** insert a single row into the table: "services" */
+  insertService?: Maybe<Services>;
+  /** insert a single row into the table: "service_templates" */
+  insertServiceTemplate?: Maybe<ServiceTemplates>;
+  /** insert data into the table: "service_templates" */
+  insertServiceTemplates?: Maybe<ServiceTemplatesMutationResponse>;
+  /** insert data into the table: "services" */
+  insertServices?: Maybe<ServicesMutationResponse>;
   /** insert a single row into the table: "audit.slow_queries" */
   insertSlowQuery?: Maybe<SlowQueries>;
   /** insert data into the table: "system_configuration" */
@@ -14894,6 +15462,12 @@ export type Mutation_Root = {
   updateClientExternalSystemById?: Maybe<ClientExternalSystems>;
   /** update multiples rows of table: "client_external_systems" */
   updateClientExternalSystemsMany?: Maybe<Array<Maybe<ClientExternalSystemsMutationResponse>>>;
+  /** update single row of the table: "client_service_agreements" */
+  updateClientServiceAgreementById?: Maybe<ClientServiceAgreements>;
+  /** update data of the table: "client_service_agreements" */
+  updateClientServiceAgreements?: Maybe<ClientServiceAgreementsMutationResponse>;
+  /** update multiples rows of table: "client_service_agreements" */
+  updateClientServiceAgreementsMany?: Maybe<Array<Maybe<ClientServiceAgreementsMutationResponse>>>;
   /** update multiples rows of table: "clients" */
   updateClientsMany?: Maybe<Array<Maybe<ClientsMutationResponse>>>;
   /** update single row of the table: "audit.data_access_log" */
@@ -15042,6 +15616,18 @@ export type Mutation_Root = {
   updateSecuritySettingsByPk?: Maybe<SecuritySettings>;
   /** update multiples rows of table: "security_settings" */
   updateSecuritySettingsMany?: Maybe<Array<Maybe<SecuritySettingsMutationResponse>>>;
+  /** update single row of the table: "services" */
+  updateServiceById?: Maybe<Services>;
+  /** update single row of the table: "service_templates" */
+  updateServiceTemplateById?: Maybe<ServiceTemplates>;
+  /** update data of the table: "service_templates" */
+  updateServiceTemplates?: Maybe<ServiceTemplatesMutationResponse>;
+  /** update multiples rows of table: "service_templates" */
+  updateServiceTemplatesMany?: Maybe<Array<Maybe<ServiceTemplatesMutationResponse>>>;
+  /** update data of the table: "services" */
+  updateServices?: Maybe<ServicesMutationResponse>;
+  /** update multiples rows of table: "services" */
+  updateServicesMany?: Maybe<Array<Maybe<ServicesMutationResponse>>>;
   /** update multiples rows of table: "audit.slow_queries" */
   updateSlowQueriesMany?: Maybe<Array<Maybe<SlowQueriesMutationResponse>>>;
   /** update single row of the table: "audit.slow_queries" */
@@ -16168,6 +16754,18 @@ export type Mutation_RootDeleteClientExternalSystemByIdArgs = {
 
 
 /** mutation root */
+export type Mutation_RootDeleteClientServiceAgreementByIdArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteClientServiceAgreementsArgs = {
+  where: ClientServiceAgreementsBoolExp;
+};
+
+
+/** mutation root */
 export type Mutation_RootDeleteDataAccessLogByIdArgs = {
   id: Scalars['uuid']['input'];
 };
@@ -16408,6 +17006,30 @@ export type Mutation_RootDeleteSecuritySettingsByPkArgs = {
 
 
 /** mutation root */
+export type Mutation_RootDeleteServiceByIdArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteServiceTemplateByIdArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteServiceTemplatesArgs = {
+  where: ServiceTemplatesBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDeleteServicesArgs = {
+  where: ServicesBoolExp;
+};
+
+
+/** mutation root */
 export type Mutation_RootDeleteSlowQueryByIdArgs = {
   id: Scalars['uuid']['input'];
 };
@@ -16619,6 +17241,20 @@ export type Mutation_RootInsertClientBillingAssignmentArgs = {
 export type Mutation_RootInsertClientExternalSystemArgs = {
   object: ClientExternalSystemsInsertInput;
   onConflict?: InputMaybe<ClientExternalSystemsOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertClientServiceAgreementArgs = {
+  object: ClientServiceAgreementsInsertInput;
+  onConflict?: InputMaybe<ClientServiceAgreementsOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertClientServiceAgreementsArgs = {
+  objects: Array<ClientServiceAgreementsInsertInput>;
+  onConflict?: InputMaybe<ClientServiceAgreementsOnConflict>;
 };
 
 
@@ -16905,6 +17541,34 @@ export type Mutation_RootInsertSecuritySettingsArgs = {
 export type Mutation_RootInsertSecuritySettingsOneArgs = {
   object: SecuritySettingsInsertInput;
   onConflict?: InputMaybe<SecuritySettingsOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertServiceArgs = {
+  object: ServicesInsertInput;
+  onConflict?: InputMaybe<ServicesOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertServiceTemplateArgs = {
+  object: ServiceTemplatesInsertInput;
+  onConflict?: InputMaybe<ServiceTemplatesOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertServiceTemplatesArgs = {
+  objects: Array<ServiceTemplatesInsertInput>;
+  onConflict?: InputMaybe<ServiceTemplatesOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertServicesArgs = {
+  objects: Array<ServicesInsertInput>;
+  onConflict?: InputMaybe<ServicesOnConflict>;
 };
 
 
@@ -17233,6 +17897,38 @@ export type Mutation_RootUpdateClientExternalSystemByIdArgs = {
 /** mutation root */
 export type Mutation_RootUpdateClientExternalSystemsManyArgs = {
   updates: Array<ClientExternalSystemsUpdates>;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateClientServiceAgreementByIdArgs = {
+  _append?: InputMaybe<ClientServiceAgreementsAppendInput>;
+  _deleteAtPath?: InputMaybe<ClientServiceAgreementsDeleteAtPathInput>;
+  _deleteElem?: InputMaybe<ClientServiceAgreementsDeleteElemInput>;
+  _deleteKey?: InputMaybe<ClientServiceAgreementsDeleteKeyInput>;
+  _inc?: InputMaybe<ClientServiceAgreementsIncInput>;
+  _prepend?: InputMaybe<ClientServiceAgreementsPrependInput>;
+  _set?: InputMaybe<ClientServiceAgreementsSetInput>;
+  pkColumns: ClientServiceAgreementsPkColumnsInput;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateClientServiceAgreementsArgs = {
+  _append?: InputMaybe<ClientServiceAgreementsAppendInput>;
+  _deleteAtPath?: InputMaybe<ClientServiceAgreementsDeleteAtPathInput>;
+  _deleteElem?: InputMaybe<ClientServiceAgreementsDeleteElemInput>;
+  _deleteKey?: InputMaybe<ClientServiceAgreementsDeleteKeyInput>;
+  _inc?: InputMaybe<ClientServiceAgreementsIncInput>;
+  _prepend?: InputMaybe<ClientServiceAgreementsPrependInput>;
+  _set?: InputMaybe<ClientServiceAgreementsSetInput>;
+  where: ClientServiceAgreementsBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateClientServiceAgreementsManyArgs = {
+  updates: Array<ClientServiceAgreementsUpdates>;
 };
 
 
@@ -17827,6 +18523,70 @@ export type Mutation_RootUpdateSecuritySettingsByPkArgs = {
 /** mutation root */
 export type Mutation_RootUpdateSecuritySettingsManyArgs = {
   updates: Array<SecuritySettingsUpdates>;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateServiceByIdArgs = {
+  _append?: InputMaybe<ServicesAppendInput>;
+  _deleteAtPath?: InputMaybe<ServicesDeleteAtPathInput>;
+  _deleteElem?: InputMaybe<ServicesDeleteElemInput>;
+  _deleteKey?: InputMaybe<ServicesDeleteKeyInput>;
+  _inc?: InputMaybe<ServicesIncInput>;
+  _prepend?: InputMaybe<ServicesPrependInput>;
+  _set?: InputMaybe<ServicesSetInput>;
+  pkColumns: ServicesPkColumnsInput;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateServiceTemplateByIdArgs = {
+  _append?: InputMaybe<ServiceTemplatesAppendInput>;
+  _deleteAtPath?: InputMaybe<ServiceTemplatesDeleteAtPathInput>;
+  _deleteElem?: InputMaybe<ServiceTemplatesDeleteElemInput>;
+  _deleteKey?: InputMaybe<ServiceTemplatesDeleteKeyInput>;
+  _inc?: InputMaybe<ServiceTemplatesIncInput>;
+  _prepend?: InputMaybe<ServiceTemplatesPrependInput>;
+  _set?: InputMaybe<ServiceTemplatesSetInput>;
+  pkColumns: ServiceTemplatesPkColumnsInput;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateServiceTemplatesArgs = {
+  _append?: InputMaybe<ServiceTemplatesAppendInput>;
+  _deleteAtPath?: InputMaybe<ServiceTemplatesDeleteAtPathInput>;
+  _deleteElem?: InputMaybe<ServiceTemplatesDeleteElemInput>;
+  _deleteKey?: InputMaybe<ServiceTemplatesDeleteKeyInput>;
+  _inc?: InputMaybe<ServiceTemplatesIncInput>;
+  _prepend?: InputMaybe<ServiceTemplatesPrependInput>;
+  _set?: InputMaybe<ServiceTemplatesSetInput>;
+  where: ServiceTemplatesBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateServiceTemplatesManyArgs = {
+  updates: Array<ServiceTemplatesUpdates>;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateServicesArgs = {
+  _append?: InputMaybe<ServicesAppendInput>;
+  _deleteAtPath?: InputMaybe<ServicesDeleteAtPathInput>;
+  _deleteElem?: InputMaybe<ServicesDeleteElemInput>;
+  _deleteKey?: InputMaybe<ServicesDeleteKeyInput>;
+  _inc?: InputMaybe<ServicesIncInput>;
+  _prepend?: InputMaybe<ServicesPrependInput>;
+  _set?: InputMaybe<ServicesSetInput>;
+  where: ServicesBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdateServicesManyArgs = {
+  updates: Array<ServicesUpdates>;
 };
 
 
@@ -24328,6 +25088,12 @@ export type Query_Root = {
   clientExternalSystems: Array<ClientExternalSystems>;
   /** An aggregate relationship */
   clientExternalSystemsAggregate: ClientExternalSystemsAggregate;
+  /** fetch data from the table: "client_service_agreements" using primary key columns */
+  clientServiceAgreementById?: Maybe<ClientServiceAgreements>;
+  /** An array relationship */
+  clientServiceAgreements: Array<ClientServiceAgreements>;
+  /** An aggregate relationship */
+  clientServiceAgreementsAggregate: ClientServiceAgreementsAggregate;
   /** fetch data from the table: "client_services_with_rates" */
   clientServicesWithRates: Array<ClientServicesWithRates>;
   /** fetch aggregated fields from the table: "client_services_with_rates" */
@@ -24579,6 +25345,18 @@ export type Query_Root = {
   securitySettingsAggregate: SecuritySettingsAggregate;
   /** fetch data from the table: "security_settings" using primary key columns */
   securitySettingsByPk?: Maybe<SecuritySettings>;
+  /** fetch data from the table: "services" using primary key columns */
+  serviceById?: Maybe<Services>;
+  /** fetch data from the table: "service_templates" using primary key columns */
+  serviceTemplateById?: Maybe<ServiceTemplates>;
+  /** fetch data from the table: "service_templates" */
+  serviceTemplates: Array<ServiceTemplates>;
+  /** fetch aggregated fields from the table: "service_templates" */
+  serviceTemplatesAggregate: ServiceTemplatesAggregate;
+  /** fetch data from the table: "services" */
+  services: Array<Services>;
+  /** fetch aggregated fields from the table: "services" */
+  servicesAggregate: ServicesAggregate;
   /** fetch data from the table: "audit.slow_queries" */
   slowQueries: Array<SlowQueries>;
   /** fetch aggregated fields from the table: "audit.slow_queries" */
@@ -24982,6 +25760,29 @@ export type Query_RootClientExternalSystemsAggregateArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<ClientExternalSystemsOrderBy>>;
   where?: InputMaybe<ClientExternalSystemsBoolExp>;
+};
+
+
+export type Query_RootClientServiceAgreementByIdArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Query_RootClientServiceAgreementsArgs = {
+  distinctOn?: InputMaybe<Array<ClientServiceAgreementsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ClientServiceAgreementsOrderBy>>;
+  where?: InputMaybe<ClientServiceAgreementsBoolExp>;
+};
+
+
+export type Query_RootClientServiceAgreementsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<ClientServiceAgreementsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ClientServiceAgreementsOrderBy>>;
+  where?: InputMaybe<ClientServiceAgreementsBoolExp>;
 };
 
 
@@ -25995,6 +26796,52 @@ export type Query_RootSecuritySettingsAggregateArgs = {
 
 export type Query_RootSecuritySettingsByPkArgs = {
   id: Scalars['uuid']['input'];
+};
+
+
+export type Query_RootServiceByIdArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Query_RootServiceTemplateByIdArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Query_RootServiceTemplatesArgs = {
+  distinctOn?: InputMaybe<Array<ServiceTemplatesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ServiceTemplatesOrderBy>>;
+  where?: InputMaybe<ServiceTemplatesBoolExp>;
+};
+
+
+export type Query_RootServiceTemplatesAggregateArgs = {
+  distinctOn?: InputMaybe<Array<ServiceTemplatesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ServiceTemplatesOrderBy>>;
+  where?: InputMaybe<ServiceTemplatesBoolExp>;
+};
+
+
+export type Query_RootServicesArgs = {
+  distinctOn?: InputMaybe<Array<ServicesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ServicesOrderBy>>;
+  where?: InputMaybe<ServicesBoolExp>;
+};
+
+
+export type Query_RootServicesAggregateArgs = {
+  distinctOn?: InputMaybe<Array<ServicesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ServicesOrderBy>>;
+  where?: InputMaybe<ServicesBoolExp>;
 };
 
 
@@ -27147,6 +27994,914 @@ export type SecuritySettingsAggregateBoolExpCount = {
   predicate: IntComparisonExp;
 };
 
+/** Reusable service bundles and templates */
+export type ServiceTemplates = {
+  __typename?: 'serviceTemplates';
+  bundleDiscountPercentage?: Maybe<Scalars['numeric']['output']>;
+  category?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  createdBy?: Maybe<Scalars['uuid']['output']>;
+  /** An object relationship */
+  createdByUser?: Maybe<Users>;
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['uuid']['output'];
+  isPublic?: Maybe<Scalars['Boolean']['output']>;
+  name: Scalars['String']['output'];
+  /** How to calculate template price: sum (add all), fixed (set price), tiered (based on rules) */
+  pricingStrategy?: Maybe<Scalars['String']['output']>;
+  services: Scalars['jsonb']['output'];
+  targetClientTypes?: Maybe<Array<Scalars['String']['output']>>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  updatedBy?: Maybe<Scalars['uuid']['output']>;
+  /** An object relationship */
+  updatedByUser?: Maybe<Users>;
+};
+
+
+/** Reusable service bundles and templates */
+export type ServiceTemplatesServicesArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** aggregated selection of "service_templates" */
+export type ServiceTemplatesAggregate = {
+  __typename?: 'serviceTemplatesAggregate';
+  aggregate?: Maybe<ServiceTemplatesAggregateFields>;
+  nodes: Array<ServiceTemplates>;
+};
+
+/** aggregate fields of "service_templates" */
+export type ServiceTemplatesAggregateFields = {
+  __typename?: 'serviceTemplatesAggregateFields';
+  avg?: Maybe<ServiceTemplatesAvgFields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<ServiceTemplatesMaxFields>;
+  min?: Maybe<ServiceTemplatesMinFields>;
+  stddev?: Maybe<ServiceTemplatesStddevFields>;
+  stddevPop?: Maybe<ServiceTemplatesStddevPopFields>;
+  stddevSamp?: Maybe<ServiceTemplatesStddevSampFields>;
+  sum?: Maybe<ServiceTemplatesSumFields>;
+  varPop?: Maybe<ServiceTemplatesVarPopFields>;
+  varSamp?: Maybe<ServiceTemplatesVarSampFields>;
+  variance?: Maybe<ServiceTemplatesVarianceFields>;
+};
+
+
+/** aggregate fields of "service_templates" */
+export type ServiceTemplatesAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<ServiceTemplatesSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type ServiceTemplatesAppendInput = {
+  services?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** aggregate avg on columns */
+export type ServiceTemplatesAvgFields = {
+  __typename?: 'serviceTemplatesAvgFields';
+  bundleDiscountPercentage?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "service_templates". All fields are combined with a logical 'AND'. */
+export type ServiceTemplatesBoolExp = {
+  _and?: InputMaybe<Array<ServiceTemplatesBoolExp>>;
+  _not?: InputMaybe<ServiceTemplatesBoolExp>;
+  _or?: InputMaybe<Array<ServiceTemplatesBoolExp>>;
+  bundleDiscountPercentage?: InputMaybe<NumericComparisonExp>;
+  category?: InputMaybe<StringComparisonExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  createdBy?: InputMaybe<UuidComparisonExp>;
+  createdByUser?: InputMaybe<UsersBoolExp>;
+  description?: InputMaybe<StringComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  isPublic?: InputMaybe<BooleanComparisonExp>;
+  name?: InputMaybe<StringComparisonExp>;
+  pricingStrategy?: InputMaybe<StringComparisonExp>;
+  services?: InputMaybe<JsonbComparisonExp>;
+  targetClientTypes?: InputMaybe<StringArrayComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+  updatedBy?: InputMaybe<UuidComparisonExp>;
+  updatedByUser?: InputMaybe<UsersBoolExp>;
+};
+
+/** unique or primary key constraints on table "service_templates" */
+export type ServiceTemplatesConstraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'service_templates_pkey'
+  | '%future added value';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type ServiceTemplatesDeleteAtPathInput = {
+  services?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type ServiceTemplatesDeleteElemInput = {
+  services?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type ServiceTemplatesDeleteKeyInput = {
+  services?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** input type for incrementing numeric columns in table "service_templates" */
+export type ServiceTemplatesIncInput = {
+  bundleDiscountPercentage?: InputMaybe<Scalars['numeric']['input']>;
+};
+
+/** input type for inserting data into table "service_templates" */
+export type ServiceTemplatesInsertInput = {
+  bundleDiscountPercentage?: InputMaybe<Scalars['numeric']['input']>;
+  category?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  createdByUser?: InputMaybe<UsersObjRelInsertInput>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isPublic?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  /** How to calculate template price: sum (add all), fixed (set price), tiered (based on rules) */
+  pricingStrategy?: InputMaybe<Scalars['String']['input']>;
+  services?: InputMaybe<Scalars['jsonb']['input']>;
+  targetClientTypes?: InputMaybe<Array<Scalars['String']['input']>>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+  updatedByUser?: InputMaybe<UsersObjRelInsertInput>;
+};
+
+/** aggregate max on columns */
+export type ServiceTemplatesMaxFields = {
+  __typename?: 'serviceTemplatesMaxFields';
+  bundleDiscountPercentage?: Maybe<Scalars['numeric']['output']>;
+  category?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  createdBy?: Maybe<Scalars['uuid']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  /** How to calculate template price: sum (add all), fixed (set price), tiered (based on rules) */
+  pricingStrategy?: Maybe<Scalars['String']['output']>;
+  targetClientTypes?: Maybe<Array<Scalars['String']['output']>>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  updatedBy?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** aggregate min on columns */
+export type ServiceTemplatesMinFields = {
+  __typename?: 'serviceTemplatesMinFields';
+  bundleDiscountPercentage?: Maybe<Scalars['numeric']['output']>;
+  category?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  createdBy?: Maybe<Scalars['uuid']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  /** How to calculate template price: sum (add all), fixed (set price), tiered (based on rules) */
+  pricingStrategy?: Maybe<Scalars['String']['output']>;
+  targetClientTypes?: Maybe<Array<Scalars['String']['output']>>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  updatedBy?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** response of any mutation on the table "service_templates" */
+export type ServiceTemplatesMutationResponse = {
+  __typename?: 'serviceTemplatesMutationResponse';
+  /** number of rows affected by the mutation */
+  affectedRows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<ServiceTemplates>;
+};
+
+/** on_conflict condition type for table "service_templates" */
+export type ServiceTemplatesOnConflict = {
+  constraint: ServiceTemplatesConstraint;
+  updateColumns?: Array<ServiceTemplatesUpdateColumn>;
+  where?: InputMaybe<ServiceTemplatesBoolExp>;
+};
+
+/** Ordering options when selecting data from "service_templates". */
+export type ServiceTemplatesOrderBy = {
+  bundleDiscountPercentage?: InputMaybe<OrderBy>;
+  category?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  createdBy?: InputMaybe<OrderBy>;
+  createdByUser?: InputMaybe<UsersOrderBy>;
+  description?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  isPublic?: InputMaybe<OrderBy>;
+  name?: InputMaybe<OrderBy>;
+  pricingStrategy?: InputMaybe<OrderBy>;
+  services?: InputMaybe<OrderBy>;
+  targetClientTypes?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  updatedBy?: InputMaybe<OrderBy>;
+  updatedByUser?: InputMaybe<UsersOrderBy>;
+};
+
+/** primary key columns input for table: service_templates */
+export type ServiceTemplatesPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type ServiceTemplatesPrependInput = {
+  services?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** select columns of table "service_templates" */
+export type ServiceTemplatesSelectColumn =
+  /** column name */
+  | 'bundleDiscountPercentage'
+  /** column name */
+  | 'category'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'createdBy'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isPublic'
+  /** column name */
+  | 'name'
+  /** column name */
+  | 'pricingStrategy'
+  /** column name */
+  | 'services'
+  /** column name */
+  | 'targetClientTypes'
+  /** column name */
+  | 'updatedAt'
+  /** column name */
+  | 'updatedBy'
+  | '%future added value';
+
+/** input type for updating data in table "service_templates" */
+export type ServiceTemplatesSetInput = {
+  bundleDiscountPercentage?: InputMaybe<Scalars['numeric']['input']>;
+  category?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isPublic?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  /** How to calculate template price: sum (add all), fixed (set price), tiered (based on rules) */
+  pricingStrategy?: InputMaybe<Scalars['String']['input']>;
+  services?: InputMaybe<Scalars['jsonb']['input']>;
+  targetClientTypes?: InputMaybe<Array<Scalars['String']['input']>>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** aggregate stddev on columns */
+export type ServiceTemplatesStddevFields = {
+  __typename?: 'serviceTemplatesStddevFields';
+  bundleDiscountPercentage?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddevPop on columns */
+export type ServiceTemplatesStddevPopFields = {
+  __typename?: 'serviceTemplatesStddevPopFields';
+  bundleDiscountPercentage?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddevSamp on columns */
+export type ServiceTemplatesStddevSampFields = {
+  __typename?: 'serviceTemplatesStddevSampFields';
+  bundleDiscountPercentage?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "serviceTemplates" */
+export type ServiceTemplatesStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: ServiceTemplatesStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type ServiceTemplatesStreamCursorValueInput = {
+  bundleDiscountPercentage?: InputMaybe<Scalars['numeric']['input']>;
+  category?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isPublic?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  /** How to calculate template price: sum (add all), fixed (set price), tiered (based on rules) */
+  pricingStrategy?: InputMaybe<Scalars['String']['input']>;
+  services?: InputMaybe<Scalars['jsonb']['input']>;
+  targetClientTypes?: InputMaybe<Array<Scalars['String']['input']>>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** aggregate sum on columns */
+export type ServiceTemplatesSumFields = {
+  __typename?: 'serviceTemplatesSumFields';
+  bundleDiscountPercentage?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** update columns of table "service_templates" */
+export type ServiceTemplatesUpdateColumn =
+  /** column name */
+  | 'bundleDiscountPercentage'
+  /** column name */
+  | 'category'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'createdBy'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isPublic'
+  /** column name */
+  | 'name'
+  /** column name */
+  | 'pricingStrategy'
+  /** column name */
+  | 'services'
+  /** column name */
+  | 'targetClientTypes'
+  /** column name */
+  | 'updatedAt'
+  /** column name */
+  | 'updatedBy'
+  | '%future added value';
+
+export type ServiceTemplatesUpdates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<ServiceTemplatesAppendInput>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _deleteAtPath?: InputMaybe<ServiceTemplatesDeleteAtPathInput>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _deleteElem?: InputMaybe<ServiceTemplatesDeleteElemInput>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _deleteKey?: InputMaybe<ServiceTemplatesDeleteKeyInput>;
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<ServiceTemplatesIncInput>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<ServiceTemplatesPrependInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<ServiceTemplatesSetInput>;
+  /** filter the rows which have to be updated */
+  where: ServiceTemplatesBoolExp;
+};
+
+/** aggregate varPop on columns */
+export type ServiceTemplatesVarPopFields = {
+  __typename?: 'serviceTemplatesVarPopFields';
+  bundleDiscountPercentage?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate varSamp on columns */
+export type ServiceTemplatesVarSampFields = {
+  __typename?: 'serviceTemplatesVarSampFields';
+  bundleDiscountPercentage?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type ServiceTemplatesVarianceFields = {
+  __typename?: 'serviceTemplatesVarianceFields';
+  bundleDiscountPercentage?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Core services catalog with proper referential integrity */
+export type Services = {
+  __typename?: 'services';
+  /** An array relationship */
+  billingItems: Array<BillingItems>;
+  /** An aggregate relationship */
+  billingItemsAggregate: BillingItemsAggregate;
+  /** How this service is billed: Per Payroll, Per Employee, Per Hour, etc. */
+  billingUnit: Scalars['String']['output'];
+  category: Scalars['String']['output'];
+  /** An array relationship */
+  clientServiceAgreements: Array<ClientServiceAgreements>;
+  /** An aggregate relationship */
+  clientServiceAgreementsAggregate: ClientServiceAgreementsAggregate;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  createdBy?: Maybe<Scalars['uuid']['output']>;
+  /** An object relationship */
+  createdByUser?: Maybe<Users>;
+  currency: Scalars['String']['output'];
+  defaultRate: Scalars['numeric']['output'];
+  dependencies?: Maybe<Scalars['jsonb']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['uuid']['output'];
+  isActive?: Maybe<Scalars['Boolean']['output']>;
+  isTemplate?: Maybe<Scalars['Boolean']['output']>;
+  metadata?: Maybe<Scalars['jsonb']['output']>;
+  name: Scalars['String']['output'];
+  /** JSONB field for complex pricing logic */
+  pricingRules?: Maybe<Scalars['jsonb']['output']>;
+  /** standard: regular service, template: reusable template, custom: client-specific */
+  serviceType: Scalars['String']['output'];
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  updatedBy?: Maybe<Scalars['uuid']['output']>;
+  /** An object relationship */
+  updatedByUser?: Maybe<Users>;
+};
+
+
+/** Core services catalog with proper referential integrity */
+export type ServicesBillingItemsArgs = {
+  distinctOn?: InputMaybe<Array<BillingItemsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingItemsOrderBy>>;
+  where?: InputMaybe<BillingItemsBoolExp>;
+};
+
+
+/** Core services catalog with proper referential integrity */
+export type ServicesBillingItemsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<BillingItemsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<BillingItemsOrderBy>>;
+  where?: InputMaybe<BillingItemsBoolExp>;
+};
+
+
+/** Core services catalog with proper referential integrity */
+export type ServicesClientServiceAgreementsArgs = {
+  distinctOn?: InputMaybe<Array<ClientServiceAgreementsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ClientServiceAgreementsOrderBy>>;
+  where?: InputMaybe<ClientServiceAgreementsBoolExp>;
+};
+
+
+/** Core services catalog with proper referential integrity */
+export type ServicesClientServiceAgreementsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<ClientServiceAgreementsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ClientServiceAgreementsOrderBy>>;
+  where?: InputMaybe<ClientServiceAgreementsBoolExp>;
+};
+
+
+/** Core services catalog with proper referential integrity */
+export type ServicesDependenciesArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** Core services catalog with proper referential integrity */
+export type ServicesMetadataArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** Core services catalog with proper referential integrity */
+export type ServicesPricingRulesArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** aggregated selection of "services" */
+export type ServicesAggregate = {
+  __typename?: 'servicesAggregate';
+  aggregate?: Maybe<ServicesAggregateFields>;
+  nodes: Array<Services>;
+};
+
+/** aggregate fields of "services" */
+export type ServicesAggregateFields = {
+  __typename?: 'servicesAggregateFields';
+  avg?: Maybe<ServicesAvgFields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<ServicesMaxFields>;
+  min?: Maybe<ServicesMinFields>;
+  stddev?: Maybe<ServicesStddevFields>;
+  stddevPop?: Maybe<ServicesStddevPopFields>;
+  stddevSamp?: Maybe<ServicesStddevSampFields>;
+  sum?: Maybe<ServicesSumFields>;
+  varPop?: Maybe<ServicesVarPopFields>;
+  varSamp?: Maybe<ServicesVarSampFields>;
+  variance?: Maybe<ServicesVarianceFields>;
+};
+
+
+/** aggregate fields of "services" */
+export type ServicesAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<ServicesSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type ServicesAppendInput = {
+  dependencies?: InputMaybe<Scalars['jsonb']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  /** JSONB field for complex pricing logic */
+  pricingRules?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** aggregate avg on columns */
+export type ServicesAvgFields = {
+  __typename?: 'servicesAvgFields';
+  defaultRate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "services". All fields are combined with a logical 'AND'. */
+export type ServicesBoolExp = {
+  _and?: InputMaybe<Array<ServicesBoolExp>>;
+  _not?: InputMaybe<ServicesBoolExp>;
+  _or?: InputMaybe<Array<ServicesBoolExp>>;
+  billingItems?: InputMaybe<BillingItemsBoolExp>;
+  billingItemsAggregate?: InputMaybe<BillingItemsAggregateBoolExp>;
+  billingUnit?: InputMaybe<StringComparisonExp>;
+  category?: InputMaybe<StringComparisonExp>;
+  clientServiceAgreements?: InputMaybe<ClientServiceAgreementsBoolExp>;
+  clientServiceAgreementsAggregate?: InputMaybe<ClientServiceAgreementsAggregateBoolExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  createdBy?: InputMaybe<UuidComparisonExp>;
+  createdByUser?: InputMaybe<UsersBoolExp>;
+  currency?: InputMaybe<StringComparisonExp>;
+  defaultRate?: InputMaybe<NumericComparisonExp>;
+  dependencies?: InputMaybe<JsonbComparisonExp>;
+  description?: InputMaybe<StringComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  isActive?: InputMaybe<BooleanComparisonExp>;
+  isTemplate?: InputMaybe<BooleanComparisonExp>;
+  metadata?: InputMaybe<JsonbComparisonExp>;
+  name?: InputMaybe<StringComparisonExp>;
+  pricingRules?: InputMaybe<JsonbComparisonExp>;
+  serviceType?: InputMaybe<StringComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+  updatedBy?: InputMaybe<UuidComparisonExp>;
+  updatedByUser?: InputMaybe<UsersBoolExp>;
+};
+
+/** unique or primary key constraints on table "services" */
+export type ServicesConstraint =
+  /** unique or primary key constraint on columns "name" */
+  | 'services_name_key'
+  /** unique or primary key constraint on columns "id" */
+  | 'services_pkey'
+  | '%future added value';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type ServicesDeleteAtPathInput = {
+  dependencies?: InputMaybe<Array<Scalars['String']['input']>>;
+  metadata?: InputMaybe<Array<Scalars['String']['input']>>;
+  /** JSONB field for complex pricing logic */
+  pricingRules?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type ServicesDeleteElemInput = {
+  dependencies?: InputMaybe<Scalars['Int']['input']>;
+  metadata?: InputMaybe<Scalars['Int']['input']>;
+  /** JSONB field for complex pricing logic */
+  pricingRules?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type ServicesDeleteKeyInput = {
+  dependencies?: InputMaybe<Scalars['String']['input']>;
+  metadata?: InputMaybe<Scalars['String']['input']>;
+  /** JSONB field for complex pricing logic */
+  pricingRules?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** input type for incrementing numeric columns in table "services" */
+export type ServicesIncInput = {
+  defaultRate?: InputMaybe<Scalars['numeric']['input']>;
+};
+
+/** input type for inserting data into table "services" */
+export type ServicesInsertInput = {
+  billingItems?: InputMaybe<BillingItemsArrRelInsertInput>;
+  /** How this service is billed: Per Payroll, Per Employee, Per Hour, etc. */
+  billingUnit?: InputMaybe<Scalars['String']['input']>;
+  category?: InputMaybe<Scalars['String']['input']>;
+  clientServiceAgreements?: InputMaybe<ClientServiceAgreementsArrRelInsertInput>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  createdByUser?: InputMaybe<UsersObjRelInsertInput>;
+  currency?: InputMaybe<Scalars['String']['input']>;
+  defaultRate?: InputMaybe<Scalars['numeric']['input']>;
+  dependencies?: InputMaybe<Scalars['jsonb']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  isTemplate?: InputMaybe<Scalars['Boolean']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  /** JSONB field for complex pricing logic */
+  pricingRules?: InputMaybe<Scalars['jsonb']['input']>;
+  /** standard: regular service, template: reusable template, custom: client-specific */
+  serviceType?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+  updatedByUser?: InputMaybe<UsersObjRelInsertInput>;
+};
+
+/** aggregate max on columns */
+export type ServicesMaxFields = {
+  __typename?: 'servicesMaxFields';
+  /** How this service is billed: Per Payroll, Per Employee, Per Hour, etc. */
+  billingUnit?: Maybe<Scalars['String']['output']>;
+  category?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  createdBy?: Maybe<Scalars['uuid']['output']>;
+  currency?: Maybe<Scalars['String']['output']>;
+  defaultRate?: Maybe<Scalars['numeric']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  /** standard: regular service, template: reusable template, custom: client-specific */
+  serviceType?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  updatedBy?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** aggregate min on columns */
+export type ServicesMinFields = {
+  __typename?: 'servicesMinFields';
+  /** How this service is billed: Per Payroll, Per Employee, Per Hour, etc. */
+  billingUnit?: Maybe<Scalars['String']['output']>;
+  category?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  createdBy?: Maybe<Scalars['uuid']['output']>;
+  currency?: Maybe<Scalars['String']['output']>;
+  defaultRate?: Maybe<Scalars['numeric']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  /** standard: regular service, template: reusable template, custom: client-specific */
+  serviceType?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  updatedBy?: Maybe<Scalars['uuid']['output']>;
+};
+
+/** response of any mutation on the table "services" */
+export type ServicesMutationResponse = {
+  __typename?: 'servicesMutationResponse';
+  /** number of rows affected by the mutation */
+  affectedRows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<Services>;
+};
+
+/** input type for inserting object relation for remote table "services" */
+export type ServicesObjRelInsertInput = {
+  data: ServicesInsertInput;
+  /** upsert condition */
+  onConflict?: InputMaybe<ServicesOnConflict>;
+};
+
+/** on_conflict condition type for table "services" */
+export type ServicesOnConflict = {
+  constraint: ServicesConstraint;
+  updateColumns?: Array<ServicesUpdateColumn>;
+  where?: InputMaybe<ServicesBoolExp>;
+};
+
+/** Ordering options when selecting data from "services". */
+export type ServicesOrderBy = {
+  billingItemsAggregate?: InputMaybe<BillingItemsAggregateOrderBy>;
+  billingUnit?: InputMaybe<OrderBy>;
+  category?: InputMaybe<OrderBy>;
+  clientServiceAgreementsAggregate?: InputMaybe<ClientServiceAgreementsAggregateOrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  createdBy?: InputMaybe<OrderBy>;
+  createdByUser?: InputMaybe<UsersOrderBy>;
+  currency?: InputMaybe<OrderBy>;
+  defaultRate?: InputMaybe<OrderBy>;
+  dependencies?: InputMaybe<OrderBy>;
+  description?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  isActive?: InputMaybe<OrderBy>;
+  isTemplate?: InputMaybe<OrderBy>;
+  metadata?: InputMaybe<OrderBy>;
+  name?: InputMaybe<OrderBy>;
+  pricingRules?: InputMaybe<OrderBy>;
+  serviceType?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  updatedBy?: InputMaybe<OrderBy>;
+  updatedByUser?: InputMaybe<UsersOrderBy>;
+};
+
+/** primary key columns input for table: services */
+export type ServicesPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type ServicesPrependInput = {
+  dependencies?: InputMaybe<Scalars['jsonb']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  /** JSONB field for complex pricing logic */
+  pricingRules?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** select columns of table "services" */
+export type ServicesSelectColumn =
+  /** column name */
+  | 'billingUnit'
+  /** column name */
+  | 'category'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'createdBy'
+  /** column name */
+  | 'currency'
+  /** column name */
+  | 'defaultRate'
+  /** column name */
+  | 'dependencies'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isTemplate'
+  /** column name */
+  | 'metadata'
+  /** column name */
+  | 'name'
+  /** column name */
+  | 'pricingRules'
+  /** column name */
+  | 'serviceType'
+  /** column name */
+  | 'updatedAt'
+  /** column name */
+  | 'updatedBy'
+  | '%future added value';
+
+/** input type for updating data in table "services" */
+export type ServicesSetInput = {
+  /** How this service is billed: Per Payroll, Per Employee, Per Hour, etc. */
+  billingUnit?: InputMaybe<Scalars['String']['input']>;
+  category?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  currency?: InputMaybe<Scalars['String']['input']>;
+  defaultRate?: InputMaybe<Scalars['numeric']['input']>;
+  dependencies?: InputMaybe<Scalars['jsonb']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  isTemplate?: InputMaybe<Scalars['Boolean']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  /** JSONB field for complex pricing logic */
+  pricingRules?: InputMaybe<Scalars['jsonb']['input']>;
+  /** standard: regular service, template: reusable template, custom: client-specific */
+  serviceType?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** aggregate stddev on columns */
+export type ServicesStddevFields = {
+  __typename?: 'servicesStddevFields';
+  defaultRate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddevPop on columns */
+export type ServicesStddevPopFields = {
+  __typename?: 'servicesStddevPopFields';
+  defaultRate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddevSamp on columns */
+export type ServicesStddevSampFields = {
+  __typename?: 'servicesStddevSampFields';
+  defaultRate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "services" */
+export type ServicesStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: ServicesStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type ServicesStreamCursorValueInput = {
+  /** How this service is billed: Per Payroll, Per Employee, Per Hour, etc. */
+  billingUnit?: InputMaybe<Scalars['String']['input']>;
+  category?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  currency?: InputMaybe<Scalars['String']['input']>;
+  defaultRate?: InputMaybe<Scalars['numeric']['input']>;
+  dependencies?: InputMaybe<Scalars['jsonb']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  isTemplate?: InputMaybe<Scalars['Boolean']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  /** JSONB field for complex pricing logic */
+  pricingRules?: InputMaybe<Scalars['jsonb']['input']>;
+  /** standard: regular service, template: reusable template, custom: client-specific */
+  serviceType?: InputMaybe<Scalars['String']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** aggregate sum on columns */
+export type ServicesSumFields = {
+  __typename?: 'servicesSumFields';
+  defaultRate?: Maybe<Scalars['numeric']['output']>;
+};
+
+/** update columns of table "services" */
+export type ServicesUpdateColumn =
+  /** column name */
+  | 'billingUnit'
+  /** column name */
+  | 'category'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'createdBy'
+  /** column name */
+  | 'currency'
+  /** column name */
+  | 'defaultRate'
+  /** column name */
+  | 'dependencies'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isTemplate'
+  /** column name */
+  | 'metadata'
+  /** column name */
+  | 'name'
+  /** column name */
+  | 'pricingRules'
+  /** column name */
+  | 'serviceType'
+  /** column name */
+  | 'updatedAt'
+  /** column name */
+  | 'updatedBy'
+  | '%future added value';
+
+export type ServicesUpdates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<ServicesAppendInput>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _deleteAtPath?: InputMaybe<ServicesDeleteAtPathInput>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _deleteElem?: InputMaybe<ServicesDeleteElemInput>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _deleteKey?: InputMaybe<ServicesDeleteKeyInput>;
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<ServicesIncInput>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<ServicesPrependInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<ServicesSetInput>;
+  /** filter the rows which have to be updated */
+  where: ServicesBoolExp;
+};
+
+/** aggregate varPop on columns */
+export type ServicesVarPopFields = {
+  __typename?: 'servicesVarPopFields';
+  defaultRate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate varSamp on columns */
+export type ServicesVarSampFields = {
+  __typename?: 'servicesVarSampFields';
+  defaultRate?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type ServicesVarianceFields = {
+  __typename?: 'servicesVarianceFields';
+  defaultRate?: Maybe<Scalars['Float']['output']>;
+};
+
 /** columns and relationships of "audit.slow_queries" */
 export type SlowQueries = {
   __typename?: 'slowQueries';
@@ -27459,6 +29214,14 @@ export type Subscription_Root = {
   clientExternalSystemsAggregate: ClientExternalSystemsAggregate;
   /** fetch data from the table in a streaming manner: "client_external_systems" */
   clientExternalSystemsStream: Array<ClientExternalSystems>;
+  /** fetch data from the table: "client_service_agreements" using primary key columns */
+  clientServiceAgreementById?: Maybe<ClientServiceAgreements>;
+  /** An array relationship */
+  clientServiceAgreements: Array<ClientServiceAgreements>;
+  /** An aggregate relationship */
+  clientServiceAgreementsAggregate: ClientServiceAgreementsAggregate;
+  /** fetch data from the table in a streaming manner: "client_service_agreements" */
+  clientServiceAgreementsStream: Array<ClientServiceAgreements>;
   /** fetch data from the table: "client_services_with_rates" */
   clientServicesWithRates: Array<ClientServicesWithRates>;
   /** fetch aggregated fields from the table: "client_services_with_rates" */
@@ -27789,6 +29552,22 @@ export type Subscription_Root = {
   securitySettingsByPk?: Maybe<SecuritySettings>;
   /** fetch data from the table in a streaming manner: "security_settings" */
   securitySettingsStream: Array<SecuritySettings>;
+  /** fetch data from the table: "services" using primary key columns */
+  serviceById?: Maybe<Services>;
+  /** fetch data from the table: "service_templates" using primary key columns */
+  serviceTemplateById?: Maybe<ServiceTemplates>;
+  /** fetch data from the table: "service_templates" */
+  serviceTemplates: Array<ServiceTemplates>;
+  /** fetch aggregated fields from the table: "service_templates" */
+  serviceTemplatesAggregate: ServiceTemplatesAggregate;
+  /** fetch data from the table in a streaming manner: "service_templates" */
+  serviceTemplatesStream: Array<ServiceTemplates>;
+  /** fetch data from the table: "services" */
+  services: Array<Services>;
+  /** fetch aggregated fields from the table: "services" */
+  servicesAggregate: ServicesAggregate;
+  /** fetch data from the table in a streaming manner: "services" */
+  servicesStream: Array<Services>;
   /** fetch data from the table: "audit.slow_queries" */
   slowQueries: Array<SlowQueries>;
   /** fetch aggregated fields from the table: "audit.slow_queries" */
@@ -28301,6 +30080,36 @@ export type Subscription_RootClientExternalSystemsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<ClientExternalSystemsStreamCursorInput>>;
   where?: InputMaybe<ClientExternalSystemsBoolExp>;
+};
+
+
+export type Subscription_RootClientServiceAgreementByIdArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootClientServiceAgreementsArgs = {
+  distinctOn?: InputMaybe<Array<ClientServiceAgreementsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ClientServiceAgreementsOrderBy>>;
+  where?: InputMaybe<ClientServiceAgreementsBoolExp>;
+};
+
+
+export type Subscription_RootClientServiceAgreementsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<ClientServiceAgreementsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ClientServiceAgreementsOrderBy>>;
+  where?: InputMaybe<ClientServiceAgreementsBoolExp>;
+};
+
+
+export type Subscription_RootClientServiceAgreementsStreamArgs = {
+  batchSize: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<ClientServiceAgreementsStreamCursorInput>>;
+  where?: InputMaybe<ClientServiceAgreementsBoolExp>;
 };
 
 
@@ -29586,6 +31395,66 @@ export type Subscription_RootSecuritySettingsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<SecuritySettingsStreamCursorInput>>;
   where?: InputMaybe<SecuritySettingsBoolExp>;
+};
+
+
+export type Subscription_RootServiceByIdArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootServiceTemplateByIdArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootServiceTemplatesArgs = {
+  distinctOn?: InputMaybe<Array<ServiceTemplatesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ServiceTemplatesOrderBy>>;
+  where?: InputMaybe<ServiceTemplatesBoolExp>;
+};
+
+
+export type Subscription_RootServiceTemplatesAggregateArgs = {
+  distinctOn?: InputMaybe<Array<ServiceTemplatesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ServiceTemplatesOrderBy>>;
+  where?: InputMaybe<ServiceTemplatesBoolExp>;
+};
+
+
+export type Subscription_RootServiceTemplatesStreamArgs = {
+  batchSize: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<ServiceTemplatesStreamCursorInput>>;
+  where?: InputMaybe<ServiceTemplatesBoolExp>;
+};
+
+
+export type Subscription_RootServicesArgs = {
+  distinctOn?: InputMaybe<Array<ServicesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ServicesOrderBy>>;
+  where?: InputMaybe<ServicesBoolExp>;
+};
+
+
+export type Subscription_RootServicesAggregateArgs = {
+  distinctOn?: InputMaybe<Array<ServicesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<ServicesOrderBy>>;
+  where?: InputMaybe<ServicesBoolExp>;
+};
+
+
+export type Subscription_RootServicesStreamArgs = {
+  batchSize: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<ServicesStreamCursorInput>>;
+  where?: InputMaybe<ServicesBoolExp>;
 };
 
 

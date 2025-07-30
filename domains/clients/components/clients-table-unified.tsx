@@ -23,9 +23,9 @@ import {
 interface Client {
   id: string;
   name: string;
-  contact_person: string | null;
-  contact_email: string | null;
-  contact_phone: string | null;
+  contactPerson: string | null;
+  contactEmail: string | null;
+  contactPhone: string | null;
   active: boolean;
   payrolls?: Array<{
     id: string;
@@ -105,14 +105,14 @@ export function ClientsTableUnified({
         cellRenderers.badge(active ? "Active" : "Inactive"),
     },
     {
-      key: "contact_person",
+      key: "contactPerson",
       label: "Contact Person",
       sortable: true,
       defaultVisible: true,
       cellRenderer: value => value || "—",
     },
     {
-      key: "contact_email",
+      key: "contactEmail",
       label: "Email",
       sortable: true,
       defaultVisible: true,
@@ -120,7 +120,7 @@ export function ClientsTableUnified({
         email ? cellRenderers.iconText(email, Mail) : "—",
     },
     {
-      key: "contact_phone",
+      key: "contactPhone",
       label: "Phone",
       sortable: true,
       defaultVisible: true,
