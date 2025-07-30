@@ -508,7 +508,7 @@ export async function syncUserRoleAssignmentsHierarchical(
     await adminApolloClient.mutate({
       mutation: gql`
         mutation RemoveExistingRoleAssignments($userId: uuid!) {
-          deleteUserRoles(where: { userId: { _eq: $userId } }) {
+          bulkDeleteUserRoles(where: { userId: { _eq: $userId } }) {
             affectedRows
           }
         }
@@ -520,7 +520,7 @@ export async function syncUserRoleAssignmentsHierarchical(
     await adminApolloClient.mutate({
       mutation: gql`
         mutation InsertUserRoleAssignment($userId: uuid!, $roleId: uuid!) {
-          insertUserRolesOne(object: { userId: $userId, roleId: $roleId }) {
+          insertUserRole(object: { userId: $userId, roleId: $roleId }) {
             id
             userId
             roleId
