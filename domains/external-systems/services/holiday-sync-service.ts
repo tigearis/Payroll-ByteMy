@@ -73,10 +73,12 @@ const INSERT_HOLIDAYS_MUTATION = gql`
     insert_holidays(
       objects: $objects
       on_conflict: {
-        constraint: holidays_date_country_code_key
+        constraint: holidays_pkey
         update_columns: [
+          date
           local_name
           name
+          country_code
           region
           is_fixed
           is_global
@@ -105,10 +107,12 @@ const INSERT_HOLIDAYS_ENHANCED_MUTATION = gql`
     insert_holidays(
       objects: $objects
       on_conflict: {
-        constraint: holidays_date_country_code_key
+        constraint: holidays_pkey
         update_columns: [
+          date
           local_name
           name
+          country_code
           region
           is_fixed
           is_global
@@ -292,11 +296,6 @@ export function transformDataGovAuHolidays(holidays: DataGovAuHoliday[]) {
         launch_year: null, // Not provided by data.gov.au
         types: ['public'], // Assume all are public holidays
         updated_at: new Date().toISOString(),
-        // Custom fields for our enhanced logic
-        source: 'data.gov.au',
-        jurisdiction: holiday.Jurisdiction,
-        more_information: holiday["More Information"],
-        eft_relevant: isEftRelevant,
       };
     } catch (error) {
       console.error(`❌ Error transforming holiday:`, {
@@ -368,7 +367,7 @@ export async function checkExistingHolidays(
     }
 
     if (data && data.holidays_aggregate) {
-      const count = data.holidaysaggregate.aggregate.count;
+      const count = data.holidays_aggregate.aggregate.count;
       const samples = data.holidays || [];
 
       console.log(
@@ -561,9 +560,14 @@ export async function syncComprehensiveAustralianHolidays(
     // Transform data for database insertion
     const holidaysToInsert = transformDataGovAuHolidays(dataGovHolidays);
     
+    // Calculate EFT relevant holidays (NSW and National)
+    const eftRelevantCount = holidaysToInsert.filter(h => 
+      h.region.some(r => EFT_RELEVANT_REGIONS.includes(r))
+    ).length;
+    
     console.log(`📝 Prepared ${holidaysToInsert.length} holidays for insertion`);
-    console.log(`   EFT Relevant: ${holidaysToInsert.filter(h => h.eft_relevant).length}`);
-    console.log(`   Informational: ${holidaysToInsert.filter(h => !h.eft_relevant).length}`);
+    console.log(`   EFT Relevant: ${eftRelevantCount}`);
+    console.log(`   Informational: ${holidaysToInsert.length - eftRelevantCount}`);
     
     // Group by jurisdiction for reporting
     const byJurisdiction = holidaysToInsert.reduce((acc, holiday) => {
@@ -591,19 +595,17 @@ export async function syncComprehensiveAustralianHolidays(
         success: true,
         affectedRows: data.insert_holidays.affected_rows,
         totalHolidays: holidaysToInsert.length,
-        eftRelevantHolidays: holidaysToInsert.filter(h => h.eft_relevant).length,
+        eftRelevantHolidays: eftRelevantCount,
         jurisdictionBreakdown: byJurisdiction,
         message: `Synced ${data.insert_holidays.affected_rows} comprehensive Australian holidays for ${year}`,
       };
     } catch (error) {
-      // Fallback to basic mutation if enhanced fields don't exist
+      // Fallback to basic mutation if main mutation fails
       console.warn("Falling back to basic holiday insertion...", error instanceof Error ? error.message : String(error));
-      
-      const basicHolidays = holidaysToInsert.map(({ source, jurisdiction, more_information, eft_relevant, ...holiday }) => holiday);
       
       const { data, errors } = await adminApolloClient.mutate({
         mutation: INSERT_HOLIDAYS_FALLBACK_MUTATION,
-        variables: { objects: basicHolidays },
+        variables: { objects: holidaysToInsert },
       });
 
       if (errors) {
@@ -616,7 +618,8 @@ export async function syncComprehensiveAustralianHolidays(
       return {
         success: true,
         affectedRows: data.insert_holidays.affected_rows,
-        totalHolidays: basicHolidays.length,
+        totalHolidays: holidaysToInsert.length,
+        eftRelevantHolidays: eftRelevantCount,
         jurisdictionBreakdown: byJurisdiction,
         message: `Synced ${data.insert_holidays.affected_rows} comprehensive Australian holidays for ${year} (fallback)`,
       };

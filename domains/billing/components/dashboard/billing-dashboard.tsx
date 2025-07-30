@@ -35,37 +35,43 @@ import {
 
 interface BillingItem {
   id: string;
-  clientId: string;
-  payrollId?: string;
-  description: string;
-  serviceName: string;
+  clientId?: string | null;
+  payrollId?: string | null;
+  description?: string | null;
+  serviceName?: string | null;
   quantity: number;
-  amount: number;
-  totalAmount?: number;
-  hourlyRate?: number;
-  isApproved: boolean;
-  approvalDate?: string;
-  confirmedAt?: string;
-  notes?: string;
+  amount?: number | null;
+  totalAmount?: number | null;
+  hourlyRate?: number | null;
+  isApproved?: boolean | null;
+  approvalDate?: string | null;
+  confirmedAt?: string | null;
+  notes?: string | null;
   createdAt: string;
   client?: {
     id: string;
     name: string;
-  };
+  } | null;
   payroll?: {
     id: string;
     name: string;
-  };
+  } | null;
   user?: {
     id: string;
     firstName: string;
     lastName: string;
     computedName: string;
-  };
+  } | null;
+  approver?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    computedName: string;
+  } | null;
 }
 
 interface DashboardFilters {
-  isApproved?: boolean;
+  isApproved?: boolean | undefined;
   clientId: string;
   dateRange: string;
   approvalStatus: string;
@@ -97,13 +103,11 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
     return { startDate, endDate };
   }, [filters.dateRange]);
 
-  // Get billing items (get all items, then filter)
+  // Get billing items (get all items, then filter client-side)
   const { data: billingData, loading: billingLoading, refetch } = useQuery(
     GetAllBillingItemsDocument,
     {
       variables: { 
-        searchTerm: null,
-        isApproved: null,
         limit: 500,
         offset: 0
       },
@@ -132,7 +136,7 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
   // Filter billing items
   const filteredItems = useMemo(() => {
     return billingItems.filter(item => {
-      if (filters.isApproved !== undefined && item.isApproved !== filters.isApproved) return false;
+      if (filters.isApproved !== undefined && (item.isApproved ?? false) !== filters.isApproved) return false;
       if (filters.approvalStatus === 'confirmed' && !item.confirmedAt) return false;
       if (filters.approvalStatus === 'unconfirmed' && item.confirmedAt) return false;
       return true;
@@ -141,17 +145,17 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
 
   // Calculate metrics
   const metrics = useMemo(() => {
-    const total = filteredItems.reduce((sum, item) => sum + (item.totalAmount || item.amount || 0), 0);
-    const pending = filteredItems.filter(item => !item.isApproved);
-    const approved = filteredItems.filter(item => item.isApproved);
+    const total = filteredItems.reduce((sum, item) => sum + (item.totalAmount ?? item.amount ?? 0), 0);
+    const pending = filteredItems.filter(item => !(item.isApproved ?? false));
+    const approved = filteredItems.filter(item => item.isApproved ?? false);
     const confirmed = filteredItems.filter(item => item.confirmedAt);
     
     return {
       totalAmount: total,
       pendingCount: pending.length,
-      pendingAmount: pending.reduce((sum, item) => sum + (item.totalAmount || item.amount || 0), 0),
+      pendingAmount: pending.reduce((sum, item) => sum + (item.totalAmount ?? item.amount ?? 0), 0),
       approvedCount: approved.length,
-      approvedAmount: approved.reduce((sum, item) => sum + (item.totalAmount || item.amount || 0), 0),
+      approvedAmount: approved.reduce((sum, item) => sum + (item.totalAmount ?? item.amount ?? 0), 0),
       confirmedCount: confirmed.length,
       totalItems: filteredItems.length
     };
@@ -222,7 +226,7 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
     }
   };
 
-  const getStatusColor = (isApproved: boolean, confirmedAt?: string) => {
+  const getStatusColor = (isApproved: boolean | null, confirmedAt?: string | null) => {
     if (isApproved) {
       return 'bg-green-100 text-green-800';
     } else if (confirmedAt) {
@@ -232,7 +236,7 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
     }
   };
 
-  const getStatusLabel = (isApproved: boolean, confirmedAt?: string) => {
+  const getStatusLabel = (isApproved: boolean | null, confirmedAt?: string | null) => {
     if (isApproved) {
       return 'Approved';
     } else if (confirmedAt) {
@@ -352,15 +356,15 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
                     <div key={item.id} className="flex items-center justify-between p-4 border rounded-lg">
                       <div className="flex items-center gap-4">
                         <div>
-                          <div className="font-medium">{item.serviceName}</div>
-                          <div className="text-sm text-gray-600">{item.description}</div>
+                          <div className="font-medium">{item.serviceName || 'Unnamed Service'}</div>
+                          <div className="text-sm text-gray-600">{item.description || 'No description'}</div>
                         </div>
-                        <Badge className={getStatusColor(item.isApproved, item.confirmedAt)}>
-                          {getStatusLabel(item.isApproved, item.confirmedAt)}
+                        <Badge className={getStatusColor(item.isApproved ?? false, item.confirmedAt ?? null)}>
+                          {getStatusLabel(item.isApproved ?? false, item.confirmedAt ?? null)}
                         </Badge>
                       </div>
                       <div className="text-right">
-                        <div className="font-semibold">{formatCurrency(item.amount)}</div>
+                        <div className="font-semibold">{formatCurrency(item.amount ?? 0)}</div>
                         <div className="text-sm text-gray-600">{formatDate(item.createdAt)}</div>
                       </div>
                     </div>
@@ -532,8 +536,8 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
                       </TableCell>
                       <TableCell>
                         <div className="cursor-pointer" onClick={() => onItemClick?.(item)}>
-                          <div className="font-medium">{item.serviceName}</div>
-                          <div className="text-sm text-gray-600">{item.description}</div>
+                          <div className="font-medium">{item.serviceName || 'Unnamed Service'}</div>
+                          <div className="text-sm text-gray-600">{item.description || 'No description'}</div>
                         </div>
                       </TableCell>
                       <TableCell>
@@ -543,14 +547,14 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
                         )}
                       </TableCell>
                       <TableCell>
-                        <div className="font-semibold">{formatCurrency(item.totalAmount || item.amount)}</div>
+                        <div className="font-semibold">{formatCurrency(item.totalAmount ?? item.amount ?? 0)}</div>
                         {item.quantity > 1 && (
-                          <div className="text-sm text-gray-600">{item.quantity} × {formatCurrency((item.totalAmount || item.amount) / item.quantity)}</div>
+                          <div className="text-sm text-gray-600">{item.quantity} × {formatCurrency((item.totalAmount ?? item.amount ?? 0) / item.quantity)}</div>
                         )}
                       </TableCell>
                       <TableCell>
-                        <Badge className={getStatusColor(item.isApproved, item.confirmedAt)}>
-                          {getStatusLabel(item.isApproved, item.confirmedAt)}
+                        <Badge className={getStatusColor(item.isApproved ?? false, item.confirmedAt ?? null)}>
+                          {getStatusLabel(item.isApproved ?? false, item.confirmedAt ?? null)}
                         </Badge>
                       </TableCell>
                       <TableCell>

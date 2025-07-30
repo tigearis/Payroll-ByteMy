@@ -870,7 +870,7 @@ query GeneratePayrollDatesQuery(
   }
 }
 
-# User-specific upcoming payrolls query
+# User-specific upcoming payrolls query - show all assigned payrolls, prioritize those with upcoming dates
 query GetUserUpcomingPayrolls($userId: uuid!, $limit: Int = 10) {
   payrolls(
     where: {
@@ -881,20 +881,41 @@ query GetUserUpcomingPayrolls($userId: uuid!, $limit: Int = 10) {
         { backupConsultantUserId: { _eq: $userId } }
         { managerUserId: { _eq: $userId } }
       ]
-      payrollDates: { originalEftDate: { _gte: "now()" } }
     }
     orderBy: { updatedAt: DESC }
     limit: $limit
   ) {
     ...PayrollDashboardCard
+    # Get the next upcoming payroll date - use adjustedEftDate or originalEftDate
     nextPayDate: payrollDates(
-      where: { originalEftDate: { _gte: "now()" } }
-      orderBy: { originalEftDate: ASC }
+      where: { _or: [
+        { adjustedEftDate: { _gte: "now()" } }
+        { originalEftDate: { _gte: "now()" } }
+      ] }
+      orderBy: [
+        { adjustedEftDate: ASC }
+        { originalEftDate: ASC }
+      ]
       limit: 1
     ) {
       originalEftDate
       adjustedEftDate
       processingDate
+    }
+    # Also get backup/manager info for role determination
+    backupConsultant {
+      id
+      firstName
+      lastName
+      computedName
+      email
+    }
+    manager {
+      id
+      firstName
+      lastName
+      computedName
+      email
     }
   }
 }

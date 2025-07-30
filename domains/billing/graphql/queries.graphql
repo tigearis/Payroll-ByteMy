@@ -274,20 +274,71 @@ query GetBillingItemsByStatus($isApproved: Boolean, $clientId: uuid) {
   }
 }
 
+# Get all billing items with optional filtering
 query GetAllBillingItems($searchTerm: String, $isApproved: Boolean, $limit: Int, $offset: Int) {
   billingItems(
+    orderBy: { createdAt: DESC }
+    limit: $limit
+    offset: $offset
+  ) {
+    ...BillingItemFragment
+    client {
+      id
+      name
+    }
+    user {
+      id
+      firstName
+      lastName
+      computedName
+    }
+    approver {
+      id
+      firstName
+      lastName
+      computedName
+    }
+  }
+}
+
+# Get billing items with search filter
+query GetBillingItemsWithSearch($searchTerm: String!, $limit: Int, $offset: Int) {
+  billingItems(
     where: {
-      _and: [
-        { 
-          _or: [
-            { description: { _ilike: $searchTerm } }
-            { serviceName: { _ilike: $searchTerm } }
-            { client: { name: { _ilike: $searchTerm } } }
-          ]
-        }
-        { isApproved: { _eq: $isApproved } }
+      _or: [
+        { description: { _ilike: $searchTerm } }
+        { serviceName: { _ilike: $searchTerm } }
+        { client: { name: { _ilike: $searchTerm } } }
       ]
     }
+    orderBy: { createdAt: DESC }
+    limit: $limit
+    offset: $offset
+  ) {
+    ...BillingItemFragment
+    client {
+      id
+      name
+    }
+    user {
+      id
+      firstName
+      lastName
+      computedName
+    }
+    approver {
+      id
+      firstName
+      lastName
+      computedName
+    }
+  }
+}
+
+# Get billing items with approval filter
+query GetBillingItemsByApproval($isApproved: Boolean!, $limit: Int, $offset: Int) {
+  billingItems(
+    where: { isApproved: { _eq: $isApproved } }
     orderBy: { createdAt: DESC }
     limit: $limit
     offset: $offset
