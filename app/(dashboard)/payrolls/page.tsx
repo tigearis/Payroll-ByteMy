@@ -62,6 +62,7 @@ import {
   GetPayrollsTableEnhancedDocument,
   GetPayrollDashboardStatsDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
+import { getScheduleSummary } from "@/domains/payrolls/utils/schedule-helpers";
 import { useDynamicLoading } from "@/lib/hooks/use-dynamic-loading";
 
 type ViewMode = "cards" | "table" | "list";
@@ -947,7 +948,9 @@ export default function PayrollsPage() {
                             <UserCheck className="w-4 h-4 text-gray-500" />
                             <span className="text-gray-600">Consultant:</span>
                             <span className="font-medium">
-                              {payroll.primaryConsultant?.name || "Unassigned"}
+                              {payroll.primaryConsultant?.computedName || 
+                               (payroll.primaryConsultant ? `${payroll.primaryConsultant.firstName || ''} ${payroll.primaryConsultant.lastName || ''}`.trim() : '') || 
+                               "Unassigned"}
                             </span>
                           </div>
 
@@ -963,7 +966,7 @@ export default function PayrollsPage() {
                             <Clock className="w-4 h-4 text-gray-500" />
                             <span className="text-gray-600">Schedule:</span>
                             <span className="font-medium">
-                              {formatPayrollCycle(payroll)}
+                              {getScheduleSummary(payroll)}
                             </span>
                           </div>
 
@@ -1073,8 +1076,9 @@ export default function PayrollsPage() {
                                 <div className="flex items-center gap-1">
                                   <UserCheck className="w-3 h-3" />
                                   <span>
-                                    {payroll.primaryConsultant?.name ||
-                                      "Unassigned"}
+                                    {payroll.primaryConsultant?.computedName || 
+                                     (payroll.primaryConsultant ? `${payroll.primaryConsultant.firstName || ''} ${payroll.primaryConsultant.lastName || ''}`.trim() : '') || 
+                                     "Unassigned"}
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-1">
@@ -1090,7 +1094,7 @@ export default function PayrollsPage() {
                           <div className="flex items-center space-x-4">
                             <div className="text-right text-sm">
                               <div className="font-medium text-gray-900">
-                                {formatPayrollCycle(payroll)}
+                                {getScheduleSummary(payroll)}
                               </div>
                               <div className="text-gray-500">
                                 Next:{" "}

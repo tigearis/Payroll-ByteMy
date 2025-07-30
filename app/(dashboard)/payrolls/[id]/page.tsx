@@ -29,7 +29,7 @@ import {
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { toast } from "sonner";
 // Lazy load export and modal components
 const ExportCsv = dynamic(() => import("@/components/export-csv").then(mod => ({ default: mod.ExportCsv })), {
@@ -133,7 +133,62 @@ import { PermissionGuard, CanUpdate, CanDelete } from "@/components/auth/permiss
 import { PayrollCycleType, PayrollDateType } from "@/types/enums";
 import { QuickEmailDialog } from "@/domains/email/components/quick-email-dialog";
 
-// Add error boundary component for debugging
+// Enhanced error boundary for version checking
+function VersionCheckErrorBoundary({ children }: { children: React.ReactNode }) {
+  const [hasError, setHasError] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    const handleError = (event: ErrorEvent) => {
+      if (event.error?.message?.includes('version') || event.error?.message?.includes('redirect')) {
+        console.error("Version Check Error:", event.error);
+        setError(event.error);
+        setHasError(true);
+      }
+    };
+
+    window.addEventListener('error', handleError);
+    return () => window.removeEventListener('error', handleError);
+  }, []);
+
+  if (hasError) {
+    return (
+      <div className="p-6 border border-amber-300 bg-amber-50 rounded-lg">
+        <div className="flex items-center gap-3 mb-3">
+          <AlertTriangle className="w-6 h-6 text-amber-600" />
+          <h2 className="text-amber-800 font-semibold">Version Check Error</h2>
+        </div>
+        <p className="text-amber-700 mb-4">
+          There was an issue checking the payroll version. This may be due to network connectivity or data consistency issues.
+        </p>
+        <div className="bg-amber-100 p-3 rounded text-sm text-amber-800 mb-4">
+          <strong>Error:</strong> {error?.message || 'Unknown error'}
+        </div>
+        <div className="flex gap-2">
+          <Button onClick={() => window.location.reload()} variant="outline">
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Retry
+          </Button>
+          <Button onClick={() => window.history.back()} variant="outline">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Go Back
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  try {
+    return <>{children}</>;
+  } catch (error) {
+    console.error("Version Check Component Error:", error);
+    setError(error as Error);
+    setHasError(true);
+    return null;
+  }
+}
+
+// General error boundary component for debugging
 function ErrorBoundary({ children }: { children: React.ReactNode }) {
   try {
     return <>{children}</>;
@@ -274,6 +329,55 @@ const getRoleDisplayName = (role: string) => {
   }
 };
 
+// Unified loading state manager
+function useLoadingCoordinator() {
+  const [loadingStates, setLoadingStates] = useState({
+    versionCheck: false,
+    latestVersion: false,
+    batchData: false,
+    redirecting: false
+  });
+  const [loadingToastShown, setLoadingToastShown] = useState(false);
+
+  const setLoading = useCallback((key: keyof typeof loadingStates, value: boolean) => {
+    setLoadingStates(prev => ({ ...prev, [key]: value }));
+  }, []);
+
+  const isAnyLoading = useMemo(() => {
+    return Object.values(loadingStates).some(Boolean);
+  }, [loadingStates]);
+
+  const isVersionCheckingOrRedirecting = useMemo(() => {
+    return loadingStates.latestVersion || loadingStates.redirecting;
+  }, [loadingStates.latestVersion, loadingStates.redirecting]);
+
+  // Show loading toast after 2 seconds if still loading
+  useEffect(() => {
+    if (isAnyLoading && !loadingToastShown) {
+      const timer = setTimeout(() => {
+        if (isAnyLoading) {
+          toast.info("Loading payroll data...");
+          setLoadingToastShown(true);
+        }
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+    
+    // Clear toast when loading finishes
+    if (!isAnyLoading && loadingToastShown) {
+      setLoadingToastShown(false);
+    }
+  }, [isAnyLoading, loadingToastShown]);
+
+  return {
+    loadingStates,
+    setLoading,
+    isAnyLoading,
+    isVersionCheckingOrRedirecting,
+    loadingToastShown
+  };
+}
+
 export default function PayrollPage() {
   console.log("🚀 PayrollPage component starting...");
 
@@ -286,10 +390,15 @@ export default function PayrollPage() {
   const apolloClient = useApolloClient(); // For QueryOptimizer
 
   console.log("📋 Payroll ID:", id);
-
-  // Permission checks now handled by PermissionGuard components
-
-  const [loadingToastShown, setLoadingToastShown] = useState(false);
+  
+  // Unified loading state management
+  const { 
+    loadingStates, 
+    setLoading, 
+    isAnyLoading, 
+    isVersionCheckingOrRedirecting, 
+    loadingToastShown 
+  } = useLoadingCoordinator();
   const [activeTab, setActiveTab] = useState("overview");
   const [isEditing, setIsEditing] = useState(false);
   const [showStatusDialog, setShowStatusDialog] = useState(false);
@@ -349,7 +458,16 @@ export default function PayrollPage() {
       variables: { payrollId: id }, // Use the current ID to find the latest in this family
       skip: !id,
       fetchPolicy: "network-only",
+      onCompleted: () => setLoading('latestVersion', false),
+      onError: () => setLoading('latestVersion', false),
     });
+
+  // Update loading state when version check starts
+  useEffect(() => {
+    if (latestVersionLoading) {
+      setLoading('latestVersion', true);
+    }
+  }, [latestVersionLoading, setLoading]);
   console.log("✅ Latest version query loaded first");
 
   // STEP 2: Determine if we need to redirect to the latest version
@@ -379,8 +497,17 @@ export default function PayrollPage() {
       variables: { id },
       skip: !id || !shouldLoadCurrentPayroll,
       fetchPolicy: "network-only",
+      onCompleted: () => setLoading('versionCheck', false),
+      onError: () => setLoading('versionCheck', false),
     }
   );
+  
+  // Update loading state for version check
+  useEffect(() => {
+    if (versionCheckLoading) {
+      setLoading('versionCheck', true);
+    }
+  }, [versionCheckLoading, setLoading]);
   console.log("✅ Version check query loaded");
 
   const currentPayroll = versionCheckData?.payrollById as any;
@@ -435,18 +562,17 @@ export default function PayrollPage() {
     cycles: any;
     dateTypes: any;
   } | null>(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<any>(null);
 
-  // Function to refetch all data
+  // Enhanced function to refetch all data with better error handling and fallbacks
   const refetch = async () => {
     if (!id || isVersionCheckingOrRedirecting) return;
 
-    setLoading(true);
+    setLoading('batchData', true);
     setError(null);
 
     try {
-      console.log("🚀 Starting optimized parallel queries...");
+      console.log("🚀 Starting optimized parallel queries with enhanced error handling...");
       
       // Execute all queries in parallel using QueryOptimizer
       const { results, errors } = await QueryOptimizer.executeParallelQueries(
@@ -476,29 +602,70 @@ export default function PayrollPage() {
             },
           ],
           maxConcurrent: 4,
-          timeoutMs: 10000,
+          timeoutMs: 15000, // Increased timeout to 15 seconds
+          retryCount: 2, // Add retry capability if supported
         }
       );
 
       if (errors.length > 0) {
-        throw errors[0]; // Handle first error
+        console.warn(`⚠️ ${errors.length} query errors occurred:`, errors);
+        
+        // Handle partial failures with fallback data
+        if (results[0]) { // If we at least have payroll data
+          setBatchData({
+            payroll: results[0],
+            users: results[1] || { users: [] }, // Fallback to empty users
+            cycles: results[2] || { payrollCycles: [] }, // Fallback to empty cycles
+            dateTypes: results[3] || { payrollDateTypes: [] }, // Fallback to empty date types
+          });
+          
+          // Show warning toast for partial data
+          toast.warning("Some data failed to load. Core functionality remains available.", {
+            description: "Users, cycles, or date types may be limited.",
+            duration: 5000
+          });
+        } else {
+          throw new Error("Critical payroll data failed to load");
+        }
+      } else {
+        // Map results to our data structure
+        setBatchData({
+          payroll: results[0],
+          users: results[1],
+          cycles: results[2],
+          dateTypes: results[3],
+        });
+
+        console.log("✅ All queries completed successfully in parallel!");
       }
 
-      // Map results to our data structure
-      setBatchData({
-        payroll: results[0],
-        users: results[1],
-        cycles: results[2],
-        dateTypes: results[3],
-      });
-
-      console.log("✅ All queries completed in parallel!");
-
-    } catch (err) {
+    } catch (err: any) {
       console.error("🔥 BATCH QUERY ERROR:", err);
       setError(err);
+      
+      // Enhanced error context
+      const errorMessage = err.message || 'Unknown error occurred';
+      const isTimeoutError = errorMessage.includes('timeout') || errorMessage.includes('AbortError');
+      const isNetworkError = errorMessage.includes('network') || errorMessage.includes('fetch');
+      
+      if (isTimeoutError) {
+        toast.error("Request timed out. Please check your connection and try again.", {
+          description: "The payroll data is taking too long to load.",
+          duration: 8000
+        });
+      } else if (isNetworkError) {
+        toast.error("Network error occurred. Please check your connection.", {
+          description: "Unable to fetch payroll data due to connectivity issues.",
+          duration: 8000
+        });
+      } else {
+        toast.error("Failed to load payroll data", {
+          description: errorMessage,
+          duration: 8000
+        });
+      }
     } finally {
-      setLoading(false);
+      setLoading('batchData', false);
     }
   };
 
@@ -830,40 +997,55 @@ export default function PayrollPage() {
 
   // Show loading state while checking versions or redirecting
   if (isVersionCheckingOrRedirecting) {
-    return <PayrollDetailsLoading />;
+    return (
+      <VersionCheckErrorBoundary>
+        <PayrollDetailsLoading />
+      </VersionCheckErrorBoundary>
+    );
   }
 
   // If we're not redirecting, we should have version check data
   if (versionCheckLoading) {
-    return <PayrollDetailsLoading />;
+    return (
+      <VersionCheckErrorBoundary>
+        <PayrollDetailsLoading />
+      </VersionCheckErrorBoundary>
+    );
   }
 
   if (!versionCheckData || !versionCheckData.payrollById) {
     // Show detailed error information instead of calling notFound()
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] p-8 space-y-6">
-        <AlertTriangle className="w-16 h-16 text-red-500" />
-        <div className="text-center space-y-2">
-          <h2 className="text-2xl font-bold">Payroll Data Issue</h2>
-          <p className="text-gray-600">
-            The payroll with ID "{id}" could not be loaded
-          </p>
-
-          <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-md text-left max-w-lg mx-auto mt-4">
-            <p>No error was reported, but payrollById returned null.</p>
-            <p className="text-sm mt-2">
-              This usually happens when the record exists but you don't have
-              permission to view it, or the record doesn't exist.
+      <VersionCheckErrorBoundary>
+        <div className="flex flex-col items-center justify-center min-h-[400px] p-8 space-y-6">
+          <AlertTriangle className="w-16 h-16 text-red-500" />
+          <div className="text-center space-y-2">
+            <h2 className="text-2xl font-bold">Payroll Data Issue</h2>
+            <p className="text-gray-600">
+              The payroll with ID "{id}" could not be loaded
             </p>
-          </div>
 
-          <div className="mt-6">
-            <Button onClick={() => router.push("/payrolls")} variant="outline">
-              Back to Payrolls List
-            </Button>
+            <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-md text-left max-w-lg mx-auto mt-4">
+              <p>No error was reported, but payrollById returned null.</p>
+              <p className="text-sm mt-2">
+                This usually happens when the record exists but you don't have
+                permission to view it, or the record doesn't exist.
+              </p>
+            </div>
+
+            <div className="mt-6 flex gap-2">
+              <Button onClick={() => window.location.reload()} variant="outline">
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Retry Loading
+              </Button>
+              <Button onClick={() => router.push("/payrolls")} variant="outline">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Payrolls List
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
+      </VersionCheckErrorBoundary>
     );
   }
 
