@@ -512,8 +512,14 @@ export default function PayrollPage() {
 
   const currentPayroll = versionCheckData?.payrollById as any;
 
-  // Show loading if we're checking versions or about to redirect
-  const isVersionCheckingOrRedirecting = latestVersionLoading || needsRedirect;
+  // Update loading coordinator with version checking state
+  useEffect(() => {
+    if (latestVersionLoading || needsRedirect) {
+      setLoading('redirecting', true);
+    } else {
+      setLoading('redirecting', false);
+    }
+  }, [latestVersionLoading, needsRedirect, setLoading]);
 
   // Add debugging for versioning logic
   useEffect(() => {
