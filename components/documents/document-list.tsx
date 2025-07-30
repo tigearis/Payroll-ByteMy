@@ -225,15 +225,22 @@ export function DocumentList({
   // Handle document actions
   const handleView = async (document: Document) => {
     try {
-      const response = await fetch(`/api/documents/${document.id}/view`);
-      const result = await response.json();
-
-      if (result.success) {
-        window.open(result.viewUrl, '_blank');
+      // Use the existing presigned URL from the document record
+      // This avoids authentication issues and is more efficient
+      if (document.url) {
+        window.open(document.url, '_blank');
       } else {
-        toast.error('Failed to open document', {
-          description: result.error,
-        });
+        // Fallback to API if no URL is available
+        const response = await fetch(`/api/documents/${document.id}/view`);
+        const result = await response.json();
+
+        if (result.success) {
+          window.open(result.viewUrl, '_blank');
+        } else {
+          toast.error('Failed to open document', {
+            description: result.error,
+          });
+        }
       }
     } catch (error) {
       toast.error('Failed to open document');

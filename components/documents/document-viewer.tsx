@@ -159,24 +159,35 @@ export function DocumentViewer({
     }));
 
     try {
-      const response = await fetch(
-        `/api/documents/${document.id}/view?expiryMinutes=60`
-      );
-      const result = await response.json();
-
-      if (result.success) {
+      // Use the existing presigned URL from the document record
+      // This avoids the authentication issue and is more efficient
+      if (document.url) {
         setViewerState(prev => ({
           ...prev,
           isLoading: false,
-          viewUrl: result.viewUrl,
+          viewUrl: document.url,
         }));
       } else {
-        setViewerState(prev => ({
-          ...prev,
-          isLoading: false,
-          hasError: true,
-          errorMessage: result.error || "Failed to load document",
-        }));
+        // Fallback to API if no URL is available
+        const response = await fetch(
+          `/api/documents/${document.id}/view?expiryMinutes=60`
+        );
+        const result = await response.json();
+
+        if (result.success) {
+          setViewerState(prev => ({
+            ...prev,
+            isLoading: false,
+            viewUrl: result.viewUrl,
+          }));
+        } else {
+          setViewerState(prev => ({
+            ...prev,
+            isLoading: false,
+            hasError: true,
+            errorMessage: result.error || "Failed to load document",
+          }));
+        }
       }
     } catch (error) {
       console.error("Error loading document view URL:", error);
