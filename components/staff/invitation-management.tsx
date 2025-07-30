@@ -185,7 +185,7 @@ function InvitationDetailsModal({
               {invitation.invitedByUser && (
                 <div>
                   <label className="text-sm font-medium text-gray-500">Invited By</label>
-                  <p>{invitation.invitedByUser.name}</p>
+                  <p>{invitation.invitedByUser.computedName || `${invitation.invitedByUser.firstName || ''} ${invitation.invitedByUser.lastName || ''}`.trim() || 'Unknown User'}</p>
                 </div>
               )}
             </div>
@@ -446,7 +446,7 @@ export function InvitationManagement({ embedded = false }: InvitationManagementP
       </CardHeader>
       <CardContent className="pt-0">
         <div className="text-sm text-gray-600 space-y-1">
-          <div>Invited by: {invitation.invitedByUser?.name || 'System'}</div>
+          <div>Invited by: {invitation.invitedByUser?.computedName || `${invitation.invitedByUser?.firstName || ''} ${invitation.invitedByUser?.lastName || ''}`.trim() || 'System'}</div>
           <div>Created: {new Date(invitation.createdAt).toLocaleDateString()}</div>
           <div>Expires: {new Date(invitation.expiresAt).toLocaleDateString()}</div>
           {invitation.acceptedAt && (
@@ -680,7 +680,7 @@ export function InvitationManagement({ embedded = false }: InvitationManagementP
                       <td className="p-4">{invitation.email}</td>
                       <td className="p-4">{getRoleBadge(invitation.invitedRole)}</td>
                       <td className="p-4">{getStatusBadge(getInvitationStatus(invitation))}</td>
-                      <td className="p-4">{invitation.invitedByUser?.name || 'System'}</td>
+                      <td className="p-4">{invitation.invitedByUser?.computedName || `${invitation.invitedByUser?.firstName || ''} ${invitation.invitedByUser?.lastName || ''}`.trim() || 'System'}</td>
                       <td className="p-4">{new Date(invitation.expiresAt).toLocaleDateString()}</td>
                       <td className="p-4">
                         <DropdownMenu>

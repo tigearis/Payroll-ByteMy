@@ -292,7 +292,7 @@ export function NotesList({
                   </div>
                   <div className="mt-2 flex justify-between items-center text-xs text-muted-foreground">
                     <div className="flex items-center gap-2">
-                      <span>{note.authorUser?.name || "Anonymous"}</span>
+                      <span>{note.authorUser?.computedName || `${note.authorUser?.firstName || ''} ${note.authorUser?.lastName || ''}`.trim() || "Anonymous"}</span>
                       {note.isImportant && (
                         <div className="flex items-center gap-1 text-red-600">
                           <AlertTriangle className="w-3 h-3" />
@@ -341,7 +341,7 @@ export function NotesList({
 
             {editingNote && (
               <div className="text-xs text-muted-foreground border-t pt-2">
-                <p>Created by: {editingNote.authorUser?.name || "Anonymous"}</p>
+                <p>Created by: {editingNote.authorUser?.computedName || `${editingNote.authorUser?.firstName || ''} ${editingNote.authorUser?.lastName || ''}`.trim() || "Anonymous"}</p>
                 <p>Created: {safeFormatDateTime(editingNote.createdAt)}</p>
                 {editingNote.updatedAt !== editingNote.createdAt && (
                   <p>

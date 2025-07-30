@@ -355,7 +355,7 @@ export function TemplateLibrary({
                       {template.createdByUser && (
                         <div className="flex items-center gap-1">
                           <User className="h-3 w-3" />
-                          {template.createdByUser.name}
+                          {template.createdByUser.computedName || `${template.createdByUser.firstName || ''} ${template.createdByUser.lastName || ''}`.trim() || 'Unknown User'}
                         </div>
                       )}
                       

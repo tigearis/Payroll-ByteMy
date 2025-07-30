@@ -845,7 +845,7 @@ function InvitationCard({
           {invitation.invitedByUser && (
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-500">Invited by</span>
-              <span className="text-sm font-medium">{invitation.invitedByUser?.name || 'System'}</span>
+              <span className="text-sm font-medium">{invitation.invitedByUser?.computedName || `${invitation.invitedByUser?.firstName || ''} ${invitation.invitedByUser?.lastName || ''}`.trim() || 'System'}</span>
             </div>
           )}
           <div className="flex items-center justify-between">
@@ -932,7 +932,7 @@ function InvitationTable({
                     }
                   </td>
                   <td className="p-4 text-gray-600">
-                    {invitation.invitedByUser?.name || "System"}
+                    {invitation.invitedByUser?.computedName || `${invitation.invitedByUser?.firstName || ''} ${invitation.invitedByUser?.lastName || ''}`.trim() || "System"}
                   </td>
                   <td className="p-4">
                     <DropdownMenu>
@@ -1137,7 +1137,7 @@ function InvitationDetailsModal({
               {invitation.managerId && (
                 <div>
                   <label className="text-sm font-medium text-gray-500">Manager</label>
-                  <p>{invitation.managerUser?.name || 'Not assigned'}</p>
+                  <p>{invitation.managerUser?.computedName || `${invitation.managerUser?.firstName || ''} ${invitation.managerUser?.lastName || ''}`.trim() || 'Not assigned'}</p>
                 </div>
               )}
             </div>
@@ -1191,7 +1191,7 @@ function InvitationDetailsModal({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium text-gray-500">Invited By</label>
-                <p>{invitation.invitedByUser?.name || 'System'}</p>
+                <p>{invitation.invitedByUser?.computedName || `${invitation.invitedByUser?.firstName || ''} ${invitation.invitedByUser?.lastName || ''}`.trim() || 'System'}</p>
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-500">Resend Count</label>

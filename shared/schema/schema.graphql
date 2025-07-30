@@ -53,6 +53,175 @@ type AuditEventResponse {
 }
 
 """
+columns and relationships of "audit.user_access_summary"
+"""
+type AuditUserAccessSummary {
+  createdAt: timestamptz
+  email: String
+  id: uuid
+  isActive: Boolean
+  isStaff: Boolean
+  name: String
+  role: user_role
+  updatedAt: timestamptz
+}
+
+"""
+aggregated selection of "audit.user_access_summary"
+"""
+type AuditUserAccessSummaryAggregate {
+  aggregate: AuditUserAccessSummaryAggregateFields
+  nodes: [AuditUserAccessSummary!]!
+}
+
+"""
+aggregate fields of "audit.user_access_summary"
+"""
+type AuditUserAccessSummaryAggregateFields {
+  count(columns: [AuditUserAccessSummarySelectColumn!], distinct: Boolean): Int!
+  max: AuditUserAccessSummaryMaxFields
+  min: AuditUserAccessSummaryMinFields
+}
+
+"""
+Boolean expression to filter rows from the table "audit.user_access_summary". All fields are combined with a logical 'AND'.
+"""
+input AuditUserAccessSummaryBoolExp {
+  _and: [AuditUserAccessSummaryBoolExp!]
+  _not: AuditUserAccessSummaryBoolExp
+  _or: [AuditUserAccessSummaryBoolExp!]
+  createdAt: TimestamptzComparisonExp
+  email: StringComparisonExp
+  id: UuidComparisonExp
+  isActive: BooleanComparisonExp
+  isStaff: BooleanComparisonExp
+  name: StringComparisonExp
+  role: UserRoleComparisonExp
+  updatedAt: TimestamptzComparisonExp
+}
+
+"""
+input type for inserting data into table "audit.user_access_summary"
+"""
+input AuditUserAccessSummaryInsertInput {
+  createdAt: timestamptz
+  email: String
+  id: uuid
+  isActive: Boolean
+  isStaff: Boolean
+  name: String
+  role: user_role
+  updatedAt: timestamptz
+}
+
+"""aggregate max on columns"""
+type AuditUserAccessSummaryMaxFields {
+  createdAt: timestamptz
+  email: String
+  id: uuid
+  name: String
+  role: user_role
+  updatedAt: timestamptz
+}
+
+"""aggregate min on columns"""
+type AuditUserAccessSummaryMinFields {
+  createdAt: timestamptz
+  email: String
+  id: uuid
+  name: String
+  role: user_role
+  updatedAt: timestamptz
+}
+
+"""
+response of any mutation on the table "audit.user_access_summary"
+"""
+type AuditUserAccessSummaryMutationResponse {
+  """number of rows affected by the mutation"""
+  affectedRows: Int!
+  """data from the rows affected by the mutation"""
+  returning: [AuditUserAccessSummary!]!
+}
+
+"""Ordering options when selecting data from "audit.user_access_summary"."""
+input AuditUserAccessSummaryOrderBy {
+  createdAt: OrderBy
+  email: OrderBy
+  id: OrderBy
+  isActive: OrderBy
+  isStaff: OrderBy
+  name: OrderBy
+  role: OrderBy
+  updatedAt: OrderBy
+}
+
+"""
+select columns of table "audit.user_access_summary"
+"""
+enum AuditUserAccessSummarySelectColumn {
+  """column name"""
+  createdAt
+  """column name"""
+  email
+  """column name"""
+  id
+  """column name"""
+  isActive
+  """column name"""
+  isStaff
+  """column name"""
+  name
+  """column name"""
+  role
+  """column name"""
+  updatedAt
+}
+
+"""
+input type for updating data in table "audit.user_access_summary"
+"""
+input AuditUserAccessSummarySetInput {
+  createdAt: timestamptz
+  email: String
+  id: uuid
+  isActive: Boolean
+  isStaff: Boolean
+  name: String
+  role: user_role
+  updatedAt: timestamptz
+}
+
+"""
+Streaming cursor of the table "audit_user_access_summary"
+"""
+input AuditUserAccessSummaryStreamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: AuditUserAccessSummaryStreamCursorValueInput!
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input AuditUserAccessSummaryStreamCursorValueInput {
+  createdAt: timestamptz
+  email: String
+  id: uuid
+  isActive: Boolean
+  isStaff: Boolean
+  name: String
+  role: user_role
+  updatedAt: timestamptz
+}
+
+input AuditUserAccessSummaryUpdates {
+  """sets the columns of the filtered rows to the given values"""
+  _set: AuditUserAccessSummarySetInput
+  """filter the rows which have to be updated"""
+  where: AuditUserAccessSummaryBoolExp!
+}
+
+"""
 Boolean expression to compare columns of type "bigint". All fields are combined with logical 'AND'.
 """
 input BigintComparisonExp {
@@ -4321,16 +4490,17 @@ input SecuritySettingsUpdates {
   where: SecuritySettingsBoolExp!
 }
 
-"""Staff performance metrics for billing and time tracking"""
+"""
+columns and relationships of "staff_billing_performance"
+"""
 type StaffBillingPerformance {
-  billingItemsCreated: bigint
-  distinctClientsServed: bigint
-  payrollsWorked: bigint
-  revenuePerHour: numeric
-  staffId: uuid
+  averageProfitMargin: numeric
   staffName: String
+  staffUserId: uuid
+  totalActualRevenue: numeric
+  totalEstimatedRevenue: numeric
   totalHoursLogged: numeric
-  totalRevenueGenerated: numeric
+  totalPayrolls: bigint
 }
 
 """
@@ -4360,12 +4530,11 @@ type StaffBillingPerformanceAggregateFields {
 
 """aggregate avg on columns"""
 type StaffBillingPerformanceAvgFields {
-  billingItemsCreated: Float
-  distinctClientsServed: Float
-  payrollsWorked: Float
-  revenuePerHour: Float
+  averageProfitMargin: Float
+  totalActualRevenue: Float
+  totalEstimatedRevenue: Float
   totalHoursLogged: Float
-  totalRevenueGenerated: Float
+  totalPayrolls: Float
 }
 
 """
@@ -4375,50 +4544,46 @@ input StaffBillingPerformanceBoolExp {
   _and: [StaffBillingPerformanceBoolExp!]
   _not: StaffBillingPerformanceBoolExp
   _or: [StaffBillingPerformanceBoolExp!]
-  billingItemsCreated: BigintComparisonExp
-  distinctClientsServed: BigintComparisonExp
-  payrollsWorked: BigintComparisonExp
-  revenuePerHour: NumericComparisonExp
-  staffId: UuidComparisonExp
+  averageProfitMargin: NumericComparisonExp
   staffName: StringComparisonExp
+  staffUserId: UuidComparisonExp
+  totalActualRevenue: NumericComparisonExp
+  totalEstimatedRevenue: NumericComparisonExp
   totalHoursLogged: NumericComparisonExp
-  totalRevenueGenerated: NumericComparisonExp
+  totalPayrolls: BigintComparisonExp
 }
 
 """aggregate max on columns"""
 type StaffBillingPerformanceMaxFields {
-  billingItemsCreated: bigint
-  distinctClientsServed: bigint
-  payrollsWorked: bigint
-  revenuePerHour: numeric
-  staffId: uuid
+  averageProfitMargin: numeric
   staffName: String
+  staffUserId: uuid
+  totalActualRevenue: numeric
+  totalEstimatedRevenue: numeric
   totalHoursLogged: numeric
-  totalRevenueGenerated: numeric
+  totalPayrolls: bigint
 }
 
 """aggregate min on columns"""
 type StaffBillingPerformanceMinFields {
-  billingItemsCreated: bigint
-  distinctClientsServed: bigint
-  payrollsWorked: bigint
-  revenuePerHour: numeric
-  staffId: uuid
+  averageProfitMargin: numeric
   staffName: String
+  staffUserId: uuid
+  totalActualRevenue: numeric
+  totalEstimatedRevenue: numeric
   totalHoursLogged: numeric
-  totalRevenueGenerated: numeric
+  totalPayrolls: bigint
 }
 
 """Ordering options when selecting data from "staff_billing_performance"."""
 input StaffBillingPerformanceOrderBy {
-  billingItemsCreated: OrderBy
-  distinctClientsServed: OrderBy
-  payrollsWorked: OrderBy
-  revenuePerHour: OrderBy
-  staffId: OrderBy
+  averageProfitMargin: OrderBy
   staffName: OrderBy
+  staffUserId: OrderBy
+  totalActualRevenue: OrderBy
+  totalEstimatedRevenue: OrderBy
   totalHoursLogged: OrderBy
-  totalRevenueGenerated: OrderBy
+  totalPayrolls: OrderBy
 }
 
 """
@@ -4426,51 +4591,46 @@ select columns of table "staff_billing_performance"
 """
 enum StaffBillingPerformanceSelectColumn {
   """column name"""
-  billingItemsCreated
-  """column name"""
-  distinctClientsServed
-  """column name"""
-  payrollsWorked
-  """column name"""
-  revenuePerHour
-  """column name"""
-  staffId
+  averageProfitMargin
   """column name"""
   staffName
   """column name"""
+  staffUserId
+  """column name"""
+  totalActualRevenue
+  """column name"""
+  totalEstimatedRevenue
+  """column name"""
   totalHoursLogged
   """column name"""
-  totalRevenueGenerated
+  totalPayrolls
 }
 
 """aggregate stddev on columns"""
 type StaffBillingPerformanceStddevFields {
-  billingItemsCreated: Float
-  distinctClientsServed: Float
-  payrollsWorked: Float
-  revenuePerHour: Float
+  averageProfitMargin: Float
+  totalActualRevenue: Float
+  totalEstimatedRevenue: Float
   totalHoursLogged: Float
-  totalRevenueGenerated: Float
+  totalPayrolls: Float
 }
 
 """aggregate stddevPop on columns"""
 type StaffBillingPerformanceStddevPopFields {
-  billingItemsCreated: Float
-  distinctClientsServed: Float
-  payrollsWorked: Float
-  revenuePerHour: Float
+  averageProfitMargin: Float
+  totalActualRevenue: Float
+  totalEstimatedRevenue: Float
   totalHoursLogged: Float
-  totalRevenueGenerated: Float
+  totalPayrolls: Float
 }
 
 """aggregate stddevSamp on columns"""
 type StaffBillingPerformanceStddevSampFields {
-  billingItemsCreated: Float
-  distinctClientsServed: Float
-  payrollsWorked: Float
-  revenuePerHour: Float
+  averageProfitMargin: Float
+  totalActualRevenue: Float
+  totalEstimatedRevenue: Float
   totalHoursLogged: Float
-  totalRevenueGenerated: Float
+  totalPayrolls: Float
 }
 
 """
@@ -4485,54 +4645,49 @@ input StaffBillingPerformanceStreamCursorInput {
 
 """Initial value of the column from where the streaming should start"""
 input StaffBillingPerformanceStreamCursorValueInput {
-  billingItemsCreated: bigint
-  distinctClientsServed: bigint
-  payrollsWorked: bigint
-  revenuePerHour: numeric
-  staffId: uuid
+  averageProfitMargin: numeric
   staffName: String
+  staffUserId: uuid
+  totalActualRevenue: numeric
+  totalEstimatedRevenue: numeric
   totalHoursLogged: numeric
-  totalRevenueGenerated: numeric
+  totalPayrolls: bigint
 }
 
 """aggregate sum on columns"""
 type StaffBillingPerformanceSumFields {
-  billingItemsCreated: bigint
-  distinctClientsServed: bigint
-  payrollsWorked: bigint
-  revenuePerHour: numeric
+  averageProfitMargin: numeric
+  totalActualRevenue: numeric
+  totalEstimatedRevenue: numeric
   totalHoursLogged: numeric
-  totalRevenueGenerated: numeric
+  totalPayrolls: bigint
 }
 
 """aggregate varPop on columns"""
 type StaffBillingPerformanceVarPopFields {
-  billingItemsCreated: Float
-  distinctClientsServed: Float
-  payrollsWorked: Float
-  revenuePerHour: Float
+  averageProfitMargin: Float
+  totalActualRevenue: Float
+  totalEstimatedRevenue: Float
   totalHoursLogged: Float
-  totalRevenueGenerated: Float
+  totalPayrolls: Float
 }
 
 """aggregate varSamp on columns"""
 type StaffBillingPerformanceVarSampFields {
-  billingItemsCreated: Float
-  distinctClientsServed: Float
-  payrollsWorked: Float
-  revenuePerHour: Float
+  averageProfitMargin: Float
+  totalActualRevenue: Float
+  totalEstimatedRevenue: Float
   totalHoursLogged: Float
-  totalRevenueGenerated: Float
+  totalPayrolls: Float
 }
 
 """aggregate variance on columns"""
 type StaffBillingPerformanceVarianceFields {
-  billingItemsCreated: Float
-  distinctClientsServed: Float
-  payrollsWorked: Float
-  revenuePerHour: Float
+  averageProfitMargin: Float
+  totalActualRevenue: Float
+  totalEstimatedRevenue: Float
   totalHoursLogged: Float
-  totalRevenueGenerated: Float
+  totalPayrolls: Float
 }
 
 type StaffResponse {
@@ -14679,13 +14834,6 @@ type mutation_root {
     where: slowQueriesBoolExp!
   ): slowQueriesMutationResponse
   """
-  delete data from the table: "audit.user_access_summary"
-  """
-  bulkDeleteUserAccessSummaries(
-    """filter the rows which have to be deleted"""
-    where: userAccessSummariesBoolExp!
-  ): userAccessSummariesMutationResponse
-  """
   delete data from the table: "user_invitations"
   """
   bulkDeleteUserInvitations(
@@ -15049,13 +15197,6 @@ type mutation_root {
     """upsert condition"""
     onConflict: slowQueriesOnConflict
   ): slowQueriesMutationResponse
-  """
-  insert data into the table: "audit.user_access_summary"
-  """
-  bulkInsertUserAccessSummaries(
-    """the rows to be inserted"""
-    objects: [userAccessSummariesInsertInput!]!
-  ): userAccessSummariesMutationResponse
   """
   insert data into the table: "user_invitations"
   """
@@ -15599,15 +15740,6 @@ type mutation_root {
     where: slowQueriesBoolExp!
   ): slowQueriesMutationResponse
   """
-  update data of the table: "audit.user_access_summary"
-  """
-  bulkUpdateUserAccessSummaries(
-    """sets the columns of the filtered rows to the given values"""
-    _set: userAccessSummariesSetInput
-    """filter the rows which have to be updated"""
-    where: userAccessSummariesBoolExp!
-  ): userAccessSummariesMutationResponse
-  """
   update data of the table: "user_invitations"
   """
   bulkUpdateUserInvitations(
@@ -15702,6 +15834,13 @@ type mutation_root {
   delete single row from the table: "audit.audit_log"
   """
   deleteAuditLogById(id: uuid!): auditLogs
+  """
+  delete data from the table: "audit.user_access_summary"
+  """
+  deleteAuditUserAccessSummary(
+    """filter the rows which have to be deleted"""
+    where: AuditUserAccessSummaryBoolExp!
+  ): AuditUserAccessSummaryMutationResponse
   """
   delete single row from the table: "audit.auth_events"
   """
@@ -16078,6 +16217,20 @@ type mutation_root {
     """upsert condition"""
     onConflict: auditLogsOnConflict
   ): auditLogs
+  """
+  insert data into the table: "audit.user_access_summary"
+  """
+  insertAuditUserAccessSummary(
+    """the rows to be inserted"""
+    objects: [AuditUserAccessSummaryInsertInput!]!
+  ): AuditUserAccessSummaryMutationResponse
+  """
+  insert a single row into the table: "audit.user_access_summary"
+  """
+  insertAuditUserAccessSummaryOne(
+    """the row to be inserted"""
+    object: AuditUserAccessSummaryInsertInput!
+  ): AuditUserAccessSummary
   """
   insert a single row into the table: "audit.auth_events"
   """
@@ -16617,13 +16770,6 @@ type mutation_root {
     onConflict: usersOnConflict
   ): users
   """
-  insert a single row into the table: "audit.user_access_summary"
-  """
-  insertUserAccessSummary(
-    """the row to be inserted"""
-    object: userAccessSummariesInsertInput!
-  ): userAccessSummaries
-  """
   insert data into the table: "user_email_template_favorites"
   """
   insertUserEmailTemplateFavorites(
@@ -16777,6 +16923,22 @@ type mutation_root {
     """updates to execute, in order"""
     updates: [auditLogsUpdates!]!
   ): [auditLogsMutationResponse]
+  """
+  update data of the table: "audit.user_access_summary"
+  """
+  updateAuditUserAccessSummary(
+    """sets the columns of the filtered rows to the given values"""
+    _set: AuditUserAccessSummarySetInput
+    """filter the rows which have to be updated"""
+    where: AuditUserAccessSummaryBoolExp!
+  ): AuditUserAccessSummaryMutationResponse
+  """
+  update multiples rows of table: "audit.user_access_summary"
+  """
+  updateAuditUserAccessSummaryMany(
+    """updates to execute, in order"""
+    updates: [AuditUserAccessSummaryUpdates!]!
+  ): [AuditUserAccessSummaryMutationResponse]
   """
   update single row of the table: "audit.auth_events"
   """
@@ -17992,13 +18154,6 @@ type mutation_root {
     _set: timeEntriesSetInput
     pkColumns: timeEntriesPkColumnsInput!
   ): timeEntries
-  """
-  update multiples rows of table: "audit.user_access_summary"
-  """
-  updateUserAccessSummariesMany(
-    """updates to execute, in order"""
-    updates: [userAccessSummariesUpdates!]!
-  ): [userAccessSummariesMutationResponse]
   """
   update single row of the table: "users"
   """
@@ -24803,6 +24958,36 @@ type query_root {
     where: auditLogsBoolExp
   ): auditLogsAggregate!
   """
+  fetch data from the table: "audit.user_access_summary"
+  """
+  auditUserAccessSummary(
+    """distinct select on columns"""
+    distinctOn: [AuditUserAccessSummarySelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [AuditUserAccessSummaryOrderBy!]
+    """filter the rows returned"""
+    where: AuditUserAccessSummaryBoolExp
+  ): [AuditUserAccessSummary!]!
+  """
+  fetch aggregated fields from the table: "audit.user_access_summary"
+  """
+  auditUserAccessSummaryAggregate(
+    """distinct select on columns"""
+    distinctOn: [AuditUserAccessSummarySelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [AuditUserAccessSummaryOrderBy!]
+    """filter the rows returned"""
+    where: AuditUserAccessSummaryBoolExp
+  ): AuditUserAccessSummaryAggregate!
+  """
   fetch data from the table: "audit.auth_events" using primary key columns
   """
   authEventById(id: uuid!): authEvents
@@ -26753,36 +26938,6 @@ type query_root {
   ): timeEntriesAggregate!
   """fetch data from the table: "time_entries" using primary key columns"""
   timeEntry(id: uuid!): timeEntries
-  """
-  fetch data from the table: "audit.user_access_summary"
-  """
-  userAccessSummaries(
-    """distinct select on columns"""
-    distinctOn: [userAccessSummariesSelectColumn!]
-    """limit the number of rows returned"""
-    limit: Int
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-    """sort the rows by one or more columns"""
-    orderBy: [userAccessSummariesOrderBy!]
-    """filter the rows returned"""
-    where: userAccessSummariesBoolExp
-  ): [userAccessSummaries!]!
-  """
-  fetch aggregated fields from the table: "audit.user_access_summary"
-  """
-  userAccessSummariesAggregate(
-    """distinct select on columns"""
-    distinctOn: [userAccessSummariesSelectColumn!]
-    """limit the number of rows returned"""
-    limit: Int
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-    """sort the rows by one or more columns"""
-    orderBy: [userAccessSummariesOrderBy!]
-    """filter the rows returned"""
-    where: userAccessSummariesBoolExp
-  ): userAccessSummariesAggregate!
   """fetch data from the table: "users" using primary key columns"""
   userById(
     """Unique identifier for the user"""
@@ -28328,6 +28483,47 @@ type subscription_root {
     """filter the rows returned"""
     where: auditLogsBoolExp
   ): [auditLogs!]!
+  """
+  fetch data from the table: "audit.user_access_summary"
+  """
+  auditUserAccessSummary(
+    """distinct select on columns"""
+    distinctOn: [AuditUserAccessSummarySelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [AuditUserAccessSummaryOrderBy!]
+    """filter the rows returned"""
+    where: AuditUserAccessSummaryBoolExp
+  ): [AuditUserAccessSummary!]!
+  """
+  fetch aggregated fields from the table: "audit.user_access_summary"
+  """
+  auditUserAccessSummaryAggregate(
+    """distinct select on columns"""
+    distinctOn: [AuditUserAccessSummarySelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [AuditUserAccessSummaryOrderBy!]
+    """filter the rows returned"""
+    where: AuditUserAccessSummaryBoolExp
+  ): AuditUserAccessSummaryAggregate!
+  """
+  fetch data from the table in a streaming manner: "audit.user_access_summary"
+  """
+  auditUserAccessSummaryStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+    """cursor to stream the results returned by the query"""
+    cursor: [AuditUserAccessSummaryStreamCursorInput]!
+    """filter the rows returned"""
+    where: AuditUserAccessSummaryBoolExp
+  ): [AuditUserAccessSummary!]!
   """
   fetch data from the table: "audit.auth_events" using primary key columns
   """
@@ -30880,47 +31076,6 @@ type subscription_root {
   ): [timeEntries!]!
   """fetch data from the table: "time_entries" using primary key columns"""
   timeEntry(id: uuid!): timeEntries
-  """
-  fetch data from the table: "audit.user_access_summary"
-  """
-  userAccessSummaries(
-    """distinct select on columns"""
-    distinctOn: [userAccessSummariesSelectColumn!]
-    """limit the number of rows returned"""
-    limit: Int
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-    """sort the rows by one or more columns"""
-    orderBy: [userAccessSummariesOrderBy!]
-    """filter the rows returned"""
-    where: userAccessSummariesBoolExp
-  ): [userAccessSummaries!]!
-  """
-  fetch aggregated fields from the table: "audit.user_access_summary"
-  """
-  userAccessSummariesAggregate(
-    """distinct select on columns"""
-    distinctOn: [userAccessSummariesSelectColumn!]
-    """limit the number of rows returned"""
-    limit: Int
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-    """sort the rows by one or more columns"""
-    orderBy: [userAccessSummariesOrderBy!]
-    """filter the rows returned"""
-    where: userAccessSummariesBoolExp
-  ): userAccessSummariesAggregate!
-  """
-  fetch data from the table in a streaming manner: "audit.user_access_summary"
-  """
-  userAccessSummariesStream(
-    """maximum number of rows returned in a single batch"""
-    batchSize: Int!
-    """cursor to stream the results returned by the query"""
-    cursor: [userAccessSummariesStreamCursorInput]!
-    """filter the rows returned"""
-    where: userAccessSummariesBoolExp
-  ): [userAccessSummaries!]!
   """fetch data from the table: "users" using primary key columns"""
   userById(
     """Unique identifier for the user"""
@@ -31780,175 +31935,6 @@ input timeEntriesVarianceOrderBy {
 scalar timestamp
 
 scalar timestamptz
-
-"""
-columns and relationships of "audit.user_access_summary"
-"""
-type userAccessSummaries {
-  createdAt: timestamptz
-  email: String
-  id: uuid
-  isActive: Boolean
-  isStaff: Boolean
-  name: String
-  role: user_role
-  updatedAt: timestamptz
-}
-
-"""
-aggregated selection of "audit.user_access_summary"
-"""
-type userAccessSummariesAggregate {
-  aggregate: userAccessSummariesAggregateFields
-  nodes: [userAccessSummaries!]!
-}
-
-"""
-aggregate fields of "audit.user_access_summary"
-"""
-type userAccessSummariesAggregateFields {
-  count(columns: [userAccessSummariesSelectColumn!], distinct: Boolean): Int!
-  max: userAccessSummariesMaxFields
-  min: userAccessSummariesMinFields
-}
-
-"""
-Boolean expression to filter rows from the table "audit.user_access_summary". All fields are combined with a logical 'AND'.
-"""
-input userAccessSummariesBoolExp {
-  _and: [userAccessSummariesBoolExp!]
-  _not: userAccessSummariesBoolExp
-  _or: [userAccessSummariesBoolExp!]
-  createdAt: TimestamptzComparisonExp
-  email: StringComparisonExp
-  id: UuidComparisonExp
-  isActive: BooleanComparisonExp
-  isStaff: BooleanComparisonExp
-  name: StringComparisonExp
-  role: UserRoleComparisonExp
-  updatedAt: TimestamptzComparisonExp
-}
-
-"""
-input type for inserting data into table "audit.user_access_summary"
-"""
-input userAccessSummariesInsertInput {
-  createdAt: timestamptz
-  email: String
-  id: uuid
-  isActive: Boolean
-  isStaff: Boolean
-  name: String
-  role: user_role
-  updatedAt: timestamptz
-}
-
-"""aggregate max on columns"""
-type userAccessSummariesMaxFields {
-  createdAt: timestamptz
-  email: String
-  id: uuid
-  name: String
-  role: user_role
-  updatedAt: timestamptz
-}
-
-"""aggregate min on columns"""
-type userAccessSummariesMinFields {
-  createdAt: timestamptz
-  email: String
-  id: uuid
-  name: String
-  role: user_role
-  updatedAt: timestamptz
-}
-
-"""
-response of any mutation on the table "audit.user_access_summary"
-"""
-type userAccessSummariesMutationResponse {
-  """number of rows affected by the mutation"""
-  affectedRows: Int!
-  """data from the rows affected by the mutation"""
-  returning: [userAccessSummaries!]!
-}
-
-"""Ordering options when selecting data from "audit.user_access_summary"."""
-input userAccessSummariesOrderBy {
-  createdAt: OrderBy
-  email: OrderBy
-  id: OrderBy
-  isActive: OrderBy
-  isStaff: OrderBy
-  name: OrderBy
-  role: OrderBy
-  updatedAt: OrderBy
-}
-
-"""
-select columns of table "audit.user_access_summary"
-"""
-enum userAccessSummariesSelectColumn {
-  """column name"""
-  createdAt
-  """column name"""
-  email
-  """column name"""
-  id
-  """column name"""
-  isActive
-  """column name"""
-  isStaff
-  """column name"""
-  name
-  """column name"""
-  role
-  """column name"""
-  updatedAt
-}
-
-"""
-input type for updating data in table "audit.user_access_summary"
-"""
-input userAccessSummariesSetInput {
-  createdAt: timestamptz
-  email: String
-  id: uuid
-  isActive: Boolean
-  isStaff: Boolean
-  name: String
-  role: user_role
-  updatedAt: timestamptz
-}
-
-"""
-Streaming cursor of the table "userAccessSummaries"
-"""
-input userAccessSummariesStreamCursorInput {
-  """Stream column input with initial value"""
-  initialValue: userAccessSummariesStreamCursorValueInput!
-  """cursor ordering"""
-  ordering: CursorOrdering
-}
-
-"""Initial value of the column from where the streaming should start"""
-input userAccessSummariesStreamCursorValueInput {
-  createdAt: timestamptz
-  email: String
-  id: uuid
-  isActive: Boolean
-  isStaff: Boolean
-  name: String
-  role: user_role
-  updatedAt: timestamptz
-}
-
-input userAccessSummariesUpdates {
-  """sets the columns of the filtered rows to the given values"""
-  _set: userAccessSummariesSetInput
-  """filter the rows which have to be updated"""
-  where: userAccessSummariesBoolExp!
-}
 
 input userEmailTemplateFavoritesAggregateBoolExpCount {
   arguments: [UserEmailTemplateFavoritesSelectColumn!]
@@ -33460,8 +33446,6 @@ type users {
   managerId: uuid
   """An object relationship"""
   managerUser: users
-  """User's full name"""
-  name: String!
   """An array relationship"""
   newConsultantAuditTrail(
     """distinct select on columns"""
@@ -34132,7 +34116,6 @@ input usersBoolExp {
   managedUsersAggregate: usersAggregateBoolExp
   managerId: UuidComparisonExp
   managerUser: usersBoolExp
-  name: StringComparisonExp
   newConsultantAuditTrail: payrollAssignmentAuditsBoolExp
   newConsultantAuditTrailAggregate: payrollAssignmentAuditsAggregateBoolExp
   originalConsultantAssignments: payrollAssignmentsBoolExp
@@ -34262,8 +34245,6 @@ input usersInsertInput {
   """Reference to the user's manager"""
   managerId: uuid
   managerUser: usersObjRelInsertInput
-  """User's full name"""
-  name: String
   newConsultantAuditTrail: payrollAssignmentAuditsArrRelInsertInput
   originalConsultantAssignments: payrollAssignmentsArrRelInsertInput
   originalConsultantAuditTrail: payrollAssignmentAuditsArrRelInsertInput
@@ -34329,8 +34310,6 @@ type usersMaxFields {
   lastName: String
   """Reference to the user's manager"""
   managerId: uuid
-  """User's full name"""
-  name: String
   """User contact phone number"""
   phone: String
   """Organizational position affecting admin time allocation"""
@@ -34378,8 +34357,6 @@ input usersMaxOrderBy {
   lastName: OrderBy
   """Reference to the user's manager"""
   managerId: OrderBy
-  """User's full name"""
-  name: OrderBy
   """User contact phone number"""
   phone: OrderBy
   """Organizational position affecting admin time allocation"""
@@ -34425,8 +34402,6 @@ type usersMinFields {
   lastName: String
   """Reference to the user's manager"""
   managerId: uuid
-  """User's full name"""
-  name: String
   """User contact phone number"""
   phone: String
   """Organizational position affecting admin time allocation"""
@@ -34474,8 +34449,6 @@ input usersMinOrderBy {
   lastName: OrderBy
   """Reference to the user's manager"""
   managerId: OrderBy
-  """User's full name"""
-  name: OrderBy
   """User contact phone number"""
   phone: OrderBy
   """Organizational position affecting admin time allocation"""
@@ -34562,7 +34535,6 @@ input usersOrderBy {
   managedUsersAggregate: usersAggregateOrderBy
   managerId: OrderBy
   managerUser: usersOrderBy
-  name: OrderBy
   newConsultantAuditTrailAggregate: payrollAssignmentAuditsAggregateOrderBy
   originalConsultantAssignmentsAggregate: payrollAssignmentsAggregateOrderBy
   originalConsultantAuditTrailAggregate: payrollAssignmentAuditsAggregateOrderBy
@@ -34770,8 +34742,6 @@ enum usersSelectColumn {
   """column name"""
   managerId
   """column name"""
-  name
-  """column name"""
   phone
   """column name"""
   position
@@ -34840,8 +34810,6 @@ input usersSetInput {
   lastName: String
   """Reference to the user's manager"""
   managerId: uuid
-  """User's full name"""
-  name: String
   """User contact phone number"""
   phone: String
   """Organizational position affecting admin time allocation"""
@@ -34942,8 +34910,6 @@ input usersStreamCursorValueInput {
   lastName: String
   """Reference to the user's manager"""
   managerId: uuid
-  """User's full name"""
-  name: String
   """User contact phone number"""
   phone: String
   """Organizational position affecting admin time allocation"""
@@ -35012,8 +34978,6 @@ enum usersUpdateColumn {
   lastName
   """column name"""
   managerId
-  """column name"""
-  name
   """column name"""
   phone
   """column name"""

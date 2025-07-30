@@ -94,10 +94,10 @@ export function UserTable({
   };
 
   const handleDeleteUser = async (user: User) => {
-    if (window.confirm(`Are you sure you want to delete ${user.name}?`)) {
+    if (window.confirm(`Are you sure you want to delete ${user.computedName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'this user'}?`)) {
       const success = await deleteUser(user.id);
       if (success) {
-        toast.success(`${user.name} has been deleted`);
+        toast.success(`${user.computedName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'User'} has been deleted`);
       }
     }
   };
@@ -147,11 +147,11 @@ export function UserTable({
                     <AvatarImage
                       src={
                         user.imageUrl ||
-                        `https://api.dicebear.com/7.x/initials/svg?seed=${user.name}`
+                        `https://api.dicebear.com/7.x/initials/svg?seed=${user.computedName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown User'}`
                       }
                     />
                     <AvatarFallback>
-                      {user.name
+                      {(user.computedName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown User')
                         .split(" ")
                         .map(n => n[0])
                         .join("")
@@ -159,7 +159,7 @@ export function UserTable({
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <div className="font-medium">{user.name}</div>
+                    <div className="font-medium">{user.computedName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown User'}</div>
                     <div className="text-sm text-muted-foreground flex items-center">
                       <Mail className="h-3 w-3 mr-1" />
                       {user.email}
@@ -179,7 +179,7 @@ export function UserTable({
               <TableCell>
                 {user.managerUser ? (
                   <div className="text-sm">
-                    <div className="font-medium">{user.managerUser.name}</div>
+                    <div className="font-medium">{user.managerUser.computedName || `${user.managerUser.firstName || ''} ${user.managerUser.lastName || ''}`.trim() || 'Unknown User'}</div>
                     <div className="text-muted-foreground">
                       {user.managerUser.email}
                     </div>
@@ -276,11 +276,11 @@ export function UserTable({
                   <AvatarImage
                     src={
                       selectedUser.imageUrl ||
-                      `https://api.dicebear.com/7.x/initials/svg?seed=${selectedUser.name}`
+                      `https://api.dicebear.com/7.x/initials/svg?seed=${selectedUser.computedName || `${selectedUser.firstName || ''} ${selectedUser.lastName || ''}`.trim() || 'Unknown User'}`
                     }
                   />
                   <AvatarFallback className="text-lg">
-                    {selectedUser.name
+                    {(selectedUser.computedName || `${selectedUser.firstName || ''} ${selectedUser.lastName || ''}`.trim() || 'Unknown User')
                       .split(" ")
                       .map(n => n[0])
                       .join("")
@@ -288,7 +288,7 @@ export function UserTable({
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h3 className="text-xl font-semibold">{selectedUser.name}</h3>
+                  <h3 className="text-xl font-semibold">{selectedUser.computedName || `${selectedUser.firstName || ''} ${selectedUser.lastName || ''}`.trim() || 'Unknown User'}</h3>
                   <p className="text-muted-foreground">
                     {selectedUser.role.charAt(0).toUpperCase() +
                       selectedUser.role.slice(1)}
@@ -380,7 +380,7 @@ export function UserTable({
                     </Avatar>
                     <div>
                       <div className="text-sm font-medium">
-                        {selectedUser.managerUser.name}
+                        {selectedUser.managerUser.computedName || `${selectedUser.managerUser.firstName || ''} ${selectedUser.managerUser.lastName || ''}`.trim() || 'Unknown User'}
                       </div>
                       <div className="text-xs text-muted-foreground">
                         {selectedUser.managerUser.email}
@@ -411,7 +411,7 @@ export function UserTable({
                           </Avatar>
                           <div>
                             <div className="text-sm font-medium">
-                              {subordinate.name}
+                              {subordinate.computedName || `${subordinate.firstName || ''} ${subordinate.lastName || ''}`.trim() || 'Unknown User'}
                             </div>
                             <div className="text-xs text-muted-foreground">
                               {subordinate.role.charAt(0).toUpperCase() +

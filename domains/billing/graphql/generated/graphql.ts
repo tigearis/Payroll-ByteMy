@@ -18,7 +18,7 @@
  * ✓ Client Preset v4.8+ for optimal type safety
  * ✓ Zero type conflicts with modern codegen
  * 
- * Generated: 2025-07-29T15:23:14.302Z
+ * Generated: 2025-07-30T00:04:04.998Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Client Preset v4.0
  */
@@ -77,6 +77,104 @@ export type AuditEventInput = {
   resourceType: Scalars['String']['input'];
   userAgent?: InputMaybe<Scalars['String']['input']>;
   userId: Scalars['String']['input'];
+};
+
+/** Boolean expression to filter rows from the table "audit.user_access_summary". All fields are combined with a logical 'AND'. */
+export type AuditUserAccessSummaryBoolExp = {
+  _and?: InputMaybe<Array<AuditUserAccessSummaryBoolExp>>;
+  _not?: InputMaybe<AuditUserAccessSummaryBoolExp>;
+  _or?: InputMaybe<Array<AuditUserAccessSummaryBoolExp>>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  email?: InputMaybe<StringComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  isActive?: InputMaybe<BooleanComparisonExp>;
+  isStaff?: InputMaybe<BooleanComparisonExp>;
+  name?: InputMaybe<StringComparisonExp>;
+  role?: InputMaybe<UserRoleComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+};
+
+/** input type for inserting data into table "audit.user_access_summary" */
+export type AuditUserAccessSummaryInsertInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  email?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  isStaff?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  role?: InputMaybe<Scalars['user_role']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** Ordering options when selecting data from "audit.user_access_summary". */
+export type AuditUserAccessSummaryOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
+  email?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  isActive?: InputMaybe<OrderBy>;
+  isStaff?: InputMaybe<OrderBy>;
+  name?: InputMaybe<OrderBy>;
+  role?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** select columns of table "audit.user_access_summary" */
+export type AuditUserAccessSummarySelectColumn =
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'email'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isStaff'
+  /** column name */
+  | 'name'
+  /** column name */
+  | 'role'
+  /** column name */
+  | 'updatedAt'
+  | '%future added value';
+
+/** input type for updating data in table "audit.user_access_summary" */
+export type AuditUserAccessSummarySetInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  email?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  isStaff?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  role?: InputMaybe<Scalars['user_role']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** Streaming cursor of the table "audit_user_access_summary" */
+export type AuditUserAccessSummaryStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: AuditUserAccessSummaryStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type AuditUserAccessSummaryStreamCursorValueInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  email?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  isStaff?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  role?: InputMaybe<Scalars['user_role']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+export type AuditUserAccessSummaryUpdates = {
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<AuditUserAccessSummarySetInput>;
+  /** filter the rows which have to be updated */
+  where: AuditUserAccessSummaryBoolExp;
 };
 
 /** Boolean expression to compare columns of type "bigint". All fields are combined with logical 'AND'. */
@@ -2646,46 +2744,42 @@ export type StaffBillingPerformanceBoolExp = {
   _and?: InputMaybe<Array<StaffBillingPerformanceBoolExp>>;
   _not?: InputMaybe<StaffBillingPerformanceBoolExp>;
   _or?: InputMaybe<Array<StaffBillingPerformanceBoolExp>>;
-  billingItemsCreated?: InputMaybe<BigintComparisonExp>;
-  distinctClientsServed?: InputMaybe<BigintComparisonExp>;
-  payrollsWorked?: InputMaybe<BigintComparisonExp>;
-  revenuePerHour?: InputMaybe<NumericComparisonExp>;
-  staffId?: InputMaybe<UuidComparisonExp>;
+  averageProfitMargin?: InputMaybe<NumericComparisonExp>;
   staffName?: InputMaybe<StringComparisonExp>;
+  staffUserId?: InputMaybe<UuidComparisonExp>;
+  totalActualRevenue?: InputMaybe<NumericComparisonExp>;
+  totalEstimatedRevenue?: InputMaybe<NumericComparisonExp>;
   totalHoursLogged?: InputMaybe<NumericComparisonExp>;
-  totalRevenueGenerated?: InputMaybe<NumericComparisonExp>;
+  totalPayrolls?: InputMaybe<BigintComparisonExp>;
 };
 
 /** Ordering options when selecting data from "staff_billing_performance". */
 export type StaffBillingPerformanceOrderBy = {
-  billingItemsCreated?: InputMaybe<OrderBy>;
-  distinctClientsServed?: InputMaybe<OrderBy>;
-  payrollsWorked?: InputMaybe<OrderBy>;
-  revenuePerHour?: InputMaybe<OrderBy>;
-  staffId?: InputMaybe<OrderBy>;
+  averageProfitMargin?: InputMaybe<OrderBy>;
   staffName?: InputMaybe<OrderBy>;
+  staffUserId?: InputMaybe<OrderBy>;
+  totalActualRevenue?: InputMaybe<OrderBy>;
+  totalEstimatedRevenue?: InputMaybe<OrderBy>;
   totalHoursLogged?: InputMaybe<OrderBy>;
-  totalRevenueGenerated?: InputMaybe<OrderBy>;
+  totalPayrolls?: InputMaybe<OrderBy>;
 };
 
 /** select columns of table "staff_billing_performance" */
 export type StaffBillingPerformanceSelectColumn =
   /** column name */
-  | 'billingItemsCreated'
-  /** column name */
-  | 'distinctClientsServed'
-  /** column name */
-  | 'payrollsWorked'
-  /** column name */
-  | 'revenuePerHour'
-  /** column name */
-  | 'staffId'
+  | 'averageProfitMargin'
   /** column name */
   | 'staffName'
   /** column name */
+  | 'staffUserId'
+  /** column name */
+  | 'totalActualRevenue'
+  /** column name */
+  | 'totalEstimatedRevenue'
+  /** column name */
   | 'totalHoursLogged'
   /** column name */
-  | 'totalRevenueGenerated'
+  | 'totalPayrolls'
   | '%future added value';
 
 /** Streaming cursor of the table "staff_billing_performance" */
@@ -2698,14 +2792,13 @@ export type StaffBillingPerformanceStreamCursorInput = {
 
 /** Initial value of the column from where the streaming should start */
 export type StaffBillingPerformanceStreamCursorValueInput = {
-  billingItemsCreated?: InputMaybe<Scalars['bigint']['input']>;
-  distinctClientsServed?: InputMaybe<Scalars['bigint']['input']>;
-  payrollsWorked?: InputMaybe<Scalars['bigint']['input']>;
-  revenuePerHour?: InputMaybe<Scalars['numeric']['input']>;
-  staffId?: InputMaybe<Scalars['uuid']['input']>;
+  averageProfitMargin?: InputMaybe<Scalars['numeric']['input']>;
   staffName?: InputMaybe<Scalars['String']['input']>;
+  staffUserId?: InputMaybe<Scalars['uuid']['input']>;
+  totalActualRevenue?: InputMaybe<Scalars['numeric']['input']>;
+  totalEstimatedRevenue?: InputMaybe<Scalars['numeric']['input']>;
   totalHoursLogged?: InputMaybe<Scalars['numeric']['input']>;
-  totalRevenueGenerated?: InputMaybe<Scalars['numeric']['input']>;
+  totalPayrolls?: InputMaybe<Scalars['bigint']['input']>;
 };
 
 /** Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'. */
@@ -13320,104 +13413,6 @@ export type TimeEntriesVarianceOrderBy = {
   hoursSpent?: InputMaybe<OrderBy>;
 };
 
-/** Boolean expression to filter rows from the table "audit.user_access_summary". All fields are combined with a logical 'AND'. */
-export type UserAccessSummariesBoolExp = {
-  _and?: InputMaybe<Array<UserAccessSummariesBoolExp>>;
-  _not?: InputMaybe<UserAccessSummariesBoolExp>;
-  _or?: InputMaybe<Array<UserAccessSummariesBoolExp>>;
-  createdAt?: InputMaybe<TimestamptzComparisonExp>;
-  email?: InputMaybe<StringComparisonExp>;
-  id?: InputMaybe<UuidComparisonExp>;
-  isActive?: InputMaybe<BooleanComparisonExp>;
-  isStaff?: InputMaybe<BooleanComparisonExp>;
-  name?: InputMaybe<StringComparisonExp>;
-  role?: InputMaybe<UserRoleComparisonExp>;
-  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
-};
-
-/** input type for inserting data into table "audit.user_access_summary" */
-export type UserAccessSummariesInsertInput = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  email?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  isActive?: InputMaybe<Scalars['Boolean']['input']>;
-  isStaff?: InputMaybe<Scalars['Boolean']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  role?: InputMaybe<Scalars['user_role']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
-
-/** Ordering options when selecting data from "audit.user_access_summary". */
-export type UserAccessSummariesOrderBy = {
-  createdAt?: InputMaybe<OrderBy>;
-  email?: InputMaybe<OrderBy>;
-  id?: InputMaybe<OrderBy>;
-  isActive?: InputMaybe<OrderBy>;
-  isStaff?: InputMaybe<OrderBy>;
-  name?: InputMaybe<OrderBy>;
-  role?: InputMaybe<OrderBy>;
-  updatedAt?: InputMaybe<OrderBy>;
-};
-
-/** select columns of table "audit.user_access_summary" */
-export type UserAccessSummariesSelectColumn =
-  /** column name */
-  | 'createdAt'
-  /** column name */
-  | 'email'
-  /** column name */
-  | 'id'
-  /** column name */
-  | 'isActive'
-  /** column name */
-  | 'isStaff'
-  /** column name */
-  | 'name'
-  /** column name */
-  | 'role'
-  /** column name */
-  | 'updatedAt'
-  | '%future added value';
-
-/** input type for updating data in table "audit.user_access_summary" */
-export type UserAccessSummariesSetInput = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  email?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  isActive?: InputMaybe<Scalars['Boolean']['input']>;
-  isStaff?: InputMaybe<Scalars['Boolean']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  role?: InputMaybe<Scalars['user_role']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
-
-/** Streaming cursor of the table "userAccessSummaries" */
-export type UserAccessSummariesStreamCursorInput = {
-  /** Stream column input with initial value */
-  initialValue: UserAccessSummariesStreamCursorValueInput;
-  /** cursor ordering */
-  ordering?: InputMaybe<CursorOrdering>;
-};
-
-/** Initial value of the column from where the streaming should start */
-export type UserAccessSummariesStreamCursorValueInput = {
-  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  email?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['uuid']['input']>;
-  isActive?: InputMaybe<Scalars['Boolean']['input']>;
-  isStaff?: InputMaybe<Scalars['Boolean']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  role?: InputMaybe<Scalars['user_role']['input']>;
-  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
-};
-
-export type UserAccessSummariesUpdates = {
-  /** sets the columns of the filtered rows to the given values */
-  _set?: InputMaybe<UserAccessSummariesSetInput>;
-  /** filter the rows which have to be updated */
-  where: UserAccessSummariesBoolExp;
-};
-
 export type UserEmailTemplateFavoritesAggregateBoolExpCount = {
   arguments?: InputMaybe<Array<UserEmailTemplateFavoritesSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
@@ -14200,7 +14195,6 @@ export type UsersBoolExp = {
   managedUsersAggregate?: InputMaybe<UsersAggregateBoolExp>;
   managerId?: InputMaybe<UuidComparisonExp>;
   managerUser?: InputMaybe<UsersBoolExp>;
-  name?: InputMaybe<StringComparisonExp>;
   newConsultantAuditTrail?: InputMaybe<PayrollAssignmentAuditsBoolExp>;
   newConsultantAuditTrailAggregate?: InputMaybe<PayrollAssignmentAuditsAggregateBoolExp>;
   originalConsultantAssignments?: InputMaybe<PayrollAssignmentsBoolExp>;
@@ -14316,8 +14310,6 @@ export type UsersInsertInput = {
   /** Reference to the user's manager */
   managerId?: InputMaybe<Scalars['uuid']['input']>;
   managerUser?: InputMaybe<UsersObjRelInsertInput>;
-  /** User's full name */
-  name?: InputMaybe<Scalars['String']['input']>;
   newConsultantAuditTrail?: InputMaybe<PayrollAssignmentAuditsArrRelInsertInput>;
   originalConsultantAssignments?: InputMaybe<PayrollAssignmentsArrRelInsertInput>;
   originalConsultantAuditTrail?: InputMaybe<PayrollAssignmentAuditsArrRelInsertInput>;
@@ -14383,8 +14375,6 @@ export type UsersMaxOrderBy = {
   lastName?: InputMaybe<OrderBy>;
   /** Reference to the user's manager */
   managerId?: InputMaybe<OrderBy>;
-  /** User's full name */
-  name?: InputMaybe<OrderBy>;
   /** User contact phone number */
   phone?: InputMaybe<OrderBy>;
   /** Organizational position affecting admin time allocation */
@@ -14430,8 +14420,6 @@ export type UsersMinOrderBy = {
   lastName?: InputMaybe<OrderBy>;
   /** Reference to the user's manager */
   managerId?: InputMaybe<OrderBy>;
-  /** User's full name */
-  name?: InputMaybe<OrderBy>;
   /** User contact phone number */
   phone?: InputMaybe<OrderBy>;
   /** Organizational position affecting admin time allocation */
@@ -14504,7 +14492,6 @@ export type UsersOrderBy = {
   managedUsersAggregate?: InputMaybe<UsersAggregateOrderBy>;
   managerId?: InputMaybe<OrderBy>;
   managerUser?: InputMaybe<UsersOrderBy>;
-  name?: InputMaybe<OrderBy>;
   newConsultantAuditTrailAggregate?: InputMaybe<PayrollAssignmentAuditsAggregateOrderBy>;
   originalConsultantAssignmentsAggregate?: InputMaybe<PayrollAssignmentsAggregateOrderBy>;
   originalConsultantAuditTrailAggregate?: InputMaybe<PayrollAssignmentAuditsAggregateOrderBy>;
@@ -14647,8 +14634,6 @@ export type UsersSelectColumn =
   /** column name */
   | 'managerId'
   /** column name */
-  | 'name'
-  /** column name */
   | 'phone'
   /** column name */
   | 'position'
@@ -14711,8 +14696,6 @@ export type UsersSetInput = {
   lastName?: InputMaybe<Scalars['String']['input']>;
   /** Reference to the user's manager */
   managerId?: InputMaybe<Scalars['uuid']['input']>;
-  /** User's full name */
-  name?: InputMaybe<Scalars['String']['input']>;
   /** User contact phone number */
   phone?: InputMaybe<Scalars['String']['input']>;
   /** Organizational position affecting admin time allocation */
@@ -14787,8 +14770,6 @@ export type UsersStreamCursorValueInput = {
   lastName?: InputMaybe<Scalars['String']['input']>;
   /** Reference to the user's manager */
   managerId?: InputMaybe<Scalars['uuid']['input']>;
-  /** User's full name */
-  name?: InputMaybe<Scalars['String']['input']>;
   /** User contact phone number */
   phone?: InputMaybe<Scalars['String']['input']>;
   /** Organizational position affecting admin time allocation */
@@ -14847,8 +14828,6 @@ export type UsersUpdateColumn =
   | 'lastName'
   /** column name */
   | 'managerId'
-  /** column name */
-  | 'name'
   /** column name */
   | 'phone'
   /** column name */
