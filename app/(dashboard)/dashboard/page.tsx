@@ -17,6 +17,11 @@ interface DashboardStatsData {
     name: string;
     status: string;
     client: { id: string; name: string };
+    nextEftDate: Array<{
+      originalEftDate: string;
+      adjustedEftDate: string;
+      processingDate: string;
+    }>;
   }>;
 }
 
@@ -37,8 +42,10 @@ export default function DashboardPage() {
   const activePayrolls = dashboardData?.activePayrolls?.aggregate?.count ?? 0;
   const upcomingPayrolls = dashboardData?.upcomingPayrolls ?? [];
 
-  // Get next payroll - using the first upcoming payroll as an approximation
+  // Get next payroll with proper date information
   const nextPayroll = upcomingPayrolls[0];
+  const nextEftDate = nextPayroll?.nextEftDate?.[0];
+  const effectiveDate = nextEftDate?.adjustedEftDate || nextEftDate?.originalEftDate;
 
   // Calculate loading and error states
   const isLoading = dashboardLoading;
@@ -108,8 +115,10 @@ export default function DashboardPage() {
               </div>
             )}
             <p className="text-xs text-gray-600">
-              {nextPayroll
-                ? `Next: ${nextPayroll.client.name} (${nextPayroll.name})`
+              {nextPayroll && effectiveDate
+                ? `Next: ${nextPayroll.client.name} - ${new Date(effectiveDate).toLocaleDateString('en-AU')}${nextEftDate?.adjustedEftDate !== nextEftDate?.originalEftDate ? ' (Adjusted)' : ''}`
+                : nextPayroll 
+                ? `Next: ${nextPayroll.client.name} (${nextPayroll.name}) - Date TBD`
                 : "No upcoming payrolls"}
             </p>
           </CardContent>

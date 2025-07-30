@@ -59,7 +59,7 @@ query GetDashboardMetrics($userId: uuid!) {
 # Replaces: GetClientStatsDocument, GetPayrollDashboardStatsDocument, GetUpcomingPayrollsDocument
 # Domain: shared | Security: MEDIUM | Complexity: MEDIUM
 # Param limit: Maximum number of upcoming payrolls to return (default: 10)
-# Returns: Combined dashboard statistics with clients, payrolls, and upcoming payroll data
+# Returns: Combined dashboard statistics with clients, payrolls, and upcoming payroll data with next EFT dates
 # Usage: Main dashboard page (/dashboard) to load all statistics in a single request
 # Since: Priority 2 optimization (2025-06-27) | Classification: SOC2_COMPLIANT
 query GetDashboardStatsOptimized($limit: Int = 10) {
@@ -89,7 +89,11 @@ query GetDashboardStatsOptimized($limit: Int = 10) {
 
   # Upcoming payrolls with next pay dates (replaces GetUpcomingPayrollsDocument)
   upcomingPayrolls: payrolls(
-    where: { supersededDate: { _isNull: true }, status: { _eq: "Active" } }
+    where: { 
+      supersededDate: { _isNull: true } 
+      status: { _eq: "Active" }
+      payrollDates: { adjustedEftDate: { _gte: "now()" } }
+    }
     orderBy: { updatedAt: DESC }
     limit: $limit
   ) {
@@ -99,6 +103,16 @@ query GetDashboardStatsOptimized($limit: Int = 10) {
     client {
       id
       name
+    }
+    # Get the next upcoming EFT date - prioritize adjusted dates
+    nextEftDate: payrollDates(
+      where: { adjustedEftDate: { _gte: "now()" } }
+      orderBy: { adjustedEftDate: ASC }
+      limit: 1
+    ) {
+      originalEftDate
+      adjustedEftDate
+      processingDate
     }
   }
 }

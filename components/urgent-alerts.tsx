@@ -57,7 +57,9 @@ function getUserRole(
   if (payroll.manager?.id === currentUserId) {
     return "Manager";
   }
-  return "Assigned";
+  // If user is assigned but not in a specific role, check for any assignment
+  // This handles cases where the user might be assigned through other means
+  return "Assigned Staff";
 }
 
 export function UrgentAlerts() {
@@ -141,11 +143,13 @@ function UrgentAlertsInner() {
   return (
     <div className="space-y-4">
       {payrolls.map(payroll => {
-        const nextDate = payroll.payrollDates?.[0];
+        // Get the next upcoming payroll date - handle both data structures
+        const nextDate = payroll.payrollDates?.[0] || payroll.nextEftDate?.[0];
         const userRole = getUserRole(payroll, currentUserId);
-        const daysUntil = nextDate?.adjustedEftDate
+        const effectiveDate = nextDate?.adjustedEftDate || nextDate?.originalEftDate;
+        const daysUntil = effectiveDate
           ? Math.ceil(
-              (new Date(nextDate.adjustedEftDate).getTime() - Date.now()) /
+              (new Date(effectiveDate).getTime() - Date.now()) /
                 (1000 * 60 * 60 * 24)
             )
           : null;
@@ -162,22 +166,33 @@ function UrgentAlertsInner() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <h4 className="font-medium text-blue-900 truncate">
-                      {payroll.client?.name} - {payroll.name} - {payroll.status} - {nextDate?.adjustedEftDate
-                        ? format(new Date(nextDate.adjustedEftDate), "MMM dd, yyyy")
-                        : "Not scheduled"}
+                      {payroll.client?.name} - {payroll.name}
                     </h4>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Badge className={getStatusVariant(payroll.status)}>
+                        {payroll.status}
+                      </Badge>
+                      {effectiveDate && (
+                        <Badge variant="outline" className="text-xs">
+                          {format(new Date(effectiveDate), "MMM dd, yyyy")}
+                        </Badge>
+                      )}
+                    </div>
                   </div>
 
                   <div className="text-sm text-blue-700 space-y-1">
                     <div className="flex items-center justify-between">
                       <span>
                         Due:{" "}
-                        {nextDate?.adjustedEftDate
+                        {effectiveDate
                           ? format(
-                              new Date(nextDate.adjustedEftDate),
+                              new Date(effectiveDate),
                               "MMM dd, yyyy"
                             )
                           : "Not scheduled"}
+                        {nextDate?.adjustedEftDate && nextDate.adjustedEftDate !== nextDate.originalEftDate && (
+                          <span className="text-xs text-orange-600 ml-1">(Adjusted)</span>
+                        )}
                       </span>
                       {daysUntil !== null && (
                         <span
