@@ -53,7 +53,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
         createdAt: (user as any).createdAt || null,
         managerUser: (user as any).managerUser ? {
           id: (user as any).managerUser.id,
-          name: (user as any).managerUser.name,
+          name: (user as any).managerUser.computedName || `${(user as any).managerUser.firstName || ''} ${(user as any).managerUser.lastName || ''}`.trim() || 'Unknown User',
           email: (user as any).managerUser.email,
         } : null,
       },

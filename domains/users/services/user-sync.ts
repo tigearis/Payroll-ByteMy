@@ -257,7 +257,7 @@ export async function syncUserWithDatabase(
 
       if (existingUserByEmail) {
         console.log(
-          `✅ Found existing user by email, updating with Clerk ID: ${existingUserByEmail.name}`
+          `✅ Found existing user by email, updating with Clerk ID: ${existingUserByEmail.computedName || `${existingUserByEmail.firstName || ''} ${existingUserByEmail.lastName || ''}`.trim() || 'Unknown User'}`
         );
 
         // Update the existing user with the Clerk ID

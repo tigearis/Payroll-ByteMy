@@ -104,7 +104,7 @@ const EnhancedWorkloadVisualization = ({
   if (typeof window !== 'undefined' && workSchedule) {
     console.log('EnhancedWorkloadVisualization - Hook data:', {
       userId: member.id,
-      userName: member.name,
+      userName: member.computedName || `${member.firstName || ''} ${member.lastName || ''}`.trim() || 'Unknown User',
       workScheduleLength: workSchedule.length,
       workScheduleSample: workSchedule.slice(0, 5),
       hasAssignments: workSchedule.some(day => day.assignments.length > 0),
@@ -139,7 +139,7 @@ const EnhancedWorkloadVisualization = ({
   return (
     <IndividualWorkloadCard
       userId={member.id}
-      userName={member.name}
+      userName={member.computedName || `${member.firstName || ''} ${member.lastName || ''}`.trim() || 'Unknown User'}
       userRole={member.position}
       workSchedule={workSchedule}
       onAssignmentClick={onAssignmentClick}

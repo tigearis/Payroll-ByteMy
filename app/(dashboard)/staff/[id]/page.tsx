@@ -583,7 +583,7 @@ export default function StaffDetailsPage() {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Manager</p>
                   <p className="text-2xl font-bold text-gray-900">
-                    {user.managerUser?.computedName || `${user.managerUser?.firstName} ${user.managerUser?.lastName}` || "None"}
+                    {user.managerUser?.computedName || `${user.managerUser?.firstName || ''} ${user.managerUser?.lastName || ''}`.trim() || "No manager assigned"}
                   </p>
                 </div>
                 <UserCheck className="w-8 h-8 text-purple-600" />
@@ -770,7 +770,7 @@ export default function StaffDetailsPage() {
                     <div>
                       <p className="text-sm font-medium text-gray-500">Manager</p>
                       <p className="text-sm text-gray-900">
-                        {user.managerUser?.computedName || `${user.managerUser?.firstName} ${user.managerUser?.lastName}` || "No manager assigned"}
+                        {user.managerUser?.computedName || `${user.managerUser?.firstName || ''} ${user.managerUser?.lastName || ''}`.trim() || "No manager assigned"}
                       </p>
                     </div>
                   </div>
@@ -951,7 +951,7 @@ export default function StaffDetailsPage() {
                     <SelectItem value="none">No manager</SelectItem>
                     {managerOptions.map((manager: any) => (
                       <SelectItem key={manager.id} value={manager.id}>
-                        {manager.computedName || `${manager.firstName} ${manager.lastName}`}
+                        {manager.computedName || `${manager.firstName || ''} ${manager.lastName || ''}`.trim() || 'Unknown Manager'}
                       </SelectItem>
                     ))}
                   </SelectContent>

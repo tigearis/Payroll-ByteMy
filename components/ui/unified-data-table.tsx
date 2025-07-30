@@ -133,9 +133,9 @@ export const createCellRenderers = <T,>(
   avatar: (user: { name: string; imageUrl?: string; email?: string }) => (
     <div className="flex items-center space-x-3">
       <Avatar className="h-8 w-8">
-        <AvatarImage src={user.imageUrl} alt={user.name} />
+        <AvatarImage src={user.imageUrl} alt={user.computedName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown User'} />
         <AvatarFallback>
-          {user.name
+          {(user.computedName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown User')
             .split(" ")
             .map(n => n[0])
             .join("")
@@ -143,7 +143,7 @@ export const createCellRenderers = <T,>(
         </AvatarFallback>
       </Avatar>
       <div className="min-w-0">
-        <div className="font-medium truncate">{user.name}</div>
+        <div className="font-medium truncate">{user.computedName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown User'}</div>
         {user.email && (
           <div className="text-sm text-muted-foreground truncate">
             {user.email}
