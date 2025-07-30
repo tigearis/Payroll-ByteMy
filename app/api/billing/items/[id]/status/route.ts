@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from '@/lib/auth/api-auth';
+import { withAuthParams } from '@/lib/auth/api-auth';
 import { executeTypedQuery } from '@/lib/apollo/query-helpers';
 import { 
   GetBillingItemByIdDocument,
@@ -28,9 +28,9 @@ const VALID_TRANSITIONS = {
  * Manages status transitions for billing items with proper workflow validation.
  * Includes audit logging and permission checks for each transition type.
  */
-export const PUT = withAuth(async (req: NextRequest, session, { params }) => {
+export const PUT = withAuthParams(async (req: NextRequest, { params }, session: any) => {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body: StatusTransitionRequest = await req.json();
     const { newStatus, notes, reason } = body;
 
@@ -48,7 +48,7 @@ export const PUT = withAuth(async (req: NextRequest, session, { params }) => {
       session
     );
 
-    const billingItem = billingItemData?.billingItemById;
+    const billingItem = billingItemData?.billingItem;
     if (!billingItem) {
       return NextResponse.json(
         { success: false, error: 'Billing item not found' },
@@ -59,12 +59,12 @@ export const PUT = withAuth(async (req: NextRequest, session, { params }) => {
     const currentStatus = billingItem.status;
 
     // Validate status transition
-    if (!VALID_TRANSITIONS[currentStatus]?.includes(newStatus)) {
+    if (!VALID_TRANSITIONS[currentStatus as keyof typeof VALID_TRANSITIONS]?.includes(newStatus)) {
       return NextResponse.json(
         { 
           success: false, 
           error: `Invalid status transition from '${currentStatus}' to '${newStatus}'`,
-          validTransitions: VALID_TRANSITIONS[currentStatus] || []
+          validTransitions: VALID_TRANSITIONS[currentStatus as keyof typeof VALID_TRANSITIONS] || []
         },
         { status: 400 }
       );
@@ -146,7 +146,7 @@ export const PUT = withAuth(async (req: NextRequest, session, { params }) => {
       session
     );
 
-    if (!updatedItem?.updateBillingItemById) {
+    if (!updatedItem?.updateBillingItem) {
       throw new Error('Failed to update billing item status');
     }
 
@@ -174,7 +174,7 @@ export const PUT = withAuth(async (req: NextRequest, session, { params }) => {
     return NextResponse.json({
       success: true,
       data: {
-        billingItem: updatedItem.updateBillingItemById,
+        billingItem: updatedItem.updateBillingItem,
         statusTransition: {
           from: currentStatus,
           to: newStatus,
@@ -204,9 +204,9 @@ export const PUT = withAuth(async (req: NextRequest, session, { params }) => {
  * 
  * Returns current status and available transitions for a billing item
  */
-export const GET = withAuth(async (req: NextRequest, session, { params }) => {
+export const GET = withAuthParams(async (req: NextRequest, { params }, session: any) => {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Get current billing item
     const billingItemData = await executeTypedQuery(
@@ -215,7 +215,7 @@ export const GET = withAuth(async (req: NextRequest, session, { params }) => {
       session
     );
 
-    const billingItem = billingItemData?.billingItemById;
+    const billingItem = billingItemData?.billingItem;
     if (!billingItem) {
       return NextResponse.json(
         { success: false, error: 'Billing item not found' },

@@ -104,7 +104,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
       // Create consolidated billing items
       for (const [key, group] of groupedEntries) {
         const services = clientServices.get(group.clientId) || [];
-        const hourlyService = services.find(s => 
+        const hourlyService = services.find((s: any) => 
           s.assignedBillingPlan?.billingUnit?.toLowerCase().includes('hour')
         );
         
@@ -134,7 +134,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
       // Create individual billing items for each time entry
       for (const entry of timeEntries) {
         const services = clientServices.get(entry.clientId) || [];
-        const hourlyService = services.find(s => 
+        const hourlyService = services.find((s: any) => 
           s.assignedBillingPlan?.billingUnit?.toLowerCase().includes('hour')
         );
         

@@ -377,7 +377,7 @@ export async function checkExistingHolidays(
               date: { _gte: $startDate, _lt: $endDate }
             }
             limit: 3
-            orderBy: { date: asc }
+            orderBy: { date: ASC }
           ) {
             date
             name

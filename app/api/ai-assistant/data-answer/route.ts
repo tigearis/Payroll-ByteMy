@@ -502,7 +502,6 @@ async function logDataAnswer(data: {
       userId: data.userId,
       action: data.success ? 'AI_DATA_QUERY_SUCCESS' : 'AI_DATA_QUERY_FAILED',
       entityType: 'ai_data_query',
-      entityId: undefined,
       success: data.success,
       metadata: {
         userRole: data.userRole,

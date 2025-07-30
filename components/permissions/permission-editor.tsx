@@ -27,13 +27,69 @@ import {
   CreatePermissionAuditLogDocument,
 } from "@/domains/users/graphql/generated/graphql";
 import { 
-  syncPermissionOverridesToClerk,
-  createPermissionOverrideWithSync,
-  deletePermissionOverrideWithSync,
   type UserRole 
 } from "@/lib/permissions/hierarchical-permissions";
 import { useHierarchicalPermissions } from "@/hooks/use-hierarchical-permissions";
 import { ResourcePermissionRow } from "./resource-permission-row";
+
+// Helper functions for API calls
+async function createPermissionOverride(
+  userId: string,
+  clerkUserId: string,
+  userRole: UserRole,
+  resource: string,
+  operation: string,
+  granted: boolean,
+  reason: string
+): Promise<void> {
+  const response = await fetch('/api/permissions/overrides', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      action: 'create',
+      userId,
+      clerkUserId,
+      userRole,
+      resource,
+      operation,
+      granted,
+      reason,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Failed to create permission override');
+  }
+}
+
+async function deletePermissionOverride(
+  overrideId: string,
+  userId: string,
+  clerkUserId: string,
+  userRole: UserRole
+): Promise<void> {
+  const response = await fetch('/api/permissions/overrides', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      action: 'delete',
+      overrideId,
+      userId,
+      clerkUserId,
+      userRole,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Failed to delete permission override');
+  }
+}
 
 interface PermissionEditorProps {
   userId: string;
@@ -266,7 +322,7 @@ export function PermissionEditor({
           if (change.granted === hasRolePermission && change.originalOverrideId) {
             // Remove override (returning to role default) with Clerk sync
             console.log(`🔄 Removing override for ${change.resource}.${change.operation}`);
-            await deletePermissionOverrideWithSync(
+            await deletePermissionOverride(
               change.originalOverrideId,
               userId,
               clerkUserId,
@@ -276,7 +332,7 @@ export function PermissionEditor({
           } else if (change.granted !== hasRolePermission) {
             // Create new override with Clerk sync
             console.log(`🔄 Creating override for ${change.resource}.${change.operation} = ${change.granted}`);
-            await createPermissionOverrideWithSync(
+            await createPermissionOverride(
               userId,
               clerkUserId,
               userRole as UserRole,

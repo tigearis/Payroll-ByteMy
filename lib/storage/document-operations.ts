@@ -61,9 +61,9 @@ export async function uploadDocument(
       options.fileBuffer,
       options.filename,
       {
-        clientId: options.clientId || undefined,
-        payrollId: options.payrollId || undefined,
-        category: options.category || undefined,
+        ...(options.clientId ? { clientId: options.clientId } : {}),
+        ...(options.payrollId ? { payrollId: options.payrollId } : {}),
+        ...(options.category ? { category: options.category } : {}),
         userId: options.uploadedBy,
         metadata: options.metadata || {},
       }
@@ -248,22 +248,22 @@ export async function listDocuments(
       where: whereClause,
       limit: filters.limit || 50,
       offset: filters.offset || 0,
-      orderBy: [{ createdAt: 'desc' }]
+      orderBy: [{ createdAt: 'DESC' }]
     }) as { 
       files: DocumentRecord[] | null; 
       filesAggregate: { aggregate: { count: number } } | null;
     };
 
     // Log document list access for audit
-    await auditLogger.dataAccess(
-      requestingUserId,
-      'LIST',
-      'file',
-      undefined,
-      { 
+    await auditLogger.log({
+      userId: requestingUserId,
+      action: 'LIST',
+      entityType: 'file',
+      success: true,
+      metadata: { 
         resultCount: result.files?.length || 0
       }
-    );
+    });
 
     // Generate fresh URLs for all documents
     const documentsWithFreshUrls = await Promise.all(

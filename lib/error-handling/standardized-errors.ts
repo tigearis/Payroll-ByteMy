@@ -210,10 +210,12 @@ export function createErrorResponse(
       error: 'InternalServerError',
       message: isProduction ? 'An internal error occurred' : error.message,
       code: ErrorCode.INTERNAL_SERVER_ERROR,
-      details: isProduction ? undefined : { 
-        stack: error.stack ?? undefined,
-        originalMessage: error.message 
-      },
+      ...(isProduction ? {} : { 
+        details: { 
+          stack: error.stack ?? undefined,
+          originalMessage: error.message 
+        }
+      }),
       timestamp: new Date().toISOString(),
       requestId: requestId || '',
       path: path || ''

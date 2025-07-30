@@ -367,6 +367,8 @@ function useLoadingCoordinator() {
     if (!isAnyLoading && loadingToastShown) {
       setLoadingToastShown(false);
     }
+    
+    return undefined;
   }, [isAnyLoading, loadingToastShown]);
 
   return {
@@ -399,6 +401,8 @@ export default function PayrollPage() {
     isVersionCheckingOrRedirecting, 
     loadingToastShown 
   } = useLoadingCoordinator();
+  
+  // Permission checks now handled by PermissionGuard components
   const [activeTab, setActiveTab] = useState("overview");
   const [isEditing, setIsEditing] = useState(false);
   const [showStatusDialog, setShowStatusDialog] = useState(false);
@@ -608,8 +612,7 @@ export default function PayrollPage() {
             },
           ],
           maxConcurrent: 4,
-          timeoutMs: 15000, // Increased timeout to 15 seconds
-          retryCount: 2, // Add retry capability if supported
+          timeoutMs: 15000 // Increased timeout to 15 seconds
         }
       );
 
@@ -742,18 +745,7 @@ export default function PayrollPage() {
 
   console.log("🎯 All hooks loaded successfully");
 
-  useEffect(() => {
-    if (loading && !loadingToastShown) {
-      const timer = setTimeout(() => {
-        if (loading) {
-          toast.info("Loading payroll data...");
-          setLoadingToastShown(true);
-        }
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-    return undefined;
-  }, [loading, loadingToastShown]);
+  // Loading toast now handled by useLoadingCoordinator hook
 
   // Initialize edit state when payroll data loads (minimal state needed for save logic)
   useEffect(() => {
@@ -1498,12 +1490,12 @@ export default function PayrollPage() {
                 <DropdownMenuSeparator />
 
                 {/* Danger Zone */}
-                {canDeletePayroll && (
+                <CanDelete resource="payrolls">
                   <DropdownMenuItem className="text-red-600">
                     <AlertTriangle className="w-4 h-4 mr-2" />
                     Archive Payroll
                   </DropdownMenuItem>
-                )}
+                </CanDelete>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

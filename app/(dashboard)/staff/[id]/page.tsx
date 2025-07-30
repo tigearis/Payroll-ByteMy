@@ -270,7 +270,7 @@ export default function StaffDetailsPage() {
       setIsUpdatingRole(true);
       
       // Show immediate feedback
-      toast.info(`Updating ${user.computedName || `${user.firstName} ${user.lastName}`.trim()}'s role to ${newRole.replace('_', ' ')}...`);
+      toast.info(`Updating ${user?.computedName || `${user?.firstName || ''} ${user?.lastName || ''}`.trim()}'s role to ${newRole.replace('_', ' ')}...`);
 
       // Call the API route instead of GraphQL mutation to ensure Clerk sync
       const response = await fetch(`/api/staff/${id}/role`, {
@@ -881,9 +881,9 @@ export default function StaffDetailsPage() {
           <TabsContent value="permissions" className="space-y-6">
             <PermissionEditor
               userId={id}
-              clerkUserId={user.clerkUserId}
-              userRole={user.role}
-              userName={user.computedName || `${user.firstName} ${user.lastName}`}
+              clerkUserId={user?.clerkUserId || ''}
+              userRole={user?.role}
+              userName={user?.computedName || `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || 'Unknown User'}
             />
           </TabsContent>
 

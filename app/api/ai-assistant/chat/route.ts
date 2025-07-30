@@ -362,7 +362,6 @@ async function logAIInteraction(data: any) {
       userId: data.userId,
       action: data.success ? 'AI_CHAT_SUCCESS' : 'AI_CHAT_FAILED',
       entityType: 'ai_chat',
-      entityId: undefined,
       success: data.success,
       metadata: {
         userRole: data.userRole,
