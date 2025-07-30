@@ -712,3 +712,234 @@ query GetSecurityUserStats {
     }
   }
 }
+
+# Security Audit Log Viewer with Pagination and Filtering
+query GetSecurityAuditLogs(
+  $limit: Int = 50
+  $offset: Int = 0
+  $timeRange: timestamptz!
+  $searchTerm: String = ""
+  $severityFilter: [String!] = []
+  $actionFilter: [String!] = []
+) {
+  # Main audit logs with filtering
+  auditLogs(
+    where: {
+      eventTime: { _gte: $timeRange }
+      _and: [
+        {
+          _or: [
+            { userEmail: { _ilike: $searchTerm } }
+            { action: { _ilike: $searchTerm } }
+            { resourceType: { _ilike: $searchTerm } }
+            { resourceId: { _ilike: $searchTerm } }
+          ]
+        }
+        { action: { _in: $actionFilter } }
+      ]
+    }
+    orderBy: { eventTime: DESC }
+    limit: $limit
+    offset: $offset
+  ) {
+    ...AuditLogEntry
+  }
+  
+  # Count for pagination
+  auditLogsAggregate(
+    where: {
+      eventTime: { _gte: $timeRange }
+      _and: [
+        {
+          _or: [
+            { userEmail: { _ilike: $searchTerm } }
+            { action: { _ilike: $searchTerm } }
+            { resourceType: { _ilike: $searchTerm } }
+            { resourceId: { _ilike: $searchTerm } }
+          ]
+        }
+        { action: { _in: $actionFilter } }
+      ]
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  # Auth events with filtering
+  authEvents(
+    where: {
+      eventTime: { _gte: $timeRange }
+      _or: [
+        { userEmail: { _ilike: $searchTerm } }
+        { eventType: { _ilike: $searchTerm } }
+      ]
+    }
+    orderBy: { eventTime: DESC }
+    limit: $limit
+    offset: $offset
+  ) {
+    ...AuthEvent
+  }
+}
+
+# Permissions Dashboard Data
+query GetPermissionsDashboardData {
+  # All roles with their permissions
+  roles(orderBy: { priority: DESC }) {
+    id
+    name
+    displayName
+    description
+    priority
+    isSystemRole
+    assignedPermissionsAggregate {
+      aggregate {
+        count
+      }
+    }
+    assignedToUsersAggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+  
+  # Users with their role assignments
+  users(orderBy: { computedName: ASC }) {
+    ...UserMinimal
+    role
+    isActive
+    isStaff
+    assignedRoles {
+      assignedRole {
+        id
+        name
+        displayName
+        priority
+      }
+    }
+  }
+  
+  # Permission overrides
+  permissionOverrides(orderBy: { createdAt: DESC }, limit: 20) {
+    ...PermissionOverrideInfo
+  }
+  
+  # Recent permission changes from audit logs
+  recentPermissionChanges: auditLogs(
+    where: {
+      resourceType: { _in: ["permission", "role", "user"] }
+      action: { _in: ["permission_grant", "permission_revoke", "role_change"] }
+      eventTime: { _gte: "now() - interval '7 days'" }
+    }
+    orderBy: { eventTime: DESC }
+    limit: 10
+  ) {
+    ...AuditLogEntry
+  }
+}
+
+# SOC2 Compliance Dashboard Data  
+query GetSOC2ComplianceData($timeRange: timestamptz!) {
+  # Total audit log coverage
+  totalAuditLogs: auditLogsAggregate(
+    where: { eventTime: { _gte: $timeRange } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  # Failed access attempts
+  failedAccessAttempts: auditLogsAggregate(
+    where: {
+      eventTime: { _gte: $timeRange }
+      success: { _eq: false }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  # Authentication events
+  authenticationEvents: authEventsAggregate(
+    where: { eventTime: { _gte: $timeRange } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  # Failed authentication events
+  failedAuthentication: authEventsAggregate(
+    where: {
+      eventTime: { _gte: $timeRange }
+      success: { _eq: false }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  # Data access logs
+  dataAccessEvents: dataAccessLogsAggregate(
+    where: { accessedAt: { _gte: $timeRange } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  # Critical/High data access
+  sensitiveDataAccess: dataAccessLogsAggregate(
+    where: {
+      accessedAt: { _gte: $timeRange }
+      dataClassification: { _in: ["CRITICAL", "HIGH"] }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  # Users with active sessions
+  activeUsers: usersAggregate(
+    where: { isActive: { _eq: true } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  # Total users
+  totalUsers: usersAggregate {
+    aggregate {
+      count
+    }
+  }
+  
+  # Staff users
+  staffUsers: usersAggregate(
+    where: { isStaff: { _eq: true } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  # Recent critical security events
+  criticalSecurityEvents: auditLogs(
+    where: {
+      eventTime: { _gte: $timeRange }
+      action: { _in: ["delete", "export", "privilege_escalation", "unauthorized_access"] }
+    }
+    orderBy: { eventTime: DESC }
+    limit: 10
+  ) {
+    ...AuditLogEntry
+  }
+}
