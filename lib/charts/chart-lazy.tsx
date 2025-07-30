@@ -80,7 +80,7 @@ const LazyLineChart = lazy(async () => {
               type="monotone" 
               dataKey={line.key} 
               stroke={line.color} 
-              name={line.name} 
+              name={line.name || line.key} 
             />
           ))}
         </LineChart>
@@ -160,7 +160,7 @@ interface LazyBarChartProps {
 
 export function LazyBarChartWrapper(props: LazyBarChartProps) {
   return (
-    <Suspense fallback={<ChartSkeleton height={props.height} />}>
+    <Suspense fallback={<ChartSkeleton height={props.height || 300} />}>
       <LazyBarChart {...props} />
     </Suspense>
   );
@@ -182,7 +182,7 @@ interface LazyLineChartProps {
 
 export function LazyLineChartWrapper(props: LazyLineChartProps) {
   return (
-    <Suspense fallback={<ChartSkeleton height={props.height} />}>
+    <Suspense fallback={<ChartSkeleton height={props.height || 300} />}>
       <LazyLineChart {...props} />
     </Suspense>
   );
@@ -201,7 +201,7 @@ interface LazyPieChartProps {
 
 export function LazyPieChartWrapper(props: LazyPieChartProps) {
   return (
-    <Suspense fallback={<ChartSkeleton height={props.height} />}>
+    <Suspense fallback={<ChartSkeleton height={props.height || 300} />}>
       <LazyPieChart {...props} />
     </Suspense>
   );

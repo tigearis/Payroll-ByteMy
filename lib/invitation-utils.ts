@@ -57,7 +57,7 @@ export function extractInvitationParams(searchParams: URLSearchParams): Invitati
     ticket,
     status: status || 'sign_up', // Default to sign_up if status not provided
     redirectUrl: redirectUrl ?? '',
-    userData: userData ?? undefined, // Include extracted user data
+    ...(userData ? { userData } : {}), // Include extracted user data only if it exists
   };
 }
 
@@ -161,7 +161,7 @@ export async function logInvitationFlow(context: string, state: InvitationFlowSt
       userId: additionalData?.userId || 'anonymous',
       action: `INVITATION_${context.toUpperCase()}`,
       entityType: 'invitation',
-      entityId: state.ticketData?.ticket?.substring(0, 20),
+      ...(state.ticketData?.ticket ? { entityId: state.ticketData.ticket.substring(0, 20) } : {}),
       success: true,
       metadata: {
         context,

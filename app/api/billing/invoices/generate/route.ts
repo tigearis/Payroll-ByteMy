@@ -37,7 +37,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
 
     // Check if user has permission to generate invoices
     const userRole = session.role || session.defaultRole;
-    if (!['developer', 'org_admin', 'manager'].includes(userRole)) {
+    if (!userRole || !['developer', 'org_admin', 'manager'].includes(userRole)) {
       return NextResponse.json(
         { success: false, error: 'Insufficient permissions to generate invoices' },
         { status: 403 }

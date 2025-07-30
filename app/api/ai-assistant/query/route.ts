@@ -481,7 +481,6 @@ async function logQueryExecution(data: {
       userId: data.userId,
       action: data.success ? 'AI_QUERY_SUCCESS' : 'AI_QUERY_FAILED',
       entityType: 'ai_query',
-      entityId: undefined,
       success: data.success,
       metadata: {
         userRole: data.userRole,

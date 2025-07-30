@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from '@/lib/auth/api-auth';
+import { withAuthParams } from '@/lib/auth/api-auth';
 import { executeTypedQuery } from '@/lib/apollo/query-helpers';
 import { UpdateBillingItemDocument } from '@/domains/billing/graphql/generated/graphql';
 
@@ -9,9 +9,9 @@ import { UpdateBillingItemDocument } from '@/domains/billing/graphql/generated/g
  * Approves a billing item, marking it as ready for invoicing.
  * Requires manager-level permissions.
  */
-export const POST = withAuth(async (req: NextRequest, session, { params }) => {
+export const POST = withAuthParams(async (req: NextRequest, { params }, session: any) => {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await req.json();
     const { notes } = body;
 
@@ -40,13 +40,13 @@ export const POST = withAuth(async (req: NextRequest, session, { params }) => {
       session
     );
 
-    if (!result?.updateBillingItemById) {
+    if (!result?.updateBillingItem) {
       throw new Error('Failed to update billing item');
     }
 
     return NextResponse.json({
       success: true,
-      data: result.updateBillingItemById,
+      data: result.updateBillingItem,
       message: 'Billing item approved successfully'
     });
 

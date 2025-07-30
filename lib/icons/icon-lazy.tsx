@@ -34,7 +34,7 @@ export {
 /**
  * Icon categories with their respective icon sets
  */
-const ICON_SETS = {
+const ICON_SETS: Record<string, string[]> = {
   business: [
     'DollarSign', 'TrendingUp', 'TrendingDown', 'BarChart', 'LineChart', 
     'PieChart', 'Calendar', 'Clock', 'FileText', 'Briefcase', 'Building', 
