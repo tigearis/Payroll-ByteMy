@@ -168,8 +168,8 @@ export function DocumentList({
       if (clientId) params.append('clientId', clientId);
       if (payrollId) params.append('payrollId', payrollId);
       if (filters.uploadedBy) params.append('uploadedBy', filters.uploadedBy);
-      if (filters.category) params.append('category', filters.category);
-      if (filters.isPublic) params.append('isPublic', filters.isPublic);
+      if (filters.category && filters.category !== 'all') params.append('category', filters.category);
+      if (filters.isPublic && filters.isPublic !== 'all') params.append('isPublic', filters.isPublic);
 
       const response = await fetch(`/api/documents/list?${params.toString()}`);
       const result = await response.json();
@@ -355,7 +355,7 @@ export function DocumentList({
                   <SelectValue placeholder="All categories" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All categories</SelectItem>
+                  <SelectItem value="all">All categories</SelectItem>
                   {DOCUMENT_CATEGORIES.map(cat => (
                     <SelectItem key={cat.value} value={cat.value}>
                       {cat.label}
@@ -375,7 +375,7 @@ export function DocumentList({
                   <SelectValue placeholder="All documents" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All documents</SelectItem>
+                  <SelectItem value="all">All documents</SelectItem>
                   <SelectItem value="true">Public only</SelectItem>
                   <SelectItem value="false">Private only</SelectItem>
                 </SelectContent>
@@ -429,7 +429,7 @@ export function DocumentList({
                     <div className="flex flex-col items-center space-y-2">
                       <File className="w-8 h-8 text-gray-400" />
                       <p className="text-gray-500">No documents found</p>
-                      {(filters.search || filters.category || filters.isPublic) && (
+                      {(filters.search || (filters.category && filters.category !== 'all') || (filters.isPublic && filters.isPublic !== 'all')) && (
                         <Button
                           variant="outline"
                           size="sm"

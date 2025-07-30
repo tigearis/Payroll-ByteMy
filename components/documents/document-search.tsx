@@ -159,9 +159,9 @@ export function DocumentSearch({
       if (filters.query.trim()) params.append('q', filters.query.trim());
       if (filters.clientId) params.append('clientId', filters.clientId);
       if (filters.payrollId) params.append('payrollId', filters.payrollId);
-      if (filters.category) params.append('category', filters.category);
+      if (filters.category && filters.category !== 'all') params.append('category', filters.category);
       if (filters.uploadedBy) params.append('uploadedBy', filters.uploadedBy);
-      if (filters.isPublic) params.append('isPublic', filters.isPublic);
+      if (filters.isPublic && filters.isPublic !== 'all') params.append('isPublic', filters.isPublic);
       
       params.append('limit', '50'); // Limit to 50 results for search
 
@@ -242,9 +242,9 @@ export function DocumentSearch({
     let count = 0;
     if (filters.clientId) count++;
     if (filters.payrollId) count++;
-    if (filters.category) count++;
+    if (filters.category && filters.category !== 'all') count++;
     if (filters.uploadedBy) count++;
-    if (filters.isPublic) count++;
+    if (filters.isPublic && filters.isPublic !== 'all') count++;
     return count;
   }, [filters]);
 
@@ -319,7 +319,7 @@ export function DocumentSearch({
                     <SelectValue placeholder="All categories" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All categories</SelectItem>
+                    <SelectItem value="all">All categories</SelectItem>
                     {DOCUMENT_CATEGORIES.map(cat => (
                       <SelectItem key={cat.value} value={cat.value}>
                         {cat.label}
@@ -339,7 +339,7 @@ export function DocumentSearch({
                     <SelectValue placeholder="All documents" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All documents</SelectItem>
+                    <SelectItem value="all">All documents</SelectItem>
                     <SelectItem value="true">Public only</SelectItem>
                     <SelectItem value="false">Private only</SelectItem>
                   </SelectContent>
