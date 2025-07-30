@@ -234,34 +234,79 @@ export async function fetchDataGovAuHolidays(
  * @returns Array of objects ready for database insertion
  */
 export function transformDataGovAuHolidays(holidays: DataGovAuHoliday[]) {
-  return holidays.map(holiday => {
-    // Convert YYYYMMDD to ISO date format
-    const dateStr = holiday.Date;
-    const isoDate = `${dateStr.slice(0,4)}-${dateStr.slice(4,6)}-${dateStr.slice(6,8)}`;
+  const validHolidays: DataGovAuHoliday[] = [];
+  let skippedCount = 0;
+  
+  // Filter out holidays with invalid dates
+  holidays.forEach(holiday => {
+    if (!holiday.Date || typeof holiday.Date !== 'string' || holiday.Date.length !== 8) {
+      console.warn(`⚠️ Skipping holiday with invalid date:`, {
+        name: holiday["Holiday Name"],
+        date: holiday.Date,
+        jurisdiction: holiday.Jurisdiction
+      });
+      skippedCount++;
+      return;
+    }
     
-    // Map jurisdiction to proper region name
-    const regionName = JURISDICTION_MAPPING[holiday.Jurisdiction] || holiday.Jurisdiction.toUpperCase();
+    // Validate date string is numeric
+    if (!/^\d{8}$/.test(holiday.Date)) {
+      console.warn(`⚠️ Skipping holiday with non-numeric date:`, {
+        name: holiday["Holiday Name"],
+        date: holiday.Date,
+        jurisdiction: holiday.Jurisdiction
+      });
+      skippedCount++;
+      return;
+    }
     
-    // Determine if this holiday is relevant for EFT adjustments (NSW + National)
-    const isEftRelevant = EFT_RELEVANT_REGIONS.includes(regionName);
-    
-    return {
-      date: isoDate,
-      local_name: holiday["Holiday Name"],
-      name: holiday["Holiday Name"],
-      country_code: 'AU',
-      region: [regionName],
-      is_fixed: true, // Most public holidays are fixed dates
-      is_global: false, // State-specific holidays are not global
-      launch_year: null, // Not provided by data.gov.au
-      types: ['public'], // Assume all are public holidays
-      updated_at: new Date().toISOString(),
-      // Custom fields for our enhanced logic
-      source: 'data.gov.au',
-      jurisdiction: holiday.Jurisdiction,
-      more_information: holiday["More Information"],
-      eft_relevant: isEftRelevant,
-    };
+    validHolidays.push(holiday);
+  });
+  
+  if (skippedCount > 0) {
+    console.log(`📊 Skipped ${skippedCount} holidays with invalid dates`);
+  }
+  
+  console.log(`✅ Processing ${validHolidays.length} valid holidays`);
+  
+  return validHolidays.map(holiday => {
+    try {
+      // Convert YYYYMMDD to ISO date format - now safe since we validated above
+      const dateStr = holiday.Date;
+      const isoDate = `${dateStr.slice(0,4)}-${dateStr.slice(4,6)}-${dateStr.slice(6,8)}`;
+      
+      // Map jurisdiction to proper region name
+      const regionName = JURISDICTION_MAPPING[holiday.Jurisdiction] || holiday.Jurisdiction.toUpperCase();
+      
+      // Determine if this holiday is relevant for EFT adjustments (NSW + National)
+      const isEftRelevant = EFT_RELEVANT_REGIONS.includes(regionName);
+      
+      return {
+        date: isoDate,
+        local_name: holiday["Holiday Name"],
+        name: holiday["Holiday Name"],
+        country_code: 'AU',
+        region: [regionName],
+        is_fixed: true, // Most public holidays are fixed dates
+        is_global: false, // State-specific holidays are not global
+        launch_year: null, // Not provided by data.gov.au
+        types: ['public'], // Assume all are public holidays
+        updated_at: new Date().toISOString(),
+        // Custom fields for our enhanced logic
+        source: 'data.gov.au',
+        jurisdiction: holiday.Jurisdiction,
+        more_information: holiday["More Information"],
+        eft_relevant: isEftRelevant,
+      };
+    } catch (error) {
+      console.error(`❌ Error transforming holiday:`, {
+        name: holiday["Holiday Name"],
+        date: holiday.Date,
+        jurisdiction: holiday.Jurisdiction,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+      throw error;
+    }
   });
 }
 
