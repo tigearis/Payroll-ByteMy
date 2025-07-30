@@ -1,37 +1,52 @@
-'use client';
+"use client";
 
-import { useQuery, useMutation } from '@apollo/client';
-import { 
-  DollarSign, 
-  Clock, 
-  CheckCircle, 
-  AlertCircle, 
-  Users, 
+import { useQuery, useMutation } from "@apollo/client";
+import {
+  DollarSign,
+  Clock,
+  CheckCircle,
   FileText,
   TrendingUp,
   Filter,
   Download,
-  Plus
-} from 'lucide-react';
-import React, { useState, useMemo } from 'react';
-import { toast } from 'sonner';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+  Plus,
+} from "lucide-react";
+import React, { useState, useMemo } from "react";
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   GetAllBillingItemsDocument,
-  GetBillingItemsByClientDocument,
   GetPayrollProfitabilityDocument,
   UpdateBillingItemDocument,
   ConsolidateInvoicesDocument,
-} from '../../graphql/generated/graphql';
+} from "../../graphql/generated/graphql";
 
 interface BillingItem {
   id: string;
@@ -47,7 +62,7 @@ interface BillingItem {
   approvalDate?: string | null;
   confirmedAt?: string | null;
   notes?: string | null;
-  createdAt: string;
+  createdAt?: string; // Made optional with the ? operator
   client?: {
     id: string;
     name: string;
@@ -60,13 +75,13 @@ interface BillingItem {
     id: string;
     firstName: string;
     lastName: string;
-    computedName: string;
+    computedName?: string | null;
   } | null;
   approver?: {
     id: string;
     firstName: string;
     lastName: string;
-    computedName: string;
+    computedName?: string | null;
   } | null;
 }
 
@@ -84,36 +99,37 @@ interface BillingDashboardProps {
 
 export const BillingDashboard: React.FC<BillingDashboardProps> = ({
   onItemClick,
-  onBulkAction
+  onBulkAction,
 }) => {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState("overview");
   const [filters, setFilters] = useState<DashboardFilters>({
     isApproved: undefined,
-    clientId: '',
-    dateRange: '30',
-    approvalStatus: ''
+    clientId: "",
+    dateRange: "30",
+    approvalStatus: "",
   });
 
   // Calculate date range
   const dateRange = useMemo(() => {
     const endDate = new Date();
     const startDate = new Date();
-    startDate.setDate(endDate.getDate() - parseInt(filters.dateRange || '30'));
+    startDate.setDate(endDate.getDate() - parseInt(filters.dateRange || "30"));
     return { startDate, endDate };
   }, [filters.dateRange]);
 
   // Get billing items (get all items, then filter client-side)
-  const { data: billingData, loading: billingLoading, refetch } = useQuery(
-    GetAllBillingItemsDocument,
-    {
-      variables: { 
-        limit: 500,
-        offset: 0
-      },
-      fetchPolicy: 'cache-and-network'
-    }
-  );
+  const {
+    data: billingData,
+    loading: billingLoading,
+    refetch,
+  } = useQuery(GetAllBillingItemsDocument, {
+    variables: {
+      limit: 500,
+      offset: 0,
+    },
+    fetchPolicy: "cache-and-network",
+  });
 
   // Get profitability data
   const { data: profitabilityData, loading: profitabilityLoading } = useQuery(
@@ -121,8 +137,8 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
     {
       variables: {
         startDate: dateRange.startDate.toISOString(),
-        endDate: dateRange.endDate.toISOString()
-      }
+        endDate: dateRange.endDate.toISOString(),
+      },
     }
   );
 
@@ -136,28 +152,43 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
   // Filter billing items
   const filteredItems = useMemo(() => {
     return billingItems.filter(item => {
-      if (filters.isApproved !== undefined && (item.isApproved ?? false) !== filters.isApproved) return false;
-      if (filters.approvalStatus === 'confirmed' && !item.confirmedAt) return false;
-      if (filters.approvalStatus === 'unconfirmed' && item.confirmedAt) return false;
+      if (
+        filters.isApproved !== undefined &&
+        (item.isApproved ?? false) !== filters.isApproved
+      )
+        return false;
+      if (filters.approvalStatus === "confirmed" && !item.confirmedAt)
+        return false;
+      if (filters.approvalStatus === "unconfirmed" && item.confirmedAt)
+        return false;
       return true;
     });
   }, [billingItems, filters]);
 
   // Calculate metrics
   const metrics = useMemo(() => {
-    const total = filteredItems.reduce((sum, item) => sum + (item.totalAmount ?? item.amount ?? 0), 0);
+    const total = filteredItems.reduce(
+      (sum, item) => sum + (item.totalAmount ?? item.amount ?? 0),
+      0
+    );
     const pending = filteredItems.filter(item => !(item.isApproved ?? false));
     const approved = filteredItems.filter(item => item.isApproved ?? false);
     const confirmed = filteredItems.filter(item => item.confirmedAt);
-    
+
     return {
       totalAmount: total,
       pendingCount: pending.length,
-      pendingAmount: pending.reduce((sum, item) => sum + (item.totalAmount ?? item.amount ?? 0), 0),
+      pendingAmount: pending.reduce(
+        (sum, item) => sum + (item.totalAmount ?? item.amount ?? 0),
+        0
+      ),
       approvedCount: approved.length,
-      approvedAmount: approved.reduce((sum, item) => sum + (item.totalAmount ?? item.amount ?? 0), 0),
+      approvedAmount: approved.reduce(
+        (sum, item) => sum + (item.totalAmount ?? item.amount ?? 0),
+        0
+      ),
       confirmedCount: confirmed.length,
-      totalItems: filteredItems.length
+      totalItems: filteredItems.length,
     };
   }, [filteredItems]);
 
@@ -181,7 +212,7 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
   // Bulk approve items
   const bulkApprove = async () => {
     if (selectedItems.length === 0) {
-      toast.error('Please select items to approve');
+      toast.error("Please select items to approve");
       return;
     }
 
@@ -192,9 +223,9 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
             id: itemId,
             updates: {
               isApproved: true,
-              approvalDate: new Date().toISOString()
-            }
-          }
+              approvalDate: new Date().toISOString(),
+            },
+          },
         })
       );
 
@@ -202,10 +233,13 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
       toast.success(`Approved ${selectedItems.length} billing items`);
       setSelectedItems([]);
       refetch();
-      onBulkAction?.('approve', filteredItems.filter(item => selectedItems.includes(item.id)));
+      onBulkAction?.(
+        "approve",
+        filteredItems.filter(item => selectedItems.includes(item.id))
+      );
     } catch (error) {
-      toast.error('Failed to approve items');
-      console.error('Bulk approve error:', error);
+      toast.error("Failed to approve items");
+      console.error("Bulk approve error:", error);
     }
   };
 
@@ -215,46 +249,53 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
       await consolidateInvoices({
         variables: {
           clientId: clientId,
-          consolidationDate: new Date().toISOString().split('T')[0]
-        }
+          consolidationDate: new Date().toISOString().split("T")[0],
+        },
       });
-      toast.success('Invoice generated successfully');
+      toast.success("Invoice generated successfully");
       refetch();
     } catch (error) {
-      toast.error('Failed to generate invoice');
-      console.error('Invoice generation error:', error);
+      toast.error("Failed to generate invoice");
+      console.error("Invoice generation error:", error);
     }
   };
 
-  const getStatusColor = (isApproved: boolean | null, confirmedAt?: string | null) => {
+  const getStatusColor = (
+    isApproved: boolean | null,
+    confirmedAt?: string | null
+  ) => {
     if (isApproved) {
-      return 'bg-green-100 text-green-800';
+      return "bg-green-100 text-green-800";
     } else if (confirmedAt) {
-      return 'bg-blue-100 text-blue-800';
+      return "bg-blue-100 text-blue-800";
     } else {
-      return 'bg-gray-100 text-gray-800';
+      return "bg-gray-100 text-gray-800";
     }
   };
 
-  const getStatusLabel = (isApproved: boolean | null, confirmedAt?: string | null) => {
+  const getStatusLabel = (
+    isApproved: boolean | null,
+    confirmedAt?: string | null
+  ) => {
     if (isApproved) {
-      return 'Approved';
+      return "Approved";
     } else if (confirmedAt) {
-      return 'Confirmed';
+      return "Confirmed";
     } else {
-      return 'Draft';
+      return "Draft";
     }
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-AU', {
-      style: 'currency',
-      currency: 'AUD'
+    return new Intl.NumberFormat("en-AU", {
+      style: "currency",
+      currency: "AUD",
     }).format(amount);
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-AU');
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return "-";
+    return new Date(dateString).toLocaleDateString("en-AU");
   };
 
   return (
@@ -263,7 +304,9 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Billing Dashboard</h1>
-          <p className="text-gray-600">Manage billing items, approvals, and invoices</p>
+          <p className="text-gray-600">
+            Manage billing items, approvals, and invoices
+          </p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline">
@@ -285,49 +328,57 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(metrics.totalAmount)}</div>
+            <div className="text-2xl font-bold">
+              {formatCurrency(metrics.totalAmount)}
+            </div>
             <p className="text-xs text-muted-foreground">
               {metrics.totalItems} items
             </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Approval</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Pending Approval
+            </CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(metrics.pendingAmount)}</div>
+            <div className="text-2xl font-bold">
+              {formatCurrency(metrics.pendingAmount)}
+            </div>
             <p className="text-xs text-muted-foreground">
               {metrics.pendingCount} items
             </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Approved</CardTitle>
             <CheckCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(metrics.approvedAmount)}</div>
+            <div className="text-2xl font-bold">
+              {formatCurrency(metrics.approvedAmount)}
+            </div>
             <p className="text-xs text-muted-foreground">
               {metrics.approvedCount} items
             </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Confirmed Items</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Confirmed Items
+            </CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{metrics.confirmedCount}</div>
-            <p className="text-xs text-muted-foreground">
-              Manager confirmed
-            </p>
+            <p className="text-xs text-muted-foreground">Manager confirmed</p>
           </CardContent>
         </Card>
       </div>
@@ -352,20 +403,39 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
                 <div className="text-center py-8">Loading billing data...</div>
               ) : (
                 <div className="space-y-4">
-                  {filteredItems.slice(0, 10).map((item) => (
-                    <div key={item.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  {filteredItems.slice(0, 10).map(item => (
+                    <div
+                      key={item.id}
+                      className="flex items-center justify-between p-4 border rounded-lg"
+                    >
                       <div className="flex items-center gap-4">
                         <div>
-                          <div className="font-medium">{item.serviceName || 'Unnamed Service'}</div>
-                          <div className="text-sm text-gray-600">{item.description || 'No description'}</div>
+                          <div className="font-medium">
+                            {item.serviceName || "Unnamed Service"}
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            {item.description || "No description"}
+                          </div>
                         </div>
-                        <Badge className={getStatusColor(item.isApproved ?? false, item.confirmedAt ?? null)}>
-                          {getStatusLabel(item.isApproved ?? false, item.confirmedAt ?? null)}
+                        <Badge
+                          className={getStatusColor(
+                            item.isApproved ?? false,
+                            item.confirmedAt ?? null
+                          )}
+                        >
+                          {getStatusLabel(
+                            item.isApproved ?? false,
+                            item.confirmedAt ?? null
+                          )}
                         </Badge>
                       </div>
                       <div className="text-right">
-                        <div className="font-semibold">{formatCurrency(item.amount ?? 0)}</div>
-                        <div className="text-sm text-gray-600">{formatDate(item.createdAt)}</div>
+                        <div className="font-semibold">
+                          {formatCurrency(item.amount ?? 0)}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          {formatDate(item.createdAt ?? "")}
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -389,11 +459,17 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
                 <div>
                   <Label htmlFor="approval-filter">Approval Status</Label>
                   <Select
-                    value={filters.isApproved === undefined ? 'all' : filters.isApproved ? 'approved' : 'pending'}
-                    onValueChange={(value) => {
+                    value={
+                      filters.isApproved === undefined
+                        ? "all"
+                        : filters.isApproved
+                          ? "approved"
+                          : "pending"
+                    }
+                    onValueChange={value => {
                       let isApproved: boolean | undefined;
-                      if (value === 'approved') isApproved = true;
-                      else if (value === 'pending') isApproved = false;
+                      if (value === "approved") isApproved = true;
+                      else if (value === "pending") isApproved = false;
                       else isApproved = undefined;
                       setFilters(prev => ({ ...prev, isApproved }));
                     }}
@@ -408,29 +484,35 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div>
                   <Label htmlFor="confirmed">Confirmation Status</Label>
                   <Select
                     value={filters.approvalStatus}
-                    onValueChange={(value) => setFilters(prev => ({ ...prev, approvalStatus: value }))}
+                    onValueChange={value =>
+                      setFilters(prev => ({ ...prev, approvalStatus: value }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="All" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="">All</SelectItem>
-                      <SelectItem value="confirmed">Confirmed by Manager</SelectItem>
+                      <SelectItem value="confirmed">
+                        Confirmed by Manager
+                      </SelectItem>
                       <SelectItem value="unconfirmed">Not Confirmed</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div>
                   <Label htmlFor="dateRange">Date Range</Label>
                   <Select
                     value={filters.dateRange}
-                    onValueChange={(value) => setFilters(prev => ({ ...prev, dateRange: value }))}
+                    onValueChange={value =>
+                      setFilters(prev => ({ ...prev, dateRange: value }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -443,14 +525,19 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div>
                   <Label htmlFor="client">Client</Label>
                   <Input
                     id="client"
                     placeholder="Client ID"
                     value={filters.clientId}
-                    onChange={(e) => setFilters(prev => ({ ...prev, clientId: e.target.value }))}
+                    onChange={e =>
+                      setFilters(prev => ({
+                        ...prev,
+                        clientId: e.target.value,
+                      }))
+                    }
                   />
                 </div>
               </div>
@@ -463,8 +550,14 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <span className="font-medium">{selectedItems.length} items selected</span>
-                    <Button variant="outline" size="sm" onClick={clearSelection}>
+                    <span className="font-medium">
+                      {selectedItems.length} items selected
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={clearSelection}
+                    >
                       Clear Selection
                     </Button>
                   </div>
@@ -509,8 +602,13 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
                   <TableRow>
                     <TableHead className="w-12">
                       <Checkbox
-                        checked={selectedItems.length === filteredItems.length && filteredItems.length > 0}
-                        onCheckedChange={(checked) => checked ? selectAllItems() : clearSelection()}
+                        checked={
+                          selectedItems.length === filteredItems.length &&
+                          filteredItems.length > 0
+                        }
+                        onCheckedChange={checked =>
+                          checked ? selectAllItems() : clearSelection()
+                        }
                       />
                     </TableHead>
                     <TableHead>Service</TableHead>
@@ -523,10 +621,12 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredItems.map((item) => (
-                    <TableRow 
+                  {filteredItems.map(item => (
+                    <TableRow
                       key={item.id}
-                      className={selectedItems.includes(item.id) ? 'bg-blue-50' : ''}
+                      className={
+                        selectedItems.includes(item.id) ? "bg-blue-50" : ""
+                      }
                     >
                       <TableCell>
                         <Checkbox
@@ -535,36 +635,67 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
                         />
                       </TableCell>
                       <TableCell>
-                        <div className="cursor-pointer" onClick={() => onItemClick?.(item)}>
-                          <div className="font-medium">{item.serviceName || 'Unnamed Service'}</div>
-                          <div className="text-sm text-gray-600">{item.description || 'No description'}</div>
+                        <div
+                          className="cursor-pointer"
+                          onClick={() => onItemClick?.(item)}
+                        >
+                          <div className="font-medium">
+                            {item.serviceName || "Unnamed Service"}
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            {item.description || "No description"}
+                          </div>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="font-medium">{item.client?.name || item.clientId}</div>
+                        <div className="font-medium">
+                          {item.client?.name || item.clientId}
+                        </div>
                         {item.payroll && (
-                          <div className="text-sm text-gray-600">{item.payroll.name}</div>
+                          <div className="text-sm text-gray-600">
+                            {item.payroll.name}
+                          </div>
                         )}
                       </TableCell>
                       <TableCell>
-                        <div className="font-semibold">{formatCurrency(item.totalAmount ?? item.amount ?? 0)}</div>
+                        <div className="font-semibold">
+                          {formatCurrency(item.totalAmount ?? item.amount ?? 0)}
+                        </div>
                         {item.quantity > 1 && (
-                          <div className="text-sm text-gray-600">{item.quantity} × {formatCurrency((item.totalAmount ?? item.amount ?? 0) / item.quantity)}</div>
+                          <div className="text-sm text-gray-600">
+                            {item.quantity} ×{" "}
+                            {formatCurrency(
+                              (item.totalAmount ?? item.amount ?? 0) /
+                                item.quantity
+                            )}
+                          </div>
                         )}
                       </TableCell>
                       <TableCell>
-                        <Badge className={getStatusColor(item.isApproved ?? false, item.confirmedAt ?? null)}>
-                          {getStatusLabel(item.isApproved ?? false, item.confirmedAt ?? null)}
+                        <Badge
+                          className={getStatusColor(
+                            item.isApproved ?? false,
+                            item.confirmedAt ?? null
+                          )}
+                        >
+                          {getStatusLabel(
+                            item.isApproved ?? false,
+                            item.confirmedAt ?? null
+                          )}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         {item.isApproved ? (
-                          <Badge className="bg-green-100 text-green-800">Approved</Badge>
+                          <Badge className="bg-green-100 text-green-800">
+                            Approved
+                          </Badge>
                         ) : (
-                          <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>
+                          <Badge className="bg-yellow-100 text-yellow-800">
+                            Pending
+                          </Badge>
                         )}
                       </TableCell>
-                      <TableCell>{formatDate(item.createdAt)}</TableCell>
+                      <TableCell>{formatDate(item.createdAt ?? "")}</TableCell>
                       <TableCell>
                         <div className="flex gap-1">
                           {!item.isApproved && (
@@ -598,7 +729,9 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
             </CardHeader>
             <CardContent>
               {profitabilityLoading ? (
-                <div className="text-center py-8">Loading profitability data...</div>
+                <div className="text-center py-8">
+                  Loading profitability data...
+                </div>
               ) : (
                 <Table>
                   <TableHeader>
@@ -612,21 +745,26 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {profitabilityItems.map((item) => (
+                    {profitabilityItems.map(item => (
                       <TableRow key={item.id}>
-                        <TableCell className="font-medium">{item.name}</TableCell>
+                        <TableCell className="font-medium">
+                          {item.name}
+                        </TableCell>
                         <TableCell>{item.client?.name}</TableCell>
-                        <TableCell>{formatCurrency(item.estimatedRevenue || 0)}</TableCell>
+                        <TableCell>
+                          {formatCurrency(item.estimatedRevenue || 0)}
+                        </TableCell>
                         <TableCell>{item.estimatedHours || 0}h</TableCell>
                         <TableCell>
-                          {item.estimatedHours && item.estimatedRevenue 
-                            ? formatCurrency(item.estimatedRevenue / item.estimatedHours)
-                            : '-'
-                          }
+                          {item.estimatedHours && item.estimatedRevenue
+                            ? formatCurrency(
+                                item.estimatedRevenue / item.estimatedHours
+                              )
+                            : "-"}
                         </TableCell>
                         <TableCell>
                           <Badge className={getStatusColor(false, undefined)}>
-                            {item.billingStatus || 'Not Started'}
+                            {item.billingStatus || "Not Started"}
                           </Badge>
                         </TableCell>
                       </TableRow>
