@@ -33,10 +33,15 @@ export interface UserUpcomingPayroll {
   name: string;
   status: string;
   client: Client;
-  payrollDates: PayrollDate[];
+  payrollDates?: PayrollDate[];
   primaryConsultant?: Consultant;
   backupConsultant?: Consultant;
   manager?: Consultant;
+  nextEftDate?: Array<{
+    originalEftDate: string;
+    adjustedEftDate: string;
+    processingDate: string;
+  }>;
 }
 
 export interface UserUpcomingPayrollsData {
