@@ -108,13 +108,13 @@ export default function BillingItemsPage() {
               <DollarSign className="w-4 h-4" />
               All Items
             </TabsTrigger>
-            <TabsTrigger value="pending" className="flex items-center gap-2">
+            <TabsTrigger value="draft" className="flex items-center gap-2">
               <Clock className="w-4 h-4" />
-              Pending Approval
+              Draft Items
             </TabsTrigger>
-            <TabsTrigger value="approved" className="flex items-center gap-2">
+            <TabsTrigger value="confirmed" className="flex items-center gap-2">
               <CheckCircle className="w-4 h-4" />
-              Approved
+              Confirmed
             </TabsTrigger>
           </TabsList>
 
@@ -122,12 +122,12 @@ export default function BillingItemsPage() {
             <BillingItemsDashboard />
           </TabsContent>
 
-          <TabsContent value="pending">
-            <BillingItemsDashboard status="pending" />
+          <TabsContent value="draft">
+            <BillingItemsDashboard status="draft" />
           </TabsContent>
 
-          <TabsContent value="approved">
-            <BillingItemsDashboard status="approved" />
+          <TabsContent value="confirmed">
+            <BillingItemsDashboard status="confirmed" />
           </TabsContent>
         </Tabs>
       </div>

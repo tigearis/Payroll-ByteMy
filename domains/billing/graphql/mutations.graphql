@@ -108,41 +108,51 @@ mutation DeleteService($id: uuid!) {
 # Billing Items Management
 mutation CreateBillingItem($input: billingItemsInsertInput!) {
   insertBillingItem(object: $input) {
-    id
-    invoiceId
-    description
-    quantity
-    amount
-    payrollId
-    billingPlanId
-    clientId
-    staffUserId
-    serviceName
-    hourlyRate
-    isApproved
-    approvalDate
-    approvedBy
-    createdAt
+    ...BillingItemFragment
+    client {
+      id
+      name
+    }
+    staffUser {
+      id
+      firstName
+      lastName
+      computedName
+    }
   }
 }
 
 mutation UpdateBillingItem($id: uuid!, $updates: billingItemsSetInput!) {
   updateBillingItemById(pkColumns: { id: $id }, _set: $updates) {
+    ...BillingItemFragment
+    client {
+      id
+      name
+    }
+    staffUser {
+      id
+      firstName
+      lastName
+      computedName
+    }
+  }
+}
+
+mutation DeleteBillingItem($id: uuid!) {
+  deleteBillingItemById(id: $id) {
     id
-    invoiceId
     description
-    quantity
-    amount
-    payrollId
-    billingPlanId
-    clientId
-    staffUserId
-    serviceName
-    hourlyRate
-    isApproved
-    approvalDate
-    approvedBy
-    createdAt
+  }
+}
+
+# Get clients for form dropdown
+query GetClientsForBilling {
+  clients(
+    where: { active: { _eq: true } }
+    orderBy: { name: ASC }
+  ) {
+    id
+    name
   }
 }
 

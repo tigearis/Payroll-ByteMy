@@ -244,6 +244,92 @@ query GetBillingItemsByPayroll($payrollId: uuid!) {
   }
 }
 
+query GetBillingItemsByStatus($status: String, $clientId: uuid) {
+  billingItems(
+    where: {
+      _and: [
+        { status: { _eq: $status } }
+        { clientId: { _eq: $clientId } }
+      ]
+    }
+    orderBy: { createdAt: DESC }
+  ) {
+    ...BillingItemFragment
+    client {
+      id
+      name
+    }
+    staffUser {
+      id
+      firstName
+      lastName
+      computedName
+    }
+    approver {
+      id
+      firstName
+      lastName
+      computedName
+    }
+  }
+}
+
+query GetAllBillingItems($searchTerm: String, $status: String, $limit: Int, $offset: Int) {
+  billingItems(
+    where: {
+      _and: [
+        { 
+          _or: [
+            { description: { _ilike: $searchTerm } }
+            { serviceName: { _ilike: $searchTerm } }
+            { client: { name: { _ilike: $searchTerm } } }
+          ]
+        }
+        { status: { _eq: $status } }
+      ]
+    }
+    orderBy: { createdAt: DESC }
+    limit: $limit
+    offset: $offset
+  ) {
+    ...BillingItemFragment
+    client {
+      id
+      name
+    }
+    staffUser {
+      id
+      firstName
+      lastName
+      computedName
+    }
+    approver {
+      id
+      firstName
+      lastName
+      computedName
+    }
+  }
+}
+
+query GetBillingItemsStats($status: String, $clientId: uuid) {
+  billingItemsAggregate(
+    where: {
+      _and: [
+        { status: { _eq: $status } }
+        { clientId: { _eq: $clientId } }
+      ]
+    }
+  ) {
+    aggregate {
+      count
+      sum {
+        totalAmount
+      }
+    }
+  }
+}
+
 query GetBillingItemsByClient($clientId: uuid!) {
   billingItems(
     where: { clientId: { _eq: $clientId } }

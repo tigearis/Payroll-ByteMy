@@ -1,0 +1,64 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { withAuth } from '@/lib/auth/api-auth';
+import { executeTypedQuery } from '@/lib/apollo/query-helpers';
+import { UpdateBillingItemDocument } from '@/domains/billing/graphql/generated/graphql';
+
+/**
+ * POST /api/billing/items/[id]/approve
+ * 
+ * Approves a billing item, marking it as ready for invoicing.
+ * Requires manager-level permissions.
+ */
+export const POST = withAuth(async (req: NextRequest, session, { params }) => {
+  try {
+    const { id } = params;
+    const body = await req.json();
+    const { notes } = body;
+
+    // Check if user has permission to approve billing items
+    const userRole = session.role || session.defaultRole;
+    if (!['developer', 'org_admin', 'manager'].includes(userRole)) {
+      return NextResponse.json(
+        { success: false, error: 'Insufficient permissions to approve billing items' },
+        { status: 403 }
+      );
+    }
+
+    // Approve the billing item
+    const result = await executeTypedQuery(
+      UpdateBillingItemDocument,
+      {
+        id,
+        updates: {
+          status: 'confirmed',
+          isApproved: true,
+          approvalDate: new Date().toISOString(),
+          approvedBy: session.userId,
+          notes: notes || null
+        }
+      },
+      session
+    );
+
+    if (!result?.updateBillingItemById) {
+      throw new Error('Failed to update billing item');
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: result.updateBillingItemById,
+      message: 'Billing item approved successfully'
+    });
+
+  } catch (error) {
+    console.error('Error approving billing item:', error);
+    return NextResponse.json(
+      { 
+        success: false, 
+        error: 'Failed to approve billing item',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
+      { status: 500 }
+    );
+  }
+});

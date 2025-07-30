@@ -78,6 +78,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { NotesListWithAdd } from "@/domains/notes/components/notes-list";
+import { DocumentUpload, DocumentList } from "@/components/documents";
 import { PayrollDatesView } from "@/domains/payrolls/components/payroll-dates-view";
 import { PayrollForm, PayrollFormData } from "@/domains/payrolls/components/payroll-form";
 
@@ -94,6 +95,14 @@ const ProfitabilityDashboard = dynamic(
   () => import("@/domains/billing/components/profitability/profitability-dashboard").then(mod => ({ default: mod.ProfitabilityDashboard })),
   {
     loading: () => <div>Loading profitability dashboard...</div>,
+    ssr: false
+  }
+);
+
+const BillingGenerationModal = dynamic(
+  () => import("@/domains/billing/components/time-tracking/billing-generation-modal").then(mod => ({ default: mod.BillingGenerationModal })),
+  {
+    loading: () => <Button disabled>Loading...</Button>,
     ssr: false
   }
 );
@@ -1357,7 +1366,7 @@ export default function PayrollPage() {
           onValueChange={setActiveTab}
           className="space-y-4"
         >
-          <TabsList className="grid w-full grid-cols-3 bg-indigo-50 shadow-sm rounded-lg">
+          <TabsList className="grid w-full grid-cols-4 bg-indigo-50 shadow-sm rounded-lg">
             <TabsTrigger
               value="overview"
               className="data-[state=active]:bg-white data-[state=active]:text-gray-900 hover:bg-indigo-300 transition-all text-gray-900"
@@ -1376,6 +1385,13 @@ export default function PayrollPage() {
               className="data-[state=active]:bg-white data-[state=active]:text-gray-900 hover:bg-indigo-300 transition-all text-gray-900"
             >
               Payroll Dates
+            </TabsTrigger>
+            <TabsTrigger
+              value="documents"
+              className="data-[state=active]:bg-white data-[state=active]:text-gray-900 hover:bg-indigo-300 transition-all text-gray-900"
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              Documents
             </TabsTrigger>
           </TabsList>
 
@@ -1619,6 +1635,51 @@ export default function PayrollPage() {
 
           {/* Billing Tab */}
           <TabsContent value="billing" className="space-y-6">
+            {/* Quick Actions Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <Calculator className="w-5 h-5" />
+                    Billing Actions
+                  </span>
+                  <BillingGenerationModal
+                    payrollId={id}
+                    payrollName={payroll?.name || 'Payroll'}
+                    onGenerated={(count) => {
+                      toast.success(`Generated ${count} billing items`);
+                      refetch();
+                    }}
+                  />
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
+                    <Clock className="w-8 h-8 text-blue-600" />
+                    <div>
+                      <div className="font-medium text-blue-900">Time Entry Automation</div>
+                      <div className="text-sm text-blue-700">Convert tracked hours to billing items</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-green-50">
+                    <FileText className="w-8 h-8 text-green-600" />
+                    <div>
+                      <div className="font-medium text-green-900">Smart Consolidation</div>
+                      <div className="text-sm text-green-700">Group entries by service type</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-purple-50">
+                    <CheckCircle className="w-8 h-8 text-purple-600" />
+                    <div>
+                      <div className="font-medium text-purple-900">Client Rate Integration</div>
+                      <div className="text-sm text-purple-700">Uses agreed service rates</div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
             <PayrollBillingInterface 
               payrollId={id}
               onBillingCompleted={() => {
@@ -1640,6 +1701,30 @@ export default function PayrollPage() {
           {/* Payroll Dates Tab */}
           <TabsContent value="dates" className="space-y-6">
             <PayrollDatesView payrollId={id} showAllVersions={false} />
+          </TabsContent>
+
+          {/* Documents Tab */}
+          <TabsContent value="documents" className="space-y-6">
+            <div className="space-y-6">
+              {/* Document Upload */}
+              <DocumentUpload
+                payrollId={id}
+                onUploadComplete={() => {
+                  // Refresh document list when upload completes
+                  window.location.reload();
+                }}
+              />
+              
+              {/* Document List */}
+              <DocumentList
+                payrollId={id}
+                showFilters={true}
+                onDocumentUpdate={() => {
+                  // Refresh when documents are updated or deleted
+                  window.location.reload();
+                }}
+              />
+            </div>
           </TabsContent>
         </Tabs>
 

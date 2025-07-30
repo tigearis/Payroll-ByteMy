@@ -78,3 +78,6 @@ payroll_export.sql
 
 # Development log files
 dev_test.log
+
+# Hasura
+hasura/*

@@ -90,6 +90,7 @@ import {
 } from "@/domains/clients/graphql/generated/graphql";
 import { QuickEmailDialog } from "@/domains/email/components/quick-email-dialog";
 import { NotesListWithAdd } from "@/domains/notes/components/notes-list";
+import { DocumentUpload, DocumentList } from "@/components/documents";
 import { type PayrollListItemFragment } from "@/domains/payrolls/graphql/generated/graphql";
 import { useSmartPolling } from "@/hooks/use-polling";
 import { safeFormatDate } from "@/lib/utils/date-utils";
@@ -599,7 +600,7 @@ export default function ClientDetailPage() {
         onValueChange={setActiveTab}
         className="space-y-4"
       >
-        <TabsList className="grid w-full grid-cols-4 bg-indigo-100 shadow-md rounded-lg">
+        <TabsList className="grid w-full grid-cols-5 bg-indigo-100 shadow-md rounded-lg">
           <TabsTrigger
             value="overview"
             className="data-[state=active]:bg-white data-[state=active]:text-gray-900 hover:bg-indigo-300 transition-all text-gray-900"
@@ -623,6 +624,12 @@ export default function ClientDetailPage() {
             className="data-[state=active]:bg-white data-[state=active]:text-gray-900 hover:bg-indigo-300 transition-all text-gray-900"
           >
             Notes
+          </TabsTrigger>
+          <TabsTrigger
+            value="documents"
+            className="data-[state=active]:bg-white data-[state=active]:text-gray-900 hover:bg-indigo-300 transition-all text-gray-900"
+          >
+            Documents
           </TabsTrigger>
         </TabsList>
 
@@ -1021,6 +1028,30 @@ export default function ClientDetailPage() {
               />
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Documents Tab */}
+        <TabsContent value="documents" className="space-y-6">
+          <div className="space-y-6">
+            {/* Document Upload */}
+            <DocumentUpload
+              clientId={id}
+              onUploadComplete={() => {
+                // Refresh document list when upload completes
+                window.location.reload();
+              }}
+            />
+            
+            {/* Document List */}
+            <DocumentList
+              clientId={id}
+              showFilters={true}
+              onDocumentUpdate={() => {
+                // Refresh when documents are updated or deleted
+                window.location.reload();
+              }}
+            />
+          </div>
         </TabsContent>
       </Tabs>
 
