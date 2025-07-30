@@ -65,6 +65,18 @@ mutation CreatePayrollBilling(
   }
 }
 
+# Create billing item log entry for status changes and tracking
+mutation CreateBillingItemLog($input: auditLogsInsertInput!) {
+  insertAuditLog(object: $input) {
+    id
+    userId
+    action
+    success
+    metadata
+    eventTime
+  }
+}
+
 # Service Catalog Management
 mutation CreateService($input: billingPlansInsertInput!) {
   insertBillingPlan(object: $input) {

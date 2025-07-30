@@ -233,9 +233,9 @@ export async function fetchDataGovAuHolidays(
 }
 
 /**
- * Transform data.gov.au holiday data to our database format
+ * Transform and consolidate data.gov.au holiday data by grouping same dates
  * @param holidays Array of DataGovAuHoliday objects
- * @returns Array of objects ready for database insertion
+ * @returns Array of consolidated objects ready for database insertion
  */
 export function transformDataGovAuHolidays(holidays: DataGovAuHoliday[]) {
   const validHolidays: DataGovAuHoliday[] = [];
@@ -273,35 +273,68 @@ export function transformDataGovAuHolidays(holidays: DataGovAuHoliday[]) {
   
   console.log(`✅ Processing ${validHolidays.length} valid holidays`);
   
-  return validHolidays.map(holiday => {
+  // Group holidays by date to consolidate same-day holidays across jurisdictions
+  const groupedByDate = validHolidays.reduce((acc, holiday) => {
+    const dateKey = holiday.Date;
+    if (!acc[dateKey]) {
+      acc[dateKey] = [];
+    }
+    acc[dateKey].push(holiday);
+    return acc;
+  }, {} as Record<string, DataGovAuHoliday[]>);
+  
+  console.log(`📅 Grouped into ${Object.keys(groupedByDate).length} unique dates`);
+  
+  // Transform each date group into consolidated holiday records
+  return Object.entries(groupedByDate).map(([dateStr, holidaysForDate]) => {
     try {
-      // Convert YYYYMMDD to ISO date format - now safe since we validated above
-      const dateStr = holiday.Date;
+      // Convert YYYYMMDD to ISO date format
       const isoDate = `${dateStr.slice(0,4)}-${dateStr.slice(4,6)}-${dateStr.slice(6,8)}`;
       
-      // Map jurisdiction to proper region name
-      const regionName = JURISDICTION_MAPPING[holiday.Jurisdiction] || holiday.Jurisdiction.toUpperCase();
+      // Get all regions for this date
+      const regions = holidaysForDate.map(h => 
+        JURISDICTION_MAPPING[h.Jurisdiction] || h.Jurisdiction.toUpperCase()
+      );
       
-      // Determine if this holiday is relevant for EFT adjustments (NSW + National)
-      const isEftRelevant = EFT_RELEVANT_REGIONS.includes(regionName);
+      // Remove duplicates and sort
+      const uniqueRegions = [...new Set(regions)].sort();
       
-      return {
+      // Check if this is a national holiday (all 8 Australian states/territories)
+      // Australia has 8 states/territories: NSW, VIC, QLD, SA, WA, TAS, NT, ACT
+      const allAustralianRegions = ['NSW', 'VIC', 'QLD', 'SA', 'WA', 'TAS', 'NT', 'ACT'];
+      const isNational = uniqueRegions.length === allAustralianRegions.length && 
+                        allAustralianRegions.every(region => uniqueRegions.includes(region));
+      
+      // Use the first holiday for name and other details (they should be the same for same date)
+      const primaryHoliday = holidaysForDate[0];
+      
+      // Determine if this holiday is relevant for EFT adjustments
+      const isEftRelevant = isNational || uniqueRegions.some(region => EFT_RELEVANT_REGIONS.includes(region));
+      
+      const consolidatedHoliday = {
         date: isoDate,
-        localName: holiday["Holiday Name"],
-        name: holiday["Holiday Name"],
+        localName: primaryHoliday["Holiday Name"],
+        name: primaryHoliday["Holiday Name"],
         countryCode: 'AU',
-        region: [regionName],
+        region: isNational ? ['National'] : uniqueRegions,
         isFixed: true, // Most public holidays are fixed dates
-        isGlobal: false, // State-specific holidays are not global
+        isGlobal: false, // Australian holidays are not global/international
         launchYear: null, // Not provided by data.gov.au
         types: ['public'], // Assume all are public holidays
         updatedAt: new Date().toISOString(),
       };
+      
+      // Log consolidation details for reporting
+      if (holidaysForDate.length > 1) {
+        console.log(`🔄 Consolidated ${holidaysForDate.length} holidays for ${isoDate} (${primaryHoliday["Holiday Name"]}):`);
+        console.log(`   Jurisdictions: ${holidaysForDate.map(h => h.Jurisdiction).sort().join(', ')}`);
+        console.log(`   Result: ${isNational ? 'National' : uniqueRegions.join(', ')}`);
+      }
+      
+      return consolidatedHoliday;
     } catch (error) {
-      console.error(`❌ Error transforming holiday:`, {
-        name: holiday["Holiday Name"],
-        date: holiday.Date,
-        jurisdiction: holiday.Jurisdiction,
+      console.error(`❌ Error transforming holiday group for date ${dateStr}:`, {
+        holidaysCount: holidaysForDate.length,
         error: error instanceof Error ? error.message : 'Unknown error'
       });
       throw error;
@@ -565,17 +598,38 @@ export async function syncComprehensiveAustralianHolidays(
       h.region.some(r => EFT_RELEVANT_REGIONS.includes(r))
     ).length;
     
-    console.log(`📝 Prepared ${holidaysToInsert.length} holidays for insertion`);
-    console.log(`   EFT Relevant: ${eftRelevantCount}`);
-    console.log(`   Informational: ${holidaysToInsert.length - eftRelevantCount}`);
+    // Count national vs regional holidays
+    const nationalHolidays = holidaysToInsert.filter(h => h.region.includes('National'));
+    const regionalHolidays = holidaysToInsert.filter(h => !h.region.includes('National'));
     
-    // Group by jurisdiction for reporting
-    const byJurisdiction = holidaysToInsert.reduce((acc, holiday) => {
-      acc[holiday.region[0]] = (acc[holiday.region[0]] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    console.log(`📝 Prepared ${holidaysToInsert.length} consolidated holidays for insertion`);
+    console.log(`   🇦🇺 National holidays: ${nationalHolidays.length}`);
+    console.log(`   🏛️ Regional holidays: ${regionalHolidays.length}`);
+    console.log(`   🏦 EFT Relevant: ${eftRelevantCount}`);
+    console.log(`   ℹ️ Informational: ${holidaysToInsert.length - eftRelevantCount}`);
     
-    console.log(`   By Jurisdiction:`, byJurisdiction);
+    // Summary of consolidation efficiency
+    const originalCount = dataGovHolidays.length;
+    const consolidatedCount = holidaysToInsert.length;
+    const reductionPercent = ((originalCount - consolidatedCount) / originalCount * 100).toFixed(1);
+    console.log(`   📊 Consolidation: ${originalCount} → ${consolidatedCount} records (${reductionPercent}% reduction)`);
+    
+    // List national holidays for visibility
+    if (nationalHolidays.length > 0) {
+      console.log(`   🎉 National holidays detected:`);
+      nationalHolidays.forEach(h => {
+        console.log(`      ${h.date}: ${h.name}`);
+      });
+    }
+    
+    // Group by region type for reporting
+    const byRegionType = {
+      National: nationalHolidays.length,
+      'Multi-State': regionalHolidays.filter(h => h.region.length > 1).length,
+      'Single-State': regionalHolidays.filter(h => h.region.length === 1).length,
+    };
+    
+    console.log(`   📍 By coverage:`, byRegionType);
 
     // Insert holidays using admin client
     try {
@@ -596,9 +650,13 @@ export async function syncComprehensiveAustralianHolidays(
         success: true,
         affectedRows: data.bulkInsertHolidays.affectedRows,
         totalHolidays: holidaysToInsert.length,
+        originalRecordCount: dataGovHolidays.length,
+        consolidatedRecordCount: holidaysToInsert.length,
+        nationalHolidays: nationalHolidays.length,
+        regionalHolidays: regionalHolidays.length,
         eftRelevantHolidays: eftRelevantCount,
-        jurisdictionBreakdown: byJurisdiction,
-        message: `Synced ${data.bulkInsertHolidays.affectedRows} comprehensive Australian holidays for ${year}`,
+        coverageBreakdown: byRegionType,
+        message: `Synced ${data.bulkInsertHolidays.affectedRows} consolidated Australian holidays for ${year} (${dataGovHolidays.length} → ${holidaysToInsert.length} records)`,
       };
     } catch (error) {
       // Fallback to basic mutation if main mutation fails
@@ -621,9 +679,13 @@ export async function syncComprehensiveAustralianHolidays(
         success: true,
         affectedRows: data.bulkInsertHolidays.affectedRows,
         totalHolidays: holidaysToInsert.length,
+        originalRecordCount: dataGovHolidays.length,
+        consolidatedRecordCount: holidaysToInsert.length,
+        nationalHolidays: nationalHolidays.length,
+        regionalHolidays: regionalHolidays.length,
         eftRelevantHolidays: eftRelevantCount,
-        jurisdictionBreakdown: byJurisdiction,
-        message: `Synced ${data.bulkInsertHolidays.affectedRows} comprehensive Australian holidays for ${year} (fallback)`,
+        coverageBreakdown: byRegionType,
+        message: `Synced ${data.bulkInsertHolidays.affectedRows} consolidated Australian holidays for ${year} (fallback, ${dataGovHolidays.length} → ${holidaysToInsert.length} records)`,
       };
     }
   } catch (error) {
