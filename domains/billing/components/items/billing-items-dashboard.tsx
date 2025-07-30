@@ -27,7 +27,7 @@ export function BillingItemsDashboard({ status }: BillingItemsDashboardProps) {
   const { data: billingItemsData, loading: itemsLoading, error: itemsError, refetch } = useQuery(GetAllBillingItemsDocument, {
     variables: {
       searchTerm: searchTerm ? `%${searchTerm}%` : null,
-      status: status || null,
+      isApproved: status === 'draft' ? false : status === 'confirmed' ? true : null,
       limit: 100,
       offset: 0
     },
@@ -37,7 +37,7 @@ export function BillingItemsDashboard({ status }: BillingItemsDashboardProps) {
   // GraphQL query for stats
   const { data: statsData, loading: statsLoading } = useQuery(GetBillingItemsStatsDocument, {
     variables: {
-      status: status || null,
+      isApproved: status === 'draft' ? false : status === 'confirmed' ? true : null,
       clientId: null
     }
   });
@@ -45,16 +45,13 @@ export function BillingItemsDashboard({ status }: BillingItemsDashboardProps) {
   const billingItems = billingItemsData?.billingItems || [];
   const stats = statsData?.billingItemsAggregate?.aggregate;
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'draft':
-        return <Badge variant="outline" className="text-orange-600 border-orange-200"><Clock className="w-3 h-3 mr-1" />Draft</Badge>;
-      case 'confirmed':
-        return <Badge variant="outline" className="text-green-600 border-green-200"><CheckCircle className="w-3 h-3 mr-1" />Confirmed</Badge>;
-      case 'billed':
-        return <Badge variant="outline" className="text-blue-600 border-blue-200"><DollarSign className="w-3 h-3 mr-1" />Billed</Badge>;
-      default:
-        return <Badge variant="outline">{status}</Badge>;
+  const getStatusBadge = (isApproved: boolean, confirmedAt?: string) => {
+    if (isApproved) {
+      return <Badge variant="outline" className="text-green-600 border-green-200"><CheckCircle className="w-3 h-3 mr-1" />Approved</Badge>;
+    } else if (confirmedAt) {
+      return <Badge variant="outline" className="text-blue-600 border-blue-200"><Clock className="w-3 h-3 mr-1" />Confirmed</Badge>;
+    } else {
+      return <Badge variant="outline" className="text-orange-600 border-orange-200"><Clock className="w-3 h-3 mr-1" />Draft</Badge>;
     }
   };
 
@@ -201,7 +198,7 @@ export function BillingItemsDashboard({ status }: BillingItemsDashboardProps) {
                       )}
                     </TableCell>
                     <TableCell>
-                      {getStatusBadge(item.status || 'draft')}
+                      {getStatusBadge(item.isApproved || false, item.confirmedAt)}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-2">
@@ -213,8 +210,8 @@ export function BillingItemsDashboard({ status }: BillingItemsDashboardProps) {
                       <div className="flex items-center space-x-2">
                         <User className="w-4 h-4 text-gray-400" />
                         <span className="text-sm">
-                          {item.staffUser?.computedName || 
-                           `${item.staffUser?.firstName || ''} ${item.staffUser?.lastName || ''}`.trim() || 
+                          {item.user?.computedName || 
+                           `${item.user?.firstName || ''} ${item.user?.lastName || ''}`.trim() || 
                            'Unknown User'}
                         </span>
                       </div>

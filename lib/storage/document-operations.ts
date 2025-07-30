@@ -1,6 +1,14 @@
 import { minioClient } from './minio-client';
 import { executeTypedQuery } from '@/lib/apollo/query-helpers';
 import { randomUUID } from 'crypto';
+import { auditLogger } from '@/lib/audit/audit-logger';
+import { 
+  InsertFileDocument, 
+  GetFileByIdDocument, 
+  ListFilesDocument, 
+  UpdateFileMetadataDocument, 
+  DeleteFileDocument 
+} from '@/shared/types/generated/graphql';
 
 /**
  * High-level document operations service
@@ -53,9 +61,9 @@ export async function uploadDocument(
       options.fileBuffer,
       options.filename,
       {
-        clientId: options.clientId,
-        payrollId: options.payrollId,
-        category: options.category,
+        clientId: options.clientId || undefined,
+        payrollId: options.payrollId || undefined,
+        category: options.category || undefined,
         userId: options.uploadedBy,
         metadata: options.metadata || {},
       }
@@ -78,44 +86,34 @@ export async function uploadDocument(
       fileType: 'document',
     };
 
-    // Use raw GraphQL mutation for now - will create typed version later
-    const INSERT_FILE_MUTATION = `
-      mutation InsertFile($input: filesInsertInput!) {
-        insertFile(object: $input) {
-          id
-          filename
-          bucket
-          objectKey
-          size
-          mimetype
-          url
-          clientId
-          payrollId
-          uploadedBy
-          category
-          isPublic
-          metadata
-          fileType
-          createdAt
-        }
+    // Insert file record into database
+    const result = await executeTypedQuery(InsertFileDocument, {
+      input: documentData
+    }) as { insertFile: DocumentRecord };
+
+    if (!result?.insertFile) {
+      throw new Error('Failed to create document record in database');
+    }
+
+    // Log successful document upload for audit
+    await auditLogger.log({
+      userId: options.uploadedBy,
+      action: 'DOCUMENT_UPLOAD',
+      entityType: 'file',
+      entityId: result.insertFile.id,
+      success: true,
+      metadata: {
+        filename: options.filename,
+        category: options.category,
+        clientId: options.clientId,
+        payrollId: options.payrollId,
+        size: uploadResult.size,
       }
-    `;
+    });
 
-    // For now, skip database insertion and return mock data
-    // This will be implemented when proper GraphQL documents are available
-    console.log('⚠️ Database insertion skipped - returning mock data');
-    
-    const result = {
-      insertFile: {
-        id: randomUUID(),
-        ...documentData,
-        createdAt: new Date().toISOString(),
-      },
-    };
+    console.log(`📄 Document record created in database: ${options.filename} (ID: ${result.insertFile.id})`);
 
-    console.log(`📄 Document record created in database: ${options.filename}`);
-
-    return (result as any).insertFile;
+    return result.insertFile;
   } catch (error) {
     console.error('❌ Document upload operation failed:', error);
     
@@ -139,56 +137,23 @@ export async function getDocument(
 ): Promise<DocumentRecord | null> {
   try {
     // Get document from database
-    const GET_DOCUMENT_QUERY = `
-      query GetDocument($id: uuid!) {
-        fileById(id: $id) {
-          id
-          filename
-          bucket
-          objectKey
-          size
-          mimetype
-          url
-          clientId
-          payrollId
-          uploadedBy
-          category
-          isPublic
-          metadata
-          fileType
-          createdAt
-        }
-      }
-    `;
-
-    // For now, return mock data until proper GraphQL documents are available
-    console.log('⚠️ Database query skipped - returning mock data');
-    
-    const result = {
-      fileById: {
-        id: documentId,
-        filename: 'mock-document.pdf',
-        bucket: 'documents',
-        objectKey: 'mock-key',
-        size: 1024,
-        mimetype: 'application/pdf',
-        url: 'https://example.com/mock.pdf',
-        clientId: undefined,
-        payrollId: undefined,
-        uploadedBy: 'mock-user',
-        category: 'other',
-        isPublic: false,
-        metadata: {},
-        fileType: 'document',
-        createdAt: new Date().toISOString(),
-      },
-    };
+    const result = await executeTypedQuery(GetFileByIdDocument, {
+      id: documentId
+    }) as { fileById: DocumentRecord | null };
 
     if (!result?.fileById) {
       return null;
     }
 
     const document = result.fileById;
+
+    // Log document access for audit
+    await auditLogger.dataAccess(
+      requestingUserId,
+      'READ',
+      'file',
+      documentId
+    );
 
     // Generate fresh presigned URL
     const freshUrl = await minioClient.getDocumentUrl(document.objectKey);
@@ -221,18 +186,29 @@ export async function deleteDocument(
     await minioClient.deleteDocument(document.objectKey);
 
     // Delete from database
-    const DELETE_DOCUMENT_MUTATION = `
-      mutation DeleteDocument($id: uuid!) {
-        deleteFileById(id: $id) {
-          id
-        }
+    const deleteResult = await executeTypedQuery(DeleteFileDocument, {
+      id: documentId
+    }) as { deleteFileById: { id: string } | null };
+
+    if (!deleteResult?.deleteFileById) {
+      throw new Error('Failed to delete document record from database');
+    }
+
+    // Log document deletion for audit
+    await auditLogger.dataModification(
+      requestingUserId,
+      'DELETE',
+      'file',
+      documentId,
+      {
+        filename: document.filename,
+        category: document.category,
+        clientId: document.clientId,
+        payrollId: document.payrollId,
       }
-    `;
+    );
 
-    // For now, skip database deletion
-    console.log('⚠️ Database deletion skipped');
-
-    console.log(`🗑️ Document deleted: ${document.filename}`);
+    console.log(`🗑️ Document deleted: ${document.filename} (ID: ${documentId})`);
   } catch (error) {
     console.error('❌ Failed to delete document:', error);
     throw new Error(`Document deletion failed: ${error}`);
@@ -258,43 +234,6 @@ export async function listDocuments(
   totalCount: number;
 }> {
   try {
-    const LIST_DOCUMENTS_QUERY = `
-      query ListDocuments(
-        $where: filesBoolExp,
-        $limit: Int,
-        $offset: Int,
-        $orderBy: [filesOrderBy!]
-      ) {
-        files(
-          where: $where,
-          limit: $limit,
-          offset: $offset,
-          orderBy: $orderBy
-        ) {
-          id
-          filename
-          bucket
-          objectKey
-          size
-          mimetype
-          url
-          clientId
-          payrollId
-          uploadedBy
-          category
-          isPublic
-          metadata
-          fileType
-          createdAt
-        }
-        filesAggregate(where: $where) {
-          aggregate {
-            count
-          }
-        }
-      }
-    `;
-
     // Build where clause
     const whereClause: any = { fileType: { _eq: 'document' } };
     
@@ -304,39 +243,31 @@ export async function listDocuments(
     if (filters.uploadedBy) whereClause.uploadedBy = { _eq: filters.uploadedBy };
     if (filters.isPublic !== undefined) whereClause.isPublic = { _eq: filters.isPublic };
 
-    // For now, return mock data until proper GraphQL documents are available
-    console.log('⚠️ Database query skipped - returning mock data');
-    
-    const result = {
-      files: [
-        {
-          id: randomUUID(),
-          filename: 'sample-document.pdf',
-          bucket: 'documents',
-          objectKey: 'sample-key',
-          size: 2048,
-          mimetype: 'application/pdf',
-          url: 'https://example.com/sample.pdf',
-          clientId: filters.clientId || undefined,
-          payrollId: filters.payrollId || undefined,
-          uploadedBy: filters.uploadedBy || 'sample-user',
-          category: filters.category || 'other',
-          isPublic: filters.isPublic ?? false,
-          metadata: { description: 'Sample document for testing' },
-          fileType: 'document',
-          createdAt: new Date().toISOString(),
-        },
-      ],
-      filesAggregate: {
-        aggregate: {
-          count: 1,
-        },
-      },
+    // Query documents from database
+    const result = await executeTypedQuery(ListFilesDocument, {
+      where: whereClause,
+      limit: filters.limit || 50,
+      offset: filters.offset || 0,
+      orderBy: [{ createdAt: 'desc' }]
+    }) as { 
+      files: DocumentRecord[] | null; 
+      filesAggregate: { aggregate: { count: number } } | null;
     };
+
+    // Log document list access for audit
+    await auditLogger.dataAccess(
+      requestingUserId,
+      'LIST',
+      'file',
+      undefined,
+      { 
+        resultCount: result.files?.length || 0
+      }
+    );
 
     // Generate fresh URLs for all documents
     const documentsWithFreshUrls = await Promise.all(
-      result.files.map(async (doc: any) => ({
+      (result.files || []).map(async (doc: any) => ({
         ...doc,
         url: await minioClient.getDocumentUrl(doc.objectKey),
       }))
@@ -366,54 +297,25 @@ export async function updateDocumentMetadata(
   requestingUserId: string
 ): Promise<DocumentRecord> {
   try {
-    const UPDATE_DOCUMENT_MUTATION = `
-      mutation UpdateDocument($id: uuid!, $updates: filesSetInput!) {
-        updateFileById(pkColumns: { id: $id }, _set: $updates) {
-          id
-          filename
-          bucket
-          objectKey
-          size
-          mimetype
-          url
-          clientId
-          payrollId
-          uploadedBy
-          category
-          isPublic
-          metadata
-          fileType
-          createdAt
-        }
-      }
-    `;
-
-    // For now, return mock updated data
-    console.log('⚠️ Database update skipped - returning mock data');
-    
-    const result = {
-      updateFileById: {
-        id: documentId,
-        filename: updates.filename || 'updated-document.pdf',
-        bucket: 'documents',
-        objectKey: 'updated-key',
-        size: 1024,
-        mimetype: 'application/pdf',
-        url: 'https://example.com/updated.pdf',
-        clientId: undefined,
-        payrollId: undefined,
-        uploadedBy: requestingUserId,
-        category: updates.category || 'other',
-        isPublic: updates.isPublic ?? false,
-        metadata: updates.metadata || {},
-        fileType: 'document',
-        createdAt: new Date().toISOString(),
-      },
-    };
+    // Update document metadata in database
+    const result = await executeTypedQuery(UpdateFileMetadataDocument, {
+      id: documentId,
+      updates: updates
+    }) as { updateFileById: DocumentRecord | null };
 
     if (!result?.updateFileById) {
       throw new Error('Document not found or update failed');
     }
+
+    // Log document metadata update for audit
+    await auditLogger.dataModification(
+      requestingUserId,
+      'UPDATE',
+      'file',
+      documentId,
+      undefined, // old values would need to be fetched separately
+      updates
+    );
 
     // Generate fresh URL
     const freshUrl = await minioClient.getDocumentUrl(result.updateFileById.objectKey);

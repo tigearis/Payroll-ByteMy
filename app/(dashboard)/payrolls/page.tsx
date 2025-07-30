@@ -32,6 +32,7 @@ import {
 import Link from "next/link";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { PayrollUpdatesListener } from "@/components/real-time-updates";
+import { PermissionGuard, CanCreate } from "@/components/auth/permission-guard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -604,7 +605,15 @@ export default function PayrollsPage() {
 
   // Main render
   return (
-    <>
+    <PermissionGuard permission="payrolls.read" fallback={
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center space-y-4">
+          <AlertTriangle className="w-8 h-8 mx-auto text-amber-500" />
+          <h3 className="text-lg font-medium text-amber-800">Access Restricted</h3>
+          <p className="text-amber-600">You don't have permission to view payrolls.</p>
+        </div>
+      </div>
+    }>
       <PayrollUpdatesListener showToasts={true} />
       <div className="container mx-auto py-6 space-y-6">
         <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -613,12 +622,14 @@ export default function PayrollsPage() {
             <p className="text-gray-500">Manage payrolls for your clients</p>
           </div>
           <div className="flex items-center space-x-2">
-            <Link href="/payrolls/new">
-              <Button>
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Add Payroll
-              </Button>
-            </Link>
+            <CanCreate resource="payrolls">
+              <Link href="/payrolls/new">
+                <Button>
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Add Payroll
+                </Button>
+              </Link>
+            </CanCreate>
           </div>
         </header>
 
@@ -1137,6 +1148,6 @@ export default function PayrollsPage() {
           </div>
         )}
       </div>
-    </>
+    </PermissionGuard>
   );
 }

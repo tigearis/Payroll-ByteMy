@@ -49,7 +49,7 @@ interface TeamMember {
   id: string;
   firstName: string;
   lastName: string;
-  computedName?: string;
+  computedName: string;
   email: string;
   position: UserPosition;
   defaultAdminTimePercentage: number;

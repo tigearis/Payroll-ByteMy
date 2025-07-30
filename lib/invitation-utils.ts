@@ -6,6 +6,7 @@
  */
 
 import { extractClerkTicketData, type ClerkTicketUserData } from './clerk-ticket-utils';
+import { auditLogger } from './audit/audit-logger';
 
 export interface InvitationTicketData {
   ticket: string;
@@ -153,14 +154,46 @@ export function getInvitationRedirectAction(
 /**
  * Log invitation flow debugging information
  */
-export function logInvitationFlow(context: string, state: InvitationFlowState, additionalData?: any) {
-  console.log(`🎫 Invitation Flow [${context}]:`, {
-    hasTicket: state.hasTicket,
-    status: state.ticketData?.status,
-    ticket: state.ticketData?.ticket ? `${state.ticketData.ticket.substring(0, 20)}...` : 'None',
-    redirectUrl: state.ticketData?.redirectUrl,
-    shouldUseTicketStrategy: state.shouldUseTicketStrategy,
-    isInvitationFlow: state.isInvitationFlow,
-    ...additionalData,
-  });
+export async function logInvitationFlow(context: string, state: InvitationFlowState, additionalData?: any) {
+  try {
+    // Log to audit database
+    await auditLogger.log({
+      userId: additionalData?.userId || 'anonymous',
+      action: `INVITATION_${context.toUpperCase()}`,
+      entityType: 'invitation',
+      entityId: state.ticketData?.ticket?.substring(0, 20),
+      success: true,
+      metadata: {
+        context,
+        hasTicket: state.hasTicket,
+        status: state.ticketData?.status,
+        ticket: state.ticketData?.ticket ? `${state.ticketData.ticket.substring(0, 20)}...` : 'None',
+        redirectUrl: state.ticketData?.redirectUrl,
+        shouldUseTicketStrategy: state.shouldUseTicketStrategy,
+        isInvitationFlow: state.isInvitationFlow,
+        userEmail: additionalData?.userEmail,
+        timestamp: new Date().toISOString(),
+        ...additionalData,
+      }
+    });
+
+    console.log(`✅ Invitation Flow [${context}] logged to audit database:`, {
+      hasTicket: state.hasTicket,
+      status: state.ticketData?.status,
+      userEmail: additionalData?.userEmail,
+    });
+  } catch (error) {
+    console.error('❌ Failed to log invitation flow to audit database:', error);
+    
+    // Fallback to console logging
+    console.log(`🎫 Invitation Flow [${context}] (fallback):`, {
+      hasTicket: state.hasTicket,
+      status: state.ticketData?.status,
+      ticket: state.ticketData?.ticket ? `${state.ticketData.ticket.substring(0, 20)}...` : 'None',
+      redirectUrl: state.ticketData?.redirectUrl,
+      shouldUseTicketStrategy: state.shouldUseTicketStrategy,
+      isInvitationFlow: state.isInvitationFlow,
+      ...additionalData,
+    });
+  }
 }

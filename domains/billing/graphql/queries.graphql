@@ -244,11 +244,11 @@ query GetBillingItemsByPayroll($payrollId: uuid!) {
   }
 }
 
-query GetBillingItemsByStatus($status: String, $clientId: uuid) {
+query GetBillingItemsByStatus($isApproved: Boolean, $clientId: uuid) {
   billingItems(
     where: {
       _and: [
-        { status: { _eq: $status } }
+        { isApproved: { _eq: $isApproved } }
         { clientId: { _eq: $clientId } }
       ]
     }
@@ -259,7 +259,7 @@ query GetBillingItemsByStatus($status: String, $clientId: uuid) {
       id
       name
     }
-    staffUser {
+    user {
       id
       firstName
       lastName
@@ -274,7 +274,7 @@ query GetBillingItemsByStatus($status: String, $clientId: uuid) {
   }
 }
 
-query GetAllBillingItems($searchTerm: String, $status: String, $limit: Int, $offset: Int) {
+query GetAllBillingItems($searchTerm: String, $isApproved: Boolean, $limit: Int, $offset: Int) {
   billingItems(
     where: {
       _and: [
@@ -285,7 +285,7 @@ query GetAllBillingItems($searchTerm: String, $status: String, $limit: Int, $off
             { client: { name: { _ilike: $searchTerm } } }
           ]
         }
-        { status: { _eq: $status } }
+        { isApproved: { _eq: $isApproved } }
       ]
     }
     orderBy: { createdAt: DESC }
@@ -297,7 +297,7 @@ query GetAllBillingItems($searchTerm: String, $status: String, $limit: Int, $off
       id
       name
     }
-    staffUser {
+    user {
       id
       firstName
       lastName
@@ -312,11 +312,11 @@ query GetAllBillingItems($searchTerm: String, $status: String, $limit: Int, $off
   }
 }
 
-query GetBillingItemsStats($status: String, $clientId: uuid) {
+query GetBillingItemsStats($isApproved: Boolean, $clientId: uuid) {
   billingItemsAggregate(
     where: {
       _and: [
-        { status: { _eq: $status } }
+        { isApproved: { _eq: $isApproved } }
         { clientId: { _eq: $clientId } }
       ]
     }
@@ -324,6 +324,7 @@ query GetBillingItemsStats($status: String, $clientId: uuid) {
     aggregate {
       count
       sum {
+        amount
         totalAmount
       }
     }

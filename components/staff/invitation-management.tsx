@@ -68,12 +68,16 @@ interface Invitation {
   revokedAt?: string;
   invitedByUser?: {
     id: string;
-    name: string;
+    firstName: string;
+    lastName: string;
+    computedName: string;
     email: string;
   };
   acceptedBy?: {
     id: string;
-    name: string;
+    firstName: string;
+    lastName: string;
+    computedName: string;
     email: string;
   };
 }
@@ -185,7 +189,7 @@ function InvitationDetailsModal({
               {invitation.invitedByUser && (
                 <div>
                   <label className="text-sm font-medium text-gray-500">Invited By</label>
-                  <p>{invitation.invitedByUser.computedName || `${invitation.invitedByUser.firstName || ''} ${invitation.invitedByUser.lastName || ''}`.trim() || 'Unknown User'}</p>
+                  <p>{invitation.invitedByUser.computedName}</p>
                 </div>
               )}
             </div>
@@ -446,7 +450,7 @@ export function InvitationManagement({ embedded = false }: InvitationManagementP
       </CardHeader>
       <CardContent className="pt-0">
         <div className="text-sm text-gray-600 space-y-1">
-          <div>Invited by: {invitation.invitedByUser?.computedName || `${invitation.invitedByUser?.firstName || ''} ${invitation.invitedByUser?.lastName || ''}`.trim() || 'System'}</div>
+          <div>Invited by: {invitation.invitedByUser?.computedName || 'System'}</div>
           <div>Created: {new Date(invitation.createdAt).toLocaleDateString()}</div>
           <div>Expires: {new Date(invitation.expiresAt).toLocaleDateString()}</div>
           {invitation.acceptedAt && (

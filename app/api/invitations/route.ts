@@ -193,10 +193,25 @@ export const GET = withAuth(async (req: NextRequest, session) => {
           revokeReason: invitation.revokeReason,
           managerId: invitation.managerId,
           clerkInvitationId: invitation.clerkInvitationId,
+          createdAt: invitation.createdAt,
+          updatedAt: invitation.updatedAt,
+          acceptedAt: invitation.acceptedAt,
+          resendCount: 0, // TODO: Implement resend count tracking
           invitedByUser: invitation.invitedByUser ? {
             id: invitation.invitedByUser.id,
-            name: invitation.invitedByUser.computedName || `${invitation.invitedByUser.firstName} ${invitation.invitedByUser.lastName}`.trim(),
+            firstName: invitation.invitedByUser.firstName,
+            lastName: invitation.invitedByUser.lastName,
+            computedName: invitation.invitedByUser.computedName,
             email: invitation.invitedByUser.email,
+            role: invitation.invitedByUser.role,
+          } : null,
+          managerUser: invitation.managerUser ? {
+            id: invitation.managerUser.id,
+            firstName: invitation.managerUser.firstName,
+            lastName: invitation.managerUser.lastName,
+            computedName: invitation.managerUser.computedName,
+            email: invitation.managerUser.email,
+            role: invitation.managerUser.role,
           } : null,
           
           // Computed fields
@@ -210,6 +225,14 @@ export const GET = withAuth(async (req: NextRequest, session) => {
           daysUntilExpiry: invitation.invitationStatus === "pending" ? 
                           Math.ceil((new Date(invitation.expiresAt).getTime() - Date.now()) / (24 * 60 * 60 * 1000)) : 
                           null,
+          urgency: (() => {
+            if (invitation.invitationStatus !== "pending") return null;
+            const days = Math.ceil((new Date(invitation.expiresAt).getTime() - Date.now()) / (24 * 60 * 60 * 1000));
+            if (days <= 1) return "critical";
+            if (days <= 3) return "high";
+            if (days <= 7) return "medium";
+            return "low";
+          })(),
         })),
         total: search ? filteredInvitations.length : totalCount,
         page,

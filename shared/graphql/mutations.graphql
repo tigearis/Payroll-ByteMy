@@ -21,6 +21,61 @@ mutation LogAuditEvent($input: auditLogsInsertInput!) {
 # for better domain isolation and comprehensive operations
 
 # ============================================
+# File Operations Mutations
+# ============================================
+
+# Insert a file record
+mutation InsertFile($input: filesInsertInput!) {
+  insertFile(object: $input) {
+    id
+    filename
+    bucket
+    objectKey
+    size
+    mimetype
+    url
+    clientId
+    payrollId
+    uploadedBy
+    category
+    isPublic
+    metadata
+    fileType
+    createdAt
+  }
+}
+
+# Update file metadata
+mutation UpdateFileMetadata($id: uuid!, $updates: filesSetInput!) {
+  updateFileById(pkColumns: {id: $id}, _set: $updates) {
+    id
+    filename
+    bucket
+    objectKey
+    size
+    mimetype
+    url
+    clientId
+    payrollId
+    uploadedBy
+    category
+    isPublic
+    metadata
+    fileType
+    createdAt
+  }
+}
+
+# Delete a file
+mutation DeleteFile($id: uuid!) {
+  deleteFileById(id: $id) {
+    id
+    filename
+    objectKey
+  }
+}
+
+# ============================================
 # Generic Mutations
 # ============================================
 

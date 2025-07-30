@@ -11,6 +11,7 @@ import { contextExtractor } from "@/lib/ai/context-extractor";
 import { AIInputValidator } from "@/lib/ai/input-validator";
 import { langChainService, type BaseMessage } from "@/lib/ai/langchain-service";
 import { AIRateLimiter } from "@/lib/ai/rate-limiter";
+import { auditLogger } from "@/lib/audit/audit-logger";
 
 // Initialize rate limiter
 const rateLimiter = new AIRateLimiter();
@@ -321,35 +322,75 @@ export async function GET(request: NextRequest) {
 // Security event logging function
 async function logSecurityEvent(event: any) {
   try {
-    console.warn("AI Security Event:", {
+    // Log to audit database
+    await auditLogger.log({
+      userId: event.userId || 'unknown',
+      action: event.type || 'AI_SECURITY_EVENT',
+      entityType: 'ai_chat',
+      entityId: event.requestId,
+      success: false, // Security events are generally failures/denials
+      metadata: {
+        ...event,
+        timestamp: new Date().toISOString(),
+        endpoint: event.endpoint || '/api/ai-assistant/chat'
+      }
+    });
+
+    console.warn("✅ AI Security Event logged to audit database:", {
+      type: event.type,
+      userId: event.userId,
+      userRole: event.userRole,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error("❌ Failed to log security event to audit database:", error);
+    
+    // Fallback to console logging
+    console.warn("AI Security Event (fallback):", {
       timestamp: new Date().toISOString(),
       type: 'AI_SECURITY_EVENT',
       ...event
     });
-
-    // Store in database if audit table exists
-    // Note: This will be implemented when audit tables are created
-    // For now, console logging provides audit trail
-    
-  } catch (error) {
-    console.error("Failed to log security event:", error);
   }
 }
 
 // AI interaction logging function  
 async function logAIInteraction(data: any) {
   try {
-    console.log("AI Interaction:", {
+    // Log to audit database
+    await auditLogger.log({
+      userId: data.userId,
+      action: data.success ? 'AI_CHAT_SUCCESS' : 'AI_CHAT_FAILED',
+      entityType: 'ai_chat',
+      entityId: undefined,
+      success: data.success,
+      metadata: {
+        userRole: data.userRole,
+        messageLength: data.messageLength,
+        responseLength: data.responseLength,
+        responseTime: data.responseTime,
+        riskLevel: data.riskLevel,
+        tokensUsed: data.tokensUsed,
+        page: data.context?.title,
+        timestamp: new Date().toISOString(),
+      }
+    });
+
+    console.log("✅ AI Interaction logged to audit database:", {
+      userId: data.userId,
+      userRole: data.userRole,
+      success: data.success,
+      responseTime: data.responseTime,
+      riskLevel: data.riskLevel,
+    });
+  } catch (error) {
+    console.error("❌ Failed to log AI interaction to audit database:", error);
+    
+    // Fallback to console logging
+    console.log("AI Interaction (fallback):", {
       timestamp: new Date().toISOString(),
       type: 'AI_INTERACTION',
       ...data
     });
-
-    // Store in database if audit table exists
-    // Note: This will be implemented when audit tables are created
-    // For now, console logging provides audit trail
-    
-  } catch (error) {
-    console.error("Failed to log AI interaction:", error);
   }
 }

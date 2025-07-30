@@ -564,7 +564,9 @@ export default function WorkSchedulePage() {
 
       return {
         id: user.id,
-        name: user.computedName || `${user.firstName} ${user.lastName}`.trim(),
+        firstName: user.firstName,
+        lastName: user.lastName,
+        computedName: user.computedName || `${user.firstName} ${user.lastName}`.trim(),
         email: user.email,
         position: user.role,
         defaultAdminTimePercentage: user.defaultAdminTimePercentage || 12.5,
