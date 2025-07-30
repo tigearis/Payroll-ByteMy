@@ -2,7 +2,7 @@
 import { gql } from "@apollo/client";
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 
-// Type definition for holiday API response
+// Type definition for holiday API response from date.nager.at
 export interface PublicHoliday {
   date: string;
   localName: string;
@@ -14,6 +14,31 @@ export interface PublicHoliday {
   launchYear: number;
   types: string[];
 }
+
+// Type definition for data.gov.au API response
+export interface DataGovAuHoliday {
+  _id: number;
+  Date: string; // YYYYMMDD format
+  "Holiday Name": string;
+  Information?: string;
+  "More Information"?: string;
+  Jurisdiction: string; // lowercase state code (nsw, vic, qld, etc.)
+}
+
+// Jurisdiction mapping for Australian states/territories
+const JURISDICTION_MAPPING: Record<string, string> = {
+  nsw: 'NSW',
+  vic: 'VIC', 
+  qld: 'QLD',
+  sa: 'SA',
+  wa: 'WA',
+  tas: 'TAS',
+  nt: 'NT',
+  act: 'ACT',
+};
+
+// NSW and National holidays are relevant for EFT adjustments
+const EFT_RELEVANT_REGIONS = ['NSW', 'National', 'Australia'];
 
 // GraphQL query to check existing holidays
 const CHECK_EXISTING_HOLIDAYS_QUERY = gql`
@@ -68,6 +93,39 @@ const INSERT_HOLIDAYS_MUTATION = gql`
         local_name
         name
         country_code
+        region
+      }
+    }
+  }
+`;
+
+// Enhanced mutation with isEftRelevant field
+const INSERT_HOLIDAYS_ENHANCED_MUTATION = gql`
+  mutation InsertHolidaysEnhanced($objects: [holidays_insert_input!]!) {
+    insert_holidays(
+      objects: $objects
+      on_conflict: {
+        constraint: holidays_date_country_code_key
+        update_columns: [
+          local_name
+          name
+          region
+          is_fixed
+          is_global
+          launch_year
+          types
+          updated_at
+        ]
+      }
+    ) {
+      affected_rows
+      returning {
+        id
+        date
+        local_name
+        name
+        country_code
+        region
       }
     }
   }
@@ -124,6 +182,87 @@ export async function fetchPublicHolidays(
     console.error("Error fetching public holidays:", error);
     throw error;
   }
+}
+
+/**
+ * Fetch comprehensive Australian holidays from data.gov.au
+ * @param year Year to fetch holidays for
+ * @param jurisdictions Optional array of jurisdictions to filter (e.g., ['nsw', 'act'])
+ * @returns Promise<DataGovAuHoliday[]>
+ */
+export async function fetchDataGovAuHolidays(
+  year: number,
+  jurisdictions?: string[]
+): Promise<DataGovAuHoliday[]> {
+  try {
+    const resourceId = '4d4d744b-50ed-45b9-ae77-760bc478ad75'; // 2025 dataset ID
+    let url = `https://data.gov.au/api/3/action/datastore_search?resource_id=${resourceId}&limit=1000`;
+    
+    // Add jurisdiction filtering if specified
+    if (jurisdictions && jurisdictions.length > 0) {
+      const filters = JSON.stringify({ Jurisdiction: jurisdictions });
+      url += `&filters=${encodeURIComponent(filters)}`;
+    }
+
+    console.log(`🌐 Fetching Australian holidays from data.gov.au: ${url}`);
+    
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch data.gov.au holidays: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    if (!data.success || !data.result || !data.result.records) {
+      throw new Error('Invalid response format from data.gov.au API');
+    }
+
+    const holidays = data.result.records as DataGovAuHoliday[];
+    console.log(`📥 Fetched ${holidays.length} holidays from data.gov.au`);
+    
+    return holidays;
+  } catch (error) {
+    console.error("Error fetching data.gov.au holidays:", error);
+    throw error;
+  }
+}
+
+/**
+ * Transform data.gov.au holiday data to our database format
+ * @param holidays Array of DataGovAuHoliday objects
+ * @returns Array of objects ready for database insertion
+ */
+export function transformDataGovAuHolidays(holidays: DataGovAuHoliday[]) {
+  return holidays.map(holiday => {
+    // Convert YYYYMMDD to ISO date format
+    const dateStr = holiday.Date;
+    const isoDate = `${dateStr.slice(0,4)}-${dateStr.slice(4,6)}-${dateStr.slice(6,8)}`;
+    
+    // Map jurisdiction to proper region name
+    const regionName = JURISDICTION_MAPPING[holiday.Jurisdiction] || holiday.Jurisdiction.toUpperCase();
+    
+    // Determine if this holiday is relevant for EFT adjustments (NSW + National)
+    const isEftRelevant = EFT_RELEVANT_REGIONS.includes(regionName);
+    
+    return {
+      date: isoDate,
+      local_name: holiday["Holiday Name"],
+      name: holiday["Holiday Name"],
+      country_code: 'AU',
+      region: [regionName],
+      is_fixed: true, // Most public holidays are fixed dates
+      is_global: false, // State-specific holidays are not global
+      launch_year: null, // Not provided by data.gov.au
+      types: ['public'], // Assume all are public holidays
+      updated_at: new Date().toISOString(),
+      // Custom fields for our enhanced logic
+      source: 'data.gov.au',
+      jurisdiction: holiday.Jurisdiction,
+      more_information: holiday["More Information"],
+      eft_relevant: isEftRelevant,
+    };
+  });
 }
 
 export async function checkExistingHolidays(
@@ -343,6 +482,106 @@ export async function syncHolidaysForCountry(
   }
 }
 
+/**
+ * Sync comprehensive Australian holidays from data.gov.au
+ * Includes all states/territories but marks NSW + National as EFT relevant
+ * @param year Year to sync holidays for
+ * @param forceSync Whether to force sync even if data exists
+ * @returns Sync results with statistics
+ */
+export async function syncComprehensiveAustralianHolidays(
+  year: number = new Date().getFullYear(),
+  forceSync: boolean = false
+) {
+  try {
+    console.log(`🚀 Starting comprehensive Australian holiday sync for ${year}...`);
+
+    // Check if holidays already exist for this year
+    if (!forceSync) {
+      const existing = await checkExistingHolidays(year, 'AU');
+      if (existing.count > 0) {
+        console.log(`✅ Found ${existing.count} existing holidays for AU ${year}`);
+        console.log(`   Skipping sync (use forceSync=true to override)`);
+        return {
+          skipped: true,
+          existingCount: existing.count,
+          message: `${existing.count} holidays already exist for AU ${year}`,
+        };
+      }
+    }
+
+    // Fetch all Australian holidays from data.gov.au
+    const dataGovHolidays = await fetchDataGovAuHolidays(year);
+    
+    // Transform data for database insertion
+    const holidaysToInsert = transformDataGovAuHolidays(dataGovHolidays);
+    
+    console.log(`📝 Prepared ${holidaysToInsert.length} holidays for insertion`);
+    console.log(`   EFT Relevant: ${holidaysToInsert.filter(h => h.eft_relevant).length}`);
+    console.log(`   Informational: ${holidaysToInsert.filter(h => !h.eft_relevant).length}`);
+    
+    // Group by jurisdiction for reporting
+    const byJurisdiction = holidaysToInsert.reduce((acc, holiday) => {
+      acc[holiday.region[0]] = (acc[holiday.region[0]] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    
+    console.log(`   By Jurisdiction:`, byJurisdiction);
+
+    // Insert holidays using admin client
+    try {
+      const { data, errors } = await adminApolloClient.mutate({
+        mutation: INSERT_HOLIDAYS_MUTATION,
+        variables: { objects: holidaysToInsert },
+      });
+
+      if (errors) {
+        console.error("GraphQL errors during comprehensive holiday sync:", errors);
+        throw new Error("Failed to sync comprehensive holidays");
+      }
+
+      console.log(`✅ Successfully synced ${data.insert_holidays.affected_rows} holidays for AU ${year}`);
+      
+      return {
+        success: true,
+        affectedRows: data.insert_holidays.affected_rows,
+        totalHolidays: holidaysToInsert.length,
+        eftRelevantHolidays: holidaysToInsert.filter(h => h.eft_relevant).length,
+        jurisdictionBreakdown: byJurisdiction,
+        message: `Synced ${data.insert_holidays.affected_rows} comprehensive Australian holidays for ${year}`,
+      };
+    } catch (error) {
+      // Fallback to basic mutation if enhanced fields don't exist
+      console.warn("Falling back to basic holiday insertion...", error instanceof Error ? error.message : String(error));
+      
+      const basicHolidays = holidaysToInsert.map(({ source, jurisdiction, more_information, eft_relevant, ...holiday }) => holiday);
+      
+      const { data, errors } = await adminApolloClient.mutate({
+        mutation: INSERT_HOLIDAYS_FALLBACK_MUTATION,
+        variables: { objects: basicHolidays },
+      });
+
+      if (errors) {
+        console.error("GraphQL errors during fallback comprehensive holiday sync:", errors);
+        throw new Error("Failed to sync comprehensive holidays with fallback method");
+      }
+
+      console.log(`✅ Successfully synced ${data.insert_holidays.affected_rows} holidays for AU ${year} (fallback)`);
+      
+      return {
+        success: true,
+        affectedRows: data.insert_holidays.affected_rows,
+        totalHolidays: basicHolidays.length,
+        jurisdictionBreakdown: byJurisdiction,
+        message: `Synced ${data.insert_holidays.affected_rows} comprehensive Australian holidays for ${year} (fallback)`,
+      };
+    }
+  } catch (error) {
+    console.error(`❌ Error syncing comprehensive holidays for AU in ${year}:`, error);
+    throw error;
+  }
+}
+
 export async function syncAustralianHolidays(forceSync: boolean = false) {
   const currentYear = new Date().getFullYear();
 
@@ -353,9 +592,10 @@ export async function syncAustralianHolidays(forceSync: boolean = false) {
       }...`
     );
 
+    // Use comprehensive sync for better coverage
     const results = await Promise.all([
-      syncHolidaysForCountry(currentYear, "AU", undefined, forceSync),
-      syncHolidaysForCountry(currentYear + 1, "AU", undefined, forceSync),
+      syncComprehensiveAustralianHolidays(currentYear, forceSync),
+      syncComprehensiveAustralianHolidays(currentYear + 1, forceSync),
     ]);
 
     const totalAffected = results.reduce(
@@ -363,18 +603,24 @@ export async function syncAustralianHolidays(forceSync: boolean = false) {
       0
     );
     const skippedCount = results.filter((result: any) => result.skipped).length;
+    const totalEftRelevant = results.reduce(
+      (sum: number, result: any) => sum + (result.eftRelevantHolidays || 0),
+      0
+    );
 
     console.log(`🎉 Australian holiday sync completed!`);
     console.log(`   Years processed: ${currentYear}, ${currentYear + 1}`);
     console.log(`   Total holidays affected: ${totalAffected}`);
+    console.log(`   EFT Relevant holidays: ${totalEftRelevant}`);
     console.log(`   Years skipped (already had data): ${skippedCount}`);
 
     return {
       success: true,
       results,
       totalAffected,
+      totalEftRelevant,
       skippedCount,
-      message: `Australian holiday sync completed: ${totalAffected} holidays processed, ${skippedCount} years skipped`,
+      message: `Australian holiday sync completed: ${totalAffected} holidays processed (${totalEftRelevant} EFT relevant), ${skippedCount} years skipped`,
     };
   } catch (error) {
     console.error("❌ Failed to sync Australian holidays:", error);

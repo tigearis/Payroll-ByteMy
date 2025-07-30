@@ -6418,7 +6418,7 @@ type WorkloadPeriodData {
 scalar _Any
 
 """A union of all types that use the @key directive"""
-union _Entity = PositionAdminDefaults | adjustmentRules | appSettings | auditLogs | authEvents | billingEventLogs | billingInvoice | billingItems | billingPlans | clientBillingAssignments | clientExternalSystems | clients | dataAccessLogs | externalSystems | featureFlags | holidays | latestPayrollVersionResults | leave | notes | payrollActivationResults | payrollAssignmentAudits | payrollAssignments | payrollCycles | payrollDateTypes | payrollDates | payrollVersionHistoryResults | payrollVersionResults | payrolls | permissionAuditLogs | permissionChanges | permissionOverrides | permissions | resources | rolePermissions | roles | slowQueries | timeEntries | userInvitations | userRoles | users
+union _Entity = PositionAdminDefaults | adjustmentRules | appSettings | auditLogs | authEvents | billingEventLogs | billingInvoice | billingItems | billingPlans | clientBillingAssignments | clientExternalSystems | clients | dataAccessLogs | externalSystems | featureFlags | files | holidays | latestPayrollVersionResults | leave | notes | payrollActivationResults | payrollAssignmentAudits | payrollAssignments | payrollCycles | payrollDateTypes | payrollDates | payrollVersionHistoryResults | payrollVersionResults | payrolls | permissionAuditLogs | permissionChanges | permissionOverrides | permissions | resources | rolePermissions | roles | slowQueries | timeEntries | userInvitations | userRoles | users
 
 type _Service {
   """SDL representation of schema"""
@@ -13518,6 +13518,482 @@ input featureFlagsUpdates {
   where: featureFlagsBoolExp!
 }
 
+"""
+columns and relationships of "files"
+"""
+type files {
+  bucket: String!
+  """
+  Document category: contract, invoice, report, timesheet, correspondence, other
+  """
+  category: String
+  """An object relationship"""
+  client: clients
+  """Links document to a specific client"""
+  clientId: uuid
+  createdAt: timestamptz
+  """Type of file: document (MinIO) or avatar (Clerk)"""
+  fileType: String
+  filename: String!
+  id: uuid!
+  """Whether document is publicly accessible within permissions"""
+  isPublic: Boolean
+  """Additional document metadata as JSON"""
+  metadata(
+    """JSON select path"""
+    path: String
+  ): jsonb
+  mimetype: String
+  objectKey: String!
+  """An object relationship"""
+  payroll: payrolls
+  """Links document to a specific payroll"""
+  payrollId: uuid
+  size: Int
+  """User who uploaded the document"""
+  uploadedBy: uuid
+  """An object relationship"""
+  uploader: users
+  url: String
+}
+
+"""
+aggregated selection of "files"
+"""
+type filesAggregate {
+  aggregate: filesAggregateFields
+  nodes: [files!]!
+}
+
+"""
+aggregate fields of "files"
+"""
+type filesAggregateFields {
+  avg: filesAvgFields
+  count(columns: [filesSelectColumn!], distinct: Boolean): Int!
+  max: filesMaxFields
+  min: filesMinFields
+  stddev: filesStddevFields
+  stddevPop: filesStddevPopFields
+  stddevSamp: filesStddevSampFields
+  sum: filesSumFields
+  varPop: filesVarPopFields
+  varSamp: filesVarSampFields
+  variance: filesVarianceFields
+}
+
+"""append existing jsonb value of filtered columns with new jsonb value"""
+input filesAppendInput {
+  """Additional document metadata as JSON"""
+  metadata: jsonb
+}
+
+"""aggregate avg on columns"""
+type filesAvgFields {
+  size: Float
+}
+
+"""
+Boolean expression to filter rows from the table "files". All fields are combined with a logical 'AND'.
+"""
+input filesBoolExp {
+  _and: [filesBoolExp!]
+  _not: filesBoolExp
+  _or: [filesBoolExp!]
+  bucket: StringComparisonExp
+  category: StringComparisonExp
+  client: clientsBoolExp
+  clientId: UuidComparisonExp
+  createdAt: TimestamptzComparisonExp
+  fileType: StringComparisonExp
+  filename: StringComparisonExp
+  id: UuidComparisonExp
+  isPublic: BooleanComparisonExp
+  metadata: JsonbComparisonExp
+  mimetype: StringComparisonExp
+  objectKey: StringComparisonExp
+  payroll: payrollsBoolExp
+  payrollId: UuidComparisonExp
+  size: IntComparisonExp
+  uploadedBy: UuidComparisonExp
+  uploader: usersBoolExp
+  url: StringComparisonExp
+}
+
+"""
+unique or primary key constraints on table "files"
+"""
+enum filesConstraint {
+  """
+  unique or primary key constraint on columns "id"
+  """
+  files_pkey
+}
+
+"""
+delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+"""
+input filesDeleteAtPathInput {
+  """Additional document metadata as JSON"""
+  metadata: [String!]
+}
+
+"""
+delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+"""
+input filesDeleteElemInput {
+  """Additional document metadata as JSON"""
+  metadata: Int
+}
+
+"""
+delete key/value pair or string element. key/value pairs are matched based on their key value
+"""
+input filesDeleteKeyInput {
+  """Additional document metadata as JSON"""
+  metadata: String
+}
+
+"""
+input type for incrementing numeric columns in table "files"
+"""
+input filesIncInput {
+  size: Int
+}
+
+"""
+input type for inserting data into table "files"
+"""
+input filesInsertInput {
+  bucket: String
+  """
+  Document category: contract, invoice, report, timesheet, correspondence, other
+  """
+  category: String
+  client: clientsObjRelInsertInput
+  """Links document to a specific client"""
+  clientId: uuid
+  createdAt: timestamptz
+  """Type of file: document (MinIO) or avatar (Clerk)"""
+  fileType: String
+  filename: String
+  id: uuid
+  """Whether document is publicly accessible within permissions"""
+  isPublic: Boolean
+  """Additional document metadata as JSON"""
+  metadata: jsonb
+  mimetype: String
+  objectKey: String
+  payroll: payrollsObjRelInsertInput
+  """Links document to a specific payroll"""
+  payrollId: uuid
+  size: Int
+  """User who uploaded the document"""
+  uploadedBy: uuid
+  uploader: usersObjRelInsertInput
+  url: String
+}
+
+"""aggregate max on columns"""
+type filesMaxFields {
+  bucket: String
+  """
+  Document category: contract, invoice, report, timesheet, correspondence, other
+  """
+  category: String
+  """Links document to a specific client"""
+  clientId: uuid
+  createdAt: timestamptz
+  """Type of file: document (MinIO) or avatar (Clerk)"""
+  fileType: String
+  filename: String
+  id: uuid
+  mimetype: String
+  objectKey: String
+  """Links document to a specific payroll"""
+  payrollId: uuid
+  size: Int
+  """User who uploaded the document"""
+  uploadedBy: uuid
+  url: String
+}
+
+"""aggregate min on columns"""
+type filesMinFields {
+  bucket: String
+  """
+  Document category: contract, invoice, report, timesheet, correspondence, other
+  """
+  category: String
+  """Links document to a specific client"""
+  clientId: uuid
+  createdAt: timestamptz
+  """Type of file: document (MinIO) or avatar (Clerk)"""
+  fileType: String
+  filename: String
+  id: uuid
+  mimetype: String
+  objectKey: String
+  """Links document to a specific payroll"""
+  payrollId: uuid
+  size: Int
+  """User who uploaded the document"""
+  uploadedBy: uuid
+  url: String
+}
+
+"""
+response of any mutation on the table "files"
+"""
+type filesMutationResponse {
+  """number of rows affected by the mutation"""
+  affectedRows: Int!
+  """data from the rows affected by the mutation"""
+  returning: [files!]!
+}
+
+"""
+on_conflict condition type for table "files"
+"""
+input filesOnConflict {
+  constraint: filesConstraint!
+  updateColumns: [filesUpdateColumn!]! = []
+  where: filesBoolExp
+}
+
+"""Ordering options when selecting data from "files"."""
+input filesOrderBy {
+  bucket: OrderBy
+  category: OrderBy
+  client: clientsOrderBy
+  clientId: OrderBy
+  createdAt: OrderBy
+  fileType: OrderBy
+  filename: OrderBy
+  id: OrderBy
+  isPublic: OrderBy
+  metadata: OrderBy
+  mimetype: OrderBy
+  objectKey: OrderBy
+  payroll: payrollsOrderBy
+  payrollId: OrderBy
+  size: OrderBy
+  uploadedBy: OrderBy
+  uploader: usersOrderBy
+  url: OrderBy
+}
+
+"""primary key columns input for table: files"""
+input filesPkColumnsInput {
+  id: uuid!
+}
+
+"""prepend existing jsonb value of filtered columns with new jsonb value"""
+input filesPrependInput {
+  """Additional document metadata as JSON"""
+  metadata: jsonb
+}
+
+"""
+select columns of table "files"
+"""
+enum filesSelectColumn {
+  """column name"""
+  bucket
+  """column name"""
+  category
+  """column name"""
+  clientId
+  """column name"""
+  createdAt
+  """column name"""
+  fileType
+  """column name"""
+  filename
+  """column name"""
+  id
+  """column name"""
+  isPublic
+  """column name"""
+  metadata
+  """column name"""
+  mimetype
+  """column name"""
+  objectKey
+  """column name"""
+  payrollId
+  """column name"""
+  size
+  """column name"""
+  uploadedBy
+  """column name"""
+  url
+}
+
+"""
+input type for updating data in table "files"
+"""
+input filesSetInput {
+  bucket: String
+  """
+  Document category: contract, invoice, report, timesheet, correspondence, other
+  """
+  category: String
+  """Links document to a specific client"""
+  clientId: uuid
+  createdAt: timestamptz
+  """Type of file: document (MinIO) or avatar (Clerk)"""
+  fileType: String
+  filename: String
+  id: uuid
+  """Whether document is publicly accessible within permissions"""
+  isPublic: Boolean
+  """Additional document metadata as JSON"""
+  metadata: jsonb
+  mimetype: String
+  objectKey: String
+  """Links document to a specific payroll"""
+  payrollId: uuid
+  size: Int
+  """User who uploaded the document"""
+  uploadedBy: uuid
+  url: String
+}
+
+"""aggregate stddev on columns"""
+type filesStddevFields {
+  size: Float
+}
+
+"""aggregate stddevPop on columns"""
+type filesStddevPopFields {
+  size: Float
+}
+
+"""aggregate stddevSamp on columns"""
+type filesStddevSampFields {
+  size: Float
+}
+
+"""
+Streaming cursor of the table "files"
+"""
+input filesStreamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: filesStreamCursorValueInput!
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input filesStreamCursorValueInput {
+  bucket: String
+  """
+  Document category: contract, invoice, report, timesheet, correspondence, other
+  """
+  category: String
+  """Links document to a specific client"""
+  clientId: uuid
+  createdAt: timestamptz
+  """Type of file: document (MinIO) or avatar (Clerk)"""
+  fileType: String
+  filename: String
+  id: uuid
+  """Whether document is publicly accessible within permissions"""
+  isPublic: Boolean
+  """Additional document metadata as JSON"""
+  metadata: jsonb
+  mimetype: String
+  objectKey: String
+  """Links document to a specific payroll"""
+  payrollId: uuid
+  size: Int
+  """User who uploaded the document"""
+  uploadedBy: uuid
+  url: String
+}
+
+"""aggregate sum on columns"""
+type filesSumFields {
+  size: Int
+}
+
+"""
+update columns of table "files"
+"""
+enum filesUpdateColumn {
+  """column name"""
+  bucket
+  """column name"""
+  category
+  """column name"""
+  clientId
+  """column name"""
+  createdAt
+  """column name"""
+  fileType
+  """column name"""
+  filename
+  """column name"""
+  id
+  """column name"""
+  isPublic
+  """column name"""
+  metadata
+  """column name"""
+  mimetype
+  """column name"""
+  objectKey
+  """column name"""
+  payrollId
+  """column name"""
+  size
+  """column name"""
+  uploadedBy
+  """column name"""
+  url
+}
+
+input filesUpdates {
+  """append existing jsonb value of filtered columns with new jsonb value"""
+  _append: filesAppendInput
+  """
+  delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+  """
+  _deleteAtPath: filesDeleteAtPathInput
+  """
+  delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+  """
+  _deleteElem: filesDeleteElemInput
+  """
+  delete key/value pair or string element. key/value pairs are matched based on their key value
+  """
+  _deleteKey: filesDeleteKeyInput
+  """increments the numeric columns with given value of the filtered values"""
+  _inc: filesIncInput
+  """prepend existing jsonb value of filtered columns with new jsonb value"""
+  _prepend: filesPrependInput
+  """sets the columns of the filtered rows to the given values"""
+  _set: filesSetInput
+  """filter the rows which have to be updated"""
+  where: filesBoolExp!
+}
+
+"""aggregate varPop on columns"""
+type filesVarPopFields {
+  size: Float
+}
+
+"""aggregate varSamp on columns"""
+type filesVarSampFields {
+  size: Float
+}
+
+"""aggregate variance on columns"""
+type filesVarianceFields {
+  size: Float
+}
+
 input generatePayrollDatesArgs {
   p_end_date: date
   p_max_dates: Int
@@ -14680,6 +15156,13 @@ type mutation_root {
     where: featureFlagsBoolExp!
   ): featureFlagsMutationResponse
   """
+  delete data from the table: "files"
+  """
+  bulkDeleteFiles(
+    """filter the rows which have to be deleted"""
+    where: filesBoolExp!
+  ): filesMutationResponse
+  """
   delete data from the table: "holidays"
   """
   bulkDeleteHolidays(
@@ -15001,6 +15484,15 @@ type mutation_root {
     """upsert condition"""
     onConflict: featureFlagsOnConflict
   ): featureFlagsMutationResponse
+  """
+  insert data into the table: "files"
+  """
+  bulkInsertFiles(
+    """the rows to be inserted"""
+    objects: [filesInsertInput!]!
+    """upsert condition"""
+    onConflict: filesOnConflict
+  ): filesMutationResponse
   """
   insert data into the table: "holidays"
   """
@@ -15463,6 +15955,33 @@ type mutation_root {
     """filter the rows which have to be updated"""
     where: featureFlagsBoolExp!
   ): featureFlagsMutationResponse
+  """
+  update data of the table: "files"
+  """
+  bulkUpdateFiles(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: filesAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: filesDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: filesDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: filesDeleteKeyInput
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: filesIncInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: filesPrependInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: filesSetInput
+    """filter the rows which have to be updated"""
+    where: filesBoolExp!
+  ): filesMutationResponse
   """
   update data of the table: "holidays"
   """
@@ -15964,6 +16483,10 @@ type mutation_root {
     id: uuid!
   ): featureFlags
   """
+  delete single row from the table: "files"
+  """
+  deleteFileById(id: uuid!): files
+  """
   delete single row from the table: "holidays"
   """
   deleteHolidayById(
@@ -16438,6 +16961,15 @@ type mutation_root {
     """upsert condition"""
     onConflict: featureFlagsOnConflict
   ): featureFlags
+  """
+  insert a single row into the table: "files"
+  """
+  insertFile(
+    """the row to be inserted"""
+    object: filesInsertInput!
+    """upsert condition"""
+    onConflict: filesOnConflict
+  ): files
   """
   insert a single row into the table: "holidays"
   """
@@ -17442,6 +17974,39 @@ type mutation_root {
     """updates to execute, in order"""
     updates: [featureFlagsUpdates!]!
   ): [featureFlagsMutationResponse]
+  """
+  update single row of the table: "files"
+  """
+  updateFileById(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: filesAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: filesDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: filesDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: filesDeleteKeyInput
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: filesIncInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: filesPrependInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: filesSetInput
+    pkColumns: filesPkColumnsInput!
+  ): files
+  """
+  update multiples rows of table: "files"
+  """
+  updateFilesMany(
+    """updates to execute, in order"""
+    updates: [filesUpdates!]!
+  ): [filesMutationResponse]
   """
   update single row of the table: "holidays"
   """
@@ -25684,6 +26249,38 @@ type query_root {
     """filter the rows returned"""
     where: featureFlagsBoolExp
   ): featureFlagsAggregate!
+  """fetch data from the table: "files" using primary key columns"""
+  fileById(id: uuid!): files
+  """
+  fetch data from the table: "files"
+  """
+  files(
+    """distinct select on columns"""
+    distinctOn: [filesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [filesOrderBy!]
+    """filter the rows returned"""
+    where: filesBoolExp
+  ): [files!]!
+  """
+  fetch aggregated fields from the table: "files"
+  """
+  filesAggregate(
+    """distinct select on columns"""
+    distinctOn: [filesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [filesOrderBy!]
+    """filter the rows returned"""
+    where: filesBoolExp
+  ): filesAggregate!
   """
   execute function "generate_payroll_dates" which returns "payroll_dates"
   """
@@ -29440,6 +30037,49 @@ type subscription_root {
     """filter the rows returned"""
     where: featureFlagsBoolExp
   ): [featureFlags!]!
+  """fetch data from the table: "files" using primary key columns"""
+  fileById(id: uuid!): files
+  """
+  fetch data from the table: "files"
+  """
+  files(
+    """distinct select on columns"""
+    distinctOn: [filesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [filesOrderBy!]
+    """filter the rows returned"""
+    where: filesBoolExp
+  ): [files!]!
+  """
+  fetch aggregated fields from the table: "files"
+  """
+  filesAggregate(
+    """distinct select on columns"""
+    distinctOn: [filesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [filesOrderBy!]
+    """filter the rows returned"""
+    where: filesBoolExp
+  ): filesAggregate!
+  """
+  fetch data from the table in a streaming manner: "files"
+  """
+  filesStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+    """cursor to stream the results returned by the query"""
+    cursor: [filesStreamCursorInput]!
+    """filter the rows returned"""
+    where: filesBoolExp
+  ): [files!]!
   """
   execute function "generate_payroll_dates" which returns "payroll_dates"
   """

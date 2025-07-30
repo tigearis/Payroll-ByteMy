@@ -18,7 +18,7 @@
  * ✓ Client Preset v4.8+ for optimal type safety
  * ✓ Zero type conflicts with modern codegen
  * 
- * Generated: 2025-07-30T00:41:48.053Z
+ * Generated: 2025-07-30T03:08:39.851Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Client Preset v4.0
  */
@@ -8036,6 +8036,282 @@ export type FeatureFlagsUpdates = {
   _set?: InputMaybe<FeatureFlagsSetInput>;
   /** filter the rows which have to be updated */
   where: FeatureFlagsBoolExp;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type FilesAppendInput = {
+  /** Additional document metadata as JSON */
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** Boolean expression to filter rows from the table "files". All fields are combined with a logical 'AND'. */
+export type FilesBoolExp = {
+  _and?: InputMaybe<Array<FilesBoolExp>>;
+  _not?: InputMaybe<FilesBoolExp>;
+  _or?: InputMaybe<Array<FilesBoolExp>>;
+  bucket?: InputMaybe<StringComparisonExp>;
+  category?: InputMaybe<StringComparisonExp>;
+  client?: InputMaybe<ClientsBoolExp>;
+  clientId?: InputMaybe<UuidComparisonExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  fileType?: InputMaybe<StringComparisonExp>;
+  filename?: InputMaybe<StringComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  isPublic?: InputMaybe<BooleanComparisonExp>;
+  metadata?: InputMaybe<JsonbComparisonExp>;
+  mimetype?: InputMaybe<StringComparisonExp>;
+  objectKey?: InputMaybe<StringComparisonExp>;
+  payroll?: InputMaybe<PayrollsBoolExp>;
+  payrollId?: InputMaybe<UuidComparisonExp>;
+  size?: InputMaybe<IntComparisonExp>;
+  uploadedBy?: InputMaybe<UuidComparisonExp>;
+  uploader?: InputMaybe<UsersBoolExp>;
+  url?: InputMaybe<StringComparisonExp>;
+};
+
+/** unique or primary key constraints on table "files" */
+export type FilesConstraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'files_pkey'
+  | '%future added value';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type FilesDeleteAtPathInput = {
+  /** Additional document metadata as JSON */
+  metadata?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type FilesDeleteElemInput = {
+  /** Additional document metadata as JSON */
+  metadata?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type FilesDeleteKeyInput = {
+  /** Additional document metadata as JSON */
+  metadata?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** input type for incrementing numeric columns in table "files" */
+export type FilesIncInput = {
+  size?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** input type for inserting data into table "files" */
+export type FilesInsertInput = {
+  bucket?: InputMaybe<Scalars['String']['input']>;
+  /** Document category: contract, invoice, report, timesheet, correspondence, other */
+  category?: InputMaybe<Scalars['String']['input']>;
+  client?: InputMaybe<ClientsObjRelInsertInput>;
+  /** Links document to a specific client */
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Type of file: document (MinIO) or avatar (Clerk) */
+  fileType?: InputMaybe<Scalars['String']['input']>;
+  filename?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  /** Whether document is publicly accessible within permissions */
+  isPublic?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Additional document metadata as JSON */
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  mimetype?: InputMaybe<Scalars['String']['input']>;
+  objectKey?: InputMaybe<Scalars['String']['input']>;
+  payroll?: InputMaybe<PayrollsObjRelInsertInput>;
+  /** Links document to a specific payroll */
+  payrollId?: InputMaybe<Scalars['uuid']['input']>;
+  size?: InputMaybe<Scalars['Int']['input']>;
+  /** User who uploaded the document */
+  uploadedBy?: InputMaybe<Scalars['uuid']['input']>;
+  uploader?: InputMaybe<UsersObjRelInsertInput>;
+  url?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** on_conflict condition type for table "files" */
+export type FilesOnConflict = {
+  constraint: FilesConstraint;
+  updateColumns?: Array<FilesUpdateColumn>;
+  where?: InputMaybe<FilesBoolExp>;
+};
+
+/** Ordering options when selecting data from "files". */
+export type FilesOrderBy = {
+  bucket?: InputMaybe<OrderBy>;
+  category?: InputMaybe<OrderBy>;
+  client?: InputMaybe<ClientsOrderBy>;
+  clientId?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  fileType?: InputMaybe<OrderBy>;
+  filename?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  isPublic?: InputMaybe<OrderBy>;
+  metadata?: InputMaybe<OrderBy>;
+  mimetype?: InputMaybe<OrderBy>;
+  objectKey?: InputMaybe<OrderBy>;
+  payroll?: InputMaybe<PayrollsOrderBy>;
+  payrollId?: InputMaybe<OrderBy>;
+  size?: InputMaybe<OrderBy>;
+  uploadedBy?: InputMaybe<OrderBy>;
+  uploader?: InputMaybe<UsersOrderBy>;
+  url?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: files */
+export type FilesPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type FilesPrependInput = {
+  /** Additional document metadata as JSON */
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** select columns of table "files" */
+export type FilesSelectColumn =
+  /** column name */
+  | 'bucket'
+  /** column name */
+  | 'category'
+  /** column name */
+  | 'clientId'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'fileType'
+  /** column name */
+  | 'filename'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isPublic'
+  /** column name */
+  | 'metadata'
+  /** column name */
+  | 'mimetype'
+  /** column name */
+  | 'objectKey'
+  /** column name */
+  | 'payrollId'
+  /** column name */
+  | 'size'
+  /** column name */
+  | 'uploadedBy'
+  /** column name */
+  | 'url'
+  | '%future added value';
+
+/** input type for updating data in table "files" */
+export type FilesSetInput = {
+  bucket?: InputMaybe<Scalars['String']['input']>;
+  /** Document category: contract, invoice, report, timesheet, correspondence, other */
+  category?: InputMaybe<Scalars['String']['input']>;
+  /** Links document to a specific client */
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Type of file: document (MinIO) or avatar (Clerk) */
+  fileType?: InputMaybe<Scalars['String']['input']>;
+  filename?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  /** Whether document is publicly accessible within permissions */
+  isPublic?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Additional document metadata as JSON */
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  mimetype?: InputMaybe<Scalars['String']['input']>;
+  objectKey?: InputMaybe<Scalars['String']['input']>;
+  /** Links document to a specific payroll */
+  payrollId?: InputMaybe<Scalars['uuid']['input']>;
+  size?: InputMaybe<Scalars['Int']['input']>;
+  /** User who uploaded the document */
+  uploadedBy?: InputMaybe<Scalars['uuid']['input']>;
+  url?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Streaming cursor of the table "files" */
+export type FilesStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: FilesStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type FilesStreamCursorValueInput = {
+  bucket?: InputMaybe<Scalars['String']['input']>;
+  /** Document category: contract, invoice, report, timesheet, correspondence, other */
+  category?: InputMaybe<Scalars['String']['input']>;
+  /** Links document to a specific client */
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Type of file: document (MinIO) or avatar (Clerk) */
+  fileType?: InputMaybe<Scalars['String']['input']>;
+  filename?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  /** Whether document is publicly accessible within permissions */
+  isPublic?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Additional document metadata as JSON */
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  mimetype?: InputMaybe<Scalars['String']['input']>;
+  objectKey?: InputMaybe<Scalars['String']['input']>;
+  /** Links document to a specific payroll */
+  payrollId?: InputMaybe<Scalars['uuid']['input']>;
+  size?: InputMaybe<Scalars['Int']['input']>;
+  /** User who uploaded the document */
+  uploadedBy?: InputMaybe<Scalars['uuid']['input']>;
+  url?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** update columns of table "files" */
+export type FilesUpdateColumn =
+  /** column name */
+  | 'bucket'
+  /** column name */
+  | 'category'
+  /** column name */
+  | 'clientId'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'fileType'
+  /** column name */
+  | 'filename'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isPublic'
+  /** column name */
+  | 'metadata'
+  /** column name */
+  | 'mimetype'
+  /** column name */
+  | 'objectKey'
+  /** column name */
+  | 'payrollId'
+  /** column name */
+  | 'size'
+  /** column name */
+  | 'uploadedBy'
+  /** column name */
+  | 'url'
+  | '%future added value';
+
+export type FilesUpdates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<FilesAppendInput>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _deleteAtPath?: InputMaybe<FilesDeleteAtPathInput>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _deleteElem?: InputMaybe<FilesDeleteElemInput>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _deleteKey?: InputMaybe<FilesDeleteKeyInput>;
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<FilesIncInput>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<FilesPrependInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<FilesSetInput>;
+  /** filter the rows which have to be updated */
+  where: FilesBoolExp;
 };
 
 export type GeneratePayrollDatesArgs = {

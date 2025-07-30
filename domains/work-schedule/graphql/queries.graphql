@@ -395,7 +395,7 @@ query GetTeamWorkload($managerUserId: uuid!) {
   }
 }
 
-# Holidays query for payroll scheduling
+# Holidays query for payroll scheduling - returns all holidays for display
 query GetHolidaysByDateRange(
   $startDate: date!
   $endDate: date!
@@ -405,6 +405,63 @@ query GetHolidaysByDateRange(
     where: {
       date: { _gte: $startDate, _lte: $endDate }
       countryCode: { _eq: $countryCode }
+    }
+    orderBy: { date: ASC }
+  ) {
+    id
+    name
+    localName
+    date
+    countryCode
+    types
+    isGlobal
+    region
+  }
+}
+
+# EFT-specific holidays query - returns only NSW + National holidays for date adjustments
+query GetEftRelevantHolidays(
+  $startDate: date!
+  $endDate: date!
+  $countryCode: bpchar = "AU"
+) {
+  holidays(
+    where: {
+      date: { _gte: $startDate, _lte: $endDate }
+      countryCode: { _eq: $countryCode }
+      _or: [
+        { region: { _contains: ["NSW"] } }
+        { region: { _contains: ["National"] } }
+        { region: { _contains: ["Australia"] } }
+      ]
+    }
+    orderBy: { date: ASC }
+  ) {
+    id
+    name
+    localName
+    date
+    countryCode
+    types
+    isGlobal
+    region
+  }
+}
+
+# Query to get holidays by specific regions for filtering
+query GetHolidaysByRegions(
+  $startDate: date!
+  $endDate: date!
+  $regions: [String!]!
+  $countryCode: bpchar = "AU"
+) {
+  holidays(
+    where: {
+      date: { _gte: $startDate, _lte: $endDate }
+      countryCode: { _eq: $countryCode }
+      _or: [
+        { region: { _contains: $regions } }
+      ]
     }
     orderBy: { date: ASC }
   ) {
