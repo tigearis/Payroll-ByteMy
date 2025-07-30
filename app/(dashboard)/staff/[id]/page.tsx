@@ -129,6 +129,7 @@ export default function StaffDetailsPage() {
   const [permissionExpiration, setPermissionExpiration] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState("");
   const [showSkillsModal, setShowSkillsModal] = useState(false);
+  const [isUpdatingRole, setIsUpdatingRole] = useState(false);
 
   // Permission checks (simplified - always allow if authenticated)
   const canRead = true;
@@ -251,6 +252,8 @@ export default function StaffDetailsPage() {
 
   // Handle role change with validation
   const handleRoleChange = async (newRole: string) => {
+    if (isUpdatingRole) return; // Prevent multiple concurrent updates
+
     try {
       // Validate permission to change role
       if (!canChangeRole(newRole)) {
@@ -263,6 +266,11 @@ export default function StaffDetailsPage() {
         toast.error("You cannot change your own role. Please contact an administrator.");
         return;
       }
+
+      setIsUpdatingRole(true);
+      
+      // Show immediate feedback
+      toast.info(`Updating ${user.computedName || `${user.firstName} ${user.lastName}`.trim()}'s role to ${newRole.replace('_', ' ')}...`);
 
       // Call the API route instead of GraphQL mutation to ensure Clerk sync
       const response = await fetch(`/api/staff/${id}/role`, {
@@ -289,6 +297,8 @@ export default function StaffDetailsPage() {
     } catch (error: any) {
       console.error("Error updating role:", error);
       toast.error(error.message || "Failed to update user role. Please try again.");
+    } finally {
+      setIsUpdatingRole(false);
     }
   };
 
@@ -719,21 +729,30 @@ export default function StaffDetailsPage() {
                     </div>
                     {/* Quick role change dropdown */}
                     {getAvailableRoles().length > 0 && !isCurrentUser(user) && (
-                      <Select 
-                        value={user.role} 
-                        onValueChange={handleRoleChange}
-                      >
-                        <SelectTrigger className="w-32 h-8">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {getAvailableRoles().map((role) => (
-                            <SelectItem key={role.value} value={role.value}>
-                              {role.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <div className="flex items-center gap-2">
+                        <Select 
+                          value={user.role} 
+                          onValueChange={handleRoleChange}
+                          disabled={isUpdatingRole}
+                        >
+                          <SelectTrigger className="w-32 h-8">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {getAvailableRoles().map((role) => (
+                              <SelectItem key={role.value} value={role.value}>
+                                {role.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {isUpdatingRole && (
+                          <div className="flex items-center gap-1">
+                            <div className="w-4 h-4 animate-spin rounded-full border-2 border-gray-300 border-t-blue-600" />
+                            <span className="text-xs text-gray-500">Updating...</span>
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
 
@@ -969,6 +988,7 @@ export default function StaffDetailsPage() {
                   <Select 
                     value={editedUser.role || user.role} 
                     onValueChange={(value) => handleInputChange("role", value)}
+                    disabled={isUpdatingRole}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select role..." />
@@ -986,6 +1006,7 @@ export default function StaffDetailsPage() {
                   </Select>
                   <p className="text-xs text-gray-500 mt-1">
                     Current role: <span className="font-medium capitalize">{user.role?.replace('_', ' ')}</span>
+                    {isUpdatingRole && <span className="text-blue-600"> (Updating...)</span>}
                   </p>
                 </div>
               )}

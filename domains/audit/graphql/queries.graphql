@@ -567,3 +567,148 @@ query GetComplianceMonitoringData($timeRange: timestamptz!) {
     }
   }
 }
+
+# Security Dashboard Overview Query
+query GetSecurityDashboardOverview($timeRange: timestamptz!) {
+  # Total users
+  totalUsers: usersAggregate {
+    aggregate {
+      count
+    }
+  }
+  
+  # Active users
+  activeUsers: usersAggregate(
+    where: { isActive: { _eq: true } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  # Inactive users
+  inactiveUsers: usersAggregate(
+    where: { isActive: { _eq: false } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  # Total permissions count (estimate based on roles and permissions)
+  totalRoles: rolesAggregate {
+    aggregate {
+      count
+    }
+  }
+  
+  # Recent security events count
+  recentEvents: auditLogsAggregate(
+    where: { eventTime: { _gte: $timeRange } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  # Failed login attempts for security score calculation
+  failedLogins: authEventsAggregate(
+    where: {
+      eventTime: { _gte: $timeRange }
+      success: { _eq: false }
+      eventType: { _eq: "login" }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  # Total login attempts for security score calculation
+  totalLogins: authEventsAggregate(
+    where: {
+      eventTime: { _gte: $timeRange }
+      eventType: { _eq: "login" }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Security Dashboard Recent Activity Query
+query GetSecurityDashboardActivity($limit: Int = 10, $timeRange: timestamptz!) {
+  # Recent security-related audit logs
+  recentActivity: auditLogs(
+    where: {
+      eventTime: { _gte: $timeRange }
+      action: { _in: [
+        "permission_grant", 
+        "permission_revoke", 
+        "role_change", 
+        "user_create", 
+        "user_update", 
+        "user_delete",
+        "login_failure",
+        "privilege_escalation"
+      ] }
+    }
+    orderBy: { eventTime: DESC }
+    limit: $limit
+  ) {
+    ...AuditLogEntry
+  }
+  
+  # Recent auth events (failed logins, etc.)
+  recentAuthEvents: authEvents(
+    where: {
+      eventTime: { _gte: $timeRange }
+      _or: [
+        { success: { _eq: false } }
+        { eventType: { _in: ["login", "logout", "password_change"] } }
+      ]
+    }
+    orderBy: { eventTime: DESC }
+    limit: $limit
+  ) {
+    ...AuthEvent
+  }
+}
+
+# Security Dashboard User Statistics
+query GetSecurityUserStats {
+  # Users by role distribution
+  usersByRole: users {
+    role
+  }
+  
+  # Staff vs non-staff count
+  staffCount: usersAggregate(
+    where: { isStaff: { _eq: true } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  # Users with managers (for org structure analysis)
+  usersWithManagers: usersAggregate(
+    where: { managerId: { _isNull: false } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  # Recently created users (last 30 days)
+  recentUsers: usersAggregate(
+    where: { 
+      createdAt: { _gte: "now() - interval '30 days'" }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}

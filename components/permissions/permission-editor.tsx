@@ -72,6 +72,8 @@ export function PermissionEditor({
   const [showReasonDialog, setShowReasonDialog] = useState(false);
   const [currentChange, setCurrentChange] = useState<PendingChange | null>(null);
   const [changeReason, setChangeReason] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const { userRole: currentUserRole, canAccessRole } = useHierarchicalPermissions();
 
@@ -249,54 +251,96 @@ export function PermissionEditor({
   const saveAllChanges = async () => {
     if (pendingChanges.length === 0) return;
 
+    setIsSaving(true);
+    setSaveError(null);
+
     try {
+      let successCount = 0;
+      const changeCount = pendingChanges.length;
+
       for (const change of pendingChanges) {
         const currentPermission = effectivePermissions[change.resource]?.[change.operation];
         const hasRolePermission = currentPermission?.source === 'role' && currentPermission.hasPermission;
 
-        if (change.granted === hasRolePermission && change.originalOverrideId) {
-          // Remove override (returning to role default) with Clerk sync
-          await deletePermissionOverrideWithSync(
-            change.originalOverrideId,
-            userId,
-            clerkUserId,
-            userRole as UserRole
-          );
-        } else if (change.granted !== hasRolePermission) {
-          // Create new override with Clerk sync
-          await createPermissionOverrideWithSync(
-            userId,
-            clerkUserId,
-            userRole as UserRole,
-            change.resource,
-            change.operation,
-            change.granted,
-            change.reason
-          );
-        }
-
-        // Create audit log entry
-        await createAuditLog({
-          variables: {
-            input: {
-              action: change.granted ? 'GRANT_PERMISSION' : 'DENY_PERMISSION',
-              resource: `${change.resource}.${change.operation}`,
-              targetUserId: userId,
-            }
+        try {
+          if (change.granted === hasRolePermission && change.originalOverrideId) {
+            // Remove override (returning to role default) with Clerk sync
+            console.log(`🔄 Removing override for ${change.resource}.${change.operation}`);
+            await deletePermissionOverrideWithSync(
+              change.originalOverrideId,
+              userId,
+              clerkUserId,
+              userRole as UserRole
+            );
+            console.log(`✅ Successfully removed override for ${change.resource}.${change.operation}`);
+          } else if (change.granted !== hasRolePermission) {
+            // Create new override with Clerk sync
+            console.log(`🔄 Creating override for ${change.resource}.${change.operation} = ${change.granted}`);
+            await createPermissionOverrideWithSync(
+              userId,
+              clerkUserId,
+              userRole as UserRole,
+              change.resource,
+              change.operation,
+              change.granted,
+              change.reason
+            );
+            console.log(`✅ Successfully created override for ${change.resource}.${change.operation}`);
           }
-        });
+
+          // Create audit log entry
+          await createAuditLog({
+            variables: {
+              input: {
+                action: change.granted ? 'GRANT_PERMISSION' : 'DENY_PERMISSION',
+                resource: `${change.resource}.${change.operation}`,
+                targetUserId: userId,
+              }
+            }
+          });
+
+          successCount++;
+        } catch (changeError: any) {
+          console.error(`❌ Failed to process permission change for ${change.resource}.${change.operation}:`, changeError);
+          
+          // Continue with other changes but track the error
+          const errorMessage = changeError.message || 'Unknown error';
+          setSaveError(`Failed to update ${change.resource}.${change.operation}: ${errorMessage}`);
+          
+          // Don't break the loop - try to process remaining changes
+          continue;
+        }
       }
 
       // Refetch user permissions to reflect changes
-      await refetchUserPermissions();
+      try {
+        await refetchUserPermissions();
+      } catch (refetchError) {
+        console.warn("Failed to refetch user permissions:", refetchError);
+        // Don't fail the entire operation for refetch errors
+      }
       
+      // Update UI state
       setPendingChanges([]);
       onPermissionChange?.(false);
-      toast.success(`Successfully updated ${pendingChanges.length} permission(s) for ${userName}. Changes synced to Clerk.`);
+
+      // Show appropriate success/partial success message
+      if (successCount === changeCount) {
+        toast.success(`Successfully updated ${successCount} permission(s) for ${userName}. Changes synced to Clerk.`);
+        setSaveError(null);
+      } else if (successCount > 0) {
+        toast.success(`Updated ${successCount} of ${changeCount} permissions. Some changes failed - see details above.`);
+      } else {
+        toast.error("Failed to update any permissions. Please check the error details and try again.");
+      }
       
-    } catch (error) {
-      console.error("Error saving permission changes:", error);
+    } catch (error: any) {
+      console.error("❌ Critical error saving permission changes:", error);
+      const errorMessage = error.message || 'Unknown error occurred';
+      setSaveError(`Critical error: ${errorMessage}`);
       toast.error("Failed to save permission changes. Please try again.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -362,9 +406,18 @@ export function PermissionEditor({
                 <Badge variant="secondary" className="bg-orange-100 text-orange-800">
                   {pendingChanges.length} Pending Changes
                 </Badge>
-                <Button onClick={saveAllChanges} size="sm">
-                  <Save className="w-4 h-4 mr-2" />
-                  Save All Changes
+                <Button onClick={saveAllChanges} size="sm" disabled={isSaving}>
+                  {isSaving ? (
+                    <>
+                      <div className="w-4 h-4 mr-2 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4 mr-2" />
+                      Save All Changes
+                    </>
+                  )}
                 </Button>
               </div>
             )}
@@ -383,6 +436,23 @@ export function PermissionEditor({
               Base Role: {userRole?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
             </Badge>
           </div>
+          {saveError && (
+            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex items-center">
+                <AlertTriangle className="w-4 h-4 text-red-600 mr-2" />
+                <span className="text-sm font-medium text-red-800">Permission Update Error</span>
+              </div>
+              <p className="text-sm text-red-700 mt-1">{saveError}</p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="mt-2" 
+                onClick={() => setSaveError(null)}
+              >
+                Dismiss
+              </Button>
+            </div>
+          )}
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
