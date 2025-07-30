@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { PayrollWithCycle } from "@/types";
+import { getScheduleSummary } from "@/domains/payrolls/utils/schedule-helpers";
 
 interface ClientPayrollsTableProps {
   payrolls: PayrollWithCycle[];
@@ -120,16 +121,14 @@ export function ClientPayrollsTable({
       <TableHeader>
         <TableRow>
           <TableHead>Name</TableHead>
-          <TableHead>Cycle</TableHead>
-          <TableHead>Date Type</TableHead>
-          <TableHead>Day/Date</TableHead>
+          <TableHead>Schedule</TableHead>
           <TableHead>Status</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {isLoading ? (
           <TableRow>
-            <TableCell colSpan={5} className="h-24 text-center">
+            <TableCell colSpan={3} className="h-24 text-center">
               Loading...
             </TableCell>
           </TableRow>
@@ -145,10 +144,8 @@ export function ClientPayrollsTable({
                 </Link>
               </TableCell>
               <TableCell>
-                {formatName(payroll.payrollCycle?.name) || "N/A"}
+                {getScheduleSummary(payroll)}
               </TableCell>
-              <TableCell>{formatName(payroll.payrollDateType?.name)}</TableCell>
-              <TableCell>{displayDateValue(payroll)}</TableCell>
               <TableCell>
                 <Badge
                   variant={
@@ -162,7 +159,7 @@ export function ClientPayrollsTable({
           ))
         ) : (
           <TableRow>
-            <TableCell colSpan={5} className="h-24 text-center">
+            <TableCell colSpan={3} className="h-24 text-center">
               No payrolls associated with this client yet.
             </TableCell>
           </TableRow>

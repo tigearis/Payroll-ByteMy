@@ -132,6 +132,7 @@ import { QueryOptimizer } from "@/lib/apollo/query-optimization";
 import { PermissionGuard, CanUpdate, CanDelete } from "@/components/auth/permission-guard";
 import { PayrollCycleType, PayrollDateType } from "@/types/enums";
 import { QuickEmailDialog } from "@/domains/email/components/quick-email-dialog";
+import { getScheduleSummary } from "@/domains/payrolls/utils/schedule-helpers";
 
 // Enhanced error boundary for version checking
 function VersionCheckErrorBoundary({ children }: { children: React.ReactNode }) {
@@ -1609,48 +1610,7 @@ export default function PayrollPage() {
                     <div className="mt-4">
                       <div className="text-center p-4 bg-teal-50 rounded-lg">
                         <div className="text-2xl font-bold text-teal-700 break-words leading-tight">
-                          {(() => {
-                            // Try multiple data sources to get schedule info
-                            const cycleName = payroll?.payrollCycle?.name;
-                            const cycleId = payroll?.cycleId;
-                            const dateValue = payroll?.dateValue;
-                            const payrollName = payroll?.name;
-                            
-                            // If we have cycle and date value, format it properly
-                            if (cycleName && dateValue !== undefined && dateValue !== null) {
-                              const weekday = dateValue === 1 ? "Monday" :
-                                            dateValue === 2 ? "Tuesday" :
-                                            dateValue === 3 ? "Wednesday" :
-                                            dateValue === 4 ? "Thursday" :
-                                            dateValue === 5 ? "Friday" : `Day ${dateValue}`;
-                              
-                              const displayCycle = cycleName.charAt(0).toUpperCase() + cycleName.slice(1);
-                              return `${displayCycle} - ${weekday}`;
-                            }
-                            
-                            // Fallback: extract from payroll name if available
-                            if (payrollName) {
-                              if (payrollName.includes("Fortnightly")) {
-                                if (payrollName.includes("Monday")) return "Fortnightly - Monday";
-                                if (payrollName.includes("Tuesday")) return "Fortnightly - Tuesday";
-                                if (payrollName.includes("Wednesday")) return "Fortnightly - Wednesday";
-                                if (payrollName.includes("Thursday")) return "Fortnightly - Thursday";
-                                if (payrollName.includes("Friday")) return "Fortnightly - Friday";
-                                return "Fortnightly";
-                              }
-                              if (payrollName.includes("Weekly")) {
-                                if (payrollName.includes("Monday")) return "Weekly - Monday";
-                                if (payrollName.includes("Tuesday")) return "Weekly - Tuesday";
-                                if (payrollName.includes("Wednesday")) return "Weekly - Wednesday";
-                                if (payrollName.includes("Thursday")) return "Weekly - Thursday";
-                                if (payrollName.includes("Friday")) return "Weekly - Friday";
-                                return "Weekly";
-                              }
-                              if (payrollName.includes("Monthly")) return "Monthly";
-                            }
-                            
-                            return "Schedule not configured";
-                          })()}
+                          {getScheduleSummary(payroll)}
                         </div>
                         <div className="text-sm text-teal-600">Schedule</div>
                       </div>

@@ -18,6 +18,7 @@ import {
   createCellRenderers,
 } from "@/components/ui/unified-data-table";
 import { PayrollWithCycle } from "@/types";
+import { getScheduleSummary } from "@/domains/payrolls/utils/schedule-helpers";
 
 // Payroll data type for client payrolls
 interface ClientPayroll {
@@ -148,21 +149,13 @@ export function ClientPayrollsTableUnified({
     },
     {
       key: "payrollCycle",
-      label: "Cycle",
+      label: "Schedule",
       sortable: false,
       defaultVisible: true,
       cellRenderer: (value, row) => (
-        <div className="text-sm">
-          <div className="font-medium">
-            {formatName(row.payrollCycle?.name)}
-          </div>
-          <div className="text-gray-500">
-            {row.payrollCycle?.cycle_type === "weekly" && row.payrollCycle?.day_of_week !== undefined
-              ? formatDayOfWeek(row.payrollCycle.day_of_week)
-              : row.payrollCycle?.day_of_month
-              ? `Day ${row.payrollCycle.day_of_month}`
-              : "Not configured"}
-          </div>
+        <div className="flex items-center gap-2">
+          <Clock className="w-4 h-4 text-gray-500" />
+          <span className="font-medium text-sm">{getScheduleSummary(row)}</span>
         </div>
       ),
     },
@@ -175,8 +168,8 @@ export function ClientPayrollsTableUnified({
         <div className="text-sm">
           {row.primary_consultant ? (
             <>
-              <div className="font-medium">{row.primaryconsultant.name}</div>
-              <div className="text-gray-500">{row.primaryconsultant.email}</div>
+              <div className="font-medium">{row.primary_consultant.name}</div>
+              <div className="text-gray-500">{row.primary_consultant.email}</div>
             </>
           ) : (
             <span className="text-gray-400">Unassigned</span>

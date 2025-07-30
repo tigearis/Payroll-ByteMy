@@ -33,6 +33,7 @@ import {
 import { GetPayrollsDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { useSmartPolling } from "@/hooks/use-polling";
 import { useCachedQuery } from "@/hooks/use-strategic-query";
+import { getScheduleSummary } from "@/domains/payrolls/utils/schedule-helpers";
 
 interface PayrollListCardProps {
   searchQuery: string;
@@ -412,9 +413,7 @@ export function PayrollListCard({
             <TableRow>
               <TableHead>Payroll Name</TableHead>
               <TableHead>Client</TableHead>
-              <TableHead>Pay Cycle</TableHead>
-              <TableHead>Date Type</TableHead>
-              <TableHead>Date Value</TableHead>
+              <TableHead>Schedule</TableHead>
               <TableHead>Primary Consultant</TableHead>
               <TableHead>Employee Count</TableHead>
               <TableHead>Status</TableHead>
@@ -434,14 +433,12 @@ export function PayrollListCard({
                   </TableCell>
                   <TableCell>{payroll.client?.name || "N/A"}</TableCell>
                   <TableCell>
-                    {formatName(payroll.payrollCycle?.name)}
+                    {getScheduleSummary(payroll)}
                   </TableCell>
                   <TableCell>
-                    {formatName(payroll.payrollDateType?.name)}
-                  </TableCell>
-                  <TableCell>{displayDateValue(payroll)}</TableCell>
-                  <TableCell>
-                    {payroll.primaryConsultant?.name || "N/A"}
+                    {payroll.primaryConsultant?.computedName || 
+                     (payroll.primaryConsultant ? `${payroll.primaryConsultant.firstName || ''} ${payroll.primaryConsultant.lastName || ''}`.trim() : '') || 
+                     "N/A"}
                   </TableCell>
                   <TableCell>
                     {payroll.employeeCount !== null &&
@@ -462,7 +459,7 @@ export function PayrollListCard({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={8} className="h-24 text-center">
+                <TableCell colSpan={6} className="h-24 text-center">
                   No payrolls found with the current filters.
                 </TableCell>
               </TableRow>
