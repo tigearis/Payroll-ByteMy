@@ -677,7 +677,7 @@ query GetSecurityDashboardActivity($limit: Int = 10, $timeRange: timestamptz!) {
 }
 
 # Security Dashboard User Statistics
-query GetSecurityUserStats {
+query GetSecurityUserStats($thirtyDaysAgo: timestamptz!) {
   # Users by role distribution
   usersByRole: users {
     role
@@ -704,7 +704,7 @@ query GetSecurityUserStats {
   # Recently created users (last 30 days)
   recentUsers: usersAggregate(
     where: { 
-      createdAt: { _gte: "now() - interval '30 days'" }
+      createdAt: { _gte: $thirtyDaysAgo }
     }
   ) {
     aggregate {
@@ -717,27 +717,11 @@ query GetSecurityUserStats {
 query GetSecurityAuditLogs(
   $limit: Int = 50
   $offset: Int = 0
-  $timeRange: timestamptz!
+  $timeRange: timestamptz
   $searchTerm: String = ""
-  $severityFilter: [String!] = []
-  $actionFilter: [String!] = []
 ) {
-  # Main audit logs with filtering
+  # Main audit logs with simplified filtering
   auditLogs(
-    where: {
-      eventTime: { _gte: $timeRange }
-      _and: [
-        {
-          _or: [
-            { userEmail: { _ilike: $searchTerm } }
-            { action: { _ilike: $searchTerm } }
-            { resourceType: { _ilike: $searchTerm } }
-            { resourceId: { _ilike: $searchTerm } }
-          ]
-        }
-        { action: { _in: $actionFilter } }
-      ]
-    }
     orderBy: { eventTime: DESC }
     limit: $limit
     offset: $offset
@@ -746,36 +730,14 @@ query GetSecurityAuditLogs(
   }
   
   # Count for pagination
-  auditLogsAggregate(
-    where: {
-      eventTime: { _gte: $timeRange }
-      _and: [
-        {
-          _or: [
-            { userEmail: { _ilike: $searchTerm } }
-            { action: { _ilike: $searchTerm } }
-            { resourceType: { _ilike: $searchTerm } }
-            { resourceId: { _ilike: $searchTerm } }
-          ]
-        }
-        { action: { _in: $actionFilter } }
-      ]
-    }
-  ) {
+  auditLogsAggregate {
     aggregate {
       count
     }
   }
   
-  # Auth events with filtering
+  # Auth events
   authEvents(
-    where: {
-      eventTime: { _gte: $timeRange }
-      _or: [
-        { userEmail: { _ilike: $searchTerm } }
-        { eventType: { _ilike: $searchTerm } }
-      ]
-    }
     orderBy: { eventTime: DESC }
     limit: $limit
     offset: $offset
@@ -785,7 +747,7 @@ query GetSecurityAuditLogs(
 }
 
 # Permissions Dashboard Data
-query GetPermissionsDashboardData {
+query GetPermissionsDashboardData($sevenDaysAgo: timestamptz!) {
   # All roles with their permissions
   roles(orderBy: { priority: DESC }) {
     id
@@ -832,7 +794,7 @@ query GetPermissionsDashboardData {
     where: {
       resourceType: { _in: ["permission", "role", "user"] }
       action: { _in: ["permission_grant", "permission_revoke", "role_change"] }
-      eventTime: { _gte: "now() - interval '7 days'" }
+      eventTime: { _gte: $sevenDaysAgo }
     }
     orderBy: { eventTime: DESC }
     limit: 10
