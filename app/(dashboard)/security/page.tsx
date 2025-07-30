@@ -72,11 +72,23 @@ export default function SecurityPage() {
   const [auditActionFilter, setAuditActionFilter] = useState<string[]>([]);
   const auditPageSize = 20;
 
-  // Time range for queries (last 24 hours)
+  // Time ranges for queries
   const timeRange = useMemo(() => {
     const now = new Date();
     const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
     return yesterday.toISOString();
+  }, []);
+
+  const sevenDaysAgo = useMemo(() => {
+    const now = new Date();
+    const sevenDays = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    return sevenDays.toISOString();
+  }, []);
+
+  const thirtyDaysAgo = useMemo(() => {
+    const now = new Date();
+    const thirtyDays = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    return thirtyDays.toISOString();
   }, []);
 
   // GraphQL queries for real data
@@ -99,6 +111,7 @@ export default function SecurityPage() {
   const { data: userStatsData, loading: userStatsLoading, refetch: refetchUserStats } = useQuery(
     GetSecurityUserStatsDocument,
     {
+      variables: { thirtyDaysAgo },
       errorPolicy: "all",
     }
   );
@@ -110,9 +123,8 @@ export default function SecurityPage() {
       variables: {
         limit: auditPageSize,
         offset: auditPage * auditPageSize,
-        timeRange,
+        timeRange: null,
         searchTerm: auditSearchTerm ? `%${auditSearchTerm}%` : "",
-        actionFilter: auditActionFilter,
       },
       errorPolicy: "all",
     }
@@ -122,6 +134,7 @@ export default function SecurityPage() {
   const { data: permissionsData, loading: permissionsLoading, refetch: refetchPermissions } = useQuery(
     GetPermissionsDashboardDataDocument,
     {
+      variables: { sevenDaysAgo },
       errorPolicy: "all",
     }
   );
