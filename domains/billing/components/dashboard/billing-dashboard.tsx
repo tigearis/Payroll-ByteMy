@@ -10,6 +10,7 @@ import {
   Filter,
   Download,
   Plus,
+  Package,
 } from "lucide-react";
 import React, { useState, useMemo } from "react";
 import { toast } from "sonner";
@@ -23,7 +24,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -41,19 +41,23 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 import {
-  GetAllBillingItemsDocument,
+  GetBillingItemsAdvancedDocument,
+  GetNewServiceCatalogDocument,
   GetPayrollProfitabilityDocument,
-  UpdateBillingItemDocument,
+  UpdateBillingItemAdvancedDocument,
   ConsolidateInvoicesDocument,
 } from "../../graphql/generated/graphql";
+import { GetClientsForDropdownDocument } from "../../../clients/graphql/generated/graphql";
 
 interface BillingItem {
   id: string;
   clientId?: string | null;
   payrollId?: string | null;
   description?: string | null;
-  serviceName?: string | null;
+  serviceName?: string | null; // Legacy field - fallback only
+  serviceId?: string | null; // New service relationship
   quantity: number;
   amount?: number | null;
   totalAmount?: number | null;
@@ -62,7 +66,7 @@ interface BillingItem {
   approvalDate?: string | null;
   confirmedAt?: string | null;
   notes?: string | null;
-  createdAt?: string; // Made optional with the ? operator
+  createdAt?: string;
   client?: {
     id: string;
     name: string;
@@ -83,11 +87,32 @@ interface BillingItem {
     lastName: string;
     computedName?: string | null;
   } | null;
+  service?: {
+    id: string;
+    name: string;
+    description?: string | null;
+    category: string;
+    defaultRate?: number | null;
+  } | null;
+}
+
+interface Service {
+  id: string;
+  name: string;
+  description?: string | null;
+  category: string;
+  billingUnit: string;
+  defaultRate: number;
+  currency: string;
+  serviceType: string;
+  isActive?: boolean | null;
 }
 
 interface DashboardFilters {
   isApproved?: boolean | undefined;
   clientId: string;
+  serviceId: string;
+  serviceCategory: string;
   dateRange: string;
   approvalStatus: string;
 }
@@ -106,6 +131,8 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
   const [filters, setFilters] = useState<DashboardFilters>({
     isApproved: undefined,
     clientId: "",
+    serviceId: "",
+    serviceCategory: "",
     dateRange: "30",
     approvalStatus: "",
   });
@@ -118,18 +145,55 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
     return { startDate, endDate };
   }, [filters.dateRange]);
 
-  // Get billing items (get all items, then filter client-side)
+  // Get billing items with service relationships
   const {
     data: billingData,
     loading: billingLoading,
     refetch,
-  } = useQuery(GetAllBillingItemsDocument, {
+  } = useQuery(GetBillingItemsAdvancedDocument, {
     variables: {
       limit: 500,
       offset: 0,
+      where: {
+        // Apply client filter if specified
+        ...(filters.clientId ? { clientId: { _eq: filters.clientId } } : {}),
+        // Apply service filter if specified
+        ...(filters.serviceId ? { serviceId: { _eq: filters.serviceId } } : {}),
+        // Apply approval filter if specified
+        ...(filters.isApproved !== undefined
+          ? { isApproved: { _eq: filters.isApproved } }
+          : {}),
+        // Apply date range filter
+        createdAt: {
+          _gte: dateRange.startDate.toISOString(),
+          _lte: dateRange.endDate.toISOString(),
+        },
+      },
+      orderBy: [{ createdAt: "DESC" }],
     },
     fetchPolicy: "cache-and-network",
   });
+
+  // Get service catalog for service name lookups
+  const { data: servicesData, loading: servicesLoading } = useQuery(
+    GetNewServiceCatalogDocument,
+    {
+      variables: {
+        limit: 200,
+        offset: 0,
+        category: filters.serviceCategory || "",
+      },
+      fetchPolicy: "cache-and-network",
+    }
+  );
+
+  // Get clients for dropdown
+  const { data: clientsData, loading: clientsLoading } = useQuery(
+    GetClientsForDropdownDocument,
+    {
+      fetchPolicy: "cache-and-network",
+    }
+  );
 
   // Get profitability data
   const { data: profitabilityData, loading: profitabilityLoading } = useQuery(
@@ -143,27 +207,70 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
   );
 
   // Mutations
-  const [updateBillingItem] = useMutation(UpdateBillingItemDocument);
+  const [updateBillingItem] = useMutation(UpdateBillingItemAdvancedDocument);
   const [consolidateInvoices] = useMutation(ConsolidateInvoicesDocument);
 
   const billingItems: BillingItem[] = billingData?.billingItems || [];
+  const services: Service[] = servicesData?.services || [];
+  const clients = clientsData?.clients || [];
   const profitabilityItems = profitabilityData?.payrolls || [];
 
-  // Filter billing items
+  // Create a service lookup map for efficient service name resolution
+  const serviceMap = useMemo(() => {
+    const map = new Map();
+    services.forEach(service => {
+      map.set(service.id, service);
+    });
+    return map;
+  }, [services]);
+
+  // Get unique service categories for filter dropdown
+  const serviceCategories = useMemo(() => {
+    const categories = new Set<string>();
+    services.forEach(service => {
+      if (service.category) {
+        categories.add(service.category);
+      }
+    });
+    return Array.from(categories).sort();
+  }, [services]);
+
+  // Filter services by category for service dropdown
+  const filteredServices = useMemo(() => {
+    if (!filters.serviceCategory) return services;
+    return services.filter(
+      service => service.category === filters.serviceCategory
+    );
+  }, [services, filters.serviceCategory]);
+
+  // Helper function to get service name with fallback
+  const getServiceName = (item: BillingItem): string => {
+    if (item.serviceId && serviceMap.has(item.serviceId)) {
+      return serviceMap.get(item.serviceId).name;
+    }
+    return item.serviceName || "Unnamed Service";
+  };
+
+  // Helper function to get service description
+  const getServiceDescription = (item: BillingItem): string => {
+    if (item.serviceId && serviceMap.has(item.serviceId)) {
+      const service = serviceMap.get(item.serviceId);
+      return service.description || item.description || "No description";
+    }
+    return item.description || "No description";
+  };
+
+  // Apply additional client-side filtering for approval status
   const filteredItems = useMemo(() => {
     return billingItems.filter(item => {
-      if (
-        filters.isApproved !== undefined &&
-        (item.isApproved ?? false) !== filters.isApproved
-      )
-        return false;
+      // Additional confirmation status filtering (client-side only)
       if (filters.approvalStatus === "confirmed" && !item.confirmedAt)
         return false;
       if (filters.approvalStatus === "unconfirmed" && item.confirmedAt)
         return false;
       return true;
     });
-  }, [billingItems, filters]);
+  }, [billingItems, filters.approvalStatus]);
 
   // Calculate metrics
   const metrics = useMemo(() => {
@@ -224,6 +331,7 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
             updates: {
               isApproved: true,
               approvalDate: new Date().toISOString(),
+              status: "approved",
             },
           },
         })
@@ -386,7 +494,7 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="items">Billing Items</TabsTrigger>
+          <TabsTrigger value="services">Service Items</TabsTrigger>
           <TabsTrigger value="profitability">Profitability</TabsTrigger>
         </TabsList>
 
@@ -399,8 +507,10 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {billingLoading ? (
-                <div className="text-center py-8">Loading billing data...</div>
+              {billingLoading || servicesLoading ? (
+                <div className="text-center py-8">
+                  Loading billing data and services...
+                </div>
               ) : (
                 <div className="space-y-4">
                   {filteredItems.slice(0, 10).map(item => (
@@ -411,11 +521,17 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
                       <div className="flex items-center gap-4">
                         <div>
                           <div className="font-medium">
-                            {item.serviceName || "Unnamed Service"}
+                            {getServiceName(item)}
                           </div>
                           <div className="text-sm text-gray-600">
-                            {item.description || "No description"}
+                            {getServiceDescription(item)}
                           </div>
+                          {item.serviceId && serviceMap.has(item.serviceId) && (
+                            <div className="text-xs text-blue-600">
+                              {serviceMap.get(item.serviceId).category} •{" "}
+                              {serviceMap.get(item.serviceId).billingUnit}
+                            </div>
+                          )}
                         </div>
                         <Badge
                           className={getStatusColor(
@@ -445,17 +561,108 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
           </Card>
         </TabsContent>
 
-        <TabsContent value="items" className="space-y-6">
-          {/* Filters */}
-          <Card>
+        <TabsContent value="services" className="space-y-6">
+          {/* Enhanced Service Catalog Filters */}
+          <Card className="border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Filter className="h-5 w-5" />
-                Filters
+                <Filter className="h-5 w-5 text-blue-600" />
+                Advanced Service Filters
               </CardTitle>
+              <CardDescription>
+                Filter and analyze billing items by service catalog, client relationships, and approval workflows
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div>
+                  <Label htmlFor="client">Client</Label>
+                  <Select
+                    value={filters.clientId}
+                    onValueChange={value =>
+                      setFilters(prev => ({ ...prev, clientId: value }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="All Clients" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">All Clients</SelectItem>
+                      {clientsLoading ? (
+                        <SelectItem value="" disabled>
+                          Loading clients...
+                        </SelectItem>
+                      ) : (
+                        clients.map(client => (
+                          <SelectItem key={client.id} value={client.id}>
+                            {client.name}
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="serviceCategory">Service Category</Label>
+                  <Select
+                    value={filters.serviceCategory}
+                    onValueChange={value =>
+                      setFilters(prev => ({ 
+                        ...prev, 
+                        serviceCategory: value,
+                        serviceId: "", // Reset service when category changes
+                      }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="All Categories" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">All Categories</SelectItem>
+                      {servicesLoading ? (
+                        <SelectItem value="" disabled>
+                          Loading categories...
+                        </SelectItem>
+                      ) : (
+                        serviceCategories.map(category => (
+                          <SelectItem key={category} value={category}>
+                            {category}
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="service">Specific Service</Label>
+                  <Select
+                    value={filters.serviceId}
+                    onValueChange={value =>
+                      setFilters(prev => ({ ...prev, serviceId: value }))
+                    }
+                    disabled={filteredServices.length === 0}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="All Services" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">All Services</SelectItem>
+                      {filteredServices.map(service => (
+                        <SelectItem key={service.id} value={service.id}>
+                          <div className="flex flex-col">
+                            <span className="font-medium">{service.name}</span>
+                            <span className="text-xs text-gray-500">
+                              {formatCurrency(service.defaultRate || 0)} • {service.billingUnit}
+                            </span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div>
                   <Label htmlFor="approval-filter">Approval Status</Label>
                   <Select
@@ -475,7 +682,7 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
                     }}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="All Items" />
+                      <SelectValue placeholder="All Statuses" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Items</SelectItem>
@@ -484,30 +691,9 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
                     </SelectContent>
                   </Select>
                 </div>
-
+                
                 <div>
-                  <Label htmlFor="confirmed">Confirmation Status</Label>
-                  <Select
-                    value={filters.approvalStatus}
-                    onValueChange={value =>
-                      setFilters(prev => ({ ...prev, approvalStatus: value }))
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="All" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">All</SelectItem>
-                      <SelectItem value="confirmed">
-                        Confirmed by Manager
-                      </SelectItem>
-                      <SelectItem value="unconfirmed">Not Confirmed</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="dateRange">Date Range</Label>
+                  <Label htmlFor="date-range">Date Range</Label>
                   <Select
                     value={filters.dateRange}
                     onValueChange={value =>
@@ -515,7 +701,7 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
                     }
                   >
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder="Last 30 days" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="7">Last 7 days</SelectItem>
@@ -525,22 +711,142 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
                     </SelectContent>
                   </Select>
                 </div>
-
-                <div>
-                  <Label htmlFor="client">Client</Label>
-                  <Input
-                    id="client"
-                    placeholder="Client ID"
-                    value={filters.clientId}
-                    onChange={e =>
-                      setFilters(prev => ({
-                        ...prev,
-                        clientId: e.target.value,
-                      }))
-                    }
-                  />
-                </div>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Enhanced Service Analytics Cards */}
+          {!billingLoading && !servicesLoading && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Card className="border-green-200 bg-green-50">
+                <CardHeader className="pb-3 flex flex-row items-center justify-between space-y-0">
+                  <CardTitle className="text-sm font-medium text-green-800">Service Categories</CardTitle>
+                  <Package className="h-4 w-4 text-green-600" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-green-900">{serviceCategories.length}</div>
+                  <p className="text-xs text-green-600">Active categories</p>
+                  <div className="mt-2 flex flex-wrap gap-1">
+                    {serviceCategories.slice(0, 3).map(category => (
+                      <Badge key={category} variant="outline" className="text-xs border-green-300 text-green-700">
+                        {category}
+                      </Badge>
+                    ))}
+                    {serviceCategories.length > 3 && (
+                      <Badge variant="outline" className="text-xs border-green-300 text-green-700">
+                        +{serviceCategories.length - 3}
+                      </Badge>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="border-blue-200 bg-blue-50">
+                <CardHeader className="pb-3 flex flex-row items-center justify-between space-y-0">
+                  <CardTitle className="text-sm font-medium text-blue-800">Active Services</CardTitle>
+                  <TrendingUp className="h-4 w-4 text-blue-600" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-blue-900">{services.length}</div>
+                  <p className="text-xs text-blue-600">Available in catalog</p>
+                  <div className="mt-2 text-xs text-blue-700">
+                    Avg. rate: {services.length > 0 ? formatCurrency(services.reduce((sum, s) => sum + (s.defaultRate || 0), 0) / services.length) : '$0'}
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="border-purple-200 bg-purple-50">
+                <CardHeader className="pb-3 flex flex-row items-center justify-between space-y-0">
+                  <CardTitle className="text-sm font-medium text-purple-800">Billing Items</CardTitle>
+                  <FileText className="h-4 w-4 text-purple-600" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-purple-900">{filteredItems.length}</div>
+                  <p className="text-xs text-purple-600">Matching filters</p>
+                  <div className="mt-2 text-xs text-purple-700">
+                    Total: {formatCurrency(filteredItems.reduce((sum, item) => sum + (item.totalAmount ?? item.amount ?? 0), 0))}
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="border-orange-200 bg-orange-50">
+                <CardHeader className="pb-3 flex flex-row items-center justify-between space-y-0">
+                  <CardTitle className="text-sm font-medium text-orange-800">Service Usage</CardTitle>
+                  <DollarSign className="h-4 w-4 text-orange-600" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-orange-900">
+                    {Math.round((filteredItems.length / Math.max(services.length, 1)) * 100)}%
+                  </div>
+                  <p className="text-xs text-orange-600">Catalog utilization</p>
+                  <div className="mt-2 text-xs text-orange-700">
+                    {filteredItems.filter(item => item.serviceId).length} linked to catalog
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+          
+          {/* Service Catalog Quick Access */}
+          <Card className="border-indigo-200 bg-gradient-to-r from-indigo-50 to-purple-50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Package className="h-5 w-5 text-indigo-600" />
+                Service Catalog Management
+              </CardTitle>
+              <CardDescription>
+                Quick access to service catalog features and analytics
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-3">
+                <Button variant="outline" size="sm" className="flex items-center gap-2">
+                  <Package className="h-4 w-4" />
+                  View Full Catalog
+                </Button>
+                <Button variant="outline" size="sm" className="flex items-center gap-2">
+                  <Plus className="h-4 w-4" />
+                  Add New Service
+                </Button>
+                <Button variant="outline" size="sm" className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4" />
+                  Service Analytics
+                </Button>
+                <Button variant="outline" size="sm" className="flex items-center gap-2">
+                  <Download className="h-4 w-4" />
+                  Export Services
+                </Button>
+              </div>
+              
+              {serviceCategories.length > 0 && (
+                <div className="mt-4">
+                  <Label className="text-sm font-medium text-indigo-800">Popular Service Categories</Label>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {serviceCategories.slice(0, 6).map(category => {
+                      const categoryServices = services.filter(s => s.category === category);
+                      const categoryRevenue = filteredItems
+                        .filter(item => item.serviceId && serviceMap.has(item.serviceId) && serviceMap.get(item.serviceId).category === category)
+                        .reduce((sum, item) => sum + (item.totalAmount ?? item.amount ?? 0), 0);
+                      
+                      return (
+                        <div key={category} className="bg-white rounded-lg border border-indigo-200 p-3 min-w-[120px]">
+                          <div className="text-sm font-medium text-indigo-900 capitalize">
+                            {category.replace('_', ' ')}
+                          </div>
+                          <div className="text-xs text-indigo-600 mt-1">
+                            {categoryServices.length} services
+                          </div>
+                          {categoryRevenue > 0 && (
+                            <div className="text-xs text-green-600 mt-1 font-medium">
+                              {formatCurrency(categoryRevenue)}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -551,7 +857,7 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <span className="font-medium">
-                      {selectedItems.length} items selected
+                      {selectedItems.length} item{selectedItems.length > 1 ? 's' : ''} selected
                     </span>
                     <Button
                       variant="outline"
@@ -562,13 +868,13 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
                     </Button>
                   </div>
                   <div className="flex gap-2">
-                    <Button onClick={bulkApprove}>
+                    <Button onClick={bulkApprove} disabled={billingLoading}>
                       <CheckCircle className="h-4 w-4 mr-2" />
                       Approve Selected
                     </Button>
                     <Button variant="outline">
                       <FileText className="h-4 w-4 mr-2" />
-                      Generate Invoice
+                      Export Selected
                     </Button>
                   </div>
                 </div>
@@ -576,142 +882,224 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
             </Card>
           )}
 
-          {/* Billing Items Table */}
+          {/* Enhanced Service-focused Table */}
           <Card>
             <CardHeader>
               <div className="flex justify-between items-center">
                 <div>
-                  <CardTitle>Billing Items</CardTitle>
+                  <CardTitle>Service Billing Items</CardTitle>
                   <CardDescription>
-                    {filteredItems.length} items found
+                    {(billingLoading || servicesLoading) ? (
+                      "Loading billing items and services..."
+                    ) : (
+                      `${filteredItems.length} item${filteredItems.length !== 1 ? 's' : ''} found`
+                    )}
                   </CardDescription>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={selectAllItems}>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={selectAllItems}
+                    disabled={filteredItems.length === 0 || billingLoading}
+                  >
                     Select All
                   </Button>
-                  <Button variant="outline" size="sm" onClick={clearSelection}>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={clearSelection}
+                    disabled={selectedItems.length === 0}
+                  >
                     Clear All
                   </Button>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-12">
-                      <Checkbox
-                        checked={
-                          selectedItems.length === filteredItems.length &&
-                          filteredItems.length > 0
-                        }
-                        onCheckedChange={checked =>
-                          checked ? selectAllItems() : clearSelection()
-                        }
-                      />
-                    </TableHead>
-                    <TableHead>Service</TableHead>
-                    <TableHead>Client</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Approval</TableHead>
-                    <TableHead>Created</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredItems.map(item => (
-                    <TableRow
-                      key={item.id}
-                      className={
-                        selectedItems.includes(item.id) ? "bg-blue-50" : ""
-                      }
-                    >
-                      <TableCell>
+              {(billingLoading || servicesLoading) ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="text-center space-y-2">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+                    <p className="text-sm text-gray-500">Loading billing data...</p>
+                  </div>
+                </div>
+              ) : filteredItems.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="text-gray-500 space-y-2">
+                    <FileText className="h-12 w-12 mx-auto text-gray-300" />
+                    <p className="text-lg font-medium">No billing items found</p>
+                    <p className="text-sm">Try adjusting your filters or check back later.</p>
+                  </div>
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-12">
                         <Checkbox
-                          checked={selectedItems.includes(item.id)}
-                          onCheckedChange={() => toggleItemSelection(item.id)}
+                          checked={
+                            selectedItems.length === filteredItems.length &&
+                            filteredItems.length > 0
+                          }
+                          onCheckedChange={checked =>
+                            checked ? selectAllItems() : clearSelection()
+                          }
                         />
-                      </TableCell>
-                      <TableCell>
-                        <div
-                          className="cursor-pointer"
-                          onClick={() => onItemClick?.(item)}
-                        >
-                          <div className="font-medium">
-                            {item.serviceName || "Unnamed Service"}
-                          </div>
-                          <div className="text-sm text-gray-600">
-                            {item.description || "No description"}
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="font-medium">
-                          {item.client?.name || item.clientId}
-                        </div>
-                        {item.payroll && (
-                          <div className="text-sm text-gray-600">
-                            {item.payroll.name}
-                          </div>
+                      </TableHead>
+                      <TableHead>Service Details</TableHead>
+                      <TableHead>Client</TableHead>
+                      <TableHead>Amount</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Created</TableHead>
+                      <TableHead className="w-24">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredItems.map(item => (
+                      <TableRow
+                        key={item.id}
+                        className={cn(
+                          "hover:bg-gray-50 transition-colors",
+                          selectedItems.includes(item.id) && "bg-blue-50"
                         )}
-                      </TableCell>
-                      <TableCell>
-                        <div className="font-semibold">
-                          {formatCurrency(item.totalAmount ?? item.amount ?? 0)}
-                        </div>
-                        {item.quantity > 1 && (
-                          <div className="text-sm text-gray-600">
-                            {item.quantity} ×{" "}
-                            {formatCurrency(
-                              (item.totalAmount ?? item.amount ?? 0) /
-                                item.quantity
+                      >
+                        <TableCell>
+                          <Checkbox
+                            checked={selectedItems.includes(item.id)}
+                            onCheckedChange={() => toggleItemSelection(item.id)}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <div
+                            className="cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors"
+                            onClick={() => onItemClick?.(item)}
+                          >
+                            <div className="font-medium text-gray-900 flex items-center gap-2">
+                              {getServiceName(item)}
+                              {item.serviceId && serviceMap.has(item.serviceId) ? (
+                                <Badge variant="default" className="text-xs bg-green-100 text-green-800 border-green-200">
+                                  Catalog Service
+                                </Badge>
+                              ) : (
+                                <Badge variant="outline" className="text-xs border-yellow-300 text-yellow-700">
+                                  Custom/Legacy
+                                </Badge>
+                              )}
+                            </div>
+                            <div className="text-sm text-gray-600 mt-1">
+                              {getServiceDescription(item)}
+                            </div>
+                            {item.serviceId && serviceMap.has(item.serviceId) && (
+                              <div className="flex items-center gap-2 mt-2">
+                                <Badge variant="outline" className="text-xs bg-blue-50 border-blue-200 text-blue-700">
+                                  {serviceMap.get(item.serviceId).category}
+                                </Badge>
+                                <Badge variant="outline" className="text-xs bg-purple-50 border-purple-200 text-purple-700">
+                                  {serviceMap.get(item.serviceId).billingUnit}
+                                </Badge>
+                                {serviceMap.get(item.serviceId).defaultRate && (
+                                  <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                                    Std: {formatCurrency(serviceMap.get(item.serviceId).defaultRate)}
+                                  </span>
+                                )}
+                                <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded">
+                                  {serviceMap.get(item.serviceId).serviceType}
+                                </span>
+                              </div>
+                            )}
+                            {!item.serviceId && item.serviceName && (
+                              <div className="flex items-center gap-2 mt-2">
+                                <Badge variant="outline" className="text-xs border-amber-300 text-amber-700">
+                                  Legacy Service
+                                </Badge>
+                                <span className="text-xs text-amber-600">Consider migrating to catalog</span>
+                              </div>
                             )}
                           </div>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          className={getStatusColor(
-                            item.isApproved ?? false,
-                            item.confirmedAt ?? null
+                        </TableCell>
+                        <TableCell>
+                          <div className="font-medium text-gray-900">
+                            {item.client?.name || "Unknown Client"}
+                          </div>
+                          {item.payroll && (
+                            <div className="text-sm text-gray-600">
+                              Payroll: {item.payroll.name}
+                            </div>
                           )}
-                        >
-                          {getStatusLabel(
-                            item.isApproved ?? false,
-                            item.confirmedAt ?? null
+                        </TableCell>
+                        <TableCell>
+                          <div className="font-semibold text-gray-900">
+                            {formatCurrency(item.totalAmount ?? item.amount ?? 0)}
+                          </div>
+                          {item.quantity > 1 && (
+                            <div className="text-sm text-gray-600">
+                              {item.quantity} × {formatCurrency((item.totalAmount ?? item.amount ?? 0) / item.quantity)}
+                            </div>
                           )}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {item.isApproved ? (
-                          <Badge className="bg-green-100 text-green-800">
-                            Approved
-                          </Badge>
-                        ) : (
-                          <Badge className="bg-yellow-100 text-yellow-800">
-                            Pending
-                          </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell>{formatDate(item.createdAt ?? "")}</TableCell>
-                      <TableCell>
-                        <div className="flex gap-1">
-                          {!item.isApproved && (
-                            <Button size="sm" variant="outline">
-                              <CheckCircle className="h-3 w-3" />
+                          {item.hourlyRate && (
+                            <div className="text-xs text-gray-500">
+                              Rate: {formatCurrency(item.hourlyRate)}/hr
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="space-y-1">
+                            <Badge
+                              variant={item.isApproved ? "default" : "secondary"}
+                              className={cn(
+                                item.isApproved 
+                                  ? "bg-green-100 text-green-800" 
+                                  : "bg-yellow-100 text-yellow-800"
+                              )}
+                            >
+                              {item.isApproved ? "Approved" : "Pending"}
+                            </Badge>
+                            {item.confirmedAt && (
+                              <Badge variant="outline" className="text-xs">
+                                Confirmed
+                              </Badge>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="text-sm text-gray-600">
+                            {formatDate(item.createdAt ?? "")}
+                          </div>
+                          {item.approvalDate && (
+                            <div className="text-xs text-gray-500">
+                              Approved: {formatDate(item.approvalDate)}
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-1">
+                            {!item.isApproved && (
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                className="h-8 w-8 p-0"
+                                title="Approve item"
+                              >
+                                <CheckCircle className="h-3 w-3" />
+                              </Button>
+                            )}
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              className="h-8 w-8 p-0"
+                              title="View details"
+                              onClick={() => onItemClick?.(item)}
+                            >
+                              <FileText className="h-3 w-3" />
                             </Button>
-                          )}
-                          <Button size="sm" variant="outline">
-                            <FileText className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

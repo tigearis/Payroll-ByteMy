@@ -18,12 +18,13 @@ interface DocumentUploadResponse {
 export const POST = withAuth(async (req: NextRequest, session) => {
   try {
     const formData = await req.formData();
-    const file = formData.get('document') as File;
+    const file = formData.get('document') as File || formData.get('file') as File;
     const clientId = formData.get('clientId') as string | null;
     const payrollId = formData.get('payrollId') as string | null;
     const category = formData.get('category') as string | null;
     const isPublic = formData.get('isPublic') === 'true';
     const metadataStr = formData.get('metadata') as string | null;
+    const replaceDocumentId = formData.get('replaceDocumentId') as string | null;
 
     // Validate required fields
     if (!file) {
@@ -84,27 +85,64 @@ export const POST = withAuth(async (req: NextRequest, session) => {
     // Convert file to buffer
     const fileBuffer = Buffer.from(await file.arrayBuffer());
 
-    console.log(`📄 Uploading document: ${file.name} (${file.size} bytes)`);
-    console.log(`👤 Uploaded by: ${session.userId} (${userRole})`);
-    console.log(`🏢 Client: ${clientId || 'none'}, 💼 Payroll: ${payrollId || 'none'}`);
+    if (replaceDocumentId) {
+      console.log(`🔄 Replacing document: ${replaceDocumentId} with ${file.name} (${file.size} bytes)`);
+      console.log(`👤 Replaced by: ${session.userId} (${userRole})`);
 
-    // Upload document
-    const document = await uploadDocument({
-      filename: file.name,
-      fileBuffer,
-      clientId: clientId || undefined,
-      payrollId: payrollId || undefined,
-      category: (category as any) || 'other',
-      isPublic,
-      metadata,
-      uploadedBy: session.databaseId || session.userId,
-    });
+      // First, get the original document to preserve metadata
+      const { getDocument, deleteDocument } = await import('@/lib/storage/document-operations');
+      const originalDocument = await getDocument(replaceDocumentId, session.databaseId || session.userId);
+      
+      if (!originalDocument) {
+        return NextResponse.json<DocumentUploadResponse>(
+          { success: false, error: 'Original document not found' },
+          { status: 404 }
+        );
+      }
 
-    return NextResponse.json<DocumentUploadResponse>({
-      success: true,
-      document,
-      message: 'Document uploaded successfully',
-    });
+      // Delete the old document
+      await deleteDocument(replaceDocumentId, session.databaseId || session.userId);
+
+      // Upload the new document with the same metadata and relationships
+      const document = await uploadDocument({
+        filename: file.name,
+        fileBuffer,
+        clientId: originalDocument.clientId || undefined,
+        payrollId: originalDocument.payrollId || undefined,
+        category: (category as any) || originalDocument.category,
+        isPublic: isPublic !== undefined ? isPublic : originalDocument.isPublic,
+        metadata: metadata || originalDocument.metadata,
+        uploadedBy: session.databaseId || session.userId,
+      });
+
+      return NextResponse.json<DocumentUploadResponse>({
+        success: true,
+        document,
+        message: 'Document replaced successfully',
+      });
+    } else {
+      console.log(`📄 Uploading document: ${file.name} (${file.size} bytes)`);
+      console.log(`👤 Uploaded by: ${session.userId} (${userRole})`);
+      console.log(`🏢 Client: ${clientId || 'none'}, 💼 Payroll: ${payrollId || 'none'}`);
+
+      // Upload document
+      const document = await uploadDocument({
+        filename: file.name,
+        fileBuffer,
+        clientId: clientId || undefined,
+        payrollId: payrollId || undefined,
+        category: (category as any) || 'other',
+        isPublic,
+        metadata,
+        uploadedBy: session.databaseId || session.userId,
+      });
+
+      return NextResponse.json<DocumentUploadResponse>({
+        success: true,
+        document,
+        message: 'Document uploaded successfully',
+      });
+    }
 
   } catch (error: any) {
     console.error('❌ Document upload error:', error);

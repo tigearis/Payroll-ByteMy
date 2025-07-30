@@ -31,21 +31,21 @@ interface Payroll {
     id: string;
     name: string;
   };
-  primary_consultant_user?: {
+  primaryConsultantUser?: {
     id: string;
     name: string;
     email?: string;
   };
-  manager_user?: {
+  managerUser?: {
     id: string;
     name: string;
     email?: string;
   };
-  employee_count?: number;
-  processing_days_before_eft?: number;
-  payroll_system?: string;
-  updated_at: string;
-  go_live_date?: string;
+  employeeCount?: number;
+  processingDaysBeforeEft?: number;
+  payrollSystem?: string;
+  updatedAt: string;
+  goLiveDate?: string;
 }
 
 interface PayrollsTableProps {
@@ -160,7 +160,7 @@ export function PayrollsTableUnified({
       cellRenderer: client => client?.name || "—",
     },
     {
-      key: "payroll_schedule",
+      key: "payrollSchedule",
       label: "Schedule",
       sortable: false,
       defaultVisible: true,
@@ -176,7 +176,7 @@ export function PayrollsTableUnified({
       },
     },
     {
-      key: "employee_count",
+      key: "employeeCount",
       label: "Employees",
       sortable: true,
       defaultVisible: true,
@@ -185,34 +185,40 @@ export function PayrollsTableUnified({
         count ? cellRenderers.count(count, "employee") : "—",
     },
     {
-      key: "primary_consultant_user",
+      key: "primaryConsultantUser",
       label: "Primary Consultant",
       sortable: false,
       defaultVisible: true,
       cellRenderer: consultant =>
         consultant
           ? cellRenderers.avatar({
-              name: consultant.computedName || `${consultant.firstName || ''} ${consultant.lastName || ''}`.trim() || "Unknown User",
+              name:
+                consultant.computedName ||
+                `${consultant.firstName || ""} ${consultant.lastName || ""}`.trim() ||
+                "Unknown User",
               email: consultant.email,
             })
           : "—",
     },
     // Hidden columns that can be toggled on if needed
     {
-      key: "manager_user",
+      key: "managerUser",
       label: "Manager",
       sortable: false,
       defaultVisible: false,
       cellRenderer: manager =>
         manager
           ? cellRenderers.avatar({
-              name: manager.computedName || `${manager.firstName || ''} ${manager.lastName || ''}`.trim() || "Unknown User",
+              name:
+                manager.computedName ||
+                `${manager.firstName || ""} ${manager.lastName || ""}`.trim() ||
+                "Unknown User",
               email: manager.email,
             })
           : "—",
     },
     {
-      key: "processing_days_before_eft",
+      key: "processingDaysBeforeEft",
       label: "Processing Days",
       sortable: true,
       defaultVisible: false,
@@ -220,7 +226,7 @@ export function PayrollsTableUnified({
       cellRenderer: days => (days ? cellRenderers.count(days, "day") : "—"),
     },
     {
-      key: "payroll_system",
+      key: "payrollSystem",
       label: "System",
       sortable: true,
       defaultVisible: false,
@@ -228,14 +234,14 @@ export function PayrollsTableUnified({
         cellRenderers.iconText(system || "Not Set", Calculator),
     },
     {
-      key: "go_live_date",
+      key: "goLiveDate",
       label: "Go Live Date",
       sortable: true,
       defaultVisible: false,
       cellRenderer: date => (date ? cellRenderers.simpleDate(date) : "—"),
     },
     {
-      key: "updated_at",
+      key: "updatedAt",
       label: "Last Updated",
       sortable: true,
       defaultVisible: false,

@@ -127,18 +127,6 @@ export function ClientsTableUnified({
       cellRenderer: phone =>
         phone ? cellRenderers.iconText(phone, Phone) : "—",
     },
-    {
-      key: "payrolls",
-      label: "Active Payrolls",
-      sortable: false,
-      defaultVisible: true,
-      align: "center",
-      cellRenderer: payrolls => {
-        const activePayrolls =
-          payrolls?.filter((p: any) => p.active !== false) || [];
-        return cellRenderers.count(activePayrolls.length, "payroll");
-      },
-    },
   ];
 
   // Action definitions
