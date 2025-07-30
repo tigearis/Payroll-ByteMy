@@ -1521,7 +1521,7 @@ export default function AdvancedPayrollScheduler() {
               className="grid relative"
               style={{
                 gridTemplateColumns: tableOrientation === "consultants-as-columns" 
-                  ? `${responsiveConfig.cellMinWidth}px repeat(${consultants.length}, minmax(${responsiveConfig.cellMinWidth}px, ${isExpanded ? '1fr' : 'auto'}))`
+                  ? `${responsiveConfig.cellMinWidth}px repeat(${consultants.length}, minmax(${responsiveConfig.cellMinWidth}px, ${isExpanded ? '1fr' : 'max-content'}))`
                   : `${responsiveConfig.cellMinWidth + 40}px repeat(${dates.length}, ${responsiveConfig.cellMinWidth}px)`,
                 width: tableOrientation === "consultants-as-columns" 
                   ? isExpanded ? "100%" : "fit-content"
