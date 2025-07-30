@@ -1,7 +1,7 @@
 'use client';
 
 import { useMutation, useQuery } from '@apollo/client';
-import { ArrowLeft, Save, X, DollarSign, FileText } from 'lucide-react';
+import { ArrowLeft, Save, X, DollarSign, FileText, Package, Calculator, Info } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import { z } from 'zod';
@@ -11,26 +11,38 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { formatCurrency } from '@/lib/utils';
 import { 
   CreateBillingItemDocument, 
   UpdateBillingItemDocument, 
   GetClientsForBillingDocument,
-  GetBillingItemsByPayrollDocument
+  GetBillingPlansDocument
 } from '../../graphql/generated/graphql';
+// import { EnhancedServiceCatalog } from '../services/enhanced-service-catalog';
+// import { pricingEngine, type PricingContext } from '../../services/pricing-engine';
 
 const billingItemSchema = z.object({
+  billingPlanId: z.string().optional(), // Legacy billing plan support
+  serviceId: z.string().optional(), // Future services support
+  serviceName: z.string().optional(),
   description: z.string().min(3, 'Description must be at least 3 characters'),
   unitPrice: z.number().min(0.01, 'Amount must be greater than 0'),
   quantity: z.number().min(1, 'Quantity must be at least 1'),
   clientId: z.string().min(1, 'Client is required'),
   notes: z.string().optional(),
+}).refine(data => data.billingPlanId || data.serviceId || data.serviceName, {
+  message: "Either select a billing plan, service, or provide a service name",
+  path: ["serviceName"]
 });
 
 type BillingItemFormData = z.infer<typeof billingItemSchema>;
 
 interface BillingItemFormProps {
   itemId?: string;
+  preselectedClientId?: string;
 }
 
 const commonUnits = [
@@ -44,22 +56,29 @@ const commonUnits = [
   'consultation',
 ];
 
-export function BillingItemForm({ itemId }: BillingItemFormProps) {
+export function BillingItemForm({ itemId, preselectedClientId }: BillingItemFormProps) {
   const router = useRouter();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  // Future service selection features
+  // const [showServiceCatalog, setShowServiceCatalog] = useState(false);
+  // const [selectedService, setSelectedService] = useState<any>(null);
+  // const [calculatedPricing, setCalculatedPricing] = useState<any>(null);
   
   const [formData, setFormData] = useState<BillingItemFormData>({
     description: '',
     unitPrice: 0,
     quantity: 1,
-    clientId: '',
+    clientId: preselectedClientId || '',
     notes: '',
   });
 
   // Get clients for dropdown
   const { data: clientsData, loading: clientsLoading } = useQuery(GetClientsForBillingDocument);
+  
+  // Get billing plans for selection (legacy - will be replaced with services)
+  const { data: billingPlansData, loading: billingPlansLoading } = useQuery(GetBillingPlansDocument);
   
   // GraphQL mutations
   const [createBillingItem] = useMutation(CreateBillingItemDocument, {
@@ -97,6 +116,7 @@ export function BillingItemForm({ itemId }: BillingItemFormProps) {
   });
 
   const clients = clientsData?.clients || [];
+  const billingPlans = billingPlansData?.billingPlans || [];
 
   const handleInputChange = (field: keyof BillingItemFormData, value: string | number) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -105,6 +125,14 @@ export function BillingItemForm({ itemId }: BillingItemFormProps) {
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
+    
+    // Future: Recalculate pricing when quantity or client changes
+    // if ((field === 'quantity' || field === 'clientId') && selectedService) {
+    //   calculateServicePricing(selectedService, { 
+    //     ...formData, 
+    //     [field]: value 
+    //   });
+    // }
   };
 
   const validateForm = () => {
@@ -141,8 +169,13 @@ export function BillingItemForm({ itemId }: BillingItemFormProps) {
         unitPrice: formData.unitPrice,
         quantity: formData.quantity,
         clientId: formData.clientId,
+        billingPlanId: formData.billingPlanId || null, // Legacy support
+        serviceId: formData.serviceId || null, // Future services support
+        serviceName: formData.serviceName || null,
         notes: formData.notes || null,
         status: 'draft',
+        totalAmount: formData.unitPrice * formData.quantity,
+        amount: formData.unitPrice * formData.quantity,
       };
 
       if (itemId) {
@@ -181,6 +214,84 @@ export function BillingItemForm({ itemId }: BillingItemFormProps) {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* Service Selection */}
+          <div className="space-y-2">
+            <Label>Service Selection</Label>
+            <div className="flex gap-2">
+              <div className="flex-1">
+                {formData.billingPlanId ? (
+                  <Card className="border-green-200 bg-green-50">
+                    <CardContent className="p-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium text-green-800">{formData.serviceName}</p>
+                          <p className="text-sm text-green-600">
+                            {formatCurrency(formData.unitPrice)} AUD
+                          </p>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setFormData(prev => ({ ...prev, billingPlanId: '', serviceName: '' }));
+                          }}
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <div className="flex gap-2">
+                    <Select
+                      value={formData.billingPlanId || ''}
+                      onValueChange={(value) => {
+                        const plan = billingPlans.find(p => p.id === value);
+                        if (plan) {
+                          setFormData(prev => ({
+                            ...prev,
+                            billingPlanId: plan.id,
+                            serviceName: plan.name,
+                            description: plan.description || prev.description,
+                            unitPrice: plan.standardRate || prev.unitPrice
+                          }));
+                        }
+                      }}
+                      disabled={billingPlansLoading}
+                    >
+                      <SelectTrigger className="flex-1">
+                        <SelectValue placeholder={billingPlansLoading ? "Loading plans..." : "Select billing plan..."} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {billingPlans.map((plan) => (
+                          <SelectItem key={plan.id} value={plan.id}>
+                            <div className="flex items-center justify-between w-full">
+                              <span>{plan.name}</span>
+                              <span className="text-sm text-gray-500 ml-2">
+                                {formatCurrency(plan.standardRate)} {plan.currency}
+                              </span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <div className="text-center text-gray-500 px-4 py-2">OR</div>
+                    <Input
+                      placeholder="Enter custom service name"
+                      value={formData.serviceName || ''}
+                      onChange={(e) => handleInputChange('serviceName', e.target.value)}
+                      className="flex-1"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+            {errors.serviceName && (
+              <p className="text-sm text-red-600">{errors.serviceName}</p>
+            )}
+          </div>
+
           {/* Description */}
           <div className="space-y-2">
             <Label htmlFor="description">Description *</Label>
@@ -256,17 +367,79 @@ export function BillingItemForm({ itemId }: BillingItemFormProps) {
             </div>
           </div>
 
-          {/* Calculated Total */}
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-700">Total Amount:</span>
-              <span className="text-lg font-bold text-gray-900">
-                ${(formData.unitPrice * formData.quantity).toFixed(2)} AUD
-              </span>
+          {/* Pricing Information */}
+          <div className="space-y-4">
+            {/* Basic Total */}
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-gray-700">Total Amount:</span>
+                <span className="text-lg font-bold text-gray-900">
+                  ${(formData.unitPrice * formData.quantity).toFixed(2)} AUD
+                </span>
+              </div>
+              <div className="text-xs text-gray-500 mt-1">
+                {formData.quantity} item{formData.quantity !== 1 ? 's' : ''} × ${formData.unitPrice.toFixed(2)} each
+              </div>
             </div>
-            <div className="text-xs text-gray-500 mt-1">
-              {formData.quantity} item{formData.quantity !== 1 ? 's' : ''} × ${formData.unitPrice.toFixed(2)} each
-            </div>
+
+            {/* Future: Advanced Pricing Details will be shown here */}
+            {false && (
+              <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+                <div className="flex items-center gap-2 mb-3">
+                  <Calculator className="w-4 h-4 text-blue-600" />
+                  <span className="text-sm font-medium text-blue-800">Dynamic Pricing Applied</span>
+                </div>
+                
+                {calculatedPricing.originalRate !== calculatedPricing.finalRate && (
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between text-gray-600">
+                      <span>Original Rate:</span>
+                      <span>${calculatedPricing.originalRate.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-green-600 font-medium">
+                      <span>Final Rate:</span>
+                      <span>${calculatedPricing.finalRate.toFixed(2)}</span>
+                    </div>
+                    {calculatedPricing.discountAmount > 0 && (
+                      <div className="flex justify-between text-green-600">
+                        <span>Total Savings:</span>
+                        <span>-${calculatedPricing.discountAmount.toFixed(2)} ({calculatedPricing.discountPercentage.toFixed(1)}%)</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                {calculatedPricing.appliedRules.length > 0 && (
+                  <div className="mt-3 pt-3 border-t border-blue-200">
+                    <p className="text-xs font-medium text-blue-800 mb-2">Applied Pricing Rules:</p>
+                    <div className="space-y-1">
+                      {calculatedPricing.appliedRules.map((rule: any, index: number) => (
+                        <div key={index} className="flex items-center gap-2 text-xs text-blue-700">
+                          <Badge variant="outline" className="text-xs">{rule.ruleType}</Badge>
+                          <span>{rule.ruleName}</span>
+                          <span className="text-green-600 ml-auto">
+                            {rule.adjustmentType === 'percentage_discount' ? '-' : ''}${Math.abs(rule.adjustment).toFixed(2)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {calculatedPricing.metadata.warnings && calculatedPricing.metadata.warnings.length > 0 && (
+                  <div className="mt-3 pt-3 border-t border-blue-200">
+                    <div className="flex items-start gap-2">
+                      <Info className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                      <div className="text-xs text-amber-700">
+                        {calculatedPricing.metadata.warnings.map((warning: string, index: number) => (
+                          <p key={index}>{warning}</p>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

@@ -57,6 +57,7 @@ interface ViewerState {
   zoom: number;
   rotation: number;
   isFullscreen: boolean;
+  officeViewerFailed: boolean;
 }
 
 function getFileIcon(mimetype: string, className?: string) {
@@ -94,8 +95,21 @@ function canPreview(mimetype: string): boolean {
   return (
     mimetype.startsWith("image/") ||
     mimetype === "application/pdf" ||
-    mimetype === "text/plain"
+    mimetype === "text/plain" ||
+    isOfficeDocument(mimetype)
   );
+}
+
+function isOfficeDocument(mimetype: string): boolean {
+  const officeMimeTypes = [
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.ms-powerpoint',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+  ];
+  return officeMimeTypes.includes(mimetype);
 }
 
 export function DocumentViewer({
@@ -112,6 +126,7 @@ export function DocumentViewer({
     zoom: 100,
     rotation: 0,
     isFullscreen: false,
+    officeViewerFailed: false,
   });
 
   const viewerRef = useRef<HTMLDivElement>(null);
@@ -132,6 +147,7 @@ export function DocumentViewer({
           zoom: 100,
           rotation: 0,
           isFullscreen: false,
+          officeViewerFailed: false,
         });
       }
     };
@@ -159,14 +175,16 @@ export function DocumentViewer({
     }));
 
     try {
-      // Use the existing presigned URL from the document record
-      // This avoids the authentication issue and is more efficient
-      if (document.url) {
-        setViewerState(prev => ({
-          ...prev,
-          isLoading: false,
-          viewUrl: document.url,
-        }));
+      let viewUrl: string;
+
+      // For Office documents, use proxy endpoint for better compatibility with external viewers
+      if (isOfficeDocument(document.mimetype)) {
+        const baseUrl = window.location.origin;
+        viewUrl = `${baseUrl}/api/documents/${document.id}/proxy`;
+      } else if (document.url) {
+        // Use the existing presigned URL from the document record for other file types
+        // This avoids the authentication issue and is more efficient
+        viewUrl = document.url;
       } else {
         // Fallback to API if no URL is available
         const response = await fetch(
@@ -175,11 +193,7 @@ export function DocumentViewer({
         const result = await response.json();
 
         if (result.success) {
-          setViewerState(prev => ({
-            ...prev,
-            isLoading: false,
-            viewUrl: result.viewUrl,
-          }));
+          viewUrl = result.viewUrl;
         } else {
           setViewerState(prev => ({
             ...prev,
@@ -187,8 +201,15 @@ export function DocumentViewer({
             hasError: true,
             errorMessage: result.error || "Failed to load document",
           }));
+          return;
         }
       }
+
+      setViewerState(prev => ({
+        ...prev,
+        isLoading: false,
+        viewUrl,
+      }));
     } catch (error) {
       console.error("Error loading document view URL:", error);
       setViewerState(prev => ({
@@ -493,6 +514,88 @@ export function DocumentViewer({
                       }));
                     }}
                   />
+                </div>
+              ) : isOfficeDocument(document.mimetype) ? (
+                <div className="w-full h-full min-h-[500px]">
+                  {!viewerState.officeViewerFailed ? (
+                    <>
+                      <iframe
+                        src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(viewerState.viewUrl!)}`}
+                        className="w-full h-full border border-gray-200 rounded"
+                        style={{
+                          transform: `scale(${viewerState.zoom / 100})`,
+                          transformOrigin: "top left",
+                          minHeight: "500px",
+                        }}
+                        onError={() => {
+                          console.log("Microsoft Office viewer failed, trying Google Docs viewer");
+                          // Add a small delay to allow the error to be processed
+                          setTimeout(() => {
+                            setViewerState(prev => ({
+                              ...prev,
+                              officeViewerFailed: true,
+                            }));
+                          }, 1000);
+                        }}
+                        onLoad={() => {
+                          console.log("Office document loaded successfully with Microsoft viewer");
+                        }}
+                      />
+                      <div className="text-xs text-gray-500 mt-2 px-4">
+                        Document is displayed using Microsoft Office Online viewer
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex items-center justify-center p-4 bg-blue-50 border border-blue-200 rounded mb-2">
+                        <div className="text-sm text-blue-700">
+                          Microsoft Office viewer unavailable, using Google Docs viewer...
+                        </div>
+                      </div>
+                      <iframe
+                        src={`https://docs.google.com/gview?url=${encodeURIComponent(viewerState.viewUrl!)}&embedded=true`}
+                        className="w-full h-full border border-gray-200 rounded"
+                        style={{
+                          transform: `scale(${viewerState.zoom / 100})`,
+                          transformOrigin: "top left",
+                          minHeight: "500px",
+                        }}
+                        onError={() => {
+                          setViewerState(prev => ({
+                            ...prev,
+                            hasError: true,
+                            errorMessage: "Failed to load Office document using both Microsoft Office Online and Google Docs viewers. The document might not be publicly accessible or might be corrupted.",
+                          }));
+                        }}
+                        onLoad={() => {
+                          console.log("Office document loaded successfully with Google Docs viewer");
+                        }}
+                      />
+                      <div className="text-xs text-gray-500 mt-2 px-4">
+                        Document is displayed using Google Docs viewer (fallback)
+                      </div>
+                    </>
+                  )}
+                  <div className="flex justify-center gap-2 mt-4 px-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleDownload}
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Download for full features
+                    </Button>
+                    {viewerState.viewUrl && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleOpenInNewTab}
+                      >
+                        <ExternalLink className="w-4 h-4 mr-2" />
+                        Open in new tab
+                      </Button>
+                    )}
+                  </div>
                 </div>
               ) : null}
             </div>

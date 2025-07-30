@@ -9208,8 +9208,6 @@ type billingItems {
   """An object relationship"""
   billingPlanItems: billingPlans
   """An object relationship"""
-  billingServicePlan: billingPlans
-  """An object relationship"""
   client: clients
   clientId: uuid
   """When this item was confirmed by manager"""
@@ -9383,7 +9381,6 @@ input billingItemsBoolExp {
   billingInvoiceItemsAggregate: billingInvoiceItemAggregateBoolExp
   billingPlanId: UuidComparisonExp
   billingPlanItems: billingPlansBoolExp
-  billingServicePlan: billingPlansBoolExp
   client: clientsBoolExp
   clientId: UuidComparisonExp
   confirmedAt: TimestamptzComparisonExp
@@ -9441,7 +9438,6 @@ input billingItemsInsertInput {
   billingInvoiceItems: billingInvoiceItemArrRelInsertInput
   billingPlanId: uuid
   billingPlanItems: billingPlansObjRelInsertInput
-  billingServicePlan: billingPlansObjRelInsertInput
   client: clientsObjRelInsertInput
   clientId: uuid
   """When this item was confirmed by manager"""
@@ -9643,7 +9639,6 @@ input billingItemsOrderBy {
   billingInvoiceItemsAggregate: billingInvoiceItemAggregateOrderBy
   billingPlanId: OrderBy
   billingPlanItems: billingPlansOrderBy
-  billingServicePlan: billingPlansOrderBy
   client: clientsOrderBy
   clientId: OrderBy
   confirmedAt: OrderBy
@@ -11660,6 +11655,596 @@ input clientExternalSystemsUpdates {
   _set: clientExternalSystemsSetInput
   """filter the rows which have to be updated"""
   where: clientExternalSystemsBoolExp!
+}
+
+"""Client-specific service agreements and configurations"""
+type clientServiceAgreements {
+  autoBillingEnabled: Boolean
+  autoBillingTriggers(
+    """JSON select path"""
+    path: String
+  ): jsonb
+  billingFrequency: String
+  """An object relationship"""
+  client: clients!
+  clientId: uuid!
+  contractEndDate: date
+  contractStartDate: date
+  createdAt: timestamptz
+  createdBy: uuid
+  """An object relationship"""
+  createdByUser: users
+  customRate: numeric
+  id: uuid!
+  isActive: Boolean
+  isEnabled: Boolean
+  """An object relationship"""
+  service: services!
+  serviceConfiguration(
+    """JSON select path"""
+    path: String
+  ): jsonb
+  serviceId: uuid!
+  updatedAt: timestamptz
+}
+
+"""
+aggregated selection of "client_service_agreements"
+"""
+type clientServiceAgreementsAggregate {
+  aggregate: clientServiceAgreementsAggregateFields
+  nodes: [clientServiceAgreements!]!
+}
+
+input clientServiceAgreementsAggregateBoolExp {
+  bool_and: clientServiceAgreementsAggregateBoolExpBool_and
+  bool_or: clientServiceAgreementsAggregateBoolExpBool_or
+  count: clientServiceAgreementsAggregateBoolExpCount
+}
+
+input clientServiceAgreementsAggregateBoolExpBool_and {
+  arguments: clientServiceAgreementsSelectColumnClientServiceAgreementsAggregateBoolExpBool_andArgumentsColumns!
+  distinct: Boolean
+  filter: clientServiceAgreementsBoolExp
+  predicate: BooleanComparisonExp!
+}
+
+input clientServiceAgreementsAggregateBoolExpBool_or {
+  arguments: clientServiceAgreementsSelectColumnClientServiceAgreementsAggregateBoolExpBool_orArgumentsColumns!
+  distinct: Boolean
+  filter: clientServiceAgreementsBoolExp
+  predicate: BooleanComparisonExp!
+}
+
+input clientServiceAgreementsAggregateBoolExpCount {
+  arguments: [clientServiceAgreementsSelectColumn!]
+  distinct: Boolean
+  filter: clientServiceAgreementsBoolExp
+  predicate: IntComparisonExp!
+}
+
+"""
+aggregate fields of "client_service_agreements"
+"""
+type clientServiceAgreementsAggregateFields {
+  avg: clientServiceAgreementsAvgFields
+  count(columns: [clientServiceAgreementsSelectColumn!], distinct: Boolean): Int!
+  max: clientServiceAgreementsMaxFields
+  min: clientServiceAgreementsMinFields
+  stddev: clientServiceAgreementsStddevFields
+  stddevPop: clientServiceAgreementsStddevPopFields
+  stddevSamp: clientServiceAgreementsStddevSampFields
+  sum: clientServiceAgreementsSumFields
+  varPop: clientServiceAgreementsVarPopFields
+  varSamp: clientServiceAgreementsVarSampFields
+  variance: clientServiceAgreementsVarianceFields
+}
+
+"""
+order by aggregate values of table "client_service_agreements"
+"""
+input clientServiceAgreementsAggregateOrderBy {
+  avg: clientServiceAgreementsAvgOrderBy
+  count: OrderBy
+  max: clientServiceAgreementsMaxOrderBy
+  min: clientServiceAgreementsMinOrderBy
+  stddev: clientServiceAgreementsStddevOrderBy
+  stddevPop: clientServiceAgreementsStddevPopOrderBy
+  stddevSamp: clientServiceAgreementsStddevSampOrderBy
+  sum: clientServiceAgreementsSumOrderBy
+  varPop: clientServiceAgreementsVarPopOrderBy
+  varSamp: clientServiceAgreementsVarSampOrderBy
+  variance: clientServiceAgreementsVarianceOrderBy
+}
+
+"""append existing jsonb value of filtered columns with new jsonb value"""
+input clientServiceAgreementsAppendInput {
+  autoBillingTriggers: jsonb
+  serviceConfiguration: jsonb
+}
+
+"""
+input type for inserting array relation for remote table "client_service_agreements"
+"""
+input clientServiceAgreementsArrRelInsertInput {
+  data: [clientServiceAgreementsInsertInput!]!
+  """upsert condition"""
+  onConflict: clientServiceAgreementsOnConflict
+}
+
+"""aggregate avg on columns"""
+type clientServiceAgreementsAvgFields {
+  customRate: Float
+}
+
+"""
+order by avg() on columns of table "client_service_agreements"
+"""
+input clientServiceAgreementsAvgOrderBy {
+  customRate: OrderBy
+}
+
+"""
+Boolean expression to filter rows from the table "client_service_agreements". All fields are combined with a logical 'AND'.
+"""
+input clientServiceAgreementsBoolExp {
+  _and: [clientServiceAgreementsBoolExp!]
+  _not: clientServiceAgreementsBoolExp
+  _or: [clientServiceAgreementsBoolExp!]
+  autoBillingEnabled: BooleanComparisonExp
+  autoBillingTriggers: JsonbComparisonExp
+  billingFrequency: StringComparisonExp
+  client: clientsBoolExp
+  clientId: UuidComparisonExp
+  contractEndDate: DateComparisonExp
+  contractStartDate: DateComparisonExp
+  createdAt: TimestamptzComparisonExp
+  createdBy: UuidComparisonExp
+  createdByUser: usersBoolExp
+  customRate: NumericComparisonExp
+  id: UuidComparisonExp
+  isActive: BooleanComparisonExp
+  isEnabled: BooleanComparisonExp
+  service: servicesBoolExp
+  serviceConfiguration: JsonbComparisonExp
+  serviceId: UuidComparisonExp
+  updatedAt: TimestamptzComparisonExp
+}
+
+"""
+unique or primary key constraints on table "client_service_agreements"
+"""
+enum clientServiceAgreementsConstraint {
+  """
+  unique or primary key constraint on columns "client_id", "service_id"
+  """
+  client_service_agreements_client_id_service_id_key
+  """
+  unique or primary key constraint on columns "id"
+  """
+  client_service_agreements_pkey
+}
+
+"""
+delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+"""
+input clientServiceAgreementsDeleteAtPathInput {
+  autoBillingTriggers: [String!]
+  serviceConfiguration: [String!]
+}
+
+"""
+delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+"""
+input clientServiceAgreementsDeleteElemInput {
+  autoBillingTriggers: Int
+  serviceConfiguration: Int
+}
+
+"""
+delete key/value pair or string element. key/value pairs are matched based on their key value
+"""
+input clientServiceAgreementsDeleteKeyInput {
+  autoBillingTriggers: String
+  serviceConfiguration: String
+}
+
+"""
+input type for incrementing numeric columns in table "client_service_agreements"
+"""
+input clientServiceAgreementsIncInput {
+  customRate: numeric
+}
+
+"""
+input type for inserting data into table "client_service_agreements"
+"""
+input clientServiceAgreementsInsertInput {
+  autoBillingEnabled: Boolean
+  autoBillingTriggers: jsonb
+  billingFrequency: String
+  client: clientsObjRelInsertInput
+  clientId: uuid
+  contractEndDate: date
+  contractStartDate: date
+  createdAt: timestamptz
+  createdBy: uuid
+  createdByUser: usersObjRelInsertInput
+  customRate: numeric
+  id: uuid
+  isActive: Boolean
+  isEnabled: Boolean
+  service: servicesObjRelInsertInput
+  serviceConfiguration: jsonb
+  serviceId: uuid
+  updatedAt: timestamptz
+}
+
+"""aggregate max on columns"""
+type clientServiceAgreementsMaxFields {
+  billingFrequency: String
+  clientId: uuid
+  contractEndDate: date
+  contractStartDate: date
+  createdAt: timestamptz
+  createdBy: uuid
+  customRate: numeric
+  id: uuid
+  serviceId: uuid
+  updatedAt: timestamptz
+}
+
+"""
+order by max() on columns of table "client_service_agreements"
+"""
+input clientServiceAgreementsMaxOrderBy {
+  billingFrequency: OrderBy
+  clientId: OrderBy
+  contractEndDate: OrderBy
+  contractStartDate: OrderBy
+  createdAt: OrderBy
+  createdBy: OrderBy
+  customRate: OrderBy
+  id: OrderBy
+  serviceId: OrderBy
+  updatedAt: OrderBy
+}
+
+"""aggregate min on columns"""
+type clientServiceAgreementsMinFields {
+  billingFrequency: String
+  clientId: uuid
+  contractEndDate: date
+  contractStartDate: date
+  createdAt: timestamptz
+  createdBy: uuid
+  customRate: numeric
+  id: uuid
+  serviceId: uuid
+  updatedAt: timestamptz
+}
+
+"""
+order by min() on columns of table "client_service_agreements"
+"""
+input clientServiceAgreementsMinOrderBy {
+  billingFrequency: OrderBy
+  clientId: OrderBy
+  contractEndDate: OrderBy
+  contractStartDate: OrderBy
+  createdAt: OrderBy
+  createdBy: OrderBy
+  customRate: OrderBy
+  id: OrderBy
+  serviceId: OrderBy
+  updatedAt: OrderBy
+}
+
+"""
+response of any mutation on the table "client_service_agreements"
+"""
+type clientServiceAgreementsMutationResponse {
+  """number of rows affected by the mutation"""
+  affectedRows: Int!
+  """data from the rows affected by the mutation"""
+  returning: [clientServiceAgreements!]!
+}
+
+"""
+on_conflict condition type for table "client_service_agreements"
+"""
+input clientServiceAgreementsOnConflict {
+  constraint: clientServiceAgreementsConstraint!
+  updateColumns: [clientServiceAgreementsUpdateColumn!]! = []
+  where: clientServiceAgreementsBoolExp
+}
+
+"""Ordering options when selecting data from "client_service_agreements"."""
+input clientServiceAgreementsOrderBy {
+  autoBillingEnabled: OrderBy
+  autoBillingTriggers: OrderBy
+  billingFrequency: OrderBy
+  client: clientsOrderBy
+  clientId: OrderBy
+  contractEndDate: OrderBy
+  contractStartDate: OrderBy
+  createdAt: OrderBy
+  createdBy: OrderBy
+  createdByUser: usersOrderBy
+  customRate: OrderBy
+  id: OrderBy
+  isActive: OrderBy
+  isEnabled: OrderBy
+  service: servicesOrderBy
+  serviceConfiguration: OrderBy
+  serviceId: OrderBy
+  updatedAt: OrderBy
+}
+
+"""primary key columns input for table: client_service_agreements"""
+input clientServiceAgreementsPkColumnsInput {
+  id: uuid!
+}
+
+"""prepend existing jsonb value of filtered columns with new jsonb value"""
+input clientServiceAgreementsPrependInput {
+  autoBillingTriggers: jsonb
+  serviceConfiguration: jsonb
+}
+
+"""
+select columns of table "client_service_agreements"
+"""
+enum clientServiceAgreementsSelectColumn {
+  """column name"""
+  autoBillingEnabled
+  """column name"""
+  autoBillingTriggers
+  """column name"""
+  billingFrequency
+  """column name"""
+  clientId
+  """column name"""
+  contractEndDate
+  """column name"""
+  contractStartDate
+  """column name"""
+  createdAt
+  """column name"""
+  createdBy
+  """column name"""
+  customRate
+  """column name"""
+  id
+  """column name"""
+  isActive
+  """column name"""
+  isEnabled
+  """column name"""
+  serviceConfiguration
+  """column name"""
+  serviceId
+  """column name"""
+  updatedAt
+}
+
+"""
+select "clientServiceAgreementsAggregateBoolExpBool_andArgumentsColumns" columns of table "client_service_agreements"
+"""
+enum clientServiceAgreementsSelectColumnClientServiceAgreementsAggregateBoolExpBool_andArgumentsColumns {
+  """column name"""
+  autoBillingEnabled
+  """column name"""
+  isActive
+  """column name"""
+  isEnabled
+}
+
+"""
+select "clientServiceAgreementsAggregateBoolExpBool_orArgumentsColumns" columns of table "client_service_agreements"
+"""
+enum clientServiceAgreementsSelectColumnClientServiceAgreementsAggregateBoolExpBool_orArgumentsColumns {
+  """column name"""
+  autoBillingEnabled
+  """column name"""
+  isActive
+  """column name"""
+  isEnabled
+}
+
+"""
+input type for updating data in table "client_service_agreements"
+"""
+input clientServiceAgreementsSetInput {
+  autoBillingEnabled: Boolean
+  autoBillingTriggers: jsonb
+  billingFrequency: String
+  clientId: uuid
+  contractEndDate: date
+  contractStartDate: date
+  createdAt: timestamptz
+  createdBy: uuid
+  customRate: numeric
+  id: uuid
+  isActive: Boolean
+  isEnabled: Boolean
+  serviceConfiguration: jsonb
+  serviceId: uuid
+  updatedAt: timestamptz
+}
+
+"""aggregate stddev on columns"""
+type clientServiceAgreementsStddevFields {
+  customRate: Float
+}
+
+"""
+order by stddev() on columns of table "client_service_agreements"
+"""
+input clientServiceAgreementsStddevOrderBy {
+  customRate: OrderBy
+}
+
+"""aggregate stddevPop on columns"""
+type clientServiceAgreementsStddevPopFields {
+  customRate: Float
+}
+
+"""
+order by stddevPop() on columns of table "client_service_agreements"
+"""
+input clientServiceAgreementsStddevPopOrderBy {
+  customRate: OrderBy
+}
+
+"""aggregate stddevSamp on columns"""
+type clientServiceAgreementsStddevSampFields {
+  customRate: Float
+}
+
+"""
+order by stddevSamp() on columns of table "client_service_agreements"
+"""
+input clientServiceAgreementsStddevSampOrderBy {
+  customRate: OrderBy
+}
+
+"""
+Streaming cursor of the table "clientServiceAgreements"
+"""
+input clientServiceAgreementsStreamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: clientServiceAgreementsStreamCursorValueInput!
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input clientServiceAgreementsStreamCursorValueInput {
+  autoBillingEnabled: Boolean
+  autoBillingTriggers: jsonb
+  billingFrequency: String
+  clientId: uuid
+  contractEndDate: date
+  contractStartDate: date
+  createdAt: timestamptz
+  createdBy: uuid
+  customRate: numeric
+  id: uuid
+  isActive: Boolean
+  isEnabled: Boolean
+  serviceConfiguration: jsonb
+  serviceId: uuid
+  updatedAt: timestamptz
+}
+
+"""aggregate sum on columns"""
+type clientServiceAgreementsSumFields {
+  customRate: numeric
+}
+
+"""
+order by sum() on columns of table "client_service_agreements"
+"""
+input clientServiceAgreementsSumOrderBy {
+  customRate: OrderBy
+}
+
+"""
+update columns of table "client_service_agreements"
+"""
+enum clientServiceAgreementsUpdateColumn {
+  """column name"""
+  autoBillingEnabled
+  """column name"""
+  autoBillingTriggers
+  """column name"""
+  billingFrequency
+  """column name"""
+  clientId
+  """column name"""
+  contractEndDate
+  """column name"""
+  contractStartDate
+  """column name"""
+  createdAt
+  """column name"""
+  createdBy
+  """column name"""
+  customRate
+  """column name"""
+  id
+  """column name"""
+  isActive
+  """column name"""
+  isEnabled
+  """column name"""
+  serviceConfiguration
+  """column name"""
+  serviceId
+  """column name"""
+  updatedAt
+}
+
+input clientServiceAgreementsUpdates {
+  """append existing jsonb value of filtered columns with new jsonb value"""
+  _append: clientServiceAgreementsAppendInput
+  """
+  delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+  """
+  _deleteAtPath: clientServiceAgreementsDeleteAtPathInput
+  """
+  delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+  """
+  _deleteElem: clientServiceAgreementsDeleteElemInput
+  """
+  delete key/value pair or string element. key/value pairs are matched based on their key value
+  """
+  _deleteKey: clientServiceAgreementsDeleteKeyInput
+  """increments the numeric columns with given value of the filtered values"""
+  _inc: clientServiceAgreementsIncInput
+  """prepend existing jsonb value of filtered columns with new jsonb value"""
+  _prepend: clientServiceAgreementsPrependInput
+  """sets the columns of the filtered rows to the given values"""
+  _set: clientServiceAgreementsSetInput
+  """filter the rows which have to be updated"""
+  where: clientServiceAgreementsBoolExp!
+}
+
+"""aggregate varPop on columns"""
+type clientServiceAgreementsVarPopFields {
+  customRate: Float
+}
+
+"""
+order by varPop() on columns of table "client_service_agreements"
+"""
+input clientServiceAgreementsVarPopOrderBy {
+  customRate: OrderBy
+}
+
+"""aggregate varSamp on columns"""
+type clientServiceAgreementsVarSampFields {
+  customRate: Float
+}
+
+"""
+order by varSamp() on columns of table "client_service_agreements"
+"""
+input clientServiceAgreementsVarSampOrderBy {
+  customRate: OrderBy
+}
+
+"""aggregate variance on columns"""
+type clientServiceAgreementsVarianceFields {
+  customRate: Float
+}
+
+"""
+order by variance() on columns of table "client_service_agreements"
+"""
+input clientServiceAgreementsVarianceOrderBy {
+  customRate: OrderBy
 }
 
 """
@@ -16421,6 +17006,17 @@ type mutation_root {
     id: uuid!
   ): clientExternalSystems
   """
+  delete single row from the table: "client_service_agreements"
+  """
+  deleteClientServiceAgreementById(id: uuid!): clientServiceAgreements
+  """
+  delete data from the table: "client_service_agreements"
+  """
+  deleteClientServiceAgreements(
+    """filter the rows which have to be deleted"""
+    where: clientServiceAgreementsBoolExp!
+  ): clientServiceAgreementsMutationResponse
+  """
   delete single row from the table: "audit.data_access_log"
   """
   deleteDataAccessLogById(id: uuid!): dataAccessLogs
@@ -16631,6 +17227,28 @@ type mutation_root {
   delete single row from the table: "security_settings"
   """
   deleteSecuritySettingsByPk(id: uuid!): SecuritySettings
+  """
+  delete single row from the table: "services"
+  """
+  deleteServiceById(id: uuid!): services
+  """
+  delete single row from the table: "service_templates"
+  """
+  deleteServiceTemplateById(id: uuid!): serviceTemplates
+  """
+  delete data from the table: "service_templates"
+  """
+  deleteServiceTemplates(
+    """filter the rows which have to be deleted"""
+    where: serviceTemplatesBoolExp!
+  ): serviceTemplatesMutationResponse
+  """
+  delete data from the table: "services"
+  """
+  deleteServices(
+    """filter the rows which have to be deleted"""
+    where: servicesBoolExp!
+  ): servicesMutationResponse
   """
   delete single row from the table: "audit.slow_queries"
   """
@@ -16862,6 +17480,24 @@ type mutation_root {
     """upsert condition"""
     onConflict: clientExternalSystemsOnConflict
   ): clientExternalSystems
+  """
+  insert a single row into the table: "client_service_agreements"
+  """
+  insertClientServiceAgreement(
+    """the row to be inserted"""
+    object: clientServiceAgreementsInsertInput!
+    """upsert condition"""
+    onConflict: clientServiceAgreementsOnConflict
+  ): clientServiceAgreements
+  """
+  insert data into the table: "client_service_agreements"
+  """
+  insertClientServiceAgreements(
+    """the rows to be inserted"""
+    objects: [clientServiceAgreementsInsertInput!]!
+    """upsert condition"""
+    onConflict: clientServiceAgreementsOnConflict
+  ): clientServiceAgreementsMutationResponse
   """
   insert a single row into the table: "audit.data_access_log"
   """
@@ -17229,6 +17865,42 @@ type mutation_root {
     """upsert condition"""
     onConflict: SecuritySettingsOnConflict
   ): SecuritySettings
+  """
+  insert a single row into the table: "services"
+  """
+  insertService(
+    """the row to be inserted"""
+    object: servicesInsertInput!
+    """upsert condition"""
+    onConflict: servicesOnConflict
+  ): services
+  """
+  insert a single row into the table: "service_templates"
+  """
+  insertServiceTemplate(
+    """the row to be inserted"""
+    object: serviceTemplatesInsertInput!
+    """upsert condition"""
+    onConflict: serviceTemplatesOnConflict
+  ): serviceTemplates
+  """
+  insert data into the table: "service_templates"
+  """
+  insertServiceTemplates(
+    """the rows to be inserted"""
+    objects: [serviceTemplatesInsertInput!]!
+    """upsert condition"""
+    onConflict: serviceTemplatesOnConflict
+  ): serviceTemplatesMutationResponse
+  """
+  insert data into the table: "services"
+  """
+  insertServices(
+    """the rows to be inserted"""
+    objects: [servicesInsertInput!]!
+    """upsert condition"""
+    onConflict: servicesOnConflict
+  ): servicesMutationResponse
   """
   insert a single row into the table: "audit.slow_queries"
   """
@@ -17660,6 +18332,66 @@ type mutation_root {
     """updates to execute, in order"""
     updates: [clientExternalSystemsUpdates!]!
   ): [clientExternalSystemsMutationResponse]
+  """
+  update single row of the table: "client_service_agreements"
+  """
+  updateClientServiceAgreementById(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: clientServiceAgreementsAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: clientServiceAgreementsDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: clientServiceAgreementsDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: clientServiceAgreementsDeleteKeyInput
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: clientServiceAgreementsIncInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: clientServiceAgreementsPrependInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: clientServiceAgreementsSetInput
+    pkColumns: clientServiceAgreementsPkColumnsInput!
+  ): clientServiceAgreements
+  """
+  update data of the table: "client_service_agreements"
+  """
+  updateClientServiceAgreements(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: clientServiceAgreementsAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: clientServiceAgreementsDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: clientServiceAgreementsDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: clientServiceAgreementsDeleteKeyInput
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: clientServiceAgreementsIncInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: clientServiceAgreementsPrependInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: clientServiceAgreementsSetInput
+    """filter the rows which have to be updated"""
+    where: clientServiceAgreementsBoolExp!
+  ): clientServiceAgreementsMutationResponse
+  """
+  update multiples rows of table: "client_service_agreements"
+  """
+  updateClientServiceAgreementsMany(
+    """updates to execute, in order"""
+    updates: [clientServiceAgreementsUpdates!]!
+  ): [clientServiceAgreementsMutationResponse]
   """
   update multiples rows of table: "clients"
   """
@@ -18560,6 +19292,126 @@ type mutation_root {
     """updates to execute, in order"""
     updates: [SecuritySettingsUpdates!]!
   ): [SecuritySettingsMutationResponse]
+  """
+  update single row of the table: "services"
+  """
+  updateServiceById(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: servicesAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: servicesDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: servicesDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: servicesDeleteKeyInput
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: servicesIncInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: servicesPrependInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: servicesSetInput
+    pkColumns: servicesPkColumnsInput!
+  ): services
+  """
+  update single row of the table: "service_templates"
+  """
+  updateServiceTemplateById(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: serviceTemplatesAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: serviceTemplatesDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: serviceTemplatesDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: serviceTemplatesDeleteKeyInput
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: serviceTemplatesIncInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: serviceTemplatesPrependInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: serviceTemplatesSetInput
+    pkColumns: serviceTemplatesPkColumnsInput!
+  ): serviceTemplates
+  """
+  update data of the table: "service_templates"
+  """
+  updateServiceTemplates(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: serviceTemplatesAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: serviceTemplatesDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: serviceTemplatesDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: serviceTemplatesDeleteKeyInput
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: serviceTemplatesIncInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: serviceTemplatesPrependInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: serviceTemplatesSetInput
+    """filter the rows which have to be updated"""
+    where: serviceTemplatesBoolExp!
+  ): serviceTemplatesMutationResponse
+  """
+  update multiples rows of table: "service_templates"
+  """
+  updateServiceTemplatesMany(
+    """updates to execute, in order"""
+    updates: [serviceTemplatesUpdates!]!
+  ): [serviceTemplatesMutationResponse]
+  """
+  update data of the table: "services"
+  """
+  updateServices(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: servicesAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: servicesDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: servicesDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: servicesDeleteKeyInput
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: servicesIncInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: servicesPrependInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: servicesSetInput
+    """filter the rows which have to be updated"""
+    where: servicesBoolExp!
+  ): servicesMutationResponse
+  """
+  update multiples rows of table: "services"
+  """
+  updateServicesMany(
+    """updates to execute, in order"""
+    updates: [servicesUpdates!]!
+  ): [servicesMutationResponse]
   """
   update multiples rows of table: "audit.slow_queries"
   """
@@ -25836,6 +26688,36 @@ type query_root {
     where: clientExternalSystemsBoolExp
   ): clientExternalSystemsAggregate!
   """
+  fetch data from the table: "client_service_agreements" using primary key columns
+  """
+  clientServiceAgreementById(id: uuid!): clientServiceAgreements
+  """An array relationship"""
+  clientServiceAgreements(
+    """distinct select on columns"""
+    distinctOn: [clientServiceAgreementsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [clientServiceAgreementsOrderBy!]
+    """filter the rows returned"""
+    where: clientServiceAgreementsBoolExp
+  ): [clientServiceAgreements!]!
+  """An aggregate relationship"""
+  clientServiceAgreementsAggregate(
+    """distinct select on columns"""
+    distinctOn: [clientServiceAgreementsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [clientServiceAgreementsOrderBy!]
+    """filter the rows returned"""
+    where: clientServiceAgreementsBoolExp
+  ): clientServiceAgreementsAggregate!
+  """
   fetch data from the table: "client_services_with_rates"
   """
   clientServicesWithRates(
@@ -27347,6 +28229,72 @@ type query_root {
   fetch data from the table: "security_settings" using primary key columns
   """
   securitySettingsByPk(id: uuid!): SecuritySettings
+  """fetch data from the table: "services" using primary key columns"""
+  serviceById(id: uuid!): services
+  """
+  fetch data from the table: "service_templates" using primary key columns
+  """
+  serviceTemplateById(id: uuid!): serviceTemplates
+  """
+  fetch data from the table: "service_templates"
+  """
+  serviceTemplates(
+    """distinct select on columns"""
+    distinctOn: [serviceTemplatesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [serviceTemplatesOrderBy!]
+    """filter the rows returned"""
+    where: serviceTemplatesBoolExp
+  ): [serviceTemplates!]!
+  """
+  fetch aggregated fields from the table: "service_templates"
+  """
+  serviceTemplatesAggregate(
+    """distinct select on columns"""
+    distinctOn: [serviceTemplatesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [serviceTemplatesOrderBy!]
+    """filter the rows returned"""
+    where: serviceTemplatesBoolExp
+  ): serviceTemplatesAggregate!
+  """
+  fetch data from the table: "services"
+  """
+  services(
+    """distinct select on columns"""
+    distinctOn: [servicesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [servicesOrderBy!]
+    """filter the rows returned"""
+    where: servicesBoolExp
+  ): [services!]!
+  """
+  fetch aggregated fields from the table: "services"
+  """
+  servicesAggregate(
+    """distinct select on columns"""
+    distinctOn: [servicesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [servicesOrderBy!]
+    """filter the rows returned"""
+    where: servicesBoolExp
+  ): servicesAggregate!
   """
   fetch data from the table: "audit.slow_queries"
   """
@@ -28701,6 +29649,968 @@ input securitySettingsAggregateBoolExpCount {
   predicate: IntComparisonExp!
 }
 
+"""Reusable service bundles and templates"""
+type serviceTemplates {
+  bundleDiscountPercentage: numeric
+  category: String
+  createdAt: timestamptz
+  createdBy: uuid
+  """An object relationship"""
+  createdByUser: users
+  description: String
+  id: uuid!
+  isPublic: Boolean
+  name: String!
+  """
+  How to calculate template price: sum (add all), fixed (set price), tiered (based on rules)
+  """
+  pricingStrategy: String
+  services(
+    """JSON select path"""
+    path: String
+  ): jsonb!
+  targetClientTypes: [String!]
+  updatedAt: timestamptz
+  updatedBy: uuid
+  """An object relationship"""
+  updatedByUser: users
+}
+
+"""
+aggregated selection of "service_templates"
+"""
+type serviceTemplatesAggregate {
+  aggregate: serviceTemplatesAggregateFields
+  nodes: [serviceTemplates!]!
+}
+
+"""
+aggregate fields of "service_templates"
+"""
+type serviceTemplatesAggregateFields {
+  avg: serviceTemplatesAvgFields
+  count(columns: [serviceTemplatesSelectColumn!], distinct: Boolean): Int!
+  max: serviceTemplatesMaxFields
+  min: serviceTemplatesMinFields
+  stddev: serviceTemplatesStddevFields
+  stddevPop: serviceTemplatesStddevPopFields
+  stddevSamp: serviceTemplatesStddevSampFields
+  sum: serviceTemplatesSumFields
+  varPop: serviceTemplatesVarPopFields
+  varSamp: serviceTemplatesVarSampFields
+  variance: serviceTemplatesVarianceFields
+}
+
+"""append existing jsonb value of filtered columns with new jsonb value"""
+input serviceTemplatesAppendInput {
+  services: jsonb
+}
+
+"""aggregate avg on columns"""
+type serviceTemplatesAvgFields {
+  bundleDiscountPercentage: Float
+}
+
+"""
+Boolean expression to filter rows from the table "service_templates". All fields are combined with a logical 'AND'.
+"""
+input serviceTemplatesBoolExp {
+  _and: [serviceTemplatesBoolExp!]
+  _not: serviceTemplatesBoolExp
+  _or: [serviceTemplatesBoolExp!]
+  bundleDiscountPercentage: NumericComparisonExp
+  category: StringComparisonExp
+  createdAt: TimestamptzComparisonExp
+  createdBy: UuidComparisonExp
+  createdByUser: usersBoolExp
+  description: StringComparisonExp
+  id: UuidComparisonExp
+  isPublic: BooleanComparisonExp
+  name: StringComparisonExp
+  pricingStrategy: StringComparisonExp
+  services: JsonbComparisonExp
+  targetClientTypes: StringArrayComparisonExp
+  updatedAt: TimestamptzComparisonExp
+  updatedBy: UuidComparisonExp
+  updatedByUser: usersBoolExp
+}
+
+"""
+unique or primary key constraints on table "service_templates"
+"""
+enum serviceTemplatesConstraint {
+  """
+  unique or primary key constraint on columns "id"
+  """
+  service_templates_pkey
+}
+
+"""
+delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+"""
+input serviceTemplatesDeleteAtPathInput {
+  services: [String!]
+}
+
+"""
+delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+"""
+input serviceTemplatesDeleteElemInput {
+  services: Int
+}
+
+"""
+delete key/value pair or string element. key/value pairs are matched based on their key value
+"""
+input serviceTemplatesDeleteKeyInput {
+  services: String
+}
+
+"""
+input type for incrementing numeric columns in table "service_templates"
+"""
+input serviceTemplatesIncInput {
+  bundleDiscountPercentage: numeric
+}
+
+"""
+input type for inserting data into table "service_templates"
+"""
+input serviceTemplatesInsertInput {
+  bundleDiscountPercentage: numeric
+  category: String
+  createdAt: timestamptz
+  createdBy: uuid
+  createdByUser: usersObjRelInsertInput
+  description: String
+  id: uuid
+  isPublic: Boolean
+  name: String
+  """
+  How to calculate template price: sum (add all), fixed (set price), tiered (based on rules)
+  """
+  pricingStrategy: String
+  services: jsonb
+  targetClientTypes: [String!]
+  updatedAt: timestamptz
+  updatedBy: uuid
+  updatedByUser: usersObjRelInsertInput
+}
+
+"""aggregate max on columns"""
+type serviceTemplatesMaxFields {
+  bundleDiscountPercentage: numeric
+  category: String
+  createdAt: timestamptz
+  createdBy: uuid
+  description: String
+  id: uuid
+  name: String
+  """
+  How to calculate template price: sum (add all), fixed (set price), tiered (based on rules)
+  """
+  pricingStrategy: String
+  targetClientTypes: [String!]
+  updatedAt: timestamptz
+  updatedBy: uuid
+}
+
+"""aggregate min on columns"""
+type serviceTemplatesMinFields {
+  bundleDiscountPercentage: numeric
+  category: String
+  createdAt: timestamptz
+  createdBy: uuid
+  description: String
+  id: uuid
+  name: String
+  """
+  How to calculate template price: sum (add all), fixed (set price), tiered (based on rules)
+  """
+  pricingStrategy: String
+  targetClientTypes: [String!]
+  updatedAt: timestamptz
+  updatedBy: uuid
+}
+
+"""
+response of any mutation on the table "service_templates"
+"""
+type serviceTemplatesMutationResponse {
+  """number of rows affected by the mutation"""
+  affectedRows: Int!
+  """data from the rows affected by the mutation"""
+  returning: [serviceTemplates!]!
+}
+
+"""
+on_conflict condition type for table "service_templates"
+"""
+input serviceTemplatesOnConflict {
+  constraint: serviceTemplatesConstraint!
+  updateColumns: [serviceTemplatesUpdateColumn!]! = []
+  where: serviceTemplatesBoolExp
+}
+
+"""Ordering options when selecting data from "service_templates"."""
+input serviceTemplatesOrderBy {
+  bundleDiscountPercentage: OrderBy
+  category: OrderBy
+  createdAt: OrderBy
+  createdBy: OrderBy
+  createdByUser: usersOrderBy
+  description: OrderBy
+  id: OrderBy
+  isPublic: OrderBy
+  name: OrderBy
+  pricingStrategy: OrderBy
+  services: OrderBy
+  targetClientTypes: OrderBy
+  updatedAt: OrderBy
+  updatedBy: OrderBy
+  updatedByUser: usersOrderBy
+}
+
+"""primary key columns input for table: service_templates"""
+input serviceTemplatesPkColumnsInput {
+  id: uuid!
+}
+
+"""prepend existing jsonb value of filtered columns with new jsonb value"""
+input serviceTemplatesPrependInput {
+  services: jsonb
+}
+
+"""
+select columns of table "service_templates"
+"""
+enum serviceTemplatesSelectColumn {
+  """column name"""
+  bundleDiscountPercentage
+  """column name"""
+  category
+  """column name"""
+  createdAt
+  """column name"""
+  createdBy
+  """column name"""
+  description
+  """column name"""
+  id
+  """column name"""
+  isPublic
+  """column name"""
+  name
+  """column name"""
+  pricingStrategy
+  """column name"""
+  services
+  """column name"""
+  targetClientTypes
+  """column name"""
+  updatedAt
+  """column name"""
+  updatedBy
+}
+
+"""
+input type for updating data in table "service_templates"
+"""
+input serviceTemplatesSetInput {
+  bundleDiscountPercentage: numeric
+  category: String
+  createdAt: timestamptz
+  createdBy: uuid
+  description: String
+  id: uuid
+  isPublic: Boolean
+  name: String
+  """
+  How to calculate template price: sum (add all), fixed (set price), tiered (based on rules)
+  """
+  pricingStrategy: String
+  services: jsonb
+  targetClientTypes: [String!]
+  updatedAt: timestamptz
+  updatedBy: uuid
+}
+
+"""aggregate stddev on columns"""
+type serviceTemplatesStddevFields {
+  bundleDiscountPercentage: Float
+}
+
+"""aggregate stddevPop on columns"""
+type serviceTemplatesStddevPopFields {
+  bundleDiscountPercentage: Float
+}
+
+"""aggregate stddevSamp on columns"""
+type serviceTemplatesStddevSampFields {
+  bundleDiscountPercentage: Float
+}
+
+"""
+Streaming cursor of the table "serviceTemplates"
+"""
+input serviceTemplatesStreamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: serviceTemplatesStreamCursorValueInput!
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input serviceTemplatesStreamCursorValueInput {
+  bundleDiscountPercentage: numeric
+  category: String
+  createdAt: timestamptz
+  createdBy: uuid
+  description: String
+  id: uuid
+  isPublic: Boolean
+  name: String
+  """
+  How to calculate template price: sum (add all), fixed (set price), tiered (based on rules)
+  """
+  pricingStrategy: String
+  services: jsonb
+  targetClientTypes: [String!]
+  updatedAt: timestamptz
+  updatedBy: uuid
+}
+
+"""aggregate sum on columns"""
+type serviceTemplatesSumFields {
+  bundleDiscountPercentage: numeric
+}
+
+"""
+update columns of table "service_templates"
+"""
+enum serviceTemplatesUpdateColumn {
+  """column name"""
+  bundleDiscountPercentage
+  """column name"""
+  category
+  """column name"""
+  createdAt
+  """column name"""
+  createdBy
+  """column name"""
+  description
+  """column name"""
+  id
+  """column name"""
+  isPublic
+  """column name"""
+  name
+  """column name"""
+  pricingStrategy
+  """column name"""
+  services
+  """column name"""
+  targetClientTypes
+  """column name"""
+  updatedAt
+  """column name"""
+  updatedBy
+}
+
+input serviceTemplatesUpdates {
+  """append existing jsonb value of filtered columns with new jsonb value"""
+  _append: serviceTemplatesAppendInput
+  """
+  delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+  """
+  _deleteAtPath: serviceTemplatesDeleteAtPathInput
+  """
+  delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+  """
+  _deleteElem: serviceTemplatesDeleteElemInput
+  """
+  delete key/value pair or string element. key/value pairs are matched based on their key value
+  """
+  _deleteKey: serviceTemplatesDeleteKeyInput
+  """increments the numeric columns with given value of the filtered values"""
+  _inc: serviceTemplatesIncInput
+  """prepend existing jsonb value of filtered columns with new jsonb value"""
+  _prepend: serviceTemplatesPrependInput
+  """sets the columns of the filtered rows to the given values"""
+  _set: serviceTemplatesSetInput
+  """filter the rows which have to be updated"""
+  where: serviceTemplatesBoolExp!
+}
+
+"""aggregate varPop on columns"""
+type serviceTemplatesVarPopFields {
+  bundleDiscountPercentage: Float
+}
+
+"""aggregate varSamp on columns"""
+type serviceTemplatesVarSampFields {
+  bundleDiscountPercentage: Float
+}
+
+"""aggregate variance on columns"""
+type serviceTemplatesVarianceFields {
+  bundleDiscountPercentage: Float
+}
+
+"""Core services catalog with proper referential integrity"""
+type services {
+  """An array relationship"""
+  billingItems(
+    """distinct select on columns"""
+    distinctOn: [billingItemsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [billingItemsOrderBy!]
+    """filter the rows returned"""
+    where: billingItemsBoolExp
+  ): [billingItems!]!
+  """An aggregate relationship"""
+  billingItemsAggregate(
+    """distinct select on columns"""
+    distinctOn: [billingItemsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [billingItemsOrderBy!]
+    """filter the rows returned"""
+    where: billingItemsBoolExp
+  ): billingItemsAggregate!
+  """How this service is billed: Per Payroll, Per Employee, Per Hour, etc."""
+  billingUnit: String!
+  category: String!
+  """An array relationship"""
+  clientServiceAgreements(
+    """distinct select on columns"""
+    distinctOn: [clientServiceAgreementsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [clientServiceAgreementsOrderBy!]
+    """filter the rows returned"""
+    where: clientServiceAgreementsBoolExp
+  ): [clientServiceAgreements!]!
+  """An aggregate relationship"""
+  clientServiceAgreementsAggregate(
+    """distinct select on columns"""
+    distinctOn: [clientServiceAgreementsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [clientServiceAgreementsOrderBy!]
+    """filter the rows returned"""
+    where: clientServiceAgreementsBoolExp
+  ): clientServiceAgreementsAggregate!
+  createdAt: timestamptz
+  createdBy: uuid
+  """An object relationship"""
+  createdByUser: users
+  currency: String!
+  defaultRate: numeric!
+  dependencies(
+    """JSON select path"""
+    path: String
+  ): jsonb
+  description: String
+  id: uuid!
+  isActive: Boolean
+  isTemplate: Boolean
+  metadata(
+    """JSON select path"""
+    path: String
+  ): jsonb
+  name: String!
+  """JSONB field for complex pricing logic"""
+  pricingRules(
+    """JSON select path"""
+    path: String
+  ): jsonb
+  """
+  standard: regular service, template: reusable template, custom: client-specific
+  """
+  serviceType: String!
+  updatedAt: timestamptz
+  updatedBy: uuid
+  """An object relationship"""
+  updatedByUser: users
+}
+
+"""
+aggregated selection of "services"
+"""
+type servicesAggregate {
+  aggregate: servicesAggregateFields
+  nodes: [services!]!
+}
+
+"""
+aggregate fields of "services"
+"""
+type servicesAggregateFields {
+  avg: servicesAvgFields
+  count(columns: [servicesSelectColumn!], distinct: Boolean): Int!
+  max: servicesMaxFields
+  min: servicesMinFields
+  stddev: servicesStddevFields
+  stddevPop: servicesStddevPopFields
+  stddevSamp: servicesStddevSampFields
+  sum: servicesSumFields
+  varPop: servicesVarPopFields
+  varSamp: servicesVarSampFields
+  variance: servicesVarianceFields
+}
+
+"""append existing jsonb value of filtered columns with new jsonb value"""
+input servicesAppendInput {
+  dependencies: jsonb
+  metadata: jsonb
+  """JSONB field for complex pricing logic"""
+  pricingRules: jsonb
+}
+
+"""aggregate avg on columns"""
+type servicesAvgFields {
+  defaultRate: Float
+}
+
+"""
+Boolean expression to filter rows from the table "services". All fields are combined with a logical 'AND'.
+"""
+input servicesBoolExp {
+  _and: [servicesBoolExp!]
+  _not: servicesBoolExp
+  _or: [servicesBoolExp!]
+  billingItems: billingItemsBoolExp
+  billingItemsAggregate: billingItemsAggregateBoolExp
+  billingUnit: StringComparisonExp
+  category: StringComparisonExp
+  clientServiceAgreements: clientServiceAgreementsBoolExp
+  clientServiceAgreementsAggregate: clientServiceAgreementsAggregateBoolExp
+  createdAt: TimestamptzComparisonExp
+  createdBy: UuidComparisonExp
+  createdByUser: usersBoolExp
+  currency: StringComparisonExp
+  defaultRate: NumericComparisonExp
+  dependencies: JsonbComparisonExp
+  description: StringComparisonExp
+  id: UuidComparisonExp
+  isActive: BooleanComparisonExp
+  isTemplate: BooleanComparisonExp
+  metadata: JsonbComparisonExp
+  name: StringComparisonExp
+  pricingRules: JsonbComparisonExp
+  serviceType: StringComparisonExp
+  updatedAt: TimestamptzComparisonExp
+  updatedBy: UuidComparisonExp
+  updatedByUser: usersBoolExp
+}
+
+"""
+unique or primary key constraints on table "services"
+"""
+enum servicesConstraint {
+  """
+  unique or primary key constraint on columns "name"
+  """
+  services_name_key
+  """
+  unique or primary key constraint on columns "id"
+  """
+  services_pkey
+}
+
+"""
+delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+"""
+input servicesDeleteAtPathInput {
+  dependencies: [String!]
+  metadata: [String!]
+  """JSONB field for complex pricing logic"""
+  pricingRules: [String!]
+}
+
+"""
+delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+"""
+input servicesDeleteElemInput {
+  dependencies: Int
+  metadata: Int
+  """JSONB field for complex pricing logic"""
+  pricingRules: Int
+}
+
+"""
+delete key/value pair or string element. key/value pairs are matched based on their key value
+"""
+input servicesDeleteKeyInput {
+  dependencies: String
+  metadata: String
+  """JSONB field for complex pricing logic"""
+  pricingRules: String
+}
+
+"""
+input type for incrementing numeric columns in table "services"
+"""
+input servicesIncInput {
+  defaultRate: numeric
+}
+
+"""
+input type for inserting data into table "services"
+"""
+input servicesInsertInput {
+  billingItems: billingItemsArrRelInsertInput
+  """How this service is billed: Per Payroll, Per Employee, Per Hour, etc."""
+  billingUnit: String
+  category: String
+  clientServiceAgreements: clientServiceAgreementsArrRelInsertInput
+  createdAt: timestamptz
+  createdBy: uuid
+  createdByUser: usersObjRelInsertInput
+  currency: String
+  defaultRate: numeric
+  dependencies: jsonb
+  description: String
+  id: uuid
+  isActive: Boolean
+  isTemplate: Boolean
+  metadata: jsonb
+  name: String
+  """JSONB field for complex pricing logic"""
+  pricingRules: jsonb
+  """
+  standard: regular service, template: reusable template, custom: client-specific
+  """
+  serviceType: String
+  updatedAt: timestamptz
+  updatedBy: uuid
+  updatedByUser: usersObjRelInsertInput
+}
+
+"""aggregate max on columns"""
+type servicesMaxFields {
+  """How this service is billed: Per Payroll, Per Employee, Per Hour, etc."""
+  billingUnit: String
+  category: String
+  createdAt: timestamptz
+  createdBy: uuid
+  currency: String
+  defaultRate: numeric
+  description: String
+  id: uuid
+  name: String
+  """
+  standard: regular service, template: reusable template, custom: client-specific
+  """
+  serviceType: String
+  updatedAt: timestamptz
+  updatedBy: uuid
+}
+
+"""aggregate min on columns"""
+type servicesMinFields {
+  """How this service is billed: Per Payroll, Per Employee, Per Hour, etc."""
+  billingUnit: String
+  category: String
+  createdAt: timestamptz
+  createdBy: uuid
+  currency: String
+  defaultRate: numeric
+  description: String
+  id: uuid
+  name: String
+  """
+  standard: regular service, template: reusable template, custom: client-specific
+  """
+  serviceType: String
+  updatedAt: timestamptz
+  updatedBy: uuid
+}
+
+"""
+response of any mutation on the table "services"
+"""
+type servicesMutationResponse {
+  """number of rows affected by the mutation"""
+  affectedRows: Int!
+  """data from the rows affected by the mutation"""
+  returning: [services!]!
+}
+
+"""
+input type for inserting object relation for remote table "services"
+"""
+input servicesObjRelInsertInput {
+  data: servicesInsertInput!
+  """upsert condition"""
+  onConflict: servicesOnConflict
+}
+
+"""
+on_conflict condition type for table "services"
+"""
+input servicesOnConflict {
+  constraint: servicesConstraint!
+  updateColumns: [servicesUpdateColumn!]! = []
+  where: servicesBoolExp
+}
+
+"""Ordering options when selecting data from "services"."""
+input servicesOrderBy {
+  billingItemsAggregate: billingItemsAggregateOrderBy
+  billingUnit: OrderBy
+  category: OrderBy
+  clientServiceAgreementsAggregate: clientServiceAgreementsAggregateOrderBy
+  createdAt: OrderBy
+  createdBy: OrderBy
+  createdByUser: usersOrderBy
+  currency: OrderBy
+  defaultRate: OrderBy
+  dependencies: OrderBy
+  description: OrderBy
+  id: OrderBy
+  isActive: OrderBy
+  isTemplate: OrderBy
+  metadata: OrderBy
+  name: OrderBy
+  pricingRules: OrderBy
+  serviceType: OrderBy
+  updatedAt: OrderBy
+  updatedBy: OrderBy
+  updatedByUser: usersOrderBy
+}
+
+"""primary key columns input for table: services"""
+input servicesPkColumnsInput {
+  id: uuid!
+}
+
+"""prepend existing jsonb value of filtered columns with new jsonb value"""
+input servicesPrependInput {
+  dependencies: jsonb
+  metadata: jsonb
+  """JSONB field for complex pricing logic"""
+  pricingRules: jsonb
+}
+
+"""
+select columns of table "services"
+"""
+enum servicesSelectColumn {
+  """column name"""
+  billingUnit
+  """column name"""
+  category
+  """column name"""
+  createdAt
+  """column name"""
+  createdBy
+  """column name"""
+  currency
+  """column name"""
+  defaultRate
+  """column name"""
+  dependencies
+  """column name"""
+  description
+  """column name"""
+  id
+  """column name"""
+  isActive
+  """column name"""
+  isTemplate
+  """column name"""
+  metadata
+  """column name"""
+  name
+  """column name"""
+  pricingRules
+  """column name"""
+  serviceType
+  """column name"""
+  updatedAt
+  """column name"""
+  updatedBy
+}
+
+"""
+input type for updating data in table "services"
+"""
+input servicesSetInput {
+  """How this service is billed: Per Payroll, Per Employee, Per Hour, etc."""
+  billingUnit: String
+  category: String
+  createdAt: timestamptz
+  createdBy: uuid
+  currency: String
+  defaultRate: numeric
+  dependencies: jsonb
+  description: String
+  id: uuid
+  isActive: Boolean
+  isTemplate: Boolean
+  metadata: jsonb
+  name: String
+  """JSONB field for complex pricing logic"""
+  pricingRules: jsonb
+  """
+  standard: regular service, template: reusable template, custom: client-specific
+  """
+  serviceType: String
+  updatedAt: timestamptz
+  updatedBy: uuid
+}
+
+"""aggregate stddev on columns"""
+type servicesStddevFields {
+  defaultRate: Float
+}
+
+"""aggregate stddevPop on columns"""
+type servicesStddevPopFields {
+  defaultRate: Float
+}
+
+"""aggregate stddevSamp on columns"""
+type servicesStddevSampFields {
+  defaultRate: Float
+}
+
+"""
+Streaming cursor of the table "services"
+"""
+input servicesStreamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: servicesStreamCursorValueInput!
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input servicesStreamCursorValueInput {
+  """How this service is billed: Per Payroll, Per Employee, Per Hour, etc."""
+  billingUnit: String
+  category: String
+  createdAt: timestamptz
+  createdBy: uuid
+  currency: String
+  defaultRate: numeric
+  dependencies: jsonb
+  description: String
+  id: uuid
+  isActive: Boolean
+  isTemplate: Boolean
+  metadata: jsonb
+  name: String
+  """JSONB field for complex pricing logic"""
+  pricingRules: jsonb
+  """
+  standard: regular service, template: reusable template, custom: client-specific
+  """
+  serviceType: String
+  updatedAt: timestamptz
+  updatedBy: uuid
+}
+
+"""aggregate sum on columns"""
+type servicesSumFields {
+  defaultRate: numeric
+}
+
+"""
+update columns of table "services"
+"""
+enum servicesUpdateColumn {
+  """column name"""
+  billingUnit
+  """column name"""
+  category
+  """column name"""
+  createdAt
+  """column name"""
+  createdBy
+  """column name"""
+  currency
+  """column name"""
+  defaultRate
+  """column name"""
+  dependencies
+  """column name"""
+  description
+  """column name"""
+  id
+  """column name"""
+  isActive
+  """column name"""
+  isTemplate
+  """column name"""
+  metadata
+  """column name"""
+  name
+  """column name"""
+  pricingRules
+  """column name"""
+  serviceType
+  """column name"""
+  updatedAt
+  """column name"""
+  updatedBy
+}
+
+input servicesUpdates {
+  """append existing jsonb value of filtered columns with new jsonb value"""
+  _append: servicesAppendInput
+  """
+  delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+  """
+  _deleteAtPath: servicesDeleteAtPathInput
+  """
+  delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+  """
+  _deleteElem: servicesDeleteElemInput
+  """
+  delete key/value pair or string element. key/value pairs are matched based on their key value
+  """
+  _deleteKey: servicesDeleteKeyInput
+  """increments the numeric columns with given value of the filtered values"""
+  _inc: servicesIncInput
+  """prepend existing jsonb value of filtered columns with new jsonb value"""
+  _prepend: servicesPrependInput
+  """sets the columns of the filtered rows to the given values"""
+  _set: servicesSetInput
+  """filter the rows which have to be updated"""
+  where: servicesBoolExp!
+}
+
+"""aggregate varPop on columns"""
+type servicesVarPopFields {
+  defaultRate: Float
+}
+
+"""aggregate varSamp on columns"""
+type servicesVarSampFields {
+  defaultRate: Float
+}
+
+"""aggregate variance on columns"""
+type servicesVarianceFields {
+  defaultRate: Float
+}
+
 """
 columns and relationships of "audit.slow_queries"
 """
@@ -29502,6 +31412,47 @@ type subscription_root {
     """filter the rows returned"""
     where: clientExternalSystemsBoolExp
   ): [clientExternalSystems!]!
+  """
+  fetch data from the table: "client_service_agreements" using primary key columns
+  """
+  clientServiceAgreementById(id: uuid!): clientServiceAgreements
+  """An array relationship"""
+  clientServiceAgreements(
+    """distinct select on columns"""
+    distinctOn: [clientServiceAgreementsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [clientServiceAgreementsOrderBy!]
+    """filter the rows returned"""
+    where: clientServiceAgreementsBoolExp
+  ): [clientServiceAgreements!]!
+  """An aggregate relationship"""
+  clientServiceAgreementsAggregate(
+    """distinct select on columns"""
+    distinctOn: [clientServiceAgreementsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [clientServiceAgreementsOrderBy!]
+    """filter the rows returned"""
+    where: clientServiceAgreementsBoolExp
+  ): clientServiceAgreementsAggregate!
+  """
+  fetch data from the table in a streaming manner: "client_service_agreements"
+  """
+  clientServiceAgreementsStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+    """cursor to stream the results returned by the query"""
+    cursor: [clientServiceAgreementsStreamCursorInput]!
+    """filter the rows returned"""
+    where: clientServiceAgreementsBoolExp
+  ): [clientServiceAgreements!]!
   """
   fetch data from the table: "client_services_with_rates"
   """
@@ -31462,6 +33413,94 @@ type subscription_root {
     """filter the rows returned"""
     where: SecuritySettingsBoolExp
   ): [SecuritySettings!]!
+  """fetch data from the table: "services" using primary key columns"""
+  serviceById(id: uuid!): services
+  """
+  fetch data from the table: "service_templates" using primary key columns
+  """
+  serviceTemplateById(id: uuid!): serviceTemplates
+  """
+  fetch data from the table: "service_templates"
+  """
+  serviceTemplates(
+    """distinct select on columns"""
+    distinctOn: [serviceTemplatesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [serviceTemplatesOrderBy!]
+    """filter the rows returned"""
+    where: serviceTemplatesBoolExp
+  ): [serviceTemplates!]!
+  """
+  fetch aggregated fields from the table: "service_templates"
+  """
+  serviceTemplatesAggregate(
+    """distinct select on columns"""
+    distinctOn: [serviceTemplatesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [serviceTemplatesOrderBy!]
+    """filter the rows returned"""
+    where: serviceTemplatesBoolExp
+  ): serviceTemplatesAggregate!
+  """
+  fetch data from the table in a streaming manner: "service_templates"
+  """
+  serviceTemplatesStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+    """cursor to stream the results returned by the query"""
+    cursor: [serviceTemplatesStreamCursorInput]!
+    """filter the rows returned"""
+    where: serviceTemplatesBoolExp
+  ): [serviceTemplates!]!
+  """
+  fetch data from the table: "services"
+  """
+  services(
+    """distinct select on columns"""
+    distinctOn: [servicesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [servicesOrderBy!]
+    """filter the rows returned"""
+    where: servicesBoolExp
+  ): [services!]!
+  """
+  fetch aggregated fields from the table: "services"
+  """
+  servicesAggregate(
+    """distinct select on columns"""
+    distinctOn: [servicesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [servicesOrderBy!]
+    """filter the rows returned"""
+    where: servicesBoolExp
+  ): servicesAggregate!
+  """
+  fetch data from the table in a streaming manner: "services"
+  """
+  servicesStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+    """cursor to stream the results returned by the query"""
+    cursor: [servicesStreamCursorInput]!
+    """filter the rows returned"""
+    where: servicesBoolExp
+  ): [services!]!
   """
   fetch data from the table: "audit.slow_queries"
   """
