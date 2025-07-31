@@ -2,17 +2,17 @@
 # Security Classification: MEDIUM - Skill management and assignment
 
 # User Skills Operations
-fragment UserSkillBasic on userSkill {
+fragment UserSkillBasic on UserSkills {
   skillName
   proficiencyLevel
   userId
 }
 
-fragment UserSkillComplete on userSkill {
+fragment UserSkillComplete on UserSkills {
   skillName
   proficiencyLevel
   userId
-  skilledUser {
+  user {
     id
     firstName
     lastName
@@ -23,32 +23,27 @@ fragment UserSkillComplete on userSkill {
 }
 
 # Payroll Required Skills Operations
-fragment PayrollRequiredSkillBasic on payrollRequiredSkill {
+fragment PayrollRequiredSkillBasic on PayrollRequiredSkills {
   skillName
   requiredLevel
   payrollId
 }
 
-fragment PayrollRequiredSkillComplete on payrollRequiredSkill {
+fragment PayrollRequiredSkillComplete on PayrollRequiredSkills {
   skillName
   requiredLevel
   payrollId
-  requiringPayroll {
-    id
-    name
-    status
-  }
 }
 
 # Queries
 query GetUserSkills($userId: uuid!) {
-  userSkill(where: { userId: { _eq: $userId } }) {
+  userSkills(where: { userId: { _eq: $userId } }) {
     ...UserSkillBasic
   }
 }
 
 query GetUserSkillByCompositeKey($userId: uuid!, $skillName: String!) {
-  userSkill(
+  userSkills(
     where: { 
       _and: [
         { userId: { _eq: $userId } }
@@ -61,7 +56,7 @@ query GetUserSkillByCompositeKey($userId: uuid!, $skillName: String!) {
 }
 
 query GetAllUserSkills {
-  userSkill {
+  userSkills {
     ...UserSkillComplete
   }
 }
@@ -74,20 +69,20 @@ query GetUsersWithSkills {
     computedName
     email
     role
-    userSkills {
+    skills {
       ...UserSkillBasic
     }
   }
 }
 
 query GetPayrollRequiredSkills($payrollId: uuid!) {
-  payrollRequiredSkill(where: { payrollId: { _eq: $payrollId } }) {
+  payrollRequiredSkills(where: { payrollId: { _eq: $payrollId } }) {
     ...PayrollRequiredSkillBasic
   }
 }
 
 query GetPayrollRequiredSkillByCompositeKey($payrollId: uuid!, $skillName: String!) {
-  payrollRequiredSkill(
+  payrollRequiredSkills(
     where: { 
       _and: [
         { payrollId: { _eq: $payrollId } }
@@ -105,7 +100,7 @@ query GetPayrollsWithRequiredSkills {
     name
     status
     processingTime
-    payrollRequiredSkills {
+    requiredSkills {
       ...PayrollRequiredSkillBasic
     }
   }
@@ -119,7 +114,7 @@ query GetConsultantsWithSkills($requiredSkills: [String!]!) {
         { isStaff: { _eq: true } }
         { isActive: { _eq: true } }
         { role: { _in: ["consultant", "manager", "org_admin"] } }
-        { userSkills: { skillName: { _in: $requiredSkills } } }
+        { skills: { skillName: { _in: $requiredSkills } } }
       ]
     }
   ) {
@@ -130,10 +125,10 @@ query GetConsultantsWithSkills($requiredSkills: [String!]!) {
     email
     role
     defaultAdminTimePercentage
-    userSkills {
+    skills {
       ...UserSkillBasic
     }
-    userWorkSchedules {
+    workSchedules {
       id
       workDay
       workHours
@@ -146,7 +141,7 @@ query GetConsultantsWithSkills($requiredSkills: [String!]!) {
 
 # Mutations
 mutation CreateUserSkill($skillName: String!, $proficiencyLevel: String!, $userId: uuid!) {
-  insertUserSkill(
+  insertUserSkillsOne(
     object: {
       skillName: $skillName
       proficiencyLevel: $proficiencyLevel
@@ -157,8 +152,8 @@ mutation CreateUserSkill($skillName: String!, $proficiencyLevel: String!, $userI
   }
 }
 
-mutation BulkCreateUserSkills($userSkills: [userSkillInsertInput!]!) {
-  bulkInsertUserSkill(objects: $userSkills) {
+mutation BulkCreateUserSkills($userSkills: [UserSkillsInsertInput!]!) {
+  insertUserSkills(objects: $userSkills) {
     returning {
       ...UserSkillBasic
     }
@@ -171,7 +166,7 @@ mutation UpdateUserSkill(
   $skillName: String!
   $proficiencyLevel: String!
 ) {
-  bulkUpdateUserSkill(
+  updateUserSkills(
     where: { 
       _and: [
         { userId: { _eq: $userId } }
@@ -188,7 +183,7 @@ mutation UpdateUserSkill(
 }
 
 mutation DeleteUserSkill($userId: uuid!, $skillName: String!) {
-  bulkDeleteUserSkill(
+  deleteUserSkills(
     where: { 
       _and: [
         { userId: { _eq: $userId } }
@@ -208,7 +203,7 @@ mutation CreatePayrollRequiredSkill(
   $skillName: String!
   $requiredLevel: String!
 ) {
-  insertPayrollRequiredSkill(
+  insertPayrollRequiredSkillsOne(
     object: {
       payrollId: $payrollId
       skillName: $skillName
@@ -219,8 +214,8 @@ mutation CreatePayrollRequiredSkill(
   }
 }
 
-mutation BulkCreatePayrollRequiredSkills($skills: [payrollRequiredSkillInsertInput!]!) {
-  bulkInsertPayrollRequiredSkill(objects: $skills) {
+mutation BulkCreatePayrollRequiredSkills($skills: [PayrollRequiredSkillsInsertInput!]!) {
+  insertPayrollRequiredSkills(objects: $skills) {
     returning {
       ...PayrollRequiredSkillBasic
     }
@@ -229,7 +224,7 @@ mutation BulkCreatePayrollRequiredSkills($skills: [payrollRequiredSkillInsertInp
 }
 
 mutation DeletePayrollRequiredSkill($payrollId: uuid!, $skillName: String!) {
-  bulkDeletePayrollRequiredSkill(
+  deletePayrollRequiredSkills(
     where: { 
       _and: [
         { payrollId: { _eq: $payrollId } }
@@ -245,14 +240,14 @@ mutation DeletePayrollRequiredSkill($payrollId: uuid!, $skillName: String!) {
 }
 
 # Bulk operations for seeding
-mutation BulkDeleteUserSkills($where: userSkillBoolExp!) {
-  bulkDeleteUserSkill(where: $where) {
+mutation BulkDeleteUserSkills($where: UserSkillsBoolExp!) {
+  deleteUserSkills(where: $where) {
     affectedRows
   }
 }
 
-mutation BulkDeletePayrollRequiredSkills($where: payrollRequiredSkillBoolExp!) {
-  bulkDeletePayrollRequiredSkill(where: $where) {
+mutation BulkDeletePayrollRequiredSkills($where: PayrollRequiredSkillsBoolExp!) {
+  deletePayrollRequiredSkills(where: $where) {
     affectedRows
   }
 }

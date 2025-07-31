@@ -25,7 +25,7 @@ subscription UserSessionUpdates($clerkUserId: String!) {
 }
 
 subscription AuthEventsUpdates($userId: uuid!) {
-  authEvents(
+  auditAuthEvents(
     where: { userId: { _eq: $userId } }
     orderBy: { eventTime: DESC }
     limit: 20
@@ -48,10 +48,10 @@ subscription UserRoleUpdates($userId: uuid!) {
     role
     isStaff
     isActive
-    assignedRoles {
+    roleAssignments {
       id
       roleId
-      assignedRole {
+      role {
         id
         name
         displayName
@@ -67,19 +67,19 @@ subscription UserPermissionUpdates($userId: uuid!) {
   users(where: { id: { _eq: $userId } }) {
     id
     role
-    assignedRoles {
+    roleAssignments {
       roleId
-      assignedRole {
+      role {
         name
-        assignedPermissions {
+        rolePermissions {
           id
           permissionId
           conditions
-          grantedPermission {
+          permission {
             id
             action
             description
-            relatedResource {
+            resource {
               name
               displayName
             }
@@ -99,11 +99,11 @@ subscription RolePermissionChanges($roleId: uuid!) {
     conditions
     createdAt
     updatedAt
-    grantedPermission {
+    permission {
       id
       action
       description
-      relatedResource {
+      resource {
         name
         displayName
       }
@@ -113,7 +113,7 @@ subscription RolePermissionChanges($roleId: uuid!) {
 
 # Security monitoring subscriptions
 subscription FailedAuthAttemptsUpdates {
-  authEvents(
+  auditAuthEvents(
     where: { 
       success: { _eq: false }
       eventTime: { _gte: "now() - interval '1 hour'" }
@@ -131,7 +131,7 @@ subscription FailedAuthAttemptsUpdates {
 }
 
 subscription SuspiciousActivityUpdates {
-  authEvents(
+  auditAuthEvents(
     where: {
       _or: [
         { eventType: { _eq: "multiple_failed_attempts" } }
@@ -153,7 +153,7 @@ subscription SuspiciousActivityUpdates {
 }
 
 subscription SecurityAlertsUpdates {
-  authEvents(
+  auditAuthEvents(
     where: {
       eventType: { _in: [
         "account_locked",
@@ -176,25 +176,18 @@ subscription SecurityAlertsUpdates {
 
 # Permission audit subscriptions
 subscription PermissionChangesUpdates {
-  permissionAuditLogs(
-    orderBy: { timestamp: DESC }
+  auditPermissionChanges(
+    orderBy: { changedAt: DESC }
     limit: 50
   ) {
     id
-    action
-    resource
-    operation
-    previousValue
-    newValue
-    timestamp
-    userId
-    performedByUser {
-      firstName
-      lastName
-      computedName
-      email
-      role
-    }
+    changeType
+    targetUserId
+    changedByUserId
+    reason
+    oldPermissions
+    newPermissions
+    changedAt
   }
 }
 
@@ -205,14 +198,14 @@ subscription RoleAssignmentUpdates {
     roleId
     createdAt
     updatedAt
-    roleUser {
+    user {
       id
       firstName
       lastName
       computedName
       email
     }
-    assignedRole {
+    role {
       id
       name
       displayName
@@ -223,7 +216,7 @@ subscription RoleAssignmentUpdates {
 
 # System-wide auth monitoring
 subscription AuthSystemHealthUpdates {
-  authEvents(
+  auditAuthEvents(
     where: { 
       eventType: { _eq: "login" }
       success: { _eq: true }
@@ -241,7 +234,7 @@ subscription AuthSystemHealthUpdates {
 }
 
 subscription ActiveSessionsUpdates {
-  authEvents(
+  auditAuthEvents(
     where: { 
       eventType: { _eq: "session_active" }
       eventTime: { _gte: "now() - interval '30 minutes'" }
@@ -266,7 +259,7 @@ subscription UserSecurityStatusUpdates($userId: uuid!) {
 }
 
 subscription MFAEventsUpdates($userId: uuid!) {
-  authEvents(
+  auditAuthEvents(
     where: { 
       userId: { _eq: $userId }
       eventType: { _like: "mfa%" }
@@ -319,8 +312,8 @@ subscription PrivilegeChangesUpdates {
     email
     role
     updatedAt
-    assignedRoles {
-      assignedRole {
+    roleAssignments {
+      role {
         name
         priority
       }
@@ -330,39 +323,32 @@ subscription PrivilegeChangesUpdates {
 
 # Real-time compliance monitoring
 subscription ComplianceEventsUpdates {
-  permissionAuditLogs(
+  auditPermissionChanges(
     where: { 
-      action: { _in: [
+      changeType: { _in: [
         "role_assigned", 
         "role_removed", 
         "permission_granted", 
         "permission_revoked",
         "admin_access"
       ] }
-      timestamp: { _gte: "now() - interval '1 hour'" }
+      changedAt: { _gte: "now() - interval '1 hour'" }
     }
-    orderBy: { timestamp: DESC }
+    orderBy: { changedAt: DESC }
   ) {
     id
-    action
-    resource
-    operation
-    previousValue
-    newValue
-    timestamp
-    userId
-    performedByUser {
-      firstName
-      lastName
-      computedName
-      email
-      role
-    }
+    changeType
+    targetUserId
+    changedByUserId
+    reason
+    oldPermissions
+    newPermissions
+    changedAt
   }
 }
 
 subscription DataAccessMonitoring($userId: uuid!) {
-  dataAccessLogs(
+  auditDataAccessLog(
     where: { 
       userId: { _eq: $userId }
       accessedAt: { _gte: "now() - interval '24 hours'" }
@@ -384,7 +370,7 @@ subscription DataAccessMonitoring($userId: uuid!) {
 
 # Emergency and incident response subscriptions
 subscription SecurityIncidentsUpdates {
-  authEvents(
+  auditAuthEvents(
     where: {
       eventType: { _in: [
         "security_incident",
@@ -407,7 +393,7 @@ subscription SecurityIncidentsUpdates {
 }
 
 subscription EmergencyAuthUpdates {
-  authEvents(
+  auditAuthEvents(
     where: {
       eventType: { _eq: "emergency_access" }
       eventTime: { _gte: "now() - interval '1 hour'" }

@@ -1,8 +1,8 @@
 # Core Billing Mutations - Enhanced Semi-Automated System
 
 # Time Entry Mutations - Using notes as placeholder 
-mutation CreateMultipleTimeEntries($timeEntries: [notesInsertInput!]!) {
-  bulkInsertNotes(objects: $timeEntries) {
+mutation CreateMultipleTimeEntries($timeEntries: [NotesInsertInput!]!) {
+  insertNotes(objects: $timeEntries) {
     returning {
       id
       content
@@ -33,8 +33,8 @@ mutation CreateMultipleTimeEntries($timeEntries: [notesInsertInput!]!) {
 # }
 
 # Payroll Billing Generation
-mutation GeneratePayrollBilling($billingItem: billingItemsInsertInput!) {
-  insertBillingItem(object: $billingItem) {
+mutation GeneratePayrollBilling($billingItem: BillingItemsInsertInput!) {
+  insertBillingItemsOne(object: $billingItem) {
     id
     payrollId
     clientId
@@ -47,10 +47,10 @@ mutation GeneratePayrollBilling($billingItem: billingItemsInsertInput!) {
 # Batch Payroll Billing Generation  
 mutation CreatePayrollBilling(
   $payrollId: uuid!
-  $billingItems: [billingItemsInsertInput!]!
+  $billingItems: [BillingItemsInsertInput!]!
 ) {
   # Insert billing items
-  billingItems: bulkInsertBillingItems(objects: $billingItems) {
+  billingItems: insertBillingItems(objects: $billingItems) {
     returning {
       id
       payrollId
@@ -66,8 +66,8 @@ mutation CreatePayrollBilling(
 }
 
 # Create billing item log entry for status changes and tracking
-mutation CreateBillingItemLog($input: auditLogsInsertInput!) {
-  insertAuditLog(object: $input) {
+mutation CreateBillingItemLog($input: AuditAuditLogInsertInput!) {
+  insertAuditAuditLogOne(object: $input) {
     id
     userId
     action
@@ -78,8 +78,8 @@ mutation CreateBillingItemLog($input: auditLogsInsertInput!) {
 }
 
 # Service Catalog Management
-mutation CreateService($input: billingPlansInsertInput!) {
-  insertBillingPlan(object: $input) {
+mutation CreateService($input: BillingPlanInsertInput!) {
+  insertBillingPlanOne(object: $input) {
     id
     name
     description
@@ -93,8 +93,8 @@ mutation CreateService($input: billingPlansInsertInput!) {
   }
 }
 
-mutation UpdateService($id: uuid!, $updates: billingPlansSetInput!) {
-  updateBillingPlanById(pkColumns: { id: $id }, _set: $updates) {
+mutation UpdateService($id: uuid!, $updates: BillingPlanSetInput!) {
+  updateBillingPlanByPk(pkColumns: { id: $id }, _set: $updates) {
     id
     name
     description
@@ -109,7 +109,7 @@ mutation UpdateService($id: uuid!, $updates: billingPlansSetInput!) {
 }
 
 mutation DeleteService($id: uuid!) {
-  updateBillingPlanById(pkColumns: { id: $id }, _set: { isActive: false }) {
+  updateBillingPlanByPk(pkColumns: { id: $id }, _set: { isActive: false }) {
     id
     name
     isActive
@@ -118,8 +118,8 @@ mutation DeleteService($id: uuid!) {
 }
 
 # Billing Items Management
-mutation CreateBillingItem($input: billingItemsInsertInput!) {
-  insertBillingItem(object: $input) {
+mutation CreateBillingItem($input: BillingItemsInsertInput!) {
+  insertBillingItemsOne(object: $input) {
     ...BillingItemFragment
     client {
       id
@@ -134,8 +134,8 @@ mutation CreateBillingItem($input: billingItemsInsertInput!) {
   }
 }
 
-mutation UpdateBillingItem($id: uuid!, $updates: billingItemsSetInput!) {
-  updateBillingItemById(pkColumns: { id: $id }, _set: $updates) {
+mutation UpdateBillingItem($id: uuid!, $updates: BillingItemsSetInput!) {
+  updateBillingItemsByPk(pkColumns: { id: $id }, _set: $updates) {
     ...BillingItemFragment
     client {
       id
@@ -151,7 +151,7 @@ mutation UpdateBillingItem($id: uuid!, $updates: billingItemsSetInput!) {
 }
 
 mutation DeleteBillingItem($id: uuid!) {
-  deleteBillingItemById(id: $id) {
+  deleteBillingItemsByPk(id: $id) {
     id
     description
   }
@@ -169,8 +169,8 @@ query GetClientsForBilling {
 }
 
 # Time Entries Management
-mutation CreateTimeEntry($input: timeEntriesInsertInput!) {
-  insertTimeEntryOne(object: $input) {
+mutation CreateTimeEntry($input: TimeEntriesInsertInput!) {
+  insertTimeEntriesOne(object: $input) {
     id
     staffUserId
     clientId
@@ -184,8 +184,8 @@ mutation CreateTimeEntry($input: timeEntriesInsertInput!) {
   }
 }
 
-mutation UpdateTimeEntry($id: uuid!, $updates: timeEntriesSetInput!) {
-  updateTimeEntry(pkColumns: { id: $id }, _set: $updates) {
+mutation UpdateTimeEntry($id: uuid!, $updates: TimeEntriesSetInput!) {
+  updateTimeEntriesByPk(pkColumns: { id: $id }, _set: $updates) {
     id
     staffUserId
     clientId
@@ -200,9 +200,9 @@ mutation UpdateTimeEntry($id: uuid!, $updates: timeEntriesSetInput!) {
 }
 
 # Client Service Agreements Management
-mutation BulkUpdateClientServiceAgreements($clientId: uuid!, $agreements: [clientBillingAssignmentsInsertInput!]!) {
+mutation BulkUpdateClientServiceAgreements($clientId: uuid!, $agreements: [ClientBillingAssignmentInsertInput!]!) {
   # First delete existing active agreements for this client
-  bulkDeleteClientBillingAssignments(
+  deleteClientBillingAssignment(
     where: { 
       clientId: { _eq: $clientId }
       isActive: { _eq: true }
@@ -212,7 +212,7 @@ mutation BulkUpdateClientServiceAgreements($clientId: uuid!, $agreements: [clien
   }
   
   # Then insert new agreements
-  bulkInsertClientBillingAssignments(objects: $agreements) {
+  insertClientBillingAssignment(objects: $agreements) {
     returning {
       id
       clientId
@@ -225,7 +225,7 @@ mutation BulkUpdateClientServiceAgreements($clientId: uuid!, $agreements: [clien
       startDate
       endDate
       createdAt
-      assignedBillingPlan {
+      billingPlan {
         id
         name
         description
@@ -239,8 +239,8 @@ mutation BulkUpdateClientServiceAgreements($clientId: uuid!, $agreements: [clien
 }
 
 # Payroll Billing Status
-mutation UpdatePayrollBillingStatus($payrollId: uuid!, $updates: payrollsSetInput!) {
-  updatePayrollById(
+mutation UpdatePayrollBillingStatus($payrollId: uuid!, $updates: PayrollsSetInput!) {
+  updatePayrollsByPk(
     pkColumns: { id: $payrollId }
     _set: $updates
   ) {

@@ -1,7 +1,7 @@
 # Payroll Domain Specific Fragments
 
 # Payroll processing info
-fragment PayrollProcessingInfo on payrolls {
+fragment PayrollProcessingInfo on Payrolls {
   id
   name
   status
@@ -12,7 +12,7 @@ fragment PayrollProcessingInfo on payrolls {
 }
 
 # Payroll version info - fixing createdBy field
-fragment PayrollVersionInfo on payrolls {
+fragment PayrollVersionInfo on Payrolls {
   id
   versionNumber
   versionReason
@@ -23,7 +23,7 @@ fragment PayrollVersionInfo on payrolls {
 }
 
 # Payroll with all relations - fixing createdBy field
-fragment PayrollWithAllRelations on payrolls {
+fragment PayrollWithAllRelations on Payrolls {
   ...PayrollBase
   client {
     ...ClientMinimal
@@ -34,14 +34,14 @@ fragment PayrollWithAllRelations on payrolls {
   backupConsultant {
     ...UserMinimal
   }
-  manager {
+  assignedManager {
     ...UserMinimal
   }
   createdByUserId
 }
 
 # Payroll for assignment
-fragment PayrollForAssignment on payrolls {
+fragment PayrollForAssignment on Payrolls {
   id
   name
   status
@@ -55,7 +55,7 @@ fragment PayrollForAssignment on payrolls {
   primaryConsultantUserId
   backupConsultantUserId
   managerUserId
-  payrollRequiredSkills {
+  requiredSkills {
     skillName
     requiredLevel
   }
@@ -72,7 +72,7 @@ fragment PayrollForAssignment on payrolls {
 }
 
 # Payroll basic info
-fragment PayrollBasic on payrolls {
+fragment PayrollBasic on Payrolls {
   id
   name
   status
@@ -83,7 +83,7 @@ fragment PayrollBasic on payrolls {
 }
 
 # Payroll for audit - fixing createdBy field
-fragment PayrollForAudit on payrolls {
+fragment PayrollForAudit on Payrolls {
   id
   name
   status
@@ -94,7 +94,7 @@ fragment PayrollForAudit on payrolls {
 }
 
 # Payroll table row
-fragment PayrollTableRow on payrolls {
+fragment PayrollTableRow on Payrolls {
   ...PayrollListItem
   goLiveDate
   processingTime
@@ -121,7 +121,7 @@ fragment PayrollTableRow on payrolls {
 }
 
 # Payroll dashboard card
-fragment PayrollDashboardCard on payrolls {
+fragment PayrollDashboardCard on Payrolls {
   ...PayrollMinimal
   client {
     ...ClientMinimal
@@ -133,7 +133,7 @@ fragment PayrollDashboardCard on payrolls {
 }
 
 # Payroll date fragment - fixing field names to match schema
-fragment PayrollDate on payrollDates {
+fragment PayrollDate on PayrollDates {
   id
   payrollId
   originalEftDate
@@ -141,23 +141,23 @@ fragment PayrollDate on payrollDates {
   processingDate
   notes
   createdAt
-  relatedPayroll {
+  payroll {
     id
     name
   }
 }
 
 # Payroll detailed  
-fragment PayrollDetailed on payrolls {
+fragment PayrollDetailed on Payrolls {
   ...PayrollFullDetail
-  payrollRequiredSkills {
+  requiredSkills {
     skillName
     requiredLevel
   }
 }
 
 # Payroll summary
-fragment PayrollSummary on payrolls {
+fragment PayrollSummary on Payrolls {
   ...PayrollBase
   client {
     ...ClientMinimal
@@ -168,7 +168,7 @@ fragment PayrollSummary on payrolls {
 }
 
 # Missing fragments that were referenced in queries
-fragment PayrollWithCycle on payrolls {
+fragment PayrollWithCycle on Payrolls {
   ...PayrollBase
   cycleId
   payrollCycle {
@@ -177,7 +177,7 @@ fragment PayrollWithCycle on payrolls {
   }
 }
 
-fragment PayrollWorkload on payrolls {
+fragment PayrollWorkload on Payrolls {
   id
   name
   status

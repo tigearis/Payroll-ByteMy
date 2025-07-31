@@ -10,8 +10,8 @@ mutation CreateAuditLog(
   $ipAddress: inet
   $userAgent: String
 ) {
-  insertAuditLog(
-    object: {
+  insertAuditAuditLog(
+    objects: [{
       userId: $userId
       action: $action
       resourceType: $resourceType
@@ -19,10 +19,12 @@ mutation CreateAuditLog(
       metadata: $metadata
       ipAddress: $ipAddress
       userAgent: $userAgent
-    }
+    }]
   ) {
-    id
-    eventTime
+    returning {
+      id
+      eventTime
+    }
   }
 }
 
@@ -35,18 +37,20 @@ mutation CreateAuthEvent(
   $userAgent: String
   $metadata: jsonb
 ) {
-  insertAuthEvent(
-    object: {
+  insertAuditAuthEvents(
+    objects: [{
       userId: $userId
       eventType: $eventType
       success: $success
       ipAddress: $ipAddress
       userAgent: $userAgent
       metadata: $metadata
-    }
+    }]
   ) {
-    id
-    eventTime
+    returning {
+      id
+      eventTime
+    }
   }
 }
 
@@ -60,8 +64,8 @@ mutation LogAuthEvent(
   $success: Boolean = true
   $failureReason: String
 ) {
-  insertAuthEvent(
-    object: {
+  insertAuditAuthEvents(
+    objects: [{
       eventType: $eventType
       userId: $userId
       metadata: $metadata
@@ -69,10 +73,12 @@ mutation LogAuthEvent(
       userAgent: $userAgent
       success: $success
       failureReason: $failureReason
-    }
+    }]
   ) {
-    id
-    eventTime
+    returning {
+      id
+      eventTime
+    }
   }
 }
 
@@ -85,46 +91,52 @@ mutation LogDataAccessEvent(
   $ipAddress: inet
   $metadata: jsonb
 ) {
-  insertDataAccessLog(
-    object: {
+  insertAuditDataAccessLog(
+    objects: [{
       userId: $userId
       resourceType: $resourceType
       resourceId: $resourceId
       accessType: $accessType
       ipAddress: $ipAddress
       metadata: $metadata
-    }
+    }]
   ) {
-    id
-    accessedAt
+    returning {
+      id
+      accessedAt
+    }
   }
 }
 
 # Log permission audit event
 mutation LogPermissionAuditEvent(
-  $userId: uuid!
-  $action: String!
-  $resource: String!
-  $operation: String
+  $changedByUserId: uuid!
+  $targetUserId: uuid
+  $changeType: String!
   $reason: String
+  $oldPermissions: jsonb
+  $newPermissions: jsonb
 ) {
-  insertPermissionAuditLog(
-    object: {
-      userId: $userId
-      action: $action
-      resource: $resource
-      operation: $operation
+  insertAuditPermissionChanges(
+    objects: [{
+      changedByUserId: $changedByUserId
+      targetUserId: $targetUserId
+      changeType: $changeType
       reason: $reason
-    }
+      oldPermissions: $oldPermissions
+      newPermissions: $newPermissions
+    }]
   ) {
-    id
-    createdAt
+    returning {
+      id
+      changedAt
+    }
   }
 }
 
 # Delete old audit logs
 mutation DeleteOldAuditLogs($beforeDate: timestamptz!) {
-  bulkDeleteAuditLogs(
+  deleteAuditAuditLog(
     where: {eventTime: {_lt: $beforeDate}}
   ) {
     affectedRows

@@ -7,7 +7,7 @@
 # ============================================
 
 # Minimal user info for references (1-3 fields)
-fragment UserMinimal on users {
+fragment UserMinimal on Users {
   id
   firstName
   lastName
@@ -16,14 +16,14 @@ fragment UserMinimal on users {
 }
 
 # Core user fields for basic operations (4-6 fields) - SHARED VERSION
-fragment UserCoreShared on users {
+fragment UserCoreShared on Users {
   ...UserMinimal
   role
   isActive
 }
 
 # Standard user info for lists and basic operations (7-8 fields)
-fragment UserBasic on users {
+fragment UserBasic on Users {
   ...UserCoreShared
   clerkUserId
   createdAt
@@ -31,32 +31,32 @@ fragment UserBasic on users {
 }
 
 # @deprecated Use UserBasic instead for consistency
-fragment UserBase on users {
+fragment UserBase on Users {
   ...UserBasic
 }
 
 # Extended user info with role relationships (9-12 fields) - SIMPLIFIED
-fragment UserWithRole on users {
+fragment UserWithRole on Users {
   ...UserBasic
   username
   isStaff
 }
 
 # Comprehensive user profile (13+ fields) - SIMPLIFIED
-fragment UserProfile on users {
+fragment UserProfile on Users {
   ...UserWithRole
   clerkUserId
   image
   managerId
   deactivatedAt
   deactivatedBy
-  managerUser {
+  manager {
     ...UserMinimal
   }
 }
 
 # User search result format (domain-specific fragments are in users/graphql/fragments.graphql)
-fragment UserSearchResult on users {
+fragment UserSearchResult on Users {
   ...UserCoreShared
   username
   isStaff
@@ -67,13 +67,13 @@ fragment UserSearchResult on users {
 # ============================================
 
 # Minimal client info for shared use
-fragment ClientMinimal on clients {
+fragment ClientMinimal on Clients {
   id
   name
 }
 
 # Basic client info for lists
-fragment ClientBase on clients {
+fragment ClientBase on Clients {
   id
   name
   active
@@ -84,7 +84,7 @@ fragment ClientBase on clients {
 }
 
 # Client with statistics
-fragment ClientWithStats on clients {
+fragment ClientWithStats on Clients {
   ...ClientBase
   # Current employee count
   currentEmployeeCount: payrollsAggregate(
@@ -110,7 +110,7 @@ fragment ClientWithStats on clients {
 }
 
 # Client list base for shared queries (use domain-specific ClientListItem for detailed lists)
-fragment ClientListBase on clients {
+fragment ClientListBase on Clients {
   ...ClientBase
   # Basic payroll statistics
   payrollCount: payrollsAggregate(
@@ -127,7 +127,7 @@ fragment ClientListBase on clients {
 # ============================================
 
 # Minimal payroll info
-fragment PayrollMinimal on payrolls {
+fragment PayrollMinimal on Payrolls {
   id
   name
   employeeCount
@@ -135,7 +135,7 @@ fragment PayrollMinimal on payrolls {
 }
 
 # Basic payroll info
-fragment PayrollBase on payrolls {
+fragment PayrollBase on Payrolls {
   id
   name
   employeeCount
@@ -150,7 +150,7 @@ fragment PayrollBase on payrolls {
 }
 
 # Payroll with client info
-fragment PayrollWithClient on payrolls {
+fragment PayrollWithClient on Payrolls {
   ...PayrollBase
   clientId
   client {
@@ -161,7 +161,7 @@ fragment PayrollWithClient on payrolls {
 }
 
 # Payroll list item (for tables)
-fragment PayrollListItem on payrolls {
+fragment PayrollListItem on Payrolls {
   ...PayrollWithClient
   primaryConsultantUserId
   backupConsultantUserId
@@ -188,14 +188,14 @@ fragment PayrollListItem on payrolls {
   backupConsultant {
     ...UserMinimal
   }
-  manager {
+  assignedManager {
     ...UserMinimal
   }
   # createdBy relationship not available in schema
 }
 
 # Payroll with dates
-fragment PayrollWithDates on payrolls {
+fragment PayrollWithDates on Payrolls {
   ...PayrollBase
   goLiveDate
   payrollDates(orderBy: {originalEftDate: ASC}) {
@@ -207,7 +207,7 @@ fragment PayrollWithDates on payrolls {
 }
 
 # Full payroll detail
-fragment PayrollFullDetail on payrolls {
+fragment PayrollFullDetail on Payrolls {
   ...PayrollWithDates
   ...PayrollWithClient
   dateTypeId
@@ -237,7 +237,7 @@ fragment PayrollFullDetail on payrolls {
   backupConsultant {
     ...UserMinimal
   }
-  manager {
+  assignedManager {
     ...UserMinimal
   }
   # createdBy relationship not available in schema
@@ -250,14 +250,14 @@ fragment PayrollFullDetail on payrolls {
 # ============================================
 
 # Note with author
-fragment NoteWithAuthor on notes {
+fragment NoteWithAuthor on Notes {
   id
   content
   isImportant
   createdAt
   entityId
   entityType
-  authorUser {
+  author {
     ...UserMinimal
   }
 }
@@ -267,7 +267,7 @@ fragment NoteWithAuthor on notes {
 # ============================================
 
 # Basic permission
-fragment PermissionBase on permissions {
+fragment PermissionBase on Permissions {
   id
   resourceId
   description
@@ -276,15 +276,15 @@ fragment PermissionBase on permissions {
 }
 
 # Role with permissions
-fragment RoleWithPermissions on roles {
+fragment RoleWithPermissions on Roles {
   id
   name
   displayName
   description
   isSystemRole
   priority
-  assignedPermissions {
-    grantedPermission {
+  rolePermissions {
+    permission {
       ...PermissionBase
     }
   }
@@ -295,7 +295,7 @@ fragment RoleWithPermissions on roles {
 # ============================================
 
 # Audit log entry
-fragment AuditLogEntry on auditLogs {
+fragment AuditLogEntry on AuditAuditLog {
   id
   userId
   userEmail
@@ -317,7 +317,7 @@ fragment AuditLogEntry on auditLogs {
 }
 
 # Auth event
-fragment AuthEvent on authEvents {
+fragment AuthEvent on AuditAuthEvents {
   id
   userId
   userEmail
@@ -331,7 +331,7 @@ fragment AuthEvent on authEvents {
 }
 
 # Data access log
-fragment DataAccessLog on dataAccessLogs {
+fragment DataAccessLog on AuditDataAccessLog {
   id
   userId
   resourceType
@@ -346,7 +346,7 @@ fragment DataAccessLog on dataAccessLogs {
 }
 
 # Permission change
-fragment PermissionChange on permissionChanges {
+fragment PermissionChange on AuditPermissionChanges {
   id
   changedAt
   changedByUserId
@@ -365,7 +365,7 @@ fragment PermissionChange on permissionChanges {
 # ============================================
 
 # Payroll date info
-fragment PayrollDateInfo on payrollDates {
+fragment PayrollDateInfo on PayrollDates {
   id
   originalEftDate
   adjustedEftDate
@@ -378,7 +378,7 @@ fragment PayrollDateInfo on payrollDates {
 # ============================================
 
 # Permission override info
-fragment PermissionOverrideInfo on permissionOverrides {
+fragment PermissionOverrideInfo on PermissionOverrides {
   id
   userId
   role

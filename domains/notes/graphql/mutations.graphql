@@ -3,8 +3,8 @@
 # SOC2 Compliance: All mutations logged with audit trail
 
 # Core CRUD operations
-mutation CreateNote($object: notesInsertInput!) {
-  insertNote(object: $object) {
+mutation CreateNote($object: NotesInsertInput!) {
+  insertNotesOne(object: $object) {
     ...NoteDetailed
   }
 }
@@ -16,7 +16,7 @@ mutation AddNote(
   $userId: uuid!
   $isImportant: Boolean = false
 ) {
-  insertNote(
+  insertNotesOne(
     object: {
       content: $content
       entityType: $entityType
@@ -29,8 +29,8 @@ mutation AddNote(
   }
 }
 
-mutation UpdateNote($id: uuid!, $set: notesSetInput!) {
-  updateNoteById(pkColumns: { id: $id }, _set: $set) {
+mutation UpdateNote($id: uuid!, $set: NotesSetInput!) {
+  updateNotesByPk(pkColumns: { id: $id }, _set: $set) {
     ...NoteDetailed
   }
 }
@@ -40,7 +40,7 @@ mutation UpdateNoteContent(
   $content: String
   $isImportant: Boolean
 ) {
-  updateNoteById(
+  updateNotesByPk(
     pkColumns: { id: $id }
     _set: {
       content: $content
@@ -53,7 +53,7 @@ mutation UpdateNoteContent(
 }
 
 mutation DeleteNote($id: uuid!) {
-  deleteNoteById(id: $id) {
+  deleteNotesByPk(id: $id) {
     id
     content
     entityType
@@ -63,7 +63,7 @@ mutation DeleteNote($id: uuid!) {
 
 # Quick operations
 mutation ToggleNoteImportance($id: uuid!, $isImportant: Boolean!) {
-  updateNoteById(
+  updateNotesByPk(
     pkColumns: { id: $id }
     _set: { isImportant: $isImportant, updatedAt: "now()" }
   ) {
@@ -72,7 +72,7 @@ mutation ToggleNoteImportance($id: uuid!, $isImportant: Boolean!) {
 }
 
 mutation MarkNoteAsImportant($id: uuid!) {
-  updateNoteById(
+  updateNotesByPk(
     pkColumns: { id: $id }
     _set: { isImportant: true, updatedAt: "now()" }
   ) {
@@ -81,7 +81,7 @@ mutation MarkNoteAsImportant($id: uuid!) {
 }
 
 mutation UnmarkNoteAsImportant($id: uuid!) {
-  updateNoteById(
+  updateNotesByPk(
     pkColumns: { id: $id }
     _set: { isImportant: false, updatedAt: "now()" }
   ) {
@@ -96,7 +96,7 @@ mutation AddPayrollNote(
   $userId: uuid!
   $isImportant: Boolean = false
 ) {
-  insertNote(
+  insertNotesOne(
     object: {
       content: $content
       entityType: "payroll"
@@ -115,7 +115,7 @@ mutation AddClientNote(
   $userId: uuid!
   $isImportant: Boolean = false
 ) {
-  insertNote(
+  insertNotesOne(
     object: {
       content: $content
       entityType: "client"
@@ -134,7 +134,7 @@ mutation AddUserNote(
   $authorUserId: uuid!
   $isImportant: Boolean = false
 ) {
-  insertNote(
+  insertNotesOne(
     object: {
       content: $content
       entityType: "user"
@@ -149,7 +149,7 @@ mutation AddUserNote(
 
 # Bulk operations
 mutation BulkDeleteNotes($ids: [uuid!]!) {
-  bulkDeleteNotes(where: { id: { _in: $ids } }) {
+  deleteNotes(where: { id: { _in: $ids } }) {
     returning {
       id
       content
@@ -161,7 +161,7 @@ mutation BulkDeleteNotes($ids: [uuid!]!) {
 }
 
 mutation BulkMarkNotesImportant($ids: [uuid!]!) {
-  bulkUpdateNotes(
+  updateNotes(
     where: { id: { _in: $ids } }
     _set: { isImportant: true, updatedAt: "now()" }
   ) {
@@ -173,7 +173,7 @@ mutation BulkMarkNotesImportant($ids: [uuid!]!) {
 }
 
 mutation BulkUnmarkNotesImportant($ids: [uuid!]!) {
-  bulkUpdateNotes(
+  updateNotes(
     where: { id: { _in: $ids } }
     _set: { isImportant: false, updatedAt: "now()" }
   ) {
@@ -184,8 +184,8 @@ mutation BulkUnmarkNotesImportant($ids: [uuid!]!) {
   }
 }
 
-mutation BulkUpdateNotes($where: notesBoolExp!, $set: notesSetInput!) {
-  bulkUpdateNotes(where: $where, _set: $set) {
+mutation BulkUpdateNotes($where: NotesBoolExp!, $set: NotesSetInput!) {
+  updateNotes(where: $where, _set: $set) {
     returning {
       ...NoteBasic
     }
@@ -195,7 +195,7 @@ mutation BulkUpdateNotes($where: notesBoolExp!, $set: notesSetInput!) {
 
 # Entity cleanup operations
 mutation DeleteNotesByEntity($entityType: String!, $entityId: uuid!) {
-  bulkDeleteNotes(
+  deleteNotes(
     where: {
       entityType: { _eq: $entityType }
       entityId: { _eq: $entityId }
@@ -210,7 +210,7 @@ mutation DeleteNotesByEntity($entityType: String!, $entityId: uuid!) {
 }
 
 mutation DeleteNotesByAuthor($authorUserId: uuid!) {
-  bulkDeleteNotes(where: { userId: { _eq: $authorUserId } }) {
+  deleteNotes(where: { userId: { _eq: $authorUserId } }) {
     returning {
       id
       content
@@ -226,7 +226,7 @@ mutation TransferNotesToNewAuthor(
   $oldAuthorUserId: uuid!
   $newAuthorUserId: uuid!
 ) {
-  bulkUpdateNotes(
+  updateNotes(
     where: { userId: { _eq: $oldAuthorUserId } }
     _set: { userId: $newAuthorUserId, updatedAt: "now()" }
   ) {
@@ -243,7 +243,7 @@ mutation TransferNotesToNewEntity(
   $newEntityType: String!
   $newEntityId: uuid!
 ) {
-  bulkUpdateNotes(
+  updateNotes(
     where: {
       entityType: { _eq: $oldEntityType }
       entityId: { _eq: $oldEntityId }
@@ -266,7 +266,7 @@ mutation TransferNotesToNewEntity(
 # Archive notes by deletion instead:
 
 # mutation ArchiveNote($id: uuid!) {
-#   updateNoteById(
+#   updateNotesByPk(
 #     pkColumns: { id: $id }
 #     _set: { archived: true, updatedAt: "now()" }
 #   ) {
@@ -275,7 +275,7 @@ mutation TransferNotesToNewEntity(
 # }
 
 # mutation UnarchiveNote($id: uuid!) {
-#   updateNoteById(
+#   updateNotesByPk(
 #     pkColumns: { id: $id }
 #     _set: { archived: false, updatedAt: "now()" }
 #   ) {
@@ -284,7 +284,7 @@ mutation TransferNotesToNewEntity(
 # }
 
 # mutation BulkArchiveNotes($ids: [uuid!]!) {
-#   bulkUpdateNotes(
+#   updateNotes(
 #     where: { id: { _in: $ids } }
 #     _set: { archived: true, updatedAt: "now()" }
 #   ) {
@@ -303,7 +303,7 @@ mutation AddNoteExtracted(
   $userId: uuid!
   $isImportant: Boolean = false
 ) {
-  insertNote(
+  insertNotesOne(
     object: {
       content: $content
       entityType: $entityType
@@ -321,7 +321,7 @@ mutation UpdateNoteExtracted(
   $content: String
   $isImportant: Boolean
 ) {
-  updateNoteById(
+  updateNotesByPk(
     pkColumns: { id: $id }
     _set: {
       content: $content

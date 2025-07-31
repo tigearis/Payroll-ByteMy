@@ -1,7 +1,7 @@
 # Billing Items GraphQL Operations
 
 # Fragments
-fragment BillingItemCore on billingItems {
+fragment BillingItemCore on BillingItems {
   id
   description
   amount
@@ -27,7 +27,7 @@ fragment BillingItemCore on billingItems {
   invoiceId
 }
 
-fragment BillingItemWithRelations on billingItems {
+fragment BillingItemWithRelations on BillingItems {
   ...BillingItemCore
   client {
     id
@@ -40,13 +40,13 @@ fragment BillingItemWithRelations on billingItems {
     lastName
     email
   }
-  approver {
+  approvedByUser {
     id
     firstName
     lastName
     email
   }
-  relatedPayroll {
+  payroll {
     id
     name
     status
@@ -54,7 +54,7 @@ fragment BillingItemWithRelations on billingItems {
   # Service relationship temporarily removed due to multiple foreign key constraints
 }
 
-fragment BillingItemStats on billingItemsAggregate {
+fragment BillingItemStats on BillingItemsAggregate {
   aggregate {
     count
     sum {
@@ -74,8 +74,8 @@ fragment BillingItemStats on billingItemsAggregate {
 query GetBillingItemsAdvanced(
   $limit: Int = 50
   $offset: Int = 0
-  $where: billingItemsBoolExp
-  $orderBy: [billingItemsOrderBy!] = [{ createdAt: DESC }]
+  $where: BillingItemsBoolExp
+  $orderBy: [BillingItemsOrderBy!] = [{ createdAt: DESC }]
 ) {
   billingItems(
     limit: $limit
@@ -88,13 +88,13 @@ query GetBillingItemsAdvanced(
 }
 
 query GetBillingItemByIdAdvanced($id: uuid!) {
-  billingItemById(id: $id) {
+  billingItemsByPk(id: $id) {
     ...BillingItemWithRelations
   }
 }
 
 query GetBillingItemsStatsAdvanced(
-  $where: billingItemsBoolExp = {}
+  $where: BillingItemsBoolExp = {}
 ) {
   billingItemsAggregate(where: $where) {
     ...BillingItemStats
@@ -138,7 +138,7 @@ query GetBillingItemsByClientAdvanced(
   $clientId: uuid!
   $limit: Int = 50
   $offset: Int = 0
-  $orderBy: [billingItemsOrderBy!] = [{ createdAt: DESC }]
+  $orderBy: [BillingItemsOrderBy!] = [{ createdAt: DESC }]
 ) {
   billingItems(
     where: { clientId: { _eq: $clientId } }
@@ -154,7 +154,7 @@ query GetBillingItemsByUserAdvanced(
   $userId: uuid!
   $limit: Int = 50
   $offset: Int = 0
-  $orderBy: [billingItemsOrderBy!] = [{ createdAt: DESC }]
+  $orderBy: [BillingItemsOrderBy!] = [{ createdAt: DESC }]
 ) {
   billingItems(
     where: { staffUserId: { _eq: $userId } }
@@ -184,17 +184,17 @@ query GetRecentBillingItemsAdvanced(
 }
 
 # Mutations
-mutation CreateBillingItemAdvanced($input: billingItemsInsertInput!) {
-  insertBillingItem(object: $input) {
+mutation CreateBillingItemAdvanced($input: BillingItemsInsertInput!) {
+  insertBillingItemsOne(object: $input) {
     ...BillingItemWithRelations
   }
 }
 
 mutation UpdateBillingItemAdvanced(
   $id: uuid!
-  $updates: billingItemsSetInput!
+  $updates: BillingItemsSetInput!
 ) {
-  updateBillingItemById(
+  updateBillingItemsByPk(
     pkColumns: { id: $id }
     _set: $updates
   ) {
@@ -203,7 +203,7 @@ mutation UpdateBillingItemAdvanced(
 }
 
 mutation DeleteBillingItemAdvanced($id: uuid!) {
-  deleteBillingItemById(id: $id) {
+  deleteBillingItemsByPk(id: $id) {
     id
     description
   }
@@ -233,7 +233,7 @@ mutation ApproveBillingItemAdvanced(
   $id: uuid!
   $approvedBy: uuid!
 ) {
-  updateBillingItemById(
+  updateBillingItemsByPk(
     pkColumns: { id: $id }
     _set: {
       status: "approved"
@@ -251,7 +251,7 @@ mutation RejectBillingItemAdvanced(
   $approvedBy: uuid!
   $notes: String
 ) {
-  updateBillingItemById(
+  updateBillingItemsByPk(
     pkColumns: { id: $id }
     _set: {
       status: "rejected"
@@ -266,7 +266,7 @@ mutation RejectBillingItemAdvanced(
 }
 
 mutation ArchiveBillingItemAdvanced($id: uuid!) {
-  updateBillingItemById(
+  updateBillingItemsByPk(
     pkColumns: { id: $id }
     _set: {
       status: "archived"
@@ -278,7 +278,7 @@ mutation ArchiveBillingItemAdvanced($id: uuid!) {
 
 # Subscriptions
 subscription BillingItemsSubscriptionAdvanced(
-  $where: billingItemsBoolExp
+  $where: BillingItemsBoolExp
   $limit: Int = 50
 ) {
   billingItems(
@@ -291,13 +291,13 @@ subscription BillingItemsSubscriptionAdvanced(
 }
 
 subscription BillingItemByIdSubscriptionAdvanced($id: uuid!) {
-  billingItemById(id: $id) {
+  billingItemsByPk(id: $id) {
     ...BillingItemWithRelations
   }
 }
 
 subscription BillingItemsStatsSubscriptionAdvanced(
-  $where: billingItemsBoolExp
+  $where: BillingItemsBoolExp
 ) {
   billingItemsAggregate(where: $where) {
     ...BillingItemStats
@@ -336,7 +336,7 @@ query GetBillingItemAuditLogAdvanced(
   $limit: Int = 50
   $offset: Int = 0
 ) {
-  auditLogs(
+  auditAuditLog(
     where: {
       _and: [
         { resourceType: { _eq: "billing_items" } }

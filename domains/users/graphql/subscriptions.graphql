@@ -2,7 +2,7 @@
 
 # Subscribe to user updates
 subscription UserUpdates($userId: uuid!) {
-  userById(id: $userId) {
+  usersByPk(id: $userId) {
     ...UserProfile
     updatedAt
   }
@@ -22,7 +22,7 @@ subscription ActiveUsers {
 
 # Monitor user auth events - simplified since many fields don't exist
 subscription UserAuthEvents($userId: uuid!) {
-  authEvents(where: { userId: { _eq: $userId } }) {
+  auditAuthEvents(where: { userId: { _eq: $userId } }) {
     id
     createdAt
     ipAddress

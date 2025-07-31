@@ -2,7 +2,7 @@
 # Security Classification: CRITICAL - Contains PII and authentication data
 # SOC2 Compliance: Employee data with strict access controls
 
-fragment UserCore on users {
+fragment UserCore on Users {
   id
   firstName
   lastName
@@ -17,7 +17,7 @@ fragment UserCore on users {
   updatedAt
 }
 
-fragment UserWithProfile on users {
+fragment UserWithProfile on Users {
   ...UserCore
   username
   image
@@ -26,19 +26,19 @@ fragment UserWithProfile on users {
   bio
 }
 
-fragment UserWithRoles on users {
+fragment UserWithRoles on Users {
   ...UserCore
   # assignedRoles removed - using simple role field instead
 }
 
-fragment UserWithTeam on users {
+fragment UserWithTeam on Users {
   ...UserCore
   # Team members not available in schema - removed
 }
 
-fragment UserWithWorkSchedule on users {
+fragment UserWithWorkSchedule on Users {
   ...UserCore
-  userWorkSchedules {
+  workSchedules {
     id
     workDay
     workHours
@@ -50,15 +50,15 @@ fragment UserWithWorkSchedule on users {
   }
 }
 
-fragment UserWithPayrolls on users {
+fragment UserWithPayrolls on Users {
   ...UserCore
 }
 
-fragment UserWithAllRelations on users {
+fragment UserWithAllRelations on Users {
   ...UserWithProfile
   # assignedRoles removed - using simple role field instead
   # Team members not available in schema - removed
-  userWorkSchedules {
+  workSchedules {
     id
     workDay
     workHours
@@ -70,7 +70,7 @@ fragment UserWithAllRelations on users {
   }
 }
 
-fragment UserBasicInfo on users {
+fragment UserBasicInfo on Users {
   id
   firstName
   lastName
@@ -88,11 +88,11 @@ fragment UserBasicInfo on users {
 
 # UserWithManager is defined in shared GraphQL
 
-fragment UserForStaff on users {
+fragment UserForStaff on Users {
   ...UserWithProfile
 }
 
-fragment UserForAuth on users {
+fragment UserForAuth on Users {
   id
   firstName
   lastName
@@ -103,7 +103,7 @@ fragment UserForAuth on users {
   clerkUserId
 }
 
-fragment UserForAudit on users {
+fragment UserForAudit on Users {
   id
   firstName
   lastName
@@ -114,7 +114,7 @@ fragment UserForAudit on users {
   # Sensitive fields excluded from audit logs
 }
 
-fragment UserRoleInfo on users {
+fragment UserRoleInfo on Users {
   id
   firstName
   lastName
@@ -125,7 +125,7 @@ fragment UserRoleInfo on users {
   # assignedRoles removed - using simple role field instead
 }
 
-fragment UserPermissionsInfo on users {
+fragment UserPermissionsInfo on Users {
   id
   firstName
   lastName
@@ -136,7 +136,7 @@ fragment UserPermissionsInfo on users {
 
 # Performance-optimized fragments for Phase 2
 
-fragment UserSummary on users {
+fragment UserSummary on Users {
   id
   firstName
   lastName
@@ -147,7 +147,7 @@ fragment UserSummary on users {
   isStaff
 }
 
-fragment UserListItem on users {
+fragment UserListItem on Users {
   ...UserSummary
   email
   managerId
@@ -155,9 +155,9 @@ fragment UserListItem on users {
   updatedAt
 }
 
-fragment UserDashboardCard on users {
+fragment UserDashboardCard on Users {
   ...UserSummary
-  managerUser {
+  manager {
     id
     firstName
     lastName
@@ -165,10 +165,10 @@ fragment UserDashboardCard on users {
   }
 }
 
-fragment UserTeamSummary on users {
+fragment UserTeamSummary on Users {
   ...UserSummary
   email
-  managerUser {
+  manager {
     id
     firstName
     lastName
@@ -177,9 +177,9 @@ fragment UserTeamSummary on users {
   # directReports not available in schema - removed
 }
 
-fragment UserTableRow on users {
+fragment UserTableRow on Users {
   ...UserListItem
-  managerUser {
+  manager {
     id
     firstName
     lastName

@@ -15,14 +15,14 @@ query GetStaffBillingPerformance($staffId: uuid, $dateFrom: date, $dateTo: date)
     lastName
     computedName
     email
-    totalBilledHours: primaryConsultantPayrollsAggregate {
+    totalBilledHours: primaryPayrollAssignmentsAggregate {
       aggregate {
         sum {
           actualHours
         }
       }
     }
-    totalRevenue: primaryConsultantPayrollsAggregate {
+    totalRevenue: primaryPayrollAssignmentsAggregate {
       aggregate {
         sum {
           estimatedRevenue
@@ -64,7 +64,7 @@ query GetClientProfitability($clientId: uuid, $dateFrom: date, $dateTo: date) {
 }
 
 # Time Entry Queries - Using payroll data as placeholder
-query GetTimeEntries($payrollId: uuid, $userId: uuid) {
+query GettimeEntries($payrollId: uuid, $userId: uuid) {
   timeEntries: payrolls(
     where: { 
       id: { _eq: $payrollId }
@@ -79,7 +79,7 @@ query GetTimeEntries($payrollId: uuid, $userId: uuid) {
 }
 
 # Time Entry Queries - Placeholder (time_entries table not yet implemented)  
-# query GetTimeEntries($payrollId: uuid, $userId: uuid) {
+# query GettimeEntries($payrollId: uuid, $userId: uuid) {
 #   timeEntries: timeEntries(
 #     where: {
 #       _and: [
@@ -101,7 +101,7 @@ query GetTimeEntries($payrollId: uuid, $userId: uuid) {
 
 # Payroll Billing Queries
 query GetPayrollForBilling($payrollId: uuid!) {
-  payrollById(id: $payrollId) {
+  payrollsByPk(id: $payrollId) {
     id
     name
     status
@@ -126,7 +126,7 @@ query GetPayrollForBilling($payrollId: uuid!) {
 }
 
 query GetClientServicesWithRates($clientId: uuid!) {
-  clientBillingAssignments(
+  clientBillingAssignment(
     where: { 
       clientId: { _eq: $clientId }
       isActive: { _eq: true }
@@ -139,7 +139,7 @@ query GetClientServicesWithRates($clientId: uuid!) {
     billingFrequency
     isActive
     effectiveDate
-    assignedBillingPlan {
+    billingPlan {
       id
       name
       description
@@ -152,7 +152,7 @@ query GetClientServicesWithRates($clientId: uuid!) {
 
 # Service Catalog Queries
 query GetServiceCatalog($isActive: Boolean) {
-  billingPlans(
+  billingPlan(
     where: { 
       isActive: { _eq: $isActive } 
     }
@@ -172,7 +172,7 @@ query GetServiceCatalog($isActive: Boolean) {
 }
 
 query GetServiceById($id: uuid!) {
-  billingPlanById(id: $id) {
+  billingPlanByPk(id: $id) {
     id
     name
     description
@@ -188,7 +188,7 @@ query GetServiceById($id: uuid!) {
 
 # Client Service Agreement Queries
 query GetClientServiceAgreements($clientId: uuid!) {
-  clientBillingAssignments(
+  clientBillingAssignment(
     where: { 
       clientId: { _eq: $clientId }
       isActive: { _eq: true }
@@ -208,7 +208,7 @@ query GetClientServiceAgreements($clientId: uuid!) {
     endDate
     createdAt
     updatedAt
-    assignedBillingPlan {
+    billingPlan {
       id
       name
       description
@@ -259,13 +259,13 @@ query GetBillingItemsByStatus($isApproved: Boolean, $clientId: uuid) {
       id
       name
     }
-    user {
+    staffUser {
       id
       firstName
       lastName
       computedName
     }
-    approver {
+    approvedByUser {
       id
       firstName
       lastName
@@ -275,7 +275,7 @@ query GetBillingItemsByStatus($isApproved: Boolean, $clientId: uuid) {
 }
 
 # Get all billing items with optional filtering
-query GetAllBillingItems($searchTerm: String, $isApproved: Boolean, $limit: Int, $offset: Int) {
+query GetAllbillingItems($searchTerm: String, $isApproved: Boolean, $limit: Int, $offset: Int) {
   billingItems(
     orderBy: { createdAt: DESC }
     limit: $limit
@@ -286,13 +286,13 @@ query GetAllBillingItems($searchTerm: String, $isApproved: Boolean, $limit: Int,
       id
       name
     }
-    user {
+    staffUser {
       id
       firstName
       lastName
       computedName
     }
-    approver {
+    approvedByUser {
       id
       firstName
       lastName
@@ -320,13 +320,13 @@ query GetBillingItemsWithSearch($searchTerm: String!, $limit: Int, $offset: Int)
       id
       name
     }
-    user {
+    staffUser {
       id
       firstName
       lastName
       computedName
     }
-    approver {
+    approvedByUser {
       id
       firstName
       lastName
@@ -348,13 +348,13 @@ query GetBillingItemsByApproval($isApproved: Boolean!, $limit: Int, $offset: Int
       id
       name
     }
-    user {
+    staffUser {
       id
       firstName
       lastName
       computedName
     }
-    approver {
+    approvedByUser {
       id
       firstName
       lastName
@@ -407,28 +407,28 @@ query GetBillingItemsByClient($clientId: uuid!) {
 
 # Get billing item by ID with full details
 query GetBillingItemById($id: uuid!) {
-  billingItemById(id: $id) {
+  billingItemsByPk(id: $id) {
     ...BillingItemFragment
     client {
       id
       name
       contactEmail
     }
-    user {
+    staffUser {
       id
       firstName
       lastName
       computedName
       email
     }
-    approver {
+    approvedByUser {
       id
       firstName
       lastName
       computedName
       email
     }
-    relatedPayroll {
+    payroll {
       id
       name
       status
@@ -478,7 +478,7 @@ query GetTimeEntriesByStaff($staffUserId: uuid!, $startDate: date, $endDate: dat
 
 # Payroll Billing Queries
 query GetPayrollWithBillingData($payrollId: uuid!) {
-  payrollById(id: $payrollId) {
+  payrollsByPk(id: $payrollId) {
     id
     name
     clientId

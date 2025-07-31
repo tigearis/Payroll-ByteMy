@@ -41,19 +41,23 @@ export interface AuthEvent {
 
 // GraphQL mutations for database audit logging
 const INSERT_AUDIT_LOG = gql`
-  mutation InsertAuditLog($event: auditLogs_insert_input!) {
-    insertAuditLog(object: $event) {
-      id
-      createdAt
+  mutation InsertAuditLog($event: AuditAuditLogInsertInput!) {
+    insertAuditAuditLog(objects: [$event]) {
+      returning {
+        id
+        eventTime
+      }
     }
   }
 `;
 
 const INSERT_AUTH_EVENT = gql`
-  mutation InsertAuthEvent($event: authEvents_insert_input!) {
-    insertAuthEvent(object: $event) {
-      id
-      eventTime
+  mutation InsertAuthEvent($event: AuditAuthEventsInsertInput!) {
+    insertAuditAuthEvents(objects: [$event]) {
+      returning {
+        id
+        eventTime
+      }
     }
   }
 `;

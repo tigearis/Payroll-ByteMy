@@ -2,7 +2,7 @@
 # Security Classification: MEDIUM - Contains business communication data
 # SOC2 Compliance: User-generated content with audit requirements
 
-fragment NoteCore on notes {
+fragment NoteCore on Notes {
   id
   content
   isImportant
@@ -13,9 +13,9 @@ fragment NoteCore on notes {
   entityId
 }
 
-fragment NoteBasic on notes {
+fragment NoteBasic on Notes {
   ...NoteCore
-  authorUser {
+  author {
     id
     firstName
     lastName
@@ -25,12 +25,12 @@ fragment NoteBasic on notes {
   }
 }
 
-fragment NoteDetailed on notes {
+fragment NoteDetailed on Notes {
   ...NoteBasic
   # Additional fields if any exist in the schema
 }
 
-fragment NoteWithEntity on notes {
+fragment NoteWithEntity on Notes {
   ...NoteBasic
   # Entity relationships would go here based on entityType
   # This is a polymorphic relationship pattern
@@ -38,7 +38,7 @@ fragment NoteWithEntity on notes {
 
 # Performance-optimized fragments
 
-fragment NoteSummary on notes {
+fragment NoteSummary on Notes {
   id
   isImportant
   createdAt
@@ -47,11 +47,11 @@ fragment NoteSummary on notes {
   userId
 }
 
-fragment NoteListItem on notes {
+fragment NoteListItem on Notes {
   ...NoteSummary
   content
   updatedAt
-  authorUser {
+  author {
     id
     firstName
     lastName
@@ -60,19 +60,19 @@ fragment NoteListItem on notes {
   }
 }
 
-fragment NoteTableRow on notes {
+fragment NoteTableRow on Notes {
   ...NoteListItem
   # Additional fields for table display if needed
 }
 
-fragment NoteMinimal on notes {
+fragment NoteMinimal on Notes {
   id
   isImportant
   createdAt
   userId
 }
 
-fragment NoteForAudit on notes {
+fragment NoteForAudit on Notes {
   id
   isImportant
   createdAt
@@ -83,10 +83,10 @@ fragment NoteForAudit on notes {
   # Content excluded from audit for privacy
 }
 
-fragment NoteCard on notes {
+fragment NoteCard on Notes {
   ...NoteSummary
   content
-  authorUser {
+  author {
     id
     firstName
     lastName
@@ -95,9 +95,9 @@ fragment NoteCard on notes {
   }
 }
 
-fragment NoteDashboard on notes {
+fragment NoteDashboard on Notes {
   ...NoteSummary
-  authorUser {
+  author {
     id
     firstName
     lastName
@@ -107,27 +107,27 @@ fragment NoteDashboard on notes {
 
 # Entity-specific note fragments
 
-fragment PayrollNote on notes {
+fragment PayrollNote on Notes {
   ...NoteBasic
   # When entityType = 'payroll'
 }
 
-fragment ClientNote on notes {
+fragment ClientNote on Notes {
   ...NoteBasic
   # When entityType = 'client'  
 }
 
-fragment UserNote on notes {
+fragment UserNote on Notes {
   ...NoteBasic
   # When entityType = 'user'
 }
 
-fragment ImportantNote on notes {
+fragment ImportantNote on Notes {
   ...NoteListItem
   # For isImportant flagged notes
 }
 
-fragment RecentNote on notes {
+fragment RecentNote on Notes {
   ...NoteCard
   # For recently created/updated notes
 }

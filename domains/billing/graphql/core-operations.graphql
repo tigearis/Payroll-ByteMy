@@ -3,8 +3,8 @@
 
 # Note: GetServiceCatalog query moved to queries.graphql to avoid duplication
 
-mutation CreateService($input: billingPlansInsertInput!) {
-  insertBillingPlan(object: $input) {
+mutation CreateService($input: BillingPlanInsertInput!) {
+  insertBillingPlanOne(object: $input) {
     id
     name
     description
@@ -39,8 +39,8 @@ query GetTimeEntriesByPayroll($payrollId: uuid!) {
   }
 }
 
-mutation CreateTimeEntry($input: timeEntriesInsertInput!) {
-  insertTimeEntryOne(object: $input) {
+mutation CreateTimeEntryCore($input: TimeEntriesInsertInput!) {
+  insertTimeEntriesOne(object: $input) {
     id
     staffUserId
     clientId
@@ -58,8 +58,8 @@ mutation CreateTimeEntry($input: timeEntriesInsertInput!) {
 
 # Core Payroll Billing Operations - Removed duplicate (operation exists in queries.graphql)
 
-mutation UpdatePayrollBillingStatus($payrollId: uuid!, $updates: payrollsSetInput!) {
-  updatePayrollById(
+mutation UpdatePayrollBillingStatusCore($payrollId: uuid!, $updates: PayrollsSetInput!) {
+  updatePayrollsByPk(
     pkColumns: { id: $payrollId }
     _set: $updates
   ) {

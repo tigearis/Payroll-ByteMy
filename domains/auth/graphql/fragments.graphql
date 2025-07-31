@@ -3,7 +3,7 @@
 # SOC2 Compliance: Strict access controls with audit logging
 # Import shared fragments: UserCore, RoleCore, PermissionCore, ResourceCore, UserRoleCore, RolePermissionCore
 
-fragment AuthUserCore on users {
+fragment AuthUserCore on Users {
   id
   firstName
   lastName
@@ -16,12 +16,12 @@ fragment AuthUserCore on users {
   updatedAt
 }
 
-fragment AuthUserWithRoles on users {
+fragment AuthUserWithRoles on Users {
   ...AuthUserCore
-  assignedRoles {
+  roleAssignments {
     id
     roleId
-    assignedRole {
+    role {
       id
       name
       displayName
@@ -32,7 +32,7 @@ fragment AuthUserWithRoles on users {
   }
 }
 
-fragment AuthRoleCore on roles {
+fragment AuthRoleCore on Roles {
   id
   name
   displayName
@@ -43,7 +43,7 @@ fragment AuthRoleCore on roles {
   updatedAt
 }
 
-fragment AuthPermissionCore on permissions {
+fragment AuthPermissionCore on Permissions {
   id
   resourceId
   action
@@ -53,13 +53,13 @@ fragment AuthPermissionCore on permissions {
   updatedAt
 }
 
-fragment AuthUserRoleWithDetails on userRoles {
+fragment AuthUserRoleWithDetails on UserRoles {
   id
   userId
   roleId
   createdAt
   updatedAt
-  roleUser {
+  user {
     id
     firstName
     lastName
@@ -67,7 +67,7 @@ fragment AuthUserRoleWithDetails on userRoles {
     email
     isActive
   }
-  assignedRole {
+  role {
     id
     name
     displayName
@@ -78,7 +78,7 @@ fragment AuthUserRoleWithDetails on userRoles {
 
 # RolePermissionCore now moved to shared/graphql/fragments.graphql
 
-fragment PermissionOverrideCore on permissionOverrides {
+fragment PermissionOverrideCore on PermissionOverrides {
   id
   userId
   role
@@ -93,7 +93,7 @@ fragment PermissionOverrideCore on permissionOverrides {
 }
 
 # Invitation management fragments
-fragment UserInvitationCore on userInvitations {
+fragment UserInvitationCore on UserInvitations {
   id
   email
   firstName
@@ -116,7 +116,7 @@ fragment UserInvitationCore on userInvitations {
   updatedAt
 }
 
-fragment UserInvitationWithDetails on userInvitations {
+fragment UserInvitationWithDetails on UserInvitations {
   ...UserInvitationCore
   invitedByUser {
     id

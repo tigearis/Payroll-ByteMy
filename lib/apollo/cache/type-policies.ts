@@ -77,7 +77,7 @@ const entityTypePolicies = {
   users: { 
     keyFields: ["id"],
     fields: {
-      userRoles: {
+      roleAssignments: {
         merge: (_existing: any, incoming: any) => incoming,
       },
       teamMembers: {

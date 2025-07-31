@@ -5909,9 +5909,9 @@ export type ClientExternalSystems = {
   /** Unique identifier for the client-system mapping */
   id: Scalars['uuid']['output'];
   /** An object relationship */
-  linkedClient: Clients;
+  client: Clients;
   /** An object relationship */
-  linkedExternalSystem: ExternalSystems;
+  externalSystem: ExternalSystems;
   /** Client identifier in the external system */
   systemClientId?: Maybe<Scalars['String']['output']>;
   /** Timestamp when the mapping was last updated */
@@ -5974,8 +5974,8 @@ export type ClientExternalSystemsBoolExp = {
   createdAt?: InputMaybe<TimestamptzComparisonExp>;
   externalSystemId?: InputMaybe<UuidComparisonExp>;
   id?: InputMaybe<UuidComparisonExp>;
-  linkedClient?: InputMaybe<ClientsBoolExp>;
-  linkedExternalSystem?: InputMaybe<ExternalSystemsBoolExp>;
+  client?: InputMaybe<ClientsBoolExp>;
+  externalSystem?: InputMaybe<ExternalSystemsBoolExp>;
   systemClientId?: InputMaybe<StringComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
 };
@@ -5998,8 +5998,8 @@ export type ClientExternalSystemsInsertInput = {
   externalSystemId?: InputMaybe<Scalars['uuid']['input']>;
   /** Unique identifier for the client-system mapping */
   id?: InputMaybe<Scalars['uuid']['input']>;
-  linkedClient?: InputMaybe<ClientsObjRelInsertInput>;
-  linkedExternalSystem?: InputMaybe<ExternalSystemsObjRelInsertInput>;
+  client?: InputMaybe<ClientsObjRelInsertInput>;
+  externalSystem?: InputMaybe<ExternalSystemsObjRelInsertInput>;
   /** Client identifier in the external system */
   systemClientId?: InputMaybe<Scalars['String']['input']>;
   /** Timestamp when the mapping was last updated */
@@ -6094,8 +6094,8 @@ export type ClientExternalSystemsOrderBy = {
   createdAt?: InputMaybe<OrderBy>;
   externalSystemId?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
-  linkedClient?: InputMaybe<ClientsOrderBy>;
-  linkedExternalSystem?: InputMaybe<ExternalSystemsOrderBy>;
+  client?: InputMaybe<ClientsOrderBy>;
+  externalSystem?: InputMaybe<ExternalSystemsOrderBy>;
   systemClientId?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
 };
@@ -18350,9 +18350,9 @@ export type Query_Root = {
   /** fetch data from the table: "userroles" using primary key columns */
   userRoleById?: Maybe<UserRoles>;
   /** fetch data from the table: "userroles" */
-  userRoles: Array<UserRoles>;
+  roleAssignments: Array<UserRoles>;
   /** fetch aggregated fields from the table: "userroles" */
-  userRolesAggregate: UserRolesAggregate;
+  roleAssignmentsAggregate: UserRolesAggregate;
   /** fetch data from the table: "user_skills" */
   userSkill: Array<UserSkill>;
   /** fetch aggregated fields from the table: "user_skills" */
@@ -19939,7 +19939,7 @@ export type RolePermissions = {
   conditions?: Maybe<Scalars['jsonb']['output']>;
   createdAt: Scalars['timestamptz']['output'];
   /** An object relationship */
-  grantedPermission: Permissions;
+  permission: Permissions;
   /** An object relationship */
   grantedToRole: Roles;
   id: Scalars['uuid']['output'];
@@ -20013,7 +20013,7 @@ export type RolePermissionsBoolExp = {
   _or?: InputMaybe<Array<RolePermissionsBoolExp>>;
   conditions?: InputMaybe<JsonbComparisonExp>;
   createdAt?: InputMaybe<TimestamptzComparisonExp>;
-  grantedPermission?: InputMaybe<PermissionsBoolExp>;
+  permission?: InputMaybe<PermissionsBoolExp>;
   grantedToRole?: InputMaybe<RolesBoolExp>;
   id?: InputMaybe<UuidComparisonExp>;
   permissionId?: InputMaybe<UuidComparisonExp>;
@@ -20048,7 +20048,7 @@ export type RolePermissionsDeleteKeyInput = {
 export type RolePermissionsInsertInput = {
   conditions?: InputMaybe<Scalars['jsonb']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  grantedPermission?: InputMaybe<PermissionsObjRelInsertInput>;
+  permission?: InputMaybe<PermissionsObjRelInsertInput>;
   grantedToRole?: InputMaybe<RolesObjRelInsertInput>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   permissionId?: InputMaybe<Scalars['uuid']['input']>;
@@ -20114,7 +20114,7 @@ export type RolePermissionsOnConflict = {
 export type RolePermissionsOrderBy = {
   conditions?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
-  grantedPermission?: InputMaybe<PermissionsOrderBy>;
+  permission?: InputMaybe<PermissionsOrderBy>;
   grantedToRole?: InputMaybe<RolesOrderBy>;
   id?: InputMaybe<OrderBy>;
   permissionId?: InputMaybe<OrderBy>;
@@ -21144,11 +21144,11 @@ export type Subscription_Root = {
   /** fetch data from the table: "userroles" using primary key columns */
   userRoleById?: Maybe<UserRoles>;
   /** fetch data from the table: "userroles" */
-  userRoles: Array<UserRoles>;
+  roleAssignments: Array<UserRoles>;
   /** fetch aggregated fields from the table: "userroles" */
-  userRolesAggregate: UserRolesAggregate;
+  roleAssignmentsAggregate: UserRolesAggregate;
   /** fetch data from the table in a streaming manner: "userroles" */
-  userRolesStream: Array<UserRoles>;
+  roleAssignmentsStream: Array<UserRoles>;
   /** fetch data from the table: "user_skills" */
   userSkill: Array<UserSkill>;
   /** fetch aggregated fields from the table: "user_skills" */
@@ -24018,9 +24018,9 @@ export type UserInvitationsUpdates = {
 
 /** columns and relationships of "userroles" */
 export type UserRoles = {
-  __typename?: 'userRoles';
+  __typename?: 'roleAssignments';
   /** An object relationship */
-  assignedRole: Roles;
+  role: Roles;
   createdAt: Scalars['timestamptz']['output'];
   id: Scalars['uuid']['output'];
   roleId: Scalars['uuid']['output'];
@@ -24032,7 +24032,7 @@ export type UserRoles = {
 
 /** aggregated selection of "userroles" */
 export type UserRolesAggregate = {
-  __typename?: 'userRolesAggregate';
+  __typename?: 'roleAssignmentsAggregate';
   aggregate?: Maybe<UserRolesAggregateFields>;
   nodes: Array<UserRoles>;
 };
@@ -24050,7 +24050,7 @@ export type UserRolesAggregateBoolExpCount = {
 
 /** aggregate fields of "userroles" */
 export type UserRolesAggregateFields = {
-  __typename?: 'userRolesAggregateFields';
+  __typename?: 'roleAssignmentsAggregateFields';
   count: Scalars['Int']['output'];
   max?: Maybe<UserRolesMaxFields>;
   min?: Maybe<UserRolesMinFields>;
@@ -24082,7 +24082,7 @@ export type UserRolesBoolExp = {
   _and?: InputMaybe<Array<UserRolesBoolExp>>;
   _not?: InputMaybe<UserRolesBoolExp>;
   _or?: InputMaybe<Array<UserRolesBoolExp>>;
-  assignedRole?: InputMaybe<RolesBoolExp>;
+  role?: InputMaybe<RolesBoolExp>;
   createdAt?: InputMaybe<TimestamptzComparisonExp>;
   id?: InputMaybe<UuidComparisonExp>;
   roleId?: InputMaybe<UuidComparisonExp>;
@@ -24101,7 +24101,7 @@ export type UserRolesConstraint =
 
 /** input type for inserting data into table "userroles" */
 export type UserRolesInsertInput = {
-  assignedRole?: InputMaybe<RolesObjRelInsertInput>;
+  role?: InputMaybe<RolesObjRelInsertInput>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   roleId?: InputMaybe<Scalars['uuid']['input']>;
@@ -24112,7 +24112,7 @@ export type UserRolesInsertInput = {
 
 /** aggregate max on columns */
 export type UserRolesMaxFields = {
-  __typename?: 'userRolesMaxFields';
+  __typename?: 'roleAssignmentsMaxFields';
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
   id?: Maybe<Scalars['uuid']['output']>;
   roleId?: Maybe<Scalars['uuid']['output']>;
@@ -24131,7 +24131,7 @@ export type UserRolesMaxOrderBy = {
 
 /** aggregate min on columns */
 export type UserRolesMinFields = {
-  __typename?: 'userRolesMinFields';
+  __typename?: 'roleAssignmentsMinFields';
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
   id?: Maybe<Scalars['uuid']['output']>;
   roleId?: Maybe<Scalars['uuid']['output']>;
@@ -24150,7 +24150,7 @@ export type UserRolesMinOrderBy = {
 
 /** response of any mutation on the table "userroles" */
 export type UserRolesMutationResponse = {
-  __typename?: 'userRolesMutationResponse';
+  __typename?: 'roleAssignmentsMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
@@ -24166,7 +24166,7 @@ export type UserRolesOnConflict = {
 
 /** Ordering options when selecting data from "userroles". */
 export type UserRolesOrderBy = {
-  assignedRole?: InputMaybe<RolesOrderBy>;
+  role?: InputMaybe<RolesOrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   roleId?: InputMaybe<OrderBy>;
@@ -24203,7 +24203,7 @@ export type UserRolesSetInput = {
   userId?: InputMaybe<Scalars['uuid']['input']>;
 };
 
-/** Streaming cursor of the table "userRoles" */
+/** Streaming cursor of the table "roleAssignments" */
 export type UserRolesStreamCursorInput = {
   /** Stream column input with initial value */
   initialValue: UserRolesStreamCursorValueInput;
@@ -24407,9 +24407,9 @@ export type Users = {
   /** User address or location */
   address?: Maybe<Scalars['String']['output']>;
   /** An array relationship */
-  assignedRoles: Array<UserRoles>;
+  roleAssignments: Array<UserRoles>;
   /** An aggregate relationship */
-  assignedRolesAggregate: UserRolesAggregate;
+  roleAssignmentsAggregate: UserRolesAggregate;
   /** An array relationship */
   authoredNotes: Array<Notes>;
   /** An aggregate relationship */
@@ -25175,8 +25175,8 @@ export type UsersBoolExp = {
   _not?: InputMaybe<UsersBoolExp>;
   _or?: InputMaybe<Array<UsersBoolExp>>;
   address?: InputMaybe<StringComparisonExp>;
-  assignedRoles?: InputMaybe<UserRolesBoolExp>;
-  assignedRolesAggregate?: InputMaybe<UserRolesAggregateBoolExp>;
+  roleAssignments?: InputMaybe<UserRolesBoolExp>;
+  roleAssignmentsAggregate?: InputMaybe<UserRolesAggregateBoolExp>;
   authoredNotes?: InputMaybe<NotesBoolExp>;
   authoredNotesAggregate?: InputMaybe<NotesAggregateBoolExp>;
   backupConsultantPayrolls?: InputMaybe<PayrollsBoolExp>;
@@ -25275,7 +25275,7 @@ export type UsersIncInput = {
 export type UsersInsertInput = {
   /** User address or location */
   address?: InputMaybe<Scalars['String']['input']>;
-  assignedRoles?: InputMaybe<UserRolesArrRelInsertInput>;
+  roleAssignments?: InputMaybe<UserRolesArrRelInsertInput>;
   authoredNotes?: InputMaybe<NotesArrRelInsertInput>;
   backupConsultantPayrolls?: InputMaybe<PayrollsArrRelInsertInput>;
   /** User biography or description */
@@ -25550,7 +25550,7 @@ export type UsersOnConflict = {
 /** Ordering options when selecting data from "users". */
 export type UsersOrderBy = {
   address?: InputMaybe<OrderBy>;
-  assignedRolesAggregate?: InputMaybe<UserRolesAggregateOrderBy>;
+  roleAssignmentsAggregate?: InputMaybe<UserRolesAggregateOrderBy>;
   authoredNotesAggregate?: InputMaybe<NotesAggregateOrderBy>;
   backupConsultantPayrollsAggregate?: InputMaybe<PayrollsAggregateOrderBy>;
   bio?: InputMaybe<OrderBy>;

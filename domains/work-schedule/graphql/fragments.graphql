@@ -2,7 +2,7 @@
 # Security Classification: MEDIUM - Employee scheduling and time management
 
 # Core fragments with new capacity fields
-fragment WorkScheduleCore on workSchedule {
+fragment WorkScheduleCore on WorkSchedule {
   id
   userId
   workDay
@@ -14,11 +14,11 @@ fragment WorkScheduleCore on workSchedule {
   updatedAt
 }
 
-fragment WorkScheduleBasic on workSchedule {
+fragment WorkScheduleBasic on WorkSchedule {
   ...WorkScheduleCore
 }
 
-fragment WorkScheduleMinimal on workSchedule {
+fragment WorkScheduleMinimal on WorkSchedule {
   id
   userId
   workDay
@@ -28,7 +28,7 @@ fragment WorkScheduleMinimal on workSchedule {
 }
 
 # User relationship fragments
-fragment WorkScheduleWithUser on workSchedule {
+fragment WorkScheduleWithUser on WorkSchedule {
   ...WorkScheduleBasic
   user {
     id
@@ -41,7 +41,7 @@ fragment WorkScheduleWithUser on workSchedule {
   }
 }
 
-fragment WorkScheduleComplete on workSchedule {
+fragment WorkScheduleComplete on WorkSchedule {
   ...WorkScheduleBasic
   user {
     id
@@ -56,7 +56,7 @@ fragment WorkScheduleComplete on workSchedule {
   }
 }
 
-fragment TeamWorkSchedule on workSchedule {
+fragment TeamWorkSchedule on WorkSchedule {
   ...WorkScheduleBasic
   user {
     id
@@ -72,7 +72,7 @@ fragment TeamWorkSchedule on workSchedule {
 }
 
 # Capacity planning fragments
-fragment WorkScheduleCapacity on workSchedule {
+fragment WorkScheduleCapacity on WorkSchedule {
   id
   userId
   workDay
@@ -89,15 +89,15 @@ fragment WorkScheduleCapacity on workSchedule {
   }
 }
 
-fragment WorkScheduleListItem on workSchedule {
+fragment WorkScheduleListItem on WorkSchedule {
   ...WorkScheduleCapacity
 }
 
-fragment MyWorkSchedule on workSchedule {
+fragment MyWorkSchedule on WorkSchedule {
   ...WorkScheduleComplete
 }
 
-fragment WorkScheduleCalendarItem on workSchedule {
+fragment WorkScheduleCalendarItem on WorkSchedule {
   id
   workDay
   workHours
@@ -111,11 +111,11 @@ fragment WorkScheduleCalendarItem on workSchedule {
   }
 }
 
-fragment WorkScheduleMonthlyView on workSchedule {
+fragment WorkScheduleMonthlyView on WorkSchedule {
   ...WorkScheduleCalendarItem
 }
 
-fragment WorkScheduleConflictCheck on workSchedule {
+fragment WorkScheduleConflictCheck on WorkSchedule {
   id
   userId
   workDay
@@ -123,7 +123,7 @@ fragment WorkScheduleConflictCheck on workSchedule {
   payrollCapacityHours
 }
 
-fragment WorkScheduleDashboardCard on workSchedule {
+fragment WorkScheduleDashboardCard on WorkSchedule {
   ...WorkScheduleCapacity
   user {
     id
@@ -137,12 +137,12 @@ fragment WorkScheduleDashboardCard on workSchedule {
   }
 }
 
-fragment WorkScheduleWeeklyView on workSchedule {
+fragment WorkScheduleWeeklyView on WorkSchedule {
   ...WorkScheduleDashboardCard
 }
 
 # Audit and tracking fragments
-fragment WorkScheduleChangeLog on workSchedule {
+fragment WorkScheduleChangeLog on WorkSchedule {
   id
   userId
   workDay
@@ -154,7 +154,7 @@ fragment WorkScheduleChangeLog on workSchedule {
   updatedAt
 }
 
-fragment WorkScheduleForAudit on workSchedule {
+fragment WorkScheduleForAudit on WorkSchedule {
   ...WorkScheduleChangeLog
   user {
     id
@@ -165,7 +165,7 @@ fragment WorkScheduleForAudit on workSchedule {
   }
 }
 
-fragment WorkSchedulePattern on workSchedule {
+fragment WorkSchedulePattern on WorkSchedule {
   workDay
   workHours
   adminTimeHours

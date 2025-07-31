@@ -152,10 +152,10 @@ export async function getHierarchicalPermissionsFromDatabase(
     const { data: userData } = await adminApolloClient.query({
       query: gql`
         query GetUserRoleAssignments($userId: uuid!) {
-          userRoles(where: { userId: { _eq: $userId } }) {
+          roleAssignments(where: { userId: { _eq: $userId } }) {
             id
             roleId
-            assignedRole {
+            role {
               id
               name
               displayName
@@ -168,9 +168,9 @@ export async function getHierarchicalPermissionsFromDatabase(
       fetchPolicy: "network-only",
     });
 
-    const userRoles = userData?.userRoles || [];
+    const roleAssignments = userData?.roleAssignments || [];
 
-    if (userRoles.length === 0) {
+    if (roleAssignments.length === 0) {
       console.warn(
         `⚠️ No role assignments found for user ${userId}, defaulting to viewer`
       );
@@ -184,7 +184,7 @@ export async function getHierarchicalPermissionsFromDatabase(
     }
 
     // Get the highest priority role (developer = highest)
-    const highestRole = getHighestRoleFromAssignments(userRoles);
+    const highestRole = getHighestRoleFromAssignments(roleAssignments);
 
     // Generate allowed roles based on hierarchy
     const allowedRoles = generateAllowedRolesHierarchy(highestRole);
@@ -233,7 +233,7 @@ async function calculateExcludedPermissions(
     const { data: permissionsData } = await adminApolloClient.query({
       query: gql`
         query GetUserActualPermissions($userId: uuid!) {
-          userRoles(where: { userId: { _eq: $userId } }) {
+          roleAssignments(where: { userId: { _eq: $userId } }) {
             roleId
           }
         }
@@ -243,7 +243,7 @@ async function calculateExcludedPermissions(
     });
 
     const roleIds =
-      permissionsData?.userRoles?.map((ur: any) => ur.roleId) || [];
+      permissionsData?.roleAssignments?.map((ur: any) => ur.roleId) || [];
 
     if (roleIds.length === 0) {
       return [];
@@ -254,7 +254,7 @@ async function calculateExcludedPermissions(
       query: gql`
         query GetActualRolePermissions($roleIds: [uuid!]!) {
           rolePermissions(where: { roleId: { _in: $roleIds } }) {
-            grantedPermission {
+            permission {
               action
               relatedResource {
                 name
@@ -270,7 +270,7 @@ async function calculateExcludedPermissions(
     const actualPermissions = new Set(
       actualPermissionsData?.rolePermissions?.map(
         (rp: any) =>
-          `${rp.grantedPermission.relatedResource.name}.${rp.grantedPermission.action}`
+          `${rp.permission.relatedResource.name}.${rp.permission.action}`
       ) || []
     );
 
@@ -345,11 +345,11 @@ function generateAllowedRolesHierarchy(userRole: UserRole): UserRole[] {
 /**
  * Get highest priority role from database assignments
  */
-function getHighestRoleFromAssignments(userRoles: any[]): UserRole {
+function getHighestRoleFromAssignments(roleAssignments: any[]): UserRole {
   // Find the role with highest priority (lowest index in hierarchy)
   for (const hierarchyRole of ROLE_HIERARCHY) {
-    const hasRole = userRoles.some(
-      (ur: any) => ur.assignedRole.name === hierarchyRole
+    const hasRole = roleAssignments.some(
+      (ur: any) => ur.role.name === hierarchyRole
     );
     if (hasRole) {
       return hierarchyRole as UserRole;

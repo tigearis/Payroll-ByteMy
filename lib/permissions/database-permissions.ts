@@ -40,10 +40,10 @@ const ROLE_HIERARCHY: UserRole[] = [
 // Query to get user's role assignments and permissions
 const GET_USER_PERMISSIONS = gql`
   query GetUserPermissions($userId: uuid!) {
-    userRoles(where: { userId: { _eq: $userId } }) {
+    roleAssignments(where: { userId: { _eq: $userId } }) {
       id
       roleId
-      assignedRole {
+      role {
         id
         name
         displayName
@@ -62,7 +62,7 @@ const GET_USER_PERMISSIONS = gql`
       }
     ) {
       id
-      grantedPermission {
+      permission {
         id
         action
         description
@@ -85,7 +85,7 @@ const GET_ROLE_PERMISSIONS = gql`
   query GetRolePermissions($roleName: String!) {
     rolePermissions(where: { grantedToRole: { name: { _eq: $roleName } } }) {
       id
-      grantedPermission {
+      permission {
         id
         action
         description
@@ -129,10 +129,10 @@ export async function getUserPermissionsFromDatabase(
     const { data: userData } = await adminApolloClient.query({
       query: gql`
         query GetUserRoleAssignments($userId: uuid!) {
-          userRoles(where: { userId: { _eq: $userId } }) {
+          roleAssignments(where: { userId: { _eq: $userId } }) {
             id
             roleId
-            assignedRole {
+            role {
               id
               name
               displayName
@@ -145,9 +145,9 @@ export async function getUserPermissionsFromDatabase(
       fetchPolicy: "network-only",
     });
 
-    const userRoles = userData?.userRoles || [];
+    const roleAssignments = userData?.roleAssignments || [];
 
-    if (userRoles.length === 0) {
+    if (roleAssignments.length === 0) {
       console.warn(`⚠️ No role assignments found for user ${userId}`);
       return {
         permissions: [],
@@ -158,7 +158,7 @@ export async function getUserPermissionsFromDatabase(
     }
 
     // Get all role IDs for this user
-    const roleIds = userRoles.map((ur: any) => ur.roleId);
+    const roleIds = roleAssignments.map((ur: any) => ur.roleId);
 
     // Get permissions for all assigned roles
     const { data: permissionsData } = await adminApolloClient.query({
@@ -166,7 +166,7 @@ export async function getUserPermissionsFromDatabase(
         query GetRolePermissions($roleIds: [uuid!]!) {
           rolePermissions(where: { roleId: { _in: $roleIds } }) {
             id
-            grantedPermission {
+            permission {
               id
               action
               description
@@ -192,7 +192,7 @@ export async function getUserPermissionsFromDatabase(
     // Extract unique permissions
     const uniquePermissions = new Set<string>();
     rolePermissions.forEach((rp: any) => {
-      const perm = rp.grantedPermission;
+      const perm = rp.permission;
       const resource = perm.relatedResource.name;
       const permission = `${resource}.${perm.action}`;
       uniquePermissions.add(permission);
@@ -201,8 +201,8 @@ export async function getUserPermissionsFromDatabase(
     const permissions = Array.from(uniquePermissions).sort();
 
     // Get allowed roles based on hierarchy
-    const userRoleNames = userRoles.map(
-      (ur: any) => ur.assignedRole.name as UserRole
+    const userRoleNames = roleAssignments.map(
+      (ur: any) => ur.role.name as UserRole
     );
     const allowedRoles = await getAllowedRolesFromDatabase(userRoleNames);
 
@@ -244,7 +244,7 @@ export async function getRolePermissionsFromDatabase(
     const rolePermissions = data?.rolePermissions || [];
 
     const permissions = rolePermissions.map((rp: any) => {
-      const perm = rp.grantedPermission;
+      const perm = rp.permission;
       const resource = perm.relatedResource.name;
       return `${resource}.${perm.action}`;
     });
@@ -275,17 +275,17 @@ export async function getAllowedRolesFromDatabase(
     const allRoles = data?.roles || [];
 
     // Find the highest priority role for this user
-    const userRoles = allRoles.filter((role: any) =>
+    const roleAssignments = allRoles.filter((role: any) =>
       userRoleNames.includes(role.name as UserRole)
     );
 
-    if (userRoles.length === 0) {
+    if (roleAssignments.length === 0) {
       return ["viewer"]; // Default fallback
     }
 
     // Get the highest priority (largest number = highest priority)
     const highestPriority = Math.max(
-      ...userRoles.map((role: any) => role.priority || 0)
+      ...roleAssignments.map((role: any) => role.priority || 0)
     );
 
     // Return all roles with priority <= user's highest priority
@@ -378,10 +378,10 @@ export async function getUserRoleAssignments(
     const { data } = await adminApolloClient.query({
       query: gql`
         query GetUserRoleAssignments($userId: uuid!) {
-          userRoles(where: { userId: { _eq: $userId } }) {
+          roleAssignments(where: { userId: { _eq: $userId } }) {
             id
             roleId
-            assignedRole {
+            role {
               id
               name
             }
@@ -392,9 +392,9 @@ export async function getUserRoleAssignments(
       fetchPolicy: "network-only",
     });
 
-    const userRoles = data?.userRoles || [];
-    return userRoles.map((ur: any) => ({
-      roleName: ur.assignedRole.name as UserRole,
+    const roleAssignments = data?.roleAssignments || [];
+    return roleAssignments.map((ur: any) => ({
+      roleName: ur.role.name as UserRole,
       roleId: ur.roleId,
     }));
   } catch (error) {
@@ -439,7 +439,7 @@ export async function syncUserRoleAssignments(
     const { data: existingData } = await adminApolloClient.query({
       query: gql`
         query CheckExistingRoleAssignment($userId: uuid!, $roleId: uuid!) {
-          userRoles(
+          roleAssignments(
             where: { userId: { _eq: $userId }, roleId: { _eq: $roleId } }
           ) {
             id
@@ -450,7 +450,7 @@ export async function syncUserRoleAssignments(
       fetchPolicy: "network-only",
     });
 
-    if (existingData?.userRoles?.length > 0) {
+    if (existingData?.roleAssignments?.length > 0) {
       console.log(
         `✅ User ${userId} already has role assignment for ${directRole}`
       );

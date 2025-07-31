@@ -1,7 +1,7 @@
 # Invoice Management Operations - Semi-Automated Billing System
 
 # Core Invoice Queries
-query GetInvoices($where: billingInvoiceBoolExp, $orderBy: [billingInvoiceOrderBy!], $limit: Int, $offset: Int) {
+query GetInvoices($where: BillingInvoiceBoolExp, $orderBy: [BillingInvoiceOrderBy!], $limit: Int, $offset: Int) {
   billingInvoice(
     where: $where
     orderBy: $orderBy
@@ -29,7 +29,7 @@ query GetInvoices($where: billingInvoiceBoolExp, $orderBy: [billingInvoiceOrderB
       contactEmail
       contactPhone
     }
-    billingInvoiceItems {
+    invoiceItems {
       id
       descriptionOverride
       quantityHours
@@ -41,7 +41,7 @@ query GetInvoices($where: billingInvoiceBoolExp, $orderBy: [billingInvoiceOrderB
 }
 
 query GetInvoiceById($id: uuid!) {
-  billingInvoiceById(id: $id) {
+  billingInvoiceByPk(id: $id) {
     id
     invoiceNumber
     clientId
@@ -63,7 +63,7 @@ query GetInvoiceById($id: uuid!) {
       contactEmail
       contactPhone
     }
-    billingInvoiceItems {
+    invoiceItems {
       id
       descriptionOverride
       quantityHours
@@ -108,7 +108,7 @@ query GetBillingItemsForInvoice($clientId: uuid, $payrollIds: [uuid!]) {
 }
 
 query GetClientForInvoice($clientId: uuid!) {
-  clientById(id: $clientId) {
+  clientsByPk(id: $clientId) {
     id
     name
     contactPerson
@@ -196,8 +196,8 @@ query GetClientsWithUnbilledItems {
 }
 
 # Invoice Mutations
-mutation CreateInvoice($input: billingInvoiceInsertInput!) {
-  insertBillingInvoice(object: $input) {
+mutation CreateInvoice($input: BillingInvoiceInsertInput!) {
+  insertBillingInvoiceOne(object: $input) {
     id
     invoiceNumber
     clientId
@@ -209,7 +209,7 @@ mutation CreateInvoice($input: billingInvoiceInsertInput!) {
 }
 
 mutation UpdateInvoiceStatus($id: uuid!, $status: String!, $notes: String) {
-  updateBillingInvoiceById(
+  updateBillingInvoiceByPk(
     pkColumns: { id: $id }
     _set: { 
       status: $status
@@ -231,7 +231,7 @@ mutation UpdateInvoiceDetails(
   $currency: String
   $notes: String
 ) {
-  updateBillingInvoiceById(
+  updateBillingInvoiceByPk(
     pkColumns: { id: $id }
     _set: {
       invoiceNumber: $invoiceNumber
@@ -254,12 +254,14 @@ mutation UpdateInvoiceDetails(
 
 # Link billing items to invoice after creation
 mutation LinkBillingItemsToInvoice($billingItemIds: [uuid!]!, $invoiceId: uuid!) {
-  bulkUpdateBillingItems(
-    where: { id: { _in: $billingItemIds } }
-    _set: { 
-      invoiceId: $invoiceId
-      updatedAt: "now()"
-    }
+  updateBillingItemsMany(
+    updates: [{
+      where: { id: { _in: $billingItemIds } }
+      _set: { 
+        invoiceId: $invoiceId
+        updatedAt: "now()"
+      }
+    }]
   ) {
     affectedRows
     returning {
@@ -271,7 +273,7 @@ mutation LinkBillingItemsToInvoice($billingItemIds: [uuid!]!, $invoiceId: uuid!)
 
 # Cancel/Delete Invoice
 mutation CancelInvoice($id: uuid!) {
-  updateBillingInvoiceById(
+  updateBillingInvoiceByPk(
     pkColumns: { id: $id }
     _set: { 
       status: "cancelled"
@@ -284,12 +286,14 @@ mutation CancelInvoice($id: uuid!) {
   }
   
   # Unlink billing items
-  bulkUpdateBillingItems(
-    where: { invoiceId: { _eq: $id } }
-    _set: { 
-      invoiceId: null
-      updatedAt: "now()"
-    }
+  updateBillingItemsMany(
+    updates: [{
+      where: { invoiceId: { _eq: $id } }
+      _set: { 
+        invoiceId: null
+        updatedAt: "now()"
+      }
+    }]
   ) {
     affectedRows
   }
@@ -297,7 +301,7 @@ mutation CancelInvoice($id: uuid!) {
 
 # Invoice Actions
 mutation SendInvoice($invoiceId: uuid!) {
-  updateBillingInvoiceById(
+  updateBillingInvoiceByPk(
     pkColumns: { id: $invoiceId }
     _set: { 
       status: "sent"
@@ -311,7 +315,7 @@ mutation SendInvoice($invoiceId: uuid!) {
 }
 
 mutation MarkInvoiceAsPaid($invoiceId: uuid!, $paymentDate: date) {
-  updateBillingInvoiceById(
+  updateBillingInvoiceByPk(
     pkColumns: { id: $invoiceId }
     _set: { 
       status: "paid"
@@ -326,7 +330,7 @@ mutation MarkInvoiceAsPaid($invoiceId: uuid!, $paymentDate: date) {
 
 # Generate Invoice PDF/Export
 mutation GenerateInvoice($invoiceId: uuid!) {
-  updateBillingInvoiceById(
+  updateBillingInvoiceByPk(
     pkColumns: { id: $invoiceId }
     _set: { 
       status: "generating"
@@ -379,7 +383,7 @@ query GetBillingPeriodsForConsolidation($clientIds: [uuid!]) {
 
 mutation ConsolidateInvoices($clientId: uuid!, $consolidationDate: date!) {
   # Create invoice for client with unbilled items
-  insertBillingInvoice(object: {
+  insertBillingInvoiceOne(object: {
     clientId: $clientId
     issuedDate: $consolidationDate
     status: "draft"
@@ -392,9 +396,9 @@ mutation ConsolidateInvoices($clientId: uuid!, $consolidationDate: date!) {
   }
 }
 
-mutation AutoGenerateInvoices($billingPeriods: [billingPeriodsInsertInput!]!) {
+mutation AutoGenerateInvoices($billingPeriods: [BillingPeriodsInsertInput!]!) {
   # Generate billing periods for invoice creation
-  insertBillingPeriod(objects: $billingPeriods) {
+  insertBillingPeriods(objects: $billingPeriods) {
     affectedRows
     returning {
       id

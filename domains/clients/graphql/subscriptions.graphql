@@ -2,7 +2,7 @@
 
 # Subscribe to client updates
 subscription ClientUpdates($clientId: uuid!) {
-  clientById(id: $clientId) {
+  clientsByPk(id: $clientId) {
     ...ClientWithStats
     updatedAt
   }

@@ -9,7 +9,7 @@ query GetUserWorkSchedules($userId: uuid!) {
 }
 
 query GetWorkScheduleById($id: uuid!) {
-  workScheduleById(id: $id) {
+  workScheduleByPk(id: $id) {
     ...WorkScheduleComplete
   }
 }
@@ -66,7 +66,7 @@ query GetUsersBasic {
 }
 
 query GetUserById($id: uuid!) {
-  userById(id: $id) {
+  usersByPk(id: $id) {
     id
     firstName
     lastName
@@ -78,7 +78,7 @@ query GetUserById($id: uuid!) {
     defaultAdminTimePercentage
     createdAt
     updatedAt
-    userWorkSchedules {
+    workSchedules {
       ...WorkScheduleBasic
     }
   }
@@ -107,7 +107,7 @@ query GetTeamWorkloadOptimized($managerId: uuid!) {
     isActive
     
     # ✅ All work schedules fetched efficiently (eliminates N+1)
-    userWorkSchedules(orderBy: { workDay: ASC }) {
+    workSchedules(orderBy: { workDay: ASC }) {
       id
       workDay
       workHours
@@ -118,7 +118,7 @@ query GetTeamWorkloadOptimized($managerId: uuid!) {
     }
     
     # ✅ All payroll assignments with dates in one query (eliminates N+1)
-    primaryConsultantPayrolls(
+    primaryPayrollAssignments(
       where: { supersededDate: { _isNull: true } }
       orderBy: { name: ASC }
     ) {
@@ -143,7 +143,7 @@ query GetTeamWorkloadOptimized($managerId: uuid!) {
       }
     }
     
-    backupConsultantPayrolls(
+    backupPayrollAssignments(
       where: { supersededDate: { _isNull: true } }
       orderBy: { name: ASC }
     ) {
@@ -205,7 +205,7 @@ query GetTeamMembers($managerId: uuid!) {
     managerId
     isStaff
     defaultAdminTimePercentage
-    userWorkSchedules {
+    workSchedules {
       ...WorkScheduleCapacity
     }
   }
@@ -228,7 +228,7 @@ query GetTeamMembersWithCapacity($managerId: uuid!) {
     managerId
     isStaff
     defaultAdminTimePercentage
-    userWorkSchedules {
+    workSchedules {
       ...WorkScheduleCapacity
     }
   }
@@ -244,10 +244,10 @@ query GetAvailableConsultants {
     email
     role
     defaultAdminTimePercentage
-    userWorkSchedules {
+    workSchedules {
       ...WorkScheduleCapacity
     }
-    userSkills {
+    skills {
       skillName
       proficiencyLevel
     }
@@ -264,10 +264,10 @@ query GetConsultantWorkload($consultantId: uuid!) {
     email
     role
     defaultAdminTimePercentage
-    userWorkSchedules {
+    workSchedules {
       ...WorkScheduleCapacity
     }
-    primaryConsultantPayrolls(where: { supersededDate: { _isNull: true } }) {
+    primaryPayrollAssignments(where: { supersededDate: { _isNull: true } }) {
       id
       name
       processingTime
@@ -283,7 +283,7 @@ query GetConsultantWorkload($consultantId: uuid!) {
         originalEftDate
       }
     }
-    backupConsultantPayrolls(where: { supersededDate: { _isNull: true } }) {
+    backupPayrollAssignments(where: { supersededDate: { _isNull: true } }) {
       id
       name
       processingTime
@@ -336,7 +336,7 @@ query GetPayrollsForAssignment {
       lastName
       computedName
     }
-    manager {
+    assignedManager {
       id
       firstName
       lastName
@@ -369,10 +369,10 @@ query GetTeamWorkload($managerUserId: uuid!) {
     email
     role
     defaultAdminTimePercentage
-    userWorkSchedules {
+    workSchedules {
       ...WorkScheduleCapacity
     }
-    primaryConsultantPayrolls(where: { supersededDate: { _isNull: true } }) {
+    primaryPayrollAssignments(where: { supersededDate: { _isNull: true } }) {
       id
       name
       processingTime
@@ -382,7 +382,7 @@ query GetTeamWorkload($managerUserId: uuid!) {
         adjustedEftDate
       }
     }
-    backupConsultantPayrolls(where: { supersededDate: { _isNull: true } }) {
+    backupPayrollAssignments(where: { supersededDate: { _isNull: true } }) {
       id
       name
       processingTime
@@ -515,7 +515,7 @@ query GetAllStaffWorkload {
     email
     role
     defaultAdminTimePercentage
-    userWorkSchedules {
+    workSchedules {
       id
       userId
       workDay
@@ -524,11 +524,11 @@ query GetAllStaffWorkload {
       payrollCapacityHours
       usesDefaultAdminTime
     }
-    userSkills {
+    skills {
       skillName
       proficiencyLevel
     }
-    primaryConsultantPayrolls(where: { supersededDate: { _isNull: true } }) {
+    primaryPayrollAssignments(where: { supersededDate: { _isNull: true } }) {
       id
       name
       processingTime
@@ -537,12 +537,12 @@ query GetAllStaffWorkload {
       payrollDates(orderBy: { adjustedEftDate: ASC }, limit: 1) {
         adjustedEftDate
       }
-      payrollRequiredSkills {
+      requiredSkills {
         skillName
         requiredLevel
       }
     }
-    backupConsultantPayrolls(where: { supersededDate: { _isNull: true } }) {
+    backupPayrollAssignments(where: { supersededDate: { _isNull: true } }) {
       id
       name
       processingTime
@@ -551,7 +551,7 @@ query GetAllStaffWorkload {
       payrollDates(orderBy: { adjustedEftDate: ASC }, limit: 1) {
         adjustedEftDate
       }
-      payrollRequiredSkills {
+      requiredSkills {
         skillName
         requiredLevel
       }

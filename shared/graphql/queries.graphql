@@ -159,7 +159,7 @@ query GetClientsDashboardStats {
 
 # Get current user with permissions
 query GetCurrentUser($userId: uuid!) {
-  user: userById(id: $userId) {
+  user: usersByPk(id: $userId) {
     ...UserProfile
   }
 }
@@ -186,7 +186,7 @@ query GetSystemHealth {
   }
 
   # Recent activity
-  recentActivity: auditLogsAggregate(
+  recentActivity: auditAuditLogAggregate(
     where: { eventTime: { _gte: "now() - interval '1 hour'" } }
   ) {
     aggregate {
@@ -250,7 +250,7 @@ query GlobalSearch($searchTerm: String!) {
 
 # Get file by ID
 query GetFileById($id: uuid!) {
-  fileById(id: $id) {
+  filesByPk(id: $id) {
     id
     filename
     bucket
@@ -272,20 +272,16 @@ query GetFileById($id: uuid!) {
     payroll {
       name
     }
-    uploader {
-      firstName
-      lastName
-      computedName
-    }
+    uploadedBy
   }
 }
 
 # List files with filtering
 query ListFiles(
-  $where: filesBoolExp
+  $where: FilesBoolExp
   $limit: Int
   $offset: Int
-  $orderBy: [filesOrderBy!]
+  $orderBy: [FilesOrderBy!]
 ) {
   files(
     where: $where
@@ -314,11 +310,7 @@ query ListFiles(
     payroll {
       name
     }
-    uploader {
-      firstName
-      lastName
-      computedName
-    }
+    uploadedBy
   }
   
   filesAggregate(where: $where) {

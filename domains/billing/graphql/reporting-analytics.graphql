@@ -55,7 +55,7 @@ query GetClientProfitabilityAnalysis {
 
 # Client Performance Metrics  
 query GetClientPerformanceMetrics($clientId: uuid!) {
-  client: clientById(id: $clientId) {
+  client: clientsByPk(id: $clientId) {
     id
     name
     contactPerson
@@ -66,7 +66,7 @@ query GetClientPerformanceMetrics($clientId: uuid!) {
 
 # Client Forecast Data
 query GetClientForecastData($clientId: uuid!) {
-  client: clientById(id: $clientId) {
+  client: clientsByPk(id: $clientId) {
     id
     name
   }

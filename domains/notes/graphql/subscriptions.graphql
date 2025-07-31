@@ -71,9 +71,9 @@ subscription UserNotesUpdates($userId: uuid!) {
 }
 
 # Activity and monitoring subscriptions
-subscription MyNotesUpdates($authorUserId: uuid!) {
+subscription MyNotesUpdates($authorId: uuid!) {
   notes(
-    where: { userId: { _eq: $authorUserId } }
+    where: { userId: { _eq: $authorId } }
     orderBy: { updatedAt: DESC }
   ) {
     ...NoteListItem
@@ -174,9 +174,9 @@ subscription EntityImportantNotesUpdates($entityType: String!, $entityId: uuid!)
 }
 
 # User activity subscriptions
-subscription UserNoteActivityUpdates($authorUserId: uuid!) {
+subscription UserNoteActivityUpdates($authorId: uuid!) {
   notes(
-    where: { userId: { _eq: $authorUserId } }
+    where: { userId: { _eq: $authorId } }
     orderBy: { updatedAt: DESC }
     limit: 10
   ) {
@@ -204,7 +204,7 @@ subscription NoteSearchUpdates($searchTerm: String!) {
     where: {
       _or: [
         { content: { _ilike: $searchTerm } }
-        { authorUser: { computedName: { _ilike: $searchTerm } } }
+        { author: { computedName: { _ilike: $searchTerm } } }
       ]
     }
     orderBy: { createdAt: DESC }
@@ -239,7 +239,7 @@ subscription NoteChangesUpdates($noteId: uuid!) {
     content
     isImportant
     updatedAt
-    authorUser {
+    author {
       id
       firstName
       lastName
@@ -267,7 +267,7 @@ subscription RecentNotesListUpdates {
     id
     content
     createdAt
-    authorUser {
+    author {
       firstName
       lastName
       computedName

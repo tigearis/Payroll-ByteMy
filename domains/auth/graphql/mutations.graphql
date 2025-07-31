@@ -9,29 +9,31 @@
 
 # Assign role to user (primary auth operation)
 mutation AssignRoleToUser($userId: uuid!, $roleId: uuid!) {
-  insertUserRole(object: { userId: $userId, roleId: $roleId }) {
+  insertUserRoles(objects: [{ userId: $userId, roleId: $roleId }]) {
+    returning {
     id
     userId
     roleId
-    assignedRole {
-      name
-      displayName
-      priority
+      role {
+        name
+        displayName
+        priority
+      }
     }
   }
 }
 
 # Remove role from user
 mutation RemoveRoleFromUser($userRoleId: uuid!) {
-  deleteUserRoleById(id: $userRoleId) {
+  deleteUserRolesByPk(id: $userRoleId) {
     id
     roleId
   }
 }
 
 # Update user role assignment
-mutation UpdateUserRoleAssignment($id: uuid!, $set: userRolesSetInput!) {
-  updateUserRoleById(pkColumns: { id: $id }, _set: $set) {
+mutation UpdateUserRoleAssignment($id: uuid!, $set: UserRolesSetInput!) {
+  updateUserRolesByPk(pkColumns: { id: $id }, _set: $set) {
     id
     userId
     roleId
@@ -40,19 +42,19 @@ mutation UpdateUserRoleAssignment($id: uuid!, $set: userRolesSetInput!) {
 }
 
 # Bulk assign roles to user (replace all existing roles)
-mutation SetUserRoles($userId: uuid!, $roleIds: [userRolesInsertInput!]!) {
+mutation SetUserRoles($userId: uuid!, $roleIds: [UserRolesInsertInput!]!) {
   # First remove existing roles
-  bulkDeleteUserRoles(where: { userId: { _eq: $userId } }) {
+  deleteUserRoles(where: { userId: { _eq: $userId } }) {
     affectedRows
   }
 
   # Then insert new roles
-  bulkInsertUserRoles(objects: $roleIds) {
+  insertUserRoles(objects: $roleIds) {
     returning {
       id
       userId
       roleId
-      assignedRole {
+      role {
         name
         displayName
       }
@@ -76,8 +78,7 @@ mutation CreateUserPermissionOverride(
   $expiresAt: timestamptz = null
   $reason: String = null
 ) {
-  insertPermissionOverride(
-    object: {
+  insertPermissionOverrides(objects: [{
       userId: $userId
       resource: $resource
       operation: $operation
@@ -85,26 +86,27 @@ mutation CreateUserPermissionOverride(
       conditions: $conditions
       expiresAt: $expiresAt
       reason: $reason
+    }]) {
+    returning {
+      id
+      userId
+      resource
+      operation
+      granted
+      conditions
+      expiresAt
+      reason
+      createdAt
     }
-  ) {
-    id
-    userId
-    resource
-    operation
-    granted
-    conditions
-    expiresAt
-    reason
-    createdAt
   }
 }
 
 # Update user permission override
 mutation UpdateUserPermissionOverride(
   $id: uuid!
-  $set: permissionOverridesSetInput!
+  $set: PermissionOverridesSetInput!
 ) {
-  updatePermissionOverrideById(pkColumns: { id: $id }, _set: $set) {
+  updatePermissionOverridesByPk(pkColumns: { id: $id }, _set: $set) {
     id
     userId
     resource
@@ -118,7 +120,7 @@ mutation UpdateUserPermissionOverride(
 
 # Remove user permission override
 mutation RemoveUserPermissionOverride($id: uuid!) {
-  deletePermissionOverrideById(id: $id) {
+  deletePermissionOverridesByPk(id: $id) {
     id
     userId
     resource
@@ -144,8 +146,8 @@ mutation CreateUserInvitation(
   $invitedBy: uuid!
   $expiresAt: timestamptz!
 ) {
-  insertUserInvitation(
-    object: {
+  insertUserInvitations(objects: [
+    {
       email: $email
       firstName: $firstName
       lastName: $lastName
@@ -157,9 +159,10 @@ mutation CreateUserInvitation(
       invitedBy: $invitedBy
       expiresAt: $expiresAt
       invitationStatus: "pending"
+    }]) {
+    returning {
+      ...UserInvitationDetail
     }
-  ) {
-    ...UserInvitationDetail
   }
 }
 
@@ -171,26 +174,27 @@ mutation CompleteInvitationAcceptance(
   $firstName: String!
   $lastName: String!
 ) {
-  insertUser(
-    object: {
+  insertUsers(objects: [
+    {
       clerkUserId: $clerkUserId
       email: $userEmail
       firstName: $firstName
       lastName: $lastName
       isActive: true
+    }]) {
+    returning {
+      id
+      email
+      firstName
+      lastName
+      computedName
+      clerkUserId
+      isActive
+      createdAt
     }
-  ) {
-    id
-    email
-    firstName
-    lastName
-    computedName
-    clerkUserId
-    isActive
-    createdAt
   }
 
-  updateUserInvitationById(
+  updateUserInvitationsByPk(
     pkColumns: { id: $invitationId }
     _set: { invitationStatus: "accepted", acceptedAt: "now()", updatedAt: "now()" }
   ) {
@@ -206,21 +210,23 @@ mutation AssignInvitationRole(
   $roleId: uuid!
   $invitationId: uuid!
 ) {
-  insertUserRole(object: { userId: $userId, roleId: $roleId }) {
+  insertUserRoles(objects: [{ userId: $userId, roleId: $roleId }]) {
+    returning {
     id
     userId
     roleId
-    assignedRole {
-      id
-      name
-      displayName
+      role {
+        id
+        name
+        displayName
+      }
     }
   }
 }
 
 # Cancel invitation
 mutation CancelUserInvitation($invitationId: uuid!) {
-  updateUserInvitationById(
+  updateUserInvitationsByPk(
     pkColumns: { id: $invitationId }
     _set: { invitationStatus: "cancelled", updatedAt: "now()" }
   ) {
@@ -235,7 +241,7 @@ mutation ResendUserInvitation(
   $newClerkTicket: String
   $newClerkInvitationId: String
 ) {
-  updateUserInvitationById(
+  updateUserInvitationsByPk(
     pkColumns: { id: $invitationId }
     _set: {
       expiresAt: $newExpiresAt
@@ -251,7 +257,7 @@ mutation ResendUserInvitation(
 
 # Mark expired invitations as expired (bulk operation)
 mutation MarkExpiredInvitations {
-  bulkUpdateUserInvitations: bulkUpdateUserInvitations(
+  updateUserInvitations(
     where: { invitationStatus: { _eq: "pending" }, expiresAt: { _lt: "now()" } }
     _set: { invitationStatus: "expired", updatedAt: "now()" }
   ) {
@@ -270,7 +276,7 @@ mutation RevokeInvitation(
   $revokeReason: String!
   $revokedBy: uuid!
 ) {
-  updateUserInvitationById(
+  updateUserInvitationsByPk(
     pkColumns: { id: $invitationId }
     _set: {
       invitationStatus: "revoked"
@@ -291,7 +297,7 @@ mutation ResendInvitationEnhanced(
   $newClerkTicket: String
   $newClerkInvitationId: String
 ) {
-  updateUserInvitationById(
+  updateUserInvitationsByPk(
     pkColumns: { id: $invitationId }
     _set: {
       expiresAt: $newExpiresAt
@@ -318,8 +324,8 @@ mutation CreateInvitationEnhanced(
   $invitedBy: uuid!
   $expiresAt: timestamptz!
 ) {
-  insertUserInvitation(
-    object: {
+  insertUserInvitations(objects: [
+    {
       email: $email
       firstName: $firstName
       lastName: $lastName
@@ -330,9 +336,10 @@ mutation CreateInvitationEnhanced(
       invitationMetadata: $invitationMetadata
       invitedBy: $invitedBy
       expiresAt: $expiresAt
+    }]) {
+    returning {
+      ...UserInvitationCore
     }
-  ) {
-    ...UserInvitationCore
   }
 }
 
@@ -341,7 +348,7 @@ mutation AcceptInvitationEnhanced(
   $invitationId: uuid!
   $acceptedBy: uuid!
 ) {
-  updateUserInvitationById(
+  updateUserInvitationsByPk(
     pkColumns: { id: $invitationId }
     _set: {
       invitationStatus: "accepted"
@@ -360,7 +367,7 @@ mutation BulkRevokeInvitations(
   $revokeReason: String!
   $revokedBy: uuid!
 ) {
-  bulkUpdateUserInvitations(
+  updateUserInvitations(
     where: { id: { _in: $invitationIds } }
     _set: {
       invitationStatus: "revoked"
@@ -389,7 +396,7 @@ mutation DeactivateUser(
   $deactivatedBy: uuid!
   $deactivatedByString: String!
 ) {
-  updateUserById(
+  updateUsersByPk(
     pkColumns: { id: $userId }
     _set: {
       status: "inactive"
@@ -423,7 +430,7 @@ mutation LockUser(
   $reason: String!
   $lockedBy: uuid!
 ) {
-  updateUserById(
+  updateUsersByPk(
     pkColumns: { id: $userId }
     _set: {
       status: "locked"
@@ -453,7 +460,7 @@ mutation UnlockUser(
   $reason: String!
   $unlockedBy: uuid!
 ) {
-  updateUserById(
+  updateUsersByPk(
     pkColumns: { id: $userId }
     _set: {
       status: "active"
@@ -483,7 +490,7 @@ mutation ReactivateUser(
   $reason: String!
   $reactivatedBy: uuid!
 ) {
-  updateUserById(
+  updateUsersByPk(
     pkColumns: { id: $userId }
     _set: {
       status: "active"
@@ -519,7 +526,7 @@ mutation BulkChangeUserStatus(
   $changedBy: uuid!
   $setInactive: Boolean! = false
 ) {
-  bulkUpdateUsers(
+  updateUsers(
     where: { id: { _in: $userIds } }
     _set: {
       status: $newStatus
@@ -554,7 +561,7 @@ mutation UpdateUserStatus(
   $changedBy: uuid!
   $metadata: jsonb = null
 ) {
-  updateUserById(
+  updateUsersByPk(
     pkColumns: { id: $userId }
     _set: {
       status: $newStatus
@@ -590,7 +597,7 @@ mutation UpdateUserStatus(
 
 # Delete expired invitation
 mutation DeleteExpiredInvitation($invitationId: uuid!) {
-  deleteUserInvitationById(id: $invitationId) {
+  deleteUserInvitationsByPk(id: $invitationId) {
     id
     email
     invitationStatus
@@ -600,7 +607,7 @@ mutation DeleteExpiredInvitation($invitationId: uuid!) {
 
 # Delete orphaned user (user without Clerk ID)
 mutation DeleteUser($userId: uuid!) {
-  deleteUserById(id: $userId) {
+  deleteUsersByPk(id: $userId) {
     id
     email
     firstName
@@ -612,7 +619,7 @@ mutation DeleteUser($userId: uuid!) {
 
 # Bulk delete expired invitations
 mutation BulkDeleteExpiredInvitations($invitationIds: [uuid!]!) {
-  bulkDeleteUserInvitations(where: { id: { _in: $invitationIds } }) {
+  deleteUserInvitations(where: { id: { _in: $invitationIds } }) {
     affectedRows
     returning {
       id
@@ -625,7 +632,7 @@ mutation BulkDeleteExpiredInvitations($invitationIds: [uuid!]!) {
 
 # Bulk delete orphaned users
 mutation BulkDeleteOrphanedUsers($userIds: [uuid!]!) {
-  bulkDeleteUsers(where: { id: { _in: $userIds } }) {
+  deleteUsers(where: { id: { _in: $userIds } }) {
     affectedRows
     returning {
       id

@@ -3,7 +3,7 @@
 # SOC2 Compliance: Row-level security and audit logging enforced
 
 # Core external system queries
-query GetExternalSystems($limit: Int = 50, $offset: Int = 0, $where: externalSystemsBoolExp) {
+query GetExternalSystems($limit: Int = 50, $offset: Int = 0, $where: ExternalSystemsBoolExp) {
   externalSystems(
     limit: $limit
     offset: $offset
@@ -20,19 +20,19 @@ query GetExternalSystems($limit: Int = 50, $offset: Int = 0, $where: externalSys
 }
 
 query GetExternalSystemById($id: uuid!) {
-  externalSystemById(id: $id) {
+  externalSystemsByPk(id: $id) {
     ...ExternalSystemComplete
   }
 }
 
 query GetExternalSystemBasic($id: uuid!) {
-  externalSystemById(id: $id) {
+  externalSystemsByPk(id: $id) {
     ...ExternalSystemBasic
   }
 }
 
 query GetExternalSystemConfig($id: uuid!) {
-  externalSystemById(id: $id) {
+  externalSystemsByPk(id: $id) {
     ...ExternalSystemConfig
   }
 }
@@ -60,7 +60,7 @@ query GetClientExternalSystems($clientId: uuid!) {
 }
 
 query GetClientExternalSystemById($id: uuid!) {
-  clientExternalSystemById(id: $id) {
+  clientExternalSystemsByPk(id: $id) {
     ...ClientExternalSystemComplete
   }
 }
@@ -76,7 +76,7 @@ query GetActiveClientExternalSystems($clientId: uuid!) {
 
 query GetSystemClientConnections($externalSystemId: uuid!) {
   clientExternalSystems(
-    where: { externalSystemId: { _eq: $externalSystemId } }
+    where: { externalSystem: { id: { _eq: $externalSystemId } } }
     orderBy: { createdAt: DESC }
   ) {
     ...ClientExternalSystemWithRelations
@@ -85,7 +85,7 @@ query GetSystemClientConnections($externalSystemId: uuid!) {
 
 query GetActiveSystemClientConnections($externalSystemId: uuid!) {
   clientExternalSystems(
-    where: { externalSystemId: { _eq: $externalSystemId } }
+    where: { externalSystem: { id: { _eq: $externalSystemId } } }
     orderBy: { createdAt: DESC }
   ) {
     ...ClientExternalSystemWithRelations
@@ -178,7 +178,7 @@ query GetClientSystemsByDate($clientId: uuid!, $startDate: timestamptz!, $endDat
 query GetExternalSystemsForAudit(
   $limit: Int = 100
   $offset: Int = 0
-  $where: externalSystemsBoolExp = {}
+  $where: ExternalSystemsBoolExp = {}
 ) {
   externalSystems(
     limit: $limit
@@ -193,7 +193,7 @@ query GetExternalSystemsForAudit(
 query GetClientExternalSystemsForAudit(
   $limit: Int = 100
   $offset: Int = 0
-  $where: clientExternalSystemsBoolExp = {}
+  $where: ClientExternalSystemsBoolExp = {}
 ) {
   clientExternalSystems(
     limit: $limit
@@ -207,7 +207,7 @@ query GetClientExternalSystemsForAudit(
 
 query GetSystemActivityAudit($externalSystemId: uuid!, $limit: Int = 50) {
   clientExternalSystems(
-    where: { externalSystemId: { _eq: $externalSystemId } }
+    where: { externalSystem: { id: { _eq: $externalSystemId } } }
     orderBy: { updatedAt: DESC }
     limit: $limit
   ) {
@@ -219,8 +219,8 @@ query GetSystemActivityAudit($externalSystemId: uuid!, $limit: Int = 50) {
 query GetExternalSystemsPaginated(
   $limit: Int = 20
   $offset: Int = 0
-  $where: externalSystemsBoolExp = {}
-  $orderBy: [externalSystemsOrderBy!] = [{ name: ASC }]
+  $where: ExternalSystemsBoolExp = {}
+  $orderBy: [ExternalSystemsOrderBy!] = [{ name: ASC }]
 ) {
   externalSystems(
     limit: $limit
@@ -242,7 +242,7 @@ query GetClientExternalSystemsPaginated(
   $clientId: uuid!
   $limit: Int = 20
   $offset: Int = 0
-  $where: clientExternalSystemsBoolExp = {}
+  $where: ClientExternalSystemsBoolExp = {}
 ) {
   clientExternalSystems(
     where: { _and: [{ clientId: { _eq: $clientId } }, $where] }

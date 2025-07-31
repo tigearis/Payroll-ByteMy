@@ -10,20 +10,20 @@ query GetCurrentUserRoles {
     email
     isActive
     isStaff
-    assignedRoles {
-      assignedRole {
+    roleAssignments {
+      role {
         id
         name
         displayName
         description
         priority
         isSystemRole
-        assignedPermissions {
-          grantedPermission {
+        rolePermissions {
+          permission {
             id
             action
             description
-            relatedResource {
+            resource {
               id
               name
               displayName
@@ -46,14 +46,14 @@ query GetAllRoles {
     description
     priority
     isSystemRole
-    assignedPermissions {
+    rolePermissions {
       id
       conditions
-      grantedPermission {
+      permission {
         id
         action
         description
-        relatedResource {
+        resource {
           id
           name
           displayName
@@ -71,7 +71,7 @@ query GetResourcesAndPermissions {
     name
     displayName
     description
-    availablePermissions {
+    permissions {
       id
       action
       description
@@ -86,9 +86,9 @@ query GetUsersWithRoles($limit: Int = 50, $offset: Int = 0) {
     email
     isActive
     isStaff
-    assignedRoles {
+    roleAssignments {
       id
-      assignedRole {
+      role {
         id
         name
         displayName
@@ -138,8 +138,8 @@ query SearchUsersByEmail($emailPattern: String!) {
     id
     email
     isActive
-    assignedRoles {
-      assignedRole {
+    roleAssignments {
+      role {
         name
         displayName
       }
@@ -157,13 +157,13 @@ query GetRoleHierarchy {
     priority
     isSystemRole
     # Count of direct permissions
-    assignedPermissionsAggregate {
+    rolePermissionsAggregate {
       aggregate {
         count
       }
     }
     # Count of users with this role
-    assignedToUsersAggregate {
+    userRolesAggregate {
       aggregate {
         count
       }
@@ -178,21 +178,20 @@ query GetPermissionAuditLogs(
   $startDate: timestamptz
   $endDate: timestamptz
 ) {
-  permissionAuditLogs(
-    where: { timestamp: { _gte: $startDate, _lte: $endDate } }
-    orderBy: { timestamp: DESC }
+  auditPermissionChanges(
+    where: { changedAt: { _gte: $startDate, _lte: $endDate } }
+    orderBy: { changedAt: DESC }
     limit: $limit
     offset: $offset
   ) {
     id
-    userId
     targetUserId
-    action
-    resource
-    previousValue
-    newValue
-    timestamp
-    createdAt
+    changedByUserId
+    changeType
+    reason
+    oldPermissions
+    newPermissions
+    changedAt
   }
 }
 
@@ -216,14 +215,14 @@ query GetPendingInvitations($limit: Int = 50, $offset: Int = 0, $now: timestampt
 # Get invitation by Clerk ticket (for acceptance flow)
 query GetInvitationByTicket($clerkTicket: String!) {
   userInvitations(where: { clerkTicket: { _eq: $clerkTicket } }, limit: 1) {
-    ...UserInvitationDetail
+    ...UserInvitationWithDetails
   }
 }
 
 # Get invitation by Clerk invitation ID (for acceptance flow)
 query GetInvitationByClerkId($clerkInvitationId: String!) {
   userInvitations(where: { clerkInvitationId: { _eq: $clerkInvitationId } }, limit: 1) {
-    ...UserInvitationDetail
+    ...UserInvitationWithDetails
   }
 }
 
@@ -286,7 +285,7 @@ query GetExpiredInvitations($now: timestamptz!) {
     }
     orderBy: { expiresAt: DESC }
   ) {
-    ...UserInvitationDetail
+    ...UserInvitationWithDetails
   }
 }
 
@@ -299,14 +298,14 @@ query ValidateInvitationRolePermissions(
   users(where: { id: { _eq: $invitedBy } }) {
     id
     role
-    assignedRoles {
-      assignedRole {
+    roleAssignments {
+      role {
         name
         priority
-        assignedPermissions {
-          grantedPermission {
+        rolePermissions {
+          permission {
             action
-            relatedResource {
+            resource {
               name
             }
           }
@@ -326,8 +325,8 @@ query ValidateInvitationRolePermissions(
 
 # Get invitation by ID for resending
 query GetInvitationById($invitationId: uuid!) {
-  userInvitationById(id: $invitationId) {
-    ...UserInvitationDetail
+  userInvitationsByPk(id: $invitationId) {
+    ...UserInvitationWithDetails
   }
 }
 
@@ -355,7 +354,7 @@ query GetInvitationsWithStatus(
   $statuses: [invitation_status_enum!]
   $limit: Int = 50
   $offset: Int = 0
-  $orderBy: [userInvitationsOrderBy!] = [{ createdAt: DESC }]
+  $orderBy: [UserInvitationsOrderBy!] = [{ createdAt: DESC }]
 ) {
   userInvitations(
     where: { invitationStatus: { _in: $statuses } }
@@ -506,7 +505,7 @@ query SearchInvitations(
 
 # Get invitation by ID with full details
 query GetInvitationByIdDetailed($invitationId: uuid!) {
-  userInvitationById(id: $invitationId) {
+  userInvitationsByPk(id: $invitationId) {
     ...UserInvitationWithDetails
   }
 }
@@ -521,7 +520,7 @@ query GetUsersByStatus(
   $statuses: [user_status_enum!]
   $limit: Int = 50
   $offset: Int = 0
-  $orderBy: [usersOrderBy!] = [{ updatedAt: DESC }]
+  $orderBy: [UsersOrderBy!] = [{ updatedAt: DESC }]
 ) {
   users(
     where: { status: { _in: $statuses } }
@@ -667,7 +666,7 @@ query GetUserStatusHistory(
   $limit: Int = 50
 ) {
   # Current user status
-  user: userById(id: $userId) {
+  user: usersByPk(id: $userId) {
     id
     email
     firstName
@@ -731,7 +730,7 @@ query SearchUsersAdvanced(
 
 # Get user details with status information
 query GetUserWithStatusDetails($userId: uuid!) {
-  userById(id: $userId) {
+  usersByPk(id: $userId) {
     id
     email
     firstName
@@ -830,7 +829,7 @@ query GetExpiredInvitationsForCleanup {
 }
 
 # User invitation fragments
-fragment UserInvitationDetail on userInvitations {
+fragment UserInvitationDetail on UserInvitations {
   id
   email
   firstName
