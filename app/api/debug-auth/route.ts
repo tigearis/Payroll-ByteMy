@@ -26,8 +26,8 @@ export async function GET(request: NextRequest) {
       origin: request.nextUrl.origin,
       host: request.nextUrl.host,
     },
-    geo: request.geo,
-    ip: request.ip,
+    geo: (request as any).geo,
+    ip: (request as any).ip,
     userAgent: request.headers.get('user-agent'),
   };
 
@@ -124,8 +124,8 @@ export async function POST(request: NextRequest) {
       origin: request.nextUrl.origin,
       host: request.nextUrl.host,
     },
-    geo: request.geo,
-    ip: request.ip,
+    geo: (request as any).geo,
+    ip: (request as any).ip,
     userAgent: request.headers.get('user-agent'),
   };
 

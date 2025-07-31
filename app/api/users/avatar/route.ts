@@ -61,7 +61,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
     }
 
     // Determine which user's avatar to update
-    const userIdToUpdate = targetUserId || session.userId;
+    const userIdToUpdate = targetUserId || session.userId || 'anonymous';
     
     // If updating another user's avatar, check permissions
     if (targetUserId && targetUserId !== session.userId) {
@@ -145,7 +145,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
     return NextResponse.json<UploadAvatarResponse>(
       {
         success: false,
-        error: error.message || "Internal server error",
+        error: error instanceof Error ? error.message : "Internal server error",
       },
       { status: 500 }
     );
@@ -158,7 +158,7 @@ export const DELETE = withAuth(async (req: NextRequest, session) => {
     const targetUserId = searchParams.get('targetUserId');
     
     // Determine which user's avatar to remove
-    const userIdToUpdate = targetUserId || session.userId;
+    const userIdToUpdate = targetUserId || session.userId || 'anonymous';
     
     // If removing another user's avatar, check permissions
     if (targetUserId && targetUserId !== session.userId) {

@@ -76,13 +76,13 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
   const [bulkUpdateAgreements] = useMutation(BulkUpdateClientServiceAgreementsDocument);
 
   const handleStartEdit = () => {
-    if (!agreementsData?.clientBillingAssignments || !servicesData?.billingPlans) {
+    if (!agreementsData?.clientBillingAssignment || !servicesData?.billingPlan) {
       return;
     }
 
     // Create a map of existing agreements
     const existingAgreements = new Map(
-      agreementsData.clientBillingAssignments.map(agreement => [
+      agreementsData.clientBillingAssignment.map((agreement: any) => [
         agreement.billingPlanId,
         {
           id: agreement.id,
@@ -100,7 +100,7 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
     );
 
     // Create agreements for all services
-    const allAgreements = servicesData.billingPlans.map(service => {
+    const allAgreements = servicesData.billingPlan.map((service: any) => {
       const existing = existingAgreements.get(service.id);
       return existing || {
         service_id: service.id,
@@ -201,7 +201,7 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
     );
   }
 
-  const currentAgreements = agreementsData?.clientBillingAssignments || [];
+  const currentAgreements = agreementsData?.clientBillingAssignment || [];
 
   return (
     <Card>

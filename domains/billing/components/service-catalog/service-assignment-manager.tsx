@@ -104,8 +104,8 @@ export const ServiceAssignmentManager: React.FC<ServiceAssignmentManagerProps> =
   // Mutation for bulk updating agreements
   const [bulkUpdateAgreements] = useMutation(BulkUpdateClientServiceAgreementsDocument);
 
-  const services = serviceCatalog?.billingPlans || [];
-  const currentAgreements = existingAgreements?.clientBillingAssignments || [];
+  const services = serviceCatalog?.billingPlan || [];
+  const currentAgreements = existingAgreements?.clientBillingAssignment || [];
 
   // Initialize service assignments
   useEffect(() => {

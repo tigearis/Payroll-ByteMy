@@ -33,7 +33,7 @@ export const POST = withAuthParams(async (req, { params }, session) => {
       { id }
     );
 
-    if (!existingData.leaveById) {
+    if (!existingData.leaveByPk) {
       return NextResponse.json(
         { 
           success: false, 
@@ -43,7 +43,7 @@ export const POST = withAuthParams(async (req, { params }, session) => {
       );
     }
 
-    const leave = existingData.leaveById;
+    const leave = existingData.leaveByPk;
 
     // Check if leave is already processed
     if (leave.status !== "Pending") {
@@ -98,7 +98,7 @@ export const POST = withAuthParams(async (req, { params }, session) => {
     return NextResponse.json({
       success: true,
       data: {
-        leave: action === "approve" ? data.updateLeaveById : data.updateLeaveById,
+        leave: action === "approve" ? data.updateLeaveByPk : data.updateLeaveByPk,
         action: action
       },
       message: `Leave request ${action}d successfully`

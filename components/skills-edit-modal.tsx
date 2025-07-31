@@ -145,14 +145,14 @@ export function SkillsEditModal({
   useEffect(() => {
     if (type === "user" && userSkillsData) {
       setSkills(
-        userSkillsData.userSkill?.map(skill => ({
+        userSkillsData.userSkills?.map(skill => ({
           skillName: skill.skillName || "",
           proficiencyLevel: skill.proficiencyLevel || "",
         })) || []
       );
     } else if (type === "payroll" && payrollSkillsData) {
       setSkills(
-        payrollSkillsData.payrollRequiredSkill?.map(skill => ({
+        payrollSkillsData.payrollRequiredSkills?.map(skill => ({
           skillName: skill.skillName || "",
           requiredLevel: skill.requiredLevel || "",
         })) || []

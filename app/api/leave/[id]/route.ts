@@ -20,7 +20,7 @@ export const GET = withAuthParams(async (req, { params }, session) => {
       { id }
     );
 
-    if (!data.leaveById) {
+    if (!data.leaveByPk) {
       return NextResponse.json(
         { 
           success: false, 
@@ -33,7 +33,7 @@ export const GET = withAuthParams(async (req, { params }, session) => {
     return NextResponse.json({
       success: true,
       data: {
-        leave: data.leaveById
+        leave: data.leaveByPk
       }
     });
 
@@ -62,7 +62,7 @@ export const PUT = withAuthParams(async (req, { params }, session) => {
       { id }
     );
 
-    if (!existingData.leaveById) {
+    if (!existingData.leaveByPk) {
       return NextResponse.json(
         { 
           success: false, 
@@ -72,7 +72,7 @@ export const PUT = withAuthParams(async (req, { params }, session) => {
       );
     }
 
-    const leave = existingData.leaveById;
+    const leave = existingData.leaveByPk;
 
     // Check if user can edit this leave request
     // Users can only edit their own pending requests
@@ -144,7 +144,7 @@ export const PUT = withAuthParams(async (req, { params }, session) => {
     return NextResponse.json({
       success: true,
       data: {
-        leave: data.updateLeaveById
+        leave: data.updateLeaveByPk
       }
     });
 
@@ -171,7 +171,7 @@ export const DELETE = withAuthParams(async (req, { params }, session) => {
       { id }
     );
 
-    if (!existingData.leaveById) {
+    if (!existingData.leaveByPk) {
       return NextResponse.json(
         { 
           success: false, 
@@ -181,7 +181,7 @@ export const DELETE = withAuthParams(async (req, { params }, session) => {
       );
     }
 
-    const leave = existingData.leaveById;
+    const leave = existingData.leaveByPk;
 
     // Check if user can delete this leave request
     // Users can only delete their own pending requests
@@ -211,7 +211,7 @@ export const DELETE = withAuthParams(async (req, { params }, session) => {
     return NextResponse.json({
       success: true,
       data: {
-        leave: data.deleteLeaveById
+        leave: data.deleteLeaveByPk
       }
     });
 

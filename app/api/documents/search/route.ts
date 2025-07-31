@@ -35,7 +35,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
     const offset = parseInt(searchParams.get('offset') || '0');
 
     // Validate user permissions
-    const userRole = session.role || session.defaultRole;
+    const userRole = session.role || session.defaultRole || 'viewer';
     const canSearch = ['developer', 'org_admin', 'manager', 'consultant', 'viewer'].includes(userRole);
     
     if (!canSearch) {
@@ -83,7 +83,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
       // This will be enhanced with proper payroll assignment checking
       if (!whereClause.uploadedBy) {
         whereClause._or = [
-          { uploadedBy: { _eq: session.databaseId || session.userId } },
+          { uploadedBy: { _eq: session.databaseId || session.userId || 'anonymous' } },
           { isPublic: { _eq: true } }
         ];
       }
@@ -151,7 +151,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
         offset: filters.offset,
         orderBy: { createdAt: 'DESC' },
       }
-    );
+    ) as any;
 
     // Generate fresh URLs for all documents
     const { minioClient } = await import('@/lib/storage/minio-client');
@@ -195,7 +195,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
     return NextResponse.json<DocumentSearchResponse>(
       {
         success: false,
-        error: error.message || 'Document search failed',
+        error: error instanceof Error ? error.message : 'Document search failed',
       },
       { status: 500 }
     );

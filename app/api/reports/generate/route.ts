@@ -202,7 +202,7 @@ function getFieldType(type: any): string {
 
 export const POST = withAuth(async (request: NextRequest, session) => {
   // Authorization check - require developer access for reports
-  const userRole = session.role || session.defaultRole;
+  const userRole = session.role || session.defaultRole || 'viewer';
   const hasDeveloperAccess = userRole === 'developer';
   
   if (!hasDeveloperAccess) {
@@ -479,7 +479,7 @@ export const GET = withAuth(async (request: NextRequest, session) => {
   console.log('📊 Reports API GET called');
   
   // Authorization check - require developer access
-  const userRole = session.role || session.defaultRole;
+  const userRole = session.role || session.defaultRole || 'viewer';
   const hasDeveloperAccess = userRole === 'developer';
   
   if (!hasDeveloperAccess) {

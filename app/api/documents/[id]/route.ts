@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from '@/lib/auth/api-auth';
+import { withAuthParams } from '@/lib/auth/api-auth';
 import { 
   getDocument, 
   deleteDocument, 
@@ -19,9 +19,9 @@ interface DocumentResponse {
  * 
  * Get a specific document by ID with fresh presigned URL.
  */
-export const GET = withAuth(async (req: NextRequest, session, { params }) => {
+export const GET = withAuthParams(async (req: NextRequest, { params }, session) => {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     if (!id) {
       return NextResponse.json<DocumentResponse>(
@@ -31,7 +31,7 @@ export const GET = withAuth(async (req: NextRequest, session, { params }) => {
     }
 
     // Validate user permissions
-    const userRole = session.role || session.defaultRole;
+    const userRole = session.role || session.defaultRole || 'viewer';
     const canView = ['developer', 'org_admin', 'manager', 'consultant', 'viewer'].includes(userRole);
     
     if (!canView) {
@@ -44,7 +44,7 @@ export const GET = withAuth(async (req: NextRequest, session, { params }) => {
     console.log(`📄 Getting document: ${id} for user: ${session.userId} (${userRole})`);
 
     // Get document
-    const document = await getDocument(id, session.databaseId || session.userId);
+    const document = await getDocument(id, session.databaseId || session.userId || 'anonymous');
 
     if (!document) {
       return NextResponse.json<DocumentResponse>(
@@ -61,7 +61,7 @@ export const GET = withAuth(async (req: NextRequest, session, { params }) => {
       );
     }
 
-    if (userRole === 'consultant' && document.uploadedBy !== (session.databaseId || session.userId) && !document.isPublic) {
+    if (userRole === 'consultant' && document.uploadedBy !== (session.databaseId || session.userId || 'anonymous') && !document.isPublic) {
       // This will be enhanced with proper payroll assignment checking
       return NextResponse.json<DocumentResponse>(
         { success: false, error: 'Document not accessible' },
@@ -80,7 +80,7 @@ export const GET = withAuth(async (req: NextRequest, session, { params }) => {
     return NextResponse.json<DocumentResponse>(
       {
         success: false,
-        error: error.message || 'Failed to get document',
+        error: error instanceof Error ? error.message : 'Failed to get document',
       },
       { status: 500 }
     );
@@ -92,9 +92,9 @@ export const GET = withAuth(async (req: NextRequest, session, { params }) => {
  * 
  * Update document metadata.
  */
-export const PUT = withAuth(async (req: NextRequest, session, { params }) => {
+export const PUT = withAuthParams(async (req: NextRequest, { params }, session) => {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await req.json();
 
     if (!id) {
@@ -105,7 +105,7 @@ export const PUT = withAuth(async (req: NextRequest, session, { params }) => {
     }
 
     // Validate user permissions
-    const userRole = session.role || session.defaultRole;
+    const userRole = session.role || session.defaultRole || 'viewer';
     const canUpdate = ['developer', 'org_admin', 'manager', 'consultant'].includes(userRole);
     
     if (!canUpdate) {
@@ -116,7 +116,7 @@ export const PUT = withAuth(async (req: NextRequest, session, { params }) => {
     }
 
     // First get the document to check ownership for consultants
-    const existingDocument = await getDocument(id, session.databaseId || session.userId);
+    const existingDocument = await getDocument(id, session.databaseId || session.userId || 'anonymous');
     if (!existingDocument) {
       return NextResponse.json<DocumentResponse>(
         { success: false, error: 'Document not found' },
@@ -125,7 +125,7 @@ export const PUT = withAuth(async (req: NextRequest, session, { params }) => {
     }
 
     // Additional permission checks for consultants
-    if (userRole === 'consultant' && existingDocument.uploadedBy !== (session.databaseId || session.userId)) {
+    if (userRole === 'consultant' && existingDocument.uploadedBy !== (session.databaseId || session.userId || 'anonymous')) {
       return NextResponse.json<DocumentResponse>(
         { success: false, error: 'You can only update documents you uploaded' },
         { status: 403 }
@@ -140,7 +140,7 @@ export const PUT = withAuth(async (req: NextRequest, session, { params }) => {
     const updatedDocument = await updateDocumentMetadata(
       id,
       { filename, category, isPublic, metadata },
-      session.databaseId || session.userId
+      session.databaseId || session.userId || 'anonymous'
     );
 
     return NextResponse.json<DocumentResponse>({
@@ -155,7 +155,7 @@ export const PUT = withAuth(async (req: NextRequest, session, { params }) => {
     return NextResponse.json<DocumentResponse>(
       {
         success: false,
-        error: error.message || 'Failed to update document',
+        error: error instanceof Error ? error.message : 'Failed to update document',
       },
       { status: 500 }
     );
@@ -167,9 +167,9 @@ export const PUT = withAuth(async (req: NextRequest, session, { params }) => {
  * 
  * Delete a document from both MinIO and database.
  */
-export const DELETE = withAuth(async (req: NextRequest, session, { params }) => {
+export const DELETE = withAuthParams(async (req: NextRequest, { params }, session) => {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     if (!id) {
       return NextResponse.json<DocumentResponse>(
@@ -179,7 +179,7 @@ export const DELETE = withAuth(async (req: NextRequest, session, { params }) => 
     }
 
     // Validate user permissions
-    const userRole = session.role || session.defaultRole;
+    const userRole = session.role || session.defaultRole || 'viewer';
     const canDelete = ['developer', 'org_admin', 'manager'].includes(userRole);
     
     if (!canDelete) {
@@ -192,7 +192,7 @@ export const DELETE = withAuth(async (req: NextRequest, session, { params }) => 
     console.log(`🗑️ Deleting document: ${id} by user: ${session.userId} (${userRole})`);
 
     // Delete document
-    await deleteDocument(id, session.databaseId || session.userId);
+    await deleteDocument(id, session.databaseId || session.userId || 'anonymous');
 
     return NextResponse.json<DocumentResponse>({
       success: true,
@@ -205,7 +205,7 @@ export const DELETE = withAuth(async (req: NextRequest, session, { params }) => 
     return NextResponse.json<DocumentResponse>(
       {
         success: false,
-        error: error.message || 'Failed to delete document',
+        error: error instanceof Error ? error.message : 'Failed to delete document',
       },
       { status: 500 }
     );

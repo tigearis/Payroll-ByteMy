@@ -425,10 +425,12 @@ export default function ClientDetailPage() {
       await updateClient({
         variables: {
           id,
-          name: editFormData.name.trim(),
-          contactEmail: editFormData.contactEmail.trim() || null,
-          contactPhone: editFormData.contactPhone.trim() || null,
-          contactPerson: editFormData.contactPerson.trim() || null,
+          set: {
+            name: editFormData.name.trim(),
+            contactEmail: editFormData.contactEmail.trim() || null,
+            contactPhone: editFormData.contactPhone.trim() || null,
+            contactPerson: editFormData.contactPerson.trim() || null,
+          },
         },
       });
 
@@ -914,8 +916,8 @@ export default function ClientDetailPage() {
                                   <div className="flex items-center gap-2">
                                     <UserCheck className="w-4 h-4 text-blue-500" />
                                     <span>
-                                      {payroll.manager?.computedName ||
-                                        (payroll.manager ? `${payroll.manager.firstName} ${payroll.manager.lastName}` : "Unassigned")}
+                                      {payroll.assignedManager?.computedName ||
+                                        (payroll.assignedManager ? `${payroll.assignedManager.firstName} ${payroll.assignedManager.lastName}` : "Unassigned")}
                                     </span>
                                   </div>
                                 </TableCell>

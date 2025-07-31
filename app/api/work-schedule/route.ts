@@ -18,7 +18,7 @@ import { withAuth } from "@/lib/auth/api-auth";
 export const GET = withAuth(async (req, session) => {
   try {
     const { searchParams } = new URL(req.url);
-    const userId = searchParams.get('userId') || session.userId;
+    const userId = searchParams.get('userId') || session.userId || '';
 
     const data = await executeTypedQuery<GetUserWorkSchedulesQuery>(
       GetUserWorkSchedulesDocument,
@@ -39,10 +39,10 @@ export const GET = withAuth(async (req, session) => {
   }
 });
 
-export const POST = withAuth<{schedule: any, message: string} | {error: string}>(async (req, session) => {
+export const POST = withAuth(async (req, session) => {
   try {
     const body = await req.json();
-    const { userId = session.userId, workDay, workHours, adminTimeHours, payrollCapacityHours, usesDefaultAdminTime } = body;
+    const { userId = session.userId || '', workDay, workHours, adminTimeHours, payrollCapacityHours, usesDefaultAdminTime } = body;
 
     // Validate required fields
     if (!workDay || workHours === undefined) {
@@ -75,7 +75,7 @@ export const POST = withAuth<{schedule: any, message: string} | {error: string}>
     );
 
     return NextResponse.json({
-      schedule: data.insertWorkSchedule,
+      schedule: data.insertWorkScheduleOne,
       message: 'Work schedule created successfully'
     });
 
@@ -88,7 +88,7 @@ export const POST = withAuth<{schedule: any, message: string} | {error: string}>
   }
 });
 
-export const PUT = withAuth<{schedule: any, message: string} | {error: string}>(async (req, session) => {
+export const PUT = withAuth(async (req, session) => {
   try {
     const body = await req.json();
     const { id, workHours, workDay, adminTimeHours, payrollCapacityHours, usesDefaultAdminTime } = body;
@@ -125,7 +125,7 @@ export const PUT = withAuth<{schedule: any, message: string} | {error: string}>(
     );
 
     return NextResponse.json({
-      schedule: data.updateWorkScheduleById,
+      schedule: data.updateWorkScheduleByPk,
       message: 'Work schedule updated successfully'
     });
 
@@ -138,7 +138,7 @@ export const PUT = withAuth<{schedule: any, message: string} | {error: string}>(
   }
 });
 
-export const DELETE = withAuth<{deleted: any, message: string} | {error: string}>(async (req, session) => {
+export const DELETE = withAuth(async (req, session) => {
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
@@ -156,7 +156,7 @@ export const DELETE = withAuth<{deleted: any, message: string} | {error: string}
     );
 
     return NextResponse.json({
-      deleted: data.deleteWorkScheduleById,
+      deleted: data.deleteWorkScheduleByPk,
       message: 'Work schedule deleted successfully'
     });
 

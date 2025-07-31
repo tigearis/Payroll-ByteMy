@@ -79,8 +79,8 @@ export const ClientBillingInterface: React.FC<ClientBillingInterfaceProps> = ({
   const [createBillingItem] = useMutation(CreateBillingItemDocument);
   const [createTimeEntry] = useMutation(CreateTimeEntryDocument);
 
-  const clientServices = serviceAgreements?.clientBillingAssignments || [];
-  const availableServices = serviceCatalog?.billingPlans || [];
+  const clientServices = serviceAgreements?.clientBillingAssignment || [];
+  const availableServices = serviceCatalog?.billingPlan || [];
 
   // Add custom billing item
   const addCustomItem = () => {
@@ -207,8 +207,8 @@ export const ClientBillingInterface: React.FC<ClientBillingInterfaceProps> = ({
             }
           });
 
-          if (result.data?.insertBillingItem?.id) {
-            createdBillingItemIds.push(result.data.insertBillingItem.id);
+          if (result.data?.insertBillingItemsOne?.id) {
+            createdBillingItemIds.push(result.data.insertBillingItemsOne.id);
             billingItemsCreated++;
           }
         } catch (itemError) {

@@ -340,7 +340,7 @@ export const ServiceCatalogManager: React.FC<ServiceCatalogManagerProps> = ({
         </div>
       ) : (
         <div className="grid gap-4">
-          {data?.billingPlans?.map((service) => (
+          {data?.billingPlan?.map((service) => (
             <Card key={service.id}>
               <CardContent className="p-6">
                 <div className="flex justify-between items-start">

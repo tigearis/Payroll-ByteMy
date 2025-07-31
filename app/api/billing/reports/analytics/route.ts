@@ -4,7 +4,7 @@ import { executeTypedQuery } from '@/lib/apollo/query-helpers';
 import { 
   GetBillingAnalyticsDocument,
   GetClientBillingStatsDocument,
-  GetStaffBillingPerformanceDocument
+  GetStaffAnalyticsPerformanceDocument
 } from '@/domains/billing/graphql/generated/graphql';
 
 interface AnalyticsRequest {
@@ -33,7 +33,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
     const includeStaffPerformance = searchParams.get('includeStaffPerformance') === 'true';
 
     // Check permissions - analytics require at least manager role
-    const userRole = session.role || session.defaultRole;
+    const userRole = session.role || session.defaultRole || 'viewer';
     if (!['developer', 'org_admin', 'manager'].includes(userRole)) {
       return NextResponse.json(
         { success: false, error: 'Insufficient permissions to view billing analytics' },
@@ -55,8 +55,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
     // Get main analytics data
     const analyticsData = await executeTypedQuery(
       GetBillingAnalyticsDocument,
-      analyticsVariables,
-      session
+      analyticsVariables
     );
 
     const analytics = {
@@ -74,7 +73,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
       revenueByMonth: [],
       topClients: [],
       topServices: [],
-      ...analyticsData?.billingAnalytics
+      ...(analyticsData as any)?.billingAnalytics
     };
 
     const result: any = {
@@ -97,26 +96,24 @@ export const GET = withAuth(async (req: NextRequest, session) => {
           dateFrom: analyticsVariables.dateFrom,
           dateTo: analyticsVariables.dateTo,
           clientId: clientId || null
-        },
-        session
+        }
       );
 
-      result.clientStats = clientStatsData?.clientBillingStats || [];
+      result.clientStats = (clientStatsData as any)?.clientBillingStats || [];
     }
 
     // Include staff performance if requested
     if (includeStaffPerformance) {
       const staffPerformanceData = await executeTypedQuery(
-        GetStaffBillingPerformanceDocument,
+        GetStaffAnalyticsPerformanceDocument,
         {
           dateFrom: analyticsVariables.dateFrom,
           dateTo: analyticsVariables.dateTo,
           staffUserId: staffUserId || null
-        },
-        session
+        }
       );
 
-      result.staffPerformance = staffPerformanceData?.staffBillingPerformance || [];
+      result.staffPerformance = (staffPerformanceData as any)?.staffBillingPerformance || [];
     }
 
     // Calculate some derived metrics
@@ -170,7 +167,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
     const body: AnalyticsRequest = await req.json();
 
     // Check permissions
-    const userRole = session.role || session.defaultRole;
+    const userRole = session.role || session.defaultRole || 'viewer';
     if (!['developer', 'org_admin', 'manager'].includes(userRole)) {
       return NextResponse.json(
         { success: false, error: 'Insufficient permissions to view billing analytics' },

@@ -74,7 +74,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
         GetClientServicesWithRatesDocument,
         { clientId: cId }
       );
-      clientServices.set(cId, servicesData?.clientBillingAssignments || []);
+      clientServices.set(cId, servicesData?.clientBillingAssignment || []);
     }
 
     const generatedItems = [];
@@ -128,7 +128,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
           { input: billingItemData }
         );
 
-        generatedItems.push(createdItem?.insertBillingItem);
+        generatedItems.push(createdItem?.insertBillingItemsOne);
       }
     } else {
       // Create individual billing items for each time entry
@@ -158,7 +158,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
           { input: billingItemData }
         );
 
-        generatedItems.push(createdItem?.insertBillingItem);
+        generatedItems.push(createdItem?.insertBillingItemsOne);
       }
     }
 

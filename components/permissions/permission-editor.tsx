@@ -174,11 +174,11 @@ export function PermissionEditor({
 
     // Get role permissions
     const rolePermissions = new Set<string>();
-    userPermissionsData.userRoles?.forEach(userRole => {
-      userRole.assignedRole?.assignedPermissions?.forEach(rolePermission => {
-        const permission = rolePermission.grantedPermission;
-        if (permission?.relatedResource?.name && permission?.action) {
-          rolePermissions.add(`${permission.relatedResource.name}.${permission.action}`);
+    userPermissionsData.users[0]?.roleAssignments?.forEach((roleAssignment: any) => {
+      roleAssignment.role?.rolePermissions?.forEach((rolePermission: any) => {
+        const permission = rolePermission.permission;
+        if (permission?.resource?.name && permission?.action) {
+          rolePermissions.add(`${permission.resource.name}.${permission.action}`);
         }
       });
     });
@@ -187,7 +187,7 @@ export function PermissionEditor({
     resourcesData.resources.forEach(resource => {
       permissions[resource.name] = {};
       
-      resource.availablePermissions?.forEach(permission => {
+      resource.permissions?.forEach((permission: any) => {
         const permissionKey = `${resource.name}.${permission.action}`;
         const hasRolePermission = rolePermissions.has(permissionKey);
         
@@ -240,8 +240,11 @@ export function PermissionEditor({
       operation,
       granted,
       reason: "",
-      originalOverrideId: overrideId,
     };
+    
+    if (overrideId !== undefined) {
+      change.originalOverrideId = overrideId;
+    }
 
     // Determine if this is a new override or removing an existing one
     const currentPermission = effectivePermissions[resource]?.[operation];
@@ -348,9 +351,11 @@ export function PermissionEditor({
           await createAuditLog({
             variables: {
               input: {
-                action: change.granted ? 'GRANT_PERMISSION' : 'DENY_PERMISSION',
-                resource: `${change.resource}.${change.operation}`,
+                changeType: change.granted ? 'GRANT_PERMISSION' : 'DENY_PERMISSION',
+                permissionType: `${change.resource}.${change.operation}`,
                 targetUserId: userId,
+                changedByUserId: '00000000-0000-0000-0000-000000000000', // TODO: Get from session
+                changedAt: new Date().toISOString(),
               }
             }
           });

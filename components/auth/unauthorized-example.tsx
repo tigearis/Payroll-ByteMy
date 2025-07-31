@@ -6,7 +6,7 @@ import { UnauthorizedModal } from "@/components/auth/unauthorized-modal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useUnauthorizedModal } from "@/hooks/use-unauthorized-modal";
-import { navigateToUnauthorized } from "@/lib/auth/unauthorized-handler";
+import { handleUnauthorizedAccess } from "@/lib/auth/unauthorized-handler";
 
 /**
  * Example component demonstrating different ways to handle unauthorized access
@@ -31,17 +31,25 @@ export function UnauthorizedExample() {
 
   // Method 2: Using the utility function to redirect to unauthorized page as modal
   const handleModalRedirect = () => {
-    navigateToUnauthorized(router, {
-      reason: "insufficient_permissions",
-      useModal: true,
+    // Show modal first
+    unauthorizedModal.show("insufficient_permissions");
+    
+    // Then log the unauthorized access attempt
+    handleUnauthorizedAccess({
+      requiredPermission: "insufficient_permissions",
+      timestamp: new Date(),
     });
   };
 
   // Method 3: Using the utility function to redirect to full unauthorized page
   const handleFullPageRedirect = () => {
-    navigateToUnauthorized(router, {
-      reason: "insufficient_permissions",
-      useModal: false,
+    // Navigate to full unauthorized page
+    router.push("/unauthorized?reason=insufficient_permissions");
+    
+    // Log the unauthorized access attempt
+    handleUnauthorizedAccess({
+      requiredPermission: "insufficient_permissions", 
+      timestamp: new Date(),
     });
   };
 

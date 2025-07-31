@@ -250,7 +250,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
     return NextResponse.json<InvitationListResponse>(
       {
         success: false,
-        error: error.message || "Failed to fetch invitation list",
+        error: error instanceof Error ? error.message : "Failed to fetch invitation list",
       },
       { status: 500 }
     );

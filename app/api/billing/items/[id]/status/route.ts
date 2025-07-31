@@ -3,7 +3,9 @@ import { withAuthParams } from '@/lib/auth/api-auth';
 import { executeTypedQuery } from '@/lib/apollo/query-helpers';
 import { 
   GetBillingItemByIdDocument,
+  GetBillingItemByIdQuery,
   UpdateBillingItemDocument,
+  UpdateBillingItemMutation,
   CreateBillingItemLogDocument
 } from '@/domains/billing/graphql/generated/graphql';
 
@@ -14,11 +16,11 @@ interface StatusTransitionRequest {
 }
 
 // Define valid status transitions
-const VALID_TRANSITIONS = {
+const VALID_TRANSITIONS: Record<string, string[]> = {
   'draft': ['confirmed', 'rejected'],
-  'confirmed': ['invoiced', 'rejected', 'draft'],
+  'confirmed': ['invoiced', 'rejected', 'draft'], 
   'invoiced': ['paid', 'confirmed'],
-  'paid': [], // Final state
+  'paid': ['draft'], // Allow reverting from paid if needed
   'rejected': ['draft']
 };
 
@@ -42,13 +44,12 @@ export const PUT = withAuthParams(async (req: NextRequest, { params }, session: 
     }
 
     // Get current billing item
-    const billingItemData = await executeTypedQuery(
+    const billingItemData = await executeTypedQuery<GetBillingItemByIdQuery>(
       GetBillingItemByIdDocument,
-      { id },
-      session
+      { id }
     );
 
-    const billingItem = billingItemData?.billingItem;
+    const billingItem = billingItemData?.billingItemsByPk;
     if (!billingItem) {
       return NextResponse.json(
         { success: false, error: 'Billing item not found' },
@@ -56,22 +57,22 @@ export const PUT = withAuthParams(async (req: NextRequest, { params }, session: 
       );
     }
 
-    const currentStatus = billingItem.status;
+    const currentStatus = (billingItem as any).status || 'draft';
 
     // Validate status transition
-    if (!VALID_TRANSITIONS[currentStatus as keyof typeof VALID_TRANSITIONS]?.includes(newStatus)) {
+    if (!VALID_TRANSITIONS[currentStatus]?.includes(newStatus)) {
       return NextResponse.json(
         { 
           success: false, 
           error: `Invalid status transition from '${currentStatus}' to '${newStatus}'`,
-          validTransitions: VALID_TRANSITIONS[currentStatus as keyof typeof VALID_TRANSITIONS] || []
+          validTransitions: VALID_TRANSITIONS[currentStatus] || []
         },
         { status: 400 }
       );
     }
 
     // Check permissions based on status transition
-    const userRole = session.role || session.defaultRole;
+    const userRole = session.role || session.defaultRole || 'viewer';
     
     // Define permission requirements for different transitions
     const requiresManagerPermission = [
@@ -137,16 +138,15 @@ export const PUT = withAuthParams(async (req: NextRequest, { params }, session: 
     }
 
     // Update the billing item
-    const updatedItem = await executeTypedQuery(
+    const updatedItem = await executeTypedQuery<UpdateBillingItemMutation>(
       UpdateBillingItemDocument,
       {
         id,
         updates: updateData
-      },
-      session
+      }
     );
 
-    if (!updatedItem?.updateBillingItem) {
+    if (!updatedItem?.updateBillingItemsByPk) {
       throw new Error('Failed to update billing item status');
     }
 
@@ -163,8 +163,7 @@ export const PUT = withAuthParams(async (req: NextRequest, { params }, session: 
             notes: notes || reason || `Status changed from ${currentStatus} to ${newStatus}`,
             userId: session.userId
           }
-        },
-        session
+        }
       );
     } catch (logError) {
       console.warn('Failed to create audit log entry:', logError);
@@ -174,7 +173,7 @@ export const PUT = withAuthParams(async (req: NextRequest, { params }, session: 
     return NextResponse.json({
       success: true,
       data: {
-        billingItem: updatedItem.updateBillingItem,
+        billingItem: updatedItem.updateBillingItemsByPk,
         statusTransition: {
           from: currentStatus,
           to: newStatus,
@@ -209,13 +208,12 @@ export const GET = withAuthParams(async (req: NextRequest, { params }, session: 
     const { id } = await params;
 
     // Get current billing item
-    const billingItemData = await executeTypedQuery(
+    const billingItemData = await executeTypedQuery<GetBillingItemByIdQuery>(
       GetBillingItemByIdDocument,
-      { id },
-      session
+      { id }
     );
 
-    const billingItem = billingItemData?.billingItem;
+    const billingItem = billingItemData?.billingItemsByPk;
     if (!billingItem) {
       return NextResponse.json(
         { success: false, error: 'Billing item not found' },
@@ -223,12 +221,12 @@ export const GET = withAuthParams(async (req: NextRequest, { params }, session: 
       );
     }
 
-    const currentStatus = billingItem.status;
+    const currentStatus = (billingItem as any).status || 'draft';
     const availableTransitions = VALID_TRANSITIONS[currentStatus] || [];
 
     // Filter transitions based on user permissions
-    const userRole = session.role || session.defaultRole;
-    const allowedTransitions = availableTransitions.filter(status => {
+    const userRole = session.role || session.defaultRole || 'viewer';
+    const allowedTransitions = availableTransitions.filter((status: string) => {
       if (['paid'].includes(status) && !['developer', 'org_admin'].includes(userRole)) {
         return false;
       }
@@ -244,7 +242,7 @@ export const GET = withAuthParams(async (req: NextRequest, { params }, session: 
         currentStatus,
         availableTransitions: allowedTransitions,
         allPossibleTransitions: availableTransitions,
-        statusHistory: billingItem.statusHistory || [],
+        statusHistory: (billingItem as any).statusHistory || [],
         permissions: {
           canApprove: ['developer', 'org_admin', 'manager'].includes(userRole),
           canMarkPaid: ['developer', 'org_admin'].includes(userRole),

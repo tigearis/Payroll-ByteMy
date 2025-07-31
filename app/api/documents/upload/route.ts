@@ -35,7 +35,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
     }
 
     // Validate user permissions
-    const userRole = session.role || session.defaultRole;
+    const userRole = session.role || session.defaultRole || 'viewer';
     const canUpload = ['developer', 'org_admin', 'manager', 'consultant'].includes(userRole);
     
     if (!canUpload) {
@@ -64,7 +64,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
     const validation = validateFileUpload(file);
     if (!validation.isValid) {
       return NextResponse.json<DocumentUploadResponse>(
-        { success: false, error: validation.error },
+        { success: false, error: validation.error || 'File validation failed' },
         { status: 400 }
       );
     }
@@ -91,7 +91,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
 
       // First, get the original document to preserve metadata
       const { getDocument, deleteDocument } = await import('@/lib/storage/document-operations');
-      const originalDocument = await getDocument(replaceDocumentId, session.databaseId || session.userId);
+      const originalDocument = await getDocument(replaceDocumentId, session.databaseId || session.userId || 'anonymous');
       
       if (!originalDocument) {
         return NextResponse.json<DocumentUploadResponse>(
@@ -101,19 +101,26 @@ export const POST = withAuth(async (req: NextRequest, session) => {
       }
 
       // Delete the old document
-      await deleteDocument(replaceDocumentId, session.databaseId || session.userId);
+      await deleteDocument(replaceDocumentId, session.databaseId || session.userId || 'anonymous');
 
       // Upload the new document with the same metadata and relationships
-      const document = await uploadDocument({
+      const uploadOptions: any = {
         filename: file.name,
         fileBuffer,
-        clientId: originalDocument.clientId || undefined,
-        payrollId: originalDocument.payrollId || undefined,
         category: (category as any) || originalDocument.category,
         isPublic: isPublic !== undefined ? isPublic : originalDocument.isPublic,
         metadata: metadata || originalDocument.metadata,
-        uploadedBy: session.databaseId || session.userId,
-      });
+        uploadedBy: session.databaseId || session.userId || 'anonymous',
+      };
+      
+      if (originalDocument.clientId) {
+        uploadOptions.clientId = originalDocument.clientId;
+      }
+      if (originalDocument.payrollId) {
+        uploadOptions.payrollId = originalDocument.payrollId;
+      }
+      
+      const document = await uploadDocument(uploadOptions);
 
       return NextResponse.json<DocumentUploadResponse>({
         success: true,
@@ -126,16 +133,23 @@ export const POST = withAuth(async (req: NextRequest, session) => {
       console.log(`🏢 Client: ${clientId || 'none'}, 💼 Payroll: ${payrollId || 'none'}`);
 
       // Upload document
-      const document = await uploadDocument({
+      const uploadOptions: any = {
         filename: file.name,
         fileBuffer,
-        clientId: clientId || undefined,
-        payrollId: payrollId || undefined,
         category: (category as any) || 'other',
         isPublic,
         metadata,
-        uploadedBy: session.databaseId || session.userId,
-      });
+        uploadedBy: session.databaseId || session.userId || 'anonymous',
+      };
+      
+      if (clientId) {
+        uploadOptions.clientId = clientId;
+      }
+      if (payrollId) {
+        uploadOptions.payrollId = payrollId;
+      }
+      
+      const document = await uploadDocument(uploadOptions);
 
       return NextResponse.json<DocumentUploadResponse>({
         success: true,
@@ -150,7 +164,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
     return NextResponse.json<DocumentUploadResponse>(
       {
         success: false,
-        error: error.message || 'Failed to upload document',
+        error: error instanceof Error ? error.message : 'Failed to upload document',
       },
       { status: 500 }
     );

@@ -105,10 +105,9 @@ export const InvoiceConsolidationManager: React.FC<InvoiceConsolidationManagerPr
   // Auto-generate invoices mutation
   const [autoGenerateInvoices] = useMutation(AutoGenerateInvoicesDocument, {
     onCompleted: (data) => {
-      if (data.autoGenerateInvoices?.success) {
+      if (data.insertBillingPeriods?.affectedRows > 0) {
         toast.success(
-          `Generated ${data.autoGenerateInvoices.invoicesGenerated} invoices ` +
-          `totaling ${formatCurrency(data.autoGenerateInvoices.totalAmount || 0)}`
+          `Generated ${data.insertBillingPeriods.affectedRows} billing periods`
         );
         refetchPeriods();
       } else {

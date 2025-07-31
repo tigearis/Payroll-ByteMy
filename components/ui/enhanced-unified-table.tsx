@@ -24,7 +24,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 
-export interface UnifiedTableColumn<T> extends ColumnDef<T> {
+export interface UnifiedTableColumn<T> extends Omit<ColumnDef<T>, 'accessorKey' | 'header'> {
   accessorKey: string;
   header: string;
   type?: 'text' | 'number' | 'date' | 'badge' | 'currency' | 'actions';
@@ -169,7 +169,7 @@ function EnhancedUnifiedTableComponent<T extends Record<string, any>>({
     // Data columns
     cols.push(...columns.map(col => ({
       ...col,
-      cell: ({ getValue, row }) => {
+      cell: ({ getValue, row }: any) => {
         const value = getValue();
         
         if (col.render) {

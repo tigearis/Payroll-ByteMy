@@ -515,7 +515,7 @@ export default function PayrollPage() {
   }, [versionCheckLoading, setLoading]);
   console.log("✅ Version check query loaded");
 
-  const currentPayroll = versionCheckData?.payrollById as any;
+  const currentPayroll = versionCheckData?.payrollsByPk as any;
 
   // Update loading coordinator with version checking state
   useEffect(() => {
@@ -715,8 +715,8 @@ export default function PayrollPage() {
       console.log("✅ Payroll update completed with data:", data);
       
       // Verify client relationship is preserved
-      if (data?.updatePayrollById?.client) {
-        console.log("✅ Client relationship preserved:", data.updatePayrollById.client);
+      if (data?.updatePayrollsByPk?.client) {
+        console.log("✅ Client relationship preserved:", data.updatePayrollsByPk.client);
       } else {
         console.warn("⚠️ Client relationship may be missing in response");
       }
@@ -750,8 +750,8 @@ export default function PayrollPage() {
 
   // Initialize edit state when payroll data loads (minimal state needed for save logic)
   useEffect(() => {
-    if (data?.payrollById && !editedPayroll.id) {
-      const payroll = data.payrollById;
+    if (data?.payrollsByPk && !editedPayroll.id) {
+      const payroll = data.payrollsByPk;
       setEditedPayroll({
         id: payroll.id,
         cycleId: (payroll as any).cycleId || "",
@@ -896,8 +896,8 @@ export default function PayrollPage() {
 
   // Sync payroll data to PayrollForm format when editing starts or data changes
   useEffect(() => {
-    if (data?.payrollById && isEditing && cyclesData && dateTypesData) {
-      const payroll = data.payrollById;
+    if (data?.payrollsByPk && isEditing && cyclesData && dateTypesData) {
+      const payroll = data.payrollsByPk;
       console.log("🔧 Initializing form with payroll data:", payroll);
       
       // Safely get cycle name with fallback
@@ -1012,7 +1012,7 @@ export default function PayrollPage() {
     );
   }
 
-  if (!versionCheckData || !versionCheckData.payrollById) {
+  if (!versionCheckData || !versionCheckData.payrollsByPk) {
     // Show detailed error information instead of calling notFound()
     return (
       <VersionCheckErrorBoundary>
@@ -1025,7 +1025,7 @@ export default function PayrollPage() {
             </p>
 
             <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-md text-left max-w-lg mx-auto mt-4">
-              <p>No error was reported, but payrollById returned null.</p>
+              <p>No error was reported, but payrollsByPk returned null.</p>
               <p className="text-sm mt-2">
                 This usually happens when the record exists but you don't have
                 permission to view it, or the record doesn't exist.
@@ -1048,7 +1048,7 @@ export default function PayrollPage() {
     );
   }
 
-  const payroll = data?.payrollById || versionCheckData.payrollById;
+  const payroll = data?.payrollsByPk || versionCheckData.payrollsByPk;
   const client = payroll.client;
 
   // Debug: Log payroll data to see what we're getting

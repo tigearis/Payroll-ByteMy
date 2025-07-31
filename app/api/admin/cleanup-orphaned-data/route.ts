@@ -107,7 +107,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
             try {
               await executeTypedMutation(
                 gql`mutation DeleteExpiredInvitation($invitationId: uuid!) {
-                  deleteUserInvitationById(id: $invitationId) {
+                  deleteUserInvitationsByPk(id: $invitationId) {
                     id
                     email
                     invitationStatus
@@ -181,7 +181,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
             try {
               await executeTypedMutation(
                 gql`mutation DeleteUser($userId: uuid!) {
-                  deleteUserById(id: $userId) {
+                  deleteUsersByPk(id: $userId) {
                     id
                     email
                     firstName

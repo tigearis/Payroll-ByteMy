@@ -101,7 +101,7 @@ const EXCLUDED_FIELDS = [
 export const GET = withAuth(async (request: NextRequest, session) => {
   try {
     // Authorization check - require developer role only
-    const userRole = session.role || session.defaultRole;
+    const userRole = session.role || session.defaultRole || 'viewer';
     const isDeveloper = userRole === 'developer';
     
     if (!isDeveloper) {

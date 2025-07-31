@@ -36,7 +36,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
     }
 
     // Check if user has permission to generate invoices
-    const userRole = session.role || session.defaultRole;
+    const userRole = session.role || session.defaultRole || 'viewer';
     if (!userRole || !['developer', 'org_admin', 'manager'].includes(userRole)) {
       return NextResponse.json(
         { success: false, error: 'Insufficient permissions to generate invoices' },
@@ -103,11 +103,11 @@ export const POST = withAuth(async (req: NextRequest, session) => {
       { input: invoiceData }
     );
 
-    if (!createdInvoice?.insertBillingInvoice) {
+    if (!createdInvoice?.insertBillingInvoiceOne) {
       throw new Error('Failed to create invoice');
     }
 
-    const invoiceId = createdInvoice.insertBillingInvoice.id;
+    const invoiceId = createdInvoice.insertBillingInvoiceOne.id;
 
     // Update billing items to mark them as invoiced
     const updatePromises = billingItemIds.map(itemId =>
@@ -129,7 +129,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
     return NextResponse.json({
       success: true,
       data: {
-        invoice: createdInvoice.insertBillingInvoice,
+        invoice: createdInvoice.insertBillingInvoiceOne,
         invoiceNumber,
         itemsInvoiced: billingItemIds.length,
         totalAmount: totalAmount,

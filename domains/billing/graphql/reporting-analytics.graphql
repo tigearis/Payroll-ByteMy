@@ -242,3 +242,166 @@ query GetFinancialKpiSummary {
     }
   }
 }
+
+# Billing Analytics - Comprehensive analytics for API routes
+query GetBillingAnalytics(
+  $dateFrom: timestamp!
+  $dateTo: timestamp!
+  $clientId: uuid
+  $staffUserId: uuid
+) {
+  billingAnalytics: billingItemsAggregate(
+    where: {
+      createdAt: { _gte: $dateFrom, _lte: $dateTo }
+      clientId: { _eq: $clientId }
+      staffUserId: { _eq: $staffUserId }
+    }
+  ) {
+    aggregate {
+      count
+      sum {
+        totalAmount
+        quantity
+      }
+      avg {
+        totalAmount
+        hourlyRate
+      }
+    }
+  }
+  
+  revenueByStatus: billingItems(
+    where: {
+      createdAt: { _gte: $dateFrom, _lte: $dateTo }
+      clientId: { _eq: $clientId }
+      staffUserId: { _eq: $staffUserId }
+    }
+  ) {
+    status
+    totalAmount
+  }
+  
+  revenueByMonth: billingItems(
+    where: {
+      createdAt: { _gte: $dateFrom, _lte: $dateTo }
+      clientId: { _eq: $clientId }
+      staffUserId: { _eq: $staffUserId }
+    }
+    orderBy: { createdAt: ASC }
+  ) {
+    totalAmount
+    createdAt
+  }
+  
+  topClients: clients(
+    limit: 10
+    orderBy: { name: ASC }
+  ) {
+    id
+    name
+    billingItemsAggregate(
+      where: {
+        createdAt: { _gte: $dateFrom, _lte: $dateTo }
+      }
+    ) {
+      aggregate {
+        sum {
+          totalAmount
+        }
+        count
+      }
+    }
+  }
+  
+  topServices: billingItems(
+    where: {
+      createdAt: { _gte: $dateFrom, _lte: $dateTo }
+      clientId: { _eq: $clientId }
+      staffUserId: { _eq: $staffUserId }
+    }
+    distinctOn: serviceName
+    orderBy: [{ serviceName: ASC }, { totalAmount: DESC }]
+    limit: 10
+  ) {
+    serviceName
+    totalAmount
+    quantity
+  }
+}
+
+# Client Billing Statistics
+query GetClientBillingStats(
+  $dateFrom: timestamp!
+  $dateTo: timestamp!
+  $clientId: uuid
+) {
+  clientBillingStats: clients(
+    where: { id: { _eq: $clientId } }
+  ) {
+    id
+    name
+    contactPerson
+    contactEmail
+    billingItemsAggregate(
+      where: {
+        createdAt: { _gte: $dateFrom, _lte: $dateTo }
+      }
+    ) {
+      aggregate {
+        count
+        sum {
+          totalAmount
+          quantity
+        }
+        avg {
+          totalAmount
+          hourlyRate
+        }
+      }
+    }
+    payrollsAggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+}
+
+# Staff Billing Performance Analytics
+query GetStaffAnalyticsPerformance(
+  $dateFrom: timestamp!
+  $dateTo: timestamp!
+  $staffUserId: uuid
+) {
+  staffBillingPerformance: users(
+    where: { id: { _eq: $staffUserId } }
+  ) {
+    id
+    firstName
+    lastName
+    email
+    role
+    staffBillingItemsAggregate(
+      where: {
+        createdAt: { _gte: $dateFrom, _lte: $dateTo }
+      }
+    ) {
+      aggregate {
+        count
+        sum {
+          totalAmount
+          quantity
+        }
+        avg {
+          totalAmount
+          hourlyRate
+        }
+      }
+    }
+    primaryPayrollAssignmentsAggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+}

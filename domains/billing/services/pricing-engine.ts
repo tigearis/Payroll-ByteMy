@@ -150,7 +150,7 @@ export class ServicePricingEngine {
       metadata: {
         calculationDate: new Date(),
         context,
-        warnings: warnings.length > 0 ? warnings : undefined
+        ...(warnings.length > 0 && { warnings })
       }
     };
   }
@@ -368,7 +368,7 @@ export class ServicePricingEngine {
       adjusted: adjustment !== 0,
       newRate,
       adjustment,
-      warning
+      ...(warning && { warning })
     };
   }
 

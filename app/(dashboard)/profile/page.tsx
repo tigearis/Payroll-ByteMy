@@ -136,7 +136,7 @@ export default function ProfilePage() {
       errorPolicy: "all",
       notifyOnNetworkStatusChange: true,
       onCompleted: data => {
-        const user = data.userById;
+        const user = data.usersByPk;
         if (user) {
           setFormData({
             name: user.computedName || "",
@@ -167,7 +167,7 @@ export default function ProfilePage() {
       },
     });
 
-  const user = data?.userById;
+  const user = data?.usersByPk;
   
   // If we have partial data but an error, still show what we can
   const hasPartialData = user && user.id && user.computedName;
@@ -282,13 +282,13 @@ export default function ProfilePage() {
   // Calculate statistics with safe access
   const stats = {
     totalPayrolls:
-      safeProfileAccess(user, 'primaryConsultantPayrolls.length', 0) +
-      safeProfileAccess(user, 'backupConsultantPayrolls.length', 0) +
+      safeProfileAccess(user, 'primaryPayrollAssignments.length', 0) +
+      safeProfileAccess(user, 'backupPayrollAssignments.length', 0) +
       safeProfileAccess(user, 'managedPayrolls.length', 0),
-    primaryPayrolls: safeProfileAccess(user, 'primaryConsultantPayrolls.length', 0),
+    primaryPayrolls: safeProfileAccess(user, 'primaryPayrollAssignments.length', 0),
     managedStaff: safeProfileAccess(user, 'managedUsers.length', 0),
     totalEmployees:
-      user?.primaryConsultantPayrolls?.reduce(
+      user?.primaryPayrollAssignments?.reduce(
         (sum: number, p: any) => sum + (safeProfileAccess(p, 'employeeCount', 0)),
         0
       ) || 0,
@@ -544,7 +544,7 @@ export default function ProfilePage() {
         <TabsContent value="payrolls" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Manager Information */}
-            {user.managerUser && (
+            {user.manager && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -556,11 +556,11 @@ export default function ProfilePage() {
                   <div className="flex items-center space-x-3">
                     <Avatar className="w-10 h-10">
                       <AvatarImage
-                        src={user.managerUser.image || undefined}
-                        alt={user.managerUser.computedName || `${user.managerUser.firstName} ${user.managerUser.lastName}`}
+                        src={user.manager.image || undefined}
+                        alt={user.manager.computedName || `${user.manager.firstName} ${user.manager.lastName}`}
                       />
                       <AvatarFallback>
-                        {(user.managerUser.computedName || `${user.managerUser.firstName} ${user.managerUser.lastName}`)
+                        {(user.manager.computedName || `${user.manager.firstName} ${user.manager.lastName}`)
                           .split(" ")
                           .map((n: string) => n?.[0] || "")
                           .join("")
@@ -568,9 +568,9 @@ export default function ProfilePage() {
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-medium">{user.managerUser.computedName}</p>
+                      <p className="font-medium">{user.manager.computedName}</p>
                       <p className="text-sm text-gray-500">
-                        {user.managerUser.email}
+                        {user.manager.email}
                       </p>
                       <p className="text-xs text-gray-400">Manager</p>
                     </div>
@@ -580,7 +580,7 @@ export default function ProfilePage() {
             )}
 
             {/* Work Schedule */}
-            {data?.userById?.userWorkSchedules && data.userById.userWorkSchedules.length > 0 && (
+            {data?.usersByPk?.workSchedules && data.usersByPk.workSchedules.length > 0 && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -590,7 +590,7 @@ export default function ProfilePage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    {data.userById.userWorkSchedules.map((schedule: any) => (
+                    {data.usersByPk.workSchedules.map((schedule: any) => (
                       <div
                         key={schedule.id}
                         className="flex justify-between items-center py-2 border-b last:border-b-0"
@@ -651,18 +651,18 @@ export default function ProfilePage() {
         <TabsContent value="payrolls" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Primary Consultant Payrolls */}
-            {user.primaryConsultantPayrolls?.length > 0 && (
+            {user.primaryPayrollAssignments?.length > 0 && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Briefcase className="w-5 h-5" />
                     Primary Consultant (
-                    {user.primaryConsultantPayrolls?.length || 0})
+                    {user.primaryPayrollAssignments?.length || 0})
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {user.primaryConsultantPayrolls?.map((payroll: any) => (
+                    {user.primaryPayrollAssignments?.map((payroll: any) => (
                       <div
                         key={payroll.id}
                         className="flex justify-between items-start"
@@ -697,18 +697,18 @@ export default function ProfilePage() {
             )}
 
             {/* Backup Consultant Payrolls */}
-            {user.backupConsultantPayrolls?.length > 0 && (
+            {user.backupPayrollAssignments?.length > 0 && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Users className="w-5 h-5" />
                     Backup Consultant (
-                    {user.backupConsultantPayrolls?.length || 0})
+                    {user.backupPayrollAssignments?.length || 0})
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {user.backupConsultantPayrolls?.map((payroll: any) => (
+                    {user.backupPayrollAssignments?.map((payroll: any) => (
                       <div
                         key={payroll.id}
                         className="flex justify-between items-start"

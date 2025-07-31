@@ -9,9 +9,7 @@ import { syncUserWithDatabase } from "@/domains/users/services/user-sync";
 import type { UserRole } from "@/domains/users/services/user-sync";
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { 
-  authenticateServiceRequest, 
-  ServiceOperation,
-  logServiceAuth 
+  authenticateServiceRequest
 } from "@/lib/auth/service-auth";
 
 // Initialize Clerk client for backend operations
@@ -32,7 +30,7 @@ export async function POST(req: NextRequest) {
   console.log("🚀 WEBHOOK STARTED - Processing Clerk webhook request");
   
   // Define the service operation for logging
-  const operation: ServiceOperation = {
+  const operation = {
     type: 'webhook',
     name: 'clerk-webhook',
     metadata: {
@@ -46,7 +44,7 @@ export async function POST(req: NextRequest) {
     const authResult = { isValid: authenticateServiceRequest() };
 
     if (!authResult.isValid) {
-      console.warn(`🔒 Service auth warning: ${authResult.reason}`);
+      console.warn(`🔒 Service auth warning: Service authentication failed`);
       // Continue processing as webhook signature validation is the primary security
     }
     console.log("✅ SERVICE AUTH - Service auth check completed");
@@ -129,10 +127,9 @@ export async function POST(req: NextRequest) {
   try {
     console.log("🔄 PROCESSING - Starting event processing");
     // Update operation metadata with event details
-    operation.userId = id;
-    operation.metadata = {
+    (operation as any).userId = id;
+    (operation as any).metadata = {
       ...operation.metadata,
-      eventType,
       clerkUserId: id,
     };
 
@@ -342,8 +339,8 @@ export async function POST(req: NextRequest) {
             });
 
             if (
-              updateResult?.bulkUpdateUsers?.affectedRows &&
-              updateResult.bulkUpdateUsers.affectedRows > 0
+              updateResult?.updateUsers?.affectedRows &&
+              updateResult.updateUsers.affectedRows > 0
             ) {
               console.log(`✅ Database role synced from Clerk: ${updatedRole}`);
             } else {

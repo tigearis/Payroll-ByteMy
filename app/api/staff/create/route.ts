@@ -222,15 +222,44 @@ export const POST = withAuth(async (req: NextRequest, session) => {
           );
 
         console.log("✅ GraphQL mutation executed successfully");
-        invitation = dbInvitationResponse.insertUserInvitation;
+        invitation = dbInvitationResponse.insertUserInvitations?.returning?.[0];
         console.log(`✅ Database invitation record created: ${invitation?.id}`);
 
-        return NextResponse.json<CreateStaffResponse>({
+        const response: CreateStaffResponse = {
           success: true,
-          invitation: invitation ?? undefined,
           invitationSent: true,
           message: `Invitation sent to ${email} for role ${role}`,
-        });
+        };
+        
+        if (invitation) {
+          // Sanitize invitation object to match InvitationData type
+          const sanitizedInvitation: any = {
+            id: invitation.id,
+            email: invitation.email,
+            firstName: invitation.firstName,
+            lastName: invitation.lastName,
+            invitedRole: invitation.invitedRole,
+            invitationStatus: invitation.invitationStatus,
+            createdAt: invitation.createdAt,
+            updatedAt: invitation.updatedAt,
+          };
+          
+          // Only include non-null optional properties
+          if (invitation.managerId) sanitizedInvitation.managerId = invitation.managerId;
+          if (invitation.clerkInvitationId) sanitizedInvitation.clerkInvitationId = invitation.clerkInvitationId;
+          if (invitation.clerkTicket) sanitizedInvitation.clerkTicket = invitation.clerkTicket;
+          if (invitation.expiresAt) sanitizedInvitation.expiresAt = invitation.expiresAt;
+          if (invitation.acceptedAt) sanitizedInvitation.acceptedAt = invitation.acceptedAt;
+          if (invitation.acceptedBy) sanitizedInvitation.acceptedBy = invitation.acceptedBy;
+          if (invitation.invitedBy) sanitizedInvitation.invitedBy = invitation.invitedBy;
+          if (invitation.revokedAt) sanitizedInvitation.revokedAt = invitation.revokedAt;
+          if (invitation.revokedBy) sanitizedInvitation.revokedBy = invitation.revokedBy;
+          if ((invitation as any).notes) sanitizedInvitation.notes = (invitation as any).notes;
+          
+          response.invitation = sanitizedInvitation;
+        }
+        
+        return NextResponse.json(response);
       } catch (invitationError: unknown) {
         const errorMessage = invitationError instanceof Error ? invitationError.message : 'Unknown error';
         console.error("❌ INVITATION CREATION ERROR:", invitationError);
@@ -309,16 +338,37 @@ export const POST = withAuth(async (req: NextRequest, session) => {
           }
         );
 
-        user = userData.insertUser;
+        user = userData.insertUsers?.returning?.[0];
 
         console.log(`✅ User created in database: ${user?.id}`);
 
-        return NextResponse.json<CreateStaffResponse>({
+        const response: CreateStaffResponse = {
           success: true,
-          user: user ?? undefined,
           invitationSent: false,
           message: `User ${fullName} created with role ${role}`,
-        });
+        };
+        
+        if (user) {
+          // Sanitize user object to match UserData type
+          const sanitizedUser: any = {
+            id: user.id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            role: user.role,
+          };
+          
+          // Only include non-null optional properties
+          if (user.clerkUserId) sanitizedUser.clerkUserId = user.clerkUserId;
+          if (user.createdAt) sanitizedUser.createdAt = user.createdAt;
+          if (user.updatedAt) sanitizedUser.updatedAt = user.updatedAt;
+          if (user.computedName) sanitizedUser.computedName = user.computedName;
+          if (user.isActive !== null) sanitizedUser.isActive = user.isActive;
+          
+          response.user = sanitizedUser;
+        }
+        
+        return NextResponse.json(response);
       } catch (userError: unknown) {
         const errorMessage = userError instanceof Error ? userError.message : 'Unknown error';
         console.error("Error creating user:", userError);

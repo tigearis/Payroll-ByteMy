@@ -70,7 +70,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       );
     }
 
-    const user = userData.userById;
+    const user = userData.usersByPk;
     if (!user) {
       return NextResponse.json<UpdateRoleResponse>(
         { success: false, error: "User not found" },
@@ -109,7 +109,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         }
       );
 
-      const updatedUser = updatedUserData.updateUserById;
+      const updatedUser = updatedUserData.updateUsersByPk;
 
       if (!updatedUser) {
         throw new Error("Failed to update user in database");
@@ -191,7 +191,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     return NextResponse.json<UpdateRoleResponse>(
       {
         success: false,
-        error: error.message || "Internal server error",
+        error: error instanceof Error ? error.message : "Internal server error",
       },
       { status: 500 }
     );
@@ -215,7 +215,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       { id }
     );
 
-    const user = userData.userById;
+    const user = userData.usersByPk;
     if (!user) {
       return NextResponse.json<UpdateRoleResponse>(
         { success: false, error: "User not found" },
@@ -240,7 +240,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     return NextResponse.json<UpdateRoleResponse>(
       {
         success: false,
-        error: error.message || "Internal server error",
+        error: error instanceof Error ? error.message : "Internal server error",
       },
       { status: 500 }
     );

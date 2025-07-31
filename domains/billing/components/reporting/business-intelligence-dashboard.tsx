@@ -78,34 +78,18 @@ export const BusinessIntelligenceDashboard: React.FC<BusinessIntelligenceDashboa
   const { data: biData, loading: biLoading, refetch: refetchBi } = useQuery(
     GetBusinessIntelligenceDataDocument,
     {
-      variables: {
-        startDate: dateRange.start,
-        endDate: dateRange.end
-      },
       pollInterval: autoRefresh ? 300000 : 0 // 5 minutes if auto refresh
     }
   );
 
   // Query for automation metrics
   const { data: automationData, loading: automationLoading } = useQuery(
-    GetAutomationMetricsDocument,
-    {
-      variables: {
-        startDate: dateRange.start,
-        endDate: dateRange.end
-      }
-    }
+    GetAutomationMetricsDocument
   );
 
   // Query for efficiency analytics
   const { data: efficiencyData, loading: efficiencyLoading } = useQuery(
-    GetEfficiencyAnalyticsDocument,
-    {
-      variables: {
-        startDate: dateRange.start,
-        endDate: dateRange.end
-      }
-    }
+    GetEfficiencyAnalyticsDocument
   );
 
   // Process KPI metrics

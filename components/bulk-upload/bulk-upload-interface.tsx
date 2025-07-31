@@ -79,7 +79,6 @@ export function BulkUploadInterface() {
     setUploadState(prev => ({
       ...prev,
       selectedFile: file,
-      result: undefined,
     }));
   }, []);
 
@@ -174,7 +173,6 @@ export function BulkUploadInterface() {
       ...prev,
       isUploading: true,
       progress: 0,
-      result: undefined,
     }));
 
     try {
@@ -383,7 +381,7 @@ export function BulkUploadInterface() {
                           <Badge variant="outline" className="text-green-600">
                             Created: {uploadState.result.data.created}
                           </Badge>
-                          {uploadState.result.data.failed > 0 && (
+                          {uploadState.result.data.failed && uploadState.result.data.failed > 0 && (
                             <Badge variant="outline" className="text-red-600">
                               Failed: {uploadState.result.data.failed}
                             </Badge>
@@ -411,7 +409,7 @@ export function BulkUploadInterface() {
                             className="p-2 border rounded text-sm"
                           >
                             <p className="font-medium">
-                              Row {error.row || error.line}: {error.field}
+                              Row {error.row}: {error.field}
                             </p>
                             <p className="text-red-600">{error.message}</p>
                           </div>
@@ -539,7 +537,7 @@ export function BulkUploadInterface() {
                           <Badge variant="outline" className="text-green-600">
                             Created: {uploadState.result.data.created}
                           </Badge>
-                          {uploadState.result.data.failed > 0 && (
+                          {uploadState.result.data.failed && uploadState.result.data.failed > 0 && (
                             <Badge variant="outline" className="text-red-600">
                               Failed: {uploadState.result.data.failed}
                             </Badge>
@@ -567,7 +565,7 @@ export function BulkUploadInterface() {
                             className="p-2 border rounded text-sm"
                           >
                             <p className="font-medium">
-                              Row {error.row || error.line}: {error.field}
+                              Row {error.row}: {error.field}
                             </p>
                             <p className="text-red-600">{error.message}</p>
                           </div>
@@ -710,14 +708,14 @@ export function BulkUploadInterface() {
                               Created: {uploadState.result.data.created}
                             </Badge>
                           )}
-                          {(uploadState.result.data.clientsFailed ||
-                            uploadState.result.data.payrollsFailed ||
-                            uploadState.result.data.failed) > 0 && (
+                          {((uploadState.result.data.clientsFailed || 0) +
+                            (uploadState.result.data.payrollsFailed || 0) +
+                            (uploadState.result.data.failed || 0)) > 0 && (
                             <Badge variant="outline" className="text-red-600">
                               Failed:{" "}
-                              {uploadState.result.data.clientsFailed ||
-                                uploadState.result.data.payrollsFailed ||
-                                uploadState.result.data.failed}
+                              {(uploadState.result.data.clientsFailed || 0) +
+                                (uploadState.result.data.payrollsFailed || 0) +
+                                (uploadState.result.data.failed || 0)}
                             </Badge>
                           )}
                         </div>
@@ -743,7 +741,7 @@ export function BulkUploadInterface() {
                             className="p-2 border rounded text-sm"
                           >
                             <p className="font-medium">
-                              Row {error.row || error.line}: {error.field}
+                              Row {error.row}: {error.field}
                             </p>
                             <p className="text-red-600">{error.message}</p>
                           </div>

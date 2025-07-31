@@ -65,7 +65,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
     return NextResponse.json<ProfileResponse>(
       {
         success: false,
-        error: error.message || "Internal server error",
+        error: error instanceof Error ? error.message : "Internal server error",
       },
       { status: 500 }
     );
@@ -104,7 +104,7 @@ export const PUT = withAuth(async (req: NextRequest, session) => {
       }
     );
 
-    const updatedUser = updatedUserData.updateUserById;
+    const updatedUser = updatedUserData.updateUsersByPk;
 
     if (!updatedUser) {
       return NextResponse.json<ProfileResponse>(
@@ -137,7 +137,7 @@ export const PUT = withAuth(async (req: NextRequest, session) => {
     return NextResponse.json<ProfileResponse>(
       {
         success: false,
-        error: error.message || "Internal server error",
+        error: error instanceof Error ? error.message : "Internal server error",
       },
       { status: 500 }
     );
