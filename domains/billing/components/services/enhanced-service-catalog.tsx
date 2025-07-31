@@ -361,7 +361,7 @@ export const EnhancedServiceCatalog: React.FC<EnhancedServiceCatalogProps> = ({
 
   // Group services by category
   const servicesByCategory = useMemo(() => {
-    const grouped = services.reduce((acc, service) => {
+    const grouped = services.reduce((acc: Record<string, ServiceFragment[]>, service: ServiceFragment) => {
       const category = service.category || 'other';
       if (!acc[category]) acc[category] = [];
       acc[category].push(service);
@@ -602,7 +602,7 @@ export const EnhancedServiceCatalog: React.FC<EnhancedServiceCatalogProps> = ({
                   </CardHeader>
                   <CardContent>
                     <div className="grid gap-4">
-                      {categoryServices.map((service) => (
+                      {categoryServices.map((service: ServiceFragment) => (
                         <Card 
                           key={service.id} 
                           className={`transition-all duration-200 ${
@@ -698,7 +698,7 @@ export const EnhancedServiceCatalog: React.FC<EnhancedServiceCatalogProps> = ({
             </Card>
           ) : (
             <div className="grid gap-4">
-              {templates.map((template) => (
+              {templates.map((template: ServiceTemplateFragment) => (
                 <Card key={template.id} className="hover:shadow-md transition-shadow">
                   <CardContent className="p-6">
                     <div className="flex justify-between items-start">

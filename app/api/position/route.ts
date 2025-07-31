@@ -54,7 +54,7 @@ export const GET = withAuth(async (req, session) => {
 
         const query = gql`
           query GetUserPosition($id: uuid!) {
-            userById(id: $id) {
+            userByPk(id: $id) {
               id
               name
               email
@@ -65,7 +65,7 @@ export const GET = withAuth(async (req, session) => {
 
         const data = await executeTypedQuery(query, { id: userId }) as any;
         
-        if (!data?.userById) {
+        if (!data?.userByPk) {
           return NextResponse.json(
             { error: 'User not found' },
             { status: 404 }
@@ -73,7 +73,7 @@ export const GET = withAuth(async (req, session) => {
         }
 
         return NextResponse.json({
-          user: data.userById,
+          user: data.userByPk,
           availablePositions: VALID_POSITIONS
         });
 
@@ -134,7 +134,7 @@ export const PUT = withAuth(async (req, session) => {
         $position: String!
         $adminPercentage: numeric!
       ) {
-        updateUserById(
+        updateUsersByPk(
           pkColumns: { id: $userId }
           _set: {
             # position: $position

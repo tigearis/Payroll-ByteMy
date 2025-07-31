@@ -71,13 +71,7 @@ export const ClientProfitabilityAnalyzer: React.FC<ClientProfitabilityAnalyzerPr
 
   // Query for client profitability analysis
   const { data: profitabilityData, loading: profitabilityLoading } = useQuery(
-    GetClientProfitabilityAnalysisDocument,
-    {
-      variables: {
-        startDate: dateRange.start,
-        endDate: dateRange.end
-      }
-    }
+    GetClientProfitabilityAnalysisDocument
   );
 
   // Query for client performance metrics
@@ -85,10 +79,9 @@ export const ClientProfitabilityAnalyzer: React.FC<ClientProfitabilityAnalyzerPr
     GetClientPerformanceMetricsDocument,
     {
       variables: {
-        startDate: dateRange.start,
-        endDate: dateRange.end,
-        clientId: selectedClient
-      }
+        clientId: selectedClient!
+      },
+      skip: !selectedClient
     }
   );
 
@@ -97,7 +90,7 @@ export const ClientProfitabilityAnalyzer: React.FC<ClientProfitabilityAnalyzerPr
     GetClientForecastDataDocument,
     {
       variables: {
-        clientId: selectedClient,
+        clientId: selectedClient!,
         months: 6
       },
       skip: !selectedClient

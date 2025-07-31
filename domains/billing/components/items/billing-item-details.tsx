@@ -53,7 +53,7 @@ const mockBillingItem = {
   createdAt: '2024-01-15T10:30:00Z',
   updatedAt: '2024-01-15T10:30:00Z',
   approvedAt: null,
-  approvedBy: null,
+  approvedBy: null as { firstName: string; lastName: string } | null,
   notes: 'Complete redesign of company website including responsive design, new branding implementation, and content management system integration.',
   totalAmount: 4500.00,
 };
@@ -295,7 +295,7 @@ export function BillingItemDetails({ itemId }: BillingItemDetailsProps) {
                 <div>
                   <div className="font-medium text-green-700">Approved</div>
                   <div className="text-sm text-gray-500">
-                    Approved by {item.approvedBy.firstName} {item.approvedBy.lastName}
+                    Approved by {item.approvedBy?.firstName || 'N/A'} {item.approvedBy?.lastName || ''}
                   </div>
                 </div>
                 <div className="text-sm text-gray-600">

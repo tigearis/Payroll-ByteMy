@@ -81,14 +81,14 @@ export interface UserEmailTemplateFavorite {
 
 // Email composition types
 export interface EmailComposition {
-  templateId?: string;
+  templateId?: string | undefined;
   recipientEmails: string[];
   subject: string;
   htmlContent: string;
-  textContent?: string;
-  variableValues?: Record<string, any>;
-  businessContext?: Record<string, any>;
-  scheduledFor?: string;
+  textContent?: string | undefined;
+  variableValues?: Record<string, any> | undefined;
+  businessContext?: Record<string, any> | undefined;
+  scheduledFor?: string | undefined;
 }
 
 export interface EmailVariable {
@@ -148,10 +148,10 @@ export interface WorkScheduleEmailContext {
 // API response types
 export interface EmailSendResponse {
   success: boolean;
-  emailId?: string;
-  resendId?: string;
-  message?: string;
-  error?: string;
+  emailId?: string | undefined;
+  resendId?: string | undefined;
+  message?: string | undefined;
+  error?: string | undefined;
 }
 
 export interface EmailTemplateValidationResult {

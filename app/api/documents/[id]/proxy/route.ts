@@ -20,7 +20,7 @@ export const GET = withAuthParams(async (req: NextRequest, { params }, session) 
     }
 
     // Validate user permissions
-    const userRole = session.role || session.defaultRole;
+    const userRole = session.role || session.defaultRole || 'viewer';
     const canView = ['developer', 'org_admin', 'manager', 'consultant', 'viewer'].includes(userRole);
     
     if (!canView) {
@@ -33,7 +33,7 @@ export const GET = withAuthParams(async (req: NextRequest, { params }, session) 
     console.log(`🔗 Proxying document: ${id} for user: ${session.userId} (${userRole})`);
 
     // Get document metadata first
-    const document = await getDocument(id, session.databaseId || session.userId);
+    const document = await getDocument(id, session.databaseId || session.userId || 'anonymous');
 
     if (!document) {
       return NextResponse.json(
@@ -50,7 +50,7 @@ export const GET = withAuthParams(async (req: NextRequest, { params }, session) 
       );
     }
 
-    if (userRole === 'consultant' && document.uploadedBy !== (session.databaseId || session.userId) && !document.isPublic) {
+    if (userRole === 'consultant' && document.uploadedBy !== (session.databaseId || session.userId || 'anonymous') && !document.isPublic) {
       return NextResponse.json(
         { success: false, error: 'Document not accessible' },
         { status: 403 }
@@ -58,7 +58,7 @@ export const GET = withAuthParams(async (req: NextRequest, { params }, session) 
     }
 
     // Get document stream
-    const documentStream = await getDocumentStream(id, session.databaseId || session.userId);
+    const documentStream = await getDocumentStream(id, session.databaseId || session.userId || 'anonymous');
 
     // Set headers for external viewer compatibility
     const headers = new Headers({
@@ -102,7 +102,7 @@ export const GET = withAuthParams(async (req: NextRequest, { params }, session) 
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to proxy document',
+        error: error instanceof Error ? error.message : 'Failed to proxy document',
       },
       { status: 500 }
     );

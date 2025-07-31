@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from '@/lib/auth/api-auth';
+import { withAuthParams } from '@/lib/auth/api-auth';
 import { getDocument, getDocumentStream } from '@/lib/storage/document-operations';
 
 /**
@@ -8,9 +8,9 @@ import { getDocument, getDocumentStream } from '@/lib/storage/document-operation
  * Download a document directly (forces download instead of inline view).
  * Includes proper authentication and permission checking.
  */
-export const GET = withAuth(async (req: NextRequest, session, { params }) => {
+export const GET = withAuthParams(async (req: NextRequest, { params }, session) => {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     if (!id) {
       return NextResponse.json(
@@ -20,7 +20,7 @@ export const GET = withAuth(async (req: NextRequest, session, { params }) => {
     }
 
     // Validate user permissions
-    const userRole = session.role || session.defaultRole;
+    const userRole = session.role || session.defaultRole || 'viewer';
     const canDownload = ['developer', 'org_admin', 'manager', 'consultant', 'viewer'].includes(userRole);
     
     if (!canDownload) {
@@ -33,7 +33,7 @@ export const GET = withAuth(async (req: NextRequest, session, { params }) => {
     console.log(`⬇️ Downloading document: ${id} for user: ${session.userId} (${userRole})`);
 
     // Get document metadata first
-    const document = await getDocument(id, session.databaseId || session.userId);
+    const document = await getDocument(id, session.databaseId || session.userId || 'anonymous');
 
     if (!document) {
       return NextResponse.json(
@@ -50,7 +50,7 @@ export const GET = withAuth(async (req: NextRequest, session, { params }) => {
       );
     }
 
-    if (userRole === 'consultant' && document.uploadedBy !== (session.databaseId || session.userId) && !document.isPublic) {
+    if (userRole === 'consultant' && document.uploadedBy !== (session.databaseId || session.userId || 'anonymous') && !document.isPublic) {
       // This will be enhanced with proper payroll assignment checking
       return NextResponse.json(
         { success: false, error: 'Document not accessible' },
@@ -59,7 +59,7 @@ export const GET = withAuth(async (req: NextRequest, session, { params }) => {
     }
 
     // Get document stream
-    const documentStream = await getDocumentStream(id, session.databaseId || session.userId);
+    const documentStream = await getDocumentStream(id, session.databaseId || session.userId || 'anonymous');
 
     // Set appropriate headers for download
     const headers = new Headers({
@@ -102,7 +102,7 @@ export const GET = withAuth(async (req: NextRequest, session, { params }) => {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Failed to download document',
+        error: error instanceof Error ? error.message : 'Failed to download document',
       },
       { status: 500 }
     );

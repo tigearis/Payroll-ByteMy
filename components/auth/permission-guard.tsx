@@ -274,16 +274,14 @@ export function RoleGuard({
   roles?: UserRole[];
   showLoading?: boolean;
 }) {
-  return (
-    <PermissionGuard
-      role={role}
-      roles={roles}
-      fallback={fallback}
-      showLoading={showLoading}
-    >
-      {children}
-    </PermissionGuard>
-  );
+  const props: any = { children };
+  
+  if (role !== undefined) props.role = role;
+  if (roles !== undefined) props.roles = roles;
+  if (fallback !== undefined) props.fallback = fallback;
+  if (showLoading !== undefined) props.showLoading = showLoading;
+  
+  return <PermissionGuard {...props} />;
 }
 
 // Additional hierarchical-specific components for hasAny functionality

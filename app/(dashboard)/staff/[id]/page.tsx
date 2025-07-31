@@ -202,8 +202,8 @@ export default function StaffDetailsPage() {
 
   // Initialize edit state when user data loads
   useEffect(() => {
-    if (data?.userById && !editedUser.id) {
-      const user = data.userById;
+    if (data?.usersByPk && !editedUser.id) {
+      const user = data.usersByPk;
       setEditedUser({
         ...user,
         managerId: (user as any)?.managerId || "",
@@ -304,7 +304,7 @@ export default function StaffDetailsPage() {
 
   // Handle delete user
   const handleDeleteUser = async () => {
-    const user = data?.userById;
+    const user = data?.usersByPk;
     if (!user) return;
 
     // Security check: Prevent users from deleting themselves
@@ -445,7 +445,7 @@ export default function StaffDetailsPage() {
     );
   }
 
-  const user = data?.userById;
+  const user = data?.usersByPk;
   if (!user) {
     return (
       <div className="text-center py-12">
@@ -597,7 +597,7 @@ export default function StaffDetailsPage() {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Manager</p>
                   <p className="text-2xl font-bold text-gray-900">
-                    {user.managerUser?.computedName || `${user.managerUser?.firstName || ''} ${user.managerUser?.lastName || ''}`.trim() || "No manager assigned"}
+                    {user.manager?.computedName || `${user.manager?.firstName || ''} ${user.manager?.lastName || ''}`.trim() || "No manager assigned"}
                   </p>
                 </div>
                 <UserCheck className="w-8 h-8 text-purple-600" />
@@ -793,7 +793,7 @@ export default function StaffDetailsPage() {
                     <div>
                       <p className="text-sm font-medium text-gray-500">Manager</p>
                       <p className="text-sm text-gray-900">
-                        {user.managerUser?.computedName || `${user.managerUser?.firstName || ''} ${user.managerUser?.lastName || ''}`.trim() || "No manager assigned"}
+                        {user.manager?.computedName || `${user.manager?.firstName || ''} ${user.manager?.lastName || ''}`.trim() || "No manager assigned"}
                       </p>
                     </div>
                   </div>
@@ -824,9 +824,9 @@ export default function StaffDetailsPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {user.userSkills && user.userSkills.length > 0 ? (
+                  {user.skills && user.skills.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {user.userSkills.map((skill: any, index: number) => (
+                      {user.skills.map((skill: any, index: number) => (
                         <div
                           key={`${skill.skillName}-${index}`}
                           className="p-4 border rounded-lg hover:shadow-md transition-shadow"

@@ -3,9 +3,4 @@ export { FinancialPerformanceDashboard } from './financial-performance-dashboard
 export { ClientProfitabilityAnalyzer } from './client-profitability-analyzer';
 export { BusinessIntelligenceDashboard } from './business-intelligence-dashboard';
 
-// Type exports
-export type {
-  FinancialPerformanceDashboardProps,
-  ClientProfitabilityAnalyzerProps,
-  BusinessIntelligenceDashboardProps
-} from './financial-performance-dashboard';
+// Note: Component prop types are not exported - use components directly

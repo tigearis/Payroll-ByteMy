@@ -153,7 +153,7 @@ export function UserTable({
                     <AvatarFallback>
                       {(user.computedName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown User')
                         .split(" ")
-                        .map(n => n[0])
+                        .map((n: string) => n[0])
                         .join("")
                         .toUpperCase()}
                     </AvatarFallback>
@@ -373,7 +373,7 @@ export function UserTable({
                       <AvatarFallback className="text-xs">
                         {selectedUser.managerUser.name
                           .split(" ")
-                          .map(n => n[0])
+                          .map((n: string) => n[0])
                           .join("")
                           .toUpperCase()}
                       </AvatarFallback>
@@ -395,7 +395,7 @@ export function UserTable({
                   <div className="space-y-2">
                     <h4 className="text-sm font-medium">Direct Reports</h4>
                     <div className="space-y-2">
-                      {selectedUser.subordinates.map(subordinate => (
+                      {selectedUser.subordinates.map((subordinate: any) => (
                         <div
                           key={subordinate.id}
                           className="flex items-center space-x-2"
@@ -404,7 +404,7 @@ export function UserTable({
                             <AvatarFallback className="text-xs">
                               {subordinate.name
                                 .split(" ")
-                                .map(n => n[0])
+                                .map((n: string) => n[0])
                                 .join("")
                                 .toUpperCase()}
                             </AvatarFallback>

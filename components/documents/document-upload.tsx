@@ -490,7 +490,7 @@ export function DocumentUpload({
                       <p className="text-sm text-red-600">{result.error}</p>
                     )}
                   </div>
-                  <Badge variant={result.success ? "success" : "destructive"}>
+                  <Badge variant={result.success ? "default" : "destructive"}>
                     {result.success ? "Success" : "Failed"}
                   </Badge>
                 </div>

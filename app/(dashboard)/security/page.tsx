@@ -578,13 +578,13 @@ export default function SecurityPage() {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {auditData?.auditLogs?.length === 0 ? (
+                    {auditData?.auditAuditLog?.length === 0 ? (
                       <div className="text-center py-8">
                         <Eye className="w-8 h-8 mx-auto mb-2 text-gray-400" />
                         <p className="text-sm text-gray-500">No audit logs found</p>
                       </div>
                     ) : (
-                      auditData?.auditLogs?.map((log) => (
+                      auditData?.auditAuditLog?.map((log: any) => (
                         <div key={log.id} className="border rounded-lg p-4">
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
@@ -619,12 +619,12 @@ export default function SecurityPage() {
                     )}
 
                     {/* Pagination */}
-                    {(auditData?.auditLogsAggregate?.aggregate?.count || 0) > auditPageSize && (
+                    {(auditData?.auditAuditLogAggregate?.aggregate?.count || 0) > auditPageSize && (
                       <div className="flex items-center justify-between mt-6">
                         <p className="text-sm text-gray-700">
                           Showing {auditPage * auditPageSize + 1} to{' '}
-                          {Math.min((auditPage + 1) * auditPageSize, auditData?.auditLogsAggregate?.aggregate?.count || 0)} of{' '}
-                          {auditData?.auditLogsAggregate?.aggregate?.count} entries
+                          {Math.min((auditPage + 1) * auditPageSize, auditData?.auditAuditLogAggregate?.aggregate?.count || 0)} of{' '}
+                          {auditData?.auditAuditLogAggregate?.aggregate?.count} entries
                         </p>
                         <div className="flex gap-2">
                           <Button
@@ -639,7 +639,7 @@ export default function SecurityPage() {
                             variant="outline"
                             size="sm"
                             onClick={() => setAuditPage(auditPage + 1)}
-                            disabled={(auditPage + 1) * auditPageSize >= (auditData?.auditLogsAggregate?.aggregate?.count || 0)}
+                            disabled={(auditPage + 1) * auditPageSize >= (auditData?.auditAuditLogAggregate?.aggregate?.count || 0)}
                           >
                             Next
                           </Button>
@@ -687,7 +687,7 @@ export default function SecurityPage() {
                           </p>
                           <div className="flex justify-between text-xs text-gray-500">
                             <span>
-                              {role.assignedToUsersAggregate?.aggregate?.count || 0} users
+                              {role.userRolesAggregate?.aggregate?.count || 0} users
                             </span>
                             <span>
                               Priority: {role.priority}

@@ -179,21 +179,23 @@ export async function POST(request: NextRequest) {
         const { data } = await serverApolloClient.mutate({
           mutation: CreateClientDocument,
           variables: {
-            name: clientData.name,
-            ...(clientData.contactPerson && { contactPerson: clientData.contactPerson }),
-            ...(clientData.contactEmail && { contactEmail: clientData.contactEmail }),
-            ...(clientData.contactPhone && { contactPhone: clientData.contactPhone }),
+            object: {
+              name: clientData.name,
+              ...(clientData.contactPerson && { contactPerson: clientData.contactPerson }),
+              ...(clientData.contactEmail && { contactEmail: clientData.contactEmail }),
+              ...(clientData.contactPhone && { contactPhone: clientData.contactPhone }),
+            }
           },
         });
 
-        if (data?.insertClient) {
+        if (data?.insertClients?.returning[0]) {
           results.data!.created++;
 
           // Audit log
           await auditLogger.log({
             userId,
             action: "bulk_create_client",
-            entityId: data.insertClient.id,
+            entityId: data.insertClients.returning[0].id,
             entityType: "client",
             metadata: {
               bulkUpload: true,

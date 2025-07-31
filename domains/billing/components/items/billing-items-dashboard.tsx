@@ -13,7 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/utils';
-import { GetAllBillingItemsDocument, GetBillingItemsStatsDocument } from '../../graphql/generated/graphql';
+import { GetAllbillingItemsDocument, GetBillingItemsStatsDocument } from '../../graphql/generated/graphql';
 
 interface BillingItemsDashboardProps {
   status?: 'draft' | 'confirmed' | 'billed';
@@ -24,7 +24,7 @@ export function BillingItemsDashboard({ status }: BillingItemsDashboardProps) {
   const [sortBy, setSortBy] = useState('createdAt');
   
   // GraphQL queries for billing items
-  const { data: billingItemsData, loading: itemsLoading, error: itemsError, refetch } = useQuery(GetAllBillingItemsDocument, {
+  const { data: billingItemsData, loading: itemsLoading, error: itemsError, refetch } = useQuery(GetAllbillingItemsDocument, {
     variables: {
       searchTerm: searchTerm ? `%${searchTerm}%` : null,
       isApproved: status === 'draft' ? false : status === 'confirmed' ? true : null,
@@ -164,7 +164,7 @@ export function BillingItemsDashboard({ status }: BillingItemsDashboardProps) {
                   </TableCell>
                 </TableRow>
               ) : (
-                billingItems.map((item) => (
+                billingItems.map((item: any) => (
                   <TableRow key={item.id}>
                     <TableCell>
                       <div className="space-y-1">

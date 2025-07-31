@@ -22,7 +22,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useHierarchicalPermissions } from "@/hooks/use-hierarchical-permissions";
-import { securityConfig } from "@/lib/security/config";
+import { getSecurityConfig } from "@/lib/security/config";
 import { auditLogger } from "@/lib/audit/audit-logger";
 
 interface MFAStatus {
@@ -42,9 +42,9 @@ export function MFASetup() {
   const [isLoading, setIsLoading] = useState(true);
   const [isEnabling, setIsEnabling] = useState(false);
 
-  const mfaFeatureEnabled = securityConfig.auth.mfaEnabled;
+  const mfaFeatureEnabled = getSecurityConfig().mfa.enabled;
   const requiresMFA =
-    mfaFeatureEnabled && ["developer", "org_admin"].includes(userRole);
+    mfaFeatureEnabled && ["developer", "org_admin"].includes(userRole || 'viewer');
 
   const checkMFAStatus = useCallback(async () => {
     if (!user) {

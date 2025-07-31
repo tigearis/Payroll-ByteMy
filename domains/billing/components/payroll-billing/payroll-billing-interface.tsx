@@ -60,8 +60,8 @@ export const PayrollBillingInterface: React.FC<PayrollBillingInterfaceProps> = (
   const { data: servicesData, loading: servicesLoading } = useQuery(
     GetClientServicesWithRatesDocument,
     {
-      variables: { clientId: payrollData?.payrollById?.clientId || '' },
-      skip: !payrollData?.payrollById?.clientId
+      variables: { clientId: payrollData?.payrollsByPk?.clientId || '' },
+      skip: !payrollData?.payrollsByPk?.clientId
     }
   );
 
@@ -69,8 +69,8 @@ export const PayrollBillingInterface: React.FC<PayrollBillingInterfaceProps> = (
   const [createPayrollBilling] = useMutation(CreatePayrollBillingDocument);
   const [createTimeEntry] = useMutation(CreateTimeEntryDocument);
 
-  const payroll = payrollData?.payrollById;
-  const clientServices = servicesData?.clientBillingAssignments || [];
+  const payroll = payrollData?.payrollsByPk;
+  const clientServices = servicesData?.clientBillingAssignment || [];
 
   // Calculate auto-quantities based on payroll data and service type
   const calculateAutoQuantity = (billingUnit: string, payrollData: any): number => {
@@ -99,7 +99,7 @@ export const PayrollBillingInterface: React.FC<PayrollBillingInterfaceProps> = (
   useEffect(() => {
     if (payroll && clientServices.length > 0) {
       const selections = clientServices.map(service => {
-        const billingPlan = service.assignedBillingPlan;
+        const billingPlan = service.billingPlan;
         const effectiveRate = service.customRate || billingPlan.standardRate;
         const autoQuantity = calculateAutoQuantity(billingPlan.billingUnit, payroll);
         return {
@@ -163,21 +163,31 @@ export const PayrollBillingInterface: React.FC<PayrollBillingInterfaceProps> = (
     }
 
     try {
-      const billingItems = selectedServices.map(selection => ({
-        payrollId: payrollId,
-        clientId: payroll.clientId,
-        billingPlanId: selection.service_id,
-        description: selection.service_name,
-        quantity: selection.quantity,
-        unitPrice: selection.effective_rate,
-        amount: selection.quantity * selection.effective_rate,
-        serviceName: selection.service_name,
-        hourlyRate: selection.effective_rate,
-        staffUserId: payroll.primaryConsultantUserId || undefined,
-        status: 'draft',
-        isApproved: false,
-        notes: selection.notes || undefined
-      }));
+      const billingItems = selectedServices.map(selection => {
+        const item: any = {
+          payrollId: payrollId,
+          clientId: payroll.clientId,
+          billingPlanId: selection.service_id,
+          description: selection.service_name,
+          quantity: selection.quantity,
+          unitPrice: selection.effective_rate,
+          amount: selection.quantity * selection.effective_rate,
+          serviceName: selection.service_name,
+          hourlyRate: selection.effective_rate,
+          status: 'draft',
+          isApproved: false
+        };
+        
+        // Only add optional fields if they have values (avoid explicit undefined)
+        if (payroll.primaryConsultantUserId) {
+          item.staffUserId = payroll.primaryConsultantUserId;
+        }
+        if (selection.notes) {
+          item.notes = selection.notes;
+        }
+        
+        return item;
+      });
 
       const result = await createPayrollBilling({
         variables: {

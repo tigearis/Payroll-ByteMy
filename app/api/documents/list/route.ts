@@ -34,7 +34,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
     const offset = parseInt(searchParams.get('offset') || '0');
 
     // Validate user permissions
-    const userRole = session.role || session.defaultRole;
+    const userRole = session.role || session.defaultRole || 'viewer';
     const canView = ['developer', 'org_admin', 'manager', 'consultant', 'viewer'].includes(userRole);
     
     if (!canView) {
@@ -61,7 +61,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
       // Consultants can only see their own uploads or public documents
       // This will be enhanced with proper payroll assignment checking
       if (!filters.uploadedBy) {
-        filters.uploadedBy = session.databaseId || session.userId;
+        filters.uploadedBy = session.databaseId || session.userId || 'anonymous';
       }
     } else if (userRole === 'viewer') {
       // Viewers can only see public documents
@@ -72,7 +72,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
     console.log(`🔍 Filters:`, filters);
 
     // Get documents
-    const result = await listDocuments(filters, session.databaseId || session.userId);
+    const result = await listDocuments(filters, session.databaseId || session.userId || 'anonymous');
 
     const hasMore = result.totalCount > (filters.offset + result.documents.length);
 
@@ -93,7 +93,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
     return NextResponse.json<DocumentListResponse>(
       {
         success: false,
-        error: error.message || 'Failed to list documents',
+        error: error instanceof Error ? error.message : 'Failed to list documents',
       },
       { status: 500 }
     );

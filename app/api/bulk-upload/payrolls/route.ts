@@ -344,14 +344,14 @@ export async function POST(request: NextRequest) {
           },
         });
 
-        if (data?.insertPayroll) {
+        if (data?.insertPayrollsOne) {
           results.data!.created++;
 
           // Audit log
           await auditLogger.log({
             userId,
             action: "bulk_create_payroll",
-            entityId: data.insertPayroll.id,
+            entityId: data.insertPayrollsOne.id,
             entityType: "payroll",
             metadata: {
               bulkUpload: true,

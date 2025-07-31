@@ -245,7 +245,7 @@ export function BillingItemForm({ itemId, preselectedClientId }: BillingItemForm
                 ) : (
                   <div className="flex gap-2">
                     <Select
-                      value={formData.serviceId || undefined}
+                      value={formData.serviceId || ''}
                       onValueChange={(value) => {
                         const service = services.find(s => s.id === value);
                         if (service) {
@@ -388,63 +388,6 @@ export function BillingItemForm({ itemId, preselectedClientId }: BillingItemForm
             </div>
 
             {/* Future: Advanced Pricing Details will be shown here */}
-            {false && (
-              <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
-                <div className="flex items-center gap-2 mb-3">
-                  <Calculator className="w-4 h-4 text-blue-600" />
-                  <span className="text-sm font-medium text-blue-800">Dynamic Pricing Applied</span>
-                </div>
-                
-                {calculatedPricing.originalRate !== calculatedPricing.finalRate && (
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between text-gray-600">
-                      <span>Original Rate:</span>
-                      <span>${calculatedPricing.originalRate.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between text-green-600 font-medium">
-                      <span>Final Rate:</span>
-                      <span>${calculatedPricing.finalRate.toFixed(2)}</span>
-                    </div>
-                    {calculatedPricing.discountAmount > 0 && (
-                      <div className="flex justify-between text-green-600">
-                        <span>Total Savings:</span>
-                        <span>-${calculatedPricing.discountAmount.toFixed(2)} ({calculatedPricing.discountPercentage.toFixed(1)}%)</span>
-                      </div>
-                    )}
-                  </div>
-                )}
-                
-                {calculatedPricing.appliedRules.length > 0 && (
-                  <div className="mt-3 pt-3 border-t border-blue-200">
-                    <p className="text-xs font-medium text-blue-800 mb-2">Applied Pricing Rules:</p>
-                    <div className="space-y-1">
-                      {calculatedPricing.appliedRules.map((rule: any, index: number) => (
-                        <div key={index} className="flex items-center gap-2 text-xs text-blue-700">
-                          <Badge variant="outline" className="text-xs">{rule.ruleType}</Badge>
-                          <span>{rule.ruleName}</span>
-                          <span className="text-green-600 ml-auto">
-                            {rule.adjustmentType === 'percentage_discount' ? '-' : ''}${Math.abs(rule.adjustment).toFixed(2)}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                
-                {calculatedPricing.metadata.warnings && calculatedPricing.metadata.warnings.length > 0 && (
-                  <div className="mt-3 pt-3 border-t border-blue-200">
-                    <div className="flex items-start gap-2">
-                      <Info className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
-                      <div className="text-xs text-amber-700">
-                        {calculatedPricing.metadata.warnings.map((warning: string, index: number) => (
-                          <p key={index}>{warning}</p>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
           </div>
         </CardContent>
       </Card>

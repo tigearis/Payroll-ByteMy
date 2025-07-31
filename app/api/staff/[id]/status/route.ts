@@ -80,7 +80,7 @@ export const PUT = withAuthParams(async (req: NextRequest, { params }, session) 
       );
     }
 
-    const user = userData.userById;
+    const user = userData.usersByPk;
     if (!user) {
       return NextResponse.json<UpdateStatusResponse>(
         { success: false, error: "User not found" },
@@ -124,7 +124,7 @@ export const PUT = withAuthParams(async (req: NextRequest, { params }, session) 
               deactivatedByString: session.email || session.userId,
             }
           );
-          updatedUser = deactivateData.updateUserById;
+          updatedUser = deactivateData.updateUsersByPk;
           break;
 
         case "locked":
@@ -136,7 +136,7 @@ export const PUT = withAuthParams(async (req: NextRequest, { params }, session) 
               lockedBy: user.id, // Use user's own ID as placeholder since we don't have current user's database ID
             }
           );
-          updatedUser = lockData.updateUserById;
+          updatedUser = lockData.updateUsersByPk;
           break;
 
         case "active":
@@ -149,7 +149,7 @@ export const PUT = withAuthParams(async (req: NextRequest, { params }, session) 
                 unlockedBy: user.id, // Use user's own ID as placeholder since we don't have current user's database ID
               }
             );
-            updatedUser = unlockData.updateUserById;
+            updatedUser = unlockData.updateUsersByPk;
           } else {
             const reactivateData = await executeTypedMutation<ReactivateUserWithReasonMutation>(
               ReactivateUserWithReasonDocument,
@@ -159,7 +159,7 @@ export const PUT = withAuthParams(async (req: NextRequest, { params }, session) 
                 reactivatedBy: user.id, // Use user's own ID as placeholder since we don't have current user's database ID
               }
             );
-            updatedUser = reactivateData.updateUserById;
+            updatedUser = reactivateData.updateUsersByPk;
           }
           break;
 
@@ -270,7 +270,7 @@ export const PUT = withAuthParams(async (req: NextRequest, { params }, session) 
     return NextResponse.json<UpdateStatusResponse>(
       {
         success: false,
-        error: error.message || "Internal server error",
+        error: error instanceof Error ? error.message : "Internal server error",
       },
       { status: 500 }
     );
@@ -287,7 +287,7 @@ export const GET = withAuthParams(async (req: NextRequest, { params }, session) 
       { userId: id }
     );
 
-    const user = userData.userById;
+    const user = userData.usersByPk;
     if (!user) {
       return NextResponse.json<UpdateStatusResponse>(
         { success: false, error: "User not found" },
@@ -319,7 +319,7 @@ export const GET = withAuthParams(async (req: NextRequest, { params }, session) 
     return NextResponse.json<UpdateStatusResponse>(
       {
         success: false,
-        error: error.message || "Internal server error",
+        error: error instanceof Error ? error.message : "Internal server error",
       },
       { status: 500 }
     );

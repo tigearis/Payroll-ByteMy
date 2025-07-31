@@ -46,7 +46,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
     }
 
     // Check permissions based on operation
-    const userRole = session.role || session.defaultRole;
+    const userRole = session.role || session.defaultRole || 'viewer';
     const requiresManagerRole = ['approve', 'reject', 'delete'].includes(operation);
     
     if (requiresManagerRole && !['developer', 'org_admin', 'manager'].includes(userRole)) {
@@ -88,7 +88,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
       case 'approve':
         for (const itemId of itemIds) {
           try {
-            const result = await executeTypedQuery(
+            const result = await executeTypedQuery<UpdateBillingItemMutation>(
               UpdateBillingItemDocument,
               {
                 id: itemId,
@@ -99,10 +99,9 @@ export const POST = withAuth(async (req: NextRequest, session) => {
                   approvedBy: session.userId,
                   notes: data.approvalNotes || null
                 }
-              },
-              session
+              }
             );
-            results.push({ itemId, success: true, data: result?.updateBillingItemById });
+            results.push({ itemId, success: true, data: result?.updateBillingItemsByPk });
           } catch (error) {
             errors.push({ itemId, error: error instanceof Error ? error.message : 'Unknown error' });
           }
@@ -112,7 +111,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
       case 'reject':
         for (const itemId of itemIds) {
           try {
-            const result = await executeTypedQuery(
+            const result = await executeTypedQuery<UpdateBillingItemMutation>(
               UpdateBillingItemDocument,
               {
                 id: itemId,
@@ -123,10 +122,9 @@ export const POST = withAuth(async (req: NextRequest, session) => {
                   approvedBy: session.userId,
                   notes: data.approvalNotes || 'Rejected via batch operation'
                 }
-              },
-              session
+              }
             );
-            results.push({ itemId, success: true, data: result?.updateBillingItemById });
+            results.push({ itemId, success: true, data: result?.updateBillingItemsByPk });
           } catch (error) {
             errors.push({ itemId, error: error instanceof Error ? error.message : 'Unknown error' });
           }
@@ -136,10 +134,9 @@ export const POST = withAuth(async (req: NextRequest, session) => {
       case 'delete':
         for (const itemId of itemIds) {
           try {
-            const result = await executeTypedQuery(
-              DeleteBillingItemDocument,
-              { id: itemId },
-              session
+            const result = await executeTypedQuery<DeleteBillingItemAdvancedMutation>(
+              DeleteBillingItemAdvancedDocument,
+              { id: itemId }
             );
             results.push({ itemId, success: true, deleted: true });
           } catch (error) {
@@ -158,7 +155,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
         
         for (const itemId of itemIds) {
           try {
-            const result = await executeTypedQuery(
+            const result = await executeTypedQuery<UpdateBillingItemMutation>(
               UpdateBillingItemDocument,
               {
                 id: itemId,
@@ -166,10 +163,9 @@ export const POST = withAuth(async (req: NextRequest, session) => {
                   status: data.status,
                   notes: data.notes || null
                 }
-              },
-              session
+              }
             );
-            results.push({ itemId, success: true, data: result?.updateBillingItemById });
+            results.push({ itemId, success: true, data: result?.updateBillingItemsByPk });
           } catch (error) {
             errors.push({ itemId, error: error instanceof Error ? error.message : 'Unknown error' });
           }

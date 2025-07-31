@@ -305,7 +305,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
           const updateUserRoleData = await executeTypedMutation(
             gql`
               mutation UpdateUserRoleForInvitation($userId: uuid!, $role: user_role!, $managerId: uuid) {
-                updateUserById(
+                updateUsersByPk(
                   pkColumns: { id: $userId }
                   _set: { 
                     role: $role
@@ -333,7 +333,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
             }
           );
           
-          newUser = (updateUserRoleData as any)?.updateUserById;
+          newUser = (updateUserRoleData as any)?.updateUsersByPk;
           console.log("✅ Updated existing user role to match invitation:", newUser.role);
         } catch (roleUpdateError) {
           console.error("❌ Failed to update user role:", roleUpdateError);
@@ -384,7 +384,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
           }
         );
 
-        newUser = userData.insertUser;
+        newUser = userData.insertUsers;
       } catch (createUserError: any) {
         console.error("❌ Failed to create user:", createUserError);
         
@@ -411,7 +411,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
                 const updateClerkIdData = await executeTypedMutation(
                   gql`
                     mutation UpdateUserClerkId($userId: uuid!, $clerkUserId: String!) {
-                      updateUserById(
+                      updateUsersByPk(
                         pkColumns: { id: $userId }
                         _set: { clerkUserId: $clerkUserId, updatedAt: "now()" }
                       ) {
@@ -433,7 +433,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
                     clerkUserId: clerkUserId,
                   }
                 );
-                newUser = (updateClerkIdData as any)?.updateUserById;
+                newUser = (updateClerkIdData as any)?.updateUsersByPk;
               }
             } else {
               throw createUserError; // Re-throw original error if no existing user found
@@ -498,7 +498,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
       }
     );
 
-    if (!acceptedInvitation.updateUserInvitationById) {
+    if (!acceptedInvitation.updateUserInvitationsByPk) {
       console.error("❌ Failed to update invitation status in database");
       return NextResponse.json<AcceptInvitationResponse>(
         {
@@ -516,7 +516,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
     return NextResponse.json<AcceptInvitationResponse>({
       success: true,
       user: newUser,
-      invitation: acceptedInvitation.updateUserInvitationById,
+      invitation: acceptedInvitation.updateUserInvitationsByPk,
       message: `Welcome ${userName}! Your account has been created successfully.`,
     });
   } catch (error: any) {

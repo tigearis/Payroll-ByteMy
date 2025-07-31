@@ -16,11 +16,11 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { BillingDashboard } from "@/domains/billing/components/dashboard";
-import { GetAllBillingItemsDocument } from "@/domains/billing/graphql/generated/graphql";
+import { GetAllbillingItemsDocument } from "@/domains/billing/graphql/generated/graphql";
 
 export default function BillingPage() {
   // Fetch real billing data
-  const { data: allItemsData, loading: allItemsLoading } = useQuery(GetAllBillingItemsDocument, {
+  const { data: allItemsData, loading: allItemsLoading } = useQuery(GetAllbillingItemsDocument, {
     variables: { limit: 100, offset: 0 },
     fetchPolicy: 'cache-and-network'
   });
@@ -28,9 +28,9 @@ export default function BillingPage() {
   const billingItems = allItemsData?.billingItems || [];
 
   // Calculate real stats
-  const totalRevenue = billingItems.reduce((sum, item) => sum + (item.totalAmount || item.amount || 0), 0);
-  const pendingItems = billingItems.filter(item => !item.isApproved);
-  const uniqueClients = new Set(billingItems.map(item => item.clientId)).size;
+  const totalRevenue = billingItems.reduce((sum: number, item: any) => sum + (item.totalAmount || item.amount || 0), 0);
+  const pendingItems = billingItems.filter((item: any) => !item.isApproved);
+  const uniqueClients = new Set(billingItems.map((item: any) => item.clientId)).size;
   const avgItemValue = billingItems.length > 0 ? totalRevenue / billingItems.length : 0;
 
   const formatCurrency = (amount: number) => {
@@ -51,7 +51,7 @@ export default function BillingPage() {
     {
       title: "Pending Approval",
       value: allItemsLoading ? "..." : pendingItems.length.toString(),
-      change: formatCurrency(pendingItems.reduce((sum, item) => sum + (item.totalAmount || item.amount || 0), 0)),
+      change: formatCurrency(pendingItems.reduce((sum: number, item: any) => sum + (item.totalAmount || item.amount || 0), 0)),
       icon: FileText,
       positive: true,
     },

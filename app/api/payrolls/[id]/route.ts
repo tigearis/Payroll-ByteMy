@@ -6,7 +6,7 @@ import { withAuthParams } from "@/lib/auth/api-auth";
 
 type PayrollResponse = 
   | { error: string }
-  | NonNullable<GetPayrollByIdQuery['payrollById']>;
+  | NonNullable<GetPayrollByIdQuery['payrollsByPk']>;
 
 export const GET = withAuthParams(
   async (
@@ -27,11 +27,11 @@ export const GET = withAuthParams(
         { id }
       );
 
-      if (!data.payrollById) {
+      if (!data.payrollsByPk) {
         return NextResponse.json({ error: "Not Found" }, { status: 404 });
       }
 
-      return NextResponse.json(data.payrollById);
+      return NextResponse.json(data.payrollsByPk);
     } catch (error) {
       console.error("Payroll fetch error:", error);
       return NextResponse.json(

@@ -594,7 +594,7 @@ function NewLeaveRequestPage() {
           </Card>
 
           {/* Manager Information */}
-          {currentUser?.managerUser && (
+          {currentUser?.manager && (
             <Card>
               <CardHeader>
                 <CardTitle className="text-sm font-medium">Approval Manager</CardTitle>
@@ -605,8 +605,8 @@ function NewLeaveRequestPage() {
                     <User className="h-4 w-4 text-gray-500" />
                   </div>
                   <div>
-                    <p className="font-medium text-sm">{currentUser.managerUser.computedName || `${currentUser.managerUser.firstName} ${currentUser.managerUser.lastName}`}</p>
-                    <p className="text-xs text-gray-500">{currentUser.managerUser.email}</p>
+                    <p className="font-medium text-sm">{currentUser.manager.computedName || `${currentUser.manager.firstName} ${currentUser.manager.lastName}`}</p>
+                    <p className="text-xs text-gray-500">{currentUser.manager.email}</p>
                   </div>
                 </div>
                 <p className="text-xs text-gray-600 mt-2">

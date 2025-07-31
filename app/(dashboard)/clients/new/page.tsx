@@ -102,14 +102,16 @@ export default function NewClientPage() {
       // Create client first
       const clientResult = await createClient({
         variables: {
-          name: formData.name.trim(),
-          contactPerson: formData.contact_person.trim() || null,
-          contactEmail: formData.contact_email.trim() || null,
-          contactPhone: formData.contact_phone.trim() || null,
+          object: {
+            name: formData.name.trim(),
+            contactPerson: formData.contact_person.trim() || null,
+            contactEmail: formData.contact_email.trim() || null,
+            contactPhone: formData.contact_phone.trim() || null,
+          },
         },
       });
 
-      const newClientId = clientResult.data?.insertClient?.id;
+      const newClientId = clientResult.data?.insertClients?.returning[0]?.id;
 
       // Create payroll if requested and form is valid
       if (createPayroll && newClientId && isPayrollValid) {

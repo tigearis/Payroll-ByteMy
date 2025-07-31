@@ -112,8 +112,8 @@ export const ProfitabilityDashboard: React.FC<ProfitabilityDashboardProps> = ({
 
   // Calculate aggregate metrics
   const calculateAggregateMetrics = () => {
-    const totalRevenue = payrolls.reduce((sum, p) => sum + (p.total_revenue || 0), 0);
-    const totalHours = payrolls.reduce((sum, p) => sum + (p.total_hours || 0), 0);
+    const totalRevenue = payrolls.reduce((sum, p) => sum + (p.actualRevenue || p.estimatedRevenue || 0), 0);
+    const totalHours = payrolls.reduce((sum, p) => sum + (p.actualHours || p.estimatedHours || 0), 0);
     const totalPayrolls = payrolls.length;
     const averageRevenuePerHour = totalHours > 0 ? totalRevenue / totalHours : 0;
     const averageRevenuePerPayroll = totalPayrolls > 0 ? totalRevenue / totalPayrolls : 0;
@@ -242,33 +242,33 @@ export const ProfitabilityDashboard: React.FC<ProfitabilityDashboardProps> = ({
               </TableHeader>
               <TableBody>
                 {payrolls.map((payroll) => (
-                  <TableRow key={payroll.payroll_id}>
+                  <TableRow key={payroll.id}>
                     <TableCell>
-                      <div className="font-medium">{payroll.payroll_name}</div>
+                      <div className="font-medium">{payroll.name}</div>
                       <div className="text-sm text-gray-500">
-                        {payroll.payslip_count} payslips, {payroll.employee_count} employees
+                        Payroll details
                       </div>
                     </TableCell>
-                    <TableCell>{payroll.client_name}</TableCell>
+                    <TableCell>{payroll.client?.name || 'N/A'}</TableCell>
                     <TableCell>
-                      <Badge variant={payroll.billing_status === 'billed' ? 'default' : 'secondary'}>
-                        {payroll.billing_status}
+                      <Badge variant={payroll.billingStatus === 'billed' ? 'default' : 'secondary'}>
+                        {payroll.billingStatus}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <span className={`font-medium ${getRevenueColor(payroll.total_revenue || 0)}`}>
-                        ${(payroll.total_revenue || 0).toFixed(2)}
+                      <span className={`font-medium ${getRevenueColor(payroll.actualRevenue || payroll.estimatedRevenue || 0)}`}>
+                        ${(payroll.actualRevenue || payroll.estimatedRevenue || 0).toFixed(2)}
                       </span>
                     </TableCell>
-                    <TableCell>{(payroll.total_hours || 0).toFixed(1)}h</TableCell>
+                    <TableCell>{(payroll.actualHours || payroll.estimatedHours || 0).toFixed(1)}h</TableCell>
                     <TableCell>
-                      <Badge className={getProfitabilityColor(payroll.revenue_per_hour || 0)}>
-                        ${(payroll.revenue_per_hour || 0).toFixed(0)}/h
+                      <Badge className={getProfitabilityColor(((payroll.actualRevenue || payroll.estimatedRevenue || 0) / (payroll.actualHours || payroll.estimatedHours || 1)))}>
+                        ${(((payroll.actualRevenue || payroll.estimatedRevenue || 0) / (payroll.actualHours || payroll.estimatedHours || 1)) || 0).toFixed(0)}/h
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <div className="text-sm">
-                        {payroll.billing_items_count} items
+                        Billing items
                       </div>
                     </TableCell>
                   </TableRow>
@@ -302,24 +302,24 @@ export const ProfitabilityDashboard: React.FC<ProfitabilityDashboardProps> = ({
               </TableHeader>
               <TableBody>
                 {staffPerformance.map((staff) => (
-                  <TableRow key={staff.staff_id}>
+                  <TableRow key={staff.id}>
                     <TableCell>
-                      <div className="font-medium">{staff.staff_name}</div>
+                      <div className="font-medium">{staff.computedName || `${staff.firstName} ${staff.lastName}`}</div>
                     </TableCell>
-                    <TableCell>{staff.payrolls_worked}</TableCell>
+                    <TableCell>N/A</TableCell>
                     <TableCell>
-                      <span className={`font-medium ${getRevenueColor(staff.total_revenue_generated || 0)}`}>
-                        ${(staff.total_revenue_generated || 0).toFixed(2)}
+                      <span className={`font-medium ${getRevenueColor(staff.totalRevenue?.aggregate?.sum?.estimatedRevenue || 0)}`}>
+                        ${(staff.totalRevenue?.aggregate?.sum?.estimatedRevenue || 0).toFixed(2)}
                       </span>
                     </TableCell>
-                    <TableCell>{(staff.total_hours_logged || 0).toFixed(1)}h</TableCell>
+                    <TableCell>{(staff.totalBilledHours?.aggregate?.sum?.actualHours || 0).toFixed(1)}h</TableCell>
                     <TableCell>
-                      <Badge className={getProfitabilityColor(staff.revenue_per_hour || 0)}>
-                        ${(staff.revenue_per_hour || 0).toFixed(0)}/h
+                      <Badge className={getProfitabilityColor(((staff.totalRevenue?.aggregate?.sum?.estimatedRevenue || 0) / (staff.totalBilledHours?.aggregate?.sum?.actualHours || 1)))}>
+                        ${(((staff.totalRevenue?.aggregate?.sum?.estimatedRevenue || 0) / (staff.totalBilledHours?.aggregate?.sum?.actualHours || 1)) || 0).toFixed(0)}/h
                       </Badge>
                     </TableCell>
-                    <TableCell>{staff.billing_items_created}</TableCell>
-                    <TableCell>{staff.distinct_clients_served}</TableCell>
+                    <TableCell>N/A</TableCell>
+                    <TableCell>N/A</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

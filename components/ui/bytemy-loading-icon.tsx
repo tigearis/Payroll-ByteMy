@@ -5,11 +5,11 @@ import React from "react";
 import { cn } from "@/lib/utils";
 
 interface ByteMyLoadingIconProps {
-  title?: string;
-  description?: string;
-  size?: "sm" | "default" | "lg";
-  showText?: boolean;
-  className?: string;
+  title?: string | undefined;
+  description?: string | undefined;
+  size?: "sm" | "default" | "lg" | undefined;
+  showText?: boolean | undefined;
+  className?: string | undefined;
 }
 
 export function ByteMyLoadingIcon({
@@ -95,8 +95,8 @@ export function ByteMySpinner({
   className,
   size = "sm" 
 }: { 
-  className?: string;
-  size?: "sm" | "default" | "lg";
+  className?: string | undefined;
+  size?: "sm" | "default" | "lg" | undefined;
 }) {
-  return <ByteMyLoadingIcon size={size} showText={false} className={className} />;
+  return <ByteMyLoadingIcon size={size} showText={false} className={className || ""} />;
 }

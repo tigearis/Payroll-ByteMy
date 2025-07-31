@@ -46,7 +46,7 @@ export const GET = withAuth(
           }
         );
 
-        const generatedDates = result.generatePayrollDates || [];
+        const generatedDates = (result as any).generatePayrollDates || [];
 
         return NextResponse.json({
           success: true,

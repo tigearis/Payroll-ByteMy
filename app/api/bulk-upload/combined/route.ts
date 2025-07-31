@@ -304,11 +304,11 @@ export async function POST(request: NextRequest) {
 
             const clientResponse = await clientApolloClient.mutate({
               mutation: CreateClientDocument,
-              variables: clientData,
+              variables: { object: clientData },
             });
 
-            if (clientResponse.data?.insertClient?.id) {
-              clientId = clientResponse.data.insertClient.id;
+            if (clientResponse.data?.insertClients?.returning[0]?.id) {
+              clientId = clientResponse.data.insertClients.returning[0].id;
               createdClientsInUpload.set(validatedData.clientName, clientId);
               results.data!.clientsCreated++;
             } else {
@@ -424,7 +424,7 @@ export async function POST(request: NextRequest) {
             variables: { object: payrollData },
           });
 
-          if (payrollResponse.data?.insertPayroll?.id) {
+          if (payrollResponse.data?.insertPayrollsOne?.id) {
             results.data!.payrollsCreated++;
           } else {
             results.data!.errors.push({

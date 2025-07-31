@@ -210,12 +210,12 @@ export function ClientPayrollsTableUnified({
       label: "View Details",
       icon: Eye,
       href: (row) => `/payrolls/${row.id}`,
-      variant: "ghost",
+      variant: "default",
     },
   ];
 
   return (
-    <UnifiedDataTable
+    <UnifiedDataTable<ClientPayroll>
       data={payrolls}
       columns={columns}
       actions={actions}

@@ -9,16 +9,16 @@ import { type LoadingVariant } from '@/lib/config/loading-messages';
 import { cn } from '@/lib/utils';
 
 export interface SmartLoadingProps {
-  title?: string;
-  description?: string;
-  variant?: LoadingVariant;
-  size?: 'sm' | 'default' | 'lg';
-  className?: string;
-  showProgress?: boolean;
-  progress?: number;
-  showSkeleton?: boolean;
-  skeletonType?: 'card' | 'table' | 'list' | 'form';
-  children?: React.ReactNode;
+  title?: string | undefined;
+  description?: string | undefined;
+  variant?: LoadingVariant | undefined;
+  size?: 'sm' | 'default' | 'lg' | undefined;
+  className?: string | undefined;
+  showProgress?: boolean | undefined;
+  progress?: number | undefined;
+  showSkeleton?: boolean | undefined;
+  skeletonType?: 'card' | 'table' | 'list' | 'form' | undefined;
+  children?: React.ReactNode | undefined;
 }
 
 export function SmartLoading({
@@ -36,13 +36,13 @@ export function SmartLoading({
   // Render different variants
   switch (variant) {
     case 'inline':
-      return <InlineLoading title={title} size={size} className={className} />;
+      return <InlineLoading title={title} size={size} className={className || ""} />;
       
     case 'overlay':
-      return <OverlayLoading title={title} description={description} className={className} />;
+      return <OverlayLoading title={title} description={description} className={className || ""} />;
       
     case 'minimal':
-      return <MinimalLoading size={size} className={className} />;
+      return <MinimalLoading size={size} className={className || ""} />;
       
     case 'page':
     default:
@@ -51,11 +51,11 @@ export function SmartLoading({
           title={title}
           description={description}
           size={size}
-          className={className}
+          className={className || undefined}
           showProgress={showProgress}
           progress={progress}
           showSkeleton={showSkeleton}
-          skeletonType={skeletonType}
+          skeletonType={skeletonType || undefined}
         >
           {children}
         </PageLoading>
@@ -78,7 +78,7 @@ function PageLoading({
   if (showSkeleton) {
     return (
       <div className={cn("w-full space-y-6", className)}>
-        <SkeletonLoader type={skeletonType} />
+        <SkeletonLoader type={skeletonType || undefined} />
         {children}
       </div>
     );
@@ -91,9 +91,9 @@ function PageLoading({
     )}>
       <div className="text-center space-y-4">
         <ByteMyLoadingIcon
-          title={title}
-          description={description}
-          size={size}
+          title={title || undefined}
+          description={description || undefined}
+          size={size || undefined}
         />
         
         {showProgress && (
@@ -168,13 +168,13 @@ function MinimalLoading({
 }: Pick<SmartLoadingProps, 'size' | 'className'>) {
   return (
     <div className={cn("flex items-center justify-center p-4", className)}>
-      <ByteMySpinner size={size} />
+      <ByteMySpinner size={size || undefined} />
     </div>
   );
 }
 
 // Skeleton loader component
-function SkeletonLoader({ type }: { type?: 'card' | 'table' | 'list' | 'form' }) {
+function SkeletonLoader({ type }: { type?: 'card' | 'table' | 'list' | 'form' | undefined }) {
   switch (type) {
     case 'table':
       return <TableSkeleton />;
@@ -385,12 +385,12 @@ export function ProgressLoading({
 }) {
   return (
     <SmartLoading
-      title={title}
-      description={description}
+      title={title || undefined}
+      description={description || undefined}
       variant="page"
       showProgress={true}
       progress={progress}
-      className={className}
+      className={className || undefined}
     />
   );
 }

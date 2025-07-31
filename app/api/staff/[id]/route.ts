@@ -43,7 +43,7 @@ interface UserInfo {
   clerkUserId?: string;
   createdAt?: string;
   deactivatedAt?: string;
-  managerUser?: {
+  manager?: {
     id: string;
     name: string;
     email: string;
@@ -89,7 +89,7 @@ export const DELETE = withAuthParams(async (req: NextRequest, { params }, sessio
       );
     }
 
-    const user = userData.userById;
+    const user = userData.usersByPk;
     if (!user) {
       return NextResponse.json<DeleteStaffResponse>(
         { success: false, error: "User not found" },
@@ -179,7 +179,7 @@ export const DELETE = withAuthParams(async (req: NextRequest, { params }, sessio
                 id: payroll.id,
                 backupConsultantUserId: newBackupConsultantId,
                 primaryConsultantUserId: payroll.primaryConsultantUserId, // Keep existing
-                managerUserId: payroll.managerUserId || null // Keep existing or null
+                managerId: payroll.managerUserId || null // Keep existing or null
               }
             );
           }
@@ -193,7 +193,7 @@ export const DELETE = withAuthParams(async (req: NextRequest, { params }, sessio
             BulkAssignManagerDocument,
             {
               payrollIds: managedPayrollIds,
-              managerUserId: newManagerId
+              managerId: newManagerId
             }
           );
           console.log(`✅ Reassigned ${managedPayrollIds.length} managed payrolls`);
@@ -270,7 +270,7 @@ export const DELETE = withAuthParams(async (req: NextRequest, { params }, sessio
         }
       );
 
-      const deactivatedUser = deactivatedUserData.updateUserById;
+      const deactivatedUser = deactivatedUserData.updateUsersByPk;
 
       if (!deactivatedUser) {
         throw new Error("Failed to deactivate user in database");
@@ -389,7 +389,7 @@ export const GET = withAuthParams(async (req: NextRequest, { params }, session) 
       { id }
     );
 
-    const user = userData.userById;
+    const user = userData.usersByPk;
     if (!user) {
       return NextResponse.json<DeleteStaffResponse>(
         { success: false, error: "User not found" },
@@ -418,10 +418,10 @@ export const GET = withAuthParams(async (req: NextRequest, { params }, session) 
         ...(user.isActive !== null && { isActive: user.isActive }),
         ...(user.clerkUserId && { clerkUserId: user.clerkUserId }),
         ...(user.createdAt && { createdAt: user.createdAt }),
-        managerUser: user.managerUser ? {
-          id: user.managerUser.id,
-          name: user.managerUser?.computedName || `${user.managerUser?.firstName} ${user.managerUser?.lastName}`.trim(),
-          email: user.managerUser.email,
+        manager: user.manager ? {
+          id: user.manager.id,
+          name: user.manager?.computedName || `${user.manager?.firstName} ${user.manager?.lastName}`.trim(),
+          email: user.manager.email,
         } : null,
       },
       dependencies,

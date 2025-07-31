@@ -42,7 +42,7 @@ interface UserReassignmentPlan {
 // Comprehensive user dependency analysis query
 const ANALYZE_USER_DEPENDENCIES = gql`
   query AnalyzeUserDependencies($userId: uuid!) {
-    user: userById(id: $userId) {
+    user: userByPk(id: $userId) {
       id
       email
       firstName
@@ -177,8 +177,8 @@ export const GET = withAuth(async (req: NextRequest, session) => {
       targetUser = (userByEmailData as any).users?.[0];
     } else {
       const userByIdData = await executeTypedQuery(
-        gql`query GetUserById($userId: uuid!) {
-          userById(id: $userId) {
+        gql`query GetUserByPk($userId: uuid!) {
+          userByPk(id: $userId) {
             id
             email
             firstName
@@ -191,7 +191,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
         }`,
         { userId }
       );
-      targetUser = (userByIdData as any).userById;
+      targetUser = (userByIdData as any).userByPk;
     }
 
     if (!targetUser) {
@@ -381,7 +381,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
       // 5. Get user data for Clerk deletion
       const userData = await executeTypedQuery(
         gql`query GetUserForDeletion($userId: uuid!) {
-          userById(id: $userId) {
+          userByPk(id: $userId) {
             clerkUserId
             email
           }
@@ -390,10 +390,10 @@ export const POST = withAuth(async (req: NextRequest, session) => {
       );
 
       // 6. Delete from Clerk if Clerk user exists
-      if ((userData as any).userById?.clerkUserId) {
+      if ((userData as any).userByPk?.clerkUserId) {
         try {
-          await clerkClient.users.deleteUser((userData as any).userById.clerkUserId);
-          console.log(`✅ Deleted Clerk user: ${(userData as any).userById.clerkUserId}`);
+          await clerkClient.users.deleteUser((userData as any).userByPk.clerkUserId);
+          console.log(`✅ Deleted Clerk user: ${(userData as any).userByPk.clerkUserId}`);
         } catch (clerkError: any) {
           console.warn(`⚠️ Could not delete Clerk user: ${clerkError?.message || 'Unknown error'}`);
         }
@@ -402,7 +402,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
       // 7. Delete user from database
       const deletionResult = await executeTypedMutation(
         gql`mutation DeleteUser($userId: uuid!) {
-          deleteUserById(id: $userId) {
+          deleteUsersByPk(id: $userId) {
             id
             email
           }
@@ -410,12 +410,12 @@ export const POST = withAuth(async (req: NextRequest, session) => {
         { userId: fromUserId }
       );
 
-      console.log(`✅ User deletion completed: ${(userData as any).userById?.email}`);
+      console.log(`✅ User deletion completed: ${(userData as any).userByPk?.email}`);
 
       return NextResponse.json({
         success: true,
-        message: `User ${(userData as any).userById?.email} successfully deleted and data reassigned to new user`,
-        deletedUser: (deletionResult as any).deleteUserById,
+        message: `User ${(userData as any).userByPk?.email} successfully deleted and data reassigned to new user`,
+        deletedUser: (deletionResult as any).deleteUsersByPk,
       });
     }
 

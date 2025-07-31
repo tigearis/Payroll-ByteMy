@@ -32,7 +32,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
     console.log('- CLERK_SECRET_KEY length:', process.env.CLERK_SECRET_KEY?.length || 0);
 
     // Check if user has permission to manage permissions
-    const userRole = session.role || session.defaultRole;
+    const userRole = session.role || session.defaultRole || 'viewer';
     if (!userRole || !['developer', 'org_admin'].includes(userRole)) {
       return NextResponse.json(
         { success: false, error: 'Insufficient permissions to manage permission overrides' },

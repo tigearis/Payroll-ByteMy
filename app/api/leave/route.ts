@@ -180,7 +180,8 @@ export const POST = withAuth(async (req, session) => {
     // Handle manager-created requests
     if (managerCreateRequest && managerId) {
       // Verify the manager has permission to create leave for this user
-      const canManageTeamLeave = session.role ? ["manager", "org_admin", "developer"].includes(session.role) : false;
+      const userRole = session.role || session.defaultRole || 'viewer';
+      const canManageTeamLeave = ["manager", "org_admin", "developer"].includes(userRole);
       
       if (!canManageTeamLeave) {
         return NextResponse.json(
@@ -226,7 +227,7 @@ export const POST = withAuth(async (req, session) => {
         return NextResponse.json({
           success: true,
           data: {
-            leave: data.insertLeave,
+            leave: data.insertLeaveOne,
             autoApproved: true
           }
         });
@@ -245,7 +246,7 @@ export const POST = withAuth(async (req, session) => {
         return NextResponse.json({
           success: true,
           data: {
-            leave: data.insertLeave,
+            leave: data.insertLeaveOne,
             autoApproved: false
           }
         });
@@ -270,7 +271,7 @@ export const POST = withAuth(async (req, session) => {
     return NextResponse.json({
       success: true,
       data: {
-        leave: data.insertLeave
+        leave: data.insertLeaveOne
       }
     });
 

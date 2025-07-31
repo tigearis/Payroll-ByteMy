@@ -304,7 +304,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
           }
         );
 
-        invitation = invitationData.insertUserInvitation;
+        invitation = invitationData.insertUserInvitations?.returning?.[0];
 
         if (!invitation) {
           throw new Error("Failed to create invitation record in database");
@@ -392,7 +392,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
     return NextResponse.json<CreateInvitationResponse>(
       {
         success: false,
-        error: error.message || "Internal server error",
+        error: error instanceof Error ? error.message : "Internal server error",
       },
       { status: 500 }
     );

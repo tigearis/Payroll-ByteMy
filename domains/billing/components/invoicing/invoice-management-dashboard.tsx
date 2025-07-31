@@ -120,7 +120,7 @@ export const InvoiceManagementDashboard: React.FC<InvoiceManagementDashboardProp
   // Query for invoice statistics
   const { data: statsData } = useQuery(GetInvoiceStatsDocument, {
     variables: {
-      clientId,
+      ...(clientId && { clientId }),
       startDate,
       endDate
     }
@@ -293,7 +293,7 @@ export const InvoiceManagementDashboard: React.FC<InvoiceManagementDashboardProp
                   </DialogDescription>
                 </DialogHeader>
                 <InvoiceGenerator
-                  clientId={clientId}
+                  {...(clientId && { clientId })}
                   onInvoiceGenerated={(invoiceId) => {
                     setShowInvoiceGenerator(false);
                     refetchInvoices();

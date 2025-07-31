@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withAuthParams } from '@/lib/auth/api-auth';
 import { executeTypedQuery } from '@/lib/apollo/query-helpers';
-import { UpdateBillingItemDocument } from '@/domains/billing/graphql/generated/graphql';
+import { UpdateBillingItemDocument, UpdateBillingItemMutation } from '@/domains/billing/graphql/generated/graphql';
 
 /**
  * POST /api/billing/items/[id]/approve
@@ -16,7 +16,7 @@ export const POST = withAuthParams(async (req: NextRequest, { params }, session:
     const { notes } = body;
 
     // Check if user has permission to approve billing items
-    const userRole = session.role || session.defaultRole;
+    const userRole = session.role || session.defaultRole || 'viewer';
     if (!['developer', 'org_admin', 'manager'].includes(userRole)) {
       return NextResponse.json(
         { success: false, error: 'Insufficient permissions to approve billing items' },
@@ -25,7 +25,7 @@ export const POST = withAuthParams(async (req: NextRequest, { params }, session:
     }
 
     // Approve the billing item
-    const result = await executeTypedQuery(
+    const result = await executeTypedQuery<UpdateBillingItemMutation>(
       UpdateBillingItemDocument,
       {
         id,
@@ -36,17 +36,16 @@ export const POST = withAuthParams(async (req: NextRequest, { params }, session:
           approvedBy: session.userId,
           notes: notes || null
         }
-      },
-      session
+      }
     );
 
-    if (!result?.updateBillingItem) {
+    if (!result?.updateBillingItemsByPk) {
       throw new Error('Failed to update billing item');
     }
 
     return NextResponse.json({
       success: true,
-      data: result.updateBillingItem,
+      data: result.updateBillingItemsByPk,
       message: 'Billing item approved successfully'
     });
 

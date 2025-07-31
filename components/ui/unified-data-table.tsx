@@ -130,14 +130,14 @@ export const createCellRenderers = <T,>(
     </div>
   ),
 
-  avatar: (user: { name: string; imageUrl?: string; email?: string }) => (
+  avatar: (user: { name: string; imageUrl?: string; email?: string; computedName?: string; firstName?: string; lastName?: string }) => (
     <div className="flex items-center space-x-3">
       <Avatar className="h-8 w-8">
         <AvatarImage src={user.imageUrl} alt={user.computedName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown User'} />
         <AvatarFallback>
           {(user.computedName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown User')
             .split(" ")
-            .map(n => n[0])
+            .map((n: string) => n[0])
             .join("")
             .toUpperCase()}
         </AvatarFallback>
@@ -480,7 +480,7 @@ function UnifiedDataTableComponent<T>({
  * Prevents unnecessary re-renders of expensive table operations
  */
 export const UnifiedDataTable = memo(UnifiedDataTableComponent) as <T>(
-  props: UnifiedTableProps<T>
+  props: DataTableProps<T>
 ) => React.ReactElement;
 
 // Export default for easier imports

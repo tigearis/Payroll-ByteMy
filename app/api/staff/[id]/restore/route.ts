@@ -48,7 +48,7 @@ export const POST = withAuthParams(async (req: NextRequest, { params }, session)
       );
     }
 
-    const user = userData.userById;
+    const user = userData.usersByPk;
     if (!user) {
       return NextResponse.json<RestoreUserResponse>(
         { success: false, error: "User not found" },
@@ -75,7 +75,7 @@ export const POST = withAuthParams(async (req: NextRequest, { params }, session)
         }
       );
 
-      const restoredUser = restoredUserData.updateUserById;
+      const restoredUser = restoredUserData.updateUsersByPk;
 
       if (!restoredUser) {
         throw new Error("Failed to restore user in database");
@@ -176,7 +176,7 @@ export const POST = withAuthParams(async (req: NextRequest, { params }, session)
     return NextResponse.json<RestoreUserResponse>(
       {
         success: false,
-        error: error.message || "Internal server error",
+        error: error instanceof Error ? error.message : "Internal server error",
       },
       { status: 500 }
     );

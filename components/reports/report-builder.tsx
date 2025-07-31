@@ -186,15 +186,21 @@ export function ReportBuilder() {
 
     setGenerating(true);
     try {
-      const request: ReportRequest = {
+      const request: any = {
         domains: selectedDomains,
         fields: selectedFields,
-        filters: Object.keys(filters).length > 0 ? filters : undefined,
-        sortBy: sortBy || undefined,
         sortOrder,
         limit,
         includeRelationships,
       };
+
+      // Only include non-null optional properties
+      if (Object.keys(filters).length > 0) {
+        request.filters = filters;
+      }
+      if (sortBy) {
+        request.sortBy = sortBy;
+      }
 
       const response = await fetch("/api/reports/generate", {
         method: "POST",

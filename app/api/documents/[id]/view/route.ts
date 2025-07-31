@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from '@/lib/auth/api-auth';
+import { withAuthParams } from '@/lib/auth/api-auth';
 import { getDocument } from '@/lib/storage/document-operations';
 
 interface DocumentViewResponse {
@@ -15,9 +15,9 @@ interface DocumentViewResponse {
  * Get a presigned URL for viewing a document inline (not downloading).
  * Useful for embedding in PDF viewers, image displays, etc.
  */
-export const GET = withAuth(async (req: NextRequest, session, { params }) => {
+export const GET = withAuthParams(async (req: NextRequest, { params }, session) => {
   try {
-    const { id } = params;
+    const { id } = await params;
     const { searchParams } = new URL(req.url);
     const expiryMinutes = parseInt(searchParams.get('expiryMinutes') || '60'); // Default 1 hour
 
@@ -33,7 +33,7 @@ export const GET = withAuth(async (req: NextRequest, session, { params }) => {
     const safeExpiryMinutes = Math.min(Math.max(expiryMinutes, 5), maxExpiryMinutes);
 
     // Validate user permissions
-    const userRole = session.role || session.defaultRole;
+    const userRole = session.role || session.defaultRole || 'viewer';
     const canView = ['developer', 'org_admin', 'manager', 'consultant', 'viewer'].includes(userRole);
     
     if (!canView) {
@@ -46,7 +46,7 @@ export const GET = withAuth(async (req: NextRequest, session, { params }) => {
     console.log(`👁️ Getting view URL for document: ${id} (expires in ${safeExpiryMinutes}min)`);
 
     // Get document with fresh presigned URL
-    const document = await getDocument(id, session.databaseId || session.userId);
+    const document = await getDocument(id, session.databaseId || session.userId || 'anonymous');
 
     if (!document) {
       return NextResponse.json<DocumentViewResponse>(
@@ -63,7 +63,7 @@ export const GET = withAuth(async (req: NextRequest, session, { params }) => {
       );
     }
 
-    if (userRole === 'consultant' && document.uploadedBy !== (session.databaseId || session.userId) && !document.isPublic) {
+    if (userRole === 'consultant' && document.uploadedBy !== (session.databaseId || session.userId || 'anonymous') && !document.isPublic) {
       // This will be enhanced with proper payroll assignment checking
       return NextResponse.json<DocumentViewResponse>(
         { success: false, error: 'Document not accessible' },
@@ -101,7 +101,7 @@ export const GET = withAuth(async (req: NextRequest, session, { params }) => {
     return NextResponse.json<DocumentViewResponse>(
       {
         success: false,
-        error: error.message || 'Failed to generate view URL',
+        error: error instanceof Error ? error.message : 'Failed to generate view URL',
       },
       { status: 500 }
     );

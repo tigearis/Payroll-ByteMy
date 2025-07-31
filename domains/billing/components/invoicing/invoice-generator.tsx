@@ -110,7 +110,7 @@ export const InvoiceGenerator: React.FC<InvoiceGeneratorProps> = ({
 
   // Query for client information
   const { data: clientData } = useQuery(GetClientForInvoiceDocument, {
-    variables: { clientId },
+    variables: { clientId: clientId! },
     skip: !clientId
   });
 
@@ -118,8 +118,8 @@ export const InvoiceGenerator: React.FC<InvoiceGeneratorProps> = ({
   const [createInvoice] = useMutation(CreateInvoiceDocument, {
     onCompleted: (data) => {
       toast.success('Invoice created successfully');
-      if (onInvoiceGenerated && data.insertBillingInvoice?.id) {
-        onInvoiceGenerated(data.insertBillingInvoice.id);
+      if (onInvoiceGenerated && data.insertBillingInvoiceOne?.id) {
+        onInvoiceGenerated(data.insertBillingInvoiceOne.id);
       }
     },
     onError: (error) => {
@@ -235,7 +235,7 @@ export const InvoiceGenerator: React.FC<InvoiceGeneratorProps> = ({
         }
       });
 
-      if (invoiceResult.data?.insertBillingInvoice?.id) {
+      if (invoiceResult.data?.insertBillingInvoiceOne?.id) {
         // Create invoice items
         for (const item of selectedInvoiceItems) {
           // This would be handled by a separate mutation or within the same transaction
@@ -277,7 +277,7 @@ export const InvoiceGenerator: React.FC<InvoiceGeneratorProps> = ({
           </CardTitle>
           <CardDescription>
             Create a new invoice from selected billing items
-            {clientData?.clientById?.name && ` for ${clientData.clientById.name}`}
+            {clientData?.clientsByPk?.name && ` for ${clientData.clientsByPk.name}`}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -522,15 +522,15 @@ export const InvoiceGenerator: React.FC<InvoiceGeneratorProps> = ({
                 </div>
               </div>
 
-              {clientData?.clientById && (
+              {clientData?.clientsByPk && (
                 <div className="mb-6">
                   <h3 className="font-semibold mb-2">Bill To:</h3>
-                  <p>{clientData.clientById.name}</p>
-                  {clientData.clientById.contactPerson && (
-                    <p>{clientData.clientById.contactPerson}</p>
+                  <p>{clientData.clientsByPk.name}</p>
+                  {clientData.clientsByPk.contactPerson && (
+                    <p>{clientData.clientsByPk.contactPerson}</p>
                   )}
-                  {clientData.clientById.contactEmail && (
-                    <p>{clientData.clientById.contactEmail}</p>
+                  {clientData.clientsByPk.contactEmail && (
+                    <p>{clientData.clientsByPk.contactEmail}</p>
                   )}
                 </div>
               )}

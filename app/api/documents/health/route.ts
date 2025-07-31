@@ -28,7 +28,7 @@ interface HealthResponse {
 export const GET = withAuth(async (req: NextRequest, session) => {
   try {
     // Validate user permissions - only high-level roles can see health status
-    const userRole = session.role || session.defaultRole;
+    const userRole = session.role || session.defaultRole || 'viewer';
     const canViewHealth = ['developer', 'org_admin'].includes(userRole);
     
     if (!canViewHealth) {
@@ -118,7 +118,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
       {
         success: false,
         status: 'unhealthy',
-        error: error.message || 'Health check failed',
+        error: error instanceof Error ? error.message : 'Health check failed',
       },
       { status: 500 }
     );

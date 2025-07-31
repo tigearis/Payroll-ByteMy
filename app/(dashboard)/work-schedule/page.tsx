@@ -20,7 +20,7 @@
  *
  * DATA STRUCTURE NOTES:
  * - workSchedules field access: data.workSchedules (plural, root query)
- * - userWorkSchedules field access: user.userWorkSchedules (relationship)
+ * - userWorkSchedules field access: user.workSchedules (relationship)
  * - workScheduleUser field access: schedule.workScheduleUser (relationship)
  */
 
@@ -254,13 +254,13 @@ export default function WorkSchedulePage() {
   if (teamWorkloadData?.users && teamWorkloadData.users.length > 0) {
     console.log("Debug - First user work schedules:", {
       userName: teamWorkloadData.users[0].computedName || `${teamWorkloadData.users[0].firstName} ${teamWorkloadData.users[0].lastName}`.trim(),
-      userWorkSchedules: teamWorkloadData.users[0].userWorkSchedules,
+      userWorkSchedules: teamWorkloadData.users[0].workSchedules,
       workScheduleCount:
-        teamWorkloadData.users[0].userWorkSchedules?.length || 0,
+        teamWorkloadData.users[0].workSchedules?.length || 0,
       primaryPayrolls:
-        teamWorkloadData.users[0].primaryConsultantPayrolls?.length || 0,
+        teamWorkloadData.users[0].primaryPayrollAssignments?.length || 0,
       backupPayrolls:
-        teamWorkloadData.users[0].backupConsultantPayrolls?.length || 0,
+        teamWorkloadData.users[0].backupPayrollAssignments?.length || 0,
     });
   }
 
@@ -524,15 +524,15 @@ export default function WorkSchedulePage() {
   ) {
     return users.map(user => {
       // Calculate assigned hours from payroll assignments
-      const primaryPayrollHours = user.primaryConsultantPayrolls.reduce(
-        (total, payroll) => {
+      const primaryPayrollHours = user.primaryPayrollAssignments.reduce(
+        (total: number, payroll: any) => {
           return total + (payroll.processingTime || 0);
         },
         0
       );
 
-      const backupPayrollHours = user.backupConsultantPayrolls.reduce(
-        (total, payroll) => {
+      const backupPayrollHours = user.backupPayrollAssignments.reduce(
+        (total: number, payroll: any) => {
           // Backup consultants typically handle 25% of processing time
           return total + (payroll.processingTime || 0) * 0.25;
         },
@@ -542,7 +542,7 @@ export default function WorkSchedulePage() {
       const totalAssignedHours = primaryPayrollHours + backupPayrollHours;
 
       // Calculate total capacity from work schedules - use userWorkSchedules with null safety
-      const workSchedules = user.userWorkSchedules || [];
+      const workSchedules = user.workSchedules || [];
       const totalWorkHours = workSchedules.reduce(
         (sum, s) => sum + (s.workHours || 0),
         0
@@ -572,7 +572,7 @@ export default function WorkSchedulePage() {
         defaultAdminTimePercentage: user.defaultAdminTimePercentage || 12.5,
         isStaff: true, // All users in team workload query are staff
         skills:
-          user.userSkills?.map(skill => ({
+          user.skills?.map(skill => ({
             name: skill.skillName || "",
             proficiency: skill.proficiencyLevel || "",
           })) || [],
@@ -585,7 +585,7 @@ export default function WorkSchedulePage() {
           usesDefaultAdminTime: schedule.usesDefaultAdminTime || false,
         })),
         assignedPayrolls: [
-          ...(user.primaryConsultantPayrolls || []).map(payroll => ({
+          ...(user.primaryPayrollAssignments || []).map(payroll => ({
             id: payroll.id,
             name: payroll.name,
             processingTime: payroll.processingTime || 0,
@@ -597,12 +597,12 @@ export default function WorkSchedulePage() {
                 payroll.payrollDates[0]?.adjustedEftDate) ||
               null,
             requiredSkills:
-              payroll.payrollRequiredSkills?.map((skill: any) => ({
+              payroll.requiredSkills?.map((skill: any) => ({
                 name: skill.skillName || "",
                 requiredLevel: skill.requiredLevel || "",
               })) || [],
           })),
-          ...(user.backupConsultantPayrolls || []).map(payroll => ({
+          ...(user.backupPayrollAssignments || []).map(payroll => ({
             id: payroll.id,
             name: payroll.name,
             processingTime: (payroll.processingTime || 0) * 0.25, // 25% for backup
@@ -614,7 +614,7 @@ export default function WorkSchedulePage() {
                 payroll.payrollDates[0]?.adjustedEftDate) ||
               null,
             requiredSkills:
-              payroll.payrollRequiredSkills?.map((skill: any) => ({
+              payroll.requiredSkills?.map((skill: any) => ({
                 name: skill.skillName || "",
                 requiredLevel: skill.requiredLevel || "",
               })) || [],
@@ -649,7 +649,7 @@ export default function WorkSchedulePage() {
     }
 
     return users.map(user => {
-      const workSchedules = user.userWorkSchedules || [];
+      const workSchedules = user.workSchedules || [];
       const totalWorkHours = workSchedules.reduce(
         (sum, s) => sum + (s.workHours || 0),
         0
@@ -671,7 +671,7 @@ export default function WorkSchedulePage() {
         defaultAdminTimePercentage: user.defaultAdminTimePercentage || 12.5,
         isStaff: true,
         skills:
-          user.userSkills?.map(skill => ({
+          user.skills?.map(skill => ({
             name: skill.skillName || "",
             proficiency: skill.proficiencyLevel || "",
           })) || [],
@@ -720,7 +720,7 @@ export default function WorkSchedulePage() {
           ? "medium"
           : "low") as "low" | "medium" | "high",
       requiredSkills:
-        payroll.payrollRequiredSkills?.map((skill: any) => ({
+        payroll.requiredSkills?.map((skill: any) => ({
           name: skill.skillName || "",
           requiredLevel: skill.requiredLevel || "",
         })) || [],

@@ -212,7 +212,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
     return NextResponse.json<InvitationStatsResponse>(
       {
         success: false,
-        error: error.message || "Failed to fetch invitation statistics",
+        error: error instanceof Error ? error.message : "Failed to fetch invitation statistics",
       },
       { status: 500 }
     );
@@ -269,7 +269,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
     return NextResponse.json(
       {
         success: false,
-        error: error.message || "Bulk operation failed",
+        error: error instanceof Error ? error.message : "Bulk operation failed",
       },
       { status: 500 }
     );

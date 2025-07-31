@@ -81,7 +81,7 @@ export default function AccountSettings() {
     );
   }
 
-  const dbUser = userData?.userById;
+  const dbUser = userData?.usersByPk;
 
   return (
     <div className="container mx-auto py-6 space-y-6">

@@ -80,9 +80,9 @@ async function handleBulkCreate(schedules: any[], defaultUserId: string) {
   );
 
   return NextResponse.json({
-    schedules: data.bulkInsertWorkSchedule?.returning || [],
-    created: data.bulkInsertWorkSchedule?.affectedRows || 0,
-    message: `Created ${data.bulkInsertWorkSchedule?.affectedRows || 0} work schedules`
+    schedules: data.insertWorkSchedule?.returning || [],
+    created: data.insertWorkSchedule?.affectedRows || 0,
+    message: `Created ${data.insertWorkSchedule?.affectedRows || 0} work schedules`
   });
 }
 
@@ -120,9 +120,9 @@ async function handleBulkUpdate(userIds: string[], workDay: string, workHours: n
   );
 
   return NextResponse.json({
-    schedules: data.bulkUpdateWorkSchedule?.returning || [],
-    updated: data.bulkUpdateWorkSchedule?.affectedRows || 0,
-    message: `Updated ${data.bulkUpdateWorkSchedule?.affectedRows || 0} work schedules`
+    schedules: data.updateWorkSchedule?.returning || [],
+    updated: data.updateWorkSchedule?.affectedRows || 0,
+    message: `Updated ${data.updateWorkSchedule?.affectedRows || 0} work schedules`
   });
 }
 
@@ -144,8 +144,8 @@ async function handleBulkDelete(scheduleIds: string[]) {
         { id }
       );
       
-      if (data.deleteWorkScheduleById) {
-        deletedIds.push(data.deleteWorkScheduleById.id);
+      if (data.deleteWorkScheduleByPk) {
+        deletedIds.push(data.deleteWorkScheduleByPk.id);
       }
     } catch (error) {
       console.error(`Failed to delete schedule ${id}:`, error);

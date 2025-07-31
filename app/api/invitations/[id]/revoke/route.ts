@@ -57,7 +57,7 @@ export const PUT = withAuthParams(async (req: NextRequest, { params }, session) 
       );
     }
 
-    const invitation = invitationData.userInvitationById;
+    const invitation = invitationData.userInvitationsByPk;
     if (!invitation) {
       return NextResponse.json<RevokeInvitationResponse>(
         { success: false, error: "Invitation not found" },
@@ -107,7 +107,7 @@ export const PUT = withAuthParams(async (req: NextRequest, { params }, session) 
         }
       );
 
-      const revokedInvitation = revokedInvitationData.updateUserInvitationById;
+      const revokedInvitation = revokedInvitationData.updateUserInvitationsByPk;
 
       if (!revokedInvitation) {
         throw new Error("Failed to revoke invitation in database");
@@ -186,7 +186,7 @@ export const PUT = withAuthParams(async (req: NextRequest, { params }, session) 
     return NextResponse.json<RevokeInvitationResponse>(
       {
         success: false,
-        error: error.message || "Internal server error",
+        error: error instanceof Error ? error.message : "Internal server error",
       },
       { status: 500 }
     );
@@ -203,7 +203,7 @@ export const GET = withAuthParams(async (req: NextRequest, { params }, session) 
       { invitationId: id }
     );
 
-    const invitation = invitationData.userInvitationById;
+    const invitation = invitationData.userInvitationsByPk;
     if (!invitation) {
       return NextResponse.json<RevokeInvitationResponse>(
         { success: false, error: "Invitation not found" },
@@ -248,7 +248,7 @@ export const GET = withAuthParams(async (req: NextRequest, { params }, session) 
     return NextResponse.json<RevokeInvitationResponse>(
       {
         success: false,
-        error: error.message || "Internal server error",
+        error: error instanceof Error ? error.message : "Internal server error",
       },
       { status: 500 }
     );

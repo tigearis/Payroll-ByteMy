@@ -209,7 +209,7 @@ async function handleStaffListRequest(
     } else if (includeNonStaff) {
       users = (staffData as GetAllUsersPaginatedQuery).users || [];
       totalCount =
-        (staffData as GetAllUsersPaginatedQuery).allUsersAggregate?.aggregate
+        (staffData as GetAllUsersPaginatedQuery).allusersAggregate?.aggregate
           ?.count || 0;
     } else {
       users = (staffData as GetStaffPaginatedQuery).users || [];
@@ -237,14 +237,14 @@ async function handleStaffListRequest(
           clerkUserId: user.clerkUserId,
           createdAt: (user as any).createdAt || null,
           updatedAt: user.updatedAt,
-          managerUser: user.managerUser
+          manager: user.manager
             ? {
-                id: user.managerUser.id,
-                firstName: user.managerUser.firstName,
-                lastName: user.managerUser.lastName,
-                computedName: user.managerUser.computedName,
-                email: (user.managerUser as any).email || null,
-                role: (user.managerUser as any).role || null,
+                id: user.manager.id,
+                firstName: user.manager.firstName,
+                lastName: user.manager.lastName,
+                computedName: user.manager.computedName,
+                email: (user.manager as any).email || null,
+                role: (user.manager as any).role || null,
               }
             : null,
         })),
@@ -263,7 +263,7 @@ async function handleStaffListRequest(
     return NextResponse.json<StaffListResponse>(
       {
         success: false,
-        error: error.message || "Failed to fetch staff list",
+        error: error instanceof Error ? error.message : "Failed to fetch staff list",
       },
       { status: 500 }
     );
