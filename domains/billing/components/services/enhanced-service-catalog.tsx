@@ -32,16 +32,15 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { PermissionGuard } from '@/components/auth/permission-guard';
 import { formatCurrency } from '@/lib/utils';
 
-// Import the new GraphQL operations
+// Import the GraphQL operations
 import { 
-  GetEnhancedServicesDocument,
-  CreateEnhancedServiceDocument,
-  UpdateEnhancedServiceDocument,
-  DeactivateServiceDocument,
-  GetEnhancedServiceTemplatesDocument,
-  CreateEnhancedServiceTemplateDocument,
-  type ServiceFragment,
-  type ServiceTemplateFragment
+  GetServiceCatalogDocument,
+  GetNewServiceCatalogDocument,
+  CreateServiceDocument,
+  UpdateServiceDocument,
+  type ServiceCatalogFragmentFragment,
+  type GetServiceCatalogQuery,
+  type GetNewServiceCatalogQuery
 } from '../../graphql/generated/graphql';
 
 const SERVICE_CATEGORIES = [

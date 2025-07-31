@@ -101,11 +101,11 @@ export const PayrollBillingInterface: React.FC<PayrollBillingInterfaceProps> = (
       const selections = clientServices.map(service => {
         const billingPlan = service.billingPlan;
         const effectiveRate = service.customRate || billingPlan.standardRate;
-        const autoQuantity = calculateAutoQuantity(billingPlan.billingUnit, payroll);
+        const autoQuantity = calculateAutoQuantity(billingPlan.billingUnit || 'hour', payroll);
         return {
-          service_id: service.billingPlanId,
+          service_id: service.billingPlanId || '',
           service_name: billingPlan.name,
-          billing_unit: billingPlan.billingUnit,
+          billing_unit: billingPlan.billingUnit || 'hour',
           standard_rate: billingPlan.standardRate,
           effective_rate: effectiveRate,
           auto_quantity: autoQuantity,
@@ -208,7 +208,7 @@ export const PayrollBillingInterface: React.FC<PayrollBillingInterfaceProps> = (
             await createTimeEntry({
               variables: {
                 input: {
-                  staffUserId: payroll.primaryConsultantUserId,
+                  staffUserId: payroll.primaryConsultantUserId || '',
                   clientId: payroll.clientId,
                   payrollId: payrollId,
                   billingItemId: primaryBillingItem.id,
