@@ -3,7 +3,7 @@
 # SOC2 Compliance: Financial data with strict audit requirements
 
 # Service Catalog Fragment
-fragment ServiceCatalogFragment on billingPlans {
+fragment ServiceCatalogFragment on BillingPlan {
   id
   name
   description
@@ -17,7 +17,7 @@ fragment ServiceCatalogFragment on billingPlans {
 }
 
 # Client Service Agreement Fragment
-fragment ClientServiceAgreementFragment on clientBillingAssignments {
+fragment ClientServiceAgreementFragment on ClientBillingAssignment {
   id
   clientId
   billingPlanId
@@ -30,13 +30,13 @@ fragment ClientServiceAgreementFragment on clientBillingAssignments {
   endDate
   createdAt
   updatedAt
-  assignedBillingPlan {
+  billingPlan {
     ...ServiceCatalogFragment
   }
 }
 
 # Billing Item Fragment
-fragment BillingItemFragment on billingItems {
+fragment BillingItemFragment on BillingItems {
   id
   invoiceId
   description
@@ -59,7 +59,7 @@ fragment BillingItemFragment on billingItems {
 }
 
 # Time Entry Fragment
-fragment TimeEntryFragment on timeEntries {
+fragment TimeEntryFragment on TimeEntries {
   id
   staffUserId
   clientId
@@ -73,7 +73,7 @@ fragment TimeEntryFragment on timeEntries {
 }
 
 # Billing Period Fragment
-fragment BillingPeriodFragment on billingPeriods {
+fragment BillingPeriodFragment on BillingPeriods {
   id
   clientId
   periodStart
@@ -84,7 +84,7 @@ fragment BillingPeriodFragment on billingPeriods {
 }
 
 # Enhanced Invoice Fragment
-fragment BillingInvoiceFragment on billingInvoice {
+fragment BillingInvoiceFragment on BillingInvoice {
   id
   clientId
   billingPeriodStart
@@ -107,7 +107,7 @@ fragment BillingInvoiceFragment on billingInvoice {
 }
 
 # Invoice Item Fragment
-fragment BillingInvoiceItemFragment on billingInvoiceItem {
+fragment BillingInvoiceItemFragment on BillingInvoiceItem {
   id
   invoiceId
   descriptionOverride
@@ -119,7 +119,7 @@ fragment BillingInvoiceItemFragment on billingInvoiceItem {
 }
 
 # Payroll Billing Fragment
-fragment PayrollBillingFragment on payrolls {
+fragment PayrollBillingFragment on Payrolls {
   id
   name
   clientId

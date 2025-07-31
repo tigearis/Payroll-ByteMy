@@ -2,7 +2,7 @@
 # Updated to match actual Hasura schema (2025-07-30)
 
 # Service Fragment
-fragment ServiceFragment on services {
+fragment ServiceFragment on Services {
   id
   name
   description
@@ -23,7 +23,7 @@ fragment ServiceFragment on services {
 }
 
 # Service Template Fragment
-fragment ServiceTemplateFragment on serviceTemplates {
+fragment ServiceTemplateFragment on ServiceTemplates {
   id
   name
   description
@@ -40,7 +40,7 @@ fragment ServiceTemplateFragment on serviceTemplates {
 }
 
 # Client Service Agreement Fragment (New Services)
-fragment ClientServiceAgreementNewFragment on clientServiceAgreements {
+fragment ClientServiceAgreementNewFragment on ClientServiceAgreements {
   id
   clientId
   serviceId
@@ -59,7 +59,7 @@ fragment ClientServiceAgreementNewFragment on clientServiceAgreements {
 }
 
 # Enhanced service fragment with relationships
-fragment ServiceWithRelationshipsFragment on services {
+fragment ServiceWithRelationshipsFragment on Services {
   ...ServiceFragment
   billingItems {
     id
@@ -68,7 +68,7 @@ fragment ServiceWithRelationshipsFragment on services {
     unitPrice
     amount
   }
-  clientServiceAgreements {
+  clientAgreements {
     id
     clientId
     customRate
@@ -103,13 +103,13 @@ query GetNewServiceCatalog($limit: Int = 50, $offset: Int = 0, $category: String
 
 # Get service by ID
 query GetNewServiceById($id: uuid!) {
-  serviceById(id: $id) {
+  servicesByPk(id: $id) {
     ...ServiceWithRelationshipsFragment
   }
 }
 
 # Get all service templates
-query GetServiceTemplates($isPublic: Boolean) {
+query GetserviceTemplates($isPublic: Boolean) {
   serviceTemplates(
     where: { isPublic: { _eq: $isPublic } }
     orderBy: [{ name: ASC }]
@@ -119,7 +119,7 @@ query GetServiceTemplates($isPublic: Boolean) {
 }
 
 # Get client service agreements
-query GetNewClientServiceAgreements($clientId: uuid, $serviceId: uuid) {
+query GetNewclientServiceAgreements($clientId: uuid, $serviceId: uuid) {
   clientServiceAgreements(
     where: { 
       clientId: { _eq: $clientId }
@@ -154,7 +154,7 @@ query GetServiceUsageAnalytics($serviceIds: [uuid!], $startDate: timestamp, $end
       quantity
       createdAt
     }
-    clientServiceAgreementsAggregate {
+    clientAgreementsAggregate {
       aggregate {
         count
       }
@@ -163,50 +163,50 @@ query GetServiceUsageAnalytics($serviceIds: [uuid!], $startDate: timestamp, $end
 }
 
 # Create a new service
-mutation CreateNewService($input: servicesInsertInput!) {
-  insertService(object: $input) {
+mutation CreateNewService($input: ServicesInsertInput!) {
+  insertServicesOne(object: $input) {
     ...ServiceFragment
   }
 }
 
 # Update service
-mutation UpdateNewService($id: uuid!, $input: servicesSetInput) {
-  updateServiceById(pkColumns: { id: $id }, _set: $input) {
+mutation UpdateNewService($id: uuid!, $input: ServicesSetInput) {
+  updateServicesByPk(pkColumns: { id: $id }, _set: $input) {
     ...ServiceFragment
   }
 }
 
 # Create service template
-mutation CreateNewServiceTemplate($input: serviceTemplatesInsertInput!) {
-  insertServiceTemplate(object: $input) {
+mutation CreateNewServiceTemplate($input: ServiceTemplatesInsertInput!) {
+  insertServiceTemplatesOne(object: $input) {
     ...ServiceTemplateFragment
   }
 }
 
 # Create client service agreement
-mutation CreateClientServiceAgreement($input: clientServiceAgreementsInsertInput!) {
-  insertClientServiceAgreement(object: $input) {
+mutation CreateClientServiceAgreement($input: ClientServiceAgreementsInsertInput!) {
+  insertClientServiceAgreementsOne(object: $input) {
     ...ClientServiceAgreementNewFragment
   }
 }
 
 # Update client service agreement
-mutation UpdateClientServiceAgreement($id: uuid!, $input: clientServiceAgreementsSetInput) {
-  updateClientServiceAgreementById(pkColumns: { id: $id }, _set: $input) {
+mutation UpdateClientServiceAgreement($id: uuid!, $input: ClientServiceAgreementsSetInput) {
+  updateClientServiceAgreementsByPk(pkColumns: { id: $id }, _set: $input) {
     ...ClientServiceAgreementNewFragment
   }
 }
 
 # Deactivate service (soft delete)
 mutation DeactivateService($id: uuid!) {
-  updateServiceById(pkColumns: { id: $id }, _set: { isActive: false }) {
+  updateServicesByPk(pkColumns: { id: $id }, _set: { isActive: false }) {
     id
     isActive
   }
 }
 
 # Search services
-query SearchServices($searchTerm: String!, $limit: Int = 20) {
+query Searchservices($searchTerm: String!, $limit: Int = 20) {
   services(
     where: {
       _or: [

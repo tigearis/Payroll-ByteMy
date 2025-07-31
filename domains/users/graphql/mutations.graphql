@@ -1,17 +1,19 @@
 # Users Domain Mutations
 # Security Classification: CRITICAL - Employee PII and authentication data
 
-mutation CreateUser($object: usersInsertInput!) {
-  insertUser(object: $object) {
-    ...UserBase
-    username
-    image
-    managerId
+mutation CreateUser($object: UsersInsertInput!) {
+  insertUsers(objects: [$object]) {
+    returning {
+      ...UserBase
+      username
+      image
+      managerId
+    }
   }
 }
 
-mutation UpdateUser($id: uuid!, $set: usersSetInput!) {
-  updateUserById(pkColumns: { id: $id }, _set: $set) {
+mutation UpdateUser($id: uuid!, $set: UsersSetInput!) {
+  updateUsersByPk(pkColumns: { id: $id }, _set: $set) {
     ...UserBase
     username
     image
@@ -20,7 +22,7 @@ mutation UpdateUser($id: uuid!, $set: usersSetInput!) {
 }
 
 mutation DeleteUser($id: uuid!) {
-  updateUserById(
+  updateUsersByPk(
     pkColumns: { id: $id }
     _set: { isActive: false, deactivatedAt: "now()" }
   ) {
@@ -29,13 +31,13 @@ mutation DeleteUser($id: uuid!) {
 }
 
 mutation UpdateUserRole($id: uuid!, $role: user_role!) {
-  updateUserById(pkColumns: { id: $id }, _set: { role: $role }) {
+  updateUsersByPk(pkColumns: { id: $id }, _set: { role: $role }) {
     ...UserBase
   }
 }
 
-mutation BulkUpdateUsers($where: usersBoolExp!, $set: usersSetInput!) {
-  bulkUpdateUsers(where: $where, _set: $set) {
+mutation BulkUpdateUsers($where: UsersBoolExp!, $set: UsersSetInput!) {
+  updateUsers(where: $where, _set: $set) {
     returning {
       ...UserBase
     }
@@ -53,8 +55,8 @@ mutation CreateUserFromClerk(
   $managerId: uuid
   $image: String
 ) {
-  insertUser(
-    object: {
+  insertUsers(
+    objects: [{
       clerkUserId: $clerkId
       firstName: $firstName
       lastName: $lastName
@@ -63,13 +65,15 @@ mutation CreateUserFromClerk(
       isStaff: $isStaff
       managerId: $managerId
       image: $image
-    }
+    }]
     onConflict: {
       constraint: users_clerk_user_id_key
       updateColumns: [firstName, lastName, email, image, updatedAt]
     }
   ) {
-    ...UserBase
+    returning {
+      ...UserBase
+    }
   }
 }
 
@@ -82,8 +86,8 @@ mutation CreateUserByEmail(
   $isStaff: Boolean = true
   $clerkUserId: String
 ) {
-  insertUser(
-    object: {
+  insertUsers(
+    objects: [{
       firstName: $firstName
       lastName: $lastName
       email: $email
@@ -92,20 +96,22 @@ mutation CreateUserByEmail(
       isStaff: $isStaff
       isActive: true
       clerkUserId: $clerkUserId
-    }
+    }]
   ) {
-    ...UserBase
+    returning {
+      ...UserBase
+    }
   }
 }
 
-mutation UpdateUserProfile($id: uuid!, $input: usersSetInput!) {
-  updateUserById(pkColumns: { id: $id }, _set: $input) {
+mutation UpdateUserProfile($id: uuid!, $input: UsersSetInput!) {
+  updateUsersByPk(pkColumns: { id: $id }, _set: $input) {
     ...UserWithProfile
   }
 }
 
 mutation DeactivateUser($id: uuid!) {
-  updateUserById(
+  updateUsersByPk(
     pkColumns: { id: $id }
     _set: { isActive: false, deactivatedAt: "now()" }
   ) {
@@ -114,7 +120,7 @@ mutation DeactivateUser($id: uuid!) {
 }
 
 mutation ReactivateUser($id: uuid!) {
-  updateUserById(
+  updateUsersByPk(
     pkColumns: { id: $id }
     _set: { isActive: true, deactivatedAt: null }
   ) {
@@ -124,7 +130,7 @@ mutation ReactivateUser($id: uuid!) {
 
 # Hard delete mutation (use with caution)
 mutation HardDeleteUser($id: uuid!) {
-  deleteUserById(id: $id) {
+  deleteUsersByPk(id: $id) {
     id
     firstName
     lastName
@@ -135,7 +141,7 @@ mutation HardDeleteUser($id: uuid!) {
 
 # Staff role management
 mutation UpdateStaffRole($id: uuid!, $role: user_role!) {
-  updateUserById(pkColumns: { id: $id }, _set: { role: $role }) {
+  updateUsersByPk(pkColumns: { id: $id }, _set: { role: $role }) {
     ...UserBase
     managerId
   }
@@ -143,7 +149,7 @@ mutation UpdateStaffRole($id: uuid!, $role: user_role!) {
 
 # Clerk integration mutations
 mutation UpdateUserRoleFromClerk($clerkUserId: String!, $role: user_role!) {
-  bulkUpdateUsers(
+  updateUsers(
     where: { clerkUserId: { _eq: $clerkUserId } }
     _set: { role: $role }
   ) {
@@ -159,7 +165,7 @@ mutation RevokeInvitation(
   $revokeReason: String!
   $revokedBy: uuid!
 ) {
-  updateUserInvitationById(
+  updateUserInvitationsByPk(
     pkColumns: { id: $invitationId }
     _set: {
       invitationStatus: "revoked"
@@ -184,7 +190,7 @@ mutation ResendInvitationEnhanced(
   $newClerkTicket: String
   $newClerkInvitationId: String
 ) {
-  updateUserInvitationById(
+  updateUserInvitationsByPk(
     pkColumns: { id: $invitationId }
     _set: {
       expiresAt: $newExpiresAt
@@ -209,7 +215,7 @@ mutation DeactivateUserWithReason(
   $deactivatedBy: uuid!
   $deactivatedByString: String!
 ) {
-  updateUserById(
+  updateUsersByPk(
     pkColumns: { id: $userId }
     _set: {
       status: "inactive"
@@ -240,7 +246,7 @@ mutation LockUserWithReason(
   $reason: String!
   $lockedBy: uuid!
 ) {
-  updateUserById(
+  updateUsersByPk(
     pkColumns: { id: $userId }
     _set: {
       status: "locked"
@@ -268,7 +274,7 @@ mutation UnlockUserWithReason(
   $reason: String!
   $unlockedBy: uuid!
 ) {
-  updateUserById(
+  updateUsersByPk(
     pkColumns: { id: $userId }
     _set: {
       status: "active"
@@ -296,7 +302,7 @@ mutation ReactivateUserWithReason(
   $reason: String!
   $reactivatedBy: uuid!
 ) {
-  updateUserById(
+  updateUsersByPk(
     pkColumns: { id: $userId }
     _set: {
       status: "active"

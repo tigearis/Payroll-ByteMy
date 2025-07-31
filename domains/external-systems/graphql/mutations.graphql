@@ -3,43 +3,42 @@
 # SOC2 Compliance: All mutations logged with comprehensive audit trail
 
 # External system CRUD operations
-mutation CreateExternalSystem($object: externalSystemsInsertInput!) {
-  insertExternalSystem(object: $object) {
+mutation CreateExternalSystem($object: ExternalSystemsInsertInput!) {
+  insertExternalSystemsOne(object: $object) {
     ...ExternalSystemDetailed
   }
 }
 
-mutation UpdateExternalSystem($id: uuid!, $set: externalSystemsSetInput!) {
-  updateExternalSystemById(pkColumns: { id: $id }, _set: $set) {
+mutation UpdateExternalSystem($id: uuid!, $set: ExternalSystemsSetInput!) {
+  updateExternalSystemsByPk(pkColumns: { id: $id }, _set: $set) {
     ...ExternalSystemDetailed
   }
 }
 
 mutation DeleteExternalSystem($id: uuid!) {
-  deleteExternalSystemById(id: $id) {
+  deleteExternalSystemsByPk(id: $id) {
     id
     name
   }
 }
 
 # Client external system operations
-mutation CreateClientExternalSystem($object: clientExternalSystemsInsertInput!) {
-  insertClientExternalSystem(object: $object) {
+mutation CreateClientExternalSystem($object: ClientExternalSystemsInsertInput!) {
+  insertClientExternalSystemsOne(object: $object) {
     ...ClientExternalSystemComplete
   }
 }
 
-mutation UpdateClientExternalSystem($id: uuid!, $set: clientExternalSystemsSetInput!) {
-  updateClientExternalSystemById(pkColumns: { id: $id }, _set: $set) {
+mutation UpdateClientExternalSystem($id: uuid!, $set: ClientExternalSystemsSetInput!) {
+  updateClientExternalSystemsByPk(pkColumns: { id: $id }, _set: $set) {
     ...ClientExternalSystemComplete
   }
 }
 
 mutation DeleteClientExternalSystem($id: uuid!) {
-  deleteClientExternalSystemById(id: $id) {
+  deleteClientExternalSystemsByPk(id: $id) {
     id
     clientId
-    externalSystemId
   }
 }
 
@@ -48,10 +47,9 @@ mutation ConnectClientToSystem(
   $externalSystemId: uuid!
   $systemClientId: String
 ) {
-  insertClientExternalSystem(
+  insertClientExternalSystemsOne(
     object: {
       clientId: $clientId
-      externalSystemId: $externalSystemId
       systemClientId: $systemClientId
     }
   ) {
@@ -60,16 +58,15 @@ mutation ConnectClientToSystem(
 }
 
 mutation DisconnectClientFromSystem($id: uuid!) {
-  deleteClientExternalSystemById(id: $id) {
+  deleteClientExternalSystemsByPk(id: $id) {
     id
     clientId
-    externalSystemId
   }
 }
 
 # Bulk operations
 mutation BulkDeleteExternalSystems($systemIds: [uuid!]!) {
-  bulkDeleteExternalSystems(where: { id: { _in: $systemIds } }) {
+  deleteExternalSystems(where: { id: { _in: $systemIds } }) {
     affectedRows
     returning {
       id
@@ -79,41 +76,38 @@ mutation BulkDeleteExternalSystems($systemIds: [uuid!]!) {
 }
 
 mutation BulkDeleteClientExternalSystems($clientSystemIds: [uuid!]!) {
-  bulkDeleteClientExternalSystems(where: { id: { _in: $clientSystemIds } }) {
+  deleteClientExternalSystems(where: { id: { _in: $clientSystemIds } }) {
     affectedRows
     returning {
       id
       clientId
-      externalSystemId
-    }
+      }
   }
 }
 
 # Administrative operations
 mutation DisconnectAllClientSystemsBySystem($externalSystemId: uuid!) {
-  bulkDeleteClientExternalSystems(where: { externalSystemId: { _eq: $externalSystemId } }) {
+  deleteClientExternalSystems(where: { externalSystem: { id: { _eq: $externalSystemId } } }) {
     affectedRows
     returning {
       id
       clientId
-      externalSystemId
-    }
+      }
   }
 }
 
 mutation DisconnectAllClientSystemsByClient($clientId: uuid!) {
-  bulkDeleteClientExternalSystems(where: { clientId: { _eq: $clientId } }) {
+  deleteClientExternalSystems(where: { clientId: { _eq: $clientId } }) {
     affectedRows
     returning {
       id
       clientId
-      externalSystemId
-    }
+      }
   }
 }
 
 mutation TransferClientSystemConnections($oldClientId: uuid!, $newClientId: uuid!) {
-  bulkUpdateClientExternalSystems(
+  updateClientExternalSystems(
     where: { clientId: { _eq: $oldClientId } }
     _set: { clientId: $newClientId, updatedAt: "now()" }
   ) {
@@ -121,8 +115,7 @@ mutation TransferClientSystemConnections($oldClientId: uuid!, $newClientId: uuid
     returning {
       id
       clientId
-      externalSystemId
-    }
+      }
   }
 }
 
@@ -134,7 +127,7 @@ mutation UpdateExternalSystemDetails(
   $url: String
   $icon: String
 ) {
-  updateExternalSystemById(
+  updateExternalSystemsByPk(
     pkColumns: { id: $id }
     _set: {
       name: $name
@@ -152,7 +145,7 @@ mutation UpdateClientSystemMapping(
   $id: uuid!
   $systemClientId: String
 ) {
-  updateClientExternalSystemById(
+  updateClientExternalSystemsByPk(
     pkColumns: { id: $id }
     _set: {
       systemClientId: $systemClientId

@@ -19,22 +19,21 @@ import {
   CreateBillingItemDocument, 
   UpdateBillingItemDocument, 
   GetClientsForBillingDocument,
-  GetBillingPlansDocument
+  GetNewServiceCatalogDocument
 } from '../../graphql/generated/graphql';
 // import { EnhancedServiceCatalog } from '../services/enhanced-service-catalog';
 // import { pricingEngine, type PricingContext } from '../../services/pricing-engine';
 
 const billingItemSchema = z.object({
-  billingPlanId: z.string().optional(), // Legacy billing plan support
-  serviceId: z.string().optional(), // Future services support
+  serviceId: z.string().optional(), // Service item selection
   serviceName: z.string().optional(),
   description: z.string().min(3, 'Description must be at least 3 characters'),
   unitPrice: z.number().min(0.01, 'Amount must be greater than 0'),
   quantity: z.number().min(1, 'Quantity must be at least 1'),
   clientId: z.string().min(1, 'Client is required'),
   notes: z.string().optional(),
-}).refine(data => data.billingPlanId || data.serviceId || data.serviceName, {
-  message: "Either select a billing plan, service, or provide a service name",
+}).refine(data => data.serviceId || data.serviceName, {
+  message: "Either select a service item or provide a service name",
   path: ["serviceName"]
 });
 
@@ -77,8 +76,10 @@ export function BillingItemForm({ itemId, preselectedClientId }: BillingItemForm
   // Get clients for dropdown
   const { data: clientsData, loading: clientsLoading } = useQuery(GetClientsForBillingDocument);
   
-  // Get billing plans for selection (legacy - will be replaced with services)
-  const { data: billingPlansData, loading: billingPlansLoading } = useQuery(GetBillingPlansDocument);
+  // Get services for selection
+  const { data: servicesData, loading: servicesLoading } = useQuery(GetNewServiceCatalogDocument, {
+    variables: { limit: 100 }
+  });
   
   // GraphQL mutations
   const [createBillingItem] = useMutation(CreateBillingItemDocument, {
@@ -116,7 +117,7 @@ export function BillingItemForm({ itemId, preselectedClientId }: BillingItemForm
   });
 
   const clients = clientsData?.clients || [];
-  const billingPlans = billingPlansData?.billingPlans || [];
+  const services = servicesData?.services || [];
 
   const handleInputChange = (field: keyof BillingItemFormData, value: string | number) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -169,8 +170,7 @@ export function BillingItemForm({ itemId, preselectedClientId }: BillingItemForm
         unitPrice: formData.unitPrice,
         quantity: formData.quantity,
         clientId: formData.clientId,
-        billingPlanId: formData.billingPlanId || null, // Legacy support
-        serviceId: formData.serviceId || null, // Future services support
+        serviceId: formData.serviceId || null,
         serviceName: formData.serviceName || null,
         notes: formData.notes || null,
         status: 'draft',
@@ -216,10 +216,10 @@ export function BillingItemForm({ itemId, preselectedClientId }: BillingItemForm
         <CardContent className="space-y-4">
           {/* Service Selection */}
           <div className="space-y-2">
-            <Label>Service Selection</Label>
+            <Label>Service Item Selection</Label>
             <div className="flex gap-2">
               <div className="flex-1">
-                {formData.billingPlanId ? (
+                {formData.serviceId ? (
                   <Card className="border-green-200 bg-green-50">
                     <CardContent className="p-3">
                       <div className="flex items-center justify-between">
@@ -234,7 +234,7 @@ export function BillingItemForm({ itemId, preselectedClientId }: BillingItemForm
                           variant="outline"
                           size="sm"
                           onClick={() => {
-                            setFormData(prev => ({ ...prev, billingPlanId: '', serviceName: '' }));
+                            setFormData(prev => ({ ...prev, serviceId: '', serviceName: '' }));
                           }}
                         >
                           <X className="w-4 h-4" />
@@ -245,31 +245,36 @@ export function BillingItemForm({ itemId, preselectedClientId }: BillingItemForm
                 ) : (
                   <div className="flex gap-2">
                     <Select
-                      value={formData.billingPlanId || ''}
+                      value={formData.serviceId || undefined}
                       onValueChange={(value) => {
-                        const plan = billingPlans.find(p => p.id === value);
-                        if (plan) {
+                        const service = services.find(s => s.id === value);
+                        if (service) {
                           setFormData(prev => ({
                             ...prev,
-                            billingPlanId: plan.id,
-                            serviceName: plan.name,
-                            description: plan.description || prev.description,
-                            unitPrice: plan.standardRate || prev.unitPrice
+                            serviceId: service.id,
+                            serviceName: service.name,
+                            description: service.description || prev.description,
+                            unitPrice: service.defaultRate || prev.unitPrice
                           }));
                         }
                       }}
-                      disabled={billingPlansLoading}
+                      disabled={servicesLoading}
                     >
                       <SelectTrigger className="flex-1">
-                        <SelectValue placeholder={billingPlansLoading ? "Loading plans..." : "Select billing plan..."} />
+                        <SelectValue placeholder={servicesLoading ? "Loading services..." : "Select service item..."} />
                       </SelectTrigger>
                       <SelectContent>
-                        {billingPlans.map((plan) => (
-                          <SelectItem key={plan.id} value={plan.id}>
+                        {services.map((service) => (
+                          <SelectItem key={service.id} value={service.id}>
                             <div className="flex items-center justify-between w-full">
-                              <span>{plan.name}</span>
+                              <div>
+                                <span>{service.name}</span>
+                                {service.category && (
+                                  <span className="text-xs text-gray-400 ml-2">({service.category})</span>
+                                )}
+                              </div>
                               <span className="text-sm text-gray-500 ml-2">
-                                {formatCurrency(plan.standardRate)} {plan.currency}
+                                {formatCurrency(service.defaultRate || 0)} {service.currency || 'AUD'}
                               </span>
                             </div>
                           </SelectItem>

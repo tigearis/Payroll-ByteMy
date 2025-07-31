@@ -31,12 +31,12 @@ interface Payroll {
     id: string;
     name: string;
   };
-  primaryConsultantUser?: {
+  primaryConsultant?: {
     id: string;
     name: string;
     email?: string;
   };
-  managerUser?: {
+  manager?: {
     id: string;
     name: string;
     email?: string;
@@ -185,7 +185,7 @@ export function PayrollsTableUnified({
         count ? cellRenderers.count(count, "employee") : "—",
     },
     {
-      key: "primaryConsultantUser",
+      key: "primaryConsultant",
       label: "Primary Consultant",
       sortable: false,
       defaultVisible: true,
@@ -202,7 +202,7 @@ export function PayrollsTableUnified({
     },
     // Hidden columns that can be toggled on if needed
     {
-      key: "managerUser",
+      key: "manager",
       label: "Manager",
       sortable: false,
       defaultVisible: false,

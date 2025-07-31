@@ -2,20 +2,20 @@
 # Security Classification: MEDIUM - Employee scheduling and time management
 
 # Core CRUD operations with capacity fields
-mutation CreateWorkSchedule($object: workScheduleInsertInput!) {
-  insertWorkSchedule(object: $object) {
+mutation CreateWorkSchedule($object: WorkScheduleInsertInput!) {
+  insertWorkScheduleOne(object: $object) {
     ...WorkScheduleComplete
   }
 }
 
-mutation UpdateWorkSchedule($id: uuid!, $set: workScheduleSetInput!) {
-  updateWorkScheduleById(pkColumns: { id: $id }, _set: $set) {
+mutation UpdateWorkSchedule($id: uuid!, $set: WorkScheduleSetInput!) {
+  updateWorkScheduleByPk(pkColumns: { id: $id }, _set: $set) {
     ...WorkScheduleComplete
   }
 }
 
 mutation DeleteWorkSchedule($id: uuid!) {
-  deleteWorkScheduleById(id: $id) {
+  deleteWorkScheduleByPk(id: $id) {
     id
     userId
     workDay
@@ -34,7 +34,7 @@ mutation UpdateWorkScheduleHours(
   $payrollCapacityHours: numeric
   $usesDefaultAdminTime: Boolean
 ) {
-  bulkUpdateWorkSchedule(
+  updateWorkSchedule(
     where: { userId: { _eq: $userId }, workDay: { _eq: $workDay } }
     _set: {
       workHours: $workHours
@@ -52,8 +52,8 @@ mutation UpdateWorkScheduleHours(
 }
 
 # Bulk operations with capacity
-mutation BulkCreateWorkSchedule($schedules: [workScheduleInsertInput!]!) {
-  bulkInsertWorkSchedule(objects: $schedules) {
+mutation BulkCreateWorkSchedule($schedules: [WorkScheduleInsertInput!]!) {
+  insertWorkSchedule(objects: $schedules) {
     returning {
       ...WorkScheduleComplete
     }
@@ -68,7 +68,7 @@ mutation BulkUpdateWorkScheduleCapacity(
   $adminTimeHours: numeric!
   $payrollCapacityHours: numeric!
 ) {
-  bulkUpdateWorkSchedule(
+  updateWorkSchedule(
     where: { userId: { _in: $userIds }, workDay: { _eq: $workDay } }
     _set: {
       workHours: $workHours
@@ -91,7 +91,7 @@ mutation UpdateAdminTime(
   $adminTimeHours: numeric!
   $usesDefaultAdminTime: Boolean!
 ) {
-  bulkUpdateWorkSchedule(
+  updateWorkSchedule(
     where: { userId: { _eq: $userId }, workDay: { _eq: $workDay } }
     _set: {
       adminTimeHours: $adminTimeHours
@@ -115,7 +115,7 @@ mutation UpsertWorkSchedule(
   $payrollCapacityHours: numeric!
   $usesDefaultAdminTime: Boolean!
 ) {
-  insertWorkSchedule(
+  insertWorkScheduleOne(
     object: {
       userId: $userId
       workDay: $workDay
@@ -143,7 +143,7 @@ mutation UpdateUserDefaultAdminTime(
   $userId: uuid!
   $defaultAdminTimePercentage: numeric!
 ) {
-  updateUserById(
+  updateUsersByPk(
     pkColumns: { id: $userId }
     _set: {
       defaultAdminTimePercentage: $defaultAdminTimePercentage
@@ -166,7 +166,7 @@ mutation AssignPayrollToConsultant(
   $backupConsultantUserId: uuid
   $managerUserId: uuid
 ) {
-  updatePayrollById(
+  updatePayrollsByPk(
     pkColumns: { id: $payrollId }
     _set: {
       primaryConsultantUserId: $primaryConsultantUserId
@@ -192,7 +192,7 @@ mutation AssignPayrollToConsultant(
       lastName
       computedName
     }
-    manager {
+    assignedManager {
       id
       firstName
       lastName
@@ -208,7 +208,7 @@ mutation BulkAssignPayrolls(
   $backupConsultantUserId: uuid
   $managerUserId: uuid
 ) {
-  bulkUpdatePayrolls(
+  updatePayrolls(
     where: { id: { _in: $payrollIds } }
     _set: {
       primaryConsultantUserId: $primaryConsultantUserId
@@ -235,7 +235,7 @@ mutation BulkAssignPayrolls(
         lastName
         computedName
       }
-      manager {
+      assignedManager {
         id
         firstName
         lastName
@@ -251,7 +251,7 @@ mutation UnassignPayrollConsultant(
   $payrollId: uuid!
   $removeRole: String! # "primary", "backup", or "manager"
 ) {
-  updatePayrollById(
+  updatePayrollsByPk(
     pkColumns: { id: $payrollId }
     _set: {
       primaryConsultantUserId: null

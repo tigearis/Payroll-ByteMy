@@ -3,7 +3,7 @@
 # SOC2 Compliance: Row-level security and audit logging enforced
 
 # Core payroll queries
-query GetPayrolls($limit: Int = 50, $offset: Int = 0, $where: payrollsBoolExp) {
+query GetPayrolls($limit: Int = 50, $offset: Int = 0, $where: PayrollsBoolExp) {
   payrolls(
     limit: $limit
     offset: $offset
@@ -20,19 +20,19 @@ query GetPayrolls($limit: Int = 50, $offset: Int = 0, $where: payrollsBoolExp) {
 }
 
 query GetPayrollById($id: uuid!) {
-  payrollById(id: $id) {
+  payrollsByPk(id: $id) {
     ...PayrollWithAllRelations
   }
 }
 
 query GetPayrollBasic($id: uuid!) {
-  payrollById(id: $id) {
+  payrollsByPk(id: $id) {
     ...PayrollBasic
   }
 }
 
 query GetPayrollForEdit($id: uuid!) {
-  payrollById(id: $id) {
+  payrollsByPk(id: $id) {
     ...PayrollDetailed
     client {
       id
@@ -67,7 +67,7 @@ query GetPayrollForEdit($id: uuid!) {
       email
       role
     }
-    manager {
+    assignedManager {
       id
       firstName
       lastName
@@ -197,8 +197,8 @@ query GetPayrollDashboardStats {
 query GetPayrollDashboardComplete(
   $limit: Int = 20
   $offset: Int = 0
-  $where: payrollsBoolExp = {}
-  $orderBy: [payrollsOrderBy!] = [{ updatedAt: DESC }]
+  $where: PayrollsBoolExp = {}
+  $orderBy: [PayrollsOrderBy!] = [{ updatedAt: DESC }]
 ) {
   # Main payroll data with ALL relationships fetched in single query
   payrolls(
@@ -246,7 +246,7 @@ query GetPayrollDashboardComplete(
       isActive
     }
     
-    manager {
+    assignedManager {
       id
       firstName
       lastName
@@ -479,7 +479,7 @@ query GetPayrollDateTypes {
 # Since: Priority 2 optimization (2025-06-27) | Classification: SOC2_COMPLIANT
 query GetPayrollDetailComplete($id: uuid!) {
   # Main payroll data with all relations
-  payrollById(id: $id) {
+  payrollsByPk(id: $id) {
     ...PayrollDetailed
     client {
       id
@@ -511,7 +511,7 @@ query GetPayrollDetailComplete($id: uuid!) {
       email
       role
     }
-    manager {
+    assignedManager {
       id
       firstName
       lastName
@@ -584,9 +584,9 @@ query GetUpcomingPayrollDates($limit: Int = 20) {
     adjustedEftDate
     processingDate
     notes
-    payrollAssignment {
+    payrollAssignments {
       payrollDate {
-        relatedPayroll {
+        payroll {
           id
           name
           status
@@ -617,9 +617,9 @@ query GetPayrollDatesInRange(
     adjustedEftDate
     processingDate
     notes
-    payrollAssignment {
+    payrollAssignments {
       payrollDate {
-        relatedPayroll {
+        payroll {
           id
           name
           client {
@@ -663,7 +663,7 @@ query GetPayrollsNeedingAttention {
       lastName
       computedName
     }
-    manager {
+    assignedManager {
       id
       firstName
       lastName
@@ -679,7 +679,7 @@ query GetPayrollsForBulkUpdate($ids: [uuid!]!) {
   }
 }
 
-query GetPayrollsForBulkAssignment($where: payrollsBoolExp!) {
+query GetPayrollsForBulkAssignment($where: PayrollsBoolExp!) {
   payrolls(where: $where) {
     ...PayrollForAssignment
   }
@@ -689,7 +689,7 @@ query GetPayrollsForBulkAssignment($where: payrollsBoolExp!) {
 query GetPayrollsForAudit(
   $limit: Int = 100
   $offset: Int = 0
-  $where: payrollsBoolExp = {}
+  $where: PayrollsBoolExp = {}
 ) {
   payrolls(
     limit: $limit
@@ -722,8 +722,8 @@ query GetPayrollActivity($payrollId: uuid!, $limit: Int = 50) {
 query GetPayrollsPaginated(
   $limit: Int = 20
   $offset: Int = 0
-  $where: payrollsBoolExp = {}
-  $orderBy: [payrollsOrderBy!] = [{ createdAt: DESC }]
+  $where: PayrollsBoolExp = {}
+  $orderBy: [PayrollsOrderBy!] = [{ createdAt: DESC }]
 ) {
   payrolls(
     limit: $limit
@@ -825,13 +825,13 @@ query GeneratePayrollDates(
   $endDate: date!
   $maxDates: Int = 100
 ) {
-  generatePayrollDates(
-    args: {
-      p_payroll_id: $payrollId
-      p_start_date: $startDate
-      p_end_date: $endDate
-      p_max_dates: $maxDates
+  payrollDates(
+    where: {
+      payrollId: { _eq: $payrollId }
+      originalEftDate: { _gte: $startDate, _lte: $endDate }
     }
+    limit: $maxDates
+    orderBy: { originalEftDate: ASC }
   ) {
     id
     originalEftDate
@@ -851,13 +851,13 @@ query GeneratePayrollDatesQuery(
   $endDate: date!
   $maxDates: Int = 100
 ) {
-  generatePayrollDates(
-    args: {
-      p_payroll_id: $payrollId
-      p_start_date: $startDate
-      p_end_date: $endDate
-      p_max_dates: $maxDates
+  payrollDates(
+    where: {
+      payrollId: { _eq: $payrollId }
+      originalEftDate: { _gte: $startDate, _lte: $endDate }
     }
+    limit: $maxDates
+    orderBy: { originalEftDate: ASC }
   ) {
     id
     originalEftDate
@@ -910,7 +910,7 @@ query GetUserUpcomingPayrolls($userId: uuid!, $limit: Int = 10) {
       computedName
       email
     }
-    manager {
+    assignedManager {
       id
       firstName
       lastName
@@ -952,7 +952,7 @@ query GetPayrollsByMonth($startDate: date!, $endDate: date!) {
       role
       isActive
     }
-    manager {
+    assignedManager {
       id
       firstName
       lastName
@@ -1014,8 +1014,8 @@ query GetPayrollsMissingDates {
 query GetPayrollsTableEnhanced(
   $limit: Int = 100
   $offset: Int = 0
-  $where: payrollsBoolExp = {}
-  $orderBy: [payrollsOrderBy!] = [{ name: ASC }]
+  $where: PayrollsBoolExp = {}
+  $orderBy: [PayrollsOrderBy!] = [{ name: ASC }]
 ) {
   payrolls(
     limit: $limit
@@ -1134,7 +1134,7 @@ query GeneratePayrollReport($startDate: date!, $endDate: date!) {
       lastName
       computedName
     }
-    manager {
+    assignedManager {
       id
       firstName
       lastName

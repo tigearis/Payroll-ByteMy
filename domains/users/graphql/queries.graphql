@@ -3,14 +3,14 @@
 # SOC2 Compliance: Strict access controls with audit logging
 
 # OPTIMIZED: Original query with N+1 problems fixed
-query GetUsers($limit: Int = 50, $offset: Int = 0, $where: usersBoolExp) {
+query GetUsers($limit: Int = 50, $offset: Int = 0, $where: UsersBoolExp) {
   users(limit: $limit, offset: $offset, where: $where, orderBy: { computedName: ASC }) {
     ...UserBase
     username
     image
     managerId
     # ✅ Fetch manager data to avoid N+1
-    managerUser {
+    manager {
       id
       firstName
       lastName
@@ -28,8 +28,8 @@ query GetUsers($limit: Int = 50, $offset: Int = 0, $where: usersBoolExp) {
 query GetStaffWithRelationsOptimized(
   $limit: Int = 50, 
   $offset: Int = 0, 
-  $where: usersBoolExp = { isStaff: { _eq: true }, isActive: { _eq: true } }
-  $orderBy: [usersOrderBy!] = [{ computedName: ASC }]
+  $where: UsersBoolExp = { isStaff: { _eq: true }, isActive: { _eq: true } }
+  $orderBy: [UsersOrderBy!] = [{ computedName: ASC }]
 ) {
   users(
     limit: $limit
@@ -53,7 +53,7 @@ query GetStaffWithRelationsOptimized(
     updatedAt
     
     # ✅ Manager data fetched in same query (eliminates N+1)
-    managerUser {
+    manager {
       id
       firstName
       lastName
@@ -75,7 +75,7 @@ query GetStaffWithRelationsOptimized(
     }
     
     # ✅ Key payroll assignments fetched efficiently (eliminates N+1)
-    primaryConsultantPayrolls(
+    primaryPayrollAssignments(
       where: { supersededDate: { _isNull: true } }
       limit: 5
       orderBy: { updatedAt: DESC }
@@ -97,7 +97,7 @@ query GetStaffWithRelationsOptimized(
     }
     
     # ✅ Backup assignments
-    backupConsultantPayrolls(
+    backupPayrollAssignments(
       where: { supersededDate: { _isNull: true } }
       limit: 3
       orderBy: { updatedAt: DESC }
@@ -112,7 +112,7 @@ query GetStaffWithRelationsOptimized(
     }
     
     # ✅ Work schedule data for capacity planning
-    userWorkSchedules(orderBy: { workDay: ASC }) {
+    workSchedules(orderBy: { workDay: ASC }) {
       id
       workDay
       workHours
@@ -183,7 +183,7 @@ query GetActiveUsers {
 }
 
 query GetUserById($id: uuid!) {
-  userById(id: $id) {
+  usersByPk(id: $id) {
     id
     firstName
     lastName
@@ -196,7 +196,7 @@ query GetUserById($id: uuid!) {
     isActive
     managerId
     clerkUserId
-    managerUser {
+    manager {
       id
       firstName
       lastName
@@ -219,7 +219,7 @@ query GetUserById($id: uuid!) {
 # Since: Priority 2 optimization (2025-06-27) | Classification: SOC2_CRITICAL
 query GetStaffDetailComplete($id: uuid!) {
   # Main user data
-  userById(id: $id) {
+  usersByPk(id: $id) {
     id
     firstName
     lastName
@@ -236,7 +236,7 @@ query GetStaffDetailComplete($id: uuid!) {
     updatedAt
 
     # Manager relationship
-    managerUser {
+    manager {
       id
       firstName
       lastName
@@ -257,31 +257,31 @@ query GetStaffDetailComplete($id: uuid!) {
     }
 
     # User skills
-    userSkills {
+    skills {
       skillName
       proficiencyLevel
     }
-  }
 
-  # User's effective permissions (combines GetUserEffectivePermissions)
-  userPermissions: userRoles(where: { userId: { _eq: $id } }) {
-    roleId
-    userId
-  }
+    # User's effective permissions (combines GetUserEffectivePermissions)
+    roleAssignments {
+      roleId
+      userId
+    }
 
-  # Permission overrides (combines GetUserPermissionOverrides)
-  permissionOverrides(where: { userId: { _eq: $id } }) {
-    id
-    resource
-    granted
-    reason
-    expiresAt
-    createdAt
-    createdBy
+    # Permission overrides (combines GetUserPermissionOverrides)
+    permissionOverrides {
+      id
+      resource
+      granted
+      reason
+      expiresAt
+      createdAt
+      createdBy
+    }
   }
 
   # Recent audit activity for this user
-  userActivity: auditLogs(
+  userActivity: auditAuditLog(
     where: { userId: { _eq: $id } }
     orderBy: { eventTime: DESC }
     limit: 10
@@ -346,7 +346,7 @@ query GetUserByEmail($email: String!) {
     isActive
     managerId
     clerkUserId
-    managerUser {
+    manager {
       id
       firstName
       lastName
@@ -378,7 +378,7 @@ query GetStaffList {
     isActive
     managerId
     clerkUserId
-    managerUser {
+    manager {
       id
       firstName
       lastName
@@ -390,7 +390,7 @@ query GetStaffList {
 }
 
 query GetStaffById($id: uuid!) {
-  userById(id: $id) {
+  usersByPk(id: $id) {
     id
     firstName
     lastName
@@ -426,7 +426,7 @@ query GetAllUsersList {
 }
 
 query GetUserProfile($id: uuid!) {
-  userById(id: $id) {
+  usersByPk(id: $id) {
     ...UserWithProfile
   }
 }
@@ -438,7 +438,7 @@ query GetUsersWithRoles {
 }
 
 query GetUserPermissions($id: uuid!) {
-  userById(id: $id) {
+  usersByPk(id: $id) {
     ...UserPermissionsInfo
   }
 }
@@ -494,7 +494,7 @@ query GetUserStats {
 
 # Authentication helper queries
 query GetUserSessionInfo($id: uuid!) {
-  userById(id: $id) {
+  usersByPk(id: $id) {
     id
     firstName
     lastName
@@ -507,7 +507,7 @@ query GetUserSessionInfo($id: uuid!) {
 
 # Extracted from inline GraphQL operations
 query GetCurrentUserDomain($currentUserId: uuid!) {
-  userById(id: $currentUserId) {
+  usersByPk(id: $currentUserId) {
     id
     firstName
     lastName
@@ -523,7 +523,7 @@ query GetCurrentUserDomain($currentUserId: uuid!) {
 }
 
 query GetUserRole($userId: uuid!) {
-  userById(id: $userId) {
+  usersByPk(id: $userId) {
     id
     role
     isStaff
@@ -532,7 +532,7 @@ query GetUserRole($userId: uuid!) {
 }
 
 query GetUserRoleFallback($userId: uuid!) {
-  userById(id: $userId) {
+  usersByPk(id: $userId) {
     id
     role
     isStaff
@@ -555,7 +555,7 @@ query GetUsersWithLimit($limit: Int = 10) {
 }
 
 query GetUserProfileSettings($id: uuid!) {
-  userById(id: $id) {
+  usersByPk(id: $id) {
     id
     firstName
     lastName
@@ -565,7 +565,7 @@ query GetUserProfileSettings($id: uuid!) {
     isStaff
     isActive
     clerkUserId
-    managerUser {
+    manager {
       id
       firstName
       lastName
@@ -580,7 +580,7 @@ query GetUserProfileSettings($id: uuid!) {
 query GetUsersWithFiltering(
   $limit: Int = 50
   $offset: Int = 0
-  $where: usersBoolExp
+  $where: UsersBoolExp
 ) {
   users(
     limit: $limit
@@ -600,7 +600,7 @@ query GetUsersWithFiltering(
     isActive
     managerId
     clerkUserId
-    managerUser {
+    manager {
       id
       firstName
       lastName
@@ -630,7 +630,7 @@ query GetDeveloperManagers {
 }
 
 query GetUserRoleSecure($userId: uuid!) {
-  userById(id: $userId) {
+  usersByPk(id: $userId) {
     id
     role
     isStaff
@@ -639,7 +639,7 @@ query GetUserRoleSecure($userId: uuid!) {
 }
 
 query GetUserRoleFallbackSecure($userId: uuid!) {
-  userById(id: $userId) {
+  usersByPk(id: $userId) {
     id
     role
     isStaff
@@ -651,7 +651,7 @@ query GetUserRoleFallbackSecure($userId: uuid!) {
 # Migrated from inline operations - Priority 1 fixes
 
 query GetUserProfileComplete($id: uuid!) {
-  userById(id: $id) {
+  usersByPk(id: $id) {
     id
     firstName
     lastName
@@ -668,7 +668,7 @@ query GetUserProfileComplete($id: uuid!) {
     createdAt
     updatedAt
     clerkUserId
-    managerUser {
+    manager {
       id
       firstName
       lastName
@@ -687,7 +687,7 @@ query GetUserProfileComplete($id: uuid!) {
       image
       isActive
     }
-    primaryConsultantPayrolls {
+    primaryPayrollAssignments {
       id
       name
       status
@@ -697,7 +697,7 @@ query GetUserProfileComplete($id: uuid!) {
       }
       employeeCount
     }
-    backupConsultantPayrolls {
+    backupPayrollAssignments {
       id
       name
       status
@@ -716,7 +716,7 @@ query GetUserProfileComplete($id: uuid!) {
       }
     }
     # Work schedules for this user
-    userWorkSchedules {
+    workSchedules {
       id
       workDay
       workHours
@@ -743,7 +743,7 @@ query GetUserProfileComplete($id: uuid!) {
 # User deletion queries - migrated from app/api/staff/delete/route.ts
 
 query GetUserForDeletion($id: uuid!) {
-  userById(id: $id) {
+  usersByPk(id: $id) {
     id
     firstName
     lastName
@@ -754,7 +754,7 @@ query GetUserForDeletion($id: uuid!) {
     isStaff
     isActive
     createdAt
-    managerUser {
+    manager {
       id
       firstName
       lastName
@@ -805,8 +805,8 @@ query GetCurrentUserRole($clerkUserId: String!) {
 query GetUsersPaginated(
   $limit: Int = 20
   $offset: Int = 0
-  $where: usersBoolExp = {}
-  $orderBy: [usersOrderBy!] = [{ computedName: ASC }]
+  $where: UsersBoolExp = {}
+  $orderBy: [UsersOrderBy!] = [{ computedName: ASC }]
 ) {
   users(
     limit: $limit
@@ -827,14 +827,14 @@ query GetUsersPaginated(
 query GetAllUsersPaginated(
   $limit: Int = 20
   $offset: Int = 0
-  $where: usersBoolExp = {}
-  $orderBy: [usersOrderBy!] = [{ computedName: ASC }]
+  $where: UsersBoolExp = {}
+  $orderBy: [UsersOrderBy!] = [{ computedName: ASC }]
 ) {
   users(limit: $limit, offset: $offset, where: $where, orderBy: $orderBy) {
     ...UserTableRow
   }
 
-  allUsersAggregate: usersAggregate(where: $where) {
+  allusersAggregate: usersAggregate(where: $where) {
     aggregate {
       count
     }
@@ -844,7 +844,7 @@ query GetAllUsersPaginated(
 query GetStaffPaginated(
   $limit: Int = 20
   $offset: Int = 0
-  $where: usersBoolExp = {}
+  $where: UsersBoolExp = {}
 ) {
   users(
     limit: $limit
@@ -860,7 +860,7 @@ query GetStaffPaginated(
   ) {
     ...UserListItem
     createdAt
-    managerUser {
+    manager {
       ...UserMinimal
     }
   }
@@ -904,7 +904,7 @@ query SearchUsersPaginated(
   ) {
     ...UserListItem
     createdAt
-    managerUser {
+    manager {
       ...UserMinimal
     }
   }
@@ -932,7 +932,7 @@ query SearchUsersPaginated(
 # Enhanced user queries migrated from /app/api/users/[id]/route.ts
 
 query GetUserByIdComplete($id: uuid!) {
-  userById(id: $id) {
+  usersByPk(id: $id) {
     id
     firstName
     lastName
@@ -944,7 +944,7 @@ query GetUserByIdComplete($id: uuid!) {
     isStaff
     managerId
     clerkUserId
-    managerUser {
+    manager {
       id
       firstName
       lastName
@@ -969,7 +969,7 @@ query GetUserByClerkIdComplete($clerkId: String!) {
     isStaff
     managerId
     clerkUserId
-    managerUser {
+    manager {
       id
       firstName
       lastName
@@ -984,7 +984,7 @@ query GetUserByClerkIdComplete($clerkId: String!) {
 # Migrated from app/api/staff/update-role/route.ts
 
 query GetUserClerkId($id: uuid!) {
-  userById(id: $id) {
+  usersByPk(id: $id) {
     id
     firstName
     lastName
@@ -1030,10 +1030,10 @@ query GetManagersQuickList {
 
 query GetUserCard($id: uuid!) {
   # Minimal user data for user cards and preview
-  userById(id: $id) {
+  usersByPk(id: $id) {
     ...UserSummary
     email
-    managerUser {
+    manager {
       ...UserMinimal
     }
   }
@@ -1041,17 +1041,17 @@ query GetUserCard($id: uuid!) {
 
 query GetUserAssignmentData($id: uuid!) {
   # Essential data for assignment views (payrolls, clients)
-  userById(id: $id) {
+  usersByPk(id: $id) {
     ...UserSummary
     email
-    activePayrollCount: primaryConsultantPayrollsAggregate(
+    activePayrollCount: primaryPayrollAssignmentsAggregate(
       where: { supersededDate: { _isNull: true } }
     ) {
       aggregate {
         count
       }
     }
-    backupPayrollCount: backupConsultantPayrollsAggregate(
+    backupPayrollCount: backupPayrollAssignmentsAggregate(
       where: { supersededDate: { _isNull: true } }
     ) {
       aggregate {
@@ -1063,9 +1063,9 @@ query GetUserAssignmentData($id: uuid!) {
 
 query GetUserWorkload($id: uuid!) {
   # Workload data without full details
-  userById(id: $id) {
+  usersByPk(id: $id) {
     ...UserSummary
-    primaryPayrolls: primaryConsultantPayrolls(
+    primaryPayrolls: primaryPayrollAssignments(
       where: { supersededDate: { _isNull: true } }
       limit: 10
     ) {
@@ -1076,7 +1076,7 @@ query GetUserWorkload($id: uuid!) {
         name
       }
     }
-    backupPayrolls: backupConsultantPayrolls(
+    backupPayrolls: backupPayrollAssignments(
       where: { supersededDate: { _isNull: true } }
       limit: 10
     ) {
@@ -1253,7 +1253,7 @@ query GetUsersByStatus(
 }
 
 query GetUserWithStatusDetails($userId: uuid!) {
-  userById(id: $userId) {
+  usersByPk(id: $userId) {
     id
     email
     firstName
@@ -1275,7 +1275,7 @@ query GetUserWithStatusDetails($userId: uuid!) {
 }
 
 query GetCurrentUserRoleForManagement($userId: uuid!) {
-  userById(id: $userId) {
+  usersByPk(id: $userId) {
     id
     role
   }

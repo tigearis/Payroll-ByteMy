@@ -2,7 +2,7 @@
 # Security Classification: MEDIUM - Employee leave and HR data
 # SOC2 Compliance: Personal data with privacy controls
 
-fragment LeaveCore on leave {
+fragment LeaveCore on Leave {
   id
   leaveType
   startDate
@@ -11,18 +11,18 @@ fragment LeaveCore on leave {
   userId
 }
 
-fragment LeaveBasic on leave {
+fragment LeaveBasic on Leave {
   ...LeaveCore
   reason
 }
 
-fragment LeaveDetailed on leave {
+fragment LeaveDetailed on Leave {
   ...LeaveBasic
 }
 
-fragment LeaveWithUser on leave {
+fragment LeaveWithUser on Leave {
   ...LeaveBasic
-  leaveUser {
+  employee {
     id
     firstName
     lastName
@@ -30,7 +30,7 @@ fragment LeaveWithUser on leave {
     email
     role
     position
-    managerUser {
+    manager {
       id
       firstName
       lastName
@@ -40,9 +40,9 @@ fragment LeaveWithUser on leave {
   }
 }
 
-fragment LeaveComplete on leave {
+fragment LeaveComplete on Leave {
   ...LeaveDetailed
-  leaveUser {
+  employee {
     id
     firstName
     lastName
@@ -50,7 +50,7 @@ fragment LeaveComplete on leave {
     email
     role
     position
-    managerUser {
+    manager {
       id
       firstName
       lastName
@@ -61,7 +61,7 @@ fragment LeaveComplete on leave {
 }
 
 # Performance-optimized fragments
-fragment LeaveSummary on leave {
+fragment LeaveSummary on Leave {
   id
   leaveType
   startDate
@@ -70,10 +70,10 @@ fragment LeaveSummary on leave {
   userId
 }
 
-fragment LeaveListItem on leave {
+fragment LeaveListItem on Leave {
   ...LeaveSummary
   reason
-  leaveUser {
+  employee {
     id
     firstName
     lastName
@@ -81,7 +81,7 @@ fragment LeaveListItem on leave {
     email
     role
     position
-    managerUser {
+    manager {
       id
       firstName
       lastName
@@ -91,13 +91,13 @@ fragment LeaveListItem on leave {
   }
 }
 
-fragment LeaveTableRow on leave {
+fragment LeaveTableRow on Leave {
   ...LeaveListItem
 }
 
-fragment LeaveDashboardCard on leave {
+fragment LeaveDashboardCard on Leave {
   ...LeaveSummary
-  leaveUser {
+  employee {
     id
     firstName
     lastName
@@ -105,13 +105,13 @@ fragment LeaveDashboardCard on leave {
   }
 }
 
-fragment LeaveCalendarItem on leave {
+fragment LeaveCalendarItem on Leave {
   id
   leaveType
   startDate
   endDate
   status
-  leaveUser {
+  employee {
     id
     firstName
     lastName
@@ -121,7 +121,7 @@ fragment LeaveCalendarItem on leave {
   }
 }
 
-fragment LeaveMinimal on leave {
+fragment LeaveMinimal on Leave {
   id
   leaveType
   startDate
@@ -131,39 +131,39 @@ fragment LeaveMinimal on leave {
 }
 
 # Status-specific fragments
-fragment PendingLeave on leave {
+fragment PendingLeave on Leave {
   ...LeaveWithUser
   # For pending approval requests
 }
 
-fragment ApprovedLeave on leave {
+fragment ApprovedLeave on Leave {
   ...LeaveBasic
   # For approved leave requests
 }
 
-fragment RejectedLeave on leave {
+fragment RejectedLeave on Leave {
   ...LeaveBasic
   # For rejected leave requests
 }
 
 # Type-specific fragments
-fragment SickLeave on leave {
+fragment SickLeave on Leave {
   ...LeaveDetailed
   # For sick leave with medical details
 }
 
-fragment VacationLeave on leave {
+fragment VacationLeave on Leave {
   ...LeaveBasic
   # For vacation/annual leave
 }
 
-fragment EmergencyLeave on leave {
+fragment EmergencyLeave on Leave {
   ...LeaveDetailed
   # For emergency leave with contact details
 }
 
 # Audit and compliance fragments
-fragment LeaveForAudit on leave {
+fragment LeaveForAudit on Leave {
   id
   leaveType
   startDate
@@ -173,7 +173,7 @@ fragment LeaveForAudit on leave {
   # Personal details excluded for audit privacy
 }
 
-fragment LeaveApprovalAudit on leave {
+fragment LeaveApprovalAudit on Leave {
   id
   leaveType
   startDate

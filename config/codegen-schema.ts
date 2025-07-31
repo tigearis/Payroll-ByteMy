@@ -1,13 +1,8 @@
 import type { CodegenConfig } from "@graphql-codegen/cli";
-import * as dotenv from "dotenv";
-import { resolve } from "path";
 
-// Load environment variables from .env.local
-dotenv.config({ path: resolve(process.cwd(), ".env.local") });
-
-// Load environment variables
-const HASURA_URL = "";
-const HASURA_SECRET = "";
+// Load environment variables or use constants
+const HASURA_URL = "https://hasura.bytemy.com.au/v1/graphql";
+const HASURA_SECRET = "3w+sHTuq8wQwddK4xyWO5LDeRH+anvJoFVyOMvtq8Lo=";
 
 const config: CodegenConfig = {
   schema: {
@@ -18,7 +13,6 @@ const config: CodegenConfig = {
     },
   },
   generates: {
-    // Generate schema file
     "./shared/schema/schema.graphql": {
       plugins: ["schema-ast"],
       config: {
@@ -26,7 +20,6 @@ const config: CodegenConfig = {
         commentDescriptions: true,
       },
     },
-    // Generate introspection JSON
     "./shared/schema/introspection.json": {
       plugins: ["introspection"],
       config: {

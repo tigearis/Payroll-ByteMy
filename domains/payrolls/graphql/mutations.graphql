@@ -12,8 +12,8 @@
 # Audit: All payroll creations automatically logged for SOC2 compliance
 # Side effects: Triggers audit log, may notify consultants, updates client dashboard stats
 # Since: Initial payroll system implementation | Classification: SOC2_COMPLIANT
-mutation CreatePayroll($object: payrollsInsertInput!) {
-  insertPayroll(object: $object) {
+mutation CreatePayroll($object: PayrollsInsertInput!) {
+  insertPayrollsOne(object: $object) {
     ...PayrollDetailed
     client {
       id
@@ -25,17 +25,11 @@ mutation CreatePayroll($object: payrollsInsertInput!) {
       lastName
       computedName
     }
-    manager {
-      id
-      firstName
-      lastName
-      computedName
-    }
   }
 }
 
-mutation UpdatePayroll($id: uuid!, $set: payrollsSetInput!) {
-  updatePayrollById(pkColumns: { id: $id }, _set: $set) {
+mutation UpdatePayroll($id: uuid!, $set: PayrollsSetInput!) {
+  updatePayrollsByPk(pkColumns: { id: $id }, _set: $set) {
     ...PayrollDetailed
     client {
       id
@@ -53,17 +47,11 @@ mutation UpdatePayroll($id: uuid!, $set: payrollsSetInput!) {
       lastName
       computedName
     }
-    manager {
-      id
-      firstName
-      lastName
-      computedName
-    }
   }
 }
 
 mutation DeletePayroll($id: uuid!) {
-  updatePayrollById(
+  updatePayrollsByPk(
     pkColumns: { id: $id }
     _set: { supersededDate: "now()" }
   ) {
@@ -72,7 +60,7 @@ mutation DeletePayroll($id: uuid!) {
 }
 
 mutation ReactivatePayroll($id: uuid!) {
-  updatePayrollById(
+  updatePayrollsByPk(
     pkColumns: { id: $id }
     _set: { supersededDate: null }
   ) {
@@ -82,7 +70,7 @@ mutation ReactivatePayroll($id: uuid!) {
 
 # Status management
 mutation UpdatePayrollStatus($id: uuid!, $status: payroll_status!) {
-  updatePayrollById(
+  updatePayrollsByPk(
     pkColumns: { id: $id }
     _set: { status: $status, updatedAt: "now()" }
   ) {
@@ -95,7 +83,7 @@ mutation UpdatePayrollStatus($id: uuid!, $status: payroll_status!) {
 }
 
 mutation ActivatePayroll($id: uuid!) {
-  updatePayrollById(
+  updatePayrollsByPk(
     pkColumns: { id: $id }
     _set: { status: "Active", updatedAt: "now()" }
   ) {
@@ -104,7 +92,7 @@ mutation ActivatePayroll($id: uuid!) {
 }
 
 mutation DeactivatePayroll($id: uuid!) {
-  updatePayrollById(
+  updatePayrollsByPk(
     pkColumns: { id: $id }
     _set: { status: "Inactive", updatedAt: "now()" }
   ) {
@@ -114,7 +102,7 @@ mutation DeactivatePayroll($id: uuid!) {
 
 # Assignment operations
 mutation AssignPrimaryConsultant($id: uuid!, $userId: uuid!) {
-  updatePayrollById(
+  updatePayrollsByPk(
     pkColumns: { id: $id }
     _set: { primaryConsultantUserId: $userId, updatedAt: "now()" }
   ) {
@@ -130,7 +118,7 @@ mutation AssignPrimaryConsultant($id: uuid!, $userId: uuid!) {
 }
 
 mutation AssignBackupConsultant($id: uuid!, $userId: uuid!) {
-  updatePayrollById(
+  updatePayrollsByPk(
     pkColumns: { id: $id }
     _set: { backupConsultantUserId: $userId, updatedAt: "now()" }
   ) {
@@ -146,12 +134,12 @@ mutation AssignBackupConsultant($id: uuid!, $userId: uuid!) {
 }
 
 mutation AssignManager($id: uuid!, $userId: uuid!) {
-  updatePayrollById(
+  updatePayrollsByPk(
     pkColumns: { id: $id }
     _set: { managerUserId: $userId, updatedAt: "now()" }
   ) {
     ...PayrollBasic
-    manager {
+    assignedManager {
       id
       firstName
       lastName
@@ -167,7 +155,7 @@ mutation UpdatePayrollAssignments(
   $backupConsultantUserId: uuid
   $managerUserId: uuid
 ) {
-  updatePayrollById(
+  updatePayrollsByPk(
     pkColumns: { id: $id }
     _set: {
       primaryConsultantUserId: $primaryConsultantUserId
@@ -191,7 +179,7 @@ mutation UpdatePayrollAssignments(
       computedName
       email
     }
-    manager {
+    assignedManager {
       id
       firstName
       lastName
@@ -205,10 +193,10 @@ mutation UpdatePayrollAssignments(
 mutation CreatePayrollVersion(
   $parentPayrollId: uuid!
   $versionReason: String!
-  $object: payrollsInsertInput!
+  $object: PayrollsInsertInput!
 ) {
   # First supersede the current version
-  updatePayrollById(
+  updatePayrollsByPk(
     pkColumns: { id: $parentPayrollId }
     _set: { supersededDate: "now()" }
   ) {
@@ -217,7 +205,7 @@ mutation CreatePayrollVersion(
   }
   
   # Then create the new version
-  insertPayroll(
+  insertPayrollsOne(
     object: $object
   ) {
     ...PayrollWithAllRelations
@@ -225,7 +213,7 @@ mutation CreatePayrollVersion(
 }
 
 mutation SupersedePayroll($id: uuid!) {
-  updatePayrollById(
+  updatePayrollsByPk(
     pkColumns: { id: $id }
     _set: { supersededDate: "now()" }
   ) {
@@ -234,8 +222,8 @@ mutation SupersedePayroll($id: uuid!) {
 }
 
 # Bulk operations
-mutation BulkUpdatePayrolls($where: payrollsBoolExp!, $set: payrollsSetInput!) {
-  bulkUpdatePayrolls(where: $where, _set: $set) {
+mutation BulkUpdatePayrolls($where: PayrollsBoolExp!, $set: PayrollsSetInput!) {
+  updatePayrolls(where: $where, _set: $set) {
     returning {
       ...PayrollBasic
     }
@@ -247,7 +235,7 @@ mutation BulkAssignConsultant(
   $payrollIds: [uuid!]!
   $primaryConsultantUserId: uuid!
 ) {
-  bulkUpdatePayrolls(
+  updatePayrolls(
     where: { id: { _in: $payrollIds } }
     _set: {
       primaryConsultantUserId: $primaryConsultantUserId
@@ -271,7 +259,7 @@ mutation BulkAssignManager(
   $payrollIds: [uuid!]!
   $managerUserId: uuid!
 ) {
-  bulkUpdatePayrolls(
+  updatePayrolls(
     where: { id: { _in: $payrollIds } }
     _set: {
       managerUserId: $managerUserId
@@ -280,7 +268,7 @@ mutation BulkAssignManager(
   ) {
     returning {
       ...PayrollBasic
-      manager {
+      assignedManager {
         id
         firstName
         lastName
@@ -295,7 +283,7 @@ mutation BulkUpdatePayrollStatus(
   $payrollIds: [uuid!]!
   $status: payroll_status!
 ) {
-  bulkUpdatePayrolls(
+  updatePayrolls(
     where: { id: { _in: $payrollIds } }
     _set: {
       status: $status
@@ -318,7 +306,7 @@ mutation UpdatePayrollConfiguration(
   $cycleId: uuid
   $dateTypeId: uuid
 ) {
-  updatePayrollById(
+  updatePayrollsByPk(
     pkColumns: { id: $id }
     _set: {
       payrollSystem: $payrollSystem
@@ -339,7 +327,7 @@ mutation UpdatePayrollDetails(
   $employeeCount: Int
   $goLiveDate: date
 ) {
-  updatePayrollById(
+  updatePayrollsByPk(
     pkColumns: { id: $id }
     _set: {
       name: $name
@@ -353,8 +341,8 @@ mutation UpdatePayrollDetails(
 }
 
 # Payroll dates management
-mutation CreatePayrollDate($object: payrollDatesInsertInput!) {
-  insertPayrollDate(object: $object) {
+mutation CreatePayrollDate($object: PayrollDatesInsertInput!) {
+  insertPayrollDatesOne(object: $object) {
     id
     originalEftDate
     adjustedEftDate
@@ -366,8 +354,8 @@ mutation CreatePayrollDate($object: payrollDatesInsertInput!) {
   }
 }
 
-mutation UpdatePayrollDate($id: uuid!, $set: payrollDatesSetInput!) {
-  updatePayrollDateById(pkColumns: { id: $id }, _set: $set) {
+mutation UpdatePayrollDate($id: uuid!, $set: PayrollDatesSetInput!) {
+  updatePayrollDatesByPk(pkColumns: { id: $id }, _set: $set) {
     id
     originalEftDate
     adjustedEftDate
@@ -379,7 +367,7 @@ mutation UpdatePayrollDate($id: uuid!, $set: payrollDatesSetInput!) {
 }
 
 mutation DeletePayrollDate($id: uuid!) {
-  deletePayrollDateById(id: $id) {
+  deletePayrollDatesByPk(id: $id) {
     id
     originalEftDate
     adjustedEftDate
@@ -388,7 +376,7 @@ mutation DeletePayrollDate($id: uuid!) {
 }
 
 mutation UpdatePayrollDateNotes($id: uuid!, $notes: String) {
-  updatePayrollDateById(
+  updatePayrollDatesByPk(
     pkColumns: { id: $id }
     _set: { notes: $notes, updatedAt: "now()" }
   ) {
@@ -400,8 +388,8 @@ mutation UpdatePayrollDateNotes($id: uuid!, $notes: String) {
   }
 }
 
-mutation BulkCreatePayrollDates($objects: [payrollDatesInsertInput!]!) {
-  bulkInsertPayrollDates(objects: $objects) {
+mutation BulkCreatePayrollDates($objects: [PayrollDatesInsertInput!]!) {
+  insertPayrollDates(objects: $objects) {
     returning {
       id
       originalEftDate
@@ -414,14 +402,14 @@ mutation BulkCreatePayrollDates($objects: [payrollDatesInsertInput!]!) {
 }
 
 mutation BulkDeletePayrollDates($payrollId: uuid!) {
-  bulkDeletePayrollDates(where: { payrollId: { _eq: $payrollId } }) {
+  deletePayrollDates(where: { payrollId: { _eq: $payrollId } }) {
     affectedRows
   }
 }
 
 # Payroll cycle management
-mutation CreatePayrollCycle($object: payrollCyclesInsertInput!) {
-  insertPayrollCycle(object: $object) {
+mutation CreatePayrollCycle($object: PayrollCyclesInsertInput!) {
+  insertPayrollCyclesOne(object: $object) {
     id
     name
     description
@@ -429,8 +417,8 @@ mutation CreatePayrollCycle($object: payrollCyclesInsertInput!) {
   }
 }
 
-mutation UpdatePayrollCycle($id: uuid!, $set: payrollCyclesSetInput!) {
-  updatePayrollCycleById(pkColumns: { id: $id }, _set: $set) {
+mutation UpdatePayrollCycle($id: uuid!, $set: PayrollCyclesSetInput!) {
+  updatePayrollCyclesByPk(pkColumns: { id: $id }, _set: $set) {
     id
     name
     description
@@ -439,15 +427,15 @@ mutation UpdatePayrollCycle($id: uuid!, $set: payrollCyclesSetInput!) {
 }
 
 mutation DeletePayrollCycle($id: uuid!) {
-  deletePayrollCycleById(id: $id) {
+  deletePayrollCyclesByPk(id: $id) {
     id
     name
   }
 }
 
 # Payroll date type management
-mutation CreatePayrollDateType($object: payrollDateTypesInsertInput!) {
-  insertPayrollDateType(object: $object) {
+mutation CreatePayrollDateType($object: PayrollDateTypesInsertInput!) {
+  insertPayrollDateTypesOne(object: $object) {
     id
     name
     description
@@ -455,8 +443,8 @@ mutation CreatePayrollDateType($object: payrollDateTypesInsertInput!) {
   }
 }
 
-mutation UpdatePayrollDateType($id: uuid!, $set: payrollDateTypesSetInput!) {
-  updatePayrollDateTypeById(pkColumns: { id: $id }, _set: $set) {
+mutation UpdatePayrollDateType($id: uuid!, $set: PayrollDateTypesSetInput!) {
+  updatePayrollDateTypesByPk(pkColumns: { id: $id }, _set: $set) {
     id
     name
     description
@@ -465,7 +453,7 @@ mutation UpdatePayrollDateType($id: uuid!, $set: payrollDateTypesSetInput!) {
 }
 
 mutation DeletePayrollDateType($id: uuid!) {
-  deletePayrollDateTypeById(id: $id) {
+  deletePayrollDateTypesByPk(id: $id) {
     id
     name
   }
@@ -495,7 +483,7 @@ mutation ProcessPayrollBatch(
   $payrollIds: [uuid!]!
   $processedBy: uuid!
 ) {
-  bulkUpdatePayrolls(
+  updatePayrolls(
     where: { id: { _in: $payrollIds } }
     _set: {
       status: "Processing"
@@ -517,7 +505,7 @@ mutation ApprovePayrollBatch(
   $payrollIds: [uuid!]!
   $approvedBy: uuid!
 ) {
-  bulkUpdatePayrolls(
+  updatePayrolls(
     where: { 
       id: { _in: $payrollIds }
       status: { _eq: "Processing" }

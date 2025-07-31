@@ -3,16 +3,16 @@
 # SOC2 Compliance: All mutations logged with audit trail
 
 # Core CRUD operations
-mutation CreateLeave($object: leaveInsertInput!) {
-  insertLeave(object: $object) {
+mutation CreateLeave($object: LeaveInsertInput!) {
+  insertLeaveOne(object: $object) {
     ...LeaveDetailed
-    leaveUser {
+    employee {
       id
       firstName
       lastName
       computedName
       email
-      managerUser {
+      manager {
         id
         firstName
         lastName
@@ -23,10 +23,10 @@ mutation CreateLeave($object: leaveInsertInput!) {
   }
 }
 
-mutation UpdateLeave($id: uuid!, $set: leaveSetInput!) {
-  updateLeaveById(pkColumns: { id: $id }, _set: $set) {
+mutation UpdateLeave($id: uuid!, $set: LeaveSetInput!) {
+  updateLeaveByPk(pkColumns: { id: $id }, _set: $set) {
     ...LeaveDetailed
-    leaveUser {
+    employee {
       id
       firstName
       lastName
@@ -37,7 +37,7 @@ mutation UpdateLeave($id: uuid!, $set: leaveSetInput!) {
 }
 
 mutation DeleteLeave($id: uuid!) {
-  deleteLeaveById(id: $id) {
+  deleteLeaveByPk(id: $id) {
     id
     leaveType
     startDate
@@ -47,14 +47,14 @@ mutation DeleteLeave($id: uuid!) {
 
 # Quick create mutations for common leave types
 mutation CreateAnnualLeave(
-  $userId: uuid!
+  $employeeId: uuid!
   $startDate: date!
   $endDate: date!
   $reason: String
 ) {
-  insertLeave(
+  insertLeaveOne(
     object: {
-      userId: $userId
+      userId: $employeeId
       startDate: $startDate
       endDate: $endDate
       leaveType: "Annual"
@@ -63,7 +63,7 @@ mutation CreateAnnualLeave(
     }
   ) {
     ...LeaveBasic
-    leaveUser {
+    employee {
       id
       firstName
       lastName
@@ -74,14 +74,14 @@ mutation CreateAnnualLeave(
 }
 
 mutation CreateSickLeave(
-  $userId: uuid!
+  $employeeId: uuid!
   $startDate: date!
   $endDate: date!
   $reason: String
 ) {
-  insertLeave(
+  insertLeaveOne(
     object: {
-      userId: $userId
+      userId: $employeeId
       startDate: $startDate
       endDate: $endDate
       leaveType: "Sick"
@@ -90,7 +90,7 @@ mutation CreateSickLeave(
     }
   ) {
     ...LeaveBasic
-    leaveUser {
+    employee {
       id
       firstName
       lastName
@@ -101,14 +101,14 @@ mutation CreateSickLeave(
 }
 
 mutation CreateUnpaidLeave(
-  $userId: uuid!
+  $employeeId: uuid!
   $startDate: date!
   $endDate: date!
   $reason: String
 ) {
-  insertLeave(
+  insertLeaveOne(
     object: {
-      userId: $userId
+      userId: $employeeId
       startDate: $startDate
       endDate: $endDate
       leaveType: "Unpaid"
@@ -117,7 +117,7 @@ mutation CreateUnpaidLeave(
     }
   ) {
     ...LeaveBasic
-    leaveUser {
+    employee {
       id
       firstName
       lastName
@@ -128,14 +128,14 @@ mutation CreateUnpaidLeave(
 }
 
 mutation CreateOtherLeave(
-  $userId: uuid!
+  $employeeId: uuid!
   $startDate: date!
   $endDate: date!
   $reason: String!
 ) {
-  insertLeave(
+  insertLeaveOne(
     object: {
-      userId: $userId
+      userId: $employeeId
       startDate: $startDate
       endDate: $endDate
       leaveType: "Other"
@@ -144,7 +144,7 @@ mutation CreateOtherLeave(
     }
   ) {
     ...LeaveBasic
-    leaveUser {
+    employee {
       id
       firstName
       lastName
@@ -156,12 +156,12 @@ mutation CreateOtherLeave(
 
 # Status management mutations
 mutation ApproveLeave($id: uuid!) {
-  updateLeaveById(
+  updateLeaveByPk(
     pkColumns: { id: $id }
     _set: { status: Approved }
   ) {
     ...LeaveBasic
-    leaveUser {
+    employee {
       id
       firstName
       lastName
@@ -172,12 +172,12 @@ mutation ApproveLeave($id: uuid!) {
 }
 
 mutation RejectLeave($id: uuid!) {
-  updateLeaveById(
+  updateLeaveByPk(
     pkColumns: { id: $id }
     _set: { status: Rejected }
   ) {
     ...LeaveBasic
-    leaveUser {
+    employee {
       id
       firstName
       lastName
@@ -188,7 +188,7 @@ mutation RejectLeave($id: uuid!) {
 }
 
 mutation SetLeavePending($id: uuid!) {
-  updateLeaveById(
+  updateLeaveByPk(
     pkColumns: { id: $id }
     _set: { status: Pending }
   ) {
@@ -198,7 +198,7 @@ mutation SetLeavePending($id: uuid!) {
 
 # Bulk operations
 mutation BulkApproveLeave($leaveIds: [uuid!]!) {
-  bulkUpdateLeave(
+  updateLeave(
     where: { id: { _in: $leaveIds } }
     _set: { status: Approved }
   ) {
@@ -210,7 +210,7 @@ mutation BulkApproveLeave($leaveIds: [uuid!]!) {
 }
 
 mutation BulkRejectLeave($leaveIds: [uuid!]!) {
-  bulkUpdateLeave(
+  updateLeave(
     where: { id: { _in: $leaveIds } }
     _set: { status: Rejected }
   ) {
@@ -222,7 +222,7 @@ mutation BulkRejectLeave($leaveIds: [uuid!]!) {
 }
 
 mutation BulkDeleteLeave($leaveIds: [uuid!]!) {
-  bulkDeleteLeave(where: { id: { _in: $leaveIds } }) {
+  deleteLeave(where: { id: { _in: $leaveIds } }) {
     affectedRows
     returning {
       id
@@ -241,7 +241,7 @@ mutation UpdateLeaveDetails(
   $leaveType: String
   $reason: String
 ) {
-  updateLeaveById(
+  updateLeaveByPk(
     pkColumns: { id: $id }
     _set: {
       startDate: $startDate
@@ -251,7 +251,7 @@ mutation UpdateLeaveDetails(
     }
   ) {
     ...LeaveBasic
-    leaveUser {
+    employee {
       id
       firstName
       lastName
@@ -266,7 +266,7 @@ mutation UpdateLeaveDates(
   $startDate: date!
   $endDate: date!
 ) {
-  updateLeaveById(
+  updateLeaveByPk(
     pkColumns: { id: $id }
     _set: {
       startDate: $startDate
@@ -278,7 +278,7 @@ mutation UpdateLeaveDates(
 }
 
 mutation UpdateLeaveType($id: uuid!, $leaveType: String!) {
-  updateLeaveById(
+  updateLeaveByPk(
     pkColumns: { id: $id }
     _set: { leaveType: $leaveType }
   ) {
@@ -287,7 +287,7 @@ mutation UpdateLeaveType($id: uuid!, $leaveType: String!) {
 }
 
 mutation UpdateLeaveReason($id: uuid!, $reason: String) {
-  updateLeaveById(
+  updateLeaveByPk(
     pkColumns: { id: $id }
     _set: { reason: $reason }
   ) {
@@ -297,12 +297,12 @@ mutation UpdateLeaveReason($id: uuid!, $reason: String) {
 
 # Administrative operations
 mutation CancelLeave($id: uuid!) {
-  deleteLeaveById(id: $id) {
+  deleteLeaveByPk(id: $id) {
     id
     leaveType
     startDate
     endDate
-    leaveUser {
+    employee {
       id
       firstName
       lastName
@@ -313,12 +313,12 @@ mutation CancelLeave($id: uuid!) {
 }
 
 mutation TransferLeave($id: uuid!, $newUserId: uuid!) {
-  updateLeaveById(
+  updateLeaveByPk(
     pkColumns: { id: $id }
     _set: { userId: $newUserId }
   ) {
     ...LeaveBasic
-    leaveUser {
+    employee {
       id
       firstName
       lastName
@@ -335,7 +335,7 @@ mutation CreateMyLeave(
   $leaveType: String!
   $reason: String
 ) {
-  insertLeave(
+  insertLeaveOne(
     object: {
       startDate: $startDate
       endDate: $endDate
@@ -345,7 +345,7 @@ mutation CreateMyLeave(
     }
   ) {
     ...LeaveBasic
-    leaveUser {
+    employee {
       id
       firstName
       lastName
@@ -362,7 +362,7 @@ mutation UpdateMyLeave(
   $leaveType: String
   $reason: String
 ) {
-  updateLeaveById(
+  updateLeaveByPk(
     pkColumns: { id: $id }
     _set: {
       startDate: $startDate
@@ -376,7 +376,7 @@ mutation UpdateMyLeave(
 }
 
 mutation CancelMyLeave($id: uuid!) {
-  deleteLeaveById(id: $id) {
+  deleteLeaveByPk(id: $id) {
     id
     leaveType
     startDate
@@ -386,15 +386,15 @@ mutation CancelMyLeave($id: uuid!) {
 
 # Manager leave creation mutations
 mutation CreateLeaveForEmployee(
-  $userId: uuid!
+  $employeeId: uuid!
   $startDate: date!
   $endDate: date!
   $leaveType: String!
   $reason: String
 ) {
-  insertLeave(
+  insertLeaveOne(
     object: {
-      userId: $userId
+      userId: $employeeId
       startDate: $startDate
       endDate: $endDate
       leaveType: $leaveType
@@ -403,14 +403,14 @@ mutation CreateLeaveForEmployee(
     }
   ) {
     ...LeaveDetailed
-    leaveUser {
+    employee {
       id
       firstName
       lastName
       computedName
       email
       role
-      managerUser {
+      manager {
         id
         firstName
         lastName
@@ -423,15 +423,15 @@ mutation CreateLeaveForEmployee(
 }
 
 mutation CreatePendingLeaveForEmployee(
-  $userId: uuid!
+  $employeeId: uuid!
   $startDate: date!
   $endDate: date!
   $leaveType: String!
   $reason: String
 ) {
-  insertLeave(
+  insertLeaveOne(
     object: {
-      userId: $userId
+      userId: $employeeId
       startDate: $startDate
       endDate: $endDate
       leaveType: $leaveType
@@ -440,14 +440,14 @@ mutation CreatePendingLeaveForEmployee(
     }
   ) {
     ...LeaveDetailed
-    leaveUser {
+    employee {
       id
       firstName
       lastName
       computedName
       email
       role
-      managerUser {
+      manager {
         id
         firstName
         lastName

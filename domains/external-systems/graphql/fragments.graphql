@@ -2,7 +2,7 @@
 # Security Classification: MEDIUM - Integration and configuration data
 # SOC2 Compliance: Third-party system data with security controls
 
-fragment ExternalSystemCore on externalSystems {
+fragment ExternalSystemCore on ExternalSystems {
   id
   name
   description
@@ -11,41 +11,51 @@ fragment ExternalSystemCore on externalSystems {
   updatedAt
 }
 
-fragment ExternalSystemBasic on externalSystems {
+fragment ExternalSystemBasic on ExternalSystems {
   ...ExternalSystemCore
   url
 }
 
-fragment ExternalSystemDetailed on externalSystems {
+fragment ExternalSystemDetailed on ExternalSystems {
   ...ExternalSystemBasic
 }
 
-fragment ExternalSystemWithClients on externalSystems {
+fragment ExternalSystemWithClients on ExternalSystems {
   ...ExternalSystemBasic
   clientExternalSystems {
     id
     clientId
-    externalSystemId
+    externalSystem {
+    id
+    name
+    description
+    url
+  }
     systemClientId
     createdAt
     updatedAt
-    linkedClient {
+    client {
       id
       name
     }
   }
 }
 
-fragment ExternalSystemComplete on externalSystems {
+fragment ExternalSystemComplete on ExternalSystems {
   ...ExternalSystemDetailed
   clientExternalSystems {
     id
     clientId
-    externalSystemId
+    externalSystem {
+    id
+    name
+    description
+    url
+  }
     systemClientId
     createdAt
     updatedAt
-    linkedClient {
+    client {
       id
       name
       contactPerson
@@ -55,32 +65,37 @@ fragment ExternalSystemComplete on externalSystems {
 }
 
 # Client External System Fragments
-fragment ClientExternalSystemCore on clientExternalSystems {
+fragment ClientExternalSystemCore on ClientExternalSystems {
   id
   clientId
-  externalSystemId
+  externalSystem {
+    id
+    name
+    description
+    url
+  }
   systemClientId
   createdAt
   updatedAt
 }
 
-fragment ClientExternalSystemBasic on clientExternalSystems {
+fragment ClientExternalSystemBasic on ClientExternalSystems {
   ...ClientExternalSystemCore
 }
 
-fragment ClientExternalSystemDetailed on clientExternalSystems {
+fragment ClientExternalSystemDetailed on ClientExternalSystems {
   ...ClientExternalSystemBasic
 }
 
-fragment ClientExternalSystemWithRelations on clientExternalSystems {
+fragment ClientExternalSystemWithRelations on ClientExternalSystems {
   ...ClientExternalSystemBasic
-  linkedClient {
+  client {
     id
     name
     contactPerson
     contactEmail
   }
-  linkedExternalSystem {
+  externalSystem {
     id
     name
     description
@@ -89,16 +104,16 @@ fragment ClientExternalSystemWithRelations on clientExternalSystems {
   }
 }
 
-fragment ClientExternalSystemComplete on clientExternalSystems {
+fragment ClientExternalSystemComplete on ClientExternalSystems {
   ...ClientExternalSystemDetailed
-  linkedClient {
+  client {
     id
     name
     contactPerson
     contactEmail
     contactPhone
   }
-  linkedExternalSystem {
+  externalSystem {
     id
     name
     description
@@ -110,14 +125,14 @@ fragment ClientExternalSystemComplete on clientExternalSystems {
 }
 
 # Performance-optimized fragments
-fragment ExternalSystemSummary on externalSystems {
+fragment ExternalSystemSummary on ExternalSystems {
   id
   name
   description
   icon
 }
 
-fragment ExternalSystemListItem on externalSystems {
+fragment ExternalSystemListItem on ExternalSystems {
   ...ExternalSystemSummary
   url
   createdAt
@@ -129,11 +144,11 @@ fragment ExternalSystemListItem on externalSystems {
   }
 }
 
-fragment ExternalSystemTableRow on externalSystems {
+fragment ExternalSystemTableRow on ExternalSystems {
   ...ExternalSystemListItem
 }
 
-fragment ExternalSystemDashboardCard on externalSystems {
+fragment ExternalSystemDashboardCard on ExternalSystems {
   ...ExternalSystemSummary
   url
   clientCount: clientExternalSystemsAggregate {
@@ -143,22 +158,27 @@ fragment ExternalSystemDashboardCard on externalSystems {
   }
 }
 
-fragment ClientExternalSystemSummary on clientExternalSystems {
+fragment ClientExternalSystemSummary on ClientExternalSystems {
   id
   clientId
-  externalSystemId
+  externalSystem {
+    id
+    name
+    description
+    url
+  }
   systemClientId
   createdAt
   updatedAt
 }
 
-fragment ClientExternalSystemListItem on clientExternalSystems {
+fragment ClientExternalSystemListItem on ClientExternalSystems {
   ...ClientExternalSystemSummary
-  linkedClient {
+  client {
     id
     name
   }
-  linkedExternalSystem {
+  externalSystem {
     id
     name
     description
@@ -167,26 +187,31 @@ fragment ClientExternalSystemListItem on clientExternalSystems {
   }
 }
 
-fragment ClientExternalSystemTableRow on clientExternalSystems {
+fragment ClientExternalSystemTableRow on ClientExternalSystems {
   ...ClientExternalSystemListItem
 }
 
-fragment ExternalSystemMinimal on externalSystems {
+fragment ExternalSystemMinimal on ExternalSystems {
   id
   name
   url
   icon
 }
 
-fragment ClientExternalSystemMinimal on clientExternalSystems {
+fragment ClientExternalSystemMinimal on ClientExternalSystems {
   id
   clientId
-  externalSystemId
+  externalSystem {
+    id
+    name
+    description
+    url
+  }
   systemClientId
 }
 
 # Configuration and security fragments
-fragment ExternalSystemConfig on externalSystems {
+fragment ExternalSystemConfig on ExternalSystems {
   id
   name
   description
@@ -196,17 +221,22 @@ fragment ExternalSystemConfig on externalSystems {
   updatedAt
 }
 
-fragment ClientExternalSystemConfig on clientExternalSystems {
+fragment ClientExternalSystemConfig on ClientExternalSystems {
   id
   clientId
-  externalSystemId
+  externalSystem {
+    id
+    name
+    description
+    url
+  }
   systemClientId
   createdAt
   updatedAt
 }
 
 # Audit and compliance fragments
-fragment ExternalSystemForAudit on externalSystems {
+fragment ExternalSystemForAudit on ExternalSystems {
   id
   name
   description
@@ -216,17 +246,22 @@ fragment ExternalSystemForAudit on externalSystems {
   updatedAt
 }
 
-fragment ClientExternalSystemForAudit on clientExternalSystems {
+fragment ClientExternalSystemForAudit on ClientExternalSystems {
   id
   clientId
-  externalSystemId
+  externalSystem {
+    id
+    name
+    description
+    url
+  }
   systemClientId
   createdAt
   updatedAt
 }
 
 # Integration monitoring fragments
-fragment ExternalSystemMonitoring on externalSystems {
+fragment ExternalSystemMonitoring on ExternalSystems {
   id
   name
   description

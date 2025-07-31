@@ -3,6 +3,7 @@
 ## Current Situation
 
 You uploaded `Claude.pdf` directly to the MinIO `documents` bucket. The file is stored successfully:
+
 - **Location**: MinIO bucket `documents/Claude.pdf`
 - **Size**: 10,101,078 bytes (9.6 MB)
 - **Status**: ✅ File exists in MinIO storage
@@ -10,6 +11,7 @@ You uploaded `Claude.pdf` directly to the MinIO `documents` bucket. The file is 
 ## Why It's Not Visible in the API
 
 The document management system requires **two components** for full functionality:
+
 1. **File in MinIO** ✅ (You have this)
 2. **Database record** ❌ (Missing - this is created when uploading through the API)
 
@@ -18,12 +20,14 @@ The document management system requires **two components** for full functionalit
 ### Option 1: Upload Through the Document Management System (Recommended)
 
 1. **Start the development server**:
+
    ```bash
    pnpm dev
    ```
 
 2. **Navigate to a client or payroll page**:
-   - Go to `/clients/[some-client-id]` 
+
+   - Go to `/clients/[some-client-id]`
    - Click the "Documents" tab
    - Use the drag-and-drop upload component
 
@@ -80,12 +84,14 @@ INSERT INTO files (
 ## Testing the API Endpoints
 
 ### 1. Test MinIO Connectivity
+
 ```bash
 # Run this script to test MinIO connection
 node scripts/test-minio-simple.js
 ```
 
 ### 2. Test Document Health (Requires running server)
+
 ```bash
 # Start the server first: pnpm dev
 curl -X GET "http://localhost:3000/api/documents/health" \
@@ -93,6 +99,7 @@ curl -X GET "http://localhost:3000/api/documents/health" \
 ```
 
 ### 3. Test Document List
+
 ```bash
 curl -X GET "http://localhost:3000/api/documents/list" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
@@ -101,23 +108,28 @@ curl -X GET "http://localhost:3000/api/documents/list" \
 ## Complete Testing Workflow
 
 ### Step 1: Verify MinIO Connection
+
 ```bash
 node scripts/test-minio-simple.js
 ```
+
 Expected output: ✅ Connection successful, Claude.pdf listed
 
 ### Step 2: Start Development Server
+
 ```bash
 pnpm dev
 ```
 
 ### Step 3: Access the UI
-1. Open http://localhost:3000
+
+1. Open <http://localhost:3000>
 2. Sign in with your credentials
 3. Navigate to any client page
 4. Click the "Documents" tab
 
 ### Step 4: Upload Test
+
 1. Try uploading a small test file through the UI
 2. Verify it appears in the document list
 3. Test viewing/downloading functionality

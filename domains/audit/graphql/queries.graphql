@@ -4,10 +4,10 @@
 query GetAuditLogs(
   $limit: Int = 50
   $offset: Int = 0
-  $where: auditLogsBoolExp
-  $orderBy: [auditLogsOrderBy!] = {eventTime: DESC}
+  $where: AuditAuditLogBoolExp
+  $orderBy: [AuditAuditLogOrderBy!] = {eventTime: DESC}
 ) {
-  auditLogs(
+  auditAuditLog(
     limit: $limit
     offset: $offset
     where: $where
@@ -15,7 +15,7 @@ query GetAuditLogs(
   ) {
     ...AuditLogEntry
   }
-  auditLogsAggregate(where: $where) {
+  auditAuditLogAggregate(where: $where) {
     aggregate {
       count
     }
@@ -26,10 +26,10 @@ query GetAuditLogs(
 query GetAuthEvents(
   $limit: Int = 20
   $offset: Int = 0
-  $where: authEventsBoolExp
-  $orderBy: [authEventsOrderBy!] = {eventTime: DESC}
+  $where: AuditAuthEventsBoolExp
+  $orderBy: [AuditAuthEventsOrderBy!] = {eventTime: DESC}
 ) {
-  authEvents(
+  auditAuthEvents(
     limit: $limit
     offset: $offset
     where: $where
@@ -37,7 +37,7 @@ query GetAuthEvents(
   ) {
     ...AuthEvent
   }
-  authEventsAggregate(where: $where) {
+  auditAuthEventsAggregate(where: $where) {
     aggregate {
       count
     }
@@ -47,7 +47,7 @@ query GetAuthEvents(
 # Get audit summary for dashboard
 query GetAuditSummary($timeRange: timestamptz!) {
   # Total actions
-  totalActions: auditLogsAggregate(
+  totalActions: auditAuditLogAggregate(
     where: {eventTime: {_gte: $timeRange}}
   ) {
     aggregate {
@@ -56,7 +56,7 @@ query GetAuditSummary($timeRange: timestamptz!) {
   }
   
   # Actions by type - requires grouping query
-  actionsByType: auditLogs(
+  actionsByType: auditAuditLog(
     where: {eventTime: {_gte: $timeRange}}
     distinctOn: action
   ) {
@@ -64,7 +64,7 @@ query GetAuditSummary($timeRange: timestamptz!) {
   }
   
   # Most active users - simplified without summary table
-  mostActiveUsers: auditLogs(
+  mostActiveUsers: auditAuditLog(
     where: {eventTime: {_gte: $timeRange}}
     distinctOn: userId
     orderBy: {userId: ASC}
@@ -75,7 +75,7 @@ query GetAuditSummary($timeRange: timestamptz!) {
   }
   
   # Auth events by type
-  authEventsByType: authEvents(
+  authEventsByType: auditAuthEvents(
     where: {eventTime: {_gte: $timeRange}}
     distinctOn: eventType
   ) {
@@ -89,7 +89,7 @@ query GetResourceAccessHistory(
   $resourceId: String!
   $limit: Int = 50
 ) {
-  auditLogs(
+  auditAuditLog(
     where: {
       resourceType: {_eq: $resourceType}
       resourceId: {_eq: $resourceId}
@@ -116,7 +116,7 @@ query GetUserActivityTimeline(
   $startDate: timestamptz!
   $endDate: timestamptz!
 ) {
-  auditLogs(
+  auditAuditLog(
     where: {
       userId: {_eq: $userId}
       eventTime: {_gte: $startDate, _lte: $endDate}
@@ -127,7 +127,7 @@ query GetUserActivityTimeline(
   }
   
   # Login/logout events
-  authEvents(
+  auditAuthEvents(
     where: {
       userId: {_eq: $userId}
       eventTime: {_gte: $startDate, _lte: $endDate}
@@ -149,7 +149,7 @@ query GetDataAccessReport(
   $endDate: timestamptz!
   $resourceType: String
 ) {
-  dataAccessLogs(
+  auditDataAccessLog(
     where: {
       accessedAt: {_gte: $startDate, _lte: $endDate}
       resourceType: {_eq: $resourceType}
@@ -166,7 +166,7 @@ query GetComplianceAuditTrail(
   $endDate: timestamptz!
 ) {
   # Permission changes
-  permissionChanges: auditLogs(
+  permissionChanges: auditAuditLog(
     where: {
       resourceType: {_in: ["permission", "role", "permission_override"]}
       eventTime: {_gte: $startDate, _lte: $endDate}
@@ -177,7 +177,7 @@ query GetComplianceAuditTrail(
   }
   
   # User account changes
-  userChanges: auditLogs(
+  userChanges: auditAuditLog(
     where: {
       resourceType: {_eq: "user"}
       action: {_in: ["create", "update", "delete"]}
@@ -189,7 +189,7 @@ query GetComplianceAuditTrail(
   }
   
   # Data exports
-  dataExports: auditLogs(
+  dataExports: auditAuditLog(
     where: {
       action: {_eq: "export"}
       eventTime: {_gte: $startDate, _lte: $endDate}
@@ -210,7 +210,7 @@ query GenerateSOC2AuditReport(
   $limit: Int = 1000
 ) {
   # Access controls and authentication
-  authenticationEvents: authEvents(
+  authenticationEvents: auditAuthEvents(
     where: {eventTime: {_gte: $startDate, _lte: $endDate}}
     orderBy: {eventTime: DESC}
     limit: $limit
@@ -219,7 +219,7 @@ query GenerateSOC2AuditReport(
   }
   
   # Data access patterns
-  dataAccessEvents: dataAccessLogs(
+  dataAccessEvents: auditDataAccessLog(
     where: {accessedAt: {_gte: $startDate, _lte: $endDate}}
     orderBy: {accessedAt: DESC}
     limit: $limit
@@ -228,7 +228,7 @@ query GenerateSOC2AuditReport(
   }
   
   # System changes and configurations
-  systemChanges: auditLogs(
+  systemChanges: auditAuditLog(
     where: {
       eventTime: {_gte: $startDate, _lte: $endDate}
       resourceType: {_in: ["system", "configuration", "database"]}
@@ -240,7 +240,7 @@ query GenerateSOC2AuditReport(
   }
   
   # Privileged access usage
-  privilegedAccess: auditLogs(
+  privilegedAccess: auditAuditLog(
     where: {
       eventTime: {_gte: $startDate, _lte: $endDate}
       userRole: {_in: ["admin", "super_admin"]}
@@ -254,13 +254,13 @@ query GenerateSOC2AuditReport(
 
 # Missing operations needed by components
 query AuditLog($id: uuid!) {
-  auditLogById(id: $id) {
+  auditAuditLogByPk(id: $id) {
     ...AuditLogEntry
   }
 }
 
 query ComplianceReport($startDate: timestamptz!, $endDate: timestamptz!) {
-  auditLogs(
+  auditAuditLog(
     where: { eventTime: { _gte: $startDate, _lte: $endDate } }
     orderBy: { eventTime: DESC }
   ) {
@@ -269,7 +269,7 @@ query ComplianceReport($startDate: timestamptz!, $endDate: timestamptz!) {
 }
 
 query ComplianceAuditLogs($startDate: timestamptz!, $endDate: timestamptz!) {
-  auditLogs(
+  auditAuditLog(
     where: { eventTime: { _gte: $startDate, _lte: $endDate } }
     orderBy: { eventTime: DESC }
   ) {
@@ -278,13 +278,13 @@ query ComplianceAuditLogs($startDate: timestamptz!, $endDate: timestamptz!) {
 }
 
 query SecurityOverview($timeRange: timestamptz!) {
-  totalAuditLogs: auditLogsAggregate(
+  totalAuditLogs: auditAuditLogAggregate(
     where: { eventTime: { _gte: $timeRange } }
   ) {
     aggregate { count }
   }
   
-  failedLogins: authEventsAggregate(
+  failedLogins: auditAuthEventsAggregate(
     where: { 
       eventTime: { _gte: $timeRange }
       success: { _eq: false }
@@ -308,7 +308,7 @@ query GetSecurityIncidentAnalysis(
   $endDate: timestamptz!
 ) {
   # Failed authentication attempts
-  failedAuthentications: authEvents(
+  failedAuthentications: auditAuthEvents(
     where: {
       eventTime: {_gte: $startDate, _lte: $endDate}
       success: {_eq: false}
@@ -319,7 +319,7 @@ query GetSecurityIncidentAnalysis(
   }
   
   # Suspicious activity patterns
-  suspiciousActivity: auditLogs(
+  suspiciousActivity: auditAuditLog(
     where: {
       eventTime: {_gte: $startDate, _lte: $endDate}
       action: {_in: ["bulk_export", "mass_delete", "privilege_escalation"]}
@@ -330,7 +330,7 @@ query GetSecurityIncidentAnalysis(
   }
   
   # Permission denials
-  permissionDenials: auditLogs(
+  permissionDenials: auditAuditLog(
     where: {
       eventTime: {_gte: $startDate, _lte: $endDate}
       success: {_eq: false}
@@ -349,7 +349,7 @@ query GetUserActivityAnalytics(
   $userId: uuid
 ) {
   # User session analytics
-  userSessions: authEvents(
+  userSessions: auditAuthEvents(
     where: {
       eventTime: {_gte: $startDate, _lte: $endDate}
       userId: {_eq: $userId}
@@ -361,7 +361,7 @@ query GetUserActivityAnalytics(
   }
   
   # Resource access patterns
-  resourceAccess: auditLogs(
+  resourceAccess: auditAuditLog(
     where: {
       eventTime: {_gte: $startDate, _lte: $endDate}
       userId: {_eq: $userId}
@@ -373,7 +373,7 @@ query GetUserActivityAnalytics(
   }
   
   # Permission usage tracking
-  permissionUsage: auditLogs(
+  permissionUsage: auditAuditLog(
     where: {
       eventTime: {_gte: $startDate, _lte: $endDate}
       userId: {_eq: $userId}
@@ -388,7 +388,7 @@ query GetUserActivityAnalytics(
 # Data retention and cleanup analytics
 query GetDataRetentionAnalytics($retentionDate: timestamptz!) {
   # Audit log retention analysis
-  auditLogRetention: auditLogsAggregate {
+  auditLogRetention: auditAuditLogAggregate {
     aggregate {
       count
       min {
@@ -401,7 +401,7 @@ query GetDataRetentionAnalytics($retentionDate: timestamptz!) {
   }
   
   # Data access log retention
-  dataAccessRetention: dataAccessLogsAggregate {
+  dataAccessRetention: auditDataAccessLogAggregate {
     aggregate {
       count
       min {
@@ -414,7 +414,7 @@ query GetDataRetentionAnalytics($retentionDate: timestamptz!) {
   }
   
   # Old records requiring cleanup
-  oldAuditLogs: auditLogsAggregate(
+  oldAuditLogs: auditAuditLogAggregate(
     where: {eventTime: {_lt: $retentionDate}}
   ) {
     aggregate {
@@ -428,7 +428,7 @@ query GetSystemHealthAnalytics(
   $timeRange: timestamptz!
 ) {
   # API usage patterns
-  apiUsage: auditLogsAggregate(
+  apiUsage: auditAuditLogAggregate(
     where: {
       eventTime: {_gte: $timeRange}
       action: {_like: "api_%"}
@@ -440,7 +440,7 @@ query GetSystemHealthAnalytics(
   }
   
   # Error rate analysis
-  systemErrors: auditLogsAggregate(
+  systemErrors: auditAuditLogAggregate(
     where: {
       eventTime: {_gte: $timeRange}
       success: {_eq: false}
@@ -452,7 +452,7 @@ query GetSystemHealthAnalytics(
   }
   
   # Resource usage by type
-  resourceUsageStats: auditLogsAggregate(
+  resourceUsageStats: auditAuditLogAggregate(
     where: {eventTime: {_gte: $timeRange}}
   ) {
     aggregate {
@@ -472,7 +472,7 @@ query SearchAuditLogs(
   $limit: Int = 100
   $offset: Int = 0
 ) {
-  auditLogs(
+  auditAuditLog(
     where: {
       _and: [
         {eventTime: {_gte: $startDate, _lte: $endDate}}
@@ -496,7 +496,7 @@ query SearchAuditLogs(
     ...AuditLogEntry
   }
   
-  searchResults: auditLogsAggregate(
+  searchResults: auditAuditLogAggregate(
     where: {
       _and: [
         {eventTime: {_gte: $startDate, _lte: $endDate}}
@@ -523,7 +523,7 @@ query SearchAuditLogs(
 # Compliance monitoring dashboard query
 query GetComplianceMonitoringData($timeRange: timestamptz!) {
   # Recent critical events
-  criticalEvents: auditLogs(
+  criticalEvents: auditAuditLog(
     where: {
       eventTime: {_gte: $timeRange}
       action: {_in: ["delete", "export", "privilege_change", "system_config"]}
@@ -535,7 +535,7 @@ query GetComplianceMonitoringData($timeRange: timestamptz!) {
   }
   
   # Authentication metrics
-  authMetrics: authEventsAggregate(
+  authMetrics: auditAuthEventsAggregate(
     where: {eventTime: {_gte: $timeRange}}
   ) {
     aggregate {
@@ -544,7 +544,7 @@ query GetComplianceMonitoringData($timeRange: timestamptz!) {
   }
   
   # Failed access attempts
-  failedAccess: authEventsAggregate(
+  failedAccess: auditAuthEventsAggregate(
     where: {
       eventTime: {_gte: $timeRange}
       success: {_eq: false}
@@ -556,7 +556,7 @@ query GetComplianceMonitoringData($timeRange: timestamptz!) {
   }
   
   # Data classification access
-  sensitiveDataAccess: dataAccessLogsAggregate(
+  sensitiveDataAccess: auditDataAccessLogAggregate(
     where: {
       accessedAt: {_gte: $timeRange}
       dataClassification: {_in: ["CRITICAL", "HIGH"]}
@@ -603,7 +603,7 @@ query GetSecurityDashboardOverview($timeRange: timestamptz!) {
   }
   
   # Recent security events count
-  recentEvents: auditLogsAggregate(
+  recentEvents: auditAuditLogAggregate(
     where: { eventTime: { _gte: $timeRange } }
   ) {
     aggregate {
@@ -612,7 +612,7 @@ query GetSecurityDashboardOverview($timeRange: timestamptz!) {
   }
   
   # Failed login attempts for security score calculation
-  failedLogins: authEventsAggregate(
+  failedLogins: auditAuthEventsAggregate(
     where: {
       eventTime: { _gte: $timeRange }
       success: { _eq: false }
@@ -625,7 +625,7 @@ query GetSecurityDashboardOverview($timeRange: timestamptz!) {
   }
   
   # Total login attempts for security score calculation
-  totalLogins: authEventsAggregate(
+  totalLogins: auditAuthEventsAggregate(
     where: {
       eventTime: { _gte: $timeRange }
       eventType: { _eq: "login" }
@@ -640,7 +640,7 @@ query GetSecurityDashboardOverview($timeRange: timestamptz!) {
 # Security Dashboard Recent Activity Query
 query GetSecurityDashboardActivity($limit: Int = 10, $timeRange: timestamptz!) {
   # Recent security-related audit logs
-  recentActivity: auditLogs(
+  recentActivity: auditAuditLog(
     where: {
       eventTime: { _gte: $timeRange }
       action: { _in: [
@@ -661,7 +661,7 @@ query GetSecurityDashboardActivity($limit: Int = 10, $timeRange: timestamptz!) {
   }
   
   # Recent auth events (failed logins, etc.)
-  recentAuthEvents: authEvents(
+  recentAuthEvents: auditAuthEvents(
     where: {
       eventTime: { _gte: $timeRange }
       _or: [
@@ -721,7 +721,7 @@ query GetSecurityAuditLogs(
   $searchTerm: String = ""
 ) {
   # Main audit logs with simplified filtering
-  auditLogs(
+  auditAuditLog(
     orderBy: { eventTime: DESC }
     limit: $limit
     offset: $offset
@@ -730,14 +730,14 @@ query GetSecurityAuditLogs(
   }
   
   # Count for pagination
-  auditLogsAggregate {
+  auditAuditLogAggregate {
     aggregate {
       count
     }
   }
   
   # Auth events
-  authEvents(
+  auditAuthEvents(
     orderBy: { eventTime: DESC }
     limit: $limit
     offset: $offset
@@ -756,12 +756,12 @@ query GetPermissionsDashboardData($sevenDaysAgo: timestamptz!) {
     description
     priority
     isSystemRole
-    assignedPermissionsAggregate {
+    rolePermissionsAggregate {
       aggregate {
         count
       }
     }
-    assignedToUsersAggregate {
+    userRolesAggregate {
       aggregate {
         count
       }
@@ -774,8 +774,8 @@ query GetPermissionsDashboardData($sevenDaysAgo: timestamptz!) {
     role
     isActive
     isStaff
-    assignedRoles {
-      assignedRole {
+    roleAssignments {
+      role {
         id
         name
         displayName
@@ -790,7 +790,7 @@ query GetPermissionsDashboardData($sevenDaysAgo: timestamptz!) {
   }
   
   # Recent permission changes from audit logs
-  recentPermissionChanges: auditLogs(
+  recentPermissionChanges: auditAuditLog(
     where: {
       resourceType: { _in: ["permission", "role", "user"] }
       action: { _in: ["permission_grant", "permission_revoke", "role_change"] }
@@ -806,7 +806,7 @@ query GetPermissionsDashboardData($sevenDaysAgo: timestamptz!) {
 # SOC2 Compliance Dashboard Data  
 query GetSOC2ComplianceData($timeRange: timestamptz!) {
   # Total audit log coverage
-  totalAuditLogs: auditLogsAggregate(
+  totalAuditLogs: auditAuditLogAggregate(
     where: { eventTime: { _gte: $timeRange } }
   ) {
     aggregate {
@@ -815,7 +815,7 @@ query GetSOC2ComplianceData($timeRange: timestamptz!) {
   }
   
   # Failed access attempts
-  failedAccessAttempts: auditLogsAggregate(
+  failedAccessAttempts: auditAuditLogAggregate(
     where: {
       eventTime: { _gte: $timeRange }
       success: { _eq: false }
@@ -827,7 +827,7 @@ query GetSOC2ComplianceData($timeRange: timestamptz!) {
   }
   
   # Authentication events
-  authenticationEvents: authEventsAggregate(
+  authenticationEvents: auditAuthEventsAggregate(
     where: { eventTime: { _gte: $timeRange } }
   ) {
     aggregate {
@@ -836,7 +836,7 @@ query GetSOC2ComplianceData($timeRange: timestamptz!) {
   }
   
   # Failed authentication events
-  failedAuthentication: authEventsAggregate(
+  failedAuthentication: auditAuthEventsAggregate(
     where: {
       eventTime: { _gte: $timeRange }
       success: { _eq: false }
@@ -848,7 +848,7 @@ query GetSOC2ComplianceData($timeRange: timestamptz!) {
   }
   
   # Data access logs
-  dataAccessEvents: dataAccessLogsAggregate(
+  dataAccessEvents: auditDataAccessLogAggregate(
     where: { accessedAt: { _gte: $timeRange } }
   ) {
     aggregate {
@@ -857,7 +857,7 @@ query GetSOC2ComplianceData($timeRange: timestamptz!) {
   }
   
   # Critical/High data access
-  sensitiveDataAccess: dataAccessLogsAggregate(
+  sensitiveDataAccess: auditDataAccessLogAggregate(
     where: {
       accessedAt: { _gte: $timeRange }
       dataClassification: { _in: ["CRITICAL", "HIGH"] }
@@ -894,7 +894,7 @@ query GetSOC2ComplianceData($timeRange: timestamptz!) {
   }
   
   # Recent critical security events
-  criticalSecurityEvents: auditLogs(
+  criticalSecurityEvents: auditAuditLog(
     where: {
       eventTime: { _gte: $timeRange }
       action: { _in: ["delete", "export", "privilege_escalation", "unauthorized_access"] }

@@ -3,55 +3,31 @@
 # SOC2 Compliance: Full audit trail with user attribution
 
 mutation CreateClient(
-  $name: String!
-  $contactPerson: String
-  $contactEmail: String
-  $contactPhone: String
-  $address: String
-  $city: String
-  $state: String
-  $postalCode: String
-  $country: String = "Australia"
+  $object: ClientsInsertInput!
 ) {
-  insertClient(
-    object: {
-      name: $name
-      contactPerson: $contactPerson
-      contactEmail: $contactEmail
-      contactPhone: $contactPhone
-    }
+  insertClients(
+    objects: [$object]
   ) {
-    ...ClientBase
+    returning {
+      ...ClientBase
+    }
   }
 }
 
 mutation UpdateClient(
   $id: uuid!
-  $name: String
-  $contactPerson: String
-  $contactEmail: String
-  $contactPhone: String
-  $address: String
-  $city: String
-  $state: String
-  $postalCode: String
-  $country: String
+  $set: ClientsSetInput!
 ) {
-  updateClientById(
+  updateClientsByPk(
     pkColumns: { id: $id }
-    _set: {
-      name: $name
-      contactPerson: $contactPerson
-      contactEmail: $contactEmail
-      contactPhone: $contactPhone
-    }
+    _set: $set
   ) {
     ...ClientBase
   }
 }
 
 mutation UpdateClientStatus($id: uuid!, $active: Boolean!) {
-  updateClientById(
+  updateClientsByPk(
     pkColumns: { id: $id }
     _set: { active: $active, updatedAt: "now()" }
   ) {
@@ -60,7 +36,7 @@ mutation UpdateClientStatus($id: uuid!, $active: Boolean!) {
 }
 
 mutation DeactivateClient($id: uuid!) {
-  updateClientById(
+  updateClientsByPk(
     pkColumns: { id: $id }
     _set: { active: false, updatedAt: "now()" }
   ) {
@@ -69,7 +45,7 @@ mutation DeactivateClient($id: uuid!) {
 }
 
 mutation ActivateClient($id: uuid!) {
-  updateClientById(
+  updateClientsByPk(
     pkColumns: { id: $id }
     _set: { active: true, updatedAt: "now()" }
   ) {
@@ -79,7 +55,7 @@ mutation ActivateClient($id: uuid!) {
 
 # Soft delete - preserves audit trail
 mutation ArchiveClient($id: uuid!) {
-  updateClientById(
+  updateClientsByPk(
     pkColumns: { id: $id }
     _set: { active: false, updatedAt: "now()" }
   ) {
@@ -89,20 +65,20 @@ mutation ArchiveClient($id: uuid!) {
 }
 
 # Bulk operations for efficiency
-mutation BulkUpdateClientStatus($clientIds: [uuid!]!, $active: Boolean!) {
-  bulkUpdateClients(
-    where: { id: { _in: $clientIds } }
-    _set: { active: $active, updatedAt: "now()" }
+mutation BulkUpdateClientStatus($where: ClientsBoolExp!, $set: ClientsSetInput!) {
+  updateClients(
+    where: $where
+    _set: $set
   ) {
-    affectedRows
     returning {
       ...ClientBase
     }
+    affectedRows
   }
 }
 
 mutation DeleteClient($id: uuid!) {
-  updateClientById(pkColumns: { id: $id }, _set: { active: false }) {
+  updateClientsByPk(pkColumns: { id: $id }, _set: { active: false }) {
     id
     name
     active

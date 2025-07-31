@@ -1,0 +1,1550 @@
+
+> payroll-bytemy@0.1.0 codegen:dry-run /Users/nathanharris/Payroll/Payroll-ByteMy
+> graphql-codegen --config config/codegen.ts --check
+
+[STARTED] Parse Configuration
+[SUCCESS] Parse Configuration
+[STARTED] Generate outputs
+[STARTED] Generate to ./shared/types/generated/
+[STARTED] Generate to ./shared/schema/schema.graphql
+[STARTED] Generate to ./shared/schema/introspection.json
+[STARTED] Generate to ./shared/schema/security-report.json
+[STARTED] Generate to ./domains/auth/graphql/generated/
+[STARTED] Generate to ./domains/audit/graphql/generated/
+[STARTED] Generate to ./domains/users/graphql/generated/
+[STARTED] Generate to ./domains/clients/graphql/generated/
+[STARTED] Generate to ./domains/billing/graphql/generated/
+[STARTED] Generate to ./domains/email/graphql/generated/
+[STARTED] Generate to ./domains/payrolls/graphql/generated/
+[STARTED] Generate to ./domains/notes/graphql/generated/
+[STARTED] Load GraphQL schemas
+[STARTED] Load GraphQL schemas
+[STARTED] Load GraphQL schemas
+[STARTED] Load GraphQL schemas
+[STARTED] Load GraphQL schemas
+[STARTED] Load GraphQL schemas
+[STARTED] Load GraphQL schemas
+[STARTED] Load GraphQL schemas
+[STARTED] Load GraphQL schemas
+[STARTED] Load GraphQL schemas
+[STARTED] Load GraphQL schemas
+[STARTED] Load GraphQL schemas
+[SUCCESS] Load GraphQL schemas
+[SUCCESS] Load GraphQL schemas
+[SUCCESS] Load GraphQL schemas
+[SUCCESS] Load GraphQL schemas
+[SUCCESS] Load GraphQL schemas
+[SUCCESS] Load GraphQL schemas
+[SUCCESS] Load GraphQL schemas
+[SUCCESS] Load GraphQL schemas
+[SUCCESS] Load GraphQL schemas
+[SUCCESS] Load GraphQL schemas
+[SUCCESS] Load GraphQL schemas
+[SUCCESS] Load GraphQL schemas
+[STARTED] Load GraphQL documents
+[STARTED] Load GraphQL documents
+[STARTED] Load GraphQL documents
+[STARTED] Load GraphQL documents
+[STARTED] Load GraphQL documents
+[STARTED] Load GraphQL documents
+[STARTED] Load GraphQL documents
+[STARTED] Load GraphQL documents
+[STARTED] Load GraphQL documents
+[STARTED] Load GraphQL documents
+[STARTED] Load GraphQL documents
+[STARTED] Load GraphQL documents
+[SUCCESS] Load GraphQL documents
+[SUCCESS] Load GraphQL documents
+[SUCCESS] Load GraphQL documents
+[STARTED] Generate
+[STARTED] Generate
+[STARTED] Generate
+[SUCCESS] Generate
+[SUCCESS] Generate
+[SUCCESS] Generate
+[SUCCESS] Generate to ./shared/schema/security-report.json
+[SUCCESS] Generate to ./shared/schema/schema.graphql
+[SUCCESS] Generate to ./shared/schema/introspection.json
+[STARTED] Generate to ./domains/leave/graphql/generated/
+[STARTED] Generate to ./domains/work-schedule/graphql/generated/
+[STARTED] Generate to ./domains/external-systems/graphql/generated/
+[STARTED] Load GraphQL schemas
+[STARTED] Load GraphQL schemas
+[STARTED] Load GraphQL schemas
+[SUCCESS] Load GraphQL schemas
+[SUCCESS] Load GraphQL schemas
+[SUCCESS] Load GraphQL schemas
+[STARTED] Load GraphQL documents
+[STARTED] Load GraphQL documents
+[STARTED] Load GraphQL documents
+[SUCCESS] Load GraphQL documents
+[STARTED] Generate
+[FAILED] GraphQL Document Validation failed with 1 errors;
+[FAILED]   Error 0: Cannot query field "managerUserId" on type "Users". Did you mean "managedUsers", "managerId", "clerkUserId", or "manager"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/shared/graphql/fragments.graphql:50:3
+[SUCCESS] Load GraphQL documents
+[STARTED] Generate
+[FAILED] GraphQL Document Validation failed with 1 errors;
+[FAILED]   Error 0: Cannot query field "managerUserId" on type "Users". Did you mean "managedUsers", "managerId", "clerkUserId", or "manager"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/shared/graphql/fragments.graphql:50:3
+[SUCCESS] Load GraphQL documents
+[STARTED] Generate
+[FAILED] GraphQL Document Validation failed with 1 errors;
+[FAILED]   Error 0: Cannot query field "managerUserId" on type "Users". Did you mean "managedUsers", "managerId", "clerkUserId", or "manager"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/shared/graphql/fragments.graphql:50:3
+[SUCCESS] Load GraphQL documents
+[STARTED] Generate
+[FAILED] GraphQL Document Validation failed with 41 errors;
+[FAILED]   Error 0: Cannot query field "primaryConsultantPayrolls" on type "Users". Did you mean "fromConsultantAudits"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:78:5
+[FAILED] 
+[FAILED] Error 1: Cannot query field "backupConsultantPayrolls" on type "Users".
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:100:5
+[FAILED] 
+[FAILED] Error 2: Cannot query field "userWorkSchedules" on type "Users". Did you mean "workSchedules"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:115:5
+[FAILED] 
+[FAILED] Error 3: Cannot query field "UsersAggregate" on type "query_root". Did you mean "usersAggregate", "filesAggregate", "notesAggregate", "rolesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:125:3
+[FAILED] 
+[FAILED] Error 4: Cannot query field "UsersAggregate" on type "query_root". Did you mean "usersAggregate", "filesAggregate", "notesAggregate", "rolesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:130:3
+[FAILED] 
+[FAILED] Error 5: Cannot query field "UsersAggregate" on type "query_root". Did you mean "usersAggregate", "filesAggregate", "notesAggregate", "rolesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:136:3
+[FAILED] 
+[FAILED] Error 6: Cannot query field "UsersAggregate" on type "query_root". Did you mean "usersAggregate", "filesAggregate", "notesAggregate", "rolesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:172:3
+[FAILED] 
+[FAILED] Error 7: Cannot query field "userSkills" on type "Users". Did you mean "skills" or "userSessions"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:260:5
+[FAILED] 
+[FAILED] Error 8: Cannot query field "roleAssignments" on type "query_root". Did you mean "payrollAssignments"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:267:3
+[FAILED] 
+[FAILED] Error 9: Field "managerId" is not defined by type "PayrollsBoolExp". Did you mean "managerUserId"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:302:11
+[FAILED] 
+[FAILED] Error 10: Cannot query field "UsersAggregate" on type "query_root". Did you mean "usersAggregate", "filesAggregate", "notesAggregate", "rolesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:475:3
+[FAILED] 
+[FAILED] Error 11: Cannot query field "UsersAggregate" on type "query_root". Did you mean "usersAggregate", "filesAggregate", "notesAggregate", "rolesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:480:3
+[FAILED] 
+[FAILED] Error 12: Cannot query field "UsersAggregate" on type "query_root". Did you mean "usersAggregate", "filesAggregate", "notesAggregate", "rolesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:485:3
+[FAILED] 
+[FAILED] Error 13: Cannot query field "UsersAggregate" on type "query_root". Did you mean "usersAggregate", "filesAggregate", "notesAggregate", "rolesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:611:3
+[FAILED] 
+[FAILED] Error 14: Cannot query field "primaryConsultantPayrolls" on type "Users". Did you mean "fromConsultantAudits"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:690:5
+[FAILED] 
+[FAILED] Error 15: Cannot query field "backupConsultantPayrolls" on type "Users".
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:700:5
+[FAILED] 
+[FAILED] Error 16: Cannot query field "userWorkSchedules" on type "Users". Did you mean "workSchedules"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:719:5
+[FAILED] 
+[FAILED] Error 17: Field "managerId" is not defined by type "PayrollsBoolExp". Did you mean "managerUserId"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:771:11
+[FAILED] 
+[FAILED] Error 18: Cannot query field "UsersAggregate" on type "query_root". Did you mean "usersAggregate", "filesAggregate", "notesAggregate", "rolesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:820:3
+[FAILED] 
+[FAILED] Error 19: Cannot query field "UsersAggregate" on type "query_root". Did you mean "usersAggregate", "filesAggregate", "notesAggregate", "rolesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:837:3
+[FAILED] 
+[FAILED] Error 20: Cannot query field "UsersAggregate" on type "query_root". Did you mean "usersAggregate", "filesAggregate", "notesAggregate", "rolesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:868:3
+[FAILED] 
+[FAILED] Error 21: Cannot query field "UsersAggregate" on type "query_root". Did you mean "usersAggregate", "filesAggregate", "notesAggregate", "rolesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:912:3
+[FAILED] 
+[FAILED] Error 22: Cannot query field "primaryConsultantPayrollsAggregate" on type "Users". Did you mean "fromConsultantAuditsAggregate", "toConsultantAuditsAggregate", or "managedPayrollsAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:1047:5
+[FAILED] 
+[FAILED] Error 23: Cannot query field "backupConsultantPayrollsAggregate" on type "Users". Did you mean "fromConsultantAuditsAggregate", "toConsultantAuditsAggregate", or "managedPayrollsAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:1054:5
+[FAILED] 
+[FAILED] Error 24: Cannot query field "primaryConsultantPayrolls" on type "Users". Did you mean "fromConsultantAudits"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:1068:5
+[FAILED] 
+[FAILED] Error 25: Cannot query field "backupConsultantPayrolls" on type "Users".
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:1079:5
+[FAILED] 
+[FAILED] Error 26: Unknown type "InvitationStatusEnum". Did you mean "invitation_status_enum"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:1094:15
+[FAILED] 
+[FAILED] Error 27: Cannot query field "UserInvitationsAggregate" on type "query_root". Did you mean "userInvitationsAggregate", "userSessionsAggregate", "permissionsAggregate", "servicesAggregate", or "userInvitations"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:1122:3
+[FAILED] 
+[FAILED] Error 28: Cannot query field "UserInvitationsAggregate" on type "query_root". Did you mean "userInvitationsAggregate", "userSessionsAggregate", "permissionsAggregate", "servicesAggregate", or "userInvitations"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:1130:3
+[FAILED] 
+[FAILED] Error 29: Cannot query field "UserInvitationsAggregate" on type "query_root". Did you mean "userInvitationsAggregate", "userSessionsAggregate", "permissionsAggregate", "servicesAggregate", or "userInvitations"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:1138:3
+[FAILED] 
+[FAILED] Error 30: Cannot query field "UserInvitationsAggregate" on type "query_root". Did you mean "userInvitationsAggregate", "userSessionsAggregate", "permissionsAggregate", "servicesAggregate", or "userInvitations"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:1146:3
+[FAILED] 
+[FAILED] Error 31: Cannot query field "UserInvitationsAggregate" on type "query_root". Did you mean "userInvitationsAggregate", "userSessionsAggregate", "permissionsAggregate", "servicesAggregate", or "userInvitations"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:1154:3
+[FAILED] 
+[FAILED] Error 32: Cannot query field "UserInvitationsAggregate" on type "query_root". Did you mean "userInvitationsAggregate", "userSessionsAggregate", "permissionsAggregate", "servicesAggregate", or "userInvitations"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:1162:3
+[FAILED] 
+[FAILED] Error 33: Cannot query field "UserInvitationsAggregate" on type "query_root". Did you mean "userInvitationsAggregate", "userSessionsAggregate", "permissionsAggregate", "servicesAggregate", or "userInvitations"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:1193:3
+[FAILED] 
+[FAILED] Error 34: Unknown type "Interval". Did you mean "interval"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:1200:48
+[FAILED] 
+[FAILED] Error 35: Unknown type "UserStatusEnum". Did you mean "user_status_enum" or "leave_status_enum"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:1224:15
+[FAILED] 
+[FAILED] Error 36: Cannot query field "UsersAggregate" on type "query_root". Did you mean "usersAggregate", "filesAggregate", "notesAggregate", "rolesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/queries.graphql:1248:3
+[FAILED] 
+[FAILED] Error 37: Cannot query field "userById" on type "subscription_root". Did you mean "usersByPk" or "users"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/subscriptions.graphql:5:3
+[FAILED] 
+[FAILED] Error 38: Cannot query field "userWorkSchedules" on type "Users". Did you mean "workSchedules"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/fragments.graphql:41:3
+[FAILED] 
+[FAILED] Error 39: Cannot query field "userWorkSchedules" on type "Users". Did you mean "workSchedules"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/users/graphql/fragments.graphql:61:3
+[FAILED] 
+[FAILED] Error 40: Cannot query field "managerUserId" on type "Users". Did you mean "managedUsers", "managerId", "clerkUserId", or "manager"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/shared/graphql/fragments.graphql:50:3
+[SUCCESS] Load GraphQL documents
+[STARTED] Generate
+[FAILED] GraphQL Document Validation failed with 6 errors;
+[FAILED]   Error 0: Cannot query field "ClientsAggregate" on type "query_root". Did you mean "clientsAggregate", "filesAggregate", "holidaysAggregate", "leaveAggregate", or "notesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/clients/graphql/queries.graphql:106:3
+[FAILED] 
+[FAILED] Error 1: Cannot query field "Clients" on type "query_root". Did you mean "clients"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/clients/graphql/queries.graphql:122:3
+[FAILED] 
+[FAILED] Error 2: Cannot query field "Clients" on type "query_root". Did you mean "clients"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/clients/graphql/queries.graphql:138:3
+[FAILED] 
+[FAILED] Error 3: Cannot query field "ClientsAggregate" on type "query_root". Did you mean "clientsAggregate", "filesAggregate", "holidaysAggregate", "leaveAggregate", or "notesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/clients/graphql/queries.graphql:227:3
+[FAILED] 
+[FAILED] Error 4: Cannot query field "ClientsAggregate" on type "query_root". Did you mean "clientsAggregate", "filesAggregate", "holidaysAggregate", "leaveAggregate", or "notesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/clients/graphql/queries.graphql:236:3
+[FAILED] 
+[FAILED] Error 5: Cannot query field "managerUserId" on type "Users". Did you mean "managedUsers", "managerId", "clerkUserId", or "manager"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/shared/graphql/fragments.graphql:50:3
+[SUCCESS] Load GraphQL documents
+[STARTED] Generate
+[FAILED] GraphQL Document Validation failed with 101 errors;
+[FAILED]   Error 0: Cannot query field "BillingItems" on type "query_root". Did you mean "billingItems", "billingItemsByPk", or "billingPlan"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/billing-items-operations.graphql:80:3
+[FAILED] 
+[FAILED] Error 1: Cannot query field "BillingItemByPk" on type "query_root". Did you mean "billingItemsByPk", "billingItems", "billingPlanByPk", "billingInvoiceByPk", or "billingPeriodsByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/billing-items-operations.graphql:91:3
+[FAILED] 
+[FAILED] Error 2: Cannot query field "BillingItemsAggregate" on type "query_root". Did you mean "billingItemsAggregate", "billingPlanAggregate", "billingInvoiceAggregate", "billingPeriodsAggregate", or "billingEventLogAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/billing-items-operations.graphql:99:3
+[FAILED] 
+[FAILED] Error 3: Cannot query field "BillingItems" on type "query_root". Did you mean "billingItems", "billingItemsByPk", or "billingPlan"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/billing-items-operations.graphql:143:3
+[FAILED] 
+[FAILED] Error 4: Cannot query field "BillingItems" on type "query_root". Did you mean "billingItems", "billingItemsByPk", or "billingPlan"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/billing-items-operations.graphql:159:3
+[FAILED] 
+[FAILED] Error 5: Cannot query field "BillingItems" on type "query_root". Did you mean "billingItems", "billingItemsByPk", or "billingPlan"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/billing-items-operations.graphql:173:3
+[FAILED] 
+[FAILED] Error 6: Cannot query field "InsertBillingItemOne" on type "mutation_root". Did you mean "insertBillingItemsOne", "insertBillingItems", "insertBillingPlanOne", "insertBillingInvoice", or "insertBillingInvoiceOne"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/billing-items-operations.graphql:188:3
+[FAILED] 
+[FAILED] Error 7: Cannot query field "UpdateBillingItemByPk" on type "mutation_root". Did you mean "updateBillingItemsByPk", "updateBillingItems", "updateBillingPlanByPk", "deleteBillingItemsByPk", or "updateBillingItemsMany"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/billing-items-operations.graphql:197:3
+[FAILED] 
+[FAILED] Error 8: Cannot query field "DeleteBillingItemByPk" on type "mutation_root". Did you mean "deleteBillingItemsByPk", "deleteBillingItems", "deleteBillingPlanByPk", "updateBillingItemsByPk", or "deleteBillingInvoiceByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/billing-items-operations.graphql:206:3
+[FAILED] 
+[FAILED] Error 9: Cannot query field "UpdateBillingItemsMany" on type "mutation_root". Did you mean "updateBillingItemsMany", "updateBillingItems", "updateBillingItemsByPk", "updateBillingPlanMany", or "updateBillingInvoiceMany"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/billing-items-operations.graphql:217:3
+[FAILED] 
+[FAILED] Error 10: Cannot query field "UpdateBillingItemByPk" on type "mutation_root". Did you mean "updateBillingItemsByPk", "updateBillingItems", "updateBillingPlanByPk", "deleteBillingItemsByPk", or "updateBillingItemsMany"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/billing-items-operations.graphql:236:3
+[FAILED] 
+[FAILED] Error 11: Cannot query field "UpdateBillingItemByPk" on type "mutation_root". Did you mean "updateBillingItemsByPk", "updateBillingItems", "updateBillingPlanByPk", "deleteBillingItemsByPk", or "updateBillingItemsMany"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/billing-items-operations.graphql:254:3
+[FAILED] 
+[FAILED] Error 12: Cannot query field "UpdateBillingItemByPk" on type "mutation_root". Did you mean "updateBillingItemsByPk", "updateBillingItems", "updateBillingPlanByPk", "deleteBillingItemsByPk", or "updateBillingItemsMany"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/billing-items-operations.graphql:269:3
+[FAILED] 
+[FAILED] Error 13: Cannot query field "BillingItems" on type "subscription_root". Did you mean "billingItems", "billingItemsByPk", or "billingPlan"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/billing-items-operations.graphql:284:3
+[FAILED] 
+[FAILED] Error 14: Cannot query field "BillingItemByPk" on type "subscription_root". Did you mean "billingItemsByPk", "billingItems", "billingPlanByPk", "billingInvoiceByPk", or "billingPeriodsByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/billing-items-operations.graphql:294:3
+[FAILED] 
+[FAILED] Error 15: Cannot query field "BillingItemsAggregate" on type "subscription_root". Did you mean "billingItemsAggregate", "billingPlanAggregate", "billingInvoiceAggregate", "billingItemsStream", or "billingPeriodsAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/billing-items-operations.graphql:302:3
+[FAILED] 
+[FAILED] Error 16: Cannot query field "Clients" on type "query_root". Did you mean "clients"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/billing-items-operations.graphql:309:3
+[FAILED] 
+[FAILED] Error 17: Cannot query field "Users" on type "query_root". Did you mean "users"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/billing-items-operations.graphql:321:3
+[FAILED] 
+[FAILED] Error 18: Cannot query field "AuditLogs" on type "query_root".
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/billing-items-operations.graphql:339:3
+[FAILED] 
+[FAILED] Error 19: Unknown type "BillingPlansInsertInput". Did you mean "BillingPlanInsertInput", "BillingItemsInsertInput", "BillingPlanSetInput", "BillingPeriodsInsertInput", or "BillingPlanIncInput"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/core-operations.graphql:6:32
+[FAILED] 
+[FAILED] Error 20: Cannot query field "InsertBillingPlanOne" on type "mutation_root". Did you mean "insertBillingPlanOne", "insertBillingPlan", "insertBillingItemsOne", "insertBillingPeriods", or "insertBillingInvoice"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/core-operations.graphql:7:3
+[FAILED] 
+[FAILED] Error 21: Cannot query field "TimeEntries" on type "query_root". Did you mean "timeEntries" or "timeEntriesByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/core-operations.graphql:25:3
+[FAILED] 
+[FAILED] Error 22: Cannot query field "InsertTimeEntryOne" on type "mutation_root". Did you mean "insertTimeEntriesOne", "insertTimeEntries", "insertClientsOne", "insertFilesOne", or "insertUsersOne"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/core-operations.graphql:43:3
+[FAILED] 
+[FAILED] Error 23: Cannot query field "UpdatePayrollByPk" on type "mutation_root". Did you mean "updatePayrollsByPk", "updatePayrolls", "deletePayrollsByPk", "updatePayrollCycles", or "updatePayrollDates"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/core-operations.graphql:62:3
+[FAILED] 
+[FAILED] Error 24: Cannot query field "BillingInvoice" on type "query_root". Did you mean "billingInvoice", "billingInvoiceByPk", "billingInvoiceItem", "billingItems", or "billingPeriods"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/invoicing-operations.graphql:5:3
+[FAILED] 
+[FAILED] Error 25: Cannot query field "BillingInvoiceByPk" on type "query_root". Did you mean "billingInvoiceByPk", "billingInvoice", "billingInvoiceItem", "billingInvoiceItemByPk", or "billingItemsByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/invoicing-operations.graphql:44:3
+[FAILED] 
+[FAILED] Error 26: Cannot query field "BillingItems" on type "query_root". Did you mean "billingItems", "billingItemsByPk", or "billingPlan"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/invoicing-operations.graphql:79:3
+[FAILED] 
+[FAILED] Error 27: Cannot query field "ClientByPk" on type "query_root". Did you mean "clientsByPk", "clients", "filesByPk", "leaveByPk", or "notesByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/invoicing-operations.graphql:111:3
+[FAILED] 
+[FAILED] Error 28: Cannot query field "BillingInvoiceAggregate" on type "query_root". Did you mean "billingInvoiceAggregate", "billingInvoiceItemAggregate", "billingItemsAggregate", "billingPeriodsAggregate", or "billingPlanAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/invoicing-operations.graphql:123:3
+[FAILED] 
+[FAILED] Error 29: Cannot query field "BillingInvoiceAggregate" on type "query_root". Did you mean "billingInvoiceAggregate", "billingInvoiceItemAggregate", "billingItemsAggregate", "billingPeriodsAggregate", or "billingPlanAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/invoicing-operations.graphql:142:3
+[FAILED] 
+[FAILED] Error 30: Cannot query field "BillingInvoiceAggregate" on type "query_root". Did you mean "billingInvoiceAggregate", "billingInvoiceItemAggregate", "billingItemsAggregate", "billingPeriodsAggregate", or "billingPlanAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/invoicing-operations.graphql:157:3
+[FAILED] 
+[FAILED] Error 31: Cannot query field "BillingInvoiceAggregate" on type "query_root". Did you mean "billingInvoiceAggregate", "billingInvoiceItemAggregate", "billingItemsAggregate", "billingPeriodsAggregate", or "billingPlanAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/invoicing-operations.graphql:172:3
+[FAILED] 
+[FAILED] Error 32: Cannot query field "Clients" on type "query_root". Did you mean "clients"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/invoicing-operations.graphql:190:3
+[FAILED] 
+[FAILED] Error 33: Cannot query field "InsertBillingInvoiceOne" on type "mutation_root". Did you mean "insertBillingInvoiceOne", "insertBillingInvoice", "insertBillingInvoiceItem", "insertBillingInvoiceItemOne", or "insertBillingItemsOne"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/invoicing-operations.graphql:200:3
+[FAILED] 
+[FAILED] Error 34: Cannot query field "UpdateBillingInvoiceByPk" on type "mutation_root". Did you mean "updateBillingInvoiceByPk", "deleteBillingInvoiceByPk", "updateBillingInvoice", "updateBillingInvoiceItem", or "updateBillingInvoiceItemByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/invoicing-operations.graphql:212:3
+[FAILED] 
+[FAILED] Error 35: Cannot query field "UpdateBillingInvoiceByPk" on type "mutation_root". Did you mean "updateBillingInvoiceByPk", "deleteBillingInvoiceByPk", "updateBillingInvoice", "updateBillingInvoiceItem", or "updateBillingInvoiceItemByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/invoicing-operations.graphql:234:3
+[FAILED] 
+[FAILED] Error 36: Cannot query field "UpdateBillingItemsMany" on type "mutation_root". Did you mean "updateBillingItemsMany", "updateBillingItems", "updateBillingItemsByPk", "updateBillingPlanMany", or "updateBillingInvoiceMany"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/invoicing-operations.graphql:257:3
+[FAILED] 
+[FAILED] Error 37: Cannot query field "UpdateBillingInvoiceByPk" on type "mutation_root". Did you mean "updateBillingInvoiceByPk", "deleteBillingInvoiceByPk", "updateBillingInvoice", "updateBillingInvoiceItem", or "updateBillingInvoiceItemByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/invoicing-operations.graphql:274:3
+[FAILED] 
+[FAILED] Error 38: Cannot query field "UpdateBillingItemsMany" on type "mutation_root". Did you mean "updateBillingItemsMany", "updateBillingItems", "updateBillingItemsByPk", "updateBillingPlanMany", or "updateBillingInvoiceMany"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/invoicing-operations.graphql:287:3
+[FAILED] 
+[FAILED] Error 39: Cannot query field "UpdateBillingInvoiceByPk" on type "mutation_root". Did you mean "updateBillingInvoiceByPk", "deleteBillingInvoiceByPk", "updateBillingInvoice", "updateBillingInvoiceItem", or "updateBillingInvoiceItemByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/invoicing-operations.graphql:300:3
+[FAILED] 
+[FAILED] Error 40: Cannot query field "UpdateBillingInvoiceByPk" on type "mutation_root". Did you mean "updateBillingInvoiceByPk", "deleteBillingInvoiceByPk", "updateBillingInvoice", "updateBillingInvoiceItem", or "updateBillingInvoiceItemByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/invoicing-operations.graphql:314:3
+[FAILED] 
+[FAILED] Error 41: Cannot query field "UpdateBillingInvoiceByPk" on type "mutation_root". Did you mean "updateBillingInvoiceByPk", "deleteBillingInvoiceByPk", "updateBillingInvoice", "updateBillingInvoiceItem", or "updateBillingInvoiceItemByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/invoicing-operations.graphql:329:3
+[FAILED] 
+[FAILED] Error 42: Cannot query field "BillingItems" on type "query_root". Did you mean "billingItems", "billingItemsByPk", or "billingPlan"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/invoicing-operations.graphql:344:3
+[FAILED] 
+[FAILED] Error 43: Cannot query field "BillingPeriods" on type "query_root". Did you mean "billingPeriods", "billingPeriodsByPk", "billingInvoice", "billingItems", or "billingPlan"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/invoicing-operations.graphql:361:3
+[FAILED] 
+[FAILED] Error 44: Cannot query field "InsertBillingInvoiceOne" on type "mutation_root". Did you mean "insertBillingInvoiceOne", "insertBillingInvoice", "insertBillingInvoiceItem", "insertBillingInvoiceItemOne", or "insertBillingItemsOne"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/invoicing-operations.graphql:382:3
+[FAILED] 
+[FAILED] Error 45: Cannot query field "InsertBillingPeriodsMany" on type "mutation_root". Did you mean "insertBillingPeriodsOne", "insertBillingPeriods", "updateBillingPeriodsMany", "insertBillingItemsOne", or "insertBillingPlan"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/invoicing-operations.graphql:397:3
+[FAILED] 
+[FAILED] Error 46: Cannot query field "InsertNotesMany" on type "mutation_root". Did you mean "insertNotesOne", "insertNotes", "insertRolesOne", "insertFilesOne", or "insertRoles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/mutations.graphql:5:3
+[FAILED] 
+[FAILED] Error 47: Cannot query field "InsertBillingItemOne" on type "mutation_root". Did you mean "insertBillingItemsOne", "insertBillingItems", "insertBillingPlanOne", "insertBillingInvoice", or "insertBillingInvoiceOne"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/mutations.graphql:37:3
+[FAILED] 
+[FAILED] Error 48: Cannot query field "InsertBillingItemsMany" on type "mutation_root". Did you mean "insertBillingItemsOne", "insertBillingItems", "updateBillingItemsMany", "insertBillingPlan", or "insertBillingEventLog"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/mutations.graphql:53:3
+[FAILED] 
+[FAILED] Error 49: Unknown type "AuditLogsInsertInput". Did you mean "AuditAuditLogInsertInput", "FilesInsertInput", "AppSettingsInsertInput", "ClientsInsertInput", or "FeatureFlagsInsertInput"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/mutations.graphql:69:39
+[FAILED] 
+[FAILED] Error 50: Cannot query field "InsertAuditLogOne" on type "mutation_root". Did you mean "insertAuditAuditLogOne", "insertFilesOne", "insertClientsOne", "insertHolidaysOne", or "insertNotesOne"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/mutations.graphql:70:3
+[FAILED] 
+[FAILED] Error 51: Unknown type "BillingPlansSetInput". Did you mean "BillingPlanSetInput", "BillingPlanInsertInput", "BillingItemsSetInput", "BillingPlanIncInput", or "BillingPeriodsSetInput"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/mutations.graphql:96:46
+[FAILED] 
+[FAILED] Error 52: Cannot query field "UpdateBillingPlanByPk" on type "mutation_root". Did you mean "updateBillingPlanByPk", "deleteBillingPlanByPk", "updateBillingPlan", "updateBillingPlanMany", or "updateBillingItemsByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/mutations.graphql:97:3
+[FAILED] 
+[FAILED] Error 53: Cannot query field "UpdateBillingPlanByPk" on type "mutation_root". Did you mean "updateBillingPlanByPk", "deleteBillingPlanByPk", "updateBillingPlan", "updateBillingPlanMany", or "updateBillingItemsByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/mutations.graphql:112:3
+[FAILED] 
+[FAILED] Error 54: Cannot query field "InsertBillingItemOne" on type "mutation_root". Did you mean "insertBillingItemsOne", "insertBillingItems", "insertBillingPlanOne", "insertBillingInvoice", or "insertBillingInvoiceOne"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/mutations.graphql:122:3
+[FAILED] 
+[FAILED] Error 55: Cannot query field "UpdateBillingItemByPk" on type "mutation_root". Did you mean "updateBillingItemsByPk", "updateBillingItems", "updateBillingPlanByPk", "deleteBillingItemsByPk", or "updateBillingItemsMany"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/mutations.graphql:138:3
+[FAILED] 
+[FAILED] Error 56: Cannot query field "DeleteBillingItemByPk" on type "mutation_root". Did you mean "deleteBillingItemsByPk", "deleteBillingItems", "deleteBillingPlanByPk", "updateBillingItemsByPk", or "deleteBillingInvoiceByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/mutations.graphql:154:3
+[FAILED] 
+[FAILED] Error 57: Cannot query field "Clients" on type "query_root". Did you mean "clients"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/mutations.graphql:162:3
+[FAILED] 
+[FAILED] Error 58: Cannot query field "UpdateTimeEntryByPk" on type "mutation_root". Did you mean "updateTimeEntriesByPk", "updateTimeEntries", "updateClientsByPk", "deleteTimeEntriesByPk", or "updateFilesByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/mutations.graphql:188:3
+[FAILED] 
+[FAILED] Error 59: Unknown type "ClientBillingAssignmentsInsertInput". Did you mean "ClientBillingAssignmentInsertInput", "ClientBillingAssignmentSetInput", "ClientBillingAssignmentIncInput", "ClientBillingAssignmentArrRelInsertInput", or "ClientBillingAssignmentConstraint"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/mutations.graphql:203:76
+[FAILED] 
+[FAILED] Error 60: Cannot query field "DeleteClientBillingAssignmentsMany" on type "mutation_root". Did you mean "deleteClientBillingAssignment", "deleteClientBillingAssignmentByPk", "updateClientBillingAssignmentMany", "insertClientBillingAssignmentOne", or "updateClientBillingAssignment"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/mutations.graphql:205:3
+[FAILED] 
+[FAILED] Error 61: Cannot query field "InsertClientBillingAssignmentsMany" on type "mutation_root". Did you mean "insertClientBillingAssignmentOne", "insertClientBillingAssignment", "updateClientBillingAssignmentMany", "deleteClientBillingAssignment", or "deleteClientBillingAssignmentByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/mutations.graphql:215:3
+[FAILED] 
+[FAILED] Error 62: Cannot query field "Users" on type "query_root". Did you mean "users"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/queries.graphql:5:3
+[FAILED] 
+[FAILED] Error 63: Cannot query field "Clients" on type "query_root". Did you mean "clients"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/queries.graphql:37:3
+[FAILED] 
+[FAILED] Error 64: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/queries.graphql:68:3
+[FAILED] 
+[FAILED] Error 65: Cannot query field "PayrollByPk" on type "query_root". Did you mean "payrollsByPk", "payrolls", "payrollCycles", "payrollDates", or "payrollDatesByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/queries.graphql:104:3
+[FAILED] 
+[FAILED] Error 66: Cannot query field "ClientBillingAssignments" on type "query_root". Did you mean "clientBillingAssignment", "clientBillingAssignmentByPk", or "clientBillingAssignmentAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/queries.graphql:129:3
+[FAILED] 
+[FAILED] Error 67: Cannot query field "BillingPlans" on type "query_root". Did you mean "billingPlan", "billingItems", "billingPlanByPk", or "billingPeriods"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/queries.graphql:155:3
+[FAILED] 
+[FAILED] Error 68: Cannot query field "BillingPlanByPk" on type "query_root". Did you mean "billingPlanByPk", "billingPlan", "billingItemsByPk", "billingPeriodsByPk", or "billingEventLog"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/queries.graphql:175:3
+[FAILED] 
+[FAILED] Error 69: Cannot query field "ClientBillingAssignments" on type "query_root". Did you mean "clientBillingAssignment", "clientBillingAssignmentByPk", or "clientBillingAssignmentAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/queries.graphql:191:3
+[FAILED] 
+[FAILED] Error 70: Cannot query field "BillingItems" on type "query_root". Did you mean "billingItems", "billingItemsByPk", or "billingPlan"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/queries.graphql:225:3
+[FAILED] 
+[FAILED] Error 71: Cannot query field "BillingItems" on type "query_root". Did you mean "billingItems", "billingItemsByPk", or "billingPlan"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/queries.graphql:248:3
+[FAILED] 
+[FAILED] Error 72: Cannot query field "BillingItems" on type "query_root". Did you mean "billingItems", "billingItemsByPk", or "billingPlan"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/queries.graphql:279:3
+[FAILED] 
+[FAILED] Error 73: Cannot query field "BillingItems" on type "query_root". Did you mean "billingItems", "billingItemsByPk", or "billingPlan"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/queries.graphql:306:3
+[FAILED] 
+[FAILED] Error 74: Cannot query field "BillingItems" on type "query_root". Did you mean "billingItems", "billingItemsByPk", or "billingPlan"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/queries.graphql:340:3
+[FAILED] 
+[FAILED] Error 75: Cannot query field "BillingItemsAggregate" on type "query_root". Did you mean "billingItemsAggregate", "billingPlanAggregate", "billingInvoiceAggregate", "billingPeriodsAggregate", or "billingEventLogAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/queries.graphql:367:3
+[FAILED] 
+[FAILED] Error 76: Cannot query field "BillingItems" on type "query_root". Did you mean "billingItems", "billingItemsByPk", or "billingPlan"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/queries.graphql:386:3
+[FAILED] 
+[FAILED] Error 77: Cannot query field "BillingItemByPk" on type "query_root". Did you mean "billingItemsByPk", "billingItems", "billingPlanByPk", "billingInvoiceByPk", or "billingPeriodsByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/queries.graphql:410:3
+[FAILED] 
+[FAILED] Error 78: Cannot query field "TimeEntries" on type "query_root". Did you mean "timeEntries" or "timeEntriesByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/queries.graphql:459:3
+[FAILED] 
+[FAILED] Error 79: Cannot query field "PayrollByPk" on type "query_root". Did you mean "payrollsByPk", "payrolls", "payrollCycles", "payrollDates", or "payrollDatesByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/queries.graphql:481:3
+[FAILED] 
+[FAILED] Error 80: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/queries.graphql:520:3
+[FAILED] 
+[FAILED] Error 81: Cannot query field "BillingInvoiceAggregate" on type "query_root". Did you mean "billingInvoiceAggregate", "billingInvoiceItemAggregate", "billingItemsAggregate", "billingPeriodsAggregate", or "billingPlanAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/reporting-analytics.graphql:6:3
+[FAILED] 
+[FAILED] Error 82: Cannot query field "BillingInvoiceAggregate" on type "query_root". Did you mean "billingInvoiceAggregate", "billingInvoiceItemAggregate", "billingItemsAggregate", "billingPeriodsAggregate", or "billingPlanAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/reporting-analytics.graphql:24:3
+[FAILED] 
+[FAILED] Error 83: Cannot query field "BillingInvoice" on type "query_root". Did you mean "billingInvoice", "billingInvoiceByPk", "billingInvoiceItem", "billingItems", or "billingPeriods"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/reporting-analytics.graphql:33:3
+[FAILED] 
+[FAILED] Error 84: Cannot query field "ClientByPk" on type "query_root". Did you mean "clientsByPk", "clients", "filesByPk", "leaveByPk", or "notesByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/reporting-analytics.graphql:58:3
+[FAILED] 
+[FAILED] Error 85: Cannot query field "ClientByPk" on type "query_root". Did you mean "clientsByPk", "clients", "filesByPk", "leaveByPk", or "notesByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/reporting-analytics.graphql:69:3
+[FAILED] 
+[FAILED] Error 86: Cannot query field "BillingInvoiceAggregate" on type "query_root". Did you mean "billingInvoiceAggregate", "billingInvoiceItemAggregate", "billingItemsAggregate", "billingPeriodsAggregate", or "billingPlanAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/reporting-analytics.graphql:78:3
+[FAILED] 
+[FAILED] Error 87: Cannot query field "ClientsAggregate" on type "query_root". Did you mean "clientsAggregate", "filesAggregate", "holidaysAggregate", "leaveAggregate", or "notesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/reporting-analytics.graphql:93:3
+[FAILED] 
+[FAILED] Error 88: Cannot query field "BillingItems" on type "query_root". Did you mean "billingItems", "billingItemsByPk", or "billingPlan"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/reporting-analytics.graphql:100:3
+[FAILED] 
+[FAILED] Error 89: Cannot query field "BillingInvoice" on type "query_root". Did you mean "billingInvoice", "billingInvoiceByPk", "billingInvoiceItem", "billingItems", or "billingPeriods"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/reporting-analytics.graphql:112:3
+[FAILED] 
+[FAILED] Error 90: Cannot query field "BillingItemsAggregate" on type "query_root". Did you mean "billingItemsAggregate", "billingPlanAggregate", "billingInvoiceAggregate", "billingPeriodsAggregate", or "billingEventLogAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/reporting-analytics.graphql:125:3
+[FAILED] 
+[FAILED] Error 91: Cannot query field "BillingInvoiceAggregate" on type "query_root". Did you mean "billingInvoiceAggregate", "billingInvoiceItemAggregate", "billingItemsAggregate", "billingPeriodsAggregate", or "billingPlanAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/reporting-analytics.graphql:135:3
+[FAILED] 
+[FAILED] Error 92: Cannot query field "BillingItemsAggregate" on type "query_root". Did you mean "billingItemsAggregate", "billingPlanAggregate", "billingInvoiceAggregate", "billingPeriodsAggregate", or "billingEventLogAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/reporting-analytics.graphql:145:3
+[FAILED] 
+[FAILED] Error 93: Cannot query field "BillingItemsAggregate" on type "query_root". Did you mean "billingItemsAggregate", "billingPlanAggregate", "billingInvoiceAggregate", "billingPeriodsAggregate", or "billingEventLogAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/reporting-analytics.graphql:155:3
+[FAILED] 
+[FAILED] Error 94: Cannot query field "BillingItems" on type "query_root". Did you mean "billingItems", "billingItemsByPk", or "billingPlan"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/reporting-analytics.graphql:169:3
+[FAILED] 
+[FAILED] Error 95: Cannot query field "BillingInvoice" on type "query_root". Did you mean "billingInvoice", "billingInvoiceByPk", "billingInvoiceItem", "billingItems", or "billingPeriods"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/reporting-analytics.graphql:182:3
+[FAILED] 
+[FAILED] Error 96: Cannot query field "BillingInvoiceAggregate" on type "query_root". Did you mean "billingInvoiceAggregate", "billingInvoiceItemAggregate", "billingItemsAggregate", "billingPeriodsAggregate", or "billingPlanAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/reporting-analytics.graphql:197:3
+[FAILED] 
+[FAILED] Error 97: Cannot query field "BillingInvoiceAggregate" on type "query_root". Did you mean "billingInvoiceAggregate", "billingInvoiceItemAggregate", "billingItemsAggregate", "billingPeriodsAggregate", or "billingPlanAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/reporting-analytics.graphql:211:3
+[FAILED] 
+[FAILED] Error 98: Cannot query field "BillingInvoiceAggregate" on type "query_root". Did you mean "billingInvoiceAggregate", "billingInvoiceItemAggregate", "billingItemsAggregate", "billingPeriodsAggregate", or "billingPlanAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/reporting-analytics.graphql:225:3
+[FAILED] 
+[FAILED] Error 99: Cannot query field "ClientsAggregate" on type "query_root". Did you mean "clientsAggregate", "filesAggregate", "holidaysAggregate", "leaveAggregate", or "notesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/billing/graphql/reporting-analytics.graphql:239:3
+[FAILED] 
+[FAILED] Error 100: Too many validation errors, error limit reached. Validation aborted.
+[SUCCESS] Load GraphQL documents
+[STARTED] Generate
+[FAILED] GraphQL Document Validation failed with 83 errors;
+[FAILED]   Error 0: Cannot query field "manager" on type "Payrolls".
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/mutations.graphql:28:5
+[FAILED] 
+[FAILED] Error 1: Cannot query field "manager" on type "Payrolls".
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/mutations.graphql:56:5
+[FAILED] 
+[FAILED] Error 2: Unknown type "PayrollStatusEnum". Did you mean "payroll_status", "PayrollDates", "PayrollsMaxFields", "PayrollsSetInput", or "user_status_enum"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/mutations.graphql:84:51
+[FAILED] 
+[FAILED] Error 3: Cannot query field "manager" on type "Payrolls".
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/mutations.graphql:154:5
+[FAILED] 
+[FAILED] Error 4: Cannot query field "manager" on type "Payrolls".
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/mutations.graphql:194:5
+[FAILED] 
+[FAILED] Error 5: Cannot query field "manager" on type "Payrolls".
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/mutations.graphql:283:7
+[FAILED] 
+[FAILED] Error 6: Unknown type "PayrollStatusEnum". Did you mean "payroll_status", "PayrollDates", "PayrollsMaxFields", "PayrollsSetInput", or "user_status_enum"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/mutations.graphql:296:12
+[FAILED] 
+[FAILED] Error 7: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/mutations.graphql:546:3
+[FAILED] 
+[FAILED] Error 8: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:7:3
+[FAILED] 
+[FAILED] Error 9: Cannot query field "PayrollsAggregate" on type "query_root". Did you mean "payrollsAggregate", "payrollDatesAggregate", "rolesAggregate", "payrollCyclesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:15:3
+[FAILED] 
+[FAILED] Error 10: Cannot query field "manager" on type "Payrolls".
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:70:5
+[FAILED] 
+[FAILED] Error 11: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:83:3
+[FAILED] 
+[FAILED] Error 12: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:92:3
+[FAILED] 
+[FAILED] Error 13: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:105:3
+[FAILED] 
+[FAILED] Error 14: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:114:3
+[FAILED] 
+[FAILED] Error 15: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:124:3
+[FAILED] 
+[FAILED] Error 16: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:134:3
+[FAILED] 
+[FAILED] Error 17: Cannot query field "PayrollsAggregate" on type "query_root". Did you mean "payrollsAggregate", "payrollDatesAggregate", "rolesAggregate", "payrollCyclesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:147:3
+[FAILED] 
+[FAILED] Error 18: Cannot query field "PayrollsAggregate" on type "query_root". Did you mean "payrollsAggregate", "payrollDatesAggregate", "rolesAggregate", "payrollCyclesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:155:3
+[FAILED] 
+[FAILED] Error 19: Cannot query field "PayrollsAggregate" on type "query_root". Did you mean "payrollsAggregate", "payrollDatesAggregate", "rolesAggregate", "payrollCyclesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:163:3
+[FAILED] 
+[FAILED] Error 20: Cannot query field "PayrollsAggregate" on type "query_root". Did you mean "payrollsAggregate", "payrollDatesAggregate", "rolesAggregate", "payrollCyclesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:173:3
+[FAILED] 
+[FAILED] Error 21: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:184:3
+[FAILED] 
+[FAILED] Error 22: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:204:3
+[FAILED] 
+[FAILED] Error 23: Cannot query field "PayrollsAggregate" on type "query_root". Did you mean "payrollsAggregate", "payrollDatesAggregate", "rolesAggregate", "payrollCyclesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:299:3
+[FAILED] 
+[FAILED] Error 24: Cannot query field "PayrollsAggregate" on type "query_root". Did you mean "payrollsAggregate", "payrollDatesAggregate", "rolesAggregate", "payrollCyclesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:305:3
+[FAILED] 
+[FAILED] Error 25: Cannot query field "PayrollsAggregate" on type "query_root". Did you mean "payrollsAggregate", "payrollDatesAggregate", "rolesAggregate", "payrollCyclesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:311:3
+[FAILED] 
+[FAILED] Error 26: Cannot query field "PayrollsAggregate" on type "query_root". Did you mean "payrollsAggregate", "payrollDatesAggregate", "rolesAggregate", "payrollCyclesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:319:3
+[FAILED] 
+[FAILED] Error 27: Cannot query field "PayrollsAggregate" on type "query_root". Did you mean "payrollsAggregate", "payrollDatesAggregate", "rolesAggregate", "payrollCyclesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:325:3
+[FAILED] 
+[FAILED] Error 28: Cannot query field "PayrollsAggregate" on type "query_root". Did you mean "payrollsAggregate", "payrollDatesAggregate", "rolesAggregate", "payrollCyclesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:331:3
+[FAILED] 
+[FAILED] Error 29: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:339:3
+[FAILED] 
+[FAILED] Error 30: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:363:3
+[FAILED] 
+[FAILED] Error 31: Unknown type "PayrollStatusEnum". Did you mean "payroll_status", "PayrollDates", "PayrollsMaxFields", "PayrollsSetInput", or "user_status_enum"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:383:36
+[FAILED] 
+[FAILED] Error 32: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:384:3
+[FAILED] 
+[FAILED] Error 33: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:393:3
+[FAILED] 
+[FAILED] Error 34: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:406:3
+[FAILED] 
+[FAILED] Error 35: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:420:3
+[FAILED] 
+[FAILED] Error 36: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:436:3
+[FAILED] 
+[FAILED] Error 37: Cannot query field "PayrollCycles" on type "query_root". Did you mean "payrollCycles", "payrollCyclesByPk", "payrollDates", "payrolls", or "payrollsByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:452:3
+[FAILED] 
+[FAILED] Error 38: Cannot query field "PayrollDateTypes" on type "query_root". Did you mean "payrollDateTypes", "payrollDateTypesByPk", "payrollDates", "payrollDatesByPk", or "payrollCycles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:462:3
+[FAILED] 
+[FAILED] Error 39: Cannot query field "manager" on type "Payrolls".
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:514:5
+[FAILED] 
+[FAILED] Error 40: Cannot query field "Users" on type "query_root". Did you mean "users"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:533:3
+[FAILED] 
+[FAILED] Error 41: Cannot query field "PayrollCycles" on type "query_root". Did you mean "payrollCycles", "payrollCyclesByPk", "payrollDates", "payrolls", or "payrollsByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:545:3
+[FAILED] 
+[FAILED] Error 42: Cannot query field "PayrollDateTypes" on type "query_root". Did you mean "payrollDateTypes", "payrollDateTypesByPk", "payrollDates", "payrollDatesByPk", or "payrollCycles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:552:3
+[FAILED] 
+[FAILED] Error 43: Cannot query field "PayrollDates" on type "query_root". Did you mean "payrollDates", "payrollCycles", "payrollDateTypes", "payrollDatesByPk", or "payrolls"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:561:3
+[FAILED] 
+[FAILED] Error 44: Cannot query field "PayrollDates" on type "query_root". Did you mean "payrollDates", "payrollCycles", "payrollDateTypes", "payrollDatesByPk", or "payrolls"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:577:3
+[FAILED] 
+[FAILED] Error 45: Cannot query field "PayrollDates" on type "query_root". Did you mean "payrollDates", "payrollCycles", "payrollDateTypes", "payrollDatesByPk", or "payrolls"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:608:3
+[FAILED] 
+[FAILED] Error 46: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:636:3
+[FAILED] 
+[FAILED] Error 47: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:652:3
+[FAILED] 
+[FAILED] Error 48: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:677:3
+[FAILED] 
+[FAILED] Error 49: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:683:3
+[FAILED] 
+[FAILED] Error 50: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:694:3
+[FAILED] 
+[FAILED] Error 51: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:705:3
+[FAILED] 
+[FAILED] Error 52: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:728:3
+[FAILED] 
+[FAILED] Error 53: Cannot query field "PayrollsAggregate" on type "query_root". Did you mean "payrollsAggregate", "payrollDatesAggregate", "rolesAggregate", "payrollCyclesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:737:3
+[FAILED] 
+[FAILED] Error 54: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:751:3
+[FAILED] 
+[FAILED] Error 55: Cannot query field "PayrollsAggregate" on type "query_root". Did you mean "payrollsAggregate", "payrollDatesAggregate", "rolesAggregate", "payrollCyclesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:772:3
+[FAILED] 
+[FAILED] Error 56: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:795:3
+[FAILED] 
+[FAILED] Error 57: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:804:3
+[FAILED] 
+[FAILED] Error 58: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:813:3
+[FAILED] 
+[FAILED] Error 59: Cannot query field "generatePayrollDates" on type "query_root". Did you mean "payrollDates"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:828:3
+[FAILED] 
+[FAILED] Error 60: Cannot query field "generatePayrollDates" on type "query_root". Did you mean "payrollDates"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:854:3
+[FAILED] 
+[FAILED] Error 61: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:875:3
+[FAILED] 
+[FAILED] Error 62: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:925:3
+[FAILED] 
+[FAILED] Error 63: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:969:3
+[FAILED] 
+[FAILED] Error 64: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:991:3
+[FAILED] 
+[FAILED] Error 65: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:1020:3
+[FAILED] 
+[FAILED] Error 66: Cannot query field "PayrollsAggregate" on type "query_root". Did you mean "payrollsAggregate", "payrollDatesAggregate", "rolesAggregate", "payrollCyclesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:1097:3
+[FAILED] 
+[FAILED] Error 67: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:1113:3
+[FAILED] 
+[FAILED] Error 68: Cannot query field "PayrollsAggregate" on type "query_root". Did you mean "payrollsAggregate", "payrollDatesAggregate", "rolesAggregate", "payrollCyclesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/queries.graphql:1155:3
+[FAILED] 
+[FAILED] Error 69: Cannot query field "Payrolls" on type "subscription_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/subscriptions.graphql:7:3
+[FAILED] 
+[FAILED] Error 70: Cannot query field "Payrolls" on type "subscription_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/subscriptions.graphql:16:3
+[FAILED] 
+[FAILED] Error 71: Cannot query field "Payrolls" on type "subscription_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/subscriptions.graphql:23:3
+[FAILED] 
+[FAILED] Error 72: Cannot query field "PayrollsAggregate" on type "subscription_root". Did you mean "payrollsAggregate", "payrollDatesAggregate", "rolesAggregate", "payrollCyclesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/subscriptions.graphql:40:3
+[FAILED] 
+[FAILED] Error 73: Cannot query field "Payrolls" on type "subscription_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/subscriptions.graphql:51:3
+[FAILED] 
+[FAILED] Error 74: Cannot query field "PayrollDates" on type "subscription_root". Did you mean "payrollDates", "payrollCycles", "payrollDateTypes", "payrollDatesByPk", or "payrolls"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/subscriptions.graphql:67:3
+[FAILED] 
+[FAILED] Error 75: Cannot query field "PayrollDates" on type "subscription_root". Did you mean "payrollDates", "payrollCycles", "payrollDateTypes", "payrollDatesByPk", or "payrolls"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/subscriptions.graphql:81:3
+[FAILED] 
+[FAILED] Error 76: Cannot query field "Payrolls" on type "subscription_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/subscriptions.graphql:99:3
+[FAILED] 
+[FAILED] Error 77: Cannot query field "Payrolls" on type "subscription_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/subscriptions.graphql:124:3
+[FAILED] 
+[FAILED] Error 78: Cannot query field "manager" on type "Payrolls".
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/fragments.graphql:37:3
+[FAILED] 
+[FAILED] Error 79: Cannot query field "payrollRequiredSkills" on type "Payrolls". Did you mean "requiredSkills"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/fragments.graphql:58:3
+[FAILED] 
+[FAILED] Error 80: Cannot query field "relatedPayroll" on type "PayrollDates".
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/fragments.graphql:144:3
+[FAILED] 
+[FAILED] Error 81: Cannot query field "payrollRequiredSkills" on type "Payrolls". Did you mean "requiredSkills"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/payrolls/graphql/fragments.graphql:153:3
+[FAILED] 
+[FAILED] Error 82: Cannot query field "managerUserId" on type "Users". Did you mean "managedUsers", "managerId", "clerkUserId", or "manager"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/shared/graphql/fragments.graphql:50:3
+[SUCCESS] Load GraphQL documents
+[STARTED] Generate
+[FAILED] GraphQL Document Validation failed with 63 errors;
+[FAILED]   Error 0: Unknown type "notesInsertInput". Did you mean "NotesInsertInput", "RolesInsertInput", "FilesInsertInput", "NotesSetInput", or "UsersInsertInput"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/mutations.graphql:6:30
+[FAILED] 
+[FAILED] Error 1: Cannot query field "insertNote" on type "mutation_root". Did you mean "insertNotes", "insertRoles", "insertFiles", "insertLeave", or "insertNotesOne"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/mutations.graphql:7:3
+[FAILED] 
+[FAILED] Error 2: Cannot query field "insertNote" on type "mutation_root". Did you mean "insertNotes", "insertRoles", "insertFiles", "insertLeave", or "insertNotesOne"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/mutations.graphql:19:3
+[FAILED] 
+[FAILED] Error 3: Unknown type "notesSetInput". Did you mean "NotesSetInput", "RolesSetInput", "FilesSetInput", "NotesInsertInput", or "UsersSetInput"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/mutations.graphql:32:39
+[FAILED] 
+[FAILED] Error 4: Cannot query field "updateNoteById" on type "mutation_root". Did you mean "updateNotesByPk", "updateNotes", "updateNotesMany", "updateRolesByPk", or "updateFilesByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/mutations.graphql:33:3
+[FAILED] 
+[FAILED] Error 5: Cannot query field "updateNoteById" on type "mutation_root". Did you mean "updateNotesByPk", "updateNotes", "updateNotesMany", "updateRolesByPk", or "updateFilesByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/mutations.graphql:43:3
+[FAILED] 
+[FAILED] Error 6: Cannot query field "deleteNoteById" on type "mutation_root". Did you mean "deleteNotesByPk", "deleteNotes", "deleteRolesByPk", "deleteFilesByPk", or "deleteLeaveByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/mutations.graphql:56:3
+[FAILED] 
+[FAILED] Error 7: Cannot query field "updateNoteById" on type "mutation_root". Did you mean "updateNotesByPk", "updateNotes", "updateNotesMany", "updateRolesByPk", or "updateFilesByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/mutations.graphql:66:3
+[FAILED] 
+[FAILED] Error 8: Cannot query field "updateNoteById" on type "mutation_root". Did you mean "updateNotesByPk", "updateNotes", "updateNotesMany", "updateRolesByPk", or "updateFilesByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/mutations.graphql:75:3
+[FAILED] 
+[FAILED] Error 9: Cannot query field "updateNoteById" on type "mutation_root". Did you mean "updateNotesByPk", "updateNotes", "updateNotesMany", "updateRolesByPk", or "updateFilesByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/mutations.graphql:84:3
+[FAILED] 
+[FAILED] Error 10: Cannot query field "insertNote" on type "mutation_root". Did you mean "insertNotes", "insertRoles", "insertFiles", "insertLeave", or "insertNotesOne"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/mutations.graphql:99:3
+[FAILED] 
+[FAILED] Error 11: Cannot query field "insertNote" on type "mutation_root". Did you mean "insertNotes", "insertRoles", "insertFiles", "insertLeave", or "insertNotesOne"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/mutations.graphql:118:3
+[FAILED] 
+[FAILED] Error 12: Cannot query field "insertNote" on type "mutation_root". Did you mean "insertNotes", "insertRoles", "insertFiles", "insertLeave", or "insertNotesOne"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/mutations.graphql:137:3
+[FAILED] 
+[FAILED] Error 13: Cannot query field "DeleteNotes" on type "mutation_root". Did you mean "deleteNotes", "deleteRoles", "deleteFiles", "deleteNotesByPk", or "deleteUsers"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/mutations.graphql:152:3
+[FAILED] 
+[FAILED] Error 14: Cannot query field "bulkUpdateNotes" on type "mutation_root". Did you mean "updateNotes", "updateRoles", "deleteNotes", or "updateFiles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/mutations.graphql:164:3
+[FAILED] 
+[FAILED] Error 15: Cannot query field "bulkUpdateNotes" on type "mutation_root". Did you mean "updateNotes", "updateRoles", "deleteNotes", or "updateFiles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/mutations.graphql:176:3
+[FAILED] 
+[FAILED] Error 16: Unknown type "notesBoolExp". Did you mean "NotesBoolExp", "RolesBoolExp", "FilesBoolExp", "UsersBoolExp", or "ClientsBoolExp"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/mutations.graphql:187:34
+[FAILED] 
+[FAILED] Error 17: Unknown type "notesSetInput". Did you mean "NotesSetInput", "RolesSetInput", "FilesSetInput", "NotesInsertInput", or "UsersSetInput"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/mutations.graphql:187:55
+[FAILED] 
+[FAILED] Error 18: Cannot query field "bulkUpdateNotes" on type "mutation_root". Did you mean "updateNotes", "updateRoles", "deleteNotes", or "updateFiles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/mutations.graphql:188:3
+[FAILED] 
+[FAILED] Error 19: Cannot query field "bulkDeleteNotes" on type "mutation_root". Did you mean "deleteNotes", "deleteRoles", "updateNotes", or "deleteFiles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/mutations.graphql:198:3
+[FAILED] 
+[FAILED] Error 20: Cannot query field "bulkDeleteNotes" on type "mutation_root". Did you mean "deleteNotes", "deleteRoles", "updateNotes", or "deleteFiles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/mutations.graphql:213:3
+[FAILED] 
+[FAILED] Error 21: Cannot query field "bulkUpdateNotes" on type "mutation_root". Did you mean "updateNotes", "updateRoles", "deleteNotes", or "updateFiles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/mutations.graphql:229:3
+[FAILED] 
+[FAILED] Error 22: Cannot query field "bulkUpdateNotes" on type "mutation_root". Did you mean "updateNotes", "updateRoles", "deleteNotes", or "updateFiles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/mutations.graphql:246:3
+[FAILED] 
+[FAILED] Error 23: Cannot query field "insertNote" on type "mutation_root". Did you mean "insertNotes", "insertRoles", "insertFiles", "insertLeave", or "insertNotesOne"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/mutations.graphql:306:3
+[FAILED] 
+[FAILED] Error 24: Cannot query field "updateNoteById" on type "mutation_root". Did you mean "updateNotesByPk", "updateNotes", "updateNotesMany", "updateRolesByPk", or "updateFilesByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/mutations.graphql:324:3
+[FAILED] 
+[FAILED] Error 25: Cannot query field "Notes" on type "query_root". Did you mean "notes", "roles", or "files"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/queries.graphql:7:3
+[FAILED] 
+[FAILED] Error 26: Cannot query field "NotesAggregate" on type "query_root". Did you mean "notesAggregate", "rolesAggregate", "filesAggregate", "usersAggregate", or "clientsAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/queries.graphql:15:3
+[FAILED] 
+[FAILED] Error 27: Cannot query field "NoteByPk" on type "query_root". Did you mean "notesByPk", "rolesByPk", "filesByPk", "leaveByPk", or "notes"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/queries.graphql:23:3
+[FAILED] 
+[FAILED] Error 28: Cannot query field "NoteByPk" on type "query_root". Did you mean "notesByPk", "rolesByPk", "filesByPk", "leaveByPk", or "notes"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/queries.graphql:29:3
+[FAILED] 
+[FAILED] Error 29: Field "authorUser" is not defined by type "NotesBoolExp". Did you mean "author"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/queries.graphql:151:11
+[FAILED] 
+[FAILED] Error 30: Unknown type "notesBoolExp". Did you mean "NotesBoolExp", "RolesBoolExp", "FilesBoolExp", "UsersBoolExp", or "ClientsBoolExp"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/queries.graphql:311:11
+[FAILED] 
+[FAILED] Error 31: Unknown type "notesBoolExp". Did you mean "NotesBoolExp", "RolesBoolExp", "FilesBoolExp", "UsersBoolExp", or "ClientsBoolExp"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/queries.graphql:336:11
+[FAILED] 
+[FAILED] Error 32: Unknown type "notesOrderBy". Did you mean "NotesOrderBy", "RolesOrderBy", "FilesOrderBy", "NotesMaxOrderBy", or "NotesMinOrderBy"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/queries.graphql:337:14
+[FAILED] 
+[FAILED] Error 33: Cannot query field "NotesAggregate" on type "query_root". Did you mean "notesAggregate", "rolesAggregate", "filesAggregate", "usersAggregate", or "clientsAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/queries.graphql:348:3
+[FAILED] 
+[FAILED] Error 34: Cannot query field "NotesAggregate" on type "query_root". Did you mean "notesAggregate", "rolesAggregate", "filesAggregate", "usersAggregate", or "clientsAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/queries.graphql:373:3
+[FAILED] 
+[FAILED] Error 35: Field "authorUser" is not defined by type "NotesBoolExp". Did you mean "author"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/queries.graphql:394:11
+[FAILED] 
+[FAILED] Error 36: Cannot query field "NotesAggregate" on type "query_root". Did you mean "notesAggregate", "rolesAggregate", "filesAggregate", "usersAggregate", or "clientsAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/queries.graphql:404:3
+[FAILED] 
+[FAILED] Error 37: Cannot query field "Notes" on type "subscription_root". Did you mean "notes", "roles", or "files"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/subscriptions.graphql:7:3
+[FAILED] 
+[FAILED] Error 38: Cannot query field "Notes" on type "subscription_root". Did you mean "notes", "roles", or "files"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/subscriptions.graphql:19:3
+[FAILED] 
+[FAILED] Error 39: Cannot query field "Notes" on type "subscription_root". Did you mean "notes", "roles", or "files"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/subscriptions.graphql:31:3
+[FAILED] 
+[FAILED] Error 40: Cannot query field "Notes" on type "subscription_root". Did you mean "notes", "roles", or "files"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/subscriptions.graphql:38:3
+[FAILED] 
+[FAILED] Error 41: Cannot query field "Notes" on type "subscription_root". Did you mean "notes", "roles", or "files"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/subscriptions.graphql:50:3
+[FAILED] 
+[FAILED] Error 42: Cannot query field "Notes" on type "subscription_root". Did you mean "notes", "roles", or "files"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/subscriptions.graphql:62:3
+[FAILED] 
+[FAILED] Error 43: Cannot query field "Notes" on type "subscription_root". Did you mean "notes", "roles", or "files"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/subscriptions.graphql:75:3
+[FAILED] 
+[FAILED] Error 44: Cannot query field "Notes" on type "subscription_root". Did you mean "notes", "roles", or "files"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/subscriptions.graphql:84:3
+[FAILED] 
+[FAILED] Error 45: Cannot query field "Notes" on type "subscription_root". Did you mean "notes", "roles", or "files"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/subscriptions.graphql:93:3
+[FAILED] 
+[FAILED] Error 46: Cannot query field "Notes" on type "subscription_root". Did you mean "notes", "roles", or "files"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/subscriptions.graphql:103:3
+[FAILED] 
+[FAILED] Error 47: Cannot query field "Notes" on type "subscription_root". Did you mean "notes", "roles", or "files"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/subscriptions.graphql:117:3
+[FAILED] 
+[FAILED] Error 48: Cannot query field "Notes" on type "subscription_root". Did you mean "notes", "roles", or "files"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/subscriptions.graphql:178:3
+[FAILED] 
+[FAILED] Error 49: Cannot query field "Notes" on type "subscription_root". Did you mean "notes", "roles", or "files"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/subscriptions.graphql:191:3
+[FAILED] 
+[FAILED] Error 50: Cannot query field "Notes" on type "subscription_root". Did you mean "notes", "roles", or "files"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/subscriptions.graphql:203:3
+[FAILED] 
+[FAILED] Error 51: Cannot query field "Notes" on type "subscription_root". Did you mean "notes", "roles", or "files"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/subscriptions.graphql:218:3
+[FAILED] 
+[FAILED] Error 52: Cannot query field "Notes" on type "subscription_root". Did you mean "notes", "roles", or "files"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/subscriptions.graphql:227:3
+[FAILED] 
+[FAILED] Error 53: Cannot query field "Notes" on type "subscription_root". Did you mean "notes", "roles", or "files"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/subscriptions.graphql:237:3
+[FAILED] 
+[FAILED] Error 54: Cannot query field "Notes" on type "subscription_root". Did you mean "notes", "roles", or "files"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/subscriptions.graphql:252:3
+[FAILED] 
+[FAILED] Error 55: Cannot query field "Notes" on type "subscription_root". Did you mean "notes", "roles", or "files"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/subscriptions.graphql:263:3
+[FAILED] 
+[FAILED] Error 56: Cannot query field "Notes" on type "subscription_root". Did you mean "notes", "roles", or "files"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/subscriptions.graphql:289:3
+[FAILED] 
+[FAILED] Error 57: Cannot query field "Notes" on type "subscription_root". Did you mean "notes", "roles", or "files"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/subscriptions.graphql:298:3
+[FAILED] 
+[FAILED] Error 58: Cannot query field "authorUser" on type "Notes". Did you mean "author"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/fragments.graphql:18:3
+[FAILED] 
+[FAILED] Error 59: Cannot query field "authorUser" on type "Notes". Did you mean "author"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/fragments.graphql:54:3
+[FAILED] 
+[FAILED] Error 60: Cannot query field "authorUser" on type "Notes". Did you mean "author"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/fragments.graphql:89:3
+[FAILED] 
+[FAILED] Error 61: Cannot query field "authorUser" on type "Notes". Did you mean "author"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/notes/graphql/fragments.graphql:100:3
+[FAILED] 
+[FAILED] Error 62: Cannot query field "managerUserId" on type "Users". Did you mean "managedUsers", "managerId", "clerkUserId", or "manager"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/shared/graphql/fragments.graphql:50:3
+[SUCCESS] Load GraphQL documents
+[STARTED] Generate
+[FAILED] GraphQL Document Validation failed with 75 errors;
+[FAILED]   Error 0: Cannot query field "InsertLeaveOne" on type "mutation_root". Did you mean "insertLeaveOne", "insertLeave", "insertClientsOne", "insertFilesOne", or "insertNotesOne"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/mutations.graphql:7:3
+[FAILED] 
+[FAILED] Error 1: Cannot query field "UpdateLeaveByPk" on type "mutation_root". Did you mean "updateLeaveByPk", "deleteLeaveByPk", "updateLeave", "updateLeaveMany", or "updateClientsByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/mutations.graphql:27:3
+[FAILED] 
+[FAILED] Error 2: Cannot query field "DeleteLeaveByPk" on type "mutation_root". Did you mean "deleteLeaveByPk", "deleteLeave", "updateLeaveByPk", "deleteClientsByPk", or "deleteFilesByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/mutations.graphql:40:3
+[FAILED] 
+[FAILED] Error 3: Cannot query field "InsertLeaveOne" on type "mutation_root". Did you mean "insertLeaveOne", "insertLeave", "insertClientsOne", "insertFilesOne", or "insertNotesOne"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/mutations.graphql:55:3
+[FAILED] 
+[FAILED] Error 4: Cannot query field "InsertLeaveOne" on type "mutation_root". Did you mean "insertLeaveOne", "insertLeave", "insertClientsOne", "insertFilesOne", or "insertNotesOne"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/mutations.graphql:82:3
+[FAILED] 
+[FAILED] Error 5: Cannot query field "InsertLeaveOne" on type "mutation_root". Did you mean "insertLeaveOne", "insertLeave", "insertClientsOne", "insertFilesOne", or "insertNotesOne"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/mutations.graphql:109:3
+[FAILED] 
+[FAILED] Error 6: Cannot query field "InsertLeaveOne" on type "mutation_root". Did you mean "insertLeaveOne", "insertLeave", "insertClientsOne", "insertFilesOne", or "insertNotesOne"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/mutations.graphql:136:3
+[FAILED] 
+[FAILED] Error 7: Cannot query field "UpdateLeaveByPk" on type "mutation_root". Did you mean "updateLeaveByPk", "deleteLeaveByPk", "updateLeave", "updateLeaveMany", or "updateClientsByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/mutations.graphql:159:3
+[FAILED] 
+[FAILED] Error 8: Cannot query field "UpdateLeaveByPk" on type "mutation_root". Did you mean "updateLeaveByPk", "deleteLeaveByPk", "updateLeave", "updateLeaveMany", or "updateClientsByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/mutations.graphql:175:3
+[FAILED] 
+[FAILED] Error 9: Cannot query field "UpdateLeaveByPk" on type "mutation_root". Did you mean "updateLeaveByPk", "deleteLeaveByPk", "updateLeave", "updateLeaveMany", or "updateClientsByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/mutations.graphql:191:3
+[FAILED] 
+[FAILED] Error 10: Cannot query field "UpdateLeave" on type "mutation_root". Did you mean "updateLeave", "deleteLeave", "updateLeaveByPk", "updateLeaveMany", or "updateClients"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/mutations.graphql:201:3
+[FAILED] 
+[FAILED] Error 11: Cannot query field "UpdateLeave" on type "mutation_root". Did you mean "updateLeave", "deleteLeave", "updateLeaveByPk", "updateLeaveMany", or "updateClients"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/mutations.graphql:213:3
+[FAILED] 
+[FAILED] Error 12: Cannot query field "DeleteLeave" on type "mutation_root". Did you mean "deleteLeave", "deleteLeaveByPk", "updateLeave", "deleteClients", or "deleteFiles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/mutations.graphql:225:3
+[FAILED] 
+[FAILED] Error 13: Cannot query field "UpdateLeaveByPk" on type "mutation_root". Did you mean "updateLeaveByPk", "deleteLeaveByPk", "updateLeave", "updateLeaveMany", or "updateClientsByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/mutations.graphql:244:3
+[FAILED] 
+[FAILED] Error 14: Cannot query field "UpdateLeaveByPk" on type "mutation_root". Did you mean "updateLeaveByPk", "deleteLeaveByPk", "updateLeave", "updateLeaveMany", or "updateClientsByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/mutations.graphql:269:3
+[FAILED] 
+[FAILED] Error 15: Cannot query field "UpdateLeaveByPk" on type "mutation_root". Did you mean "updateLeaveByPk", "deleteLeaveByPk", "updateLeave", "updateLeaveMany", or "updateClientsByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/mutations.graphql:281:3
+[FAILED] 
+[FAILED] Error 16: Cannot query field "UpdateLeaveByPk" on type "mutation_root". Did you mean "updateLeaveByPk", "deleteLeaveByPk", "updateLeave", "updateLeaveMany", or "updateClientsByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/mutations.graphql:290:3
+[FAILED] 
+[FAILED] Error 17: Cannot query field "DeleteLeaveByPk" on type "mutation_root". Did you mean "deleteLeaveByPk", "deleteLeave", "updateLeaveByPk", "deleteClientsByPk", or "deleteFilesByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/mutations.graphql:300:3
+[FAILED] 
+[FAILED] Error 18: Cannot query field "UpdateLeaveByPk" on type "mutation_root". Did you mean "updateLeaveByPk", "deleteLeaveByPk", "updateLeave", "updateLeaveMany", or "updateClientsByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/mutations.graphql:316:3
+[FAILED] 
+[FAILED] Error 19: Cannot query field "InsertLeaveOne" on type "mutation_root". Did you mean "insertLeaveOne", "insertLeave", "insertClientsOne", "insertFilesOne", or "insertNotesOne"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/mutations.graphql:338:3
+[FAILED] 
+[FAILED] Error 20: Cannot query field "UpdateLeaveByPk" on type "mutation_root". Did you mean "updateLeaveByPk", "deleteLeaveByPk", "updateLeave", "updateLeaveMany", or "updateClientsByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/mutations.graphql:365:3
+[FAILED] 
+[FAILED] Error 21: Cannot query field "DeleteLeaveByPk" on type "mutation_root". Did you mean "deleteLeaveByPk", "deleteLeave", "updateLeaveByPk", "deleteClientsByPk", or "deleteFilesByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/mutations.graphql:379:3
+[FAILED] 
+[FAILED] Error 22: Cannot query field "InsertLeaveOne" on type "mutation_root". Did you mean "insertLeaveOne", "insertLeave", "insertClientsOne", "insertFilesOne", or "insertNotesOne"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/mutations.graphql:395:3
+[FAILED] 
+[FAILED] Error 23: Cannot query field "InsertLeaveOne" on type "mutation_root". Did you mean "insertLeaveOne", "insertLeave", "insertClientsOne", "insertFilesOne", or "insertNotesOne"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/mutations.graphql:432:3
+[FAILED] 
+[FAILED] Error 24: Unknown type "leaveBoolExp". Did you mean "LeaveBoolExp", "ClientsBoolExp", "FilesBoolExp", "NotesBoolExp", or "RolesBoolExp"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/queries.graphql:6:60
+[FAILED] 
+[FAILED] Error 25: Cannot query field "LeaveAggregate" on type "query_root". Did you mean "leaveAggregate", "clientsAggregate", "filesAggregate", "notesAggregate", or "rolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/queries.graphql:15:3
+[FAILED] 
+[FAILED] Error 26: Cannot query field "leaveById" on type "query_root". Did you mean "leaveByPk" or "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/queries.graphql:23:3
+[FAILED] 
+[FAILED] Error 27: Cannot query field "leaveById" on type "query_root". Did you mean "leaveByPk" or "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/queries.graphql:29:3
+[FAILED] 
+[FAILED] Error 28: Cannot query field "leaveById" on type "query_root". Did you mean "leaveByPk" or "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/queries.graphql:54:3
+[FAILED] 
+[FAILED] Error 29: Field "leaveUser" is not defined by type "LeaveBoolExp". Did you mean "leaveType"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/queries.graphql:249:7
+[FAILED] 
+[FAILED] Error 30: Field "leaveUser" is not defined by type "LeaveBoolExp". Did you mean "leaveType"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/queries.graphql:262:7
+[FAILED] 
+[FAILED] Error 31: Field "leaveUser" is not defined by type "LeaveBoolExp". Did you mean "leaveType"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/queries.graphql:334:11
+[FAILED] 
+[FAILED] Error 32: Unknown type "leaveBoolExp". Did you mean "LeaveBoolExp", "ClientsBoolExp", "FilesBoolExp", "NotesBoolExp", or "RolesBoolExp"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/queries.graphql:378:11
+[FAILED] 
+[FAILED] Error 33: Unknown type "leaveBoolExp". Did you mean "LeaveBoolExp", "ClientsBoolExp", "FilesBoolExp", "NotesBoolExp", or "RolesBoolExp"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/queries.graphql:414:11
+[FAILED] 
+[FAILED] Error 34: Unknown type "leaveOrderBy". Did you mean "LeaveOrderBy", "LeaveMaxOrderBy", "LeaveMinOrderBy", "FilesAvgOrderBy", or "ClientsOrderBy"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/queries.graphql:415:14
+[FAILED] 
+[FAILED] Error 35: Cannot query field "LeaveAggregate" on type "query_root". Did you mean "leaveAggregate", "clientsAggregate", "filesAggregate", "notesAggregate", or "rolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/queries.graphql:426:3
+[FAILED] 
+[FAILED] Error 36: Unknown type "leaveBoolExp". Did you mean "LeaveBoolExp", "ClientsBoolExp", "FilesBoolExp", "NotesBoolExp", or "RolesBoolExp"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/queries.graphql:437:11
+[FAILED] 
+[FAILED] Error 37: Cannot query field "LeaveAggregate" on type "query_root". Did you mean "leaveAggregate", "clientsAggregate", "filesAggregate", "notesAggregate", or "rolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/queries.graphql:448:3
+[FAILED] 
+[FAILED] Error 38: Field "leaveUser" is not defined by type "LeaveBoolExp". Did you mean "leaveType"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/queries.graphql:494:11
+[FAILED] 
+[FAILED] Error 39: Field "managerUser" is not defined by type "UsersBoolExp". Did you mean "managedUsers", "manager", or "managerId"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/queries.graphql:532:11
+[FAILED] 
+[FAILED] Error 40: Cannot query field "managerUser" on type "Users". Did you mean "managedUsers", "manager", or "managerId"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/queries.graphql:547:5
+[FAILED] 
+[FAILED] Error 41: Cannot query field "managerUser" on type "Users". Did you mean "managedUsers", "manager", or "managerId"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/queries.graphql:575:5
+[FAILED] 
+[FAILED] Error 42: Cannot query field "Leave" on type "subscription_root". Did you mean "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/subscriptions.graphql:7:3
+[FAILED] 
+[FAILED] Error 43: Cannot query field "Leave" on type "subscription_root". Did you mean "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/subscriptions.graphql:16:3
+[FAILED] 
+[FAILED] Error 44: Cannot query field "Leave" on type "subscription_root". Did you mean "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/subscriptions.graphql:25:3
+[FAILED] 
+[FAILED] Error 45: Cannot query field "Leave" on type "subscription_root". Did you mean "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/subscriptions.graphql:37:3
+[FAILED] 
+[FAILED] Error 46: Cannot query field "Leave" on type "subscription_root". Did you mean "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/subscriptions.graphql:46:3
+[FAILED] 
+[FAILED] Error 47: Cannot query field "Leave" on type "subscription_root". Did you mean "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/subscriptions.graphql:59:3
+[FAILED] 
+[FAILED] Error 48: Cannot query field "Leave" on type "subscription_root". Did you mean "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/subscriptions.graphql:70:3
+[FAILED] 
+[FAILED] Error 49: Cannot query field "Leave" on type "subscription_root". Did you mean "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/subscriptions.graphql:84:3
+[FAILED] 
+[FAILED] Error 50: Cannot query field "Leave" on type "subscription_root". Did you mean "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/subscriptions.graphql:98:3
+[FAILED] 
+[FAILED] Error 51: Cannot query field "Leave" on type "subscription_root". Did you mean "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/subscriptions.graphql:111:3
+[FAILED] 
+[FAILED] Error 52: Cannot query field "Leave" on type "subscription_root". Did you mean "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/subscriptions.graphql:120:3
+[FAILED] 
+[FAILED] Error 53: Cannot query field "Leave" on type "subscription_root". Did you mean "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/subscriptions.graphql:129:3
+[FAILED] 
+[FAILED] Error 54: Cannot query field "Leave" on type "subscription_root". Did you mean "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/subscriptions.graphql:142:3
+[FAILED] 
+[FAILED] Error 55: Cannot query field "Leave" on type "subscription_root". Did you mean "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/subscriptions.graphql:151:3
+[FAILED] 
+[FAILED] Error 56: Cannot query field "Leave" on type "subscription_root". Did you mean "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/subscriptions.graphql:160:3
+[FAILED] 
+[FAILED] Error 57: Cannot query field "Leave" on type "subscription_root". Did you mean "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/subscriptions.graphql:170:3
+[FAILED] 
+[FAILED] Error 58: Cannot query field "Leave" on type "subscription_root". Did you mean "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/subscriptions.graphql:199:3
+[FAILED] 
+[FAILED] Error 59: Cannot query field "Leave" on type "subscription_root". Did you mean "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/subscriptions.graphql:268:3
+[FAILED] 
+[FAILED] Error 60: Cannot query field "Leave" on type "subscription_root". Did you mean "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/subscriptions.graphql:310:3
+[FAILED] 
+[FAILED] Error 61: Cannot query field "Leave" on type "subscription_root". Did you mean "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/subscriptions.graphql:322:3
+[FAILED] 
+[FAILED] Error 62: Cannot query field "Leave" on type "subscription_root". Did you mean "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/subscriptions.graphql:331:3
+[FAILED] 
+[FAILED] Error 63: Cannot query field "Leave" on type "subscription_root". Did you mean "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/subscriptions.graphql:343:3
+[FAILED] 
+[FAILED] Error 64: Cannot query field "Leave" on type "subscription_root". Did you mean "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/subscriptions.graphql:353:3
+[FAILED] 
+[FAILED] Error 65: Cannot query field "Leave" on type "subscription_root". Did you mean "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/subscriptions.graphql:362:3
+[FAILED] 
+[FAILED] Error 66: Cannot query field "Leave" on type "subscription_root". Did you mean "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/subscriptions.graphql:371:3
+[FAILED] 
+[FAILED] Error 67: Cannot query field "Leave" on type "subscription_root". Did you mean "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/subscriptions.graphql:378:3
+[FAILED] 
+[FAILED] Error 68: Cannot query field "Leave" on type "subscription_root". Did you mean "leave"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/subscriptions.graphql:403:3
+[FAILED] 
+[FAILED] Error 69: Cannot query field "leaveUser" on type "Leave". Did you mean "leaveType"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/fragments.graphql:25:3
+[FAILED] 
+[FAILED] Error 70: Cannot query field "leaveUser" on type "Leave". Did you mean "leaveType"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/fragments.graphql:45:3
+[FAILED] 
+[FAILED] Error 71: Cannot query field "leaveUser" on type "Leave". Did you mean "leaveType"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/fragments.graphql:76:3
+[FAILED] 
+[FAILED] Error 72: Cannot query field "leaveUser" on type "Leave". Did you mean "leaveType"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/fragments.graphql:100:3
+[FAILED] 
+[FAILED] Error 73: Cannot query field "leaveUser" on type "Leave". Did you mean "leaveType"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/leave/graphql/fragments.graphql:114:3
+[FAILED] 
+[FAILED] Error 74: Cannot query field "managerUserId" on type "Users". Did you mean "managedUsers", "managerId", "clerkUserId", or "manager"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/shared/graphql/fragments.graphql:50:3
+[SUCCESS] Load GraphQL documents
+[STARTED] Generate
+[FAILED] GraphQL Document Validation failed with 1 errors;
+[FAILED]   Error 0: Cannot query field "managerUserId" on type "Users". Did you mean "managedUsers", "managerId", "clerkUserId", or "manager"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/shared/graphql/fragments.graphql:50:3
+[SUCCESS] Load GraphQL documents
+[STARTED] Generate
+[FAILED] GraphQL Document Validation failed with 59 errors;
+[FAILED]   Error 0: Unknown type "workScheduleInsertInput". Did you mean "WorkScheduleInsertInput", "WorkScheduleSetInput", "WorkScheduleIncInput", "WorkScheduleArrRelInsertInput", or "WorkScheduleConstraint"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/mutations.graphql:5:38
+[FAILED] 
+[FAILED] Error 1: Unknown argument "object" on field "mutation_root.insertWorkSchedule". Did you mean "objects"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/mutations.graphql:6:22
+[FAILED] 
+[FAILED] Error 2: Fragment "WorkScheduleComplete" cannot be spread here as objects of type "WorkScheduleMutationResponse" can never be of type "WorkSchedule".
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/mutations.graphql:7:5
+[FAILED] 
+[FAILED] Error 3: Field "insertWorkSchedule" argument "objects" of type "[WorkScheduleInsertInput!]!" is required, but it was not provided.
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/mutations.graphql:6:3
+[FAILED] 
+[FAILED] Error 4: Unknown type "workScheduleSetInput". Did you mean "WorkScheduleSetInput", "WorkScheduleIncInput", "WorkScheduleInsertInput", "WorkScheduleSumFields", or "WorkSchedule"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/mutations.graphql:11:47
+[FAILED] 
+[FAILED] Error 5: Cannot query field "updateWorkScheduleById" on type "mutation_root". Did you mean "updateWorkScheduleByPk", "updateWorkSchedule", "updateWorkScheduleMany", "deleteWorkScheduleByPk", or "deleteWorkSchedule"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/mutations.graphql:12:3
+[FAILED] 
+[FAILED] Error 6: Cannot query field "deleteWorkScheduleById" on type "mutation_root". Did you mean "deleteWorkScheduleByPk", "deleteWorkSchedule", "updateWorkScheduleByPk", "updateWorkSchedule", or "updateWorkScheduleMany"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/mutations.graphql:18:3
+[FAILED] 
+[FAILED] Error 7: Cannot query field "bulkUpdateWorkSchedule" on type "mutation_root". Did you mean "updateWorkSchedule", "deleteWorkSchedule", "updateWorkScheduleByPk", "updateWorkScheduleMany", or "insertWorkSchedule"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/mutations.graphql:37:3
+[FAILED] 
+[FAILED] Error 8: Unknown type "workScheduleInsertInput". Did you mean "WorkScheduleInsertInput", "WorkScheduleSetInput", "WorkScheduleIncInput", "WorkScheduleArrRelInsertInput", or "WorkScheduleConstraint"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/mutations.graphql:55:46
+[FAILED] 
+[FAILED] Error 9: Cannot query field "bulkInsertWorkSchedule" on type "mutation_root". Did you mean "insertWorkSchedule", "insertWorkScheduleOne", "deleteWorkSchedule", or "updateWorkSchedule"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/mutations.graphql:56:3
+[FAILED] 
+[FAILED] Error 10: Cannot query field "bulkUpdateWorkSchedule" on type "mutation_root". Did you mean "updateWorkSchedule", "deleteWorkSchedule", "updateWorkScheduleByPk", "updateWorkScheduleMany", or "insertWorkSchedule"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/mutations.graphql:71:3
+[FAILED] 
+[FAILED] Error 11: Cannot query field "bulkUpdateWorkSchedule" on type "mutation_root". Did you mean "updateWorkSchedule", "deleteWorkSchedule", "updateWorkScheduleByPk", "updateWorkScheduleMany", or "insertWorkSchedule"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/mutations.graphql:94:3
+[FAILED] 
+[FAILED] Error 12: Unknown argument "object" on field "mutation_root.insertWorkSchedule". Did you mean "objects"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/mutations.graphql:119:5
+[FAILED] 
+[FAILED] Error 13: Fragment "WorkScheduleComplete" cannot be spread here as objects of type "WorkScheduleMutationResponse" can never be of type "WorkSchedule".
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/mutations.graphql:137:5
+[FAILED] 
+[FAILED] Error 14: Field "insertWorkSchedule" argument "objects" of type "[WorkScheduleInsertInput!]!" is required, but it was not provided.
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/mutations.graphql:118:3
+[FAILED] 
+[FAILED] Error 15: Cannot query field "updateUserById" on type "mutation_root". Did you mean "updateUsersByPk", "updateUsers", "updateUserRoles", "updateUserSkills", or "updateUsersMany"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/mutations.graphql:146:3
+[FAILED] 
+[FAILED] Error 16: Cannot query field "updatePayrollById" on type "mutation_root". Did you mean "updatePayrollsByPk", "updatePayrolls", "updatePayrollCycles", "updatePayrollDates", or "updatePayrollsMany"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/mutations.graphql:169:3
+[FAILED] 
+[FAILED] Error 17: Cannot query field "bulkUpdatePayrolls" on type "mutation_root". Did you mean "updatePayrolls", "deletePayrolls", "updatePayrollDates", "updatePayrollsByPk", or "updatePayrollsMany"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/mutations.graphql:211:3
+[FAILED] 
+[FAILED] Error 18: Cannot query field "updatePayrollById" on type "mutation_root". Did you mean "updatePayrollsByPk", "updatePayrolls", "updatePayrollCycles", "updatePayrollDates", or "updatePayrollsMany"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/mutations.graphql:254:3
+[FAILED] 
+[FAILED] Error 19: Cannot query field "workScheduleById" on type "query_root". Did you mean "workScheduleByPk" or "workSchedule"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/queries.graphql:12:3
+[FAILED] 
+[FAILED] Error 20: Cannot query field "userById" on type "query_root". Did you mean "usersByPk" or "users"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/queries.graphql:69:3
+[FAILED] 
+[FAILED] Error 21: Cannot query field "userWorkSchedules" on type "Users". Did you mean "workSchedules"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/queries.graphql:110:5
+[FAILED] 
+[FAILED] Error 22: Cannot query field "primaryConsultantPayrolls" on type "Users". Did you mean "fromConsultantAudits"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/queries.graphql:121:5
+[FAILED] 
+[FAILED] Error 23: Cannot query field "backupConsultantPayrolls" on type "Users".
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/queries.graphql:146:5
+[FAILED] 
+[FAILED] Error 24: Cannot query field "userWorkSchedules" on type "Users". Did you mean "workSchedules"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/queries.graphql:208:5
+[FAILED] 
+[FAILED] Error 25: Cannot query field "userWorkSchedules" on type "Users". Did you mean "workSchedules"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/queries.graphql:231:5
+[FAILED] 
+[FAILED] Error 26: Cannot query field "userWorkSchedules" on type "Users". Did you mean "workSchedules"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/queries.graphql:247:5
+[FAILED] 
+[FAILED] Error 27: Cannot query field "userSkills" on type "Users". Did you mean "skills" or "userSessions"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/queries.graphql:250:5
+[FAILED] 
+[FAILED] Error 28: Cannot query field "userWorkSchedules" on type "Users". Did you mean "workSchedules"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/queries.graphql:267:5
+[FAILED] 
+[FAILED] Error 29: Cannot query field "primaryConsultantPayrolls" on type "Users". Did you mean "fromConsultantAudits"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/queries.graphql:270:5
+[FAILED] 
+[FAILED] Error 30: Cannot query field "backupConsultantPayrolls" on type "Users".
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/queries.graphql:286:5
+[FAILED] 
+[FAILED] Error 31: Cannot query field "manager" on type "Payrolls".
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/queries.graphql:339:5
+[FAILED] 
+[FAILED] Error 32: Cannot query field "userWorkSchedules" on type "Users". Did you mean "workSchedules"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/queries.graphql:372:5
+[FAILED] 
+[FAILED] Error 33: Cannot query field "primaryConsultantPayrolls" on type "Users". Did you mean "fromConsultantAudits"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/queries.graphql:375:5
+[FAILED] 
+[FAILED] Error 34: Cannot query field "backupConsultantPayrolls" on type "Users".
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/queries.graphql:385:5
+[FAILED] 
+[FAILED] Error 35: Cannot query field "userWorkSchedules" on type "Users". Did you mean "workSchedules"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/queries.graphql:518:5
+[FAILED] 
+[FAILED] Error 36: Cannot query field "userSkills" on type "Users". Did you mean "skills" or "userSessions"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/queries.graphql:527:5
+[FAILED] 
+[FAILED] Error 37: Cannot query field "primaryConsultantPayrolls" on type "Users". Did you mean "fromConsultantAudits"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/queries.graphql:531:5
+[FAILED] 
+[FAILED] Error 38: Cannot query field "backupConsultantPayrolls" on type "Users".
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/queries.graphql:545:5
+[FAILED] 
+[FAILED] Error 39: Cannot query field "Users" on type "query_root". Did you mean "users"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/skills-operations.graphql:70:3
+[FAILED] 
+[FAILED] Error 40: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/skills-operations.graphql:103:3
+[FAILED] 
+[FAILED] Error 41: Cannot query field "Users" on type "query_root". Did you mean "users"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/skills-operations.graphql:116:3
+[FAILED] 
+[FAILED] Error 42: Cannot query field "WorkSchedule" on type "subscription_root". Did you mean "workSchedule" or "workScheduleByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/subscriptions.graphql:7:3
+[FAILED] 
+[FAILED] Error 43: Cannot query field "WorkSchedule" on type "subscription_root". Did you mean "workSchedule" or "workScheduleByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/subscriptions.graphql:13:3
+[FAILED] 
+[FAILED] Error 44: Cannot query field "WorkSchedule" on type "subscription_root". Did you mean "workSchedule" or "workScheduleByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/subscriptions.graphql:19:3
+[FAILED] 
+[FAILED] Error 45: Cannot query field "WorkSchedule" on type "subscription_root". Did you mean "workSchedule" or "workScheduleByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/subscriptions.graphql:25:3
+[FAILED] 
+[FAILED] Error 46: Cannot query field "WorkSchedule" on type "subscription_root". Did you mean "workSchedule" or "workScheduleByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/subscriptions.graphql:34:3
+[FAILED] 
+[FAILED] Error 47: Cannot query field "UserByPk" on type "query_root". Did you mean "usersByPk", "filesByPk", "notesByPk", "rolesByPk", or "users"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/workload-queries.graphql:8:3
+[FAILED] 
+[FAILED] Error 48: Cannot query field "WorkSchedule" on type "query_root". Did you mean "workSchedule" or "workScheduleByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/workload-queries.graphql:19:3
+[FAILED] 
+[FAILED] Error 49: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/workload-queries.graphql:29:3
+[FAILED] 
+[FAILED] Error 50: Cannot query field "Payrolls" on type "query_root". Did you mean "payrolls", "payrollDates", "payrollsByPk", or "roles"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/workload-queries.graphql:55:3
+[FAILED] 
+[FAILED] Error 51: Cannot query field "Users" on type "query_root". Did you mean "users"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/workload-queries.graphql:88:3
+[FAILED] 
+[FAILED] Error 52: Cannot query field "WorkScheduleAggregate" on type "query_root". Did you mean "workScheduleAggregate", "servicesAggregate", "workSchedule", or "workScheduleByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/workload-queries.graphql:169:3
+[FAILED] 
+[FAILED] Error 53: Cannot query field "PayrollsAggregate" on type "query_root". Did you mean "payrollsAggregate", "payrollDatesAggregate", "rolesAggregate", "payrollCyclesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/workload-queries.graphql:187:3
+[FAILED] 
+[FAILED] Error 54: Cannot query field "PayrollsAggregate" on type "query_root". Did you mean "payrollsAggregate", "payrollDatesAggregate", "rolesAggregate", "payrollCyclesAggregate", or "userRolesAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/workload-queries.graphql:201:3
+[FAILED] 
+[FAILED] Error 55: Cannot query field "PayrollDatesAggregate" on type "query_root". Did you mean "payrollDatesAggregate", "payrollCyclesAggregate", "payrollDateTypesAggregate", "payrollsAggregate", or "holidaysAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/workload-queries.graphql:216:3
+[FAILED] 
+[FAILED] Error 56: Cannot query field "skilledUser" on type "UserSkills". Did you mean "skillName"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/skills-operations.graphql:15:3
+[FAILED] 
+[FAILED] Error 57: Cannot query field "requiringPayroll" on type "PayrollRequiredSkills".
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/work-schedule/graphql/skills-operations.graphql:36:3
+[FAILED] 
+[FAILED] Error 58: Cannot query field "managerUserId" on type "Users". Did you mean "managedUsers", "managerId", "clerkUserId", or "manager"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/shared/graphql/fragments.graphql:50:3
+[SUCCESS] Load GraphQL documents
+[STARTED] Generate
+[FAILED] GraphQL Document Validation failed with 50 errors;
+[FAILED]   Error 0: Cannot query field "InsertExternalSystemsOne" on type "mutation_root". Did you mean "insertExternalSystemsOne", "insertExternalSystems", "insertClientExternalSystemsOne", "deleteExternalSystems", or "deleteExternalSystemsByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/mutations.graphql:7:3
+[FAILED] 
+[FAILED] Error 1: Cannot query field "UpdateExternalSystemsByPk" on type "mutation_root". Did you mean "updateExternalSystemsByPk", "deleteExternalSystemsByPk", "updateExternalSystems", "updateExternalSystemsMany", or "updateClientExternalSystemsByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/mutations.graphql:13:3
+[FAILED] 
+[FAILED] Error 2: Cannot query field "DeleteExternalSystemsByPk" on type "mutation_root". Did you mean "deleteExternalSystemsByPk", "deleteExternalSystems", "updateExternalSystemsByPk", "deleteClientExternalSystemsByPk", or "updateClientExternalSystemsByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/mutations.graphql:19:3
+[FAILED] 
+[FAILED] Error 3: Cannot query field "InsertClientExternalSystemsOne" on type "mutation_root". Did you mean "insertClientExternalSystemsOne", "insertClientExternalSystems", "insertExternalSystemsOne", "deleteClientExternalSystems", or "deleteClientExternalSystemsByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/mutations.graphql:27:3
+[FAILED] 
+[FAILED] Error 4: Cannot query field "UpdateClientExternalSystemsByPk" on type "mutation_root". Did you mean "updateClientExternalSystemsByPk", "deleteClientExternalSystemsByPk", "updateClientExternalSystems", "updateClientExternalSystemsMany", or "updateExternalSystemsByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/mutations.graphql:33:3
+[FAILED] 
+[FAILED] Error 5: Cannot query field "DeleteClientExternalSystemsByPk" on type "mutation_root". Did you mean "deleteClientExternalSystemsByPk", "deleteClientExternalSystems", "updateClientExternalSystemsByPk", "deleteExternalSystemsByPk", or "updateClientExternalSystems"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/mutations.graphql:39:3
+[FAILED] 
+[FAILED] Error 6: Cannot query field "InsertClientExternalSystemsOne" on type "mutation_root". Did you mean "insertClientExternalSystemsOne", "insertClientExternalSystems", "insertExternalSystemsOne", "deleteClientExternalSystems", or "deleteClientExternalSystemsByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/mutations.graphql:51:3
+[FAILED] 
+[FAILED] Error 7: Cannot query field "DeleteClientExternalSystemsByPk" on type "mutation_root". Did you mean "deleteClientExternalSystemsByPk", "deleteClientExternalSystems", "updateClientExternalSystemsByPk", "deleteExternalSystemsByPk", or "updateClientExternalSystems"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/mutations.graphql:63:3
+[FAILED] 
+[FAILED] Error 8: Cannot query field "DeleteExternalSystems" on type "mutation_root". Did you mean "deleteExternalSystems", "deleteExternalSystemsByPk", "updateExternalSystems", "insertExternalSystems", or "deleteClientExternalSystems"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/mutations.graphql:72:3
+[FAILED] 
+[FAILED] Error 9: Cannot query field "DeleteClientExternalSystems" on type "mutation_root". Did you mean "deleteClientExternalSystems", "deleteClientExternalSystemsByPk", "updateClientExternalSystems", "insertClientExternalSystems", or "deleteExternalSystems"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/mutations.graphql:82:3
+[FAILED] 
+[FAILED] Error 10: Cannot query field "DeleteClientExternalSystems" on type "mutation_root". Did you mean "deleteClientExternalSystems", "deleteClientExternalSystemsByPk", "updateClientExternalSystems", "insertClientExternalSystems", or "deleteExternalSystems"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/mutations.graphql:94:3
+[FAILED] 
+[FAILED] Error 11: Cannot query field "DeleteClientExternalSystems" on type "mutation_root". Did you mean "deleteClientExternalSystems", "deleteClientExternalSystemsByPk", "updateClientExternalSystems", "insertClientExternalSystems", or "deleteExternalSystems"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/mutations.graphql:105:3
+[FAILED] 
+[FAILED] Error 12: Cannot query field "UpdateClientExternalSystems" on type "mutation_root". Did you mean "updateClientExternalSystems", "deleteClientExternalSystems", "updateClientExternalSystemsByPk", "updateClientExternalSystemsMany", or "insertClientExternalSystems"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/mutations.graphql:116:3
+[FAILED] 
+[FAILED] Error 13: Cannot query field "UpdateExternalSystemsByPk" on type "mutation_root". Did you mean "updateExternalSystemsByPk", "deleteExternalSystemsByPk", "updateExternalSystems", "updateExternalSystemsMany", or "updateClientExternalSystemsByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/mutations.graphql:137:3
+[FAILED] 
+[FAILED] Error 14: Cannot query field "UpdateClientExternalSystemsByPk" on type "mutation_root". Did you mean "updateClientExternalSystemsByPk", "deleteClientExternalSystemsByPk", "updateClientExternalSystems", "updateClientExternalSystemsMany", or "updateExternalSystemsByPk"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/mutations.graphql:155:3
+[FAILED] 
+[FAILED] Error 15: Unknown type "externalSystemsBoolExp". Did you mean "ExternalSystemsBoolExp", "ClientExternalSystemsBoolExp", "ExternalSystemsOrderBy", "ExternalSystems", or "ExternalSystemsUpdates"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/queries.graphql:6:70
+[FAILED] 
+[FAILED] Error 16: Cannot query field "ExternalSystemsAggregate" on type "query_root". Did you mean "externalSystemsAggregate", "clientExternalSystemsAggregate", "externalSystems", "externalSystemsByPk", or "billingItemsAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/queries.graphql:15:3
+[FAILED] 
+[FAILED] Error 17: Cannot query field "externalSystemById" on type "query_root". Did you mean "externalSystemsByPk" or "externalSystems"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/queries.graphql:23:3
+[FAILED] 
+[FAILED] Error 18: Cannot query field "externalSystemById" on type "query_root". Did you mean "externalSystemsByPk" or "externalSystems"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/queries.graphql:29:3
+[FAILED] 
+[FAILED] Error 19: Cannot query field "externalSystemById" on type "query_root". Did you mean "externalSystemsByPk" or "externalSystems"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/queries.graphql:35:3
+[FAILED] 
+[FAILED] Error 20: Cannot query field "clientExternalSystemById" on type "query_root". Did you mean "clientExternalSystemsByPk", "clientExternalSystems", "externalSystemsByPk", "clientExternalSystemsAggregate", or "externalSystems"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/queries.graphql:63:3
+[FAILED] 
+[FAILED] Error 21: Field "externalSystemId" is not defined by type "ClientExternalSystemsBoolExp". Did you mean "externalSystem"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/queries.graphql:79:14
+[FAILED] 
+[FAILED] Error 22: Field "externalSystemId" is not defined by type "ClientExternalSystemsBoolExp". Did you mean "externalSystem"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/queries.graphql:88:14
+[FAILED] 
+[FAILED] Error 23: Unknown type "externalSystemsBoolExp". Did you mean "ExternalSystemsBoolExp", "ClientExternalSystemsBoolExp", "ExternalSystemsOrderBy", "ExternalSystems", or "ExternalSystemsUpdates"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/queries.graphql:181:11
+[FAILED] 
+[FAILED] Error 24: Unknown type "clientExternalSystemsBoolExp". Did you mean "ClientExternalSystemsBoolExp", "ClientExternalSystemsOrderBy", "ExternalSystemsBoolExp", "ClientExternalSystems", or "ClientExternalSystemsUpdates"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/queries.graphql:196:11
+[FAILED] 
+[FAILED] Error 25: Field "externalSystemId" is not defined by type "ClientExternalSystemsBoolExp". Did you mean "externalSystem"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/queries.graphql:210:14
+[FAILED] 
+[FAILED] Error 26: Unknown type "externalSystemsBoolExp". Did you mean "ExternalSystemsBoolExp", "ClientExternalSystemsBoolExp", "ExternalSystemsOrderBy", "ExternalSystems", or "ExternalSystemsUpdates"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/queries.graphql:222:11
+[FAILED] 
+[FAILED] Error 27: Unknown type "externalSystemsOrderBy". Did you mean "ExternalSystemsOrderBy", "ClientExternalSystemsOrderBy", "ExternalSystemsBoolExp", "ExternalSystemsUpdates", or "ExternalSystems"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/queries.graphql:223:14
+[FAILED] 
+[FAILED] Error 28: Cannot query field "ExternalSystemsAggregate" on type "query_root". Did you mean "externalSystemsAggregate", "clientExternalSystemsAggregate", "externalSystems", "externalSystemsByPk", or "billingItemsAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/queries.graphql:234:3
+[FAILED] 
+[FAILED] Error 29: Unknown type "clientExternalSystemsBoolExp". Did you mean "ClientExternalSystemsBoolExp", "ClientExternalSystemsOrderBy", "ExternalSystemsBoolExp", "ClientExternalSystems", or "ClientExternalSystemsUpdates"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/queries.graphql:245:11
+[FAILED] 
+[FAILED] Error 30: Cannot query field "ClientExternalSystemsAggregate" on type "query_root". Did you mean "clientExternalSystemsAggregate", "externalSystemsAggregate", "clientExternalSystems", "clientExternalSystemsByPk", or "clientBillingAssignmentAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/queries.graphql:256:3
+[FAILED] 
+[FAILED] Error 31: Cannot query field "ExternalSystems" on type "subscription_root". Did you mean "externalSystems", "externalSystemsByPk", "clientExternalSystems", or "externalSystemsStream"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/subscriptions.graphql:7:3
+[FAILED] 
+[FAILED] Error 32: Cannot query field "ExternalSystems" on type "subscription_root". Did you mean "externalSystems", "externalSystemsByPk", "clientExternalSystems", or "externalSystemsStream"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/subscriptions.graphql:13:3
+[FAILED] 
+[FAILED] Error 33: Cannot query field "ClientExternalSystems" on type "subscription_root". Did you mean "clientExternalSystems", "clientExternalSystemsByPk", "clientExternalSystemsStream", "externalSystems", or "clientExternalSystemsAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/subscriptions.graphql:20:3
+[FAILED] 
+[FAILED] Error 34: Cannot query field "ClientExternalSystems" on type "subscription_root". Did you mean "clientExternalSystems", "clientExternalSystemsByPk", "clientExternalSystemsStream", "externalSystems", or "clientExternalSystemsAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/subscriptions.graphql:29:3
+[FAILED] 
+[FAILED] Error 35: Cannot query field "ClientExternalSystems" on type "subscription_root". Did you mean "clientExternalSystems", "clientExternalSystemsByPk", "clientExternalSystemsStream", "externalSystems", or "clientExternalSystemsAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/subscriptions.graphql:35:3
+[FAILED] 
+[FAILED] Error 36: Cannot query field "ExternalSystems" on type "subscription_root". Did you mean "externalSystems", "externalSystemsByPk", "clientExternalSystems", or "externalSystemsStream"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/subscriptions.graphql:61:3
+[FAILED] 
+[FAILED] Error 37: Cannot query field "ExternalSystems" on type "subscription_root". Did you mean "externalSystems", "externalSystemsByPk", "clientExternalSystems", or "externalSystemsStream"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/subscriptions.graphql:70:3
+[FAILED] 
+[FAILED] Error 38: Cannot query field "ExternalSystems" on type "subscription_root". Did you mean "externalSystems", "externalSystemsByPk", "clientExternalSystems", or "externalSystemsStream"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/subscriptions.graphql:90:3
+[FAILED] 
+[FAILED] Error 39: Cannot query field "ClientExternalSystems" on type "subscription_root". Did you mean "clientExternalSystems", "clientExternalSystemsByPk", "clientExternalSystemsStream", "externalSystems", or "clientExternalSystemsAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/subscriptions.graphql:101:3
+[FAILED] 
+[FAILED] Error 40: Cannot query field "ClientExternalSystems" on type "subscription_root". Did you mean "clientExternalSystems", "clientExternalSystemsByPk", "clientExternalSystemsStream", "externalSystems", or "clientExternalSystemsAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/subscriptions.graphql:112:3
+[FAILED] 
+[FAILED] Error 41: Cannot query field "ClientExternalSystems" on type "subscription_root". Did you mean "clientExternalSystems", "clientExternalSystemsByPk", "clientExternalSystemsStream", "externalSystems", or "clientExternalSystemsAggregate"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/subscriptions.graphql:124:3
+[FAILED] 
+[FAILED] Error 42: Cannot query field "externalSystemId" on type "ClientExternalSystems". Did you mean "externalSystem"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/fragments.graphql:28:5
+[FAILED] 
+[FAILED] Error 43: Cannot query field "externalSystemId" on type "ClientExternalSystems". Did you mean "externalSystem"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/fragments.graphql:44:5
+[FAILED] 
+[FAILED] Error 44: Cannot query field "externalSystemId" on type "ClientExternalSystems". Did you mean "externalSystem"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/fragments.graphql:61:3
+[FAILED] 
+[FAILED] Error 45: Cannot query field "externalSystemId" on type "ClientExternalSystems". Did you mean "externalSystem"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/fragments.graphql:149:3
+[FAILED] 
+[FAILED] Error 46: Cannot query field "externalSystemId" on type "ClientExternalSystems". Did you mean "externalSystem"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/fragments.graphql:184:3
+[FAILED] 
+[FAILED] Error 47: Cannot query field "externalSystemId" on type "ClientExternalSystems". Did you mean "externalSystem"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/fragments.graphql:202:3
+[FAILED] 
+[FAILED] Error 48: Cannot query field "externalSystemId" on type "ClientExternalSystems". Did you mean "externalSystem"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/domains/external-systems/graphql/fragments.graphql:222:3
+[FAILED] 
+[FAILED] Error 49: Cannot query field "managerUserId" on type "Users". Did you mean "managedUsers", "managerId", "clerkUserId", or "manager"?
+[FAILED]     at /Users/nathanharris/Payroll/Payroll-ByteMy/shared/graphql/fragments.graphql:50:3
+[SUCCESS] Generate outputs
+ ELIFECYCLE  Command failed with exit code 1.

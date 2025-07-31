@@ -3612,9 +3612,9 @@ export interface ClientExternalSystems {
   /** Unique identifier for the client-system mapping */
   id: Scalars['uuid']['output'];
   /** An object relationship */
-  linkedClient: Clients;
+  client: Clients;
   /** An object relationship */
-  linkedExternalSystem: ExternalSystems;
+  externalSystem: ExternalSystems;
   /** Client identifier in the external system */
   systemClientId: Maybe<Scalars['String']['output']>;
   /** Timestamp when the mapping was last updated */
@@ -3677,8 +3677,8 @@ export interface ClientExternalSystemsBoolExp {
   createdAt?: InputMaybe<TimestamptzComparisonExp>;
   externalSystemId?: InputMaybe<UuidComparisonExp>;
   id?: InputMaybe<UuidComparisonExp>;
-  linkedClient?: InputMaybe<ClientsBoolExp>;
-  linkedExternalSystem?: InputMaybe<ExternalSystemsBoolExp>;
+  client?: InputMaybe<ClientsBoolExp>;
+  externalSystem?: InputMaybe<ExternalSystemsBoolExp>;
   systemClientId?: InputMaybe<StringComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
 }
@@ -3701,8 +3701,8 @@ export interface ClientExternalSystemsInsertInput {
   externalSystemId?: InputMaybe<Scalars['uuid']['input']>;
   /** Unique identifier for the client-system mapping */
   id?: InputMaybe<Scalars['uuid']['input']>;
-  linkedClient?: InputMaybe<ClientsObjRelInsertInput>;
-  linkedExternalSystem?: InputMaybe<ExternalSystemsObjRelInsertInput>;
+  client?: InputMaybe<ClientsObjRelInsertInput>;
+  externalSystem?: InputMaybe<ExternalSystemsObjRelInsertInput>;
   /** Client identifier in the external system */
   systemClientId?: InputMaybe<Scalars['String']['input']>;
   /** Timestamp when the mapping was last updated */
@@ -3797,8 +3797,8 @@ export interface ClientExternalSystemsOrderBy {
   createdAt?: InputMaybe<OrderBy>;
   externalSystemId?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
-  linkedClient?: InputMaybe<ClientsOrderBy>;
-  linkedExternalSystem?: InputMaybe<ExternalSystemsOrderBy>;
+  client?: InputMaybe<ClientsOrderBy>;
+  externalSystem?: InputMaybe<ExternalSystemsOrderBy>;
   systemClientId?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
 }
@@ -15009,9 +15009,9 @@ export interface QueryRoot {
   /** fetch data from the table: "userroles" using primary key columns */
   userRoleById: Maybe<UserRoles>;
   /** fetch data from the table: "userroles" */
-  userRoles: Array<UserRoles>;
+  roleAssignments: Array<UserRoles>;
   /** fetch aggregated fields from the table: "userroles" */
-  userRolesAggregate: UserRolesAggregate;
+  roleAssignmentsAggregate: UserRolesAggregate;
   /** fetch data from the table: "neonauth.users_sync" using primary key columns */
   userSyncById: Maybe<AuthUsersSync>;
   /** fetch data from the table: "users" */
@@ -16410,7 +16410,7 @@ export interface RolePermissions {
   conditions: Maybe<Scalars['jsonb']['output']>;
   createdAt: Scalars['timestamptz']['output'];
   /** An object relationship */
-  grantedPermission: Permissions;
+  permission: Permissions;
   /** An object relationship */
   grantedToRole: Roles;
   id: Scalars['uuid']['output'];
@@ -16484,7 +16484,7 @@ export interface RolePermissionsBoolExp {
   _or?: InputMaybe<Array<RolePermissionsBoolExp>>;
   conditions?: InputMaybe<JsonbComparisonExp>;
   createdAt?: InputMaybe<TimestamptzComparisonExp>;
-  grantedPermission?: InputMaybe<PermissionsBoolExp>;
+  permission?: InputMaybe<PermissionsBoolExp>;
   grantedToRole?: InputMaybe<RolesBoolExp>;
   id?: InputMaybe<UuidComparisonExp>;
   permissionId?: InputMaybe<UuidComparisonExp>;
@@ -16519,7 +16519,7 @@ export interface RolePermissionsDeleteKeyInput {
 export interface RolePermissionsInsertInput {
   conditions?: InputMaybe<Scalars['jsonb']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
-  grantedPermission?: InputMaybe<PermissionsObjRelInsertInput>;
+  permission?: InputMaybe<PermissionsObjRelInsertInput>;
   grantedToRole?: InputMaybe<RolesObjRelInsertInput>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   permissionId?: InputMaybe<Scalars['uuid']['input']>;
@@ -16585,7 +16585,7 @@ export interface RolePermissionsOnConflict {
 export interface RolePermissionsOrderBy {
   conditions?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
-  grantedPermission?: InputMaybe<PermissionsOrderBy>;
+  permission?: InputMaybe<PermissionsOrderBy>;
   grantedToRole?: InputMaybe<RolesOrderBy>;
   id?: InputMaybe<OrderBy>;
   permissionId?: InputMaybe<OrderBy>;
@@ -17565,11 +17565,11 @@ export interface SubscriptionRoot {
   /** fetch data from the table: "userroles" using primary key columns */
   userRoleById: Maybe<UserRoles>;
   /** fetch data from the table: "userroles" */
-  userRoles: Array<UserRoles>;
+  roleAssignments: Array<UserRoles>;
   /** fetch aggregated fields from the table: "userroles" */
-  userRolesAggregate: UserRolesAggregate;
+  roleAssignmentsAggregate: UserRolesAggregate;
   /** fetch data from the table in a streaming manner: "userroles" */
-  userRolesStream: Array<UserRoles>;
+  roleAssignmentsStream: Array<UserRoles>;
   /** fetch data from the table: "neonauth.users_sync" using primary key columns */
   userSyncById: Maybe<AuthUsersSync>;
   /** fetch data from the table: "users" */
@@ -19600,9 +19600,9 @@ export interface UserInvitationsUpdates {
 
 /** columns and relationships of "userroles" */
 export interface UserRoles {
-  __typename?: 'userRoles';
+  __typename?: 'roleAssignments';
   /** An object relationship */
-  assignedRole: Roles;
+  role: Roles;
   createdAt: Scalars['timestamptz']['output'];
   id: Scalars['uuid']['output'];
   roleId: Scalars['uuid']['output'];
@@ -19614,7 +19614,7 @@ export interface UserRoles {
 
 /** aggregated selection of "userroles" */
 export interface UserRolesAggregate {
-  __typename?: 'userRolesAggregate';
+  __typename?: 'roleAssignmentsAggregate';
   aggregate: Maybe<UserRolesAggregateFields>;
   nodes: Array<UserRoles>;
 }
@@ -19632,7 +19632,7 @@ export interface UserRolesAggregateBoolExpCount {
 
 /** aggregate fields of "userroles" */
 export interface UserRolesAggregateFields {
-  __typename?: 'userRolesAggregateFields';
+  __typename?: 'roleAssignmentsAggregateFields';
   count: Scalars['Int']['output'];
   max: Maybe<UserRolesMaxFields>;
   min: Maybe<UserRolesMinFields>;
@@ -19664,7 +19664,7 @@ export interface UserRolesBoolExp {
   _and?: InputMaybe<Array<UserRolesBoolExp>>;
   _not?: InputMaybe<UserRolesBoolExp>;
   _or?: InputMaybe<Array<UserRolesBoolExp>>;
-  assignedRole?: InputMaybe<RolesBoolExp>;
+  role?: InputMaybe<RolesBoolExp>;
   createdAt?: InputMaybe<TimestamptzComparisonExp>;
   id?: InputMaybe<UuidComparisonExp>;
   roleId?: InputMaybe<UuidComparisonExp>;
@@ -19683,7 +19683,7 @@ export enum UserRolesConstraint {
 
 /** input type for inserting data into table "userroles" */
 export interface UserRolesInsertInput {
-  assignedRole?: InputMaybe<RolesObjRelInsertInput>;
+  role?: InputMaybe<RolesObjRelInsertInput>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   roleId?: InputMaybe<Scalars['uuid']['input']>;
@@ -19694,7 +19694,7 @@ export interface UserRolesInsertInput {
 
 /** aggregate max on columns */
 export interface UserRolesMaxFields {
-  __typename?: 'userRolesMaxFields';
+  __typename?: 'roleAssignmentsMaxFields';
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   id: Maybe<Scalars['uuid']['output']>;
   roleId: Maybe<Scalars['uuid']['output']>;
@@ -19713,7 +19713,7 @@ export interface UserRolesMaxOrderBy {
 
 /** aggregate min on columns */
 export interface UserRolesMinFields {
-  __typename?: 'userRolesMinFields';
+  __typename?: 'roleAssignmentsMinFields';
   createdAt: Maybe<Scalars['timestamptz']['output']>;
   id: Maybe<Scalars['uuid']['output']>;
   roleId: Maybe<Scalars['uuid']['output']>;
@@ -19732,7 +19732,7 @@ export interface UserRolesMinOrderBy {
 
 /** response of any mutation on the table "userroles" */
 export interface UserRolesMutationResponse {
-  __typename?: 'userRolesMutationResponse';
+  __typename?: 'roleAssignmentsMutationResponse';
   /** number of rows affected by the mutation */
   affectedRows: Scalars['Int']['output'];
   /** data from the rows affected by the mutation */
@@ -19748,7 +19748,7 @@ export interface UserRolesOnConflict {
 
 /** Ordering options when selecting data from "userroles". */
 export interface UserRolesOrderBy {
-  assignedRole?: InputMaybe<RolesOrderBy>;
+  role?: InputMaybe<RolesOrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   roleId?: InputMaybe<OrderBy>;
@@ -19785,7 +19785,7 @@ export interface UserRolesSetInput {
   userId?: InputMaybe<Scalars['uuid']['input']>;
 }
 
-/** Streaming cursor of the table "userRoles" */
+/** Streaming cursor of the table "roleAssignments" */
 export interface UserRolesStreamCursorInput {
   /** Stream column input with initial value */
   initialValue: UserRolesStreamCursorValueInput;
@@ -19827,9 +19827,9 @@ export interface UserRolesUpdates {
 export interface Users {
   __typename?: 'users';
   /** An array relationship */
-  assignedRoles: Array<UserRoles>;
+  roleAssignments: Array<UserRoles>;
   /** An aggregate relationship */
-  assignedRolesAggregate: UserRolesAggregate;
+  roleAssignmentsAggregate: UserRolesAggregate;
   /** An array relationship */
   authoredNotes: Array<Notes>;
   /** An aggregate relationship */
@@ -20403,8 +20403,8 @@ export interface UsersBoolExp {
   _and?: InputMaybe<Array<UsersBoolExp>>;
   _not?: InputMaybe<UsersBoolExp>;
   _or?: InputMaybe<Array<UsersBoolExp>>;
-  assignedRoles?: InputMaybe<UserRolesBoolExp>;
-  assignedRolesAggregate?: InputMaybe<UserRolesAggregateBoolExp>;
+  roleAssignments?: InputMaybe<UserRolesBoolExp>;
+  roleAssignmentsAggregate?: InputMaybe<UserRolesAggregateBoolExp>;
   authoredNotes?: InputMaybe<NotesBoolExp>;
   authoredNotesAggregate?: InputMaybe<NotesAggregateBoolExp>;
   backupConsultantPayrolls?: InputMaybe<PayrollsBoolExp>;
@@ -20474,7 +20474,7 @@ export enum UsersConstraint {
 
 /** input type for inserting data into table "users" */
 export interface UsersInsertInput {
-  assignedRoles?: InputMaybe<UserRolesArrRelInsertInput>;
+  roleAssignments?: InputMaybe<UserRolesArrRelInsertInput>;
   authoredNotes?: InputMaybe<NotesArrRelInsertInput>;
   backupConsultantPayrolls?: InputMaybe<PayrollsArrRelInsertInput>;
   /** External identifier from Clerk authentication service */
@@ -20653,7 +20653,7 @@ export interface UsersOnConflict {
 
 /** Ordering options when selecting data from "users". */
 export interface UsersOrderBy {
-  assignedRolesAggregate?: InputMaybe<UserRolesAggregateOrderBy>;
+  roleAssignmentsAggregate?: InputMaybe<UserRolesAggregateOrderBy>;
   authoredNotesAggregate?: InputMaybe<NotesAggregateOrderBy>;
   backupConsultantPayrollsAggregate?: InputMaybe<PayrollsAggregateOrderBy>;
   clerkUserId?: InputMaybe<OrderBy>;

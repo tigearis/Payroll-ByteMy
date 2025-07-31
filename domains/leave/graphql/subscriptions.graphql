@@ -3,18 +3,18 @@
 # SOC2 Compliance: Real-time access controls with audit logging
 
 # Core leave subscriptions
-subscription LeaveUpdates($userId: uuid!) {
+subscription LeaveUpdates($employeeId: uuid!) {
   leave(
-    where: { userId: { _eq: $userId } }
+    where: { userId: { _eq: $employeeId } }
     orderBy: { startDate: DESC }
   ) {
     ...LeaveDetailed
   }
 }
 
-subscription UserLeaveUpdates($userId: uuid!) {
+subscription UserLeaveUpdates($employeeId: uuid!) {
   leave(
-    where: { userId: { _eq: $userId } }
+    where: { userId: { _eq: $employeeId } }
     orderBy: { startDate: DESC }
   ) {
     ...LeaveWithUser
@@ -45,7 +45,7 @@ subscription PendingLeaveUpdates {
 subscription ManagerPendingApprovalsUpdates($managerUserId: uuid!) {
   leave(
     where: {
-      leaveUser: { managerId: { _eq: $managerUserId } }
+      employee: { managerId: { _eq: $managerUserId } }
       status: { _eq: Pending }
     }
     orderBy: { startDate: ASC }
@@ -58,7 +58,7 @@ subscription ManagerPendingApprovalsUpdates($managerUserId: uuid!) {
 subscription TeamLeaveUpdates($managerUserId: uuid!) {
   leave(
     where: {
-      leaveUser: { managerId: { _eq: $managerUserId } }
+      employee: { managerId: { _eq: $managerUserId } }
     }
     orderBy: { startDate: DESC }
   ) {
@@ -69,7 +69,7 @@ subscription TeamLeaveUpdates($managerUserId: uuid!) {
 subscription ActiveTeamLeaveUpdates($managerUserId: uuid!) {
   leave(
     where: {
-      leaveUser: { managerId: { _eq: $managerUserId } }
+      employee: { managerId: { _eq: $managerUserId } }
       status: { _eq: Approved }
       startDate: { _lte: "now()" }
       endDate: { _gte: "now()" }
@@ -83,7 +83,7 @@ subscription ActiveTeamLeaveUpdates($managerUserId: uuid!) {
 subscription UpcomingTeamLeaveUpdates($managerUserId: uuid!) {
   leave(
     where: {
-      leaveUser: { managerId: { _eq: $managerUserId } }
+      employee: { managerId: { _eq: $managerUserId } }
       status: { _eq: Approved }
       startDate: { _gte: "now()" }
     }
@@ -198,7 +198,7 @@ subscription TeamLeaveCalendarUpdates(
 ) {
   leave(
     where: {
-      leaveUser: { managerId: { _eq: $managerUserId } }
+      employee: { managerId: { _eq: $managerUserId } }
       _or: [
         {
           startDate: { _gte: $startDate, _lte: $endDate }
@@ -306,10 +306,10 @@ subscription OtherLeaveCountUpdates {
 }
 
 # Notification subscriptions
-subscription TeamLeaveRequestsUpdates($userId: uuid!) {
+subscription TeamLeaveRequestsUpdates($employeeId: uuid!) {
   leave(
     where: {
-      leaveUser: { managerId: { _eq: $userId } }
+      employee: { managerId: { _eq: $employeeId } }
       status: { _eq: Pending }
     }
     orderBy: { startDate: DESC }
@@ -318,9 +318,9 @@ subscription TeamLeaveRequestsUpdates($userId: uuid!) {
   }
 }
 
-subscription MyLeaveRequestsUpdates($userId: uuid!) {
+subscription MyLeaveRequestsUpdates($employeeId: uuid!) {
   leave(
-    where: { userId: { _eq: $userId } }
+    where: { userId: { _eq: $employeeId } }
     orderBy: { startDate: DESC }
   ) {
     ...LeaveBasic
@@ -383,7 +383,7 @@ subscription LeaveRecentActivityUpdates {
     status
     leaveType
     startDate
-    leaveUser {
+    employee {
       firstName
       lastName
       computedName

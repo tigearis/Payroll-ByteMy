@@ -6,10 +6,12 @@
 # ============================================
 
 # Log an audit event
-mutation LogAuditEvent($input: auditLogsInsertInput!) {
-  insertAuditLogsOne: insertAuditLog(object: $input) {
-    id
-    eventTime
+mutation LogAuditEvent($input: AuditAuditLogInsertInput!) {
+  insertAuditAuditLog(objects: [$input]) {
+    returning {
+      id
+      eventTime
+    }
   }
 }
 
@@ -25,29 +27,31 @@ mutation LogAuditEvent($input: auditLogsInsertInput!) {
 # ============================================
 
 # Insert a file record
-mutation InsertFile($input: filesInsertInput!) {
-  insertFile(object: $input) {
-    id
-    filename
-    bucket
-    objectKey
-    size
-    mimetype
-    url
-    clientId
-    payrollId
-    uploadedBy
-    category
-    isPublic
-    metadata
-    fileType
-    createdAt
+mutation InsertFile($input: FilesInsertInput!) {
+  insertFiles(objects: [$input]) {
+    returning {
+      id
+      filename
+      bucket
+      objectKey
+      size
+      mimetype
+      url
+      clientId
+      payrollId
+      uploadedBy
+      category
+      isPublic
+      metadata
+      fileType
+      createdAt
+    }
   }
 }
 
 # Update file metadata
-mutation UpdateFileMetadata($id: uuid!, $updates: filesSetInput!) {
-  updateFileById(pkColumns: {id: $id}, _set: $updates) {
+mutation UpdateFileMetadata($id: uuid!, $updates: FilesSetInput!) {
+  updateFilesByPk(pkColumns: {id: $id}, _set: $updates) {
     id
     filename
     bucket
@@ -68,7 +72,7 @@ mutation UpdateFileMetadata($id: uuid!, $updates: filesSetInput!) {
 
 # Delete a file
 mutation DeleteFile($id: uuid!) {
-  deleteFileById(id: $id) {
+  deleteFilesByPk(id: $id) {
     id
     filename
     objectKey

@@ -85,7 +85,7 @@ const COLUMN_DEFINITIONS = [
     defaultVisible: true,
   },
   {
-    key: "primaryConsultantUser",
+    key: "primaryConsultant",
     label: "Primary Consultant",
     sortable: false,
     defaultVisible: true,
@@ -606,15 +606,22 @@ export default function PayrollsPage() {
 
   // Main render
   return (
-    <PermissionGuard permission="payrolls.read" fallback={
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center space-y-4">
-          <AlertTriangle className="w-8 h-8 mx-auto text-amber-500" />
-          <h3 className="text-lg font-medium text-amber-800">Access Restricted</h3>
-          <p className="text-amber-600">You don't have permission to view payrolls.</p>
+    <PermissionGuard
+      permission="payrolls.read"
+      fallback={
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center space-y-4">
+            <AlertTriangle className="w-8 h-8 mx-auto text-amber-500" />
+            <h3 className="text-lg font-medium text-amber-800">
+              Access Restricted
+            </h3>
+            <p className="text-amber-600">
+              You don't have permission to view payrolls.
+            </p>
+          </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <PayrollUpdatesListener showToasts={true} />
       <div className="container mx-auto py-6 space-y-6">
         <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -948,9 +955,11 @@ export default function PayrollsPage() {
                             <UserCheck className="w-4 h-4 text-gray-500" />
                             <span className="text-gray-600">Consultant:</span>
                             <span className="font-medium">
-                              {payroll.primaryConsultant?.computedName || 
-                               (payroll.primaryConsultant ? `${payroll.primaryConsultant.firstName || ''} ${payroll.primaryConsultant.lastName || ''}`.trim() : '') || 
-                               "Unassigned"}
+                              {payroll.primaryConsultant?.computedName ||
+                                (payroll.primaryConsultant
+                                  ? `${payroll.primaryConsultant.firstName || ""} ${payroll.primaryConsultant.lastName || ""}`.trim()
+                                  : "") ||
+                                "Unassigned"}
                             </span>
                           </div>
 
@@ -1076,9 +1085,11 @@ export default function PayrollsPage() {
                                 <div className="flex items-center gap-1">
                                   <UserCheck className="w-3 h-3" />
                                   <span>
-                                    {payroll.primaryConsultant?.computedName || 
-                                     (payroll.primaryConsultant ? `${payroll.primaryConsultant.firstName || ''} ${payroll.primaryConsultant.lastName || ''}`.trim() : '') || 
-                                     "Unassigned"}
+                                    {payroll.primaryConsultant?.computedName ||
+                                      (payroll.primaryConsultant
+                                        ? `${payroll.primaryConsultant.firstName || ""} ${payroll.primaryConsultant.lastName || ""}`.trim()
+                                        : "") ||
+                                      "Unassigned"}
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-1">

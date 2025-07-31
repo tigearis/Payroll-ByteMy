@@ -110,7 +110,7 @@ subscription PayrollSystemHealthUpdates {
       lastName
       computedName
     }
-    manager {
+    assignedManager {
       id
       firstName
       lastName

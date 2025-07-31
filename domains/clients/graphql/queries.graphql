@@ -8,8 +8,8 @@
 query GetClientsListOptimized(
   $limit: Int = 20
   $offset: Int = 0
-  $where: clientsBoolExp
-  $orderBy: [clientsOrderBy!] = { name: ASC }
+  $where: ClientsBoolExp
+  $orderBy: [ClientsOrderBy!] = { name: ASC }
 ) {
   clients(limit: $limit, offset: $offset, where: $where, orderBy: $orderBy) {
     ...ClientListItem
@@ -87,8 +87,8 @@ query GetClientsListOptimized(
 query GetClientsListWithStats(
   $limit: Int = 20
   $offset: Int = 0
-  $where: clientsBoolExp
-  $orderBy: [clientsOrderBy!] = { name: ASC }
+  $where: ClientsBoolExp
+  $orderBy: [ClientsOrderBy!] = { name: ASC }
 ) {
   # Main clients list with pagination
   clients(limit: $limit, offset: $offset, where: $where, orderBy: $orderBy) {
@@ -147,7 +147,7 @@ query GetClientsListWithStats(
 
 # Get single client by ID
 query GetClientById($id: uuid!) {
-  client: clientById(id: $id) {
+  client: clientsByPk(id: $id) {
     ...ClientWithStats
     # Basic client fields that exist in schema
     createdAt
@@ -191,7 +191,7 @@ query SearchClients($searchTerm: String!) {
 
 # Get client activity
 query GetClientActivity($clientId: String!, $limit: Int = 20) {
-  auditLogs(
+  auditAuditLog(
     where: { resourceType: { _eq: "client" }, resourceId: { _eq: $clientId } }
     orderBy: { eventTime: DESC }
     limit: $limit

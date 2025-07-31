@@ -7,12 +7,12 @@ query GetAllResourcesWithPermissions {
     name
     displayName
     description
-    availablePermissions(orderBy: { action: ASC }) {
+    permissions(orderBy: { action: ASC }) {
       id
       action
       description
       legacyPermissionName
-      relatedResource {
+      resource {
         id
         name
         displayName
@@ -23,25 +23,28 @@ query GetAllResourcesWithPermissions {
 
 # Get user's current effective permissions (role + overrides)
 query GetUserEffectivePermissions($userId: uuid!) {
-  # Get user's role assignments
-  userRoles(where: { userId: { _eq: $userId } }) {
+  # Get user through role assignments
+  users(where: { id: { _eq: $userId } }) {
     id
-    roleId
-    assignedRole {
+    roleAssignments {
       id
-      name
-      displayName
-      priority
-      assignedPermissions {
+      roleId
+      role {
         id
-        grantedPermission {
+        name
+        displayName
+        priority
+        rolePermissions {
           id
-          action
-          description
-          relatedResource {
+          permission {
             id
-            name
-            displayName
+            action
+            description
+            resource {
+              id
+              name
+              displayName
+            }
           }
         }
       }
@@ -68,54 +71,47 @@ query GetUserEffectivePermissions($userId: uuid!) {
 
 # Get permission audit history for a user
 query GetUserPermissionHistory($userId: uuid!, $limit: Int = 50) {
-  permissionAuditLogs(
+  auditPermissionChanges(
     where: { 
       _or: [
         { targetUserId: { _eq: $userId } }
-        { performedByUser: { id: { _eq: $userId } } }
+        { changedByUserId: { _eq: $userId } }
       ]
     }
-    orderBy: { timestamp: DESC }
+    orderBy: { changedAt: DESC }
     limit: $limit
   ) {
     id
-    action
-    resource
+    changeType
     targetUserId
-    timestamp
-    targetUser {
-      id
-      firstName
-      lastName
-      computedName
-    }
-    performedByUser {
-      id
-      firstName
-      lastName
-      computedName
-    }
+    changedByUserId
+    changedAt
+    reason
+    oldPermissions
+    newPermissions
   }
 }
 
 # Create a permission override
-mutation CreatePermissionOverride($input: permissionOverridesInsertInput!) {
-  insertPermissionOverride(object: $input) {
-    id
-    granted
-    reason
-    expiresAt
-    operation
-    resource
+mutation CreatePermissionOverride($input: PermissionOverridesInsertInput!) {
+  insertPermissionOverrides(objects: [$input]) {
+    returning {
+      id
+      granted
+      reason
+      expiresAt
+      operation
+      resource
+    }
   }
 }
 
 # Update a permission override
 mutation UpdatePermissionOverride(
   $id: uuid!
-  $updates: permissionOverridesSetInput!
+  $updates: PermissionOverridesSetInput!
 ) {
-  updatePermissionOverrideById(
+  updatePermissionOverridesByPk(
     pkColumns: { id: $id }
     _set: $updates
   ) {
@@ -129,16 +125,18 @@ mutation UpdatePermissionOverride(
 
 # Delete a permission override
 mutation DeletePermissionOverride($id: uuid!) {
-  deletePermissionOverrideById(id: $id) {
+  deletePermissionOverridesByPk(id: $id) {
     id
   }
 }
 
 # Create permission audit log entry
-mutation CreatePermissionAuditLog($input: permissionAuditLogsInsertInput!) {
-  insertPermissionAuditLog(object: $input) {
-    id
-    timestamp
+mutation CreatePermissionAuditLog($input: AuditPermissionChangesInsertInput!) {
+  insertAuditPermissionChanges(objects: [$input]) {
+    returning {
+      id
+      changedAt
+    }
   }
 }
 
@@ -150,13 +148,13 @@ query GetRolesWithPermissions {
     displayName
     description
     priority
-    assignedPermissions {
+    rolePermissions {
       id
-      grantedPermission {
+      permission {
         id
         action
         description
-        relatedResource {
+        resource {
           id
           name
           displayName
@@ -167,8 +165,8 @@ query GetRolesWithPermissions {
 }
 
 # Bulk create permission overrides
-mutation BulkCreatePermissionOverrides($overrides: [permissionOverridesInsertInput!]!) {
-  bulkInsertPermissionOverrides(objects: $overrides) {
+mutation BulkCreatePermissionOverrides($overrides: [PermissionOverridesInsertInput!]!) {
+  insertPermissionOverrides(objects: $overrides) {
     affectedRows
     returning {
       id

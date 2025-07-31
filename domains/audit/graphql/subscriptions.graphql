@@ -6,7 +6,7 @@ subscription AuditLogStream(
   $actions: [String!]
   $sinceTimestamp: timestamptz!
 ) {
-  auditLogs(
+  auditAuditLog(
     where: {
       resourceType: {_in: $resourceTypes}
       action: {_in: $actions}
@@ -20,7 +20,7 @@ subscription AuditLogStream(
 
 # Monitor auth events
 subscription AuthEventStream($eventTypes: [String!], $sinceTimestamp: timestamptz!) {
-  authEvents(
+  auditAuthEvents(
     where: {
       eventType: {_in: $eventTypes}
       eventTime: {_gte: $sinceTimestamp}
@@ -33,13 +33,13 @@ subscription AuthEventStream($eventTypes: [String!], $sinceTimestamp: timestampt
 
 # Missing subscriptions needed by security pages
 subscription SubscribeToAuditLogs($limit: Int = 50) {
-  auditLogs(orderBy: { eventTime: DESC }, limit: $limit) {
+  auditAuditLog(orderBy: { eventTime: DESC }, limit: $limit) {
     ...AuditLogEntry
   }
 }
 
 subscription SecurityEventsStream {
-  auditLogs(
+  auditAuditLog(
     where: { 
       resourceType: { _in: ["security", "auth", "permission"] }
     }
@@ -51,7 +51,7 @@ subscription SecurityEventsStream {
 }
 
 subscription FailedOperationsStream {
-  auditLogs(
+  auditAuditLog(
     where: { success: { _eq: false } }
     orderBy: { eventTime: DESC }
     limit: 50
@@ -61,7 +61,7 @@ subscription FailedOperationsStream {
 }
 
 subscription CriticalDataAccessStream {
-  auditLogs(
+  auditAuditLog(
     where: { 
       resourceType: { _in: ["users", "clients", "payrolls"] }
       action: { _in: ["delete", "create", "update"] }
@@ -75,7 +75,7 @@ subscription CriticalDataAccessStream {
 
 # Monitor data access events
 subscription DataAccessStream($resourceTypes: [String!], $sinceTimestamp: timestamptz!) {
-  dataAccessLogs(
+  auditDataAccessLog(
     where: {
       resourceType: {_in: $resourceTypes}
       accessedAt: {_gte: $sinceTimestamp}
@@ -88,7 +88,7 @@ subscription DataAccessStream($resourceTypes: [String!], $sinceTimestamp: timest
 
 # Monitor sensitive audit logs
 subscription SensitiveAuditStream($resourceTypes: [String!]!, $sinceTimestamp: timestamptz!) {
-  auditLogs(
+  auditAuditLog(
     where: {
       resourceType: {_in: $resourceTypes}
       action: {_in: ["view", "export", "update", "delete"]}
@@ -102,20 +102,19 @@ subscription SensitiveAuditStream($resourceTypes: [String!]!, $sinceTimestamp: t
 
 # Monitor permission audit events
 subscription PermissionAuditStream($sinceTimestamp: timestamptz!) {
-  permissionAuditLogs(
+  auditPermissionChanges(
     where: {
-      operation: {_eq: "deny"}
-      createdAt: {_gte: $sinceTimestamp}
+      changedAt: {_gte: $sinceTimestamp}
     }
-    orderBy: {createdAt: DESC}
+    orderBy: {changedAt: DESC}
   ) {
     id
-    userId
-    action
-    resource
-    operation
+    targetUserId
+    changedByUserId
+    changeType
     reason
-    createdAt
-    # user relationship not available
+    changedAt
+    oldPermissions
+    newPermissions
   }
 }

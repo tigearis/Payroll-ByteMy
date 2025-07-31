@@ -33,7 +33,7 @@ subscription ClientSystemUpdates($id: uuid!) {
 
 subscription SystemClientConnectionsUpdates($externalSystemId: uuid!) {
   clientExternalSystems(
-    where: { externalSystemId: { _eq: $externalSystemId } }
+    where: { externalSystem: { id: { _eq: $externalSystemId } } }
     orderBy: { createdAt: DESC }
   ) {
     ...ClientExternalSystemWithRelations
@@ -111,7 +111,7 @@ subscription ClientSystemAuditUpdates {
 subscription SystemActivityAuditUpdates($externalSystemId: uuid!) {
   clientExternalSystems(
     where: { 
-      externalSystemId: { _eq: $externalSystemId }
+      externalSystem: { id: { _eq: $externalSystemId } }
       updatedAt: { _gte: "now() - interval '1 hour'" }
     }
     orderBy: { updatedAt: DESC }

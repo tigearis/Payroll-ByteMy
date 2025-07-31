@@ -9,7 +9,7 @@
 # Use the shared version for consistency across domains
 
 # Core client fields for basic operations
-fragment ClientCore on clients {
+fragment ClientCore on Clients {
   ...ClientMinimal
   contactPerson
 }
@@ -19,7 +19,7 @@ fragment ClientCore on clients {
 # ============================================
 
 # Standard client information for most operations
-fragment ClientBasic on clients {
+fragment ClientBasic on Clients {
   ...ClientCore
   active
   contactEmail
@@ -29,13 +29,13 @@ fragment ClientBasic on clients {
 }
 
 # Client summary with key business metrics
-fragment ClientSummary on clients {
+fragment ClientSummary on Clients {
   ...ClientBasic
   # Add computed fields when available in schema
 }
 
 # Optimized for client list displays
-fragment ClientListItem on clients {
+fragment ClientListItem on Clients {
   ...ClientBasic
   # Optimized field selection for list performance
   payrollsAggregate(where: { supersededDate: { _isNull: true } }) {
@@ -50,19 +50,19 @@ fragment ClientListItem on clients {
 # ============================================
 
 # Comprehensive client details
-fragment ClientDetailed on clients {
+fragment ClientDetailed on Clients {
   ...ClientBasic
   # Extended fields when available in schema
 }
 
 # Client with relationship data
-fragment ClientWithRelations on clients {
+fragment ClientWithRelations on Clients {
   ...ClientDetailed
   # Relationship fields to be added when schema supports
 }
 
 # Most comprehensive client view
-fragment ClientComplete on clients {
+fragment ClientComplete on Clients {
   ...ClientWithRelations
   # All available client data including nested relationships
 }
@@ -72,18 +72,18 @@ fragment ClientComplete on clients {
 # ============================================
 
 # Optimized for dashboard card display
-fragment ClientCard on clients {
+fragment ClientCard on Clients {
   ...ClientCore
   updatedAt
 }
 
 # Table row format for client tables
-fragment ClientTableRow on clients {
+fragment ClientTableRow on Clients {
   ...ClientBasic
 }
 
 # Audit-compliant fields only
-fragment ClientForAudit on clients {
+fragment ClientForAudit on Clients {
   id
   name
   active
@@ -92,7 +92,7 @@ fragment ClientForAudit on clients {
 }
 
 # Search result format
-fragment ClientSearchResult on clients {
+fragment ClientSearchResult on Clients {
   ...ClientCore
   contactEmail
   contactPhone
@@ -103,6 +103,6 @@ fragment ClientSearchResult on clients {
 # ============================================
 
 # @deprecated Use ClientComplete instead
-fragment ClientWithConsultant on clients {
+fragment ClientWithConsultant on Clients {
   ...ClientBasic
 }

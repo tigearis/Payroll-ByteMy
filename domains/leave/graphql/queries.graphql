@@ -3,7 +3,7 @@
 # SOC2 Compliance: Row-level security and audit logging enforced
 
 # Core leave queries
-query GetLeave($limit: Int = 50, $offset: Int = 0, $where: leaveBoolExp) {
+query GetLeave($limit: Int = 50, $offset: Int = 0, $where: LeaveBoolExp) {
   leave(
     limit: $limit
     offset: $offset
@@ -20,13 +20,13 @@ query GetLeave($limit: Int = 50, $offset: Int = 0, $where: leaveBoolExp) {
 }
 
 query GetLeaveById($id: uuid!) {
-  leaveById(id: $id) {
+  leaveByPk(id: $id) {
     ...LeaveComplete
   }
 }
 
 query GetLeaveBasic($id: uuid!) {
-  leaveById(id: $id) {
+  leaveByPk(id: $id) {
     ...LeaveBasic
   }
 }
@@ -51,7 +51,7 @@ query GetMyLeave($userId: uuid!) {
 }
 
 query GetUserLeaveById($id: uuid!, $userId: uuid!) {
-  leaveById(id: $id) {
+  leaveByPk(id: $id) {
     ...LeaveWithUser
   }
 }
@@ -243,11 +243,11 @@ query GetCurrentLeave {
 }
 
 # Manager and team queries
-query GetTeamLeave($managerUserId: uuid!) {
+query GetTeamLeave($managerId: uuid!) {
   leave(
     where: {
-      leaveUser: {
-        managerId: { _eq: $managerUserId }
+      employee: {
+        managerId: { _eq: $managerId }
       }
     }
     orderBy: { startDate: DESC }
@@ -256,11 +256,11 @@ query GetTeamLeave($managerUserId: uuid!) {
   }
 }
 
-query GetTeamPendingLeave($managerUserId: uuid!) {
+query GetTeamPendingLeave($managerId: uuid!) {
   leave(
     where: {
-      leaveUser: {
-        managerId: { _eq: $managerUserId }
+      employee: {
+        managerId: { _eq: $managerId }
       }
       status: { _eq: Pending }
     }
@@ -331,7 +331,7 @@ query SearchLeave($searchTerm: String!, $limit: Int = 50) {
       _or: [
         { reason: { _ilike: $searchTerm } }
         { leaveType: { _ilike: $searchTerm } }
-        { leaveUser: { computedName: { _ilike: $searchTerm } } }
+        { employee: { computedName: { _ilike: $searchTerm } } }
       ]
     }
     orderBy: { startDate: DESC }
@@ -375,7 +375,7 @@ query FilterLeaveByDateAndType(
 query GetLeaveForAudit(
   $limit: Int = 100
   $offset: Int = 0
-  $where: leaveBoolExp = {}
+  $where: LeaveBoolExp = {}
 ) {
   leave(
     limit: $limit
@@ -411,8 +411,8 @@ query GetUserLeaveAudit($userId: uuid!, $limit: Int = 50) {
 query GetLeavePaginated(
   $limit: Int = 20
   $offset: Int = 0
-  $where: leaveBoolExp = {}
-  $orderBy: [leaveOrderBy!] = [{ startDate: DESC }]
+  $where: LeaveBoolExp = {}
+  $orderBy: [LeaveOrderBy!] = [{ startDate: DESC }]
 ) {
   leave(
     limit: $limit
@@ -434,7 +434,7 @@ query GetUserLeavePaginated(
   $userId: uuid!
   $limit: Int = 20
   $offset: Int = 0
-  $where: leaveBoolExp = {}
+  $where: LeaveBoolExp = {}
 ) {
   leave(
     where: { _and: [{ userId: { _eq: $userId } }, $where] }
@@ -485,13 +485,13 @@ query GetLeaveCalendar($startDate: date!, $endDate: date!) {
   }
 }
 
-query GetTeamLeaveCalendar($managerUserId: uuid!, $startDate: date!, $endDate: date!) {
+query GetTeamLeaveCalendar($managerId: uuid!, $startDate: date!, $endDate: date!) {
   leave(
     where: {
       _and: [
         { startDate: { _lte: $endDate } }
         { endDate: { _gte: $startDate } }
-        { leaveUser: { managerId: { _eq: $managerUserId } } }
+        { employee: { managerId: { _eq: $managerId } } }
       ]
     }
     orderBy: { startDate: ASC }
@@ -529,7 +529,7 @@ query GetManagerTeamForLeave($managerId: uuid!) {
         # Direct reports
         { managerId: { _eq: $managerId } }
         # Second level reports (reports of reports) - only for org_admin and developer
-        { managerUser: { managerId: { _eq: $managerId } } }
+        { manager: { managerId: { _eq: $managerId } } }
       ]
       isActive: { _eq: true }
     }
@@ -544,7 +544,7 @@ query GetManagerTeamForLeave($managerId: uuid!) {
     isStaff
     isActive
     managerId
-    managerUser {
+    manager {
       id
       firstName
       lastName
@@ -572,7 +572,7 @@ query GetAllUsersForLeave {
     isStaff
     isActive
     managerId
-    managerUser {
+    manager {
       id
       firstName
       lastName

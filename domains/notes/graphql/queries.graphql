@@ -3,7 +3,7 @@
 # SOC2 Compliance: Row-level security and audit logging enforced
 
 # Core note queries
-query GetNotes($limit: Int = 50, $offset: Int = 0, $where: notesBoolExp) {
+query GetNotes($limit: Int = 50, $offset: Int = 0, $where: NotesBoolExp) {
   notes(
     limit: $limit
     offset: $offset
@@ -20,13 +20,13 @@ query GetNotes($limit: Int = 50, $offset: Int = 0, $where: notesBoolExp) {
 }
 
 query GetNoteById($id: uuid!) {
-  noteById(id: $id) {
+  notesByPk(id: $id) {
     ...NoteDetailed
   }
 }
 
 query GetNoteBasic($id: uuid!) {
-  noteById(id: $id) {
+  notesByPk(id: $id) {
     ...NoteBasic
   }
 }
@@ -148,7 +148,7 @@ query SearchNotes($searchTerm: String!, $limit: Int = 50) {
     where: {
       _or: [
         { content: { _ilike: $searchTerm } }
-        { authorUser: { computedName: { _ilike: $searchTerm } } }
+        { author: { computedName: { _ilike: $searchTerm } } }
       ]
     }
     orderBy: { createdAt: DESC }
@@ -308,7 +308,7 @@ query GetNotesByAuthorAndDateRange(
 query GetNotesForAudit(
   $limit: Int = 100
   $offset: Int = 0
-  $where: notesBoolExp = {}
+  $where: NotesBoolExp = {}
 ) {
   notes(
     limit: $limit
@@ -333,8 +333,8 @@ query GetNotesByEntityType($entityType: String!) {
 query GetNotesPaginated(
   $limit: Int = 20
   $offset: Int = 0
-  $where: notesBoolExp = {}
-  $orderBy: [notesOrderBy!] = [{ createdAt: DESC }]
+  $where: NotesBoolExp = {}
+  $orderBy: [NotesOrderBy!] = [{ createdAt: DESC }]
 ) {
   notes(
     limit: $limit
@@ -391,7 +391,7 @@ query SearchNotesPaginated(
     where: {
       _or: [
         { content: { _ilike: $searchTerm } }
-        { authorUser: { computedName: { _ilike: $searchTerm } } }
+        { author: { computedName: { _ilike: $searchTerm } } }
       ]
     }
     orderBy: { createdAt: DESC }
@@ -405,7 +405,7 @@ query SearchNotesPaginated(
     where: {
       _or: [
         { content: { _ilike: $searchTerm } }
-        { authorUser: { computedName: { _ilike: $searchTerm } } }
+        { author: { computedName: { _ilike: $searchTerm } } }
       ]
     }
   ) {

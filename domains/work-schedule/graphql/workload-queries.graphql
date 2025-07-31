@@ -5,7 +5,7 @@ query GetConsultantPayrollWorkload(
   $endDate: date!
 ) {
   # User basic info
-  userById(id: $userId) {
+  usersByPk(id: $userId) {
     id
     firstName
     lastName
@@ -102,7 +102,7 @@ query GetTeamPayrollWorkload(
     defaultAdminTimePercentage
 
     # Work schedules (all days for this user)
-    userWorkSchedules(orderBy: { workDay: ASC }) {
+    workSchedules(orderBy: { workDay: ASC }) {
       id
       workDay
       workHours
@@ -112,7 +112,7 @@ query GetTeamPayrollWorkload(
     }
 
     # Primary payroll assignments
-    primaryConsultantPayrolls(
+    primaryPayrollAssignments(
       where: { status: { _in: ["Active", "pending_approval", "Implementation"] } }
     ) {
       id
@@ -135,7 +135,7 @@ query GetTeamPayrollWorkload(
     }
 
     # Backup payroll assignments
-    backupConsultantPayrolls(
+    backupPayrollAssignments(
       where: { status: { _in: ["Active", "pending_approval", "Implementation"] } }
     ) {
       id
@@ -215,7 +215,7 @@ query GetPayrollWorkloadStats(
   # Upcoming payroll dates count
   upcomingPayrollDates: payrollDatesAggregate(
     where: {
-      relatedPayroll: {
+      payroll: {
         _or: [
           { primaryConsultantUserId: { _eq: $userId } }
           { backupConsultantUserId: { _eq: $userId } }
@@ -236,7 +236,7 @@ query GetPayrollAssignmentDetails(
   $startDate: date!
   $endDate: date!
 ) {
-  payrollById(id: $payrollId) {
+  payrollsByPk(id: $payrollId) {
     id
     name
     processingTime
@@ -270,3 +270,7 @@ query GetPayrollAssignmentDetails(
     }
   }
 }
+
+# NOTE: Enhanced queries using the payroll_workload_distribution view
+# These queries are ready for use once Hasura tracks the new database view
+# For now, the JavaScript-based fix in useTeamWorkloadGraphQL provides the correct distribution
