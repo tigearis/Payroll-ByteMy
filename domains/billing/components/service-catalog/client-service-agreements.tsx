@@ -87,11 +87,11 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
         {
           id: agreement.id,
           service_id: agreement.billingPlanId,
-          service_name: agreement.assignedBillingPlan?.name || 'Unknown Service',
+          service_name: agreement.billingPlan?.name || 'Unknown Service',
           standard_rate: agreement.assignedBillingPlan?.standardRate || 0,
           custom_rate: agreement.customRate || undefined,
           billing_unit: agreement.assignedBillingPlan?.billingUnit || 'Per Payroll',
-          category: agreement.assignedBillingPlan?.category || 'Processing',
+          category: agreement.billingPlan?.category || 'Processing',
           billing_frequency: agreement.billingFrequency || 'Per Job',
           is_enabled: agreement.isEnabled || false,
           effective_date: agreement.effectiveDate || new Date().toISOString().split('T')[0]
@@ -360,18 +360,18 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
                     <TableRow key={agreement.id}>
                       <TableCell>
                         <div className="font-medium">
-                          {agreement.assignedBillingPlan?.name || 'Unknown Service'}
+                          {agreement.billingPlan?.name || 'Unknown Service'}
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge className={getCategoryColor(agreement.assignedBillingPlan?.category || 'Processing')}>
-                          {agreement.assignedBillingPlan?.category || 'Processing'}
+                        <Badge className={getCategoryColor(agreement.billingPlan?.category || 'Processing')}>
+                          {agreement.billingPlan?.category || 'Processing'}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <span className="font-medium">
-                            ${agreement.customRate || agreement.assignedBillingPlan?.standardRate}
+                            ${agreement.customRate || agreement.billingPlan?.standardRate}
                           </span>
                           {agreement.customRate && (
                             <Badge variant="secondary" className="text-xs">
@@ -382,7 +382,7 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline">
-                          {agreement.assignedBillingPlan?.billingUnit || 'Per Payroll'}
+                          {agreement.billingPlan?.billingUnit || 'Per Payroll'}
                         </Badge>
                       </TableCell>
                       <TableCell>{agreement.billingFrequency || 'Per Job'}</TableCell>

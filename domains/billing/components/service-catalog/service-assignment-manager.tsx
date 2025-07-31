@@ -119,9 +119,9 @@ export const ServiceAssignmentManager: React.FC<ServiceAssignmentManagerProps> =
         return {
           serviceId: service.id,
           serviceName: service.name,
-          category: service.category,
+          category: service.category || 'Processing',
           standardRate: service.standardRate,
-          billingUnit: service.billingUnit,
+          billingUnit: service.billingUnit || 'hour',
           customRate: existingAgreement?.customRate || undefined,
           billingFrequency: existingAgreement?.billingFrequency || defaultBillingFrequency,
           selected: !!existingAgreement,
