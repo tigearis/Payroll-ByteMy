@@ -78,12 +78,12 @@ mutation CreateBillingItemLog($input: AuditAuditLogInsertInput!) {
 }
 
 # Service Catalog Management
-mutation CreateService($input: BillingPlanInsertInput!) {
-  insertBillingPlanOne(object: $input) {
+mutation CreateService($input: ServicesInsertInput!) {
+  insertServicesOne(object: $input) {
     id
     name
     description
-    standardRate
+    defaultRate
     billingUnit
     category
     isActive
@@ -93,12 +93,12 @@ mutation CreateService($input: BillingPlanInsertInput!) {
   }
 }
 
-mutation UpdateService($id: uuid!, $updates: BillingPlanSetInput!) {
-  updateBillingPlanByPk(pkColumns: { id: $id }, _set: $updates) {
+mutation UpdateService($id: uuid!, $updates: ServicesSetInput!) {
+  updateServicesByPk(pkColumns: { id: $id }, _set: $updates) {
     id
     name
     description
-    standardRate
+    defaultRate
     billingUnit
     category
     isActive
@@ -109,7 +109,7 @@ mutation UpdateService($id: uuid!, $updates: BillingPlanSetInput!) {
 }
 
 mutation DeleteService($id: uuid!) {
-  updateBillingPlanByPk(pkColumns: { id: $id }, _set: { isActive: false }) {
+  updateServicesByPk(pkColumns: { id: $id }, _set: { isActive: false }) {
     id
     name
     isActive
@@ -200,9 +200,9 @@ mutation UpdateTimeEntry($id: uuid!, $updates: TimeEntriesSetInput!) {
 }
 
 # Client Service Agreements Management
-mutation BulkUpdateClientServiceAgreements($clientId: uuid!, $agreements: [ClientBillingAssignmentInsertInput!]!) {
+mutation BulkUpdateClientServiceAgreements($clientId: uuid!, $agreements: [ClientServiceAgreementsInsertInput!]!) {
   # First delete existing active agreements for this client
-  deleteClientBillingAssignment(
+  deleteClientServiceAgreements(
     where: { 
       clientId: { _eq: $clientId }
       isActive: { _eq: true }
@@ -212,24 +212,24 @@ mutation BulkUpdateClientServiceAgreements($clientId: uuid!, $agreements: [Clien
   }
   
   # Then insert new agreements
-  insertClientBillingAssignment(objects: $agreements) {
+  insertClientServiceAgreements(objects: $agreements) {
     returning {
       id
       clientId
-      billingPlanId
+      serviceId
       customRate
       billingFrequency
-      effectiveDate
+      contractStartDate
       isEnabled
       isActive
-      startDate
-      endDate
+      contractStartDate
+      contractEndDate
       createdAt
-      billingPlan {
+      service {
         id
         name
         description
-        standardRate
+        defaultRate
         billingUnit
         category
       }

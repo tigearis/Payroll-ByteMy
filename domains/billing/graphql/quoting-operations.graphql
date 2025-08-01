@@ -1,0 +1,622 @@
+# =============================================================================
+# Quoting System GraphQL Operations
+# Complete CRUD operations for quotes, quote templates, and conversions
+# =============================================================================
+
+# =============================================================================
+# CORE QUOTE OPERATIONS
+# =============================================================================
+
+# Create a new quote
+mutation CreateQuote($input: QuotesInsertInput!) {
+  insertQuotesOne(object: $input) {
+    id
+    quoteNumber
+    clientId
+    prospectName
+    prospectEmail
+    prospectPhone
+    prospectCompany
+    status
+    totalAmount
+    validUntil
+    createdBy
+    notes
+    termsConditions
+    createdAt
+    updatedAt
+    client {
+      id
+      name
+      contactEmail
+    }
+    createdByUser {
+      id
+      firstName
+      lastName
+    }
+  }
+}
+
+# Update existing quote
+mutation UpdateQuote($id: uuid!, $changes: QuotesSetInput!) {
+  updateQuotesByPk(pkColumns: {id: $id}, _set: $changes) {
+    id
+    quoteNumber
+    status
+    totalAmount
+    validUntil
+    updatedAt
+  }
+}
+
+# Delete quote (soft delete by setting status to 'cancelled')
+mutation DeleteQuote($id: uuid!) {
+  updateQuotesByPk(pkColumns: {id: $id}, _set: {status: "cancelled"}) {
+    id
+    status
+  }
+}
+
+# Get quote by ID with full details
+query GetQuoteById($id: uuid!) {
+  quotesByPk(id: $id) {
+    id
+    quoteNumber
+    clientId
+    prospectName
+    prospectEmail
+    prospectPhone
+    prospectCompany
+    status
+    totalAmount
+    validUntil
+    createdBy
+    convertedAt
+    convertedToClientId
+    conversionValue
+    notes
+    termsConditions
+    createdAt
+    updatedAt
+    client {
+      id
+      name
+      contactEmail
+      contactPhone
+    }
+    convertedToClient {
+      id
+      name
+    }
+    createdByUser {
+      id
+      firstName
+      lastName
+    }
+    lineItems {
+      id
+      serviceId
+      description
+      quantity
+      unitRate
+      totalAmount
+      notes
+      service {
+        id
+        name
+        category
+        billingUnit
+        defaultRate
+      }
+    }
+    conversions {
+      id
+      clientId
+      conversionDate
+      totalValue
+      conversionNotes
+      serviceAgreementsCreated
+    }
+  }
+}
+
+# Get all quotes with filtering and pagination
+query GetQuotes(
+  $limit: Int = 50
+  $offset: Int = 0
+  $where: QuotesBoolExp
+  $orderBy: [QuotesOrderBy!] = [{createdAt: DESC}]
+) {
+  quotes(limit: $limit, offset: $offset, where: $where, orderBy: $orderBy) {
+    id
+    quoteNumber
+    clientId
+    prospectName
+    prospectCompany
+    status
+    totalAmount
+    validUntil
+    createdAt
+    updatedAt
+    client {
+      id
+      name
+    }
+    createdByUser {
+      firstName
+      lastName
+    }
+    lineItems {
+      id
+      totalAmount
+    }
+  }
+  quotesAggregate(where: $where) {
+    aggregate {
+      count
+      sum {
+        totalAmount
+      }
+      avg {
+        totalAmount
+      }
+    }
+  }
+}
+
+# Get quotes analytics view
+query GetQuoteAnalytics(
+  $where: QuoteAnalyticsBoolExp
+  $orderBy: [QuoteAnalyticsOrderBy!] = [{createdAt: DESC}]
+) {
+  quoteAnalytics(where: $where, orderBy: $orderBy) {
+    id
+    quoteNumber
+    status
+    totalAmount
+    createdAt
+    validUntil
+    convertedAt
+    conversionValue
+    clientName
+    createdByName
+    lineItemsCount
+    pipelineStatus
+    daysInPipeline
+  }
+}
+
+# =============================================================================
+# QUOTE LINE ITEMS OPERATIONS
+# =============================================================================
+
+# Add line item to quote
+mutation AddQuoteLineItem($input: QuoteLineItemsInsertInput!) {
+  insertQuoteLineItemsOne(object: $input) {
+    id
+    quoteId
+    serviceId
+    description
+    quantity
+    unitRate
+    totalAmount
+    notes
+    createdAt
+    service {
+      id
+      name
+      billingUnit
+      defaultRate
+    }
+  }
+}
+
+# Update quote line item
+mutation UpdateQuoteLineItem($id: uuid!, $changes: QuoteLineItemsSetInput!) {
+  updateQuoteLineItemsByPk(pkColumns: {id: $id}, _set: $changes) {
+    id
+    description
+    quantity
+    unitRate
+    totalAmount
+    createdAt
+  }
+}
+
+# Delete quote line item
+mutation DeleteQuoteLineItem($id: uuid!) {
+  deleteQuoteLineItemsByPk(id: $id) {
+    id
+  }
+}
+
+# Bulk add multiple line items to quote
+mutation AddMultipleQuoteLineItems($items: [QuoteLineItemsInsertInput!]!) {
+  insertQuoteLineItems(objects: $items) {
+    returning {
+      id
+      quoteId
+      description
+      totalAmount
+    }
+    affectedRows
+  }
+}
+
+# =============================================================================
+# QUOTE TEMPLATES OPERATIONS
+# =============================================================================
+
+# Create quote template
+mutation CreateQuoteTemplate($input: QuoteTemplatesInsertInput!) {
+  insertQuoteTemplatesOne(object: $input) {
+    id
+    name
+    description
+    category
+    serviceBundle
+    targetClientSize
+    targetIndustry
+    estimatedTotal
+    isActive
+    isPublic
+    createdBy
+    createdAt
+  }
+}
+
+# Update quote template
+mutation UpdateQuoteTemplate($id: uuid!, $changes: QuoteTemplatesSetInput!) {
+  updateQuoteTemplatesByPk(pkColumns: {id: $id}, _set: $changes) {
+    id
+    name
+    description
+    estimatedTotal
+    updatedAt
+  }
+}
+
+# Get all quote templates
+query GetQuoteTemplates(
+  $where: QuoteTemplatesBoolExp
+  $orderBy: [QuoteTemplatesOrderBy!] = [{createdAt: DESC}]
+) {
+  quoteTemplates(where: $where, orderBy: $orderBy) {
+    id
+    name
+    description
+    category
+    serviceBundle
+    targetClientSize
+    targetIndustry
+    estimatedTotal
+    isActive
+    isPublic
+    createdAt
+    createdByUser {
+      firstName
+      lastName
+    }
+  }
+}
+
+# Get quote template by ID
+query GetQuoteTemplateById($id: uuid!) {
+  quoteTemplatesByPk(id: $id) {
+    id
+    name
+    description
+    category
+    serviceBundle
+    targetClientSize
+    targetIndustry
+    estimatedTotal
+    isActive
+    isPublic
+    createdBy
+    createdAt
+    updatedAt
+    createdByUser {
+      id
+      firstName
+      lastName
+    }
+  }
+}
+
+# Get quote template summary (using regular templates table)
+query GetQuoteTemplateSummary {
+  quoteTemplates {
+    id
+    name
+    description
+    category
+    targetClientSize
+    estimatedTotal
+    isActive
+    createdAt
+  }
+}
+
+# =============================================================================
+# QUOTE CONVERSION OPERATIONS
+# =============================================================================
+
+# Convert quote to client
+mutation ConvertQuoteToClient(
+  $quoteId: uuid!
+  $clientId: uuid!
+  $conversionNotes: String
+  $serviceAgreements: [ClientServiceAgreementsInsertInput!]!
+) {
+  # Update quote status to converted
+  updateQuotesByPk(
+    pkColumns: {id: $quoteId}
+    _set: {
+      status: "converted"
+      convertedAt: "now()"
+      convertedToClientId: $clientId
+    }
+  ) {
+    id
+    status
+    convertedAt
+  }
+  
+  # Create service agreements for the client
+  insertClientServiceAgreements(objects: $serviceAgreements) {
+    returning {
+      id
+      clientId
+      serviceId
+      customRate
+      isActive
+    }
+    affectedRows
+  }
+  
+  # Log the conversion
+  insertQuoteConversionsOne(object: {
+    quoteId: $quoteId
+    clientId: $clientId
+    conversionNotes: $conversionNotes
+    totalValue: 0  # Will be calculated by trigger
+  }) {
+    id
+    conversionDate
+    totalValue
+  }
+}
+
+# Create new client from quote prospect
+mutation CreateClientFromQuote(
+  $quoteId: uuid!
+  $clientData: ClientsInsertInput!
+  $serviceAgreements: [ClientServiceAgreementsInsertInput!]!
+) {
+  # Create new client
+  insertClientsOne(object: $clientData) {
+    id
+    name
+    contactEmail
+    createdAt
+  }
+  
+  # Convert quote (this will be handled by a stored procedure in production)
+  updateQuotesByPk(
+    pkColumns: {id: $quoteId}
+    _set: {
+      status: "converted"
+      convertedAt: "now()"
+    }
+  ) {
+    id
+    status
+  }
+}
+
+# Get conversion analytics
+query GetQuoteConversions(
+  $where: QuoteConversionsBoolExp
+  $orderBy: [QuoteConversionsOrderBy!] = [{conversionDate: DESC}]
+) {
+  quoteConversions(where: $where, orderBy: $orderBy) {
+    id
+    quoteId
+    clientId
+    conversionDate
+    totalValue
+    conversionNotes
+    serviceAgreementsCreated
+    quote {
+      quoteNumber
+      prospectName
+      totalAmount
+    }
+    client {
+      name
+      contactEmail
+    }
+    createdByUser {
+      firstName
+      lastName
+    }
+  }
+}
+
+# =============================================================================
+# QUOTE PIPELINE & ANALYTICS
+# =============================================================================
+
+# Get quote pipeline summary
+query GetQuotePipeline {
+  quotes(where: {status: {_in: ["draft", "sent"]}}) {
+    id
+    quoteNumber
+    status
+    totalAmount
+    validUntil
+    createdAt
+    prospectName
+    prospectCompany
+    client {
+      name
+    }
+  }
+  
+  # Pipeline metrics
+  draftQuotes: quotesAggregate(where: {status: {_eq: "draft"}}) {
+    aggregate {
+      count
+      sum {
+        totalAmount
+      }
+    }
+  }
+  
+  sentQuotes: quotesAggregate(where: {status: {_eq: "sent"}}) {
+    aggregate {
+      count
+      sum {
+        totalAmount
+      }
+    }
+  }
+  
+  convertedQuotes: quotesAggregate(where: {status: {_eq: "converted"}}) {
+    aggregate {
+      count
+      sum {
+        conversionValue
+      }
+    }
+  }
+}
+
+# Get quote performance metrics
+query GetQuoteMetrics(
+  $startDate: timestamptz!
+  $endDate: timestamptz!
+) {
+  # Total quotes created
+  totalQuotes: quotesAggregate(
+    where: {
+      createdAt: {_gte: $startDate, _lte: $endDate}
+    }
+  ) {
+    aggregate {
+      count
+      sum {
+        totalAmount
+      }
+      avg {
+        totalAmount
+      }
+    }
+  }
+  
+  # Conversion metrics
+  convertedQuotesMetrics: quotesAggregate(
+    where: {
+      convertedAt: {_gte: $startDate, _lte: $endDate}
+      status: {_eq: "converted"}
+    }
+  ) {
+    aggregate {
+      count
+      sum {
+        conversionValue
+      }
+    }
+  }
+  
+  # Lost quotes
+  lostQuotes: quotesAggregate(
+    where: {
+      createdAt: {_gte: $startDate, _lte: $endDate}
+      status: {_in: ["rejected", "expired"]}
+    }
+  ) {
+    aggregate {
+      count
+      sum {
+        totalAmount
+      }
+    }
+  }
+}
+
+# =============================================================================
+# SERVICE INTEGRATION FOR QUOTES
+# =============================================================================
+
+# Get services for quote building
+query GetServicesForQuoting(
+  $category: String
+  $billingUnit: String
+) {
+  services(
+    where: {
+      isActive: {_eq: true}
+      category: {_ilike: $category}
+      billingUnit: {_ilike: $billingUnit}
+    }
+    orderBy: [{category: ASC}, {defaultRate: ASC}]
+  ) {
+    id
+    name
+    description
+    category
+    billingUnit
+    defaultRate
+    currency
+    metadata
+  }
+}
+
+# Get service catalog for quotes (using regular services table)
+query GetServiceCatalogForQuotes {
+  services(where: {isActive: {_eq: true}}) {
+    id
+    name
+    description
+    category
+    billingUnit
+    defaultRate
+    currency
+    isActive
+  }
+}
+
+# =============================================================================
+# SUBSCRIPTION OPERATIONS FOR REAL-TIME UPDATES
+# =============================================================================
+
+# Subscribe to quote updates
+subscription SubscribeToQuoteUpdates($quoteId: uuid!) {
+  quotesByPk(id: $quoteId) {
+    id
+    status
+    totalAmount
+    updatedAt
+    lineItems {
+      id
+      totalAmount
+    }
+  }
+}
+
+# Subscribe to quote pipeline changes
+subscription SubscribeToQuotePipeline {
+  quotes(
+    where: {status: {_in: ["draft", "sent", "converted", "rejected"]}}
+    orderBy: {updatedAt: DESC}
+  ) {
+    id
+    quoteNumber
+    status
+    totalAmount
+    updatedAt
+  }
+}

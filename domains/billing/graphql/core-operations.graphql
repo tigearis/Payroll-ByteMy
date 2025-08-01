@@ -3,16 +3,17 @@
 
 # Note: GetServiceCatalog query moved to queries.graphql to avoid duplication
 
-mutation CreateService($input: BillingPlanInsertInput!) {
-  insertBillingPlanOne(object: $input) {
+mutation CreateServiceCore($input: ServicesInsertInput!) {
+  insertServicesOne(object: $input) {
     id
     name
     description
-    standardRate
+    defaultRate
     billingUnit
     category
     isActive
     currency
+    serviceType
     createdAt
     updatedAt
   }
