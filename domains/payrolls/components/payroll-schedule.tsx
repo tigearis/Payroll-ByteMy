@@ -256,7 +256,7 @@ export function PayrollSchedule() {
         .filter(user => user.role === 'consultant' || user.role === 'manager' || user.role === 'org_admin')
         .forEach(user => {
           if (!consultantMap.has(user.id)) {
-            consultantMap.set(user.id, { id: user.id, name: user.name });
+            consultantMap.set(user.id, { id: user.id, name: user.computedName || `${user.firstName} ${user.lastName}`.trim() });
           }
         });
     }

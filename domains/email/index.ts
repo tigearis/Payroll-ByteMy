@@ -1,8 +1,15 @@
 // Email Domain Exports
 // Security Classification: HIGH - Email communication system
 
-// Types
-export * from './types';
+// Types - explicit exports to avoid naming conflicts
+export type { 
+  EmailAnalytics as EmailAnalyticsType,
+  EmailTemplate,
+  EmailSendLog,
+  EmailDraft,
+  EmailVariable,
+  EmailCategory
+} from './types';
 
 // Services
 export { resendService } from './services/resend-service';

@@ -204,11 +204,11 @@ The following tables are available for querying with their complete field struct
 `;
 
       // Filter tables by business domain
-      const businessTables = tables.filter(table => 
+      const businessTables = tables.filter((table: any) => 
         ['clients', 'payrolls', 'users', 'workSchedule', 'timeEntries', 'billingItems', 'payrollDates', 'notes', 'leave', 'userSkill'].includes(table.name)
       );
       
-      const systemTables = tables.filter(table => 
+      const systemTables = tables.filter((table: any) => 
         !['clients', 'payrolls', 'users', 'workSchedule', 'timeEntries', 'billingItems', 'payrollDates', 'notes', 'leave', 'userSkill'].includes(table.name)
       );
 

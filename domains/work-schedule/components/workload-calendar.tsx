@@ -152,7 +152,7 @@ const WorkloadCalendar: React.FC<WorkloadCalendarProps> = ({
                 <AssignmentCard
                   key={`${assignment.id}-${idx}`}
                   assignment={assignment}
-                  onClick={onAssignmentClick}
+                  onClick={onAssignmentClick || (() => {})}
                   variant="default"
                 />
               ))
@@ -221,7 +221,7 @@ const WorkloadCalendar: React.FC<WorkloadCalendarProps> = ({
                       <AssignmentCard
                         key={`week-${i}-${assignment.id}-${idx}`}
                         assignment={assignment}
-                        onClick={onAssignmentClick}
+                        onClick={onAssignmentClick || (() => {})}
                         variant="compact"
                         showClient={false}
                       />

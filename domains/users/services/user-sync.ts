@@ -3,9 +3,9 @@ import { gql } from "@apollo/client";
 import { clerkClient } from "@clerk/nextjs/server";
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { 
-  type UserRole,
   getHierarchicalPermissionsFromDatabase,
-  syncUserRoleAssignmentsHierarchical
+  syncUserRoleAssignmentsHierarchical,
+  type UserRole as HierarchicalUserRole
 } from "@/lib/permissions/hierarchical-permissions";
 
 // Define user role hierarchy for permission checking

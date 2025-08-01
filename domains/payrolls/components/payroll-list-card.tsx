@@ -82,7 +82,6 @@ export function PayrollListCard({
       <div className="flex items-center justify-center py-8">
         <QuickLoading.Page 
           title="Loading payrolls..." 
-          size="default"
         />
       </div>
     );

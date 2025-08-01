@@ -126,9 +126,9 @@ export function useTeamCapacity({
       : users;
 
     const teamMembers = filteredUsers.map(user => {
-      const schedules = user.userWorkSchedules || [];
-      const primaryPayrolls = user.primaryConsultantPayrolls || [];
-      const backupPayrolls = user.backupConsultantPayrolls || [];
+      const schedules = user.workSchedules || [];
+      const primaryPayrolls = user.primaryPayrollAssignments || [];
+      const backupPayrolls = user.backupPayrollAssignments || [];
       const allPayrolls = [...primaryPayrolls, ...backupPayrolls];
 
       // Calculate periods for this team member

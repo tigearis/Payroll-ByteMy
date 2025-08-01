@@ -39,11 +39,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { User } from "@/domains/users/types";
-import { deleteUser, canEditUser, canDeleteUser } from "@/domains/users/services/user-management";
+import { Users } from "@/shared/types/generated/graphql";
+import { deleteUser, canEditUserSync as canEditUser, canDeleteUserSync as canDeleteUser } from "@/domains/users/services/user-management";
 
 interface UserTableProps {
-  users: User[];
+  users: Users[];
   loading: boolean;
   onEditUser: (userId: string) => void;
   currentUserRole: string | null;
@@ -56,7 +56,7 @@ export function UserTable({
   currentUserRole,
 }: UserTableProps) {
   const { userId } = useAuth(); // Get current user's Clerk ID
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedUser, setSelectedUser] = useState<Users | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
   const getRoleBadgeVariant = (role: string) => {
@@ -93,7 +93,7 @@ export function UserTable({
     return new Date(dateString).toLocaleDateString();
   };
 
-  const handleDeleteUser = async (user: User) => {
+  const handleDeleteUser = async (user: Users) => {
     if (window.confirm(`Are you sure you want to delete ${user.computedName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'this user'}?`)) {
       const success = await deleteUser(user.id);
       if (success) {
@@ -102,13 +102,13 @@ export function UserTable({
     }
   };
 
-  const handleViewUser = (user: User) => {
+  const handleViewUser = (user: Users) => {
     setSelectedUser(user);
     setIsViewModalOpen(true);
   };
 
   // Helper function to check if user is trying to delete themselves
-  const isCurrentUser = (user: User): boolean => {
+  const isCurrentUser = (user: Users): boolean => {
     return user.clerkUserId === userId;
   };
 
@@ -146,7 +146,7 @@ export function UserTable({
                   <Avatar className="h-8 w-8">
                     <AvatarImage
                       src={
-                        user.imageUrl ||
+                        user.image ||
                         `https://api.dicebear.com/7.x/initials/svg?seed=${user.computedName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown User'}`
                       }
                     />
@@ -177,11 +177,11 @@ export function UserTable({
                 </Badge>
               </TableCell>
               <TableCell>
-                {user.managerUser ? (
+                {user.manager ? (
                   <div className="text-sm">
-                    <div className="font-medium">{user.managerUser.computedName || `${user.managerUser.firstName || ''} ${user.managerUser.lastName || ''}`.trim() || 'Unknown User'}</div>
+                    <div className="font-medium">{user.manager.computedName || `${user.manager.firstName || ''} ${user.manager.lastName || ''}`.trim() || 'Unknown User'}</div>
                     <div className="text-muted-foreground">
-                      {user.managerUser.email}
+                      {user.manager.email}
                     </div>
                   </div>
                 ) : (
@@ -203,7 +203,7 @@ export function UserTable({
               <TableCell>
                 <div className="text-sm flex items-center text-muted-foreground">
                   <Clock className="h-3 w-3 mr-1" />
-                  {user.lastSignIn ? formatDate(user.lastSignIn) : "Never"}
+                  {(user as any).lastSignIn ? formatDate((user as any).lastSignIn) : "Never"}
                 </div>
               </TableCell>
               <TableCell>
@@ -226,14 +226,14 @@ export function UserTable({
                       <Eye className="mr-2 h-4 w-4" />
                       View Details
                     </DropdownMenuItem>
-                    {canEditUser(user) && (
+                    {canEditUser(user, currentUserRole || undefined, userId || undefined) && (
                       <DropdownMenuItem onClick={() => onEditUser(user.id)}>
                         <Edit className="mr-2 h-4 w-4" />
                         Edit User
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuSeparator />
-                    {canDeleteUser(user) && (
+                    {canDeleteUser(user, currentUserRole || undefined, userId || undefined) && (
                       <DropdownMenuItem
                         className={
                           isCurrentUser(user)
@@ -275,7 +275,7 @@ export function UserTable({
                 <Avatar className="h-16 w-16">
                   <AvatarImage
                     src={
-                      selectedUser.imageUrl ||
+                      selectedUser.image ||
                       `https://api.dicebear.com/7.x/initials/svg?seed=${selectedUser.computedName || `${selectedUser.firstName || ''} ${selectedUser.lastName || ''}`.trim() || 'Unknown User'}`
                     }
                   />
@@ -304,7 +304,7 @@ export function UserTable({
                     >
                       {selectedUser.isStaff ? "Active" : "Inactive"}
                     </Badge>
-                    {selectedUser.emailVerified && (
+                    {(selectedUser as any).emailVerified && (
                       <Badge variant="outline">
                         <Shield className="h-3 w-3 mr-1" />
                         Verified
@@ -338,8 +338,8 @@ export function UserTable({
                     <div className="flex items-center">
                       <Clock className="mr-2 h-4 w-4" />
                       Last active{" "}
-                      {selectedUser.lastSignIn
-                        ? formatDate(selectedUser.lastSignIn)
+                      {(selectedUser as any).lastSignIn
+                        ? formatDate((selectedUser as any).lastSignIn)
                         : "Never"}
                     </div>
                   </div>
@@ -365,13 +365,13 @@ export function UserTable({
                 </div>
               </div>
 
-              {selectedUser.managerUser && (
+              {selectedUser.manager && (
                 <div className="space-y-2">
                   <h4 className="text-sm font-medium">Manager</h4>
                   <div className="flex items-center space-x-2">
                     <Avatar className="h-6 w-6">
                       <AvatarFallback className="text-xs">
-                        {selectedUser.managerUser.name
+                        {selectedUser.manager.computedName || `${selectedUser.manager.firstName || ''} ${selectedUser.manager.lastName || ''}`.trim() || 'Unknown User'
                           .split(" ")
                           .map((n: string) => n[0])
                           .join("")
@@ -380,29 +380,29 @@ export function UserTable({
                     </Avatar>
                     <div>
                       <div className="text-sm font-medium">
-                        {selectedUser.managerUser.computedName || `${selectedUser.managerUser.firstName || ''} ${selectedUser.managerUser.lastName || ''}`.trim() || 'Unknown User'}
+                        {selectedUser.manager.computedName || `${selectedUser.manager.firstName || ''} ${selectedUser.manager.lastName || ''}`.trim() || 'Unknown User'}
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {selectedUser.managerUser.email}
+                        {selectedUser.manager.email}
                       </div>
                     </div>
                   </div>
                 </div>
               )}
 
-              {selectedUser.subordinates &&
-                selectedUser.subordinates.length > 0 && (
+              {selectedUser.managedTeamMembers &&
+                selectedUser.managedTeamMembers.length > 0 && (
                   <div className="space-y-2">
                     <h4 className="text-sm font-medium">Direct Reports</h4>
                     <div className="space-y-2">
-                      {selectedUser.subordinates.map((subordinate: any) => (
+                      {selectedUser.managedTeamMembers.map((subordinate: Users) => (
                         <div
                           key={subordinate.id}
                           className="flex items-center space-x-2"
                         >
                           <Avatar className="h-6 w-6">
                             <AvatarFallback className="text-xs">
-                              {subordinate.name
+                              {(subordinate.computedName || `${subordinate.firstName} ${subordinate.lastName}`)
                                 .split(" ")
                                 .map((n: string) => n[0])
                                 .join("")
@@ -427,7 +427,7 @@ export function UserTable({
               {/* Modal Action Buttons */}
               <div className="flex justify-between items-center pt-4 border-t">
                 <div className="flex space-x-2">
-                  {canEditUser(selectedUser) && (
+                  {canEditUser(selectedUser, currentUserRole || undefined, userId || undefined) && (
                     <Button
                       onClick={() => {
                         setIsViewModalOpen(false);
@@ -440,7 +440,7 @@ export function UserTable({
                     </Button>
                   )}
 
-                  {canDeleteUser(selectedUser) && (
+                  {canDeleteUser(selectedUser, currentUserRole || undefined, userId || undefined) && (
                     <Button
                       variant={
                         isCurrentUser(selectedUser)

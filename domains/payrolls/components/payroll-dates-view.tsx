@@ -266,8 +266,8 @@ function PayrollDatesTable({
         <div>
           <NotesListModal
             payrollDateId={row.original.id}
-            existingNotes={row.original.notes}
-            payrollDate={row.original.adjusted_eft_date}
+            existingNotes={row.original.notes ?? null}
+            {...(row.original.adjusted_eft_date && { payrollDate: row.original.adjusted_eft_date })}
             refetchNotes={() => refetch()}
           />
         </div>

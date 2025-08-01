@@ -7,6 +7,7 @@ import {
   SingleMemberVisualization,
   type SingleMemberVisualizationProps 
 } from "./payroll-workload-dashboard";
+import { TeamMember, WorkScheduleDay, PayrollAssignment, AssignmentStatus, AssignmentPriority } from "../types/workload";
 import { SimpleTimeNavigation } from "./simple-time-navigation";
 
 // Import the single member visualization from the dashboard
@@ -51,16 +52,31 @@ export const IndividualWorkloadCard: React.FC<IndividualWorkloadCardProps> = ({
     },
   });
 
-  const member = {
+  const member: TeamMember = {
     userId,
     userName,
     userRole,
-    email: undefined,
-    avatarUrl: undefined,
+    email: '',
+    avatarUrl: '',
     isActive: true,
-    workSchedule,
-    skills: undefined,
-    managerId: undefined,
+    workSchedule: workSchedule.map((day): WorkScheduleDay => ({
+      date: day.date,
+      workHours: day.workHours,
+      adminTimeHours: day.adminTimeHours,
+      payrollCapacityHours: day.payrollCapacityHours,
+      assignments: day.assignments.map((assignment): PayrollAssignment => ({
+        id: assignment.id,
+        name: assignment.name,
+        clientName: '', // Not available in WorkloadDay assignment
+        processingTime: assignment.processingTime,
+        processingDaysBeforeEft: assignment.processingDaysBeforeEft,
+        eftDate: assignment.eftDate,
+        status: assignment.status as AssignmentStatus,
+        priority: assignment.priority as AssignmentPriority
+      }))
+    })),
+    skills: [],
+    managerId: '',
   };
 
   return (
@@ -91,7 +107,7 @@ export const IndividualWorkloadCard: React.FC<IndividualWorkloadCardProps> = ({
           viewPeriod={state.viewPeriod}
           currentDate={state.currentDate}
           selectedView="chart"
-          onAssignmentClick={onAssignmentClick}
+          {...(onAssignmentClick && { onAssignmentClick })}
         />
       </div>
     </div>

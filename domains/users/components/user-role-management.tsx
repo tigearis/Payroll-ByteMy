@@ -262,7 +262,7 @@ export function UserRoleManagement() {
           <TableBody>
             {users.map(user => (
               <TableRow key={user.id}>
-                <TableCell className="font-medium">{user.computedName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown User'}</TableCell>
+                <TableCell className="font-medium">{(user as any).computedName || `${(user as any).firstName || ''} ${(user as any).lastName || ''}`.trim() || user.name || 'Unknown User'}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.role}</TableCell>
                 <TableCell>{user.status}</TableCell>

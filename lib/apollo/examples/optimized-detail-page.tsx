@@ -116,7 +116,7 @@ export function ManuallyOptimizedPayrollPage({ payrollId }: OptimizedPayrollDeta
     payroll: null,
     dates: null,
     staff: null,
-    errors: [],
+    errors: [] as any[],
   });
 
   React.useEffect(() => {
@@ -165,7 +165,7 @@ export function ManuallyOptimizedPayrollPage({ payrollId }: OptimizedPayrollDeta
           payroll: null,
           dates: null,
           staff: null,
-          errors: [error],
+          errors: [error] as any[],
         });
       }
     };

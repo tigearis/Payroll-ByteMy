@@ -26,7 +26,7 @@ export function GenerateMissingDatesButton({
     <PermissionGuard permission="payroll:write">
       <GenerateMissingDatesButtonInner
         payrollIds={payrollIds}
-        onSuccess={onSuccess}
+        onSuccess={onSuccess || (() => {})}
       />
     </PermissionGuard>
   );

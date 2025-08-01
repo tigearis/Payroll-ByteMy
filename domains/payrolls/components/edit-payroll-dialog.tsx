@@ -75,8 +75,8 @@ const EditPayrollDialogComponent: React.FC<EditPayrollDialogProps> = ({
       },
       optimisticResponse: {
         __typename: "mutation_root",
-        updatePayrollById: {
-          __typename: "payrolls",
+        updatePayrollsByPk: {
+          __typename: "Payrolls",
           id: payroll.id,
           name,
           clientId: payroll.clientId,
@@ -85,7 +85,7 @@ const EditPayrollDialogComponent: React.FC<EditPayrollDialogProps> = ({
           primaryConsultant: payroll.primaryConsultantUserId ? { id: payroll.primaryConsultantUserId } : (payroll as any).primaryConsultant,
           employeeCount: payroll.employeeCount,
           client: {
-            __typename: "clients",
+            __typename: "Clients",
             id: payroll.clientId,
             name: "Loading...",
           },
@@ -94,11 +94,12 @@ const EditPayrollDialogComponent: React.FC<EditPayrollDialogProps> = ({
           processingTime: 1,
           childPayrolls: [],
           payrollDates: [],
+          requiredSkills: [],
         },
       },
       update: (cache, { data }) => {
         // We could also use the updatePayrollInCache utility here, but this way works too
-        if (!data?.updatePayrollById) {
+        if (!data?.updatePayrollsByPk) {
           return;
         }
 
@@ -121,9 +122,9 @@ const EditPayrollDialogComponent: React.FC<EditPayrollDialogProps> = ({
                 __typename: "query_root",
                 payrolls: updatedPayrolls,
                 payrollsAggregate: {
-                  __typename: "payrollsAggregate",
+                  __typename: "PayrollsAggregate",
                   aggregate: {
-                    __typename: "payrollsAggregateFields",
+                    __typename: "PayrollsAggregateFields",
                     count: updatedPayrolls.length,
                   },
                 },

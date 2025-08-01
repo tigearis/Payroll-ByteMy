@@ -8,7 +8,8 @@
 "use client";
 
 import { useCallback } from 'react';
-import { useHierarchicalPermissions, type UserRole } from '@/hooks/use-hierarchical-permissions';
+import { useHierarchicalPermissions } from '@/hooks/use-hierarchical-permissions';
+import { type UserRole } from '@/lib/permissions/hierarchical-permissions';
 
 // Legacy Role type for backward compatibility
 export type Role = UserRole;

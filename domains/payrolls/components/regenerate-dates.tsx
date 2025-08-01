@@ -30,7 +30,7 @@ export function RegenerateDates({
     GeneratePayrollDatesQueryDocument,
     {
       onCompleted: data => {
-        const count = data?.generatePayrollDates?.length || 0;
+        const count = data?.payrollDates?.length || 0;
         toast.success(`Successfully generated ${count} payroll dates`);
         setIsDialogOpen(false);
         if (onSuccess) {

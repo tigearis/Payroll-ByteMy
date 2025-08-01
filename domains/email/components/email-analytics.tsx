@@ -364,7 +364,7 @@ export function EmailAnalytics({
                             {log.sendStatus || 'unknown'}
                           </Badge>
                           <span className="text-muted-foreground">
-                            {new Date(log.createdAt).toLocaleString()}
+                            {log.createdAt ? new Date(log.createdAt).toLocaleString() : 'Unknown date'}
                           </span>
                         </div>
                       </div>

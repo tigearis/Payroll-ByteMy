@@ -1,12 +1,12 @@
 import { executeTypedQuery } from '@/lib/apollo/query-helpers';
 import { auditLogger } from '@/lib/audit/audit-logger';
 import { getJWTClaims } from '@/lib/auth';
-import { hasRolePermission } from '@/lib/permissions/hierarchical-permissions';
+import { hasHierarchicalPermission, UserRole } from '@/lib/permissions/hierarchical-permissions';
 import { 
   DeleteUserDocument,
   DeactivateUserWithReasonDocument,
-  type User 
 } from '../graphql/generated/graphql';
+import { Users } from '@/shared/types/generated/graphql';
 
 /**
  * Delete user function (soft delete - deactivates user)
@@ -19,7 +19,7 @@ export async function deleteUser(userId: string, reason?: string): Promise<boole
     }
 
     // Check permission to delete users
-    if (!hasRolePermission(claims.defaultRole || 'viewer', 'users', 'delete')) {
+    if (!hasHierarchicalPermission((claims.defaultRole || 'viewer') as UserRole, 'staff:write', [])) {
       throw new Error('Insufficient permissions to delete user');
     }
 
@@ -29,7 +29,7 @@ export async function deleteUser(userId: string, reason?: string): Promise<boole
       reason: reason || 'User deactivated by admin',
       deactivatedBy: claims.databaseId,
       deactivatedByString: claims.databaseId
-    }) as { updateUserById: User | null };
+    }) as { updateUserById: Users | null };
 
     if (!result?.updateUserById) {
       throw new Error('Failed to deactivate user');
@@ -74,7 +74,7 @@ export async function deleteUser(userId: string, reason?: string): Promise<boole
 /**
  * Check if current user can edit the specified user
  */
-export async function canEditUser(user: User): Promise<boolean> {
+export async function canEditUser(user: Users): Promise<boolean> {
   try {
     const claims = await getJWTClaims();
     if (!claims?.defaultRole) {
@@ -82,7 +82,7 @@ export async function canEditUser(user: User): Promise<boolean> {
     }
 
     // Check permission to update users
-    if (!hasRolePermission(claims.defaultRole, 'users', 'update')) {
+    if (!hasHierarchicalPermission(claims.defaultRole as UserRole, 'staff.update', [])) {
       return false;
     }
 
@@ -113,7 +113,7 @@ export async function canEditUser(user: User): Promise<boolean> {
 /**
  * Check if current user can delete the specified user
  */
-export async function canDeleteUser(user: User): Promise<boolean> {
+export async function canDeleteUser(user: Users): Promise<boolean> {
   try {
     const claims = await getJWTClaims();
     if (!claims?.defaultRole) {
@@ -126,7 +126,7 @@ export async function canDeleteUser(user: User): Promise<boolean> {
     }
 
     // Check permission to delete users
-    if (!hasRolePermission(claims.defaultRole, 'users', 'delete')) {
+    if (!hasHierarchicalPermission(claims.defaultRole as UserRole, 'staff.manage', [])) {
       return false;
     }
 
@@ -161,11 +161,11 @@ export async function canDeleteUser(user: User): Promise<boolean> {
  * Synchronous version of canEditUser using cached permissions
  * For UI components that need immediate permission checks
  */
-export function canEditUserSync(user: User, currentRole?: string, currentUserId?: string): boolean {
+export function canEditUserSync(user: Users, currentRole?: string, currentUserId?: string): boolean {
   if (!currentRole) return false;
   
   // Check permission to update users
-  if (!hasRolePermission(currentRole, 'users', 'update')) {
+  if (!hasHierarchicalPermission(currentRole as UserRole, 'staff.update', [])) {
     return false;
   }
 
@@ -192,7 +192,7 @@ export function canEditUserSync(user: User, currentRole?: string, currentUserId?
  * Synchronous version of canDeleteUser using cached permissions
  * For UI components that need immediate permission checks
  */
-export function canDeleteUserSync(user: User, currentRole?: string, currentUserId?: string): boolean {
+export function canDeleteUserSync(user: Users, currentRole?: string, currentUserId?: string): boolean {
   if (!currentRole || !currentUserId) return false;
   
   // Only developers and org_admin can delete users
@@ -201,7 +201,7 @@ export function canDeleteUserSync(user: User, currentRole?: string, currentUserI
   }
 
   // Check permission to delete users
-  if (!hasRolePermission(currentRole, 'users', 'delete')) {
+  if (!hasHierarchicalPermission(currentRole as UserRole, 'staff.manage', [])) {
     return false;
   }
 

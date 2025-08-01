@@ -217,7 +217,7 @@ export const PUT = withAuthParams(async (req: NextRequest, { params }, session) 
         ...updatedTemplate,
         categoryInfo: EMAIL_CATEGORIES[updatedTemplate.category as EmailCategory] || null
       },
-      validation
+      ...(validation && { validation })
     });
 
   } catch (error: any) {

@@ -6,7 +6,8 @@ import type {
   EmailTemplate, 
   EmailCategory, 
   TemplatePreview,
-  TemplateValidationResult
+  TemplateValidationRule,
+  EmailTemplateValidationResult
 } from '../types';
 import { SAMPLE_PREVIEW_DATA } from '../types/template-types';
 
@@ -49,7 +50,7 @@ class EmailTemplateService {
   /**
    * Validate email template content and structure
    */
-  validateTemplate(template: Partial<EmailTemplate>): TemplateValidationResult {
+  validateTemplate(template: Partial<EmailTemplate>): EmailTemplateValidationResult {
     const errors: string[] = [];
     const warnings: string[] = [];
     const missingVariables: string[] = [];
@@ -170,7 +171,7 @@ class EmailTemplateService {
       category: sourceTemplate.category,
       subjectTemplate: sourceTemplate.subjectTemplate,
       htmlContent: sourceTemplate.htmlContent,
-      textContent: sourceTemplate.textContent,
+      textContent: sourceTemplate.textContent || '',
       availableVariables: [...sourceTemplate.availableVariables],
       isActive: true,
       isSystemTemplate: false,

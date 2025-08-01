@@ -47,7 +47,7 @@ export function usePayrollCreation() {
         },
       });
 
-      const newPayroll = payrollResult.data?.insertPayroll;
+      const newPayroll = payrollResult.data?.insertPayrollsOne;
       if (!newPayroll) {
         throw new Error("Failed to create payroll");
       }
@@ -74,7 +74,7 @@ export function usePayrollCreation() {
           },
         });
 
-        const generatedDates = datesResult.data?.generatePayrollDates;
+        const generatedDates = datesResult.data?.payrollDates;
         const dateCount = generatedDates?.length || 0;
 
         console.log(`✅ Generated ${dateCount} payroll dates`);
@@ -148,7 +148,7 @@ export function usePayrollDateGeneration() {
         },
       });
 
-      const generatedDates = result.data?.generatePayrollDates;
+      const generatedDates = result.data?.payrollDates;
       const dateCount = generatedDates?.length || 0;
 
       console.log(`✅ Generated ${dateCount} payroll dates`);

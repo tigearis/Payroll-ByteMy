@@ -56,7 +56,7 @@ function getUserRole(payroll: UpcomingPayroll, currentUserId: string): string {
   if (payroll.backupConsultant?.id === currentUserId) {
     return "Backup Consultant";
   }
-  if (payroll.manager?.id === currentUserId) {
+  if (payroll.assignedManager?.id === currentUserId) {
     return "Manager";
   }
   return "Assigned";

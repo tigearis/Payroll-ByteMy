@@ -92,9 +92,9 @@ export function useWorkloadData({
     if (!consultantData?.users?.[0]) return null;
 
     const user = consultantData.users[0];
-    const schedules = user.userWorkSchedules || [];
-    const primaryPayrolls = user.primaryConsultantPayrolls || [];
-    const backupPayrolls = user.backupConsultantPayrolls || [];
+    const schedules = user.workSchedules || [];
+    const primaryPayrolls = user.primaryPayrollAssignments || [];
+    const backupPayrolls = user.backupPayrollAssignments || [];
     const allPayrolls = [...primaryPayrolls, ...backupPayrolls];
 
     // Generate work schedule days for the date range - MEMORY LEAK FIXED

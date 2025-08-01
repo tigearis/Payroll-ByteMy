@@ -40,11 +40,11 @@ export function PayrollVersionHistory({
         variables: { id: versionId }
       });
 
-      if (!payrollData?.payrollById) {
+      if (!payrollData?.payrollsByPk) {
         throw new Error("Failed to fetch payroll data for cloning");
       }
 
-      const sourcePayroll = payrollData.payrollById;
+      const sourcePayroll = payrollData.payrollsByPk;
       
       // Create new version input based on the source payroll
       // Set go live date to today to ensure new dates are generated
