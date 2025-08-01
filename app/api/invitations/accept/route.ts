@@ -298,18 +298,28 @@ export const POST = withAuth(async (req: NextRequest, session) => {
       newUser = existingUser;
       
       // Check if user role needs to be updated to match invitation
-      if (existingUser.role !== invitation.invitedRole) {
-        console.log(`🔄 Updating user role from ${existingUser.role} to ${invitation.invitedRole} to match invitation`);
+      const invitationIsStaff = ["manager", "org_admin", "developer"].includes(invitation.invitedRole);
+      const needsRoleUpdate = existingUser.role !== invitation.invitedRole;
+      const needsStaffUpdate = existingUser.isStaff !== invitationIsStaff;
+      const needsManagerUpdate = existingUser.managerId !== invitation.managerId;
+      
+      if (needsRoleUpdate || needsStaffUpdate || needsManagerUpdate) {
+        console.log(`🔄 Updating user to match invitation:`, {
+          roleChange: needsRoleUpdate ? `${existingUser.role} → ${invitation.invitedRole}` : 'no change',
+          staffChange: needsStaffUpdate ? `${existingUser.isStaff} → ${invitationIsStaff}` : 'no change',
+          managerChange: needsManagerUpdate ? `${existingUser.managerId} → ${invitation.managerId}` : 'no change'
+        });
         
         try {
           const updateUserRoleData = await executeTypedMutation(
             gql`
-              mutation UpdateUserRoleForInvitation($userId: uuid!, $role: user_role!, $managerId: uuid) {
+              mutation UpdateUserRoleForInvitation($userId: uuid!, $role: user_role!, $managerId: uuid, $isStaff: Boolean!) {
                 updateUsersByPk(
                   pkColumns: { id: $userId }
                   _set: { 
                     role: $role
                     managerId: $managerId
+                    isStaff: $isStaff
                     updatedAt: "now()" 
                   }
                 ) {
@@ -330,6 +340,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
               userId: existingUser.id,
               role: invitation.invitedRole,
               managerId: invitation.managerId,
+              isStaff: invitationIsStaff,
             }
           );
           
@@ -354,22 +365,24 @@ export const POST = withAuth(async (req: NextRequest, session) => {
       console.log("   - Clerk user email:", userEmail);
       console.log("   - Using invitation email for consistency");
       
-      // ENHANCED: Ticket-first name parsing using utility function
-      const nameValidation = getReliableNameFromTicket(ticketUserData, userName);
-      const firstName = nameValidation.firstName;
-      const lastName = nameValidation.lastName;
+      // ENHANCED: Invitation-first name parsing (use invitation data as primary source)
+      const firstName = invitation.firstName || ticketUserData.firstName || userName.split(' ')[0] || '';
+      const lastName = invitation.lastName || ticketUserData.lastName || userName.split(' ').slice(1).join(' ') || '';
       
-      console.log("👤 Name validation (ticket-first):", { 
+      console.log("👤 Name validation (invitation-first):", { 
         firstName, 
         lastName, 
-        source: nameValidation.source,
+        invitationFirstName: invitation.firstName,
+        invitationLastName: invitation.lastName,
         ticketFirstName: ticketUserData.firstName,
         ticketLastName: ticketUserData.lastName,
-        ticketFullName: ticketUserData.fullName,
         requestUserName: userName
       });
       
       // CRITICAL: Use the invitation email, not the Clerk email, to ensure exact match
+      // Determine staff status based on role (managers and above are staff)
+      const isStaff = ["manager", "org_admin", "developer"].includes(invitation.invitedRole);
+      
       try {
         const userData = await executeTypedMutation<CreateUserByEmailMutation>(
           CreateUserByEmailDocument,
@@ -379,7 +392,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
             email: invitation.email, // Use invitation email for exact match
             role: invitation.invitedRole,
             managerId: invitation.managerId,
-            isStaff: true, // Users from invitations are staff by default
+            isStaff: isStaff, // Determine staff status based on role
             clerkUserId: clerkUserId,
           }
         );
