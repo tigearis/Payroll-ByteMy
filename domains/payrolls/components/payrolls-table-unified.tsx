@@ -194,8 +194,10 @@ export function PayrollsTableUnified({
           ? cellRenderers.avatar({
               name:
                 consultant.computedName ||
-                `${consultant.firstName || ""} ${consultant.lastName || ""}`.trim() ||
-                "Unknown User",
+                (consultant
+                  ? `${consultant.firstName || ""} ${consultant.lastName || ""}`.trim()
+                  : "") ||
+                "Unassigned",
               email: consultant.email,
             })
           : "—",
@@ -211,8 +213,10 @@ export function PayrollsTableUnified({
           ? cellRenderers.avatar({
               name:
                 manager.computedName ||
-                `${manager.firstName || ""} ${manager.lastName || ""}`.trim() ||
-                "Unknown User",
+                (manager
+                  ? `${manager.firstName || ""} ${manager.lastName || ""}`.trim()
+                  : "") ||
+                "Unassigned",
               email: manager.email,
             })
           : "—",
