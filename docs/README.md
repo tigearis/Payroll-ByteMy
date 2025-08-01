@@ -6,16 +6,18 @@ Choose your path based on your role:
 
 ### 👨‍💻 **Developer Getting Started**
 1. [Authentication System](./architecture/AUTHENTICATION_SYSTEM_DOCUMENTATION.md) - Understanding the auth flow
-2. [Apollo Client Architecture](./architecture/APOLLO_CLIENT_ARCHITECTURE.md) - Modular GraphQL client system ⭐ **NEW**
-3. [GraphQL Development](./architecture/CODEGEN_SYSTEM.md) - Working with GraphQL and code generation
-4. [Database Customization](./guides/DATABASE_SCHEMA_CUSTOMIZATION_GUIDE.md) - Understanding the database
-5. [Permission System](./guides/PERMISSION_SYSTEM_EXTENSION_GUIDE.md) - Role-based access control
+2. [Hasura Permissions System](./security/HASURA_PERMISSIONS_SYSTEM.md) - Complete GraphQL permissions guide ⭐ **NEW**
+3. [Hasura Quick Reference](./security/HASURA_PERMISSIONS_QUICK_REFERENCE.md) - Developer quick reference ⭐ **NEW**
+4. [Apollo Client Architecture](./architecture/APOLLO_CLIENT_ARCHITECTURE.md) - Modular GraphQL client system
+5. [GraphQL Development](./architecture/CODEGEN_SYSTEM.md) - Working with GraphQL and code generation
+6. [Database Customization](./guides/DATABASE_SCHEMA_CUSTOMIZATION_GUIDE.md) - Understanding the database
 
 ### 🛠️ **Administrator/DevOps**
 1. [Deployment Guide](./deployment/DEPLOYMENT_GUIDE.md) - Production deployment
-2. [Security & Compliance](./security/SECURITY_IMPROVEMENT_REPORT.md) - Security implementation
-3. [SOC2 Compliance](./security/SOC2_COMPLIANCE_OVERVIEW.md) - Compliance features
-4. [JWT Customization](./security/JWT_TEMPLATE_CUSTOMIZATION_GUIDE.md) - Authentication customization
+2. [Hasura Permissions System](./security/HASURA_PERMISSIONS_SYSTEM.md) - Complete permissions overview ⭐ **NEW**
+3. [Security Documentation](./security/README.md) - Complete security documentation index ⭐ **NEW**
+4. [SOC2 Compliance](./security/SOC2_COMPLIANCE_OVERVIEW.md) - Compliance features
+5. [JWT Customization](./security/JWT_TEMPLATE_CUSTOMIZATION_GUIDE.md) - Authentication customization
 
 ### 💼 **Business User**
 1. [Payroll System](./features/PAYROLL_SYSTEM_DOCUMENTATION.md) - Core business functionality

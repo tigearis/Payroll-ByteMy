@@ -156,9 +156,9 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
       offset: 0,
       where: {
         // Apply client filter if specified
-        ...(filters.clientId ? { clientId: { _eq: filters.clientId } } : {}),
+        ...(filters.clientId && filters.clientId !== "all" ? { clientId: { _eq: filters.clientId } } : {}),
         // Apply service filter if specified
-        ...(filters.serviceId ? { serviceId: { _eq: filters.serviceId } } : {}),
+        ...(filters.serviceId && filters.serviceId !== "all" ? { serviceId: { _eq: filters.serviceId } } : {}),
         // Apply approval filter if specified
         ...(filters.isApproved !== undefined
           ? { isApproved: { _eq: filters.isApproved } }
@@ -181,7 +181,7 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
       variables: {
         limit: 200,
         offset: 0,
-        category: filters.serviceCategory || "",
+        category: filters.serviceCategory && filters.serviceCategory !== "all" ? filters.serviceCategory : "",
       },
       fetchPolicy: "cache-and-network",
     }
@@ -237,7 +237,7 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
 
   // Filter services by category for service dropdown
   const filteredServices = useMemo(() => {
-    if (!filters.serviceCategory) return services;
+    if (!filters.serviceCategory || filters.serviceCategory === "all") return services;
     return services.filter(
       service => service.category === filters.serviceCategory
     );
@@ -587,9 +587,9 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
                       <SelectValue placeholder="All Clients" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Clients</SelectItem>
+                      <SelectItem value="all">All Clients</SelectItem>
                       {clientsLoading ? (
-                        <SelectItem value="" disabled>
+                        <SelectItem value="loading" disabled>
                           Loading clients...
                         </SelectItem>
                       ) : (
@@ -619,9 +619,9 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
                       <SelectValue placeholder="All Categories" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Categories</SelectItem>
+                      <SelectItem value="all">All Categories</SelectItem>
                       {servicesLoading ? (
-                        <SelectItem value="" disabled>
+                        <SelectItem value="loading" disabled>
                           Loading categories...
                         </SelectItem>
                       ) : (
@@ -648,7 +648,7 @@ export const BillingDashboard: React.FC<BillingDashboardProps> = ({
                       <SelectValue placeholder="All Services" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Services</SelectItem>
+                      <SelectItem value="all">All Services</SelectItem>
                       {filteredServices.map(service => (
                         <SelectItem key={service.id} value={service.id}>
                           <div className="flex flex-col">

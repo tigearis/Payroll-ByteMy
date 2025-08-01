@@ -107,7 +107,7 @@ export function QuickEmailDialog({
 
   // Handle template selection
   const handleTemplateSelect = useCallback(async (templateId: string) => {
-    if (!templateId) {
+    if (!templateId || templateId === "none") {
       setSelectedTemplateId('');
       setSubject(suggestedSubject || '');
       setMessage('');
@@ -283,7 +283,7 @@ export function QuickEmailDialog({
                   <SelectValue placeholder="Choose a template or compose from scratch" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">
+                  <SelectItem value="none">
                     <div className="flex items-center gap-2">
                       <FileText className="h-4 w-4" />
                       Compose from scratch
