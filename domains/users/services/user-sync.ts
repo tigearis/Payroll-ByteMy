@@ -47,7 +47,7 @@ const GET_USER_BY_EMAIL = gql`
       image
       createdAt
       updatedAt
-      managerUser {
+      manager {
         id
         computedName
         email
@@ -71,7 +71,7 @@ const GET_USER_BY_CLERK_ID = gql`
       image
       createdAt
       updatedAt
-      managerUser {
+      manager {
         id
         computedName
         email
@@ -93,7 +93,7 @@ const UPSERT_USER = gql`
     $managerId: uuid
     $image: String
   ) {
-    insertUser(
+    insertUsersOne(
       object: {
         clerkUserId: $clerkId
         firstName: $firstName
@@ -149,7 +149,7 @@ const UPDATE_USER_ROLE = gql`
       isStaff
       managerId
       updatedAt
-      managerUser {
+      manager {
         id
         computedName
         email
@@ -321,7 +321,7 @@ export async function syncUserWithDatabase(
         );
       }
 
-      databaseUser = newUserData?.insertUser;
+      databaseUser = newUserData?.insertUsersOne;
       console.log("✅ Created new user in database:", databaseUser);
     } else if (
       databaseUser &&
