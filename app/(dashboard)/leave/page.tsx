@@ -721,7 +721,7 @@ function LeaveCard({
   };
 
   const canManageLeave = isManager && leave.status === "Pending" && 
-    (currentUser?.id === leave.leaveUser?.managerUser?.id || currentUser?.role === "org_admin" || currentUser?.role === "developer");
+    (currentUser?.id === leave.leaveUser?.manager?.id || currentUser?.role === "org_admin" || currentUser?.role === "developer");
 
   return (
     <Card className="hover:shadow-md transition-shadow">
@@ -846,7 +846,7 @@ function LeaveTable({
             <tbody>
               {leaveRequests.map((leave) => {
                 const canManageLeave = isManager && leave.status === "Pending" && 
-                  (currentUser?.id === leave.leaveUser?.managerUser?.id || currentUser?.role === "org_admin" || currentUser?.role === "developer");
+                  (currentUser?.id === leave.leaveUser?.manager?.id || currentUser?.role === "org_admin" || currentUser?.role === "developer");
 
                 return (
                   <tr key={leave.id} className="border-b last:border-b-0 hover:bg-gray-50">
@@ -937,7 +937,7 @@ function LeaveListItem({
   isManager: boolean;
 }) {
   const canManageLeave = isManager && leave.status === "Pending" && 
-    (currentUser?.id === leave.leaveUser?.managerUser?.id || currentUser?.role === "org_admin" || currentUser?.role === "developer");
+    (currentUser?.id === leave.leaveUser?.manager?.id || currentUser?.role === "org_admin" || currentUser?.role === "developer");
 
   return (
     <Card>
@@ -1035,7 +1035,7 @@ function LeaveDetailsModal({
   };
 
   const canManageLeave = isManager && leave.status === "Pending" && 
-    (currentUser?.id === leave.leaveUser?.managerUser?.id || currentUser?.role === "org_admin" || currentUser?.role === "developer");
+    (currentUser?.id === leave.leaveUser?.manager?.id || currentUser?.role === "org_admin" || currentUser?.role === "developer");
 
   const getDaysCount = () => {
     const start = new Date(leave.startDate);
@@ -1132,9 +1132,9 @@ function LeaveDetailsModal({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium text-gray-500">Manager</label>
-                  <p>{leave.leaveUser?.managerUser?.computedName ||
-                                (leave.leaveUser?.managerUser
-                                  ? `${leave.leaveUser.managerUser.firstName || ''} ${leave.leaveUser.managerUser.lastName || ''}`.trim()
+                  <p>{leave.leaveUser?.manager?.computedName ||
+                                (leave.leaveUser?.manager
+                                  ? `${leave.leaveUser.manager.firstName || ''} ${leave.leaveUser.manager.lastName || ''}`.trim()
                                   : '') ||
                                 'Not assigned'}</p>
                 </div>
