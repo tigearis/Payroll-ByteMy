@@ -361,8 +361,8 @@ export default function PayrollsPage() {
         _or: [
           { name: { _ilike: `%${searchTerm}%` } },
           { client: { name: { _ilike: `%${searchTerm}%` } } },
-          { primaryConsultant: { name: { _ilike: `%${searchTerm}%` } } },
-          { backupConsultant: { name: { _ilike: `%${searchTerm}%` } } },
+          { primaryConsultant: { computedName: { _ilike: `%${searchTerm}%` } } },
+          { backupConsultant: { computedName: { _ilike: `%${searchTerm}%` } } },
         ],
       });
     }
@@ -400,7 +400,7 @@ export default function PayrollsPage() {
     const sortMap: Record<string, any> = {
       name: { name: sortDirection },
       client: { client: { name: sortDirection } },
-      consultant: { primaryConsultant: { name: sortDirection } },
+      consultant: { primaryConsultant: { computedName: sortDirection } },
       employees: { employeeCount: sortDirection },
       lastUpdated: { updatedAt: sortDirection },
       status: { status: sortDirection },
