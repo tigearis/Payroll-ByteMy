@@ -728,7 +728,11 @@ function LeaveCard({
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <CardTitle className="text-lg">{leave.leaveUser?.computedName || `${leave.leaveUser?.firstName || ''} ${leave.leaveUser?.lastName || ''}`.trim() || 'Unknown User'}</CardTitle>
+            <CardTitle className="text-lg">{leave.leaveUser?.computedName ||
+                                (leave.leaveUser
+                                  ? `${leave.leaveUser.firstName || ''} ${leave.leaveUser.lastName || ''}`.trim()
+                                  : '') ||
+                                'Unknown User'}</CardTitle>
             <p className="text-sm text-gray-500">{leave.leaveUser?.email || 'No email'}</p>
           </div>
           <DropdownMenu>
@@ -847,7 +851,11 @@ function LeaveTable({
                 return (
                   <tr key={leave.id} className="border-b last:border-b-0 hover:bg-gray-50">
                     <td className="p-4">
-                      <div className="font-medium">{leave.leaveUser?.computedName || `${leave.leaveUser?.firstName || ''} ${leave.leaveUser?.lastName || ''}`.trim() || 'Unknown User'}</div>
+                      <div className="font-medium">{leave.leaveUser?.computedName ||
+                                (leave.leaveUser
+                                  ? `${leave.leaveUser.firstName || ''} ${leave.leaveUser.lastName || ''}`.trim()
+                                  : '') ||
+                                'Unknown User'}</div>
                       <div className="text-sm text-gray-500">{leave.leaveUser?.email || 'No email'}</div>
                     </td>
                     <td className="p-4">
@@ -937,7 +945,11 @@ function LeaveListItem({
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div>
-              <div className="font-medium">{leave.leaveUser?.computedName || `${leave.leaveUser?.firstName || ''} ${leave.leaveUser?.lastName || ''}`.trim() || 'Unknown User'}</div>
+              <div className="font-medium">{leave.leaveUser?.computedName ||
+                                (leave.leaveUser
+                                  ? `${leave.leaveUser.firstName || ''} ${leave.leaveUser.lastName || ''}`.trim()
+                                  : '') ||
+                                'Unknown User'}</div>
               <div className="text-sm text-gray-500">{leave.leaveUser?.email || 'No email'}</div>
             </div>
             <Badge>{leave.leaveType}</Badge>
@@ -1050,7 +1062,11 @@ function LeaveDetailsModal({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium text-gray-500">Employee</label>
-                <p className="text-lg font-medium">{leave.leaveUser?.computedName || `${leave.leaveUser?.firstName || ''} ${leave.leaveUser?.lastName || ''}`.trim() || 'Unknown User'}</p>
+                <p className="text-lg font-medium">{leave.leaveUser?.computedName ||
+                                (leave.leaveUser
+                                  ? `${leave.leaveUser.firstName || ''} ${leave.leaveUser.lastName || ''}`.trim()
+                                  : '') ||
+                                'Unknown User'}</p>
                 <p className="text-sm text-gray-500">{leave.leaveUser?.email || 'No email'}</p>
               </div>
               <div>
@@ -1116,7 +1132,11 @@ function LeaveDetailsModal({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium text-gray-500">Manager</label>
-                  <p>{leave.leaveUser?.managerUser?.computedName || `${leave.leaveUser?.managerUser?.firstName || ''} ${leave.leaveUser?.managerUser?.lastName || ''}`.trim() || 'Not assigned'}</p>
+                  <p>{leave.leaveUser?.managerUser?.computedName ||
+                                (leave.leaveUser?.managerUser
+                                  ? `${leave.leaveUser.managerUser.firstName || ''} ${leave.leaveUser.managerUser.lastName || ''}`.trim()
+                                  : '') ||
+                                'Not assigned'}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500">Employee Role & Position</label>
