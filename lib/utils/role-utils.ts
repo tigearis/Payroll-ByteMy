@@ -27,7 +27,7 @@ export const ROLE_HIERARCHY: Record<UserRole, number> = {
 // Role display names with proper formatting
 export const ROLE_DISPLAY_NAMES: Record<UserRole, string> = {
   developer: "Developer",
-  org_admin: "Organization Admin",
+  org_admin: "Admin",
   manager: "Manager", 
   consultant: "Consultant",
   viewer: "Viewer",

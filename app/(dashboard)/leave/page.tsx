@@ -72,7 +72,7 @@ interface LeaveRequest {
   leaveType: "Annual" | "Sick" | "Unpaid" | "Other";
   reason?: string;
   status: "Pending" | "Approved" | "Rejected";
-  leaveUser: {
+  employee: {
     id: string;
     firstName?: string;
     lastName?: string;
@@ -80,7 +80,7 @@ interface LeaveRequest {
     email?: string;
     role?: string;
     position?: string;
-    managerUser?: {
+    manager?: {
       id: string;
       firstName?: string;
       lastName?: string;

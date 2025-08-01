@@ -28,20 +28,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { usePermissions, useRole } from "@/hooks/use-permissions";
 import { useFeatureFlags } from "@/lib/feature-flags";
 import { useLayoutPreferences } from "@/lib/preferences/layout-preferences";
+import { getRoleDisplayName } from "@/lib/utils/role-utils";
 import { ThemeToggle } from "./theme-toggle";
 
 // Local utility function
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-
-// Role display mapping
-const roleDisplayNames: Record<string, string> = {
-  developer: "Developer",
-  manager: "Manager",
-  consultant: "Consultant",
-  org_admin: "Admin",
-};
 
 const allRoutes = [
   {
@@ -174,7 +167,7 @@ export function Sidebar() {
   const pathname = usePathname();
   const { isLoaded } = useUser();
   const { can, isLoaded: permissionsLoaded } = usePermissions();
-  const { isDeveloper } = useRole();
+  const { isDeveloper, role } = useRole();
   const { sidebarCollapsed, toggleSidebar } = useLayoutPreferences();
   const { flags } = useFeatureFlags();
 
@@ -290,7 +283,7 @@ export function Sidebar() {
             <p className="text-xs text-gray-500">
               Role:{" "}
               <span className="font-medium">
-                {/* {roleDisplayNames[authContext.userRole] || authContext.userRole} */}
+                {getRoleDisplayName(role)}
               </span>
             </p>
           </div>

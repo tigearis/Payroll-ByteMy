@@ -34,6 +34,7 @@ import {
   type FeatureFlagKey,
   type FeatureFlag 
 } from "@/lib/feature-flags/types";
+import { getRoleDisplayName } from "@/lib/utils/role-utils";
 
 interface FeatureFlagWithMetadata extends FeatureFlag {
   category: string;
@@ -449,7 +450,7 @@ export function FeatureFlagManagement() {
                     <div className="flex gap-1">
                       {flag.allowedRoles.map((role) => (
                         <Badge key={role} variant="outline" className="text-xs">
-                          {role}
+                          {getRoleDisplayName(role)}
                         </Badge>
                       ))}
                     </div>

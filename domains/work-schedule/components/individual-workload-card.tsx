@@ -9,6 +9,7 @@ import {
 } from "./payroll-workload-dashboard";
 import { TeamMember, WorkScheduleDay, PayrollAssignment, AssignmentStatus, AssignmentPriority } from "../types/workload";
 import { SimpleTimeNavigation } from "./simple-time-navigation";
+import { getRoleDisplayName } from "@/lib/utils/role-utils";
 
 // Import the single member visualization from the dashboard
 
@@ -86,7 +87,7 @@ export const IndividualWorkloadCard: React.FC<IndividualWorkloadCardProps> = ({
         <CardContent className="p-3">
           <div className="text-center mb-3">
             <h3 className="font-semibold text-lg text-gray-900">{userName}</h3>
-            <p className="text-sm text-gray-600 capitalize">{userRole}</p>
+            <p className="text-sm text-gray-600">{getRoleDisplayName(userRole)}</p>
           </div>
           
           <SimpleTimeNavigation

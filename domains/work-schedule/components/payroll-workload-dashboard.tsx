@@ -12,6 +12,7 @@ import { EnhancedTimeNavigation } from "./time-navigation";
 import WorkloadCalendar from "./workload-calendar";
 import WorkloadChart from "./workload-chart";
 import WorkloadSummary from "./workload-summary";
+import { getRoleDisplayName } from "@/lib/utils/role-utils";
 
 // Utility function to determine utilization level
 function getUtilizationLevel(utilization: number) {
@@ -213,7 +214,7 @@ export const SingleMemberVisualization: React.FC<SingleMemberVisualizationProps>
         <div className="flex items-center justify-between">
           <div>
             <h3 className="font-semibold text-base">{member.userName}</h3>
-            <p className="text-xs text-muted-foreground capitalize">{member.userRole}</p>
+            <p className="text-xs text-muted-foreground">{getRoleDisplayName(member.userRole)}</p>
           </div>
           <div className="text-xs text-muted-foreground px-2 py-1 bg-background/80 rounded-md">
             {selectedView === "chart" ? "Chart" : "Calendar"}
