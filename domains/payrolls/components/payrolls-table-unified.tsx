@@ -22,30 +22,54 @@ import {
 } from "@/components/ui/unified-data-table";
 import { getScheduleSummary } from "@/domains/payrolls/utils/schedule-helpers";
 
-// Payroll data type (based on existing payroll structure)
+// Payroll data type (based on GraphQL GetPayrollsTableEnhanced query)
 interface Payroll {
   id: string;
   name: string;
   status: string;
+  employeeCount?: number;
+  dateValue?: number;
+  processingDaysBeforeEft?: number;
+  createdAt: string;
+  updatedAt: string;
   client?: {
     id: string;
     name: string;
+    active?: boolean;
+  };
+  payrollCycle?: {
+    id: string;
+    name: string;
+    description?: string;
+  };
+  payrollDateType?: {
+    id: string;
+    name: string;
+    description?: string;
   };
   primaryConsultant?: {
     id: string;
-    name: string;
+    firstName?: string;
+    lastName?: string;
+    computedName?: string;
     email?: string;
+    role?: string;
   };
-  manager?: {
+  backupConsultant?: {
     id: string;
-    name: string;
+    firstName?: string;
+    lastName?: string;
+    computedName?: string;
     email?: string;
+    role?: string;
   };
-  employeeCount?: number;
-  processingDaysBeforeEft?: number;
-  payrollSystem?: string;
-  updatedAt: string;
-  goLiveDate?: string;
+  nextEftDate?: Array<{
+    id: string;
+    originalEftDate: string;
+    adjustedEftDate: string;
+    processingDate?: string;
+    notes?: string;
+  }>;
 }
 
 interface PayrollsTableProps {
