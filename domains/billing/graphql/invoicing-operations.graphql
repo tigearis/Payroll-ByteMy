@@ -93,7 +93,7 @@ query GetBillingItemsForInvoice($clientId: uuid, $payrollIds: [uuid!]) {
     unitPrice
     amount
     payrollId
-    billingPlanId
+    serviceId
     clientId
     staffUserId
     serviceName

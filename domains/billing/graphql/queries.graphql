@@ -126,24 +126,24 @@ query GetPayrollForBilling($payrollId: uuid!) {
 }
 
 query GetClientServicesWithRates($clientId: uuid!) {
-  clientBillingAssignment(
+  clientServiceAgreements(
     where: { 
       clientId: { _eq: $clientId }
       isActive: { _eq: true }
     }
   ) {
     id
-    billingPlanId
+    serviceId
     clientId
     customRate
     billingFrequency
     isActive
-    effectiveDate
-    billingPlan {
+    contractStartDate
+    service {
       id
       name
       description
-      standardRate
+      defaultRate
       billingUnit
       category
     }
@@ -152,7 +152,7 @@ query GetClientServicesWithRates($clientId: uuid!) {
 
 # Service Catalog Queries
 query GetServiceCatalog($isActive: Boolean) {
-  billingPlan(
+  services(
     where: { 
       isActive: { _eq: $isActive } 
     }
@@ -161,7 +161,7 @@ query GetServiceCatalog($isActive: Boolean) {
     id
     name
     description
-    standardRate
+    defaultRate
     billingUnit
     category
     isActive
@@ -172,11 +172,11 @@ query GetServiceCatalog($isActive: Boolean) {
 }
 
 query GetServiceById($id: uuid!) {
-  billingPlanByPk(id: $id) {
+  servicesByPk(id: $id) {
     id
     name
     description
-    standardRate
+    defaultRate
     billingUnit
     category
     isActive
@@ -188,7 +188,7 @@ query GetServiceById($id: uuid!) {
 
 # Client Service Agreement Queries
 query GetClientServiceAgreements($clientId: uuid!) {
-  clientBillingAssignment(
+  clientServiceAgreements(
     where: { 
       clientId: { _eq: $clientId }
       isActive: { _eq: true }
@@ -198,21 +198,21 @@ query GetClientServiceAgreements($clientId: uuid!) {
   ) {
     id
     clientId
-    billingPlanId
+    serviceId
     customRate
     billingFrequency
-    effectiveDate
+    contractStartDate
     isEnabled
     isActive
-    startDate
-    endDate
+    contractStartDate
+    contractEndDate
     createdAt
     updatedAt
-    billingPlan {
+    service {
       id
       name
       description
-      standardRate
+      defaultRate
       billingUnit
       category
       isActive
@@ -232,7 +232,7 @@ query GetBillingItemsByPayroll($payrollId: uuid!) {
     quantity
     amount
     payrollId
-    billingPlanId
+    serviceId
     clientId
     staffUserId
     serviceName
@@ -393,7 +393,7 @@ query GetBillingItemsByClient($clientId: uuid!) {
     quantity
     amount
     payrollId
-    billingPlanId
+    serviceId
     clientId
     staffUserId
     serviceName

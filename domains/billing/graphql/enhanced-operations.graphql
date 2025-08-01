@@ -1,0 +1,593 @@
+# =============================================================================
+# Enhanced Billing Operations
+# Updated operations for 6-minute time tracking, automated billing, and quote integration
+# =============================================================================
+
+# =============================================================================
+# ENHANCED TIME TRACKING OPERATIONS (6-MINUTE PRECISION)
+# =============================================================================
+
+# Create time entry with 6-minute increments
+mutation CreateTimeEntryWithUnits($input: TimeEntriesInsertInput!) {
+  insertTimeEntriesOne(object: $input) {
+    id
+    staffUserId
+    clientId
+    payrollId
+    payrollDateId
+    workDate
+    hoursSpent
+    description
+    createdAt
+    updatedAt
+    client {
+      name
+    }
+    payroll {
+      name
+    }
+  }
+}
+
+# Update time entry with unit conversion
+mutation UpdateTimeEntryWithUnits($id: uuid!, $changes: TimeEntriesSetInput!) {
+  updateTimeEntriesByPk(pkColumns: {id: $id}, _set: $changes) {
+    id
+    hoursSpent
+    updatedAt
+  }
+}
+
+# Get time tracking summary
+query GetTimeTrackingSummary(
+  $staffUserId: uuid
+  $clientId: uuid
+  $startDate: date!
+  $endDate: date!
+) {
+  timeEntries(
+    where: {
+      staffUserId: {_eq: $staffUserId}
+      clientId: {_eq: $clientId}
+      workDate: {_gte: $startDate, _lte: $endDate}
+    }
+    orderBy: {workDate: DESC}
+  ) {
+    id
+    staffUserId
+    clientId
+    payrollId
+    workDate
+    hoursSpent
+    description
+    client {
+      name
+    }
+    payroll {
+      name
+    }
+  }
+}
+
+# Get billable time summary for invoicing
+query GetBillableTimeSummary(
+  $clientId: uuid!
+  $billingPeriodStart: date!
+  $billingPeriodEnd: date!
+) {
+  timeEntries(
+    where: {
+      clientId: {_eq: $clientId}
+      workDate: {_gte: $billingPeriodStart, _lte: $billingPeriodEnd}
+    }
+  ) {
+    workDate
+    hoursSpent
+    description
+  }
+  
+  # Summary totals
+  timeEntriesAggregate(
+    where: {
+      clientId: {_eq: $clientId}
+      workDate: {_gte: $billingPeriodStart, _lte: $billingPeriodEnd}
+    }
+  ) {
+    aggregate {
+      sum {
+        hoursSpent
+      }
+      count
+    }
+  }
+}
+
+# =============================================================================
+# ENHANCED BILLING ITEMS OPERATIONS
+# =============================================================================
+
+# Create billing item with quote reference
+mutation CreateBillingItemWithQuote($input: BillingItemsInsertInput!) {
+  insertBillingItemsOne(object: $input) {
+    id
+    clientId
+    payrollId
+    payrollDateId
+    serviceId
+    quantity
+    unitPrice
+    amount
+    description
+    status
+    staffUserId
+    notes
+    createdAt
+    client {
+      name
+    }
+    service {
+      name
+      category
+      billingUnit
+    }
+  }
+}
+
+# Get billing items with enhanced details
+query GetBillingItemsEnhanced(
+  $limit: Int = 50
+  $offset: Int = 0
+  $where: BillingItemsBoolExp
+  $orderBy: [BillingItemsOrderBy!] = [{createdAt: DESC}]
+) {
+  billingItems(limit: $limit, offset: $offset, where: $where, orderBy: $orderBy) {
+    id
+    clientId
+    payrollId
+    payrollDateId
+    serviceId
+    quantity
+    unitPrice
+    amount
+    description
+    status
+    staffUserId
+    notes
+    confirmedAt
+    confirmedBy
+    createdAt
+    client {
+      id
+      name
+    }
+    payroll {
+      id
+      name
+    }
+    service {
+      id
+      name
+      category
+      billingUnit
+    }
+  }
+}
+
+# Get pending billing approvals
+query GetPendingBillingApprovals(
+  $limit: Int = 100
+) {
+  billingItems(
+    where: {
+      status: {_eq: "draft"}
+    }
+    orderBy: {createdAt: ASC}
+    limit: $limit
+  ) {
+    id
+    payrollId
+    clientId
+    serviceId
+    description
+    quantity
+    unitPrice
+    amount
+    staffUserId
+    createdAt
+    client {
+      name
+    }
+    service {
+      name
+      category
+    }
+    payroll {
+      name
+    }
+  }
+}
+
+# Bulk approve billing items
+mutation ApproveBillingItemsBulk(
+  $itemIds: [uuid!]!
+  $approvedByUserId: uuid!
+  $approvalNotes: String
+) {
+  updateBillingItems(
+    where: {id: {_in: $itemIds}, status: {_eq: "draft"}}
+    _set: {
+      status: "confirmed"
+      confirmedBy: $approvedByUserId
+      confirmedAt: "now()"
+      notes: $approvalNotes
+    }
+  ) {
+    returning {
+      id
+      status
+      confirmedAt
+      amount
+    }
+    affectedRows
+  }
+}
+
+# =============================================================================
+# AUTOMATED BILLING OPERATIONS
+# =============================================================================
+
+# Trigger automated billing generation for payroll
+mutation GenerateAutoBillingForPayroll($payrollId: uuid!) {
+  updatePayrollsByPk(
+    pkColumns: {id: $payrollId}
+    _set: {billingStatus: "ready_to_bill"}
+  ) {
+    id
+    billingStatus
+    estimatedRevenue
+    updatedAt
+  }
+}
+
+# Get billing automation metrics
+query GetBillingAutomationMetrics {
+  autoGeneratedItems: billingItemsAggregate(
+    where: {isAutoGenerated: {_eq: true}}
+  ) {
+    aggregate {
+      count
+      sum {
+        amount
+      }
+    }
+  }
+  
+  manualItems: billingItemsAggregate(
+    where: {isAutoGenerated: {_eq: false}}
+  ) {
+    aggregate {
+      count
+      sum {
+        amount
+      }
+    }
+  }
+  
+  pendingApproval: billingItemsAggregate(
+    where: {status: {_eq: "draft"}}
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  approvedItems: billingItemsAggregate(
+    where: {status: {_eq: "confirmed"}}
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Get payroll billing readiness
+query GetPayrollBillingStatus(
+  $clientId: uuid
+  $billingStatus: String
+) {
+  payrolls(
+    where: {
+      clientId: {_eq: $clientId}
+      billingStatus: {_eq: $billingStatus}
+    }
+    orderBy: {updatedAt: DESC}
+  ) {
+    id
+    name
+    clientId
+    billingStatus
+    payslipCount
+    employeeCount
+    newEmployees
+    terminatedEmployees
+    estimatedRevenue
+    actualRevenue
+    estimatedHours
+    actualHours
+    profitMargin
+    lastBilledDate
+    client {
+      name
+    }
+    billingItems(where: {status: {_neq: "draft"}}) {
+      id
+      amount
+      status
+    }
+  }
+}
+
+# =============================================================================
+# ENHANCED PROFITABILITY OPERATIONS
+# =============================================================================
+
+# Get enhanced client profitability analysis
+query GetEnhancedClientProfitabilityAnalysis(
+  $clientId: uuid!
+  $startDate: timestamp!
+  $endDate: timestamp!
+  $quoteStartDate: timestamptz!
+  $quoteEndDate: timestamptz!
+  $workDateStart: date!
+  $workDateEnd: date!
+) {
+  # Revenue from billing items
+  billingItemsAggregate(
+    where: {
+      clientId: {_eq: $clientId}
+      createdAt: {_gte: $startDate, _lte: $endDate}
+      status: {_neq: "draft"}
+    }
+  ) {
+    aggregate {
+      sum {
+        amount
+      }
+      count
+      avg {
+        amount
+      }
+    }
+  }
+  
+  # Time investment
+  timeEntriesAggregate(
+    where: {
+      clientId: {_eq: $clientId}
+      workDate: {_gte: $workDateStart, _lte: $workDateEnd}
+    }
+  ) {
+    aggregate {
+      sum {
+        hoursSpent
+      }
+      count
+    }
+  }
+  
+  # Service utilization
+  billingItems(
+    where: {
+      clientId: {_eq: $clientId}
+      createdAt: {_gte: $startDate, _lte: $endDate}
+      status: {_neq: "draft"}
+    }
+  ) {
+    service {
+      name
+      category
+    }
+    amount
+    quantity
+  }
+  
+  # Quote conversion performance
+  quotes(
+    where: {
+      clientId: {_eq: $clientId}
+      createdAt: {_gte: $quoteStartDate, _lte: $quoteEndDate}
+    }
+  ) {
+    quoteNumber
+    status
+    totalAmount
+    conversionValue
+  }
+}
+
+# =============================================================================
+# INVOICE INTEGRATION OPERATIONS
+# =============================================================================
+
+# Get invoicing ready items
+query GetInvoicingReadyItems(
+  $clientId: uuid!
+  $billingPeriodStart: timestamp!
+  $billingPeriodEnd: timestamp!
+) {
+  billingItems(
+    where: {
+      clientId: {_eq: $clientId}
+      createdAt: {_gte: $billingPeriodStart, _lte: $billingPeriodEnd}
+      status: {_eq: "confirmed"}
+    }
+    orderBy: [{createdAt: ASC}]
+  ) {
+    id
+    description
+    quantity
+    unitPrice
+    amount
+    service {
+      name
+      category
+      billingUnit
+    }
+    payroll {
+      name
+    }
+  }
+  
+  # Summary totals
+  billingItemsAggregate(
+    where: {
+      clientId: {_eq: $clientId}
+      createdAt: {_gte: $billingPeriodStart, _lte: $billingPeriodEnd}
+      status: {_eq: "confirmed"}
+    }
+  ) {
+    aggregate {
+      sum {
+        amount
+      }
+      count
+    }
+  }
+}
+
+# =============================================================================
+# REPORTING & ANALYTICS OPERATIONS
+# =============================================================================
+
+# Get comprehensive billing report
+query GetComprehensiveBillingReport(
+  $startDate: timestamp!
+  $endDate: timestamp!
+  $quoteStartDate: timestamptz!
+  $quoteEndDate: timestamptz!
+  $workDateStart: date!
+  $workDateEnd: date!
+  $clientId: uuid
+) {
+  # Revenue by service category
+  billingItems(
+    where: {
+      clientId: {_eq: $clientId}
+      createdAt: {_gte: $startDate, _lte: $endDate}
+      status: {_neq: "draft"}
+    }
+  ) {
+    service {
+      category
+      name
+    }
+    amount
+    quantity
+    isAutoGenerated
+  }
+  
+  # Time utilization
+  timeEntries(
+    where: {
+      clientId: {_eq: $clientId}
+      workDate: {_gte: $workDateStart, _lte: $workDateEnd}
+    }
+  ) {
+    hoursSpent
+    description
+  }
+  
+  # Quote conversion performance
+  quotes(
+    where: {
+      clientId: {_eq: $clientId}
+      createdAt: {_gte: $quoteStartDate, _lte: $quoteEndDate}
+    }
+  ) {
+    quoteNumber
+    status
+    totalAmount
+    conversionValue
+    createdAt
+    convertedAt
+  }
+}
+
+# Get service performance metrics
+query GetServicePerformanceMetrics(
+  $startDate: timestamp!
+  $endDate: timestamp!
+) {
+  # Revenue by service
+  billingItems(
+    where: {
+      createdAt: {_gte: $startDate, _lte: $endDate}
+      status: {_neq: "draft"}
+    }
+  ) {
+    service {
+      id
+      name
+      category
+      billingUnit
+      defaultRate
+    }
+    amount
+    quantity
+    unitPrice
+    isAutoGenerated
+  }
+  
+  # Service utilization rates
+  services(where: {isActive: {_eq: true}}) {
+    id
+    name
+    category
+    defaultRate
+    clientAgreements(where: {isActive: {_eq: true}}) {
+      customRate
+      client {
+        name
+      }
+    }
+  }
+}
+
+# =============================================================================
+# SUBSCRIPTION OPERATIONS FOR REAL-TIME UPDATES
+# =============================================================================
+
+# Subscribe to billing item changes
+subscription SubscribeToBillingItemUpdates($clientId: uuid!) {
+  billingItems(
+    where: {clientId: {_eq: $clientId}}
+    orderBy: {updatedAt: DESC}
+    limit: 20
+  ) {
+    id
+    status
+    amount
+    description
+    updatedAt
+    isAutoGenerated
+  }
+}
+
+# Subscribe to pending approvals
+subscription SubscribeToPendingApprovals {
+  billingItems(
+    where: {status: {_eq: "draft"}}
+    orderBy: {createdAt: ASC}
+    limit: 50
+  ) {
+    id
+    amount
+    isAutoGenerated
+    client {
+      name
+    }
+    service {
+      name
+    }
+  }
+}
