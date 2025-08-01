@@ -13,6 +13,8 @@ import {
   BarChart3,
   Plus,
   Eye,
+  Clock,
+  Settings,
 } from "lucide-react";
 import Link from "next/link";
 import { BillingDashboard } from "@/domains/billing/components/dashboard";
@@ -73,24 +75,52 @@ export default function BillingPage() {
 
   const quickActions = [
     {
-      title: "View All Items",
-      description: "Browse and manage billing items",
-      href: "/billing/items",
+      title: "Quote Management",
+      description: "Create and manage client quotes",
+      href: "/billing/quotes",
       icon: FileText,
       permission: "billing.read",
     },
     {
-      title: "Create New Item",
-      description: "Add a new billing item",
-      href: "/billing/items/new",
+      title: "Create New Quote",
+      description: "Build a quote for prospects",
+      href: "/billing/quotes/new",
       icon: Plus,
       permission: "billing.create",
+    },
+    {
+      title: "Time Tracking",
+      description: "6-minute precision time tracking",
+      href: "/billing/time-tracking",
+      icon: Clock,
+      permission: "billing.create",
+    },
+    {
+      title: "Service Catalog",
+      description: "Manage services and rates",
+      href: "/billing/services",
+      icon: Settings,
+      permission: "billing.admin",
+    },
+    {
+      title: "Profitability Analysis",
+      description: "Client and staff performance metrics",
+      href: "/billing/profitability",
+      icon: TrendingUp,
+      permission: "billing.read",
+    },
+    {
+      title: "View All Items",
+      description: "Browse and manage billing items",
+      href: "/billing/items",
+      icon: CreditCard,
+      permission: "billing.read",
     },
     {
       title: "View Invoices",
       description: "Manage invoices and payments",
       href: "/billing/invoices",
-      icon: CreditCard,
+      icon: Eye,
       permission: "billing.read",
     },
     {
@@ -151,7 +181,7 @@ export default function BillingPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {quickActions.map((action, index) => (
               <PermissionGuard key={index} permission={action.permission}>
                 <Card className="hover:shadow-md transition-shadow cursor-pointer">
