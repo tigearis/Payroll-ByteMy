@@ -555,7 +555,7 @@ export function EnhancedScheduleManager({
           {weekDays.map(({ dayName, dateStr, schedule }) => (
             <DayScheduleCard
               key={dayName}
-              schedule={schedule}
+              {...(schedule && { schedule })}
               user={user}
               dayName={dayName}
               date={dateStr}

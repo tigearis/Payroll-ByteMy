@@ -35,12 +35,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import {
-  useUserManagement,
-  User as UserType,
-  Manager,
-  UserPermissions,
-} from "@/hooks/use-user-management";
+import { useUserManagement } from "@/hooks/use-user-management";
+import { Users as UsersType } from "@/shared/types/generated/graphql";
+import { Manager, UserPermissions } from "@/domains/users/types";
 
 const editUserSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -57,7 +54,7 @@ type EditUserFormData = z.infer<typeof editUserSchema>;
 interface EditUserModalProps {
   isOpen: boolean;
   onClose: () => void;
-  user: UserType | null;
+  user: UsersType | null;
   managers: Manager[];
   permissions: UserPermissions | null;
   currentUserRole: string | null;
@@ -94,7 +91,7 @@ function EditUserModalInner({
   currentUserRole,
 }: EditUserModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { updateUser, canAssignRole } = useUserManagement();
+  const { updateUser, canManageRoles } = useUserManagement();
 
   const form = useForm<EditUserFormData>({
     resolver: zodResolver(editUserSchema),
@@ -111,7 +108,7 @@ function EditUserModalInner({
   useEffect(() => {
     if (user) {
       form.reset({
-        name: user.name,
+        name: user.computedName || `${user.firstName} ${user.lastName}`,
         email: user.email,
         role: user.role as "manager" | "developer" | "org_admin" | "consultant" | "viewer",
         managerId: user.managerId || "",
@@ -132,7 +129,7 @@ function EditUserModalInner({
       return;
     }
 
-    if (!canAssignRole(data.role)) {
+    if (!canManageRoles) {
       toast.error(`You cannot assign the ${data.role} role`);
       return;
     }
@@ -189,7 +186,7 @@ function EditUserModalInner({
       label: "Developer",
       description: "Full system access and development",
     },
-  ].filter(role => canAssignRole(role.value));
+  ].filter(role => canManageRoles);
 
   if (!user) {
     return null;

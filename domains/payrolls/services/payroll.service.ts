@@ -38,7 +38,7 @@ export class PayrollService {
       query: GetPayrollByIdDocument,
       variables: { id },
     });
-    return data.payrollById;
+    return data.payrollsByPk;
   }
 
   /**
@@ -83,7 +83,7 @@ export class PayrollService {
       mutation: CreatePayrollDocument,
       variables: input,
     });
-    return data?.insertPayroll;
+    return data?.insertPayrollsOne;
   }
 
   /**
@@ -109,7 +109,7 @@ export class PayrollService {
       mutation: UpdatePayrollDocument,
       variables: { id, ...input },
     });
-    return data?.updatePayrollById;
+    return data?.updatePayrollsByPk;
   }
 
   /**
@@ -120,7 +120,7 @@ export class PayrollService {
       mutation: UpdatePayrollStatusDocument,
       variables: { id, status },
     });
-    return data?.updatePayrollById;
+    return data?.updatePayrollsByPk;
   }
 
   /**
@@ -131,7 +131,7 @@ export class PayrollService {
       mutation: DeletePayrollDocument,
       variables: { id },
     });
-    return data?.updatePayrollById;
+    return data?.updatePayrollsByPk;
   }
 
   /**

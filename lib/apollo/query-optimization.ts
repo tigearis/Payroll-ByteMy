@@ -208,7 +208,9 @@ export class QueryOptimizer {
         });
         
         results.push(result);
-        completed.add(query.query.definitions[0]?.name?.value || 'unknown');
+        const definition = query.query.definitions[0];
+        const operationName = definition && 'name' in definition ? definition.name?.value : 'unknown';
+        completed.add(operationName || 'unknown');
       } catch (error) {
         errors.push(error);
       }

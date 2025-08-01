@@ -301,7 +301,7 @@ export function usePayrollWorkload({
     return result;
   }, [workloadData, holidaysData, startDate, endDate]);
 
-  const user = workloadData?.userById;
+  const user = workloadData?.usersByPk;
   const workScheduleStats = statsData?.workScheduleStats?.aggregate;
   const primaryPayrollStats = statsData?.primaryPayrollCount?.aggregate;
   const backupPayrollStats = statsData?.backupPayrollCount?.aggregate;

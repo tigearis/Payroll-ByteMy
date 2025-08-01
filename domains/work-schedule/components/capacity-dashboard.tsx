@@ -1119,7 +1119,7 @@ export function CapacityDashboard({
                       await onUpdateAdminTime(selectedMember, percentage);
                     }
                   }}
-                  onPayrollClick={onPayrollClick}
+                  onPayrollClick={onPayrollClick || (() => {})}
                   onClose={() => {
                     setSelectedMember(null);
                     setActiveTab('overview');

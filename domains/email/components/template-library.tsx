@@ -65,9 +65,13 @@ interface TemplateItem {
   createdAt: string;
   createdByUser?: {
     name: string;
-  };
+  } | null;
   variableCount?: number;
   categoryInfo?: any;
+  preview?: {
+    subject: string;
+    htmlContent: string;
+  };
 }
 
 export function TemplateLibrary({
@@ -299,7 +303,15 @@ export function TemplateLibrary({
               <Card 
                 key={template.id} 
                 className="cursor-pointer hover:shadow-md transition-shadow"
-                onClick={() => handleSelectTemplate(template)}
+                onClick={() => handleSelectTemplate({
+                  id: template.id,
+                  name: template.name,
+                  category: template.category,
+                  description: template.description || '',
+                  isSystemTemplate: template.isSystemTemplate ?? false,
+                  isActive: template.isActive ?? false,
+                  createdAt: template.createdAt || new Date().toISOString()
+                })}
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
@@ -372,7 +384,15 @@ export function TemplateLibrary({
                           size="sm"
                           onClick={(e) => {
                             e.stopPropagation();
-                            handlePreview(template);
+                            handlePreview({
+                              id: template.id,
+                              name: template.name,
+                              category: template.category,
+                              description: template.description || '',
+                              isSystemTemplate: template.isSystemTemplate ?? false,
+                              isActive: template.isActive ?? false,
+                              createdAt: template.createdAt || new Date().toISOString()
+                            });
                           }}
                         >
                           <Eye className="h-3 w-3" />

@@ -228,7 +228,7 @@ export const SingleMemberVisualization: React.FC<SingleMemberVisualizationProps>
             data={summaryData.periods}
             viewPeriod={viewPeriod as any}
             height={250}
-            onAssignmentClick={onAssignmentClick}
+            onAssignmentClick={onAssignmentClick || (() => {})}
             showLegend={false}
           />
         </div>
@@ -239,7 +239,7 @@ export const SingleMemberVisualization: React.FC<SingleMemberVisualizationProps>
             workSchedule={member.workSchedule}
             viewPeriod={viewPeriod as any}
             currentDate={currentDate}
-            onAssignmentClick={onAssignmentClick}
+            onAssignmentClick={onAssignmentClick || (() => {})}
           />
         </div>
       </CardContent>
@@ -286,12 +286,8 @@ const PayrollWorkloadDashboard: React.FC<PayrollWorkloadVisualizationProps> = ({
         userId,
         userName,
         userRole,
-        email: undefined,
-        avatarUrl: undefined,
         isActive: true,
         workSchedule,
-        skills: undefined,
-        managerId: undefined,
       }];
     }
     
@@ -382,7 +378,7 @@ const PayrollWorkloadDashboard: React.FC<PayrollWorkloadVisualizationProps> = ({
                 viewPeriod={state.viewPeriod}
                 currentDate={state.currentDate}
                 selectedView={state.selectedView}
-                onAssignmentClick={onAssignmentClick}
+                onAssignmentClick={onAssignmentClick || (() => {})}
               />
             </div>
           ))}

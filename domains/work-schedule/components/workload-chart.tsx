@@ -42,6 +42,8 @@ const WorkloadChart: React.FC<WorkloadChartProps> = ({
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
+    
+    return undefined;
   }, [clickedPeriod]);
 
   // Interactive tooltip component that shows on click
@@ -158,11 +160,11 @@ const WorkloadChart: React.FC<WorkloadChartProps> = ({
 
   // Legend data
   const legendData = useMemo(() => [
-    { value: "Available Capacity", type: "square", color: COLOR_THEME.capacity },
-    { value: "Optimal (< 85%)", type: "square", color: COLOR_THEME.optimal },
-    { value: "High (85-100%)", type: "square", color: COLOR_THEME.high },
-    { value: "Overallocated (> 100%)", type: "square", color: COLOR_THEME.overallocated },
-    { value: "Overflow", type: "square", color: COLOR_THEME.overflow },
+    { value: "Available Capacity", type: "rect" as const, color: COLOR_THEME.capacity },
+    { value: "Optimal (< 85%)", type: "rect" as const, color: COLOR_THEME.optimal },
+    { value: "High (85-100%)", type: "rect" as const, color: COLOR_THEME.high },
+    { value: "Overallocated (> 100%)", type: "rect" as const, color: COLOR_THEME.overallocated },
+    { value: "Overflow", type: "rect" as const, color: COLOR_THEME.overflow },
   ], []);
 
   // Chart margin based on view period - optimized for more space
@@ -214,7 +216,7 @@ const WorkloadChart: React.FC<WorkloadChartProps> = ({
   return (
     <div className={cn("w-full h-full relative", className)} ref={containerRef}>
       <div className="w-full h-full bg-muted/20 rounded-lg p-3">
-        <ResponsiveContainer width="100%" height={height - 24}> {/* Account for padding */}
+        <ResponsiveContainer width="100%" height={height - 24}>
           <BarChart
             data={data}
             margin={chartMargin}
@@ -251,7 +253,7 @@ const WorkloadChart: React.FC<WorkloadChartProps> = ({
               <Legend
                 payload={legendData}
                 wrapperStyle={{ paddingTop: "20px" }}
-                iconType="square"
+                iconType="rect"
               />
             )}
 

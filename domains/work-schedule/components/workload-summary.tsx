@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import AssignmentCard from "./assignment-card";
+import { AssignmentStatus, AssignmentPriority } from "../types/workload";
 
 interface WorkloadDay {
   date: string;
@@ -103,7 +104,9 @@ export const WorkloadSummary: React.FC<WorkloadSummaryProps> = ({
     const allAssignments = periodData.flatMap(day => 
       day.assignments.map(assignment => ({
         ...assignment,
-        date: day.date
+        date: day.date,
+        status: assignment.status as AssignmentStatus,
+        priority: assignment.priority as AssignmentPriority
       }))
     );
 
@@ -291,7 +294,7 @@ export const WorkloadSummary: React.FC<WorkloadSummaryProps> = ({
                 <AssignmentCard
                   key={`${assignment.id}-${idx}`}
                   assignment={assignment}
-                  onClick={onAssignmentClick}
+                  {...(onAssignmentClick && { onClick: onAssignmentClick })}
                   variant="default"
                 />
               ))}
@@ -308,7 +311,7 @@ export const WorkloadSummary: React.FC<WorkloadSummaryProps> = ({
                 <AssignmentCard
                   key={`${assignment.id}-${idx}`}
                   assignment={assignment}
-                  onClick={onAssignmentClick}
+                  {...(onAssignmentClick && { onClick: onAssignmentClick })}
                   variant="compact"
                 />
               ))}

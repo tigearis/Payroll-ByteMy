@@ -41,7 +41,7 @@ export function useTeamWorkloadGraphQL({
   dateRange,
 }: UseTeamWorkloadGraphQLOptions = {}) {
   // Choose which query to use based on options
-  const shouldUseTeamQuery = managerUserId && !includeAllStaff;
+  const shouldUseTeamQuery = Boolean(managerUserId && !includeAllStaff);
   
   const allStaffResult = useQuery<GetAllStaffWorkloadQuery>(GetAllStaffWorkloadDocument, {
     skip: shouldUseTeamQuery,
@@ -61,12 +61,12 @@ export function useTeamWorkloadGraphQL({
 
     return queryResult.data.users.map((user): TeamMember => {
       // Get user's work schedule
-      const schedules = user.userWorkSchedules || [];
+      const schedules = user.workSchedules || [];
       
       // Combine primary and backup payroll assignments
       const allPayrolls = [
-        ...user.primaryConsultantPayrolls,
-        ...user.backupConsultantPayrolls,
+        ...(user.primaryPayrollAssignments || []),
+        ...(user.backupPayrollAssignments || []),
       ];
 
       // Create a map of dates to assignments with proper distribution
@@ -133,7 +133,7 @@ export function useTeamWorkloadGraphQL({
                 assignmentsByDate.get(dateStr)!.push({
                   id: payroll.id,
                   name: payroll.name,
-                  clientName: payroll.client?.name || "Unknown Client",
+                  clientName: (payroll as any).client?.name || "Unknown Client",
                   processingTime: proportionalTime,
                   processingDaysBeforeEft: payroll.processingDaysBeforeEft || 0,
                   eftDate: dateEntry.adjustedEftDate,
@@ -183,7 +183,7 @@ export function useTeamWorkloadGraphQL({
         email: user.email,
         isActive: true,
         workSchedule,
-        skills: user.userSkills?.map(skill => skill.skillName) || [],
+        skills: (user as any).skills?.map((skill: any) => skill.skillName) || [],
       };
     });
   }, [queryResult.data]);

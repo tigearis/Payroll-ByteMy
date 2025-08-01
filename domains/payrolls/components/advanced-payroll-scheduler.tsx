@@ -472,10 +472,10 @@ export default function AdvancedPayrollScheduler() {
       name: user.computedName || `${user.firstName} ${user.lastName}`.trim(),
       email: user.email,
       role: user.role,
-      workSchedules: user.userWorkSchedules || [],
-      skills: user.userSkills || [],
-      primaryPayrolls: user.primaryConsultantPayrolls || [],
-      backupPayrolls: user.backupConsultantPayrolls || [],
+      workSchedules: user.workSchedules || [],
+      skills: user.skills || [],
+      primaryPayrolls: user.primaryPayrollAssignments || [],
+      backupPayrolls: user.backupPayrollAssignments || [],
     }));
 
     console.log(
@@ -845,7 +845,7 @@ export default function AdvancedPayrollScheduler() {
                 payrollName: payroll.name,
                 fromConsultantId: originalConsultant.id,
                 toConsultantId: edit.consultantId,
-                fromConsultantName: originalConsultant.name,
+                fromConsultantName: originalConsultant.computedName || `${originalConsultant.firstName} ${originalConsultant.lastName}`.trim(),
                 toConsultantName: edit.consultantName,
                 affectedDates: [date],
               });
@@ -905,7 +905,7 @@ export default function AdvancedPayrollScheduler() {
 
       // Check if all updates were successful
       const successfulUpdates = results.filter(
-        result => result.data?.updatePayrollById
+        result => result.data?.updatePayrollsByPk
       );
       const totalAffectedRows = successfulUpdates.length;
 

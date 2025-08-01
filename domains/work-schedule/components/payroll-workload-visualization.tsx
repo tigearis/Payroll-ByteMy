@@ -70,6 +70,7 @@ interface TeamMember {
   userName: string;
   userRole: string;
   workSchedule: WorkScheduleDay[];
+  isActive: boolean;
 }
 
 interface PayrollWorkloadVisualizationProps {
@@ -662,13 +663,13 @@ export default function PayrollWorkloadVisualization({
   // For backward compatibility, use the new dashboard
   return (
     <PayrollWorkloadDashboard
-      teamMembers={teamMembers}
-      userId={userId}
-      userName={userName}
-      userRole={userRole}
-      workSchedule={workSchedule}
+      {...(teamMembers && { teamMembers })}
+      {...(userId && { userId })}
+      {...(userName && { userName })}
+      {...(userRole && { userRole })}
+      {...(workSchedule && { workSchedule })}
       viewMode={viewMode}
-      onAssignmentClick={onAssignmentClick}
+      {...(onAssignmentClick && { onAssignmentClick })}
     />
   );
 }

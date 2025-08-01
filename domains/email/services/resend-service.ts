@@ -61,15 +61,19 @@ class ResendEmailService {
       }
 
       // Prepare email data for Resend
-      const emailData = {
+      const emailData: any = {
         from: `${this.fromName} <${this.fromEmail}>`,
         to: composition.recipientEmails,
         subject: composition.subject,
         html: composition.htmlContent,
-        text: composition.textContent,
         tags: this.buildEmailTags(composition),
         headers: this.buildEmailHeaders(composition, senderId)
       };
+
+      // Only add text if it's not undefined
+      if (composition.textContent !== undefined) {
+        emailData.text = composition.textContent;
+      }
 
       // Send via Resend
       const response = await this.resend.emails.send(emailData);

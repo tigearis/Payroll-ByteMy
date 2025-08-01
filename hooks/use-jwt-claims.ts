@@ -56,7 +56,7 @@ export function useJWTClaims(): JWTClaims {
       userId: user.id, // x-hasura-clerk-id
       databaseId: publicMetadata?.databaseId as string, // x-hasura-user-id
       clerkId: user.id, // x-hasura-clerk-id
-      email: user.primaryEmailAddress?.emailAddress, // x-hasura-user-email
+      email: user.primaryEmailAddress?.emailAddress || '', // x-hasura-user-email
       
       // Hierarchy and organization
       managerId: publicMetadata?.managerId as string, // x-hasura-manager-id

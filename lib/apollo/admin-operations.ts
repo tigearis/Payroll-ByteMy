@@ -6,7 +6,7 @@
  * unified client approach.
  */
 
-import { gql } from "@apollo/client";
+import { gql, DocumentNode, TypedDocumentNode, OperationVariables } from "@apollo/client";
 import { auth } from "@clerk/nextjs/server";
 import { GeneratePayrollDatesDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import {
@@ -49,9 +49,9 @@ export class AdminOperationsService {
         return { isValid: false };
       }
 
-      const userRole = sessionClaims?.metadata?.role as string;
+      const userRole = (sessionClaims as any)?.metadata?.role as string;
 
-      if (!userRole || !ADMINROLES.includes(userRole)) {
+      if (!userRole || !ADMIN_ROLES.includes(userRole)) {
         console.warn(`Access denied for user ${userId} with role ${userRole}`);
         return { isValid: false, userId, role: userRole };
       }
@@ -65,7 +65,7 @@ export class AdminOperationsService {
 
   // Execute admin query with permission check
   async executeAdminQuery<T = unknown>(
-    query: unknown,
+    query: DocumentNode | TypedDocumentNode<any, OperationVariables>,
     variables?: Record<string, unknown>
   ): Promise<{ data?: T; errors?: readonly Error[] }> {
     const { isValid } = await this.validateAdminAccess();
@@ -77,20 +77,23 @@ export class AdminOperationsService {
     try {
       const result = await adminApolloClient.query({
         query,
-        variables,
+        ...(variables && { variables }),
         fetchPolicy: "network-only",
       });
 
-      return { data: result.data, errors: result.errors || [] };
+      return { 
+        data: result.data, 
+        errors: result.errors ? result.errors.map(err => new Error(err.message)) : [] 
+      };
     } catch (error: unknown) {
       console.error("Admin query error:", error);
-      return { errors: [error] };
+      return { errors: [error instanceof Error ? error : new Error(String(error))] };
     }
   }
 
   // Execute admin mutation with permission check
   async executeAdminMutation<T = unknown>(
-    mutation: unknown,
+    mutation: DocumentNode | TypedDocumentNode<any, OperationVariables>,
     variables?: Record<string, unknown>
   ): Promise<{ data?: T; errors?: readonly Error[] }> {
     const { isValid } = await this.validateAdminAccess();
@@ -102,13 +105,16 @@ export class AdminOperationsService {
     try {
       const result = await adminApolloClient.mutate({
         mutation,
-        variables,
+        ...(variables && { variables }),
       });
 
-      return { data: result.data, errors: result.errors || [] };
+      return { 
+        data: result.data, 
+        errors: result.errors ? result.errors.map(err => new Error(err.message)) : [] 
+      };
     } catch (error: unknown) {
       console.error("Admin mutation error:", error);
-      return { errors: [error] };
+      return { errors: [error instanceof Error ? error : new Error(String(error))] };
     }
   }
 
@@ -142,7 +148,7 @@ export class AdminOperationsService {
       { email }
     );
 
-    const existingUser = clerkUserData?.users?.[0];
+    const existingUser = (clerkUserData as any)?.users?.[0];
 
     if (existingUser) {
       // Update existing user
@@ -159,7 +165,7 @@ export class AdminOperationsService {
         }
       );
 
-      return updateData?.updateUser;
+      return (updateData as any)?.updateUser;
     } else {
       // Create new user
       const { data: createData } = await this.executeAdminMutation(
@@ -177,7 +183,7 @@ export class AdminOperationsService {
         }
       );
 
-      return createData?.insertUser;
+      return (createData as any)?.insertUser;
     }
   }
 
@@ -215,9 +221,9 @@ export class AdminOperationsService {
     }
 
     return {
-      deletedDates: data.deletepayrolldates.affected_rows,
-      deletedVersions: data.deletepayrolls.affected_rows,
-      resetPayrolls: data.updatepayrolls.affected_rows,
+      deletedDates: (data as any).delete_payroll_dates.affected_rows,
+      deletedVersions: (data as any).delete_payrolls.affected_rows,
+      resetPayrolls: (data as any).update_payrolls.affected_rows,
     };
   }
 
@@ -288,7 +294,7 @@ export const adminOperationsService: Pick<
   "executeAdminQuery" | "executeAdminMutation" | "syncUserWithDatabase" | "cleanAllPayrollDates" | "regeneratePayrollDates"
 > = {
   executeAdminQuery: async <T = unknown>(
-    query: unknown,
+    query: DocumentNode | TypedDocumentNode<any, OperationVariables>,
     variables?: Record<string, unknown>
   ): Promise<{ data?: T; errors?: readonly Error[] }> => {
     if (!_adminOperationsService) {
@@ -298,7 +304,7 @@ export const adminOperationsService: Pick<
   },
   
   executeAdminMutation: async <T = unknown>(
-    mutation: unknown,
+    mutation: DocumentNode | TypedDocumentNode<any, OperationVariables>,
     variables?: Record<string, unknown>
   ): Promise<{ data?: T; errors?: readonly Error[] }> => {
     if (!_adminOperationsService) {

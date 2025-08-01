@@ -52,7 +52,7 @@ export const TimeEntryModal: React.FC<TimeEntryModalProps> = ({
   const [createTimeEntry] = useMutation(CreateTimeEntryDocument);
 
   useEffect(() => {
-    if (existingEntries?.time_entries) {
+    if (existingEntries?.timeEntries) {
       const entries = existingEntries.timeEntries.map((entry: any) => ({
         id: entry.id,
         work_date: entry.work_date,

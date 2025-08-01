@@ -98,8 +98,8 @@ class SchemaParser {
     }
 
     // Find the query root type
-    const queryType = this.introspection.schema.types.find(
-      type => type.name === 'query_root'
+    const queryType = this.introspection.__schema.types.find(
+      (type: any) => type.name === 'query_root'
     );
 
     if (!queryType || !queryType.fields) {
@@ -137,8 +137,8 @@ class SchemaParser {
     
     // Find the type definition in the schema
     if (this.introspection) {
-      return this.introspection.schema.types.find(
-        type => type.name === currentType.name && type.kind === 'OBJECT'
+      return this.introspection.__schema.types.find(
+        (type: any) => type.name === currentType.name && type.kind === 'OBJECT'
       ) || null;
     }
     

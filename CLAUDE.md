@@ -57,6 +57,134 @@ hasura metadata ic list
 - `notes`, `files`, `leave`: Fixed all snake_case column names
 - `payrolls`, `clients`: Proper relationship-based filtering
 
+## 🔧 TypeScript Standards & Error Resolution
+
+### Critical Type Safety Requirements
+
+**MANDATORY**: The codebase MUST maintain zero TypeScript errors with strict type checking enabled.
+
+### Common TypeScript Patterns & Solutions
+
+#### 1. Optional Property Handling with exactOptionalPropertyTypes
+When passing optional properties to components, use conditional spread syntax:
+```typescript
+// ✅ Correct - Only pass defined properties
+<Component
+  {...(userId && { userId })}
+  {...(teamMembers && { teamMembers })}
+  {...(onCallback && { onCallback })}
+/>
+
+// ❌ Wrong - Passing undefined values
+<Component
+  userId={userId}  // Error if userId can be undefined
+  onCallback={onCallback}  // Error if onCallback can be undefined
+/>
+```
+
+#### 2. GraphQL & Apollo Client Types
+- **Always import proper Apollo Client types**: `DocumentNode`, `TypedDocumentNode`, `OperationVariables`
+- **Handle GraphQL errors correctly**: Convert `GraphQLFormattedError[]` to `Error[]`
+- **Variables handling**: Use conditional spread `{...(variables && { variables })}` to avoid undefined assignment
+
+```typescript
+// ✅ Correct Apollo Client implementation
+import { gql, DocumentNode, TypedDocumentNode, OperationVariables } from "@apollo/client";
+
+async executeQuery<T = unknown>(
+  query: DocumentNode | TypedDocumentNode<any, OperationVariables>,
+  variables?: Record<string, unknown>
+): Promise<{ data?: T; errors?: readonly Error[] }> {
+  const result = await client.query({
+    query,
+    ...(variables && { variables }), // Conditional spread
+    fetchPolicy: "network-only",
+  });
+
+  return { 
+    data: result.data, 
+    errors: result.errors ? result.errors.map(err => new Error(err.message)) : [] 
+  };
+}
+```
+
+#### 3. Interface Consistency
+- **Local vs Imported Interfaces**: Ensure local interfaces match imported types exactly
+- **Required Properties**: Add missing required properties like `isActive: boolean` to maintain compatibility
+
+#### 4. Array Type Initialization
+```typescript
+// ✅ Correct - Typed array initialization
+const [state, setState] = useState({
+  errors: [] as any[], // Explicit typing prevents never[] inference
+});
+
+// ❌ Wrong - TypeScript infers never[]
+const [state, setState] = useState({
+  errors: [], // This becomes never[] and can't accept values
+});
+```
+
+#### 5. JSX Children Prop Issues
+```typescript
+// ✅ Correct - No comments inside JSX that expects single child
+<ResponsiveContainer width="100%" height={300}>
+  <BarChart data={data}>
+    {/* Comments outside single-child components only */}
+  </BarChart>
+</ResponsiveContainer>
+
+// ❌ Wrong - Comment treated as second child
+<ResponsiveContainer width="100%" height={300}> {/* This comment causes error */}
+  <BarChart data={data} />
+</ResponsiveContainer>
+```
+
+#### 6. Type Guards for Complex Objects
+```typescript
+// ✅ Correct - Type guard for property access
+const definition = query.definitions[0];
+const operationName = definition && 'name' in definition ? definition.name?.value : 'unknown';
+
+// ❌ Wrong - Direct property access on union types
+const operationName = query.definitions[0]?.name?.value; // Error: not all DefinitionNode types have 'name'
+```
+
+#### 7. IntrospectionResult Property Access
+```typescript
+// ✅ Correct - Use __schema for IntrospectionResult
+const queryType = introspection.__schema.types.find((type: any) => type.name === 'query_root');
+
+// ❌ Wrong - 'schema' property doesn't exist
+const queryType = introspection.schema.types.find(type => type.name === 'query_root');
+```
+
+### Enforcement Rules
+
+#### Pre-Commit Requirements
+```bash
+# MUST pass before any commit
+pnpm run type-check  # Zero errors required
+pnpm run lint        # Clean linting required
+```
+
+#### Development Workflow
+1. **Before making changes**: Run `pnpm run type-check` to establish baseline
+2. **During development**: Fix TypeScript errors immediately - never accumulate them
+3. **Before PR**: Ensure `pnpm run type-check` passes with zero errors
+4. **Code review**: TypeScript errors are blocking issues
+
+#### Error Categories & Response
+- **High Priority** (blocking): Apollo Client types, interface mismatches, property access errors
+- **Medium Priority** (fix same day): Array type issues, conditional property handling
+- **Low Priority** (fix before PR): Type annotations, unused imports
+
+### Type Safety Best Practices
+- **Explicit typing** over `any` where possible, but use `any` strategically for complex GraphQL responses
+- **Conditional spreading** for all optional properties in components
+- **Type guards** for union types and complex object property access
+- **Proper error handling** with typed error arrays and conversion functions
+
 ## 📚 Documentation Structure
 
 - `/docs/security/` - Security and permissions documentation

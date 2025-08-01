@@ -11,14 +11,13 @@ import {
   Settings,
 } from "lucide-react";
 import {
-  UnifiedDataTable,
-  DataTableColumn,
-  DataTableAction,
-  StatusConfig,
-  createCellRenderers,
-} from "@/components/ui/unified-data-table";
+  EnhancedUnifiedTable,
+  UnifiedTableColumn,
+  UnifiedTableAction,
+} from "@/components/ui/enhanced-unified-table";
 import { PayrollWithCycle } from "@/types";
 import { getScheduleSummary } from "@/domains/payrolls/utils/schedule-helpers";
+import { useState } from "react";
 
 // Payroll data type for client payrolls
 interface ClientPayroll {
@@ -48,8 +47,8 @@ interface ClientPayrollsTableProps {
   clientId?: string;
 }
 
-// Status configuration for payrolls
-const payrollStatusConfig: Record<string, StatusConfig> = {
+// Status configuration for payrolls  
+const payrollStatusConfig = {
   Implementation: {
     variant: "secondary",
     icon: Settings,
@@ -88,8 +87,13 @@ export function ClientPayrollsTableUnified({
   onRefresh,
   clientId,
 }: ClientPayrollsTableProps) {
-  // Create cell renderers with status config
-  const cellRenderers = createCellRenderers<PayrollWithCycle & { updated_at?: string }>(payrollStatusConfig);
+  // Pagination state
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  
+  // Calculate pagination values
+  const pageCount = Math.ceil(payrolls.length / pageSize);
+  const paginatedData = payrolls.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize);
 
   // Helper functions
   const formatDate = (dateString: string) => {
@@ -118,13 +122,12 @@ export function ClientPayrollsTableUnified({
   };
 
   // Column definitions
-  const columns: DataTableColumn<PayrollWithCycle & { updated_at?: string }>[] = [
+  const columns: UnifiedTableColumn<PayrollWithCycle & { updated_at?: string }>[] = [
     {
-      key: "name",
-      label: "Payroll Name",
+      accessorKey: "name",
+      header: "Payroll Name",
       sortable: true,
-      defaultVisible: true,
-      cellRenderer: (value, row) => (
+      render: (value, row) => (
         <div className="flex items-center space-x-3">
           <div className="flex-shrink-0">
             <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
@@ -134,25 +137,23 @@ export function ClientPayrollsTableUnified({
           <div>
             <div className="font-medium text-gray-900">{formatName(value)}</div>
             <div className="text-sm text-gray-500">
-              {row.employee_count ? `${row.employee_count} employees` : "No employees"}
+              {row.employeeCount ? `${row.employeeCount} employees` : "No employees"}
             </div>
           </div>
         </div>
       ),
     },
     {
-      key: "status",
-      label: "Status",
+      accessorKey: "status",
+      header: "Status",
+      type: "badge",
       sortable: true,
-      defaultVisible: true,
-      cellRenderer: cellRenderers.badge,
     },
     {
-      key: "payrollCycle",
-      label: "Schedule",
+      accessorKey: "payrollCycle",
+      header: "Schedule",
       sortable: false,
-      defaultVisible: true,
-      cellRenderer: (value, row) => (
+      render: (value, row) => (
         <div className="flex items-center gap-2">
           <Clock className="w-4 h-4 text-gray-500" />
           <span className="font-medium text-sm">{getScheduleSummary(row)}</span>
@@ -160,11 +161,10 @@ export function ClientPayrollsTableUnified({
       ),
     },
     {
-      key: "primaryConsultant" as any,
-      label: "Consultant",
+      accessorKey: "primaryConsultant" as any,
+      header: "Consultant",
       sortable: false,
-      defaultVisible: true,
-      cellRenderer: (value, row) => (
+      render: (value, row) => (
         <div className="text-sm">
           {(row as any).primaryConsultant || (row as any).primary_consultant ? (
             <>
@@ -178,11 +178,11 @@ export function ClientPayrollsTableUnified({
       ),
     },
     {
-      key: "goLiveDate" as any,
-      label: "Go Live Date",
+      accessorKey: "goLiveDate" as any,
+      header: "Go Live Date",
+      type: "date",
       sortable: true,
-      defaultVisible: true,
-      cellRenderer: (value) => (
+      render: (value) => (
         <div className="flex items-center space-x-2">
           <Calendar className="w-4 h-4 text-gray-400" />
           <span className="text-sm">
@@ -192,11 +192,11 @@ export function ClientPayrollsTableUnified({
       ),
     },
     {
-      key: "updated_at",
-      label: "Last Updated",
+      accessorKey: "updated_at",
+      header: "Last Updated",
+      type: "date",
       sortable: true,
-      defaultVisible: false,
-      cellRenderer: (value) => (
+      render: (value) => (
         <span className="text-sm text-gray-500">
           {formatDate(value)}
         </span>
@@ -205,38 +205,34 @@ export function ClientPayrollsTableUnified({
   ];
 
   // Action definitions
-  const actions: DataTableAction<PayrollWithCycle & { updated_at?: string }>[] = [
+  const actions: UnifiedTableAction<PayrollWithCycle & { updated_at?: string }>[] = [
     {
       label: "View Details",
       icon: Eye,
       onClick: (row) => window.location.href = `/payrolls/${row.id}`,
-      variant: "default",
     },
   ];
 
   return (
-    <UnifiedDataTable<PayrollWithCycle & { updated_at?: string }>
-      data={payrolls}
+    <EnhancedUnifiedTable<PayrollWithCycle & { updated_at?: string }>
+      data={paginatedData}
       columns={columns}
       actions={actions}
       loading={loading}
-      onRefresh={onRefresh}
-      // searchable={true} // This prop doesn't exist on UnifiedDataTable
-      // filterable={true} // This prop doesn't exist on UnifiedDataTable
-      // exportable={true} // This prop doesn't exist on UnifiedDataTable
+      searchable={true}
+      searchPlaceholder="Search payrolls..."
       selectable={false}
       pagination={{
-        enabled: true,
-        pageSize: 10,
-        showSizeSelector: true,
-      }}
-      emptyState={{
-        title: "No payrolls found",
-        description: "This client doesn't have any payrolls yet.",
-        action: clientId ? {
-          label: "Create Payroll",
-          href: `/payrolls/new?clientId=${clientId}`,
-        } : undefined,
+        pageIndex,
+        pageSize,
+        pageCount,
+        canPreviousPage: pageIndex > 0,
+        canNextPage: pageIndex < pageCount - 1,
+        onPageChange: setPageIndex,
+        onPageSizeChange: (size) => {
+          setPageSize(size);
+          setPageIndex(0); // Reset to first page when changing page size
+        },
       }}
     />
   );

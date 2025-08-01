@@ -258,7 +258,7 @@ export function usePayrollVersioning() {
         },
       });
 
-      const newPayrollData = insertResult.data?.insertPayroll;
+      const newPayrollData = insertResult.data?.insertPayrollsOne;
       if (!newPayrollData) {
         throw new Error("Failed to insert new payroll version");
       }
@@ -339,7 +339,7 @@ export function usePayrollVersioning() {
         },
       });
 
-      if (result.data?.updatePayrollById) {
+      if (result.data?.updatePayrollsByPk) {
         console.log(`✅ Status updated successfully to ${newStatus}`);
         toast.success(`Status changed to ${newStatus}`);
         return {
@@ -379,7 +379,7 @@ export function usePayrollVersioning() {
         },
       });
       console.log("✅ Processing note added successfully");
-      return { success: true, note: result.data?.insertNote };
+      return { success: true, note: result.data?.insertNotesOne };
     } catch (error: any) {
       console.error("❌ Failed to add processing note:", error);
       return { success: false, error: error.message };
@@ -483,7 +483,7 @@ export function usePayrollStatusUpdate() {
         awaitRefetchQueries: true,
       });
 
-      if (result.data?.updatePayrollById) {
+      if (result.data?.updatePayrollsByPk) {
         console.log(`✅ Status updated successfully to ${newStatus}`);
         toast.success(`Status changed to ${newStatus}`);
         return {
