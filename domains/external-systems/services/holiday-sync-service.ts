@@ -88,7 +88,7 @@ const INSERT_HOLIDAYS_MUTATION = gql`
         ]
       }
     ) {
-      affected_rows
+      affectedRows
       returning {
         id
         date
@@ -122,7 +122,7 @@ const INSERT_HOLIDAYS_ENHANCED_MUTATION = gql`
         ]
       }
     ) {
-      affected_rows
+      affectedRows
       returning {
         id
         date
@@ -156,7 +156,7 @@ const INSERT_HOLIDAYS_FALLBACK_MUTATION = gql`
         ]
       }
     ) {
-      affected_rows
+      affectedRows
       returning {
         id
         date
@@ -507,14 +507,14 @@ export async function syncHolidaysForCountry(
         }
 
         console.log(
-          `✅ Successfully synced ${data.insertHolidays.affected_rows} holidays for ${countryCode} ${year}`
+          `✅ Successfully synced ${data.insertHolidays.affectedRows} holidays for ${countryCode} ${year}`
         );
 
         return {
           success: true,
-          affectedRows: data.insertHolidays.affected_rows,
+          affectedRows: data.insertHolidays.affectedRows,
           newHolidays: holidaysToInsert.length,
-          message: `Synced ${data.insertHolidays.affected_rows} holidays for ${countryCode} ${year}`,
+          message: `Synced ${data.insertHolidays.affectedRows} holidays for ${countryCode} ${year}`,
         };
       } catch (error) {
         // If unique constraint doesn't exist, fall back to primary key constraint
@@ -539,9 +539,9 @@ export async function syncHolidaysForCountry(
 
         return {
           success: true,
-          affectedRows: data.insertHolidays.affected_rows,
+          affectedRows: data.insertHolidays.affectedRows,
           newHolidays: holidaysToInsert.length,
-          message: `Synced ${data.insertHolidays.affected_rows} holidays for ${countryCode} ${year} (fallback)`,
+          message: `Synced ${data.insertHolidays.affectedRows} holidays for ${countryCode} ${year} (fallback)`,
         };
       }
     }
@@ -644,11 +644,11 @@ export async function syncComprehensiveAustralianHolidays(
         throw new Error(`Failed to sync comprehensive holidays: ${errors.map(e => e.message).join(', ')}`);
       }
 
-      console.log(`✅ Successfully synced ${data.insertHolidays.affected_rows} holidays for AU ${year}`);
+      console.log(`✅ Successfully synced ${data.insertHolidays.affectedRows} holidays for AU ${year}`);
       
       return {
         success: true,
-        affectedRows: data.insertHolidays.affected_rows,
+        affectedRows: data.insertHolidays.affectedRows,
         totalHolidays: holidaysToInsert.length,
         originalRecordCount: dataGovHolidays.length,
         consolidatedRecordCount: holidaysToInsert.length,
@@ -656,7 +656,7 @@ export async function syncComprehensiveAustralianHolidays(
         regionalHolidays: regionalHolidays.length,
         eftRelevantHolidays: eftRelevantCount,
         coverageBreakdown: byRegionType,
-        message: `Synced ${data.insertHolidays.affected_rows} consolidated Australian holidays for ${year} (${dataGovHolidays.length} → ${holidaysToInsert.length} records)`,
+        message: `Synced ${data.insertHolidays.affectedRows} consolidated Australian holidays for ${year} (${dataGovHolidays.length} → ${holidaysToInsert.length} records)`,
       };
     } catch (error) {
       // Fallback to basic mutation if main mutation fails
@@ -673,11 +673,11 @@ export async function syncComprehensiveAustralianHolidays(
         throw new Error(`Failed to sync comprehensive holidays with fallback method: ${errors.map(e => e.message).join(', ')}`);
       }
 
-      console.log(`✅ Successfully synced ${data.insertHolidays.affected_rows} holidays for AU ${year} (fallback)`);
+      console.log(`✅ Successfully synced ${data.insertHolidays.affectedRows} holidays for AU ${year} (fallback)`);
       
       return {
         success: true,
-        affectedRows: data.insertHolidays.affected_rows,
+        affectedRows: data.insertHolidays.affectedRows,
         totalHolidays: holidaysToInsert.length,
         originalRecordCount: dataGovHolidays.length,
         consolidatedRecordCount: holidaysToInsert.length,
@@ -685,7 +685,7 @@ export async function syncComprehensiveAustralianHolidays(
         regionalHolidays: regionalHolidays.length,
         eftRelevantHolidays: eftRelevantCount,
         coverageBreakdown: byRegionType,
-        message: `Synced ${data.insertHolidays.affected_rows} consolidated Australian holidays for ${year} (fallback, ${dataGovHolidays.length} → ${holidaysToInsert.length} records)`,
+        message: `Synced ${data.insertHolidays.affectedRows} consolidated Australian holidays for ${year} (fallback, ${dataGovHolidays.length} → ${holidaysToInsert.length} records)`,
       };
     }
   } catch (error) {

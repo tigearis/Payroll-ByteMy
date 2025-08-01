@@ -721,15 +721,15 @@ function LeaveCard({
   };
 
   const canManageLeave = isManager && leave.status === "Pending" && 
-    (currentUser?.id === leave.leaveUser.managerUser?.id || currentUser?.role === "org_admin" || currentUser?.role === "developer");
+    (currentUser?.id === leave.leaveUser?.managerUser?.id || currentUser?.role === "org_admin" || currentUser?.role === "developer");
 
   return (
     <Card className="hover:shadow-md transition-shadow">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <CardTitle className="text-lg">{leave.leaveUser.computedName || `${leave.leaveUser.firstName || ''} ${leave.leaveUser.lastName || ''}`.trim() || 'Unknown User'}</CardTitle>
-            <p className="text-sm text-gray-500">{leave.leaveUser.email || 'No email'}</p>
+            <CardTitle className="text-lg">{leave.leaveUser?.computedName || `${leave.leaveUser?.firstName || ''} ${leave.leaveUser?.lastName || ''}`.trim() || 'Unknown User'}</CardTitle>
+            <p className="text-sm text-gray-500">{leave.leaveUser?.email || 'No email'}</p>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -842,13 +842,13 @@ function LeaveTable({
             <tbody>
               {leaveRequests.map((leave) => {
                 const canManageLeave = isManager && leave.status === "Pending" && 
-                  (currentUser?.id === leave.leaveUser.managerUser?.id || currentUser?.role === "org_admin" || currentUser?.role === "developer");
+                  (currentUser?.id === leave.leaveUser?.managerUser?.id || currentUser?.role === "org_admin" || currentUser?.role === "developer");
 
                 return (
                   <tr key={leave.id} className="border-b last:border-b-0 hover:bg-gray-50">
                     <td className="p-4">
-                      <div className="font-medium">{leave.leaveUser.computedName || `${leave.leaveUser.firstName || ''} ${leave.leaveUser.lastName || ''}`.trim() || 'Unknown User'}</div>
-                      <div className="text-sm text-gray-500">{leave.leaveUser.email || 'No email'}</div>
+                      <div className="font-medium">{leave.leaveUser?.computedName || `${leave.leaveUser?.firstName || ''} ${leave.leaveUser?.lastName || ''}`.trim() || 'Unknown User'}</div>
+                      <div className="text-sm text-gray-500">{leave.leaveUser?.email || 'No email'}</div>
                     </td>
                     <td className="p-4">
                       <Badge className="inline-flex items-center">
@@ -929,7 +929,7 @@ function LeaveListItem({
   isManager: boolean;
 }) {
   const canManageLeave = isManager && leave.status === "Pending" && 
-    (currentUser?.id === leave.leaveUser.managerUser?.id || currentUser?.role === "org_admin" || currentUser?.role === "developer");
+    (currentUser?.id === leave.leaveUser?.managerUser?.id || currentUser?.role === "org_admin" || currentUser?.role === "developer");
 
   return (
     <Card>
@@ -937,8 +937,8 @@ function LeaveListItem({
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div>
-              <div className="font-medium">{leave.leaveUser.computedName || `${leave.leaveUser.firstName || ''} ${leave.leaveUser.lastName || ''}`.trim() || 'Unknown User'}</div>
-              <div className="text-sm text-gray-500">{leave.leaveUser.email || 'No email'}</div>
+              <div className="font-medium">{leave.leaveUser?.computedName || `${leave.leaveUser?.firstName || ''} ${leave.leaveUser?.lastName || ''}`.trim() || 'Unknown User'}</div>
+              <div className="text-sm text-gray-500">{leave.leaveUser?.email || 'No email'}</div>
             </div>
             <Badge>{leave.leaveType}</Badge>
             <Badge variant={
@@ -1023,7 +1023,7 @@ function LeaveDetailsModal({
   };
 
   const canManageLeave = isManager && leave.status === "Pending" && 
-    (currentUser?.id === leave.leaveUser.managerUser?.id || currentUser?.role === "org_admin" || currentUser?.role === "developer");
+    (currentUser?.id === leave.leaveUser?.managerUser?.id || currentUser?.role === "org_admin" || currentUser?.role === "developer");
 
   const getDaysCount = () => {
     const start = new Date(leave.startDate);
@@ -1050,8 +1050,8 @@ function LeaveDetailsModal({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium text-gray-500">Employee</label>
-                <p className="text-lg font-medium">{leave.leaveUser.computedName || `${leave.leaveUser.firstName || ''} ${leave.leaveUser.lastName || ''}`.trim() || 'Unknown User'}</p>
-                <p className="text-sm text-gray-500">{leave.leaveUser.email || 'No email'}</p>
+                <p className="text-lg font-medium">{leave.leaveUser?.computedName || `${leave.leaveUser?.firstName || ''} ${leave.leaveUser?.lastName || ''}`.trim() || 'Unknown User'}</p>
+                <p className="text-sm text-gray-500">{leave.leaveUser?.email || 'No email'}</p>
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-500">Leave Type</label>
@@ -1116,16 +1116,16 @@ function LeaveDetailsModal({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium text-gray-500">Manager</label>
-                  <p>{leave.leaveUser.managerUser?.computedName || `${leave.leaveUser.managerUser?.firstName || ''} ${leave.leaveUser.managerUser?.lastName || ''}`.trim() || 'Not assigned'}</p>
+                  <p>{leave.leaveUser?.managerUser?.computedName || `${leave.leaveUser?.managerUser?.firstName || ''} ${leave.leaveUser?.managerUser?.lastName || ''}`.trim() || 'Not assigned'}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500">Employee Role & Position</label>
                   <div className="flex items-center gap-2 mt-1">
                     <Badge 
                       variant="secondary" 
-                      className={`${getRoleColor(leave.leaveUser.role || "")} px-2 py-1`}
+                      className={`${getRoleColor(leave.leaveUser?.role || "")} px-2 py-1`}
                     >
-                      {getRoleAndPositionDisplay(leave.leaveUser.role || "", leave.leaveUser.position)}
+                      {getRoleAndPositionDisplay(leave.leaveUser?.role || "", leave.leaveUser?.position)}
                     </Badge>
                   </div>
                 </div>
