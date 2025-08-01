@@ -1,0 +1,80 @@
+# GraphQL Configuration for Schema Validation and Code Generation
+# This file enables proper GraphQL tooling support across the application
+
+schema: 
+  - "./shared/schema/schema.graphql"
+
+documents:
+  - "./domains/**/*.graphql"
+  - "./shared/**/*.graphql"
+  - "./domains/**/*.ts"
+  - "./domains/**/*.tsx"
+
+# Extensions for various GraphQL tools
+extensions:
+  # ESLint GraphQL plugin configuration
+  eslint-graphql:
+    schema: "./shared/schema/schema.graphql"
+    documents: 
+      - "./domains/**/*.graphql"
+      - "./shared/**/*.graphql" 
+      - "./domains/**/*.ts"
+      - "./domains/**/*.tsx"
+    
+  # CodeGen configuration reference  
+  codegen:
+    config: "./config/codegen.ts"
+    
+  # Schema validation settings
+  validate:
+    rules:
+      # Catch type mismatches like String! vs bpchar!
+      - "known-type-names"
+      - "known-argument-names" 
+      - "provided-required-arguments"
+      - "variables-are-input-types"
+      - "variables-in-allowed-position"
+      - "no-undefined-variables"
+      
+    # Custom validation for common mistakes
+    customRules:
+      # Flag potential bpchar/String! mismatches
+      - name: "check-bpchar-types"
+        message: "Use bpchar! for country codes, not String!"
+        pattern: "countryCode.*String!"
+        
+      # Flag snake_case parameter usage
+      - name: "check-parameter-naming" 
+        message: "Use camelCase for GraphQL parameters (onConflict not on_conflict)"
+        pattern: "on_conflict|update_columns"
+        
+      # Flag manual affected_rows access
+      - name: "check-response-fields"
+        message: "Hasura returns affected_rows (snake_case) not affectedRows"
+        pattern: "affectedRows"
+
+# Environment-specific configurations
+env:
+  development:
+    schema: 
+      - url: "${NEXT_PUBLIC_HASURA_GRAPHQL_URL}"
+        headers:
+          x-hasura-admin-secret: "${HASURA_ADMIN_SECRET}"
+    
+  production:
+    schema:
+      - url: "${NEXT_PUBLIC_HASURA_GRAPHQL_URL}"
+        headers:
+          x-hasura-admin-secret: "${HASURA_ADMIN_SECRET}"
+
+  test:
+    schema: "./shared/schema/schema.graphql"
+
+# Ignore patterns for validation
+exclude:
+  - "node_modules/**"
+  - "**/*.generated.ts"
+  - "**/generated/**"
+  - ".next/**"
+  - "build/**"
+  - "out/**"

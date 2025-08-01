@@ -42,7 +42,7 @@ const EFT_RELEVANT_REGIONS = ['NSW', 'National', 'Australia'];
 
 // GraphQL query to check existing holidays
 const CHECK_EXISTING_HOLIDAYS_QUERY = gql`
-  query CheckExistingHolidays($year: Int!, $countryCode: String!) {
+  query CheckExistingHolidays($year: Int!, $countryCode: bpchar!) {
     holidays_aggregate(
       where: {
         country_code: { _eq: $countryCode }
@@ -74,7 +74,7 @@ const INSERT_HOLIDAYS_MUTATION = gql`
       objects: $objects
       onConflict: {
         constraint: holidays_pkey
-        update_columns: [
+        updateColumns: [
           date
           localName
           name
@@ -108,7 +108,7 @@ const INSERT_HOLIDAYS_ENHANCED_MUTATION = gql`
       objects: $objects
       onConflict: {
         constraint: holidays_pkey
-        update_columns: [
+        updateColumns: [
           date
           localName
           name
@@ -142,7 +142,7 @@ const INSERT_HOLIDAYS_FALLBACK_MUTATION = gql`
       objects: $objects
       onConflict: {
         constraint: holidays_pkey
-        update_columns: [
+        updateColumns: [
           date
           localName
           name

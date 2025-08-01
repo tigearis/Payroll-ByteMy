@@ -1,6 +1,8 @@
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { FlatCompat } from "@eslint/eslintrc";
+// import graphqlESLint from "@graphql-eslint/eslint-plugin";
+// import graphqlTypeSafety from "./config/eslint-rules/graphql-type-safety.js";
 
 const _filename = fileURLToPath(import.meta.url);
 const _dirname = dirname(_filename);
@@ -13,6 +15,9 @@ const eslintConfig = [
   ...compat.config({
     extends: ["next/core-web-vitals", "next/typescript"],
   }),
+  
+  // GraphQL Schema and Operations Validation (temporarily disabled - install @graphql-eslint/eslint-plugin to enable)
+  // TODO: Enable after resolving package dependencies
   {
     rules: {
       // Next.js specific rules
