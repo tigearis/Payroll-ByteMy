@@ -315,7 +315,7 @@ export const ServiceCatalogManager: React.FC<ServiceCatalogManagerProps> = ({
             <SelectValue placeholder="All Categories" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Categories</SelectItem>
+            <SelectItem value="all">All Categories</SelectItem>
             {CATEGORIES.map(category => (
               <SelectItem key={category} value={category}>
                 {category}
@@ -339,7 +339,9 @@ export const ServiceCatalogManager: React.FC<ServiceCatalogManagerProps> = ({
         </div>
       ) : (
         <div className="grid gap-4">
-          {data?.billingPlan?.map((service) => (
+          {data?.billingPlan?.filter(service => 
+            !filterCategory || filterCategory === "all" || service.category === filterCategory
+          ).map((service) => (
             <Card key={service.id}>
               <CardContent className="p-6">
                 <div className="flex justify-between items-start">

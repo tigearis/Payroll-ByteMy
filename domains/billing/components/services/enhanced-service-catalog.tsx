@@ -337,7 +337,7 @@ export const EnhancedServiceCatalog: React.FC<EnhancedServiceCatalogProps> = ({
   // Services query
   const { data: servicesData, loading: servicesLoading, refetch: refetchServices } = useQuery(GetNewServiceCatalogDocument, {
     variables: {
-      ...(filters.category && { category: filters.category }),
+      ...(filters.category && filters.category !== "all" && { category: filters.category }),
       limit: 100,
       offset: 0
     }
@@ -482,7 +482,7 @@ export const EnhancedServiceCatalog: React.FC<EnhancedServiceCatalogProps> = ({
                   <SelectValue placeholder="All categories" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All categories</SelectItem>
+                  <SelectItem value="all">All categories</SelectItem>
                   {SERVICE_CATEGORIES.map(category => (
                     <SelectItem key={category.value} value={category.value}>
                       {category.label}
@@ -502,7 +502,7 @@ export const EnhancedServiceCatalog: React.FC<EnhancedServiceCatalogProps> = ({
                   <SelectValue placeholder="All types" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All types</SelectItem>
+                  <SelectItem value="all">All types</SelectItem>
                   {SERVICE_TYPES.map(type => (
                     <SelectItem key={type.value} value={type.value}>
                       {type.label}

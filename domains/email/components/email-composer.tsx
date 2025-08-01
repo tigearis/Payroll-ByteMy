@@ -162,7 +162,7 @@ export function EmailComposer({
 
   // Handle template selection
   const handleTemplateSelect = useCallback(async (templateId: string) => {
-    if (!templateId) {
+    if (!templateId || templateId === "none") {
       setSelectedTemplateId('');
       return;
     }
@@ -450,7 +450,7 @@ export function EmailComposer({
                   <SelectValue placeholder="Select a template or compose from scratch" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">No template (compose from scratch)</SelectItem>
+                  <SelectItem value="none">No template (compose from scratch)</SelectItem>
                   {templates.map((template) => (
                     <SelectItem key={template.id} value={template.id}>
                       <div className="flex flex-col">
