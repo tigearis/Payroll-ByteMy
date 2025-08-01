@@ -72,7 +72,7 @@ const INSERT_HOLIDAYS_MUTATION = gql`
   mutation InsertHolidays($objects: [HolidaysInsertInput!]!) {
     insertHolidays(
       objects: $objects
-      on_conflict: {
+      onConflict: {
         constraint: holidays_pkey
         update_columns: [
           date
@@ -106,7 +106,7 @@ const INSERT_HOLIDAYS_ENHANCED_MUTATION = gql`
   mutation InsertHolidaysEnhanced($objects: [HolidaysInsertInput!]!) {
     insertHolidays(
       objects: $objects
-      on_conflict: {
+      onConflict: {
         constraint: holidays_pkey
         update_columns: [
           date
@@ -140,7 +140,7 @@ const INSERT_HOLIDAYS_FALLBACK_MUTATION = gql`
   mutation InsertHolidaysFallback($objects: [HolidaysInsertInput!]!) {
     insertHolidays(
       objects: $objects
-      on_conflict: {
+      onConflict: {
         constraint: holidays_pkey
         update_columns: [
           date
@@ -359,7 +359,7 @@ export async function checkExistingHolidays(
         query CheckExistingHolidays(
           $startDate: date!
           $endDate: date!
-          $countryCode: String!
+          $countryCode: bpchar!
         ) {
           holidaysAggregate(
             where: {
