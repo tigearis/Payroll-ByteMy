@@ -37,6 +37,19 @@ fragment PayrollWithAllRelations on Payrolls {
   assignedManager {
     ...UserMinimal
   }
+  cycleId
+  dateTypeId
+  dateValue
+  payrollCycle {
+    id
+    name
+    description
+  }
+  payrollDateType {
+    id
+    name
+    description
+  }
   createdByUserId
 }
 

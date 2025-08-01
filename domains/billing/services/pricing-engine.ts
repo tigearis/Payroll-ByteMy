@@ -10,7 +10,7 @@
  * - Custom pricing rules
  */
 
-import { ServiceFragment, ServicePricingRuleFragment, EnhancedClientServiceAgreementFragment } from '../graphql/generated/graphql';
+import { ServiceFragmentFragment } from '../graphql/generated/graphql';
 
 export interface PricingContext {
   serviceId: string;
@@ -82,7 +82,7 @@ export interface PricingResult {
 
 export class ServicePricingEngine {
   private pricingRules: Map<string, PricingRule[]> = new Map();
-  private serviceCache: Map<string, ServiceFragment> = new Map();
+  private serviceCache: Map<string, ServiceFragmentFragment> = new Map();
 
   constructor() {
     // Initialize with default pricing rules
@@ -93,7 +93,7 @@ export class ServicePricingEngine {
    * Calculate price for a service with given context
    */
   async calculatePrice(
-    service: ServiceFragment,
+    service: ServiceFragmentFragment,
     context: PricingContext,
     customRules?: PricingRule[]
   ): Promise<PricingResult> {
@@ -159,7 +159,7 @@ export class ServicePricingEngine {
    * Calculate bundle pricing for multiple services
    */
   async calculateBundlePrice(
-    services: Array<{ service: ServiceFragment; quantity: number }>,
+    services: Array<{ service: ServiceFragmentFragment; quantity: number }>,
     context: Omit<PricingContext, 'serviceId' | 'quantity'>,
     bundleDiscount?: number
   ): Promise<{

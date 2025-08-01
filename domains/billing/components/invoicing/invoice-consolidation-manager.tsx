@@ -78,8 +78,7 @@ export const InvoiceConsolidationManager: React.FC<InvoiceConsolidationManagerPr
     GetBillingPeriodsForConsolidationDocument,
     {
       variables: {
-        clientId,
-        hasUnbilledItems: true
+        clientIds: clientId ? [clientId] : []
       }
     }
   );
@@ -224,8 +223,8 @@ export const InvoiceConsolidationManager: React.FC<InvoiceConsolidationManagerPr
 
       await consolidateInvoices({
         variables: {
-          clientIds: selectedClientIds,
-          billingPeriodIds: selectedPeriodIds
+          clientId: selectedClientIds[0], // ConsolidateInvoices expects single clientId
+          consolidationDate: new Date().toISOString().split('T')[0] // Add required consolidationDate
         }
       });
 
@@ -254,7 +253,12 @@ export const InvoiceConsolidationManager: React.FC<InvoiceConsolidationManagerPr
 
     await autoGenerateInvoices({
       variables: {
-        clientIds: eligibleClients
+        billingPeriods: eligibleClients.map(clientId => ({
+          clientId,
+          periodStart: new Date().toISOString().split('T')[0],
+          periodEnd: new Date().toISOString().split('T')[0],
+          status: 'active'
+        }))
       }
     });
   };

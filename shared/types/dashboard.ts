@@ -36,7 +36,7 @@ export interface UserUpcomingPayroll {
   payrollDates?: PayrollDate[];
   primaryConsultant?: Consultant;
   backupConsultant?: Consultant;
-  manager?: Consultant;
+  assignedManager?: Consultant;
   nextEftDate?: Array<{
     originalEftDate: string;
     adjustedEftDate: string;

@@ -288,13 +288,13 @@ export class SOC2ComplianceReporter {
   }> {
     const auditResult = await searchAuditLogs({
       dateRange: { startDate, endDate },
-      userId,
+      ...(userId && { userId }),
       limit: 1000,
     });
     
     const authResult = await searchAuthEvents({
       dateRange: { startDate, endDate },
-      userId,
+      ...(userId && { userId }),
       limit: 1000,
     });
 
@@ -381,7 +381,7 @@ export class SOC2ComplianceReporter {
   }> {
     const auditResult = await searchAuditLogs({
       dateRange: { startDate, endDate },
-      resourceType,
+      ...(resourceType && { resourceType }),
       limit: 5000,
     });
 

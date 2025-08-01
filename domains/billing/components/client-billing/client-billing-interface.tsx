@@ -194,13 +194,13 @@ export const ClientBillingInterface: React.FC<ClientBillingInterfaceProps> = ({
             variables: {
               input: {
                 clientId: clientId,
-                billingPlanId: item.billingPlanId || undefined,
+                ...(item.billingPlanId && { billingPlanId: item.billingPlanId }),
                 description: item.description,
                 serviceName: item.serviceName,
                 quantity: item.quantity,
                 unitPrice: item.unitPrice,
-                amount: item.amount,
-                notes: item.notes || undefined,
+                totalAmount: item.amount,
+                ...(item.notes && { notes: item.notes }),
                 status: 'draft',
                 isApproved: false
               }

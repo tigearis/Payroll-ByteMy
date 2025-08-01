@@ -100,9 +100,8 @@ export const InvoiceGenerator: React.FC<InvoiceGeneratorProps> = ({
     GetBillingItemsForInvoiceDocument,
     {
       variables: {
-        clientId,
-        payrollIds,
-        billingPeriodId
+        ...(clientId && { clientId }),
+        ...(payrollIds.length > 0 && { payrollIds })
       },
       skip: !clientId && payrollIds.length === 0 && !billingPeriodId
     }
@@ -219,9 +218,9 @@ export const InvoiceGenerator: React.FC<InvoiceGeneratorProps> = ({
         variables: {
           input: {
             invoiceNumber,
-            clientId,
-            billingPeriodId,
-            invoiceDate,
+            ...(clientId && { clientId }),
+            ...(billingPeriodId && { billingPeriodId }),
+            issuedDate: invoiceDate,
             dueDate,
             totalAmount: total,
             currency,

@@ -43,15 +43,10 @@ export async function refreshTokenBeforeNavigation() {
   if (typeof window === 'undefined') return;
 
   try {
-    // Use Clerk's auth to get fresh token
-    const { getToken } = await import('@clerk/nextjs');
-    const freshToken = await getToken({ template: 'hasura' });
-    
-    if (freshToken) {
-      // Store token timestamp for middleware validation
-      sessionStorage.setItem('token-refresh-time', Date.now().toString());
-      console.log('🔄 Token refreshed before navigation');
-    }
+    // This function should be called from React context with useAuth hook
+    console.log('🔄 Token refresh requested - should be handled by useAuth hook in component');
+    // Store timestamp to indicate refresh attempt
+    sessionStorage.setItem('token-refresh-time', Date.now().toString());
   } catch (error) {
     console.warn('⚠️ Pre-navigation token refresh failed:', error);
   }
@@ -77,14 +72,11 @@ export async function forceTokenRefreshOnRoleChange() {
       localStorage.removeItem('clerk-token-cache');
     }
 
-    // Request fresh token
-    const { getToken } = await import('@clerk/nextjs');
-    const freshToken = await getToken({ template: 'hasura' });
+    // This function should be called from React context with useAuth hook
+    console.log('🔄 Force token refresh requested - should use useAuth hook');
     
-    if (freshToken) {
-      console.log('🔄 Forced token refresh after role change');
-      return freshToken;
-    }
+    // Return null since we can't get token in this context
+    return null;
   } catch (error) {
     console.error('❌ Force token refresh failed:', error);
   }

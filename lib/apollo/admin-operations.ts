@@ -269,13 +269,13 @@ export class AdminOperationsService {
     }
 
     const data = {
-      delete_payroll_dates: deleteData?.delete_payroll_dates,
-      generate_payroll_dates: generateData?.generatePayrollDates,
+      delete_payroll_dates: (deleteData as any)?.delete_payroll_dates,
+      generate_payroll_dates: (generateData as any)?.generatePayrollDates,
     };
 
     return {
-      deletedDates: data.delete_payroll_dates?.affected_rows || 0,
-      generatedDates: data.generate_payroll_dates?.length || 0,
+      deletedDates: (data.delete_payroll_dates as any)?.affected_rows || 0,
+      generatedDates: (data.generate_payroll_dates as any)?.length || 0,
     };
   }
 }

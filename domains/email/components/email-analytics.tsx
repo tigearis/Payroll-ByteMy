@@ -314,11 +314,11 @@ export function EmailAnalytics({
                           )}
                         </div>
                         <div className="flex items-center gap-3">
-                          <Badge className={getStatusColor(log.sendStatus)}>
-                            {log.sendStatus}
+                          <Badge className={getStatusColor(log.sendStatus || 'unknown')}>
+                            {log.sendStatus || 'unknown'}
                           </Badge>
                           <div className="text-sm text-muted-foreground">
-                            {new Date(log.createdAt).toLocaleDateString()}
+                            {log.createdAt ? new Date(log.createdAt).toLocaleDateString() : 'Unknown'}
                           </div>
                         </div>
                       </div>
@@ -360,8 +360,8 @@ export function EmailAnalytics({
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Badge className={getStatusColor(log.sendStatus)}>
-                            {log.sendStatus}
+                          <Badge className={getStatusColor(log.sendStatus || 'unknown')}>
+                            {log.sendStatus || 'unknown'}
                           </Badge>
                           <span className="text-muted-foreground">
                             {new Date(log.createdAt).toLocaleString()}
@@ -404,7 +404,7 @@ export function EmailAnalytics({
                                 {log.sendStatus}
                               </Badge>
                               <span className="text-muted-foreground">
-                                {new Date(log.createdAt).toLocaleDateString()}
+                                {log.createdAt ? new Date(log.createdAt).toLocaleDateString() : 'Unknown'}
                               </span>
                             </div>
                           </div>

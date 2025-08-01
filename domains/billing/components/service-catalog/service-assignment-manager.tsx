@@ -122,7 +122,7 @@ export const ServiceAssignmentManager: React.FC<ServiceAssignmentManagerProps> =
           category: service.category || 'Processing',
           standardRate: service.standardRate,
           billingUnit: service.billingUnit || 'hour',
-          customRate: existingAgreement?.customRate || undefined,
+          customRate: existingAgreement?.customRate ?? 0,
           billingFrequency: existingAgreement?.billingFrequency || defaultBillingFrequency,
           selected: !!existingAgreement,
           isActive: existingAgreement?.isActive || false

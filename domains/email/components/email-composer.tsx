@@ -13,7 +13,7 @@ import {
   Plus,
   Minus,
   FileText,
-  Variables,
+  Variable,
   Mail,
   AlertCircle,
   CheckCircle,

@@ -136,13 +136,15 @@ export function createUnauthorizedContext(
   action?: string
 ): UnauthorizedContext {
   return {
-    userRole,
-    requiredPermission,
-    requiredRole,
-    resource,
-    action,
+    userRole: userRole || 'viewer',
+    ...(requiredPermission && { requiredPermission }),
+    ...(requiredRole && { requiredRole }),
+    ...(resource && { resource }),
+    ...(action && { action }),
     timestamp: new Date(),
-    userAgent: typeof window !== 'undefined' ? window.navigator.userAgent : undefined,
+    ...(typeof window !== 'undefined' && window.navigator.userAgent && { 
+      userAgent: window.navigator.userAgent 
+    }),
     // IP would typically be extracted from request headers on server side
   };
 }
@@ -254,5 +256,4 @@ export const UnauthorizedHandlers = {
   logUnauthorizedAccess,
 };
 
-// Export error classes
-export { UnauthorizedError, PermissionDeniedError, InsufficientRoleError };
+// Error classes already exported above - removing duplicate exports

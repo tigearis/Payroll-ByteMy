@@ -36,9 +36,11 @@ import { formatCurrency } from '@/lib/utils';
 import { 
   GetServiceCatalogDocument,
   GetNewServiceCatalogDocument,
-  CreateServiceDocument,
-  UpdateServiceDocument,
-  type ServiceCatalogFragmentFragment,
+  CreateNewServiceDocument,
+  UpdateNewServiceDocument,
+  DeactivateServiceDocument,
+  GetserviceTemplatesDocument,
+  type ServiceFragmentFragment,
   type GetServiceCatalogQuery,
   type GetNewServiceCatalogQuery
 } from '../../graphql/generated/graphql';
@@ -76,7 +78,7 @@ const SERVICE_TYPES = [
 ];
 
 interface ServiceEditorProps {
-  service?: ServiceFragment;
+  service?: ServiceFragmentFragment;
   onSave: () => void;
   onCancel: () => void;
 }
@@ -97,8 +99,8 @@ const EnhancedServiceEditor: React.FC<ServiceEditorProps> = ({ service, onSave, 
     dependencies: service?.dependencies || []
   });
 
-  const [createService] = useMutation(CreateEnhancedServiceDocument);
-  const [updateService] = useMutation(UpdateEnhancedServiceDocument);
+  const [createService] = useMutation(CreateNewServiceDocument);
+  const [updateService] = useMutation(UpdateNewServiceDocument);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -123,7 +125,7 @@ const EnhancedServiceEditor: React.FC<ServiceEditorProps> = ({ service, onSave, 
         await updateService({
           variables: {
             id: service.id,
-            updates: input
+            input: input
           }
         });
         toast.success('Service updated successfully');
@@ -310,7 +312,7 @@ const EnhancedServiceEditor: React.FC<ServiceEditorProps> = ({ service, onSave, 
 
 interface EnhancedServiceCatalogProps {
   showCreateForm?: boolean;
-  onServiceSelect?: (service: ServiceFragment) => void;
+  onServiceSelect?: (service: ServiceFragmentFragment) => void;
   selectionMode?: boolean;
 }
 
@@ -319,7 +321,7 @@ export const EnhancedServiceCatalog: React.FC<EnhancedServiceCatalogProps> = ({
   onServiceSelect,
   selectionMode = false
 }) => {
-  const [editingService, setEditingService] = useState<ServiceFragment | null>(null);
+  const [editingService, setEditingService] = useState<ServiceFragmentFragment | null>(null);
   const [showEditor, setShowEditor] = useState(showCreateForm);
   const [activeTab, setActiveTab] = useState('services');
   
@@ -333,23 +335,18 @@ export const EnhancedServiceCatalog: React.FC<EnhancedServiceCatalogProps> = ({
   });
 
   // Services query
-  const { data: servicesData, loading: servicesLoading, refetch: refetchServices } = useQuery(GetEnhancedServicesDocument, {
+  const { data: servicesData, loading: servicesLoading, refetch: refetchServices } = useQuery(GetNewServiceCatalogDocument, {
     variables: {
-      category: filters.category ? `%${filters.category}%` : null,
-      serviceType: filters.serviceType || null,
-      isActive: filters.isActive,
-      isTemplate: filters.isTemplate,
-      searchTerm: filters.searchTerm ? `%${filters.searchTerm}%` : null,
+      ...(filters.category && { category: filters.category }),
       limit: 100,
       offset: 0
     }
   });
 
   // Service templates query
-  const { data: templatesData, loading: templatesLoading, refetch: refetchTemplates } = useQuery(GetEnhancedServiceTemplatesDocument, {
+  const { data: templatesData, loading: templatesLoading, refetch: refetchTemplates } = useQuery(GetserviceTemplatesDocument, {
     variables: {
-      isPublic: true,
-      limit: 50
+      isPublic: true
     }
   });
 
@@ -360,21 +357,21 @@ export const EnhancedServiceCatalog: React.FC<EnhancedServiceCatalogProps> = ({
 
   // Group services by category
   const servicesByCategory = useMemo(() => {
-    const grouped = services.reduce((acc: Record<string, ServiceFragment[]>, service: ServiceFragment) => {
+    const grouped = services.reduce((acc: Record<string, any[]>, service: any) => {
       const category = service.category || 'other';
       if (!acc[category]) acc[category] = [];
       acc[category].push(service);
       return acc;
-    }, {} as Record<string, ServiceFragment[]>);
+    }, {} as Record<string, any[]>);
     return grouped;
   }, [services]);
 
-  const handleEdit = (service: ServiceFragment) => {
+  const handleEdit = (service: any) => {
     setEditingService(service);
     setShowEditor(true);
   };
 
-  const handleDeactivate = async (service: ServiceFragment) => {
+  const handleDeactivate = async (service: any) => {
     if (!confirm(`Are you sure you want to deactivate "${service.name}"?`)) {
       return;
     }
@@ -421,7 +418,7 @@ export const EnhancedServiceCatalog: React.FC<EnhancedServiceCatalogProps> = ({
     return (
       <div className="flex justify-center p-6">
         <EnhancedServiceEditor
-          service={editingService || undefined}
+          {...(editingService && { service: editingService })}
           onSave={handleSave}
           onCancel={handleCancel}
         />
@@ -601,7 +598,7 @@ export const EnhancedServiceCatalog: React.FC<EnhancedServiceCatalogProps> = ({
                   </CardHeader>
                   <CardContent>
                     <div className="grid gap-4">
-                      {categoryServices.map((service: ServiceFragment) => (
+                      {categoryServices.map((service: ServiceFragmentFragment) => (
                         <Card 
                           key={service.id} 
                           className={`transition-all duration-200 ${
@@ -697,7 +694,7 @@ export const EnhancedServiceCatalog: React.FC<EnhancedServiceCatalogProps> = ({
             </Card>
           ) : (
             <div className="grid gap-4">
-              {templates.map((template: ServiceTemplateFragment) => (
+              {templates.map((template: any) => (
                 <Card key={template.id} className="hover:shadow-md transition-shadow">
                   <CardContent className="p-6">
                     <div className="flex justify-between items-start">
@@ -720,7 +717,7 @@ export const EnhancedServiceCatalog: React.FC<EnhancedServiceCatalogProps> = ({
                         <div className="flex items-center gap-4 text-sm text-gray-500">
                           <span className="flex items-center gap-1">
                             <Package className="w-4 h-4" />
-                            {Array.isArray(template.services) ? template.services.length : 0} services
+                            {template.services?.length || 0} services
                           </span>
                           <span className="flex items-center gap-1">
                             <TrendingUp className="w-4 h-4" />

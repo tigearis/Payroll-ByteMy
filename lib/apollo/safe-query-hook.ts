@@ -20,7 +20,7 @@ export function useSafeQuery<TData = any, TVariables extends OperationVariables 
 
   return useQuery(query, {
     ...options,
-    skip: shouldSkip,
+    skip: shouldSkip || false,
     errorPolicy: options?.errorPolicy || 'all', // Default to 'all' for better error handling
   });
 }

@@ -92,9 +92,9 @@ export const FinancialPerformanceDashboard: React.FC<FinancialPerformanceDashboa
     GetClientProfitabilityDocument,
     {
       variables: {
-        clientId: clientId,
-        dateFrom: dateRange.start,
-        dateTo: dateRange.end
+        ...(clientId && { clientId }),
+        ...(dateRange.start && { dateFrom: dateRange.start }),
+        ...(dateRange.end && { dateTo: dateRange.end })
       },
       skip: !clientId // Skip query if no clientId is provided
     }
@@ -105,7 +105,7 @@ export const FinancialPerformanceDashboard: React.FC<FinancialPerformanceDashboa
     if (!performanceData) return [];
 
     const current = performanceData.currentPeriod;
-    const previous: typeof current | null = null; // Previous period data not available
+    const previous = (performanceData as any).previousPeriod || null; // Previous period data
 
     const calculateChange = (current: number, previous: number) => {
       if (previous === 0) return current > 0 ? 100 : 0;
@@ -146,25 +146,25 @@ export const FinancialPerformanceDashboard: React.FC<FinancialPerformanceDashboa
       },
       {
         title: 'Active Clients',
-        value: current?.aggregate?.count || 0,
-        change: calculateChange(current?.aggregate?.count || 0, previous?.aggregate?.count || 0),
-        changeType: (current?.aggregate?.count || 0) >= (previous?.aggregate?.count || 0) ? 'positive' : 'negative',
+        value: (current as any)?.aggregate?.count || 0,
+        change: calculateChange((current as any)?.aggregate?.count || 0, (previous as any)?.aggregate?.count || 0),
+        changeType: ((current as any)?.aggregate?.count || 0) >= ((previous as any)?.aggregate?.count || 0) ? 'positive' : 'negative',
         icon: <Users className="w-6 h-6" />,
         description: 'Clients with active billing'
       },
       {
         title: 'Invoices Generated',
-        value: current?.aggregate?.sum?.payrollCount || 0,
-        change: calculateChange(current?.aggregate?.sum?.payrollCount || 0, previous?.aggregate?.sum?.payrollCount || 0),
-        changeType: (current?.aggregate?.sum?.payrollCount || 0) >= (previous?.aggregate?.sum?.payrollCount || 0) ? 'positive' : 'negative',
+        value: (current as any)?.aggregate?.sum?.payrollCount || 0,
+        change: calculateChange((current as any)?.aggregate?.sum?.payrollCount || 0, (previous as any)?.aggregate?.sum?.payrollCount || 0),
+        changeType: ((current as any)?.aggregate?.sum?.payrollCount || 0) >= ((previous as any)?.aggregate?.sum?.payrollCount || 0) ? 'positive' : 'negative',
         icon: <FileText className="w-6 h-6" />,
         description: 'Total invoices issued'
       },
       {
         title: 'Avg Collection Time',
-        value: `${Math.round(current?.aggregate?.avg?.totalAmount || 0)} days`,
-        change: calculateChange(previous?.aggregate?.avg?.totalAmount || 0, current?.aggregate?.avg?.totalAmount || 0), // Reversed for collection time
-        changeType: (current?.aggregate?.avg?.totalAmount || 0) <= (previous?.aggregate?.avg?.totalAmount || 0) ? 'positive' : 'negative',
+        value: `${Math.round((current as any)?.aggregate?.avg?.totalAmount || 0)} days`,
+        change: calculateChange((previous as any)?.aggregate?.avg?.totalAmount || 0, (current as any)?.aggregate?.avg?.totalAmount || 0), // Reversed for collection time
+        changeType: ((current as any)?.aggregate?.avg?.totalAmount || 0) <= ((previous as any)?.aggregate?.avg?.totalAmount || 0) ? 'positive' : 'negative',
         icon: <Clock className="w-6 h-6" />,
         description: 'Average payment collection time'
       }
