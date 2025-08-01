@@ -251,7 +251,6 @@ const WorkloadChart: React.FC<WorkloadChartProps> = ({
             {/* Legend */}
             {showLegend && (
               <Legend
-                payload={legendData}
                 wrapperStyle={{ paddingTop: "20px" }}
                 iconType="rect"
               />

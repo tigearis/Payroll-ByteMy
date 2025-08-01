@@ -1,6 +1,7 @@
 import { streamText } from "ai"
 import { executeHasuraQuery, introspectSchema } from "@/lib/hasura"
 import { createOllama } from "ollama-ai-provider"
+import { z } from "zod"
 
 export const maxDuration = 30
 
@@ -21,7 +22,7 @@ export async function POST(req: Request) {
   })
 
   const result = streamText({
-    model: ollamaInstance(ollamaConfig.model),
+    model: ollamaInstance(ollamaConfig.model) as any,
     messages,
     system: `You are a Hasura Dynamic Query AI Assistant. Your role is to help users query their database using natural language by generating and executing GraphQL queries.
 
@@ -62,10 +63,7 @@ Remember: Focus on providing direct answers to user questions, not showing techn
     tools: {
       introspectSchema: {
         description: "Introspect the Hasura GraphQL schema to understand available tables, columns, and relationships",
-        parameters: {
-          type: "object",
-          properties: {},
-        },
+        inputSchema: z.object({}),
         execute: async () => {
           try {
             const schema = await introspectSchema(hasuraConfig)
@@ -77,20 +75,10 @@ Remember: Focus on providing direct answers to user questions, not showing techn
       },
       executeQuery: {
         description: "Execute a GraphQL query against the Hasura instance",
-        parameters: {
-          type: "object",
-          properties: {
-            query: {
-              type: "string",
-              description: "The GraphQL query to execute",
-            },
-            variables: {
-              type: "object",
-              description: "Variables for the GraphQL query",
-            },
-          },
-          required: ["query"],
-        },
+        inputSchema: z.object({
+          query: z.string().describe("The GraphQL query to execute"),
+          variables: z.object({}).optional().describe("Variables for the GraphQL query"),
+        }),
         execute: async ({ query, variables = {} }) => {
           try {
             const result = await executeHasuraQuery(hasuraConfig, query, variables)
@@ -103,5 +91,5 @@ Remember: Focus on providing direct answers to user questions, not showing techn
     },
   })
 
-  return result.toDataStreamResponse()
+  return result.toTextStreamResponse()
 }
