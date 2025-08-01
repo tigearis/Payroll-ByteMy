@@ -41,10 +41,16 @@ interface InvitationSignUpFormProps {
 
 function InvitationSignUpForm({ clerkTicket, ticketData, onSuccess, onError }: InvitationSignUpFormProps) {
   const { isLoaded, signUp, setActive } = useSignUp();
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [firstName, setFirstName] = useState(ticketData?.firstName || '');
+  const [lastName, setLastName] = useState(ticketData?.lastName || '');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Update name fields when ticket data changes
+  React.useEffect(() => {
+    if (ticketData?.firstName) setFirstName(ticketData.firstName);
+    if (ticketData?.lastName) setLastName(ticketData.lastName);
+  }, [ticketData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,29 +99,39 @@ function InvitationSignUpForm({ clerkTicket, ticketData, onSuccess, onError }: I
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* First Name */}
       <div className="space-y-2">
-        <Label htmlFor="firstName">First Name</Label>
+        <Label htmlFor="firstName">
+          First Name
+          {ticketData?.firstName && <span className="ml-2 text-xs text-green-600">✓ From invitation</span>}
+        </Label>
         <Input
           id="firstName"
           type="text"
           name="firstName"
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
+          disabled={!!ticketData?.firstName}
           required
-          placeholder="Enter first name"
+          placeholder={ticketData?.firstName ? ticketData.firstName : "Enter first name"}
+          className={ticketData?.firstName ? "bg-gray-50 text-gray-700" : ""}
         />
       </div>
 
       {/* Last Name */}
       <div className="space-y-2">
-        <Label htmlFor="lastName">Last Name</Label>
+        <Label htmlFor="lastName">
+          Last Name
+          {ticketData?.lastName && <span className="ml-2 text-xs text-green-600">✓ From invitation</span>}
+        </Label>
         <Input
           id="lastName"
           type="text"
           name="lastName"
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
+          disabled={!!ticketData?.lastName}
           required
-          placeholder="Enter last name"
+          placeholder={ticketData?.lastName ? ticketData.lastName : "Enter last name"}
+          className={ticketData?.lastName ? "bg-gray-50 text-gray-700" : ""}
         />
       </div>
 
@@ -636,7 +652,7 @@ export default function SignUpPage() {
                   <CardHeader>
                     <CardTitle>Complete Your Invitation</CardTitle>
                     <CardDescription>
-                      You've been invited to join! Fill out your details below.
+                      You've been invited to join! Your name and email are pre-filled from the invitation. Just set your password below.
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -685,7 +701,7 @@ export default function SignUpPage() {
                       </CardTitle>
                       <CardDescription>
                         {invitationState.hasTicket 
-                          ? "You've been invited to join the team. Complete your account setup below."
+                          ? "You've been invited to join the team. Your name and email are pre-filled from the invitation. Just set your password below."
                           : "Welcome! Please fill in the details to get started."
                         }
                       </CardDescription>
@@ -738,8 +754,16 @@ export default function SignUpPage() {
                         </>
                       )}
 
-                      {/* First Name - conditional rendering based on ticket data */}
-                      {(!invitationState.hasTicket || !ticketValidation.userData?.firstName) && (
+                      {/* First Name - always show as disabled field if invitation has ticket */}
+                      {invitationState.hasTicket ? (
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium">First name</Label>
+                          <div className="px-3 py-2 bg-gray-50 border rounded-md text-sm text-gray-700">
+                            {ticketValidation.userData?.firstName || 'Will be filled from invitation'}
+                            <span className="ml-2 text-xs text-green-600">✓ From invitation</span>
+                          </div>
+                        </div>
+                      ) : (
                         <Clerk.Field name="firstName" className="space-y-2">
                           <Clerk.Label asChild>
                             <Label>First name</Label>
@@ -751,19 +775,16 @@ export default function SignUpPage() {
                         </Clerk.Field>
                       )}
 
-                      {/* Show first name from ticket if available */}
-                      {invitationState.hasTicket && ticketValidation.userData?.firstName && (
+                      {/* Last Name - always show as disabled field if invitation has ticket */}
+                      {invitationState.hasTicket ? (
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">First name</Label>
+                          <Label className="text-sm font-medium">Last name</Label>
                           <div className="px-3 py-2 bg-gray-50 border rounded-md text-sm text-gray-700">
-                            {ticketValidation.userData.firstName}
+                            {ticketValidation.userData?.lastName || 'Will be filled from invitation'}
                             <span className="ml-2 text-xs text-green-600">✓ From invitation</span>
                           </div>
                         </div>
-                      )}
-
-                      {/* Last Name - conditional rendering based on ticket data */}
-                      {(!invitationState.hasTicket || !ticketValidation.userData?.lastName) && (
+                      ) : (
                         <Clerk.Field name="lastName" className="space-y-2">
                           <Clerk.Label asChild>
                             <Label>Last name</Label>
@@ -773,17 +794,6 @@ export default function SignUpPage() {
                           </Clerk.Input>
                           <Clerk.FieldError className="block text-sm text-destructive" />
                         </Clerk.Field>
-                      )}
-
-                      {/* Show last name from ticket if available */}
-                      {invitationState.hasTicket && ticketValidation.userData?.lastName && (
-                        <div className="space-y-2">
-                          <Label className="text-sm font-medium">Last name</Label>
-                          <div className="px-3 py-2 bg-gray-50 border rounded-md text-sm text-gray-700">
-                            {ticketValidation.userData.lastName}
-                            <span className="ml-2 text-xs text-green-600">✓ From invitation</span>
-                          </div>
-                        </div>
                       )}
 
                       {/* Email Input - only show if no invitation ticket (Clerk auto-fills from ticket) */}
