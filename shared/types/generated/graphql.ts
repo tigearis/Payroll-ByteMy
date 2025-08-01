@@ -18,7 +18,7 @@
  * ✓ Client Preset v4.8+ for optimal type safety
  * ✓ Zero type conflicts with modern codegen
  * 
- * Generated: 2025-08-01T02:57:24.118Z
+ * Generated: 2025-08-01T06:23:07.819Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Client Preset v4.0
  */
@@ -143,7 +143,7 @@ export type AdjustmentRulesBoolExp = {
 
 /** unique or primary key constraints on table "adjustment_rules" */
 export type AdjustmentRulesConstraint =
-  /** unique or primary key constraint on columns "cycle_id", "date_type_id" */
+  /** unique or primary key constraint on columns "date_type_id", "cycle_id" */
   | 'adjustment_rules_cycle_id_date_type_id_key'
   /** unique or primary key constraint on columns "id" */
   | 'adjustment_rules_pkey'
@@ -4771,7 +4771,7 @@ export type BillingPeriodsBoolExp = {
 
 /** unique or primary key constraints on table "billing_periods" */
 export type BillingPeriodsConstraint =
-  /** unique or primary key constraint on columns "period_end", "period_start", "client_id" */
+  /** unique or primary key constraint on columns "client_id", "period_start", "period_end" */
   | 'billing_periods_client_id_period_start_period_end_key'
   /** unique or primary key constraint on columns "id" */
   | 'billing_periods_pkey'
@@ -5995,7 +5995,7 @@ export type ClientExternalSystemsBoolExp = {
 
 /** unique or primary key constraints on table "client_external_systems" */
 export type ClientExternalSystemsConstraint =
-  /** unique or primary key constraint on columns "system_id", "client_id" */
+  /** unique or primary key constraint on columns "client_id", "system_id" */
   | 'client_external_systems_client_id_system_id_key'
   /** unique or primary key constraint on columns "id" */
   | 'client_external_systems_pkey'
@@ -14195,7 +14195,7 @@ export type PayrollDatesBoolExp = {
 
 /** unique or primary key constraints on table "payroll_dates" */
 export type PayrollDatesConstraint =
-  /** unique or primary key constraint on columns "payroll_id", "original_eft_date" */
+  /** unique or primary key constraint on columns "original_eft_date", "payroll_id" */
   | 'idx_unique_payroll_date'
   /** unique or primary key constraint on columns "id" */
   | 'payroll_dates_pkey'
@@ -18642,7 +18642,7 @@ export type RateLimitsBoolExp = {
 export type RateLimitsConstraint =
   /** unique or primary key constraint on columns "id" */
   | 'rate_limits_pkey'
-  /** unique or primary key constraint on columns "window_start", "service_id" */
+  /** unique or primary key constraint on columns "service_id", "window_start" */
   | 'rate_limits_service_id_window_start_key'
   | '%future added value';
 
@@ -19155,7 +19155,7 @@ export type RolePermissionsBoolExp = {
 export type RolePermissionsConstraint =
   /** unique or primary key constraint on columns "id" */
   | 'role_permissions_pkey'
-  /** unique or primary key constraint on columns "role_id", "permission_id" */
+  /** unique or primary key constraint on columns "permission_id", "role_id" */
   | 'role_permissions_role_id_permission_id_key'
   | '%future added value';
 
@@ -24468,7 +24468,7 @@ export type UserRolesBoolExp = {
 export type UserRolesConstraint =
   /** unique or primary key constraint on columns "id" */
   | 'user_roles_pkey'
-  /** unique or primary key constraint on columns "role_id", "user_id" */
+  /** unique or primary key constraint on columns "user_id", "role_id" */
   | 'user_roles_user_id_role_id_key'
   | '%future added value';
 
