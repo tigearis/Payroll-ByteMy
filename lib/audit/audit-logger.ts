@@ -175,6 +175,7 @@ class AuditLogger {
     userAgent: string;
     requestId?: string;
   } {
+    const requestId = request.headers.get('x-request-id');
     return {
       ipAddress: 
         request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
@@ -182,7 +183,7 @@ class AuditLogger {
         request.headers.get('cf-connecting-ip') ||
         'unknown',
       userAgent: request.headers.get('user-agent') || 'unknown',
-      requestId: request.headers.get('x-request-id') || undefined,
+      ...(requestId && { requestId }),
     };
   }
 
@@ -246,7 +247,7 @@ class AuditLogger {
       userId,
       action,
       entityType: resourceType,
-      entityId: resourceId,
+      ...(resourceId && { entityId: resourceId }),
       success: true,
       ...context,
     });
@@ -267,8 +268,8 @@ class AuditLogger {
       entityType: resourceType,
       entityId: resourceId,
       success: true,
-      oldValues,
-      newValues,
+      ...(oldValues && { oldValues }),
+      ...(newValues && { newValues }),
       ...context,
     });
   }
@@ -285,9 +286,9 @@ class AuditLogger {
       userId: adminUserId,
       action: `ADMIN_${action}`,
       entityType: resourceType,
-      entityId: resourceId,
+      ...(resourceId && { entityId: resourceId }),
       success: true,
-      metadata: details,
+      ...(details && { metadata: details }),
       ...context,
     });
   }

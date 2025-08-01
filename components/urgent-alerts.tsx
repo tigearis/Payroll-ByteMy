@@ -54,7 +54,7 @@ function getUserRole(
   if (payroll.backupConsultant?.id === currentUserId) {
     return "Backup Consultant";
   }
-  if (payroll.manager?.id === currentUserId) {
+  if (payroll.assignedManager?.id === currentUserId) {
     return "Manager";
   }
   // If user is assigned but not in a specific role, check for any assignment

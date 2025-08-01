@@ -171,7 +171,7 @@ export function TemplateLibrary({
       if (response.ok) {
         const data = await response.json();
         if (data.success && data.preview) {
-          setSelectedTemplate({ ...template, preview: data.preview });
+          setSelectedTemplate((prev: any) => ({ ...template, preview: data.preview }));
           setShowPreview(true);
         }
       }
@@ -352,16 +352,16 @@ export function TemplateLibrary({
                 <CardContent className="pt-0">
                   <div className="flex items-center justify-between text-sm text-muted-foreground">
                     <div className="flex items-center gap-4">
-                      {template.createdByUser && (
+                      {(template as any).createdByUser && (
                         <div className="flex items-center gap-1">
                           <User className="h-3 w-3" />
-                          {template.createdByUser.computedName || `${template.createdByUser.firstName || ''} ${template.createdByUser.lastName || ''}`.trim() || 'Unknown User'}
+                          {(template as any).createdByUser.computedName || `${(template as any).createdByUser.firstName || ''} ${(template as any).createdByUser.lastName || ''}`.trim() || 'Unknown User'}
                         </div>
                       )}
                       
                       <div className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
-                        {new Date(template.createdAt).toLocaleDateString()}
+                        {template.createdAt ? new Date(template.createdAt).toLocaleDateString() : 'Unknown'}
                       </div>
                     </div>
 

@@ -125,7 +125,10 @@ export async function requirePermission(
   const { success, context, response } = await getAuthContext();
 
   if (!success || !context) {
-    return { authorized: false, response };
+    return { 
+      authorized: false, 
+      ...(response && { response })
+    };
   }
 
   const permission = `${resource}.${action}`;
@@ -169,7 +172,10 @@ export async function requireAnyPermission(
   const { success, context, response } = await getAuthContext();
 
   if (!success || !context) {
-    return { authorized: false, response };
+    return { 
+      authorized: false, 
+      ...(response && { response })
+    };
   }
 
   const excludedPermissions = context.user?.publicMetadata?.excludedPermissions || [];
@@ -210,7 +216,10 @@ export async function requireRole(
   const { success, context, response } = await getAuthContext();
 
   if (!success || !context) {
-    return { authorized: false, response };
+    return { 
+      authorized: false, 
+      ...(response && { response })
+    };
   }
 
   const hasAccess = hasRoleLevel(context.role, minRole);

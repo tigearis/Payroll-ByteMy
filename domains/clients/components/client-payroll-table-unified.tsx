@@ -42,7 +42,7 @@ interface ClientPayroll {
 }
 
 interface ClientPayrollsTableProps {
-  payrolls: PayrollWithCycle[];
+  payrolls: (PayrollWithCycle & { updated_at?: string })[];
   loading?: boolean;
   onRefresh?: () => void;
   clientId?: string;
@@ -89,7 +89,7 @@ export function ClientPayrollsTableUnified({
   clientId,
 }: ClientPayrollsTableProps) {
   // Create cell renderers with status config
-  const cellRenderers = createCellRenderers<ClientPayroll>(payrollStatusConfig);
+  const cellRenderers = createCellRenderers<PayrollWithCycle & { updated_at?: string }>(payrollStatusConfig);
 
   // Helper functions
   const formatDate = (dateString: string) => {
@@ -118,7 +118,7 @@ export function ClientPayrollsTableUnified({
   };
 
   // Column definitions
-  const columns: DataTableColumn<ClientPayroll>[] = [
+  const columns: DataTableColumn<PayrollWithCycle & { updated_at?: string }>[] = [
     {
       key: "name",
       label: "Payroll Name",
@@ -145,7 +145,7 @@ export function ClientPayrollsTableUnified({
       label: "Status",
       sortable: true,
       defaultVisible: true,
-      cellRenderer: cellRenderers.status,
+      cellRenderer: cellRenderers.badge,
     },
     {
       key: "payrollCycle",
@@ -160,16 +160,16 @@ export function ClientPayrollsTableUnified({
       ),
     },
     {
-      key: "primary_consultant",
+      key: "primaryConsultant" as any,
       label: "Consultant",
       sortable: false,
       defaultVisible: true,
       cellRenderer: (value, row) => (
         <div className="text-sm">
-          {row.primary_consultant ? (
+          {(row as any).primaryConsultant || (row as any).primary_consultant ? (
             <>
-              <div className="font-medium">{row.primary_consultant.name}</div>
-              <div className="text-gray-500">{row.primary_consultant.email}</div>
+              <div className="font-medium">{((row as any).primaryConsultant || (row as any).primary_consultant).name}</div>
+              <div className="text-gray-500">{((row as any).primaryConsultant || (row as any).primary_consultant).email}</div>
             </>
           ) : (
             <span className="text-gray-400">Unassigned</span>
@@ -178,7 +178,7 @@ export function ClientPayrollsTableUnified({
       ),
     },
     {
-      key: "go_live_date",
+      key: "goLiveDate" as any,
       label: "Go Live Date",
       sortable: true,
       defaultVisible: true,
@@ -205,25 +205,25 @@ export function ClientPayrollsTableUnified({
   ];
 
   // Action definitions
-  const actions: DataTableAction<ClientPayroll>[] = [
+  const actions: DataTableAction<PayrollWithCycle & { updated_at?: string }>[] = [
     {
       label: "View Details",
       icon: Eye,
-      href: (row) => `/payrolls/${row.id}`,
+      onClick: (row) => window.location.href = `/payrolls/${row.id}`,
       variant: "default",
     },
   ];
 
   return (
-    <UnifiedDataTable<ClientPayroll>
+    <UnifiedDataTable<PayrollWithCycle & { updated_at?: string }>
       data={payrolls}
       columns={columns}
       actions={actions}
       loading={loading}
       onRefresh={onRefresh}
-      searchable={true}
-      filterable={true}
-      exportable={true}
+      // searchable={true} // This prop doesn't exist on UnifiedDataTable
+      // filterable={true} // This prop doesn't exist on UnifiedDataTable
+      // exportable={true} // This prop doesn't exist on UnifiedDataTable
       selectable={false}
       pagination={{
         enabled: true,

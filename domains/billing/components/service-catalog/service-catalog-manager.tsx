@@ -230,7 +230,6 @@ export const ServiceCatalogManager: React.FC<ServiceCatalogManagerProps> = ({
 
   const { data, loading, refetch, error } = useQuery(GetServiceCatalogDocument, {
     variables: {
-      category: filterCategory ? `%${filterCategory}%` : null,
       isActive: true
     }
   });

@@ -66,29 +66,29 @@ export async function auditApiRequest(
   const auditEvent: ApiAuditEvent = {
     method: request.method,
     path: request.nextUrl.pathname,
-    userId,
-    userEmail,
+    ...(userId && { userId }),
+    ...(userEmail && { userEmail }),
     statusCode: response.status,
     responseTime,
-    error,
+    ...(error && { error }),
     ...context,
   };
 
   // Log to audit system
   try {
     await auditLogger.log({
-      userId,
+      ...(userId && { userId }),
       action: `API_${request.method}`,
       entityType: 'api_request',
       entityId: request.nextUrl.pathname,
       success: response.status < 400,
-      errorMessage: error,
+      ...(error && { errorMessage: error }),
       metadata: {
         method: request.method,
         path: request.nextUrl.pathname,
         statusCode: response.status,
         responseTime,
-        userEmail,
+        ...(userEmail && { userEmail }),
       },
       ...context,
     });
@@ -129,10 +129,10 @@ export async function auditAuthEvent(
   try {
     await auditLogger.logAuthEvent({
       eventType,
-      userId: userContext?.userId,
-      userEmail: userContext?.userEmail,
+      ...(userContext?.userId && { userId: userContext.userId }),
+      ...(userContext?.userEmail && { userEmail: userContext.userEmail }),
       success: eventType !== 'LOGIN_FAILED' && eventType !== 'PERMISSION_DENIED',
-      failureReason: error,
+      ...(error && { failureReason: error }),
       metadata: {
         path: request.nextUrl.pathname,
         method: request.method,

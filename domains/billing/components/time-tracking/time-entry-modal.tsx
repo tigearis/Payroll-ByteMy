@@ -12,8 +12,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Textarea } from '@/components/ui/textarea';
 import {
   GetTimeEntriesByPayrollDocument,
-  CreateMultipleTimeEntriesDocument
-} from '../../../billing/graphql/generated/graphql';
+  CreateTimeEntryDocument
+} from '../../graphql/generated/graphql';
 
 interface TimeEntry {
   id?: string;
@@ -43,18 +43,17 @@ export const TimeEntryModal: React.FC<TimeEntryModalProps> = ({
   });
 
   // Get existing time entries for this payroll
-  const { data: existingEntries } = useQuery(GetTimeEntriesDocument, {
+  const { data: existingEntries } = useQuery(GetTimeEntriesByPayrollDocument, {
     variables: {
-      payrollId,
-      clientId
+      payrollId
     }
   });
 
-  const [createTimeEntries] = useMutation(CreateMultipleTimeEntriesDocument);
+  const [createTimeEntry] = useMutation(CreateTimeEntryDocument);
 
   useEffect(() => {
     if (existingEntries?.time_entries) {
-      const entries = existingEntries.timeentries.map(entry => ({
+      const entries = existingEntries.timeEntries.map((entry: any) => ({
         id: entry.id,
         work_date: entry.work_date,
         hours_spent: entry.hours_spent,
@@ -115,11 +114,21 @@ export const TimeEntryModal: React.FC<TimeEntryModalProps> = ({
         description: entry.description
       }));
 
-      await createTimeEntries({
-        variables: {
-          entries: entriesToCreate
-        }
-      });
+      // Create entries one by one since we don't have bulk create
+      for (const entry of entriesToCreate) {
+        await createTimeEntry({
+          variables: {
+            input: {
+              staffUserId: entry.staff_user_id,
+              clientId: entry.client_id,
+              payrollId: entry.payroll_id,
+              workDate: entry.work_date,
+              hoursSpent: entry.hours_spent,
+              description: entry.description
+            }
+          }
+        });
+      }
 
       toast.success('Time entries saved successfully');
       onTimeEntriesUpdate(timeEntries, calculateTotalHours());

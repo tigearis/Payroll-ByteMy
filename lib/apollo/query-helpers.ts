@@ -54,8 +54,8 @@ export async function executeQuery<TData = any, TVariables = any>(
       
       const { data, errors } = await adminApolloClient.query({
         query: document,
-        variables,
-        fetchPolicy: options.fetchPolicy || 'no-cache',
+        ...(variables && { variables }),
+        fetchPolicy: (options.fetchPolicy || 'no-cache') as any,
         context: {
           context: "admin",
           ...options.context,
@@ -78,8 +78,8 @@ export async function executeQuery<TData = any, TVariables = any>(
 
     const { data, errors } = await serverApolloClient.query({
       query: document,
-      variables,
-      fetchPolicy: options.fetchPolicy || 'no-cache',
+      ...(variables && { variables }),
+      fetchPolicy: (options.fetchPolicy || 'no-cache') as any,
       context: {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
@@ -127,7 +127,7 @@ export async function executeMutation<TData = any, TVariables = any>(
       
       const { data, errors } = await adminApolloClient.mutate({
         mutation: document,
-        variables,
+        ...(variables && { variables }),
         context: {
           context: "admin",
           ...options.context,
@@ -150,7 +150,7 @@ export async function executeMutation<TData = any, TVariables = any>(
 
     const { data, errors } = await serverApolloClient.mutate({
       mutation: document,
-      variables,
+      ...(variables && { variables }),
       context: {
         headers: {
           Authorization: `Bearer ${jwtToken}`,

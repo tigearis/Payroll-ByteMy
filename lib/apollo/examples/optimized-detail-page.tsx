@@ -12,7 +12,8 @@ import React from 'react';
 import { QueryOptimizer, useOptimizedQueries } from '../query-optimization';
 
 // Example GraphQL documents (these would be imported from generated files)
-const GET_PAYROLL_DETAILS = `
+// NOTE: In real code, these would be proper DocumentNode objects from codegen
+const GET_PAYROLL_DETAILS: any = `
   query GetPayrollDetails($id: uuid!) {
     payrollById(id: $id) {
       id
@@ -26,7 +27,7 @@ const GET_PAYROLL_DETAILS = `
   }
 `;
 
-const GET_PAYROLL_DATES = `
+const GET_PAYROLL_DATES: any = `
   query GetPayrollDates($payrollId: uuid!) {
     payrollDates(where: { payrollId: { _eq: $payrollId } }) {
       id
@@ -37,7 +38,7 @@ const GET_PAYROLL_DATES = `
   }
 `;
 
-const GET_STAFF_ASSIGNMENTS = `
+const GET_STAFF_ASSIGNMENTS: any = `
   query GetStaffAssignments($payrollId: uuid!) {
     payrollAssignments(where: { payrollId: { _eq: $payrollId } }) {
       id
@@ -153,9 +154,9 @@ export function ManuallyOptimizedPayrollPage({ payrollId }: OptimizedPayrollDeta
 
         setState({
           loading: false,
-          payroll,
-          dates,
-          staff,
+          payroll: payroll as any,
+          dates: dates as any,
+          staff: staff as any,
           errors,
         });
       } catch (error) {
@@ -178,9 +179,9 @@ export function ManuallyOptimizedPayrollPage({ payrollId }: OptimizedPayrollDeta
 
   return (
     <div className="space-y-6">
-      <PayrollHeader payroll={state.payroll?.payrollById} />
-      <PayrollDatesSection dates={state.dates?.payrollDates} />
-      <StaffAssignmentsSection assignments={state.staff?.payrollAssignments} />
+      <PayrollHeader payroll={(state.payroll as any)?.payrollById} />
+      <PayrollDatesSection dates={(state.dates as any)?.payrollDates} />
+      <StaffAssignmentsSection assignments={(state.staff as any)?.payrollAssignments} />
       {state.errors.length > 0 && <ErrorSection errors={state.errors} />}
     </div>
   );

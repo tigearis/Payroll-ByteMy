@@ -39,7 +39,7 @@ const LazyBarChart = lazy(async () => {
           <YAxis />
           <Tooltip />
           {config.bars.map((bar) => (
-            <Bar key={bar.key} dataKey={bar.key} fill={bar.color} name={bar.name} />
+            <Bar key={bar.key} dataKey={bar.key} fill={bar.color} name={bar.name || bar.key} />
           ))}
         </BarChart>
       </ResponsiveContainer>

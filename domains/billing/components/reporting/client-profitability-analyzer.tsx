@@ -90,8 +90,7 @@ export const ClientProfitabilityAnalyzer: React.FC<ClientProfitabilityAnalyzerPr
     GetClientForecastDataDocument,
     {
       variables: {
-        clientId: selectedClient!,
-        months: 6
+        clientId: selectedClient!
       },
       skip: !selectedClient
     }

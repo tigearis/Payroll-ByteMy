@@ -1514,7 +1514,7 @@ export default function PayrollPage() {
                 <Progress value={statusConfig.progress} className="h-2" />
                 <div className="flex justify-between text-xs text-gray-500 mt-2">
                   <span>
-                    Manager: {(payroll as any).manager?.computedName || (payroll as any).manager ? `${(payroll as any).manager.firstName} ${(payroll as any).manager.lastName}`.trim() : "Not assigned"}
+                    Manager: {(payroll as any).assignedManager?.computedName || (payroll as any).assignedManager ? `${(payroll as any).assignedManager.firstName} ${(payroll as any).assignedManager.lastName}`.trim() : "Not assigned"}
                   </span>
                   <span>
                     Status: {(payroll as any).status || "Implementation"}
@@ -1653,11 +1653,11 @@ export default function PayrollPage() {
                       <div className="p-4 bg-purple-50 rounded-lg">
                         <div className="text-sm text-purple-600 font-medium">Manager</div>
                         <div className="text-lg font-semibold text-purple-900">
-                          {(payroll as any).manager?.computedName || (payroll as any).manager ? `${(payroll as any).manager.firstName} ${(payroll as any).manager.lastName}`.trim() : "Not assigned"}
+                          {(payroll as any).assignedManager?.computedName || (payroll as any).assignedManager ? `${(payroll as any).assignedManager.firstName} ${(payroll as any).assignedManager.lastName}`.trim() : "Not assigned"}
                         </div>
-                        {(payroll as any).manager?.email && (
+                        {(payroll as any).assignedManager?.email && (
                           <div className="text-sm text-purple-700">
-                            {(payroll as any).manager.email}
+                            {(payroll as any).assignedManager.email}
                           </div>
                         )}
                       </div>

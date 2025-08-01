@@ -140,8 +140,8 @@ export function BillingGenerationModal({
   const staffMembers = React.useMemo(() => {
     const uniqueStaff = new Map();
     timeEntries.forEach(entry => {
-      if (entry.staffUser && !uniqueStaff.has(entry.staffUserId)) {
-        uniqueStaff.set(entry.staffUserId, entry.staffUser);
+      if (entry.staffUserId && !uniqueStaff.has(entry.staffUserId)) {
+        uniqueStaff.set(entry.staffUserId, { id: entry.staffUserId, name: `Staff ${entry.staffUserId}` });
       }
     });
     return Array.from(uniqueStaff.entries());
