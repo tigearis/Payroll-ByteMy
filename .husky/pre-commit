@@ -1,0 +1,9 @@
+# Run GraphQL-specific validation first (fastest)
+echo "🔍 Validating GraphQL operations..."
+pnpm lint:graphql
+
+# Run type checking
+echo "🔍 Running TypeScript type checking..."
+pnpm type-check
+
+echo "✅ All GraphQL and TypeScript checks passed!"
