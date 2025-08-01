@@ -44,6 +44,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { getRoleDisplayName } from "@/lib/utils/role-utils";
 
 // Sample user data
 const users = [
@@ -264,7 +265,7 @@ export function UserRoleManagement() {
               <TableRow key={user.id}>
                 <TableCell className="font-medium">{(user as any).computedName || `${(user as any).firstName || ''} ${(user as any).lastName || ''}`.trim() || user.name || 'Unknown User'}</TableCell>
                 <TableCell>{user.email}</TableCell>
-                <TableCell>{user.role}</TableCell>
+                <TableCell>{getRoleDisplayName(user.role)}</TableCell>
                 <TableCell>{user.status}</TableCell>
                 <TableCell>
                   <DropdownMenu>

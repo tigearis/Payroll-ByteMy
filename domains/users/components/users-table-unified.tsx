@@ -9,6 +9,7 @@ import {
   StatusConfig,
   createCellRenderers,
 } from "@/components/ui/unified-data-table";
+import { getRoleDisplayName } from "@/lib/utils/role-utils";
 
 // User data type (based on existing user structure)
 interface User {
@@ -124,9 +125,8 @@ function UsersTableUnifiedComponent({
       sortable: true,
       defaultVisible: true,
       cellRenderer: role => {
-        const displayRole =
-          role.charAt(0).toUpperCase() + role.slice(1).replace("_", " ");
-        return cellRenderers.badge(role);
+        const displayRole = getRoleDisplayName(role);
+        return cellRenderers.badge(displayRole);
       },
     },
     {
