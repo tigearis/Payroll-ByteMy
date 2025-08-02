@@ -1079,6 +1079,16 @@ query GetPayrollsTableEnhanced(
       role
     }
     
+    # Assigned manager
+    assignedManager {
+      id
+      firstName
+      lastName
+      computedName
+      email
+      role
+    }
+    
     # Next EFT date - get the next upcoming EFT date from today
     nextEftDate: payrollDates(
       where: { adjustedEftDate: { _gte: "now()" } }
