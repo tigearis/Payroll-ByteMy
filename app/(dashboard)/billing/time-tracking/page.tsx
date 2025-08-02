@@ -14,7 +14,7 @@ export default function TimeTrackingPage() {
       </div>
       
       <PermissionGuard permission="billing.create">
-        <EnhancedTimeEntry />
+        <EnhancedTimeEntry staffUserId="current-user-id" />
       </PermissionGuard>
     </div>
   );

@@ -70,7 +70,7 @@ export const PayrollBillingInterface: React.FC<PayrollBillingInterfaceProps> = (
   const [createTimeEntry] = useMutation(CreateTimeEntryDocument);
 
   const payroll = payrollData?.payrollsByPk;
-  const clientServices = servicesData?.clientBillingAssignment || [];
+  const clientServices = servicesData?.clientServiceAgreements || [];
 
   // Calculate auto-quantities based on payroll data and service type
   const calculateAutoQuantity = (billingUnit: string, payrollData: any): number => {
@@ -98,15 +98,15 @@ export const PayrollBillingInterface: React.FC<PayrollBillingInterfaceProps> = (
   // Initialize service selections when data loads
   useEffect(() => {
     if (payroll && clientServices.length > 0) {
-      const selections = clientServices.map(service => {
-        const billingPlan = service.billingPlan;
-        const effectiveRate = service.customRate || billingPlan.standardRate;
-        const autoQuantity = calculateAutoQuantity(billingPlan.billingUnit || 'hour', payroll);
+      const selections = clientServices.map((service: any) => {
+        const serviceData = service.service;
+        const effectiveRate = service.customRate || serviceData.defaultRate;
+        const autoQuantity = calculateAutoQuantity(serviceData.billingUnit || 'hour', payroll);
         return {
-          service_id: service.billingPlanId || '',
-          service_name: billingPlan.name,
-          billing_unit: billingPlan.billingUnit || 'hour',
-          standard_rate: billingPlan.standardRate,
+          service_id: service.serviceId || '',
+          service_name: serviceData.name,
+          billing_unit: serviceData.billingUnit || 'hour',
+          standard_rate: serviceData.defaultRate,
           effective_rate: effectiveRate,
           auto_quantity: autoQuantity,
           quantity: autoQuantity,

@@ -76,22 +76,22 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
   const [bulkUpdateAgreements] = useMutation(BulkUpdateClientServiceAgreementsDocument);
 
   const handleStartEdit = () => {
-    if (!agreementsData?.clientBillingAssignment || !servicesData?.billingPlan) {
+    if (!agreementsData?.clientServiceAgreements || !servicesData?.services) {
       return;
     }
 
     // Create a map of existing agreements
     const existingAgreements = new Map(
-      agreementsData.clientBillingAssignment.map((agreement: any) => [
-        agreement.billingPlanId,
+      agreementsData.clientServiceAgreements.map((agreement: any) => [
+        agreement.serviceId,
         {
           id: agreement.id,
-          service_id: agreement.billingPlanId,
-          service_name: agreement.billingPlan?.name || 'Unknown Service',
-          standard_rate: agreement.assignedBillingPlan?.standardRate || 0,
+          service_id: agreement.serviceId,
+          service_name: agreement.service?.name || 'Unknown Service',
+          standard_rate: agreement.service?.defaultRate || 0,
           custom_rate: agreement.customRate || undefined,
-          billing_unit: agreement.assignedBillingPlan?.billingUnit || 'Per Payroll',
-          category: agreement.billingPlan?.category || 'Processing',
+          billing_unit: agreement.service?.billingUnit || 'Per Payroll',
+          category: agreement.service?.category || 'Processing',
           billing_frequency: agreement.billingFrequency || 'Per Job',
           is_enabled: agreement.isEnabled || false,
           effective_date: agreement.effectiveDate || new Date().toISOString().split('T')[0]
@@ -100,12 +100,12 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
     );
 
     // Create agreements for all services
-    const allAgreements = servicesData.billingPlan.map((service: any) => {
+    const allAgreements = servicesData.services.map((service: any) => {
       const existing = existingAgreements.get(service.id);
       return existing || {
         service_id: service.id,
         service_name: service.name || 'Unknown Service',
-        standard_rate: service.standardRate || 0,
+        standard_rate: service.defaultRate || 0,
         custom_rate: undefined,
         billing_unit: service.billingUnit || 'Per Payroll',
         category: service.category || 'Processing',
@@ -125,7 +125,7 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
         .filter(agreement => agreement.is_enabled)
         .map(agreement => ({
           clientId: clientId,
-          billingPlanId: agreement.service_id,
+          serviceId: agreement.service_id,
           customRate: agreement.custom_rate || null,
           billingFrequency: agreement.billing_frequency || 'Per Job',
           effectiveDate: agreement.effective_date || new Date().toISOString().split('T')[0],
@@ -201,7 +201,7 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
     );
   }
 
-  const currentAgreements = agreementsData?.clientBillingAssignment || [];
+  const currentAgreements = agreementsData?.clientServiceAgreements || [];
 
   return (
     <Card>
@@ -360,18 +360,18 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
                     <TableRow key={agreement.id}>
                       <TableCell>
                         <div className="font-medium">
-                          {agreement.billingPlan?.name || 'Unknown Service'}
+                          {agreement.service?.name || 'Unknown Service'}
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge className={getCategoryColor(agreement.billingPlan?.category || 'Processing')}>
-                          {agreement.billingPlan?.category || 'Processing'}
+                        <Badge className={getCategoryColor(agreement.service?.category || 'Processing')}>
+                          {agreement.service?.category || 'Processing'}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <span className="font-medium">
-                            ${agreement.customRate || agreement.billingPlan?.standardRate}
+                            ${agreement.customRate || agreement.service?.defaultRate}
                           </span>
                           {agreement.customRate && (
                             <Badge variant="secondary" className="text-xs">
@@ -382,11 +382,11 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline">
-                          {agreement.billingPlan?.billingUnit || 'Per Payroll'}
+                          {agreement.service?.billingUnit || 'Per Payroll'}
                         </Badge>
                       </TableCell>
                       <TableCell>{agreement.billingFrequency || 'Per Job'}</TableCell>
-                      <TableCell>{agreement.effectiveDate || 'Not set'}</TableCell>
+                      <TableCell>{agreement.contractStartDate || 'Not set'}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

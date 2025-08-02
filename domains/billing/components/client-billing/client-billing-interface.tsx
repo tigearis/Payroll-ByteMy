@@ -24,7 +24,7 @@ import { TimeEntryModal } from '../time-tracking/time-entry-modal';
 
 interface BillingItem {
   id?: string;
-  billingPlanId?: string;
+  serviceId?: string;
   serviceName: string;
   description: string;
   quantity: number;
@@ -79,8 +79,8 @@ export const ClientBillingInterface: React.FC<ClientBillingInterfaceProps> = ({
   const [createBillingItem] = useMutation(CreateBillingItemDocument);
   const [createTimeEntry] = useMutation(CreateTimeEntryDocument);
 
-  const clientServices = serviceAgreements?.clientBillingAssignment || [];
-  const availableServices = serviceCatalog?.billingPlan || [];
+  const clientServices = serviceAgreements?.clientServiceAgreements || [];
+  const availableServices = serviceCatalog?.services || [];
 
   // Add custom billing item
   const addCustomItem = () => {
@@ -115,10 +115,16 @@ export const ClientBillingInterface: React.FC<ClientBillingInterfaceProps> = ({
   };
 
   // Add service from catalog
-  const addServiceFromCatalog = (service: any) => {
+  const addServiceFromCatalog = (service: {
+    id: string;
+    name: string;
+    description?: string;
+    standardRate: number;
+    defaultRate?: number;
+  }) => {
     // Check if this service is already added
     const exists = billingItems.some(item => 
-      item.billingPlanId === service.id || 
+      item.serviceId === service.id || 
       (item.serviceName === service.name && !item.isCustom)
     );
 
@@ -128,7 +134,7 @@ export const ClientBillingInterface: React.FC<ClientBillingInterfaceProps> = ({
     }
 
     const newItem: BillingItem = {
-      billingPlanId: service.id,
+      serviceId: service.id,
       serviceName: service.name,
       description: service.description || service.name,
       quantity: 1,
@@ -194,7 +200,7 @@ export const ClientBillingInterface: React.FC<ClientBillingInterfaceProps> = ({
             variables: {
               input: {
                 clientId: clientId,
-                ...(item.billingPlanId && { billingPlanId: item.billingPlanId }),
+                ...(item.serviceId && { serviceId: item.serviceId }),
                 description: item.description,
                 serviceName: item.serviceName,
                 quantity: item.quantity,
@@ -362,7 +368,7 @@ export const ClientBillingInterface: React.FC<ClientBillingInterfaceProps> = ({
               <div>Loading services...</div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {availableServices.map((service) => (
+                {availableServices.map((service: any) => (
                   <Card key={service.id} className="p-4">
                     <div className="space-y-2">
                       <div className="flex justify-between items-start">

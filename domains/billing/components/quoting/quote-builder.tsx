@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation, gql } from "@apollo/client";
 import {
   Plus,
   Minus,
@@ -112,7 +112,7 @@ interface QuoteTemplate {
   estimatedTotal: number;
 }
 
-const GET_SERVICES_FOR_QUOTING = `
+const GET_SERVICES_FOR_QUOTING = gql`
   query GetServicesForQuoting {
     services(where: {isActive: {_eq: true}}, orderBy: {category: ASC, name: ASC}) {
       id
@@ -126,7 +126,7 @@ const GET_SERVICES_FOR_QUOTING = `
   }
 `;
 
-const GET_CLIENTS = `
+const GET_CLIENTS = gql`
   query GetClients {
     clients(where: {active: {_eq: true}}, orderBy: {name: ASC}) {
       id
@@ -137,7 +137,7 @@ const GET_CLIENTS = `
   }
 `;
 
-const GET_QUOTE_TEMPLATES = `
+const GET_QUOTE_TEMPLATES = gql`
   query GetQuoteTemplates {
     quoteTemplates(where: {isActive: {_eq: true}}, orderBy: {name: ASC}) {
       id
@@ -151,7 +151,7 @@ const GET_QUOTE_TEMPLATES = `
   }
 `;
 
-const CREATE_QUOTE = `
+const CREATE_QUOTE = gql`
   mutation CreateQuote($input: QuotesInsertInput!) {
     insertQuotesOne(object: $input) {
       id
@@ -163,7 +163,7 @@ const CREATE_QUOTE = `
   }
 `;
 
-const CREATE_QUOTE_LINE_ITEMS = `
+const CREATE_QUOTE_LINE_ITEMS = gql`
   mutation CreateQuoteLineItems($items: [QuoteLineItemsInsertInput!]!) {
     insertQuoteLineItems(objects: $items) {
       returning {
@@ -412,7 +412,7 @@ export function QuoteBuilder({ onQuoteCreated }: { onQuoteCreated?: (quoteId: st
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Select Client</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select onValueChange={field.onChange} {...(field.value && { value: field.value })}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Choose a client..." />

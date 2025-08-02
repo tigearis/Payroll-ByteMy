@@ -3,13 +3,13 @@
 import { Shield, UserCheck, Eye, Edit, UserX, Mail } from "lucide-react";
 import { memo } from "react";
 import {
-  UnifiedDataTable,
-  DataTableColumn,
-  DataTableAction,
-  StatusConfig,
-  createCellRenderers,
-} from "@/components/ui/unified-data-table";
+  EnhancedUnifiedTable,
+  UnifiedTableColumn,
+  UnifiedTableAction,
+} from "@/components/ui/enhanced-unified-table";
 import { getRoleDisplayName } from "@/lib/utils/role-utils";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 // User data type (based on existing user structure)
 interface User {
@@ -45,47 +45,66 @@ interface UsersTableProps {
   onViewUser?: (user: User) => void;
 }
 
-// Status configuration for users
-const userStatusConfig: Record<string, StatusConfig> = {
-  Active: {
-    variant: "default",
-    icon: UserCheck,
-    className: "bg-green-50 text-green-700 border-green-200",
-  },
-  Inactive: {
-    variant: "destructive",
-    icon: UserX,
-    className: "bg-red-50 text-red-700 border-red-200",
-  },
+// Helper functions for rendering cells
+const renderUserStatus = (isActive: boolean) => {
+  const StatusIcon = isActive ? UserCheck : UserX;
+  const variant = isActive ? 'default' : 'destructive';
+  const status = isActive ? 'Active' : 'Inactive';
+  
+  return (
+    <Badge variant={variant} className="flex items-center gap-1">
+      <StatusIcon className="w-3 h-3" />
+      {status}
+    </Badge>
+  );
 };
 
-// Role configuration
-const roleStatusConfig: Record<string, StatusConfig> = {
-  developer: {
-    variant: "default",
-    icon: Shield,
-    className: "bg-purple-50 text-purple-700 border-purple-200",
-  },
-  org_admin: {
-    variant: "default",
-    icon: Shield,
-    className: "bg-blue-50 text-blue-700 border-blue-200",
-  },
-  manager: {
-    variant: "secondary",
-    icon: UserCheck,
-    className: "bg-orange-50 text-orange-700 border-orange-200",
-  },
-  consultant: {
-    variant: "outline",
-    icon: UserCheck,
-    className: "bg-gray-50 text-gray-700 border-gray-200",
-  },
-  viewer: {
-    variant: "outline",
-    icon: Eye,
-    className: "bg-gray-50 text-gray-600 border-gray-200",
-  },
+const renderUserRole = (role: string) => {
+  const displayRole = getRoleDisplayName(role);
+  
+  const getRoleVariant = (role: string) => {
+    const normalizedRole = role?.toLowerCase();
+    if (['developer', 'org_admin'].includes(normalizedRole)) return 'default';
+    if (['manager'].includes(normalizedRole)) return 'secondary';
+    return 'outline';
+  };
+
+  const getRoleIcon = (role: string) => {
+    const normalizedRole = role?.toLowerCase();
+    if (['developer', 'org_admin'].includes(normalizedRole)) return Shield;
+    if (['manager', 'consultant'].includes(normalizedRole)) return UserCheck;
+    return Eye;
+  };
+
+  const RoleIcon = getRoleIcon(role);
+  
+  return (
+    <Badge variant={getRoleVariant(role)} className="flex items-center gap-1">
+      <RoleIcon className="w-3 h-3" />
+      {displayRole}
+    </Badge>
+  );
+};
+
+const renderUserAvatar = (user: User) => {
+  const displayName = user.computedName || `${user.firstName} ${user.lastName}`;
+    
+  return (
+    <div className="flex items-center space-x-3">
+      <Avatar className="h-8 w-8">
+        <AvatarImage src={user.imageUrl} alt={displayName} />
+        <AvatarFallback>
+          {displayName.split(" ").map((n: string) => n[0]).join("").toUpperCase()}
+        </AvatarFallback>
+      </Avatar>
+      <div className="min-w-0">
+        <div className="font-medium truncate">{displayName}</div>
+        <div className="text-sm text-muted-foreground truncate">
+          {user.email}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 function UsersTableUnifiedComponent({
@@ -99,51 +118,36 @@ function UsersTableUnifiedComponent({
   onEditUser,
   onViewUser,
 }: UsersTableProps) {
-  // Create cell renderers with combined status configs
-  const cellRenderers = createCellRenderers<User>({
-    ...userStatusConfig,
-    ...roleStatusConfig,
-  });
-
   // Column definitions
-  const columns: DataTableColumn<User>[] = [
+  const columns: UnifiedTableColumn<User>[] = [
     {
-      key: "computedName",
-      label: "User",
+      accessorKey: "computedName",
+      header: "User",
+      type: "text",
       sortable: true,
-      defaultVisible: true,
-      cellRenderer: (value, row) =>
-        cellRenderers.avatar({
-          name: value || `${row.firstName} ${row.lastName}`,
-          email: row.email,
-          imageUrl: row.imageUrl || "",
-        }),
+      render: (value, row) => renderUserAvatar(row),
     },
     {
-      key: "role",
-      label: "Role",
+      accessorKey: "role",
+      header: "Role",
+      type: "badge",
       sortable: true,
-      defaultVisible: true,
-      cellRenderer: role => {
-        const displayRole = getRoleDisplayName(role);
-        return cellRenderers.badge(displayRole);
-      },
+      render: (role) => renderUserRole(role),
     },
     {
-      key: "isActive",
-      label: "Status",
+      accessorKey: "isActive",
+      header: "Status",
+      type: "badge",
       sortable: true,
-      defaultVisible: true,
-      cellRenderer: active =>
-        cellRenderers.badge(active ? "Active" : "Inactive"),
+      render: (active) => renderUserStatus(active),
     },
     {
-      key: "isStaff",
-      label: "Staff Member",
+      accessorKey: "isStaff",
+      header: "Staff Member",
+      type: "text",
       sortable: true,
-      defaultVisible: true,
       align: "center",
-      cellRenderer: isStaff => (
+      render: (isStaff) => (
         <div className="flex justify-center">
           {isStaff ? (
             <UserCheck className="w-4 h-4 text-green-600" />
@@ -154,11 +158,11 @@ function UsersTableUnifiedComponent({
       ),
     },
     {
-      key: "manager",
-      label: "Manager",
+      accessorKey: "manager",
+      header: "Manager",
+      type: "text",
       sortable: false,
-      defaultVisible: true,
-      cellRenderer: manager =>
+      render: (manager) =>
         manager ? (
           <div className="text-sm">
             <div className="font-medium">{manager.computedName || `${manager.firstName} ${manager.lastName}`}</div>
@@ -169,34 +173,47 @@ function UsersTableUnifiedComponent({
         ),
     },
     {
-      key: "email",
-      label: "Email",
+      accessorKey: "email",
+      header: "Email",
+      type: "text",
       sortable: true,
-      defaultVisible: false,
-      cellRenderer: email => cellRenderers.iconText(email, Mail),
+      render: (email) => (
+        <div className="flex items-center gap-2">
+          <Mail className="w-4 h-4 text-gray-500" />
+          <span>{email}</span>
+        </div>
+      ),
     },
     {
-      key: "createdAt",
-      label: "Created",
+      accessorKey: "createdAt",
+      header: "Created",
+      type: "date",
       sortable: true,
-      defaultVisible: false,
-      cellRenderer: date => cellRenderers.simpleDate(date),
+      render: (date) => new Date(date).toLocaleDateString(),
     },
     {
-      key: "updatedAt",
-      label: "Last Updated",
+      accessorKey: "updatedAt",
+      header: "Last Updated",
+      type: "date",
       sortable: true,
-      defaultVisible: true,
-      cellRenderer: date => cellRenderers.date(date),
+      render: (date) => {
+        const dateObj = new Date(date);
+        return (
+          <div className="text-sm">
+            <div>{dateObj.toLocaleDateString()}</div>
+            <div className="text-muted-foreground">{dateObj.toLocaleTimeString()}</div>
+          </div>
+        );
+      },
     },
   ];
 
   // Action definitions
-  const actions: DataTableAction<User>[] = [
+  const actions: UnifiedTableAction<User>[] = [
     {
       label: "View Details",
       icon: Eye,
-      onClick: user => {
+      onClick: (user: User) => {
         if (onViewUser) {
           onViewUser(user);
         } else {
@@ -207,7 +224,7 @@ function UsersTableUnifiedComponent({
     {
       label: "Edit User",
       icon: Edit,
-      onClick: user => {
+      onClick: (user: User) => {
         if (onEditUser) {
           onEditUser(user);
         } else {
@@ -218,37 +235,36 @@ function UsersTableUnifiedComponent({
     {
       label: "Send Email",
       icon: Mail,
-      onClick: user => {
+      onClick: (user: User) => {
         window.open(`mailto:${user.email}`, "_blank");
       },
     },
     {
       label: "View Profile",
       icon: UserCheck,
-      onClick: user => {
+      onClick: (user: User) => {
         window.location.href = `/staff/${user.id}`;
       },
-      separator: true,
     },
   ];
 
   return (
-    <UnifiedDataTable
+    <EnhancedUnifiedTable
       data={users}
       columns={columns}
       loading={loading}
       emptyMessage="No users found. Add your first team member to get started."
       selectable={false}
-      sortField={sortField || ""}
-      sortDirection={sortDirection || "ASC"}
-      onSort={onSort || (() => {})}
-      visibleColumns={visibleColumns || []}
       actions={actions}
-      statusConfig={{ ...userStatusConfig, ...roleStatusConfig }}
       title="Team Members"
-      onRefresh={onRefresh || (() => {})}
-      getRowId={user => user.id}
-      getRowLink={user => `/staff/${user.id}`}
+      searchable={true}
+      searchPlaceholder="Search team members..."
+      {...(onRefresh && { onRefresh })}
+      refreshing={loading}
+      exportable={true}
+      onExport={(format) => {
+        console.log("Export users as:", format);
+      }}
     />
   );
 }
