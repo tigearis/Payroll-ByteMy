@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useMutation } from "@apollo/client";
+import { useUser } from "@clerk/nextjs";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -91,6 +92,7 @@ interface BillingItemsTableProps {
 }
 
 export function BillingItemsTable({ data, loading, refetch }: BillingItemsTableProps) {
+  const { user } = useUser();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -115,15 +117,23 @@ export function BillingItemsTable({ data, loading, refetch }: BillingItemsTableP
   };
 
   const handleApprove = async (itemId: string) => {
+    if (!user?.id) {
+      console.error("User not authenticated");
+      toast.error("User not authenticated");
+      return;
+    }
+
     try {
       await approveBillingItem({
         variables: {
           id: itemId,
-          approvedBy: "current-user-id", // TODO: Get from session
+          approvedBy: user.id,
         },
       });
+      refetch(); // Refresh the data after approval
     } catch (error) {
       console.error("Error approving billing item:", error);
+      toast.error("Failed to approve billing item");
     }
   };
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery, useMutation } from "@apollo/client";
+import { useUser } from "@clerk/nextjs";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -130,6 +131,7 @@ function PayrollDatesTable({
   emptyMessage: string;
   refetch: () => void;
 }) {
+  const { user } = useUser();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -150,15 +152,23 @@ function PayrollDatesTable({
   });
 
   const handleCompletePayrollDate = async (payrollDateId: string) => {
+    if (!user?.id) {
+      console.error("User not authenticated");
+      toast.error("User not authenticated");
+      return;
+    }
+    
     try {
       await completePayrollDate({
         variables: {
           id: payrollDateId,
-          completedBy: "current-user-id", // TODO: Get actual user ID from session
+          completedBy: user.id,
         },
       });
+      toast.success("Payroll date completed successfully");
     } catch (error) {
       console.error("Error completing payroll date:", error);
+      toast.error("Failed to complete payroll date");
     }
   };
 
@@ -484,6 +494,8 @@ export function PayrollDatesView({
   payrollId,
   showAllVersions,
 }: PayrollDatesViewProps) {
+  const { user } = useUser();
+  
   // Show all family versions or just current one
   const showFamilyDates = showAllVersions;
 

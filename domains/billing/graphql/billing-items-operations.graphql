@@ -446,3 +446,203 @@ query GetBillingItemAuditLogAdvanced(
     userRole
   }
 }
+
+# Profitability Analytics Operations
+query GetPayrollProfitabilityAnalytics(
+  $clientId: uuid
+  $dateFrom: timestamptz
+  $dateTo: timestamptz
+  $limit: Int = 50
+  $offset: Int = 0
+) {
+  payrolls(
+    where: {
+      _and: [
+        { clientId: { _eq: $clientId } }
+        { createdAt: { _gte: $dateFrom } }
+        { createdAt: { _lte: $dateTo } }
+        { supersededDate: { _isNull: true } }
+      ]
+    }
+    limit: $limit
+    offset: $offset
+    orderBy: { createdAt: DESC }
+  ) {
+    id
+    name
+    clientId
+    client {
+      id
+      name
+    }
+    status
+    createdAt
+    primaryConsultant {
+      id
+      firstName
+      lastName
+    }
+    backupConsultant {
+      id
+      firstName
+      lastName
+    }
+    billingItems(
+      where: { status: { _eq: "approved" } }
+    ) {
+      id
+      amount
+      totalAmount
+      quantity
+      serviceName
+      createdAt
+    }
+    timeEntries {
+      id
+      hoursSpent
+      workDate
+      createdAt
+    }
+  }
+}
+
+query GetStaffBillingPerformanceAnalytics(
+  $staffUserId: uuid
+  $timestampFrom: timestamp
+  $timestampTo: timestamp
+  $dateFrom: date
+  $dateTo: date
+  $limit: Int = 50
+) {
+  billingItems(
+    where: {
+      _and: [
+        { staffUserId: { _eq: $staffUserId } }
+        { createdAt: { _gte: $timestampFrom } }
+        { createdAt: { _lte: $timestampTo } }
+        { status: { _eq: "approved" } }
+      ]
+    }
+    limit: $limit
+    orderBy: { createdAt: DESC }
+  ) {
+    id
+    amount
+    totalAmount
+    quantity
+    serviceName
+    createdAt
+    staffUser {
+      id
+      firstName
+      lastName
+      email
+      role
+    }
+    client {
+      id
+      name
+    }
+    payroll {
+      id
+      name
+    }
+  }
+  
+  timeEntries(
+    where: {
+      _and: [
+        { staffUserId: { _eq: $staffUserId } }
+        { workDate: { _gte: $dateFrom } }
+        { workDate: { _lte: $dateTo } }
+      ]
+    }
+    orderBy: { workDate: DESC }
+  ) {
+    id
+    hoursSpent
+    workDate
+    description
+    staffUser {
+      id
+      firstName
+      lastName
+    }
+    client {
+      id
+      name
+    }
+    payroll {
+      id
+      name
+    }
+  }
+}
+
+query GetProfitabilityStatsAdvanced(
+  $clientId: uuid
+  $staffUserId: uuid
+  $timestampFrom: timestamp
+  $timestampTo: timestamp
+  $dateFrom: date
+  $dateTo: date
+) {
+  # Total revenue from approved billing items
+  totalRevenue: billingItemsAggregate(
+    where: {
+      _and: [
+        { clientId: { _eq: $clientId } }
+        { staffUserId: { _eq: $staffUserId } }
+        { createdAt: { _gte: $timestampFrom } }
+        { createdAt: { _lte: $timestampTo } }
+        { status: { _eq: "approved" } }
+      ]
+    }
+  ) {
+    aggregate {
+      sum {
+        totalAmount
+      }
+      count
+    }
+  }
+  
+  # Total hours from time entries
+  totalHours: timeEntriesAggregate(
+    where: {
+      _and: [
+        { clientId: { _eq: $clientId } }
+        { staffUserId: { _eq: $staffUserId } }
+        { workDate: { _gte: $dateFrom } }
+        { workDate: { _lte: $dateTo } }
+      ]
+    }
+  ) {
+    aggregate {
+      sum {
+        hoursSpent
+      }
+      count
+    }
+  }
+  
+  # Pending billing items  
+  pendingRevenue: billingItemsAggregate(
+    where: {
+      _and: [
+        { clientId: { _eq: $clientId } }
+        { staffUserId: { _eq: $staffUserId } }
+        { createdAt: { _gte: $timestampFrom } }
+        { createdAt: { _lte: $timestampTo } }
+        { status: { _eq: "pending" } }
+      ]
+    }
+  ) {
+    aggregate {
+      sum {
+        totalAmount
+      }
+      count
+    }
+  }
+}

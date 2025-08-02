@@ -80,16 +80,6 @@ export function ResourcePermissionRow({
 
   const permissions = resource.permissions || [];
   
-  // Debug logging for resource data
-  console.log(`🏗️ ResourcePermissionRow for ${resource.name}:`, {
-    resource: resource,
-    permissionsCount: permissions.length,
-    permissions: permissions,
-    effectivePermissions: effectivePermissions,
-    effectivePermissionsCount: Object.keys(effectivePermissions).length,
-    pendingChanges: pendingChanges
-  });
-  
   // Calculate resource-level access summary
   const permissionSummary = React.useMemo(() => {
     const granted = permissions.filter(p => {

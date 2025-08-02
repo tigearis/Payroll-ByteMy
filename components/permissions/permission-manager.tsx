@@ -89,8 +89,6 @@ export function PermissionManager({
       });
 
       if (response.ok) {
-        console.log(`✅ Permission ${grantType}: ${permission} for ${userName}`);
-        
         // Reset form
         setSelectedResource('');
         setSelectedAction('');
@@ -108,7 +106,6 @@ export function PermissionManager({
         alert(`Failed to ${grantType} permission: ${error.message}`);
       }
     } catch (error) {
-      console.error('Error managing permission:', error);
       alert('An error occurred while managing permissions');
     }
   };
