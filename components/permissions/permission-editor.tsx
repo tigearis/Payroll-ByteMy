@@ -168,7 +168,8 @@ export function PermissionEditor({
     resourcesData: resourcesData ? `${resourcesData.resources?.length || 0} resources` : 'no data',
     userPermissionsData: userPermissionsData ? 
       `${userPermissionsData.users?.length || 0} users, ${userPermissionsData.permissionOverrides?.length || 0} overrides` : 
-      'no data'
+      'no data',
+    rawUserPermissionsData: userPermissionsData
   });
 
   // Mutations
@@ -199,10 +200,21 @@ export function PermissionEditor({
 
     // Get role permissions
     const rolePermissions = new Set<string>();
+    
+    console.log('🔍 UserPermissionsData structure:', {
+      hasUsers: !!userPermissionsData.users,
+      usersLength: userPermissionsData.users?.length,
+      usersArray: userPermissionsData.users,
+      targetUserId: userId,
+      fullData: userPermissionsData
+    });
+    
     const user = userPermissionsData.users[0];
     console.log('👤 Processing user:', {
       user: user?.id,
-      roleAssignments: user?.roleAssignments?.length || 0
+      roleAssignments: user?.roleAssignments?.length || 0,
+      foundUser: !!user,
+      searchedUserId: userId
     });
 
     user?.roleAssignments?.forEach((roleAssignment: any) => {
