@@ -158,51 +158,7 @@ export function PermissionEditor({
     skip: !userId,
   });
 
-  // Debug logging
-  console.log('🔍 PermissionEditor Debug:', {
-    userId,
-    resourcesLoading,
-    userPermissionsLoading,
-    resourcesError: resourcesError?.message,
-    userPermissionsError: userPermissionsError?.message,
-    resourcesData: resourcesData ? `${resourcesData.resources?.length || 0} resources` : 'no data',
-    userPermissionsData: userPermissionsData ? 
-      `${userPermissionsData.users?.length || 0} users, ${userPermissionsData.permissionOverrides?.length || 0} overrides` : 
-      'no data',
-    rawUserPermissionsData: userPermissionsData
-  });
 
-  // Enhanced debugging for resources structure
-  if (resourcesData?.resources) {
-    console.log('📋 Resources Data Structure:', {
-      resourceCount: resourcesData.resources.length,
-      sampleResource: resourcesData.resources[0],
-      resourcesWithPermissions: resourcesData.resources.filter(r => r.permissions && r.permissions.length > 0).length,
-      firstResourcePermissions: resourcesData.resources[0]?.permissions,
-      allResourceNames: resourcesData.resources.map(r => ({ name: r.name, permissionCount: r.permissions?.length || 0 }))
-    });
-  }
-
-  // Additional debug for query states
-  if (!userPermissionsLoading && userPermissionsData) {
-    console.log('📊 User Permissions Query Result:', {
-      query: 'GetUserEffectivePermissions',
-      variables: { userId },
-      usersFound: userPermissionsData.users?.length || 0,
-      users: userPermissionsData.users,
-      overridesFound: userPermissionsData.permissionOverrides?.length || 0,
-      overrides: userPermissionsData.permissionOverrides
-    });
-  }
-
-  if (userPermissionsError) {
-    console.error('❌ GetUserEffectivePermissions Error:', {
-      error: userPermissionsError,
-      message: userPermissionsError.message,
-      graphQLErrors: userPermissionsError.graphQLErrors,
-      networkError: userPermissionsError.networkError
-    });
-  }
 
   // Mutations
   const [createOverride] = useMutation(CreatePermissionOverrideDocument);
@@ -211,16 +167,7 @@ export function PermissionEditor({
 
   // Calculate effective permissions
   const effectivePermissions = useMemo(() => {
-    console.log('🧮 Calculating effectivePermissions:', {
-      hasResourcesData: !!resourcesData?.resources,
-      hasUserPermissionsData: !!userPermissionsData,
-      resourcesCount: resourcesData?.resources?.length || 0,
-      usersCount: userPermissionsData?.users?.length || 0,
-      userPermissionsData: userPermissionsData
-    });
-
     if (!resourcesData?.resources || !userPermissionsData) {
-      console.log('❌ Missing data for effectivePermissions calculation');
       return {};
     }
 
@@ -233,86 +180,31 @@ export function PermissionEditor({
     // Get role permissions
     const rolePermissions = new Set<string>();
     
-    console.log('🔍 UserPermissionsData structure:', {
-      hasUsers: !!userPermissionsData.users,
-      usersLength: userPermissionsData.users?.length,
-      usersArray: userPermissionsData.users,
-      targetUserId: userId,
-      fullData: userPermissionsData
-    });
-    
     const user = userPermissionsData.users[0];
-    console.log('👤 Processing user:', {
-      user: user?.id,
-      roleAssignments: user?.roleAssignments?.length || 0,
-      foundUser: !!user,
-      searchedUserId: userId
-    });
 
     user?.roleAssignments?.forEach((roleAssignment: any) => {
-      console.log('🎭 Processing role assignment:', {
-        roleId: roleAssignment.roleId,
-        roleName: roleAssignment.role?.name,
-        rolePermissionsCount: roleAssignment.role?.rolePermissions?.length || 0,
-        fullRole: roleAssignment.role
-      });
-      
-      roleAssignment.role?.rolePermissions?.forEach((rolePermission: any, index: number) => {
+      roleAssignment.role?.rolePermissions?.forEach((rolePermission: any) => {
         const permission = rolePermission.permission;
-        console.log(`🔑 Processing role permission ${index + 1}:`, {
-          permission: permission,
-          resourceName: permission?.resource?.name,
-          action: permission?.action,
-          permissionKey: permission?.resource?.name && permission?.action ? `${permission.resource.name}.${permission.action}` : 'INVALID'
-        });
         
         if (permission?.resource?.name && permission?.action) {
           const permissionKey = `${permission.resource.name}.${permission.action}`;
           rolePermissions.add(permissionKey);
-          console.log(`✅ Added permission: ${permissionKey}`);
-        } else {
-          console.warn('⚠️ Skipped invalid permission:', permission);
         }
       });
     });
 
-    console.log('✅ Role permissions extracted:', {
-      count: rolePermissions.size,
-      sample: Array.from(rolePermissions).slice(0, 5)
-    });
-
     // Process each resource
-    console.log('🏗️ Processing resources:', {
-      resourceCount: resourcesData.resources.length,
-      rolePermissionsCount: rolePermissions.size,
-      rolePermissionsList: Array.from(rolePermissions)
-    });
 
-    resourcesData.resources.forEach((resource, resourceIndex) => {
-      console.log(`📋 Processing resource ${resourceIndex + 1}: ${resource.name}`, {
-        resource: resource,
-        permissionsCount: resource.permissions?.length || 0,
-        permissions: resource.permissions
-      });
-      
+    resourcesData.resources.forEach((resource) => {
       permissions[resource.name] = {};
       
       if (!resource.permissions || resource.permissions.length === 0) {
-        console.warn(`⚠️ Resource ${resource.name} has no permissions!`);
         return;
       }
       
-      resource.permissions?.forEach((permission: any, permIndex: number) => {
+      resource.permissions?.forEach((permission: any) => {
         const permissionKey = `${resource.name}.${permission.action}`;
         const hasRolePermission = rolePermissions.has(permissionKey);
-        
-        console.log(`  🔍 Checking permission ${permIndex + 1}:`, {
-          resourceName: resource.name,
-          action: permission.action,
-          permissionKey: permissionKey,
-          hasRolePermission: hasRolePermission,
-          rolePermissionsInclude: Array.from(rolePermissions).includes(permissionKey)
-        });
         
         // Check for overrides
         const override = userPermissionsData.permissionOverrides?.find(
@@ -320,14 +212,12 @@ export function PermissionEditor({
         );
 
         if (override) {
-          console.log(`  🔄 Found override for ${permissionKey}:`, override);
           permissions[resource.name][permission.action] = {
             hasPermission: override.granted,
             source: override.granted ? 'override_granted' : 'override_denied',
             overrideId: override.id,
           };
         } else {
-          console.log(`  ${hasRolePermission ? '✅' : '❌'} Role permission for ${permissionKey}: ${hasRolePermission}`);
           permissions[resource.name][permission.action] = {
             hasPermission: hasRolePermission,
             source: 'role',
@@ -336,14 +226,6 @@ export function PermissionEditor({
       });
     });
 
-    console.log('✅ Final effectivePermissions calculated:', {
-      resourcesCount: Object.keys(permissions).length,
-      totalPermissions: Object.values(permissions).reduce((acc, resource) => acc + Object.keys(resource).length, 0),
-      sample: Object.keys(permissions).slice(0, 3).map(resource => ({
-        resource,
-        permissions: Object.keys(permissions[resource]).length
-      }))
-    });
 
     return permissions;
   }, [resourcesData, userPermissionsData]);
@@ -352,28 +234,13 @@ export function PermissionEditor({
   const filteredResources = useMemo(() => {
     if (!resourcesData?.resources) return [];
     
-    const filtered = !searchTerm 
+    return !searchTerm 
       ? resourcesData.resources 
       : resourcesData.resources.filter(resource =>
           resource.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           resource.displayName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
           resource.description?.toLowerCase().includes(searchTerm.toLowerCase())
         );
-    
-    // Debug filtered resources
-    console.log('🔍 Filtered Resources:', {
-      totalResources: resourcesData.resources.length,
-      filteredCount: filtered.length,
-      searchTerm: searchTerm,
-      filteredResources: filtered.map(r => ({
-        name: r.name,
-        displayName: r.displayName,
-        permissionCount: r.permissions?.length || 0,
-        hasPermissions: !!r.permissions && r.permissions.length > 0
-      }))
-    });
-    
-    return filtered;
   }, [resourcesData?.resources, searchTerm]);
 
   // Handle permission change
@@ -473,17 +340,14 @@ export function PermissionEditor({
         try {
           if (change.granted === hasRolePermission && change.originalOverrideId) {
             // Remove override (returning to role default) with Clerk sync
-            console.log(`🔄 Removing override for ${change.resource}.${change.operation}`);
             await deletePermissionOverride(
               change.originalOverrideId,
               userId,
               clerkUserId,
               userRole as UserRole
             );
-            console.log(`✅ Successfully removed override for ${change.resource}.${change.operation}`);
           } else if (change.granted !== hasRolePermission) {
             // Create new override with Clerk sync
-            console.log(`🔄 Creating override for ${change.resource}.${change.operation} = ${change.granted}`);
             await createPermissionOverride(
               userId,
               clerkUserId,
@@ -493,7 +357,6 @@ export function PermissionEditor({
               change.granted,
               change.reason
             );
-            console.log(`✅ Successfully created override for ${change.resource}.${change.operation}`);
           }
 
           // Create audit log entry
@@ -511,8 +374,6 @@ export function PermissionEditor({
 
           successCount++;
         } catch (changeError: any) {
-          console.error(`❌ Failed to process permission change for ${change.resource}.${change.operation}:`, changeError);
-          
           // Continue with other changes but track the error
           const errorMessage = changeError.message || 'Unknown error';
           setSaveError(`Failed to update ${change.resource}.${change.operation}: ${errorMessage}`);
@@ -526,7 +387,6 @@ export function PermissionEditor({
       try {
         await refetchUserPermissions();
       } catch (refetchError) {
-        console.warn("Failed to refetch user permissions:", refetchError);
         // Don't fail the entire operation for refetch errors
       }
       
@@ -545,7 +405,6 @@ export function PermissionEditor({
       }
       
     } catch (error: any) {
-      console.error("❌ Critical error saving permission changes:", error);
       const errorMessage = error.message || 'Unknown error occurred';
       setSaveError(`Critical error: ${errorMessage}`);
       toast.error("Failed to save permission changes. Please try again.");
@@ -593,7 +452,7 @@ export function PermissionEditor({
         <CardContent>
           <div className="space-y-4">
             <div className="text-sm text-blue-600">
-              Loading permissions... (Resources: {resourcesLoading ? "loading" : "loaded"}, User: {userPermissionsLoading ? "loading" : "loaded"})
+              Loading permissions...
             </div>
             <Skeleton className="h-10 w-full" />
             {[...Array(5)].map((_, i) => (
@@ -627,9 +486,6 @@ export function PermissionEditor({
               {userPermissionsError && (
                 <p className="text-sm text-red-700 mt-1">User Permissions Error: {userPermissionsError.message}</p>
               )}
-              <div className="mt-2 text-xs text-red-600">
-                Debug Info: userId={userId}, resourcesData={!!resourcesData}, userPermissionsData={!!userPermissionsData}
-              </div>
             </div>
           </div>
         </CardContent>
@@ -701,18 +557,10 @@ export function PermissionEditor({
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="text-xs text-gray-600 p-2 bg-gray-50 rounded">
-              Debug: {filteredResources.length} resources, {Object.keys(effectivePermissions).length} permission resources, 
-              userId: {userId}, search: "{searchTerm}"
-            </div>
             {filteredResources.length === 0 ? (
               <div className="text-center py-8">
                 <Shield className="w-12 h-12 mx-auto mb-4 text-gray-400" />
                 <p className="text-gray-500">No resources found matching your search.</p>
-                <div className="text-xs text-gray-400 mt-2">
-                  Available resources: {resourcesData?.resources?.length || 0}, 
-                  Effective permissions: {Object.keys(effectivePermissions).length}
-                </div>
               </div>
             ) : (
               filteredResources.map((resource) => (

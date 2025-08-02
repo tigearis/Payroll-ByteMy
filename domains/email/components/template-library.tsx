@@ -5,6 +5,7 @@
 // SOC2 Compliance: Template access audit and permission checks
 
 import { useQuery, useMutation } from '@apollo/client';
+import { useUser } from '@clerk/nextjs';
 import { 
   Search,
   Filter,
@@ -83,6 +84,7 @@ export function TemplateLibrary({
   className
 }: TemplateLibraryProps) {
   // State
+  const { user } = useUser();
   const [selectedCategory, setSelectedCategory] = useState<EmailCategory | 'all'>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [showSystemOnly, setShowSystemOnly] = useState(false);
@@ -198,13 +200,17 @@ export function TemplateLibrary({
 
   // Handle favorite toggle
   const handleFavoriteToggle = useCallback((templateId: string, isFavorite: boolean) => {
-    // TODO: Track favorite status in template data
-    if (isFavorite) {
-      removeFavorite({ variables: { userId: 'current-user-id', templateId } });
-    } else {
-      addFavorite({ variables: { userId: 'current-user-id', templateId } });
+    if (!user?.id) {
+      console.error("User not authenticated");
+      return;
     }
-  }, [addFavorite, removeFavorite]);
+    
+    if (isFavorite) {
+      removeFavorite({ variables: { userId: user.id, templateId } });
+    } else {
+      addFavorite({ variables: { userId: user.id, templateId } });
+    }
+  }, [addFavorite, removeFavorite, user?.id]);
 
   // Get category info
   const getCategoryInfo = useCallback((categoryId: string) => {
