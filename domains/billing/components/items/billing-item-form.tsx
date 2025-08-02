@@ -14,11 +14,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { useDatabaseUserId } from '@/hooks/use-database-user-id';
 import { formatCurrency } from '@/lib/utils';
 import { 
   CreateBillingItemAdvancedDocument, 
   UpdateBillingItemAdvancedDocument, 
-  GetNewServiceCatalogDocument
+  GetNewServiceCatalogDocument,
+  GetClientsForBillingItemsAdvancedDocument
 } from '../../graphql/generated/graphql';
 // import { EnhancedServiceCatalog } from '../services/enhanced-service-catalog';
 // import { pricingEngine, type PricingContext } from '../../services/pricing-engine';
@@ -57,6 +59,7 @@ const commonUnits = [
 export function BillingItemForm({ itemId, preselectedClientId }: BillingItemFormProps) {
   const router = useRouter();
   const { toast } = useToast();
+  const { databaseUserId, isReady } = useDatabaseUserId();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   // Future service selection features
@@ -73,9 +76,7 @@ export function BillingItemForm({ itemId, preselectedClientId }: BillingItemForm
   });
 
   // Get clients for dropdown
-  // TODO: GetClientsForBillingDocument not available - using mock data
-  const clientsData: any = null;
-  const clientsLoading = false;
+  const { data: clientsData, loading: clientsLoading } = useQuery(GetClientsForBillingItemsAdvancedDocument);
   
   // Get services for selection
   const { data: servicesData, loading: servicesLoading } = useQuery(GetNewServiceCatalogDocument, {
@@ -163,6 +164,15 @@ export function BillingItemForm({ itemId, preselectedClientId }: BillingItemForm
       return;
     }
 
+    if (!databaseUserId || !isReady) {
+      toast({
+        title: 'Error',
+        description: 'User authentication not ready. Please try again.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -177,6 +187,7 @@ export function BillingItemForm({ itemId, preselectedClientId }: BillingItemForm
         status: 'draft',
         totalAmount: formData.unitPrice * formData.quantity,
         amount: formData.unitPrice * formData.quantity,
+        staffUserId: databaseUserId,
       };
 
       if (itemId) {

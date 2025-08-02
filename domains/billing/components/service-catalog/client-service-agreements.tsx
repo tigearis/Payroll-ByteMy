@@ -1,6 +1,6 @@
 'use client';
 
-// import { useQuery, useMutation } from '@apollo/client';
+import { useQuery, useMutation } from '@apollo/client';
 import { Edit2, Save, X, Plus } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
@@ -12,15 +12,12 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-// TODO: Missing GraphQL operations - using mock data instead:
-// GetClientServiceAgreementsDocument -> GetNewclientServiceAgreementsDocument
-// GetServiceCatalogDocument -> GetNewServiceCatalogDocument  
-// BulkUpdateClientServiceAgreementsDocument -> UpdateClientServiceAgreementDocument
-// import { 
-//   GetNewclientServiceAgreementsDocument,
-//   GetNewServiceCatalogDocument,
-//   UpdateClientServiceAgreementDocument
-// } from '../../graphql/generated/graphql';
+import { 
+  GetNewclientServiceAgreementsDocument,
+  GetNewServiceCatalogDocument,
+  UpdateClientServiceAgreementDocument,
+  CreateClientServiceAgreementDocument
+} from '../../graphql/generated/graphql';
 
 interface ClientServiceAgreement {
   id?: string;
@@ -54,120 +51,55 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
   const [editingAgreements, setEditingAgreements] = useState<ClientServiceAgreement[]>([]);
   const [isEditing, setIsEditing] = useState(false);
 
-  // Mock loading states
-  const [agreementsLoading, setAgreementsLoading] = useState(true);
-  const [servicesLoading, setServicesLoading] = useState(true);
-  const [servicesError, setServicesError] = useState(null);
+  // GraphQL queries
+  const { 
+    data: agreementsData, 
+    loading: agreementsLoading, 
+    error: agreementsError,
+    refetch 
+  } = useQuery(GetNewclientServiceAgreementsDocument, {
+    variables: { clientId },
+    errorPolicy: 'all'
+  });
 
-  // Mock data for client service agreements
-  const mockAgreementsData = {
-    clientServiceAgreements: [
-      {
-        id: 'agreement-1',
-        serviceId: 'service-1',
-        customRate: 180.00,
-        billingFrequency: 'Per Job',
-        contractStartDate: '2024-01-01',
-        effectiveDate: '2024-01-01',
-        isEnabled: true,
-        service: {
-          name: 'Payroll Processing',
-          category: 'Processing',
-          defaultRate: 150.00,
-          billingUnit: 'Per Payslip'
-        }
-      },
-      {
-        id: 'agreement-2',
-        serviceId: 'service-2',
-        customRate: null,
-        billingFrequency: 'Monthly',
-        contractStartDate: '2024-01-01',
-        effectiveDate: '2024-01-01',
-        isEnabled: true,
-        service: {
-          name: 'Employee Onboarding',
-          category: 'Employee Management',
-          defaultRate: 45.00,
-          billingUnit: 'Per Employee'
-        }
-      }
-    ]
-  };
+  const { 
+    data: servicesData, 
+    loading: servicesLoading, 
+    error: servicesError 
+  } = useQuery(GetNewServiceCatalogDocument, {
+    variables: { limit: 100 },
+    errorPolicy: 'all'
+  });
 
-  // Mock data for available services
-  const mockServicesData = {
-    services: [
-      {
-        id: 'service-1',
-        name: 'Payroll Processing',
-        category: 'Processing',
-        defaultRate: 150.00,
-        billingUnit: 'Per Payslip'
-      },
-      {
-        id: 'service-2',
-        name: 'Employee Onboarding',
-        category: 'Employee Management',
-        defaultRate: 45.00,
-        billingUnit: 'Per Employee'
-      },
-      {
-        id: 'service-3',
-        name: 'Compliance Review',
-        category: 'Compliance & Reporting',
-        defaultRate: 200.00,
-        billingUnit: 'Per Payroll'
-      },
-      {
-        id: 'service-4',
-        name: 'Payroll Setup',
-        category: 'Setup & Configuration',
-        defaultRate: 350.00,
-        billingUnit: 'Once Off'
-      }
-    ]
-  };
+  // GraphQL mutations
+  const [createAgreement] = useMutation(CreateClientServiceAgreementDocument, {
+    onCompleted: () => {
+      toast.success('Service agreement created successfully');
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(`Failed to create service agreement: ${error.message}`);
+    }
+  });
 
-  // Mock loading effect
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setAgreementsLoading(false);
-      setServicesLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Mock refetch function
-  const refetch = async () => {
-    setAgreementsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 500));
-    setAgreementsLoading(false);
-  };
-
-  // Mock mutation function
-  const bulkUpdateAgreements = async (options: any) => {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    return {
-      data: {
-        updateClientServiceAgreements: {
-          affectedRows: options.variables.agreements.length
-        }
-      }
-    };
-  };
-
-  const agreementsData = mockAgreementsData;
-  const servicesData = mockServicesData;
+  const [updateAgreementMutation] = useMutation(UpdateClientServiceAgreementDocument, {
+    onCompleted: () => {
+      toast.success('Service agreement updated successfully');
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(`Failed to update service agreement: ${error.message}`);
+    }
+  });
 
   const handleStartEdit = () => {
-    if (!agreementsData?.clientServiceAgreements || !servicesData?.services) {
+    if (!servicesData?.services) {
       return;
     }
 
     // Create a map of existing agreements
     const existingAgreements = new Map(
-      agreementsData.clientServiceAgreements.map((agreement: typeof mockAgreementsData.clientServiceAgreements[0]) => [
+      (agreementsData?.clientServiceAgreements || []).map((agreement: any) => [
         agreement.serviceId,
         {
           id: agreement.id,
@@ -179,13 +111,13 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
           category: agreement.service?.category || 'Processing',
           billing_frequency: agreement.billingFrequency || 'Per Job',
           is_enabled: agreement.isEnabled || false,
-          effective_date: agreement.effectiveDate || new Date().toISOString().split('T')[0]
+          effective_date: agreement.contractStartDate || new Date().toISOString().split('T')[0]
         }
       ])
     );
 
     // Create agreements for all services
-    const allAgreements = servicesData.services.map((service: typeof mockServicesData.services[0]) => {
+    const allAgreements = servicesData.services.map((service: any) => {
       const existing = existingAgreements.get(service.id);
       return existing || {
         service_id: service.id,
@@ -206,30 +138,40 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
 
   const handleSave = async () => {
     try {
-      const agreementsToInsert = editingAgreements
-        .filter(agreement => agreement.is_enabled)
-        .map(agreement => ({
+      const agreementsToProcess = editingAgreements.filter(agreement => agreement.is_enabled);
+      
+      for (const agreement of agreementsToProcess) {
+        const input = {
           clientId: clientId,
           serviceId: agreement.service_id,
           customRate: agreement.custom_rate || null,
           billingFrequency: agreement.billing_frequency || 'Per Job',
-          effectiveDate: agreement.effective_date || new Date().toISOString().split('T')[0],
+          contractStartDate: agreement.effective_date || new Date().toISOString().split('T')[0],
           isEnabled: agreement.is_enabled,
           isActive: true,
-          startDate: agreement.effective_date || new Date().toISOString().split('T')[0],
-          endDate: null
-        }));
+        };
 
-      await bulkUpdateAgreements({
-        variables: {
-          clientId,
-          agreements: agreementsToInsert
+        if (agreement.id) {
+          // Update existing agreement
+          await updateAgreementMutation({
+            variables: {
+              id: agreement.id,
+              input: input
+            }
+          });
+        } else {
+          // Create new agreement
+          await createAgreement({
+            variables: {
+              input: input
+            }
+          });
         }
-      });
+      }
 
       toast.success('Client service agreements updated successfully');
       setIsEditing(false);
-      refetch();
+      await refetch();
     } catch (error) {
       toast.error('Failed to update service agreements');
       console.error('Service agreements update error:', error);
@@ -241,7 +183,7 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
     setEditingAgreements([]);
   };
 
-  const updateAgreement = (serviceId: string, field: keyof ClientServiceAgreement, value: any) => {
+  const updateLocalAgreement = (serviceId: string, field: keyof ClientServiceAgreement, value: any) => {
     setEditingAgreements(prev =>
       prev.map(agreement =>
         agreement.service_id === serviceId
@@ -270,7 +212,7 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
     return <div className="text-center py-8">Loading service agreements...</div>;
   }
 
-  if (servicesError) {
+  if (servicesError || agreementsError) {
     return (
       <Card>
         <CardHeader>
@@ -278,8 +220,10 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-red-600">
-            <p>Error loading service catalog</p>
-            <p className="text-sm text-gray-500 mt-2">Please try refreshing the page</p>
+            <p>Error loading service agreements</p>
+            <p className="text-sm text-gray-500 mt-2">
+              {servicesError?.message || agreementsError?.message || 'Please try refreshing the page'}
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -345,7 +289,7 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
                       <Switch
                         checked={agreement.is_enabled}
                         onCheckedChange={(checked) =>
-                          updateAgreement(agreement.service_id, 'is_enabled', checked)
+                          updateLocalAgreement(agreement.service_id, 'is_enabled', checked)
                         }
                       />
                     </TableCell>
@@ -370,7 +314,7 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
                         step="0.01"
                         value={agreement.custom_rate || ''}
                         onChange={(e) =>
-                          updateAgreement(
+                          updateLocalAgreement(
                             agreement.service_id,
                             'custom_rate',
                             e.target.value ? parseFloat(e.target.value) : undefined
@@ -388,7 +332,7 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
                       <Select
                         value={agreement.billing_frequency}
                         onValueChange={(value) =>
-                          updateAgreement(agreement.service_id, 'billing_frequency', value)
+                          updateLocalAgreement(agreement.service_id, 'billing_frequency', value)
                         }
                         disabled={!agreement.is_enabled}
                       >
@@ -409,7 +353,7 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
                         type="date"
                         value={agreement.effective_date}
                         onChange={(e) =>
-                          updateAgreement(agreement.service_id, 'effective_date', e.target.value)
+                          updateLocalAgreement(agreement.service_id, 'effective_date', e.target.value)
                         }
                         disabled={!agreement.is_enabled}
                         className="w-36"
@@ -441,7 +385,7 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {currentAgreements.map((agreement: typeof mockAgreementsData.clientServiceAgreements[0]) => (
+                  {currentAgreements.map((agreement: any) => (
                     <TableRow key={agreement.id}>
                       <TableCell>
                         <div className="font-medium">
