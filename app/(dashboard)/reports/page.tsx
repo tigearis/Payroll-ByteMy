@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function ReportsPage() {
   return (
-    <PermissionGuard role="developer" fallback={
+    <PermissionGuard minRole="developer" fallback={
       <div className="container mx-auto py-6">
         <div className="text-center py-12">
           <h3 className="text-lg font-medium mb-2 text-red-800">

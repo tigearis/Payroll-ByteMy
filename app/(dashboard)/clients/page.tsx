@@ -25,6 +25,7 @@ import {
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { GraphQLErrorBoundary } from "@/components/graphql-error-boundary";
+import { CanCreate } from "@/components/auth/permission-guard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -132,16 +133,7 @@ function MultiSelect({
 function ClientsPage() {
   const { user, isLoaded: userLoaded } = useUser();
 
-  const canCreateClient = true;
-  const canViewClients = true;
-
-  // Debug user and permissions
-  console.log("User and permissions:", {
-    userLoaded,
-    user: user?.id,
-    canCreateClient,
-    canViewClients,
-  });
+  // Permission debugging removed - now using proper permission guards
 
   // State management
   const [searchTerm, setSearchTerm] = useState("");
@@ -215,7 +207,7 @@ function ClientsPage() {
     error: statsError,
     data: statsData,
   } = useQuery(GetClientsDashboardStatsDocument, {
-    skip: !userLoaded || !user || !canViewClients,
+    skip: !userLoaded || !user,
     errorPolicy: "all",
   });
 
@@ -229,7 +221,7 @@ function ClientsPage() {
         orderBy: buildOrderBy(),
       },
       pollInterval: 60000,
-      skip: !userLoaded || !user || !canViewClients,
+      skip: !userLoaded || !user,
       errorPolicy: "all",
       fetchPolicy: "cache-and-network",
     });
@@ -576,14 +568,14 @@ function ClientsPage() {
         </div>
 
         <div className="flex items-center space-x-2">
-          {canCreateClient && (
+          <CanCreate resource="clients">
             <Link href="/clients/new">
               <Button>
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Add Client
               </Button>
             </Link>
-          )}
+          </CanCreate>
         </div>
       </div>
 
@@ -826,14 +818,16 @@ function ClientsPage() {
                   ? "Try adjusting your search criteria or filters"
                   : "Get started by adding your first client"}
               </p>
-              {canCreateClient && !hasActiveFilters && (
-                <Link href="/clients/new">
-                  <Button>
-                    <PlusCircle className="w-4 h-4 mr-2" />
-                    Add First Client
-                  </Button>
-                </Link>
-              )}
+              <CanCreate resource="clients">
+                {!hasActiveFilters && (
+                  <Link href="/clients/new">
+                    <Button>
+                      <PlusCircle className="w-4 h-4 mr-2" />
+                      Add First Client
+                    </Button>
+                  </Link>
+                )}
+              </CanCreate>
             </div>
           </CardContent>
         </Card>

@@ -16,7 +16,7 @@ interface DeveloperOnlyProps {
 
 export function DeveloperOnly({ children, fallback }: DeveloperOnlyProps) {
   return (
-    <PermissionGuard role="developer" fallback={fallback}>
+    <PermissionGuard minRole="developer" fallback={fallback}>
       {children}
     </PermissionGuard>
   );

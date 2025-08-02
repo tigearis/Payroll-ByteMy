@@ -4,11 +4,8 @@
  * Work Schedule Management Page
  *
  * PERMISSION GUARDS SETUP:
- * 1. Uncomment the ManagerOnly import (search for "permission-guard")
- * 2. Wrap sections as follows:
- *    - HeaderSection: <ManagerOnly fallback={<ConsultantHeaderView />}>
- *    - StatsSection: <ManagerOnly fallback={<PersonalStatsView />}>
- *    - MainContentSection: <ManagerOnly fallback={<PersonalScheduleView />}>
+ * Uses new hierarchical permission system with manager role requirement.
+ * Components are wrapped with <PermissionGuard minRole="manager" fallback={...}>
  *
  * GENERATED QUERIES:
  * All inline GraphQL queries have been replaced with generated types:
@@ -39,7 +36,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ManagerOnly, PermissionGuard } from "@/components/auth/permission-guard";
+import { PermissionGuard } from "@/components/auth/permission-guard";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -898,7 +895,7 @@ export default function WorkSchedulePage() {
           </p>
         </div>
 
-        <PermissionGuard permission="workschedule.manage" fallback={
+        <PermissionGuard action="manage" fallback={
           <Badge variant="outline" className="text-gray-600">
             <Users className="w-4 h-4 mr-1" />
             View Only
@@ -916,7 +913,7 @@ export default function WorkSchedulePage() {
 
       {/* Quick Stats Summary - Manager Dashboard */}
       <StatsSection>
-        <ManagerOnly fallback={
+        <PermissionGuard minRole="manager" fallback={
           <Card>
             <CardContent className="p-6">
               <div className="text-center">
@@ -1023,12 +1020,12 @@ export default function WorkSchedulePage() {
             </CardContent>
           </Card>
         </div>
-        </ManagerOnly>
+        </PermissionGuard>
       </StatsSection>
 
       {/* Main Content Tabs - Manager Functions */}
       <MainContentSection>
-        <ManagerOnly fallback={
+        <PermissionGuard minRole="manager" fallback={
           <Card>
             <CardContent className="p-6">
               <div className="text-center">
@@ -1179,7 +1176,7 @@ export default function WorkSchedulePage() {
             </div>
           </TabsContent>
         </Tabs>
-        </ManagerOnly>
+        </PermissionGuard>
       </MainContentSection>
       {/* End of permission-protected content */}
     </div>

@@ -9,21 +9,24 @@
  * This is the single source of truth for all permission checking components.
  */
 
-import { ReactNode } from "react";
+import { ReactNode, useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useHierarchicalPermissions, useRoleAccess } from "@/hooks/use-hierarchical-permissions";
 import type { UserRole } from "@/lib/permissions/hierarchical-permissions";
+import { useResourceContext, type ResourceName, type PermissionAction } from "./resource-context";
 
 interface PermissionGuardProps {
   children: ReactNode;
   fallback?: ReactNode;
   
-  // Single permission checking
+  // Single permission checking (backwards compatible)
   permission?: string;
   
-  // Granular permission checking
-  resource?: string;
-  action?: string;
+  // Resource-based permission checking (new pattern)
+  resource?: ResourceName;
+  action?: PermissionAction;
+  
+  // Multiple permissions checking
   permissions?: string[];
   requireAll?: boolean;
   
@@ -67,6 +70,30 @@ export function PermissionGuard({
     canAccessRole
   } = useRoleAccess();
 
+  // Get resource context for action-based permissions
+  const contextResource = useResourceContext();
+
+  // Compute the final permission string with priority logic
+  const finalPermission = useMemo(() => {
+    // Priority 1: Direct permission string (backwards compatible)
+    if (permission) {
+      return permission;
+    }
+    
+    // Priority 2: Resource override + action
+    if (resource && action) {
+      return `${resource}.${action}`;
+    }
+    
+    // Priority 3: Context resource + action
+    if (contextResource && action) {
+      return `${contextResource}.${action}`;
+    }
+    
+    // If no permission can be determined, return null
+    return null;
+  }, [permission, resource, action, contextResource]);
+
   // Show loading state
   if (isLoading && showLoading) {
     return loadingComponent || <Skeleton className="w-full h-8" />;
@@ -79,15 +106,9 @@ export function PermissionGuard({
 
   let hasAccess = true;
 
-  // Check single permission (direct)
-  if (permission) {
-    hasAccess = hasAccess && hasPermission(permission);
-  }
-
-  // Check single permission (resource.action)
-  if (resource && action) {
-    const combinedPermission = `${resource}.${action}`;
-    hasAccess = hasAccess && hasPermission(combinedPermission);
+  // Check computed permission (direct, resource.action, or context.action)
+  if (finalPermission) {
+    hasAccess = hasAccess && hasPermission(finalPermission);
   }
 
   // Check multiple permissions
@@ -139,7 +160,7 @@ export function CanRead({
   children, 
   fallback 
 }: { 
-  resource: string; 
+  resource: ResourceName; 
   children: ReactNode; 
   fallback?: ReactNode 
 }) {
@@ -155,7 +176,7 @@ export function CanCreate({
   children, 
   fallback 
 }: { 
-  resource: string; 
+  resource: ResourceName; 
   children: ReactNode; 
   fallback?: ReactNode 
 }) {
@@ -171,7 +192,7 @@ export function CanUpdate({
   children, 
   fallback 
 }: { 
-  resource: string; 
+  resource: ResourceName; 
   children: ReactNode; 
   fallback?: ReactNode 
 }) {
@@ -187,7 +208,7 @@ export function CanDelete({
   children, 
   fallback 
 }: { 
-  resource: string; 
+  resource: ResourceName; 
   children: ReactNode; 
   fallback?: ReactNode 
 }) {
@@ -203,7 +224,7 @@ export function CanApprove({
   children, 
   fallback 
 }: { 
-  resource: string; 
+  resource: ResourceName; 
   children: ReactNode; 
   fallback?: ReactNode 
 }) {
@@ -219,7 +240,7 @@ export function CanExport({
   children, 
   fallback 
 }: { 
-  resource: string; 
+  resource: ResourceName; 
   children: ReactNode; 
   fallback?: ReactNode 
 }) {
@@ -340,5 +361,9 @@ export function SimplePermissionGuard({
 export const HierarchicalPermissionGuard = PermissionGuard;
 export const PermissionGuardHierarchical = PermissionGuard;
 export const HasAnyPermissionGuard = AnyPermissionGuard;
+
+// Export resource context components and types
+export { ResourceProvider, useResourceContext, RESOURCES, ACTIONS } from "./resource-context";
+export type { ResourceName, PermissionAction } from "./resource-context";
 
 export default PermissionGuard;

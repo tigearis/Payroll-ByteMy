@@ -64,7 +64,7 @@ function getUserRole(
 
 export function UrgentAlerts() {
   return (
-    <PermissionGuard permission="payroll:read">
+    <PermissionGuard resource="payrolls" action="read">
       <UrgentAlertsInner />
     </PermissionGuard>
   );

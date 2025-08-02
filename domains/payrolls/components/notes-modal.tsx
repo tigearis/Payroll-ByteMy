@@ -70,7 +70,7 @@ export function NotesModal({ note, refetchNotes, trigger }: NotesModalProps) {
   };
 
   return (
-    <PermissionGuard permission="payroll:write">
+    <PermissionGuard action="update">
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         {trigger || (

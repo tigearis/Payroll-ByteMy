@@ -68,7 +68,7 @@ export function RegenerateDates({
   };
 
   return (
-    <PermissionGuard permission="payroll:write">
+    <PermissionGuard action="update">
       <div>
       {!isDialogOpen ? (
         <Button variant="outline" onClick={() => setIsDialogOpen(true)}>

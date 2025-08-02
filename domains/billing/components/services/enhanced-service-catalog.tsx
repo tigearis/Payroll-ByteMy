@@ -440,7 +440,7 @@ export const EnhancedServiceCatalog: React.FC<EnhancedServiceCatalogProps> = ({
           </p>
         </div>
         <div className="flex gap-2">
-          <PermissionGuard permission="billing.create">
+          <PermissionGuard action="create">
             <Button onClick={() => setShowEditor(true)} className="flex items-center gap-2">
               <Plus className="h-4 w-4" />
               Add Service
@@ -645,7 +645,7 @@ export const EnhancedServiceCatalog: React.FC<EnhancedServiceCatalogProps> = ({
                               
                               {!selectionMode && (
                                 <div className="flex gap-2 ml-4">
-                                  <PermissionGuard permission="billing.update" fallback={null}>
+                                  <PermissionGuard action="update" fallback={null}>
                                     <Button
                                       variant="outline"
                                       size="sm"
@@ -655,7 +655,7 @@ export const EnhancedServiceCatalog: React.FC<EnhancedServiceCatalogProps> = ({
                                       <Edit2 className="h-4 w-4" />
                                     </Button>
                                   </PermissionGuard>
-                                  <PermissionGuard permission="billing.delete" fallback={null}>
+                                  <PermissionGuard action="delete" fallback={null}>
                                     <Button
                                       variant="outline"
                                       size="sm"

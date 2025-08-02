@@ -1299,7 +1299,7 @@ export default function PayrollPage() {
   const possibleStatuses = ["Implementation", "Active", "Inactive"];
 
   return (
-    <PermissionGuard permission="payrolls.read" fallback={
+    <PermissionGuard action="read" fallback={
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center space-y-4">
           <AlertTriangle className="w-8 h-8 mx-auto text-amber-500" />

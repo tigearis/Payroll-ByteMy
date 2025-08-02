@@ -198,7 +198,7 @@ export function PayrollCompletionTracker() {
                 Track payroll date completions and billing generation
               </CardDescription>
             </div>
-            <PermissionGuard permission="payrolls.read">
+            <PermissionGuard resource="payrolls" action="read">
               <Button variant="outline" asChild>
                 <Link href="/payrolls">
                   <Calendar className="w-4 h-4 mr-2" />
@@ -240,7 +240,7 @@ export function PayrollCompletionTracker() {
                 <div className="flex items-center space-x-3">
                   {getStatusBadge(payrollDate.status, payrollDate.billingGenerated)}
                   {payrollDate.status === "completed" && !payrollDate.billingGenerated && (
-                    <PermissionGuard permission="billing.create">
+                    <PermissionGuard action="create">
                       <Button size="sm" variant="outline">
                         Generate Billing
                       </Button>

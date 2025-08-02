@@ -157,6 +157,59 @@ export function getReliableNameFromTicket(
 }
 
 /**
+ * Enhanced ticket validation that includes database invitation lookup
+ * Combines JWT validation with database invitation data for complete user info
+ */
+export async function extractClerkTicketDataWithInvitation(clerkTicket: string): Promise<ClerkTicketValidationResult & { invitationData?: any }> {
+  // First, validate the JWT ticket
+  const jwtResult = extractClerkTicketData(clerkTicket);
+  
+  if (!jwtResult.isValid || !jwtResult.invitationId) {
+    return jwtResult;
+  }
+
+  try {
+    // Import GraphQL functions dynamically to avoid circular imports
+    const { executeTypedQuery } = await import('@/lib/apollo/query-helpers');
+    const { GetInvitationByClerkIdDocument } = await import('@/domains/auth/graphql/generated/graphql');
+    
+    // Fetch invitation data from database using the invitation ID from JWT
+    const invitationData = await executeTypedQuery(
+      GetInvitationByClerkIdDocument,
+      { clerkInvitationId: jwtResult.invitationId }
+    );
+
+    const invitation = (invitationData as any)?.userInvitations?.[0];
+
+    if (invitation) {
+      // Merge JWT data with database invitation data
+      const enhancedUserData: ClerkTicketUserData = {
+        ...jwtResult.userData,
+        // Prioritize database invitation data for names
+        firstName: invitation.firstName || jwtResult.userData?.firstName,
+        lastName: invitation.lastName || jwtResult.userData?.lastName,
+        email: invitation.email || jwtResult.userData?.email,
+        role: invitation.invitedRole || jwtResult.userData?.role,
+      };
+
+      return {
+        ...jwtResult,
+        userData: enhancedUserData,
+        invitationData: invitation
+      };
+    }
+
+    // If no invitation found in database, return original JWT result
+    return jwtResult;
+
+  } catch (error) {
+    console.warn('Failed to fetch invitation data from database:', error);
+    // Return original JWT result even if database lookup fails
+    return jwtResult;
+  }
+}
+
+/**
  * Get the most reliable email from ticket
  * Priority: 1) ticket email, 2) fallback email
  */

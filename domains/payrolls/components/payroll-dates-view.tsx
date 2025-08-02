@@ -316,7 +316,7 @@ function PayrollDatesTable({
               )}
             </Badge>
             {!isCompleted && (
-              <PermissionGuard permission="payrolls.manage">
+              <PermissionGuard action="manage">
                 <Button
                   variant="outline"
                   size="sm"
@@ -711,7 +711,7 @@ export function PayrollDatesView({
   }
 
   return (
-    <PermissionGuard permission="payroll:read">
+    <PermissionGuard action="read">
       <div className="w-full">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold">Payroll Dates</h2>

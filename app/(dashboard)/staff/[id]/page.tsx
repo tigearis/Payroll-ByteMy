@@ -131,9 +131,7 @@ export default function StaffDetailsPage() {
   const [showSkillsModal, setShowSkillsModal] = useState(false);
   const [isUpdatingRole, setIsUpdatingRole] = useState(false);
 
-  // Permission checks (simplified - always allow if authenticated)
-  const canRead = true;
-  const canEdit = true;
+  // Permission checks now handled by PermissionGuard components
 
   // Helper function to check if user is viewing their own profile
   const isCurrentUser = (user: any): boolean => {
@@ -172,12 +170,12 @@ export default function StaffDetailsPage() {
   // GraphQL queries with hierarchical permission guards
   const { data, loading, error, refetch } = useQuery(GetStaffDetailCompleteDocument, {
     variables: { id },
-    skip: !id || !canRead,
+    skip: !id,
     fetchPolicy: "network-only",
   });
 
   const { data: usersData } = useQuery(GetAllUsersListDocument, {
-    skip: !canEdit,
+    // Permission handled by page-level PermissionGuard
   });
 
   // Permission queries removed - using simplified auth system
@@ -396,8 +394,8 @@ export default function StaffDetailsPage() {
     permission.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Permission guard
-  if (!canRead) {
+  // Permission guard removed - handled by layout resource context
+  if (false) {
     return (
       <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-6">
         <h3 className="text-lg font-semibold text-destructive mb-2">
@@ -476,7 +474,7 @@ export default function StaffDetailsPage() {
 
   return (
     <div className="container mx-auto py-6 space-y-6">
-      <PermissionGuard >
+      <PermissionGuard action="read">
         <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">

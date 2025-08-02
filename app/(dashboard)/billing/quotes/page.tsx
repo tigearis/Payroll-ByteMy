@@ -13,7 +13,7 @@ export default function QuotesPage() {
         </p>
       </div>
       
-      <PermissionGuard permission="billing.read">
+      <PermissionGuard action="read">
         <QuoteManagementDashboard />
       </PermissionGuard>
     </div>

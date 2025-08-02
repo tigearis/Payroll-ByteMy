@@ -55,7 +55,7 @@ const AVAILABLE_PERMISSIONS = [
 
 export function APIKeyManager() {
   return (
-    <PermissionGuard permission="admin:manage">
+    <PermissionGuard resource="security" action="manage">
       <APIKeyManagerInner />
     </PermissionGuard>
   );

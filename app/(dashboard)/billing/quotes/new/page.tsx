@@ -24,7 +24,7 @@ export default function NewQuotePage() {
         </p>
       </div>
       
-      <PermissionGuard permission="billing.create">
+      <PermissionGuard action="create">
         <QuoteBuilder />
       </PermissionGuard>
     </div>

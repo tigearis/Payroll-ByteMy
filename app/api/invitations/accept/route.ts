@@ -25,6 +25,10 @@ import {
   getReliableEmailFromTicket,
   logTicketData 
 } from "@/lib/clerk-ticket-utils";
+import { 
+  syncUserRoleAssignmentsHierarchical,
+  syncPermissionOverridesToClerk 
+} from "@/lib/permissions/hierarchical-permissions";
 
 const clerkClient = createClerkClient({
   secretKey: process.env.CLERK_SECRET_KEY!,
@@ -346,6 +350,25 @@ export const POST = withAuth(async (req: NextRequest, session) => {
           
           newUser = (updateUserRoleData as any)?.updateUsersByPk;
           console.log("✅ Updated existing user role to match invitation:", newUser.role);
+
+          // ✅ Sync role permissions after role update
+          if (newUser && needsRoleUpdate) {
+            try {
+              console.log(`🔄 Syncing role permissions after role update for user ${newUser.id}`);
+              await syncUserRoleAssignmentsHierarchical(newUser.id, newUser.role);
+              console.log(`✅ Role permissions synced after update for ${newUser.role} role`);
+
+              // Sync permissions to Clerk metadata
+              try {
+                await syncPermissionOverridesToClerk(newUser.id, clerkUserId, newUser.role);
+                console.log(`✅ Updated permissions synced to Clerk metadata`);
+              } catch (clerkSyncError) {
+                console.error("⚠️ Failed to sync updated permissions to Clerk:", clerkSyncError);
+              }
+            } catch (permissionSyncError) {
+              console.error("❌ Failed to sync permissions after role update:", permissionSyncError);
+            }
+          }
         } catch (roleUpdateError) {
           console.error("❌ Failed to update user role:", roleUpdateError);
           // Continue with existing user - don't fail the invitation acceptance
@@ -397,7 +420,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
           }
         );
 
-        newUser = userData.insertUsers;
+        newUser = userData.insertUsers?.returning?.[0];
       } catch (createUserError: any) {
         console.error("❌ Failed to create user:", createUserError);
         
@@ -490,6 +513,27 @@ export const POST = withAuth(async (req: NextRequest, session) => {
           },
           { status: 500 }
         );
+      }
+
+      // ✅ CRITICAL: Sync role permissions to database tables
+      try {
+        console.log(`🔄 Syncing role permissions for user ${newUser.id} with role ${newUser.role}`);
+        await syncUserRoleAssignmentsHierarchical(newUser.id, newUser.role);
+        console.log(`✅ Role permissions synced successfully for ${newUser.role} role`);
+
+        // Sync permissions to Clerk metadata for frontend access
+        try {
+          await syncPermissionOverridesToClerk(newUser.id, clerkUserId, newUser.role);
+          console.log(`✅ Permissions synced to Clerk metadata successfully`);
+        } catch (clerkSyncError) {
+          console.error("⚠️ Failed to sync permissions to Clerk (non-blocking):", clerkSyncError);
+          // Don't fail the invitation acceptance for Clerk sync issues
+        }
+      } catch (permissionSyncError) {
+        console.error("❌ Failed to sync role permissions:", permissionSyncError);
+        // Don't fail the invitation acceptance for permission sync issues - user still needs access
+        // This ensures the user can at least log in, and permissions can be synced later
+        console.log("⚠️ Continuing with invitation acceptance despite permission sync failure");
       }
     }
 

@@ -166,7 +166,7 @@ export function ClientsTableUnified({
   ];
 
   return (
-    <PermissionGuard permission="client:read">
+    <PermissionGuard action="read">
       <EnhancedUnifiedTable
         data={clients}
         columns={columns}

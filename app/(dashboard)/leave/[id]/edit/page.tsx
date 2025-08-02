@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowLeft, Calendar, FileText, User, Clock, AlertTriangle, Trash2 } from "lucide-react";
+import { PermissionGuard } from "@/components/auth/permission-guard";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -365,7 +366,8 @@ function EditLeaveRequestPage({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
+    <PermissionGuard action="read">
+      <div className="container mx-auto py-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
@@ -615,7 +617,8 @@ function EditLeaveRequestPage({ params }: { params: { id: string } }) {
           </Card>
         </div>
       </div>
-    </div>
+      </div>
+    </PermissionGuard>
   );
 }
 

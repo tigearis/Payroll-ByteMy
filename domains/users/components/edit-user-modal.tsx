@@ -69,7 +69,7 @@ export function EditUserModal({
   currentUserRole,
 }: EditUserModalProps) {
   return (
-    <PermissionGuard permission="staff:write">
+    <PermissionGuard resource="staff" action="update">
       <EditUserModalInner
         isOpen={isOpen}
         onClose={onClose}

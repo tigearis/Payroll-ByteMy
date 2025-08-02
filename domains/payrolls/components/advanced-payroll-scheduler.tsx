@@ -1367,7 +1367,7 @@ export default function AdvancedPayrollScheduler() {
             {/* Preview Mode Actions */}
             {!isPreviewMode ? (
               <div className="ml-auto">
-                <PermissionGuard permissions={["payroll:write"]}>
+                <PermissionGuard action="update">
                   <Button
                     onClick={enterPreviewMode}
                     disabled={loading || updating}
@@ -1388,7 +1388,7 @@ export default function AdvancedPayrollScheduler() {
                     Save failed
                   </Badge>
                 )}
-                <PermissionGuard permissions={["payroll:write"]}>
+                <PermissionGuard action="update">
                   <Button
                     variant="outline"
                     size="sm"
