@@ -389,14 +389,14 @@ export function BillingItemsTable({ data, loading, refetch }: BillingItemsTableP
                 <Eye className="w-4 h-4 mr-2" />
                 View Details
               </DropdownMenuItem>
-              <PermissionGuard permission="billing.edit">
+              <PermissionGuard action="update">
                 <DropdownMenuItem>
                   <Edit className="w-4 h-4 mr-2" />
                   Edit Item
                 </DropdownMenuItem>
               </PermissionGuard>
               {!item.isApproved && (
-                <PermissionGuard permission="billing.approve">
+                <PermissionGuard action="approve">
                   <DropdownMenuItem onClick={() => handleApprove(item.id)}>
                     <Check className="w-4 h-4 mr-2" />
                     Approve

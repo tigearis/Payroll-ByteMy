@@ -20,7 +20,7 @@ export function StaffUpdatesListener({
   onUpdate?: (data: any) => void;
 }) {
   return (
-    <PermissionGuard permission="staff:read">
+    <PermissionGuard resource="staff" action="read">
       <RealTimeUpdates
         subscription={ActiveUsersDocument}
         refetchQueries={refetchQueries}

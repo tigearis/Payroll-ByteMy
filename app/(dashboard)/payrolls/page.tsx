@@ -607,7 +607,7 @@ export default function PayrollsPage() {
   // Main render
   return (
     <PermissionGuard
-      permission="payrolls.read"
+      action="read"
       fallback={
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center space-y-4">

@@ -205,10 +205,17 @@ export async function syncUserWithDatabase(
   role: UserRole = "viewer",
   managerId?: string,
   imageUrl?: string,
-  isStaff: boolean = false
+  isStaff?: boolean // Remove default value - will be calculated if not provided
 ) {
   try {
     console.log(`🔄 Syncing user with database: ${clerkId} (${email})`);
+
+    // Determine staff status if not explicitly provided
+    // Manager, org_admin, and developer roles are considered staff
+    const finalIsStaff = isStaff !== undefined ? isStaff : 
+      ["manager", "org_admin", "developer"].includes(role);
+    
+    console.log(`📋 Staff status determined: ${finalIsStaff} (role: ${role}, explicit: ${isStaff !== undefined})`);
 
     // Get user data from Clerk to ensure we have the latest imageUrl
     let clerkImageUrl = imageUrl;
@@ -293,7 +300,7 @@ export async function syncUserWithDatabase(
       const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
       
       console.log(
-        `📝 Creating new user in database: ${fullName} (${email}) with role: ${role}`
+        `📝 Creating new user in database: ${fullName} (${email}) with role: ${role}, staff: ${finalIsStaff}`
       );
 
       const { data: newUserData, errors: mutationErrors } =
@@ -305,7 +312,7 @@ export async function syncUserWithDatabase(
             lastName,
             email,
             role,
-            isStaff,
+            isStaff: finalIsStaff,
             managerId: managerId || null,
             image: clerkImageUrl || null,
           },

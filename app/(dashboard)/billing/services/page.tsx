@@ -13,7 +13,7 @@ export default function ServiceCatalogPage() {
         </p>
       </div>
       
-      <PermissionGuard permission="billing.admin">
+      <PermissionGuard action="admin">
         <ServiceCatalogManager />
       </PermissionGuard>
     </div>

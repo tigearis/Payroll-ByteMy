@@ -194,7 +194,7 @@ export function NotesListModal({
   const hasExistingNotes = !!existingNotes && existingNotes.trim() !== '';
 
   return (
-    <PermissionGuard permission="payroll:write">
+    <PermissionGuard action="update">
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
           {trigger || (

@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { PermissionGuard, CanCreate, CanUpdate, CanDelete, AdminOnly, ManagerOnly } from "@/components/auth/permission-guard";
+import { PermissionGuard, CanCreate, CanUpdate, CanDelete } from "@/components/auth/permission-guard";
 import { InvitationManagement } from "@/components/staff/invitation-management";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -1106,7 +1106,7 @@ function StaffCard({
                   Edit User
                 </DropdownMenuItem>
               </PermissionGuard>
-              <ManagerOnly>
+              <PermissionGuard minRole="manager">
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   className="text-orange-600"
@@ -1120,7 +1120,7 @@ function StaffCard({
                 >
                   Deactivate
                 </DropdownMenuItem>
-              </ManagerOnly>
+              </PermissionGuard>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

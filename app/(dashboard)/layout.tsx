@@ -8,6 +8,8 @@ import { Sidebar } from "@/components/sidebar";
 import { ClientWrapper } from "@/domains/clients/components/client-wrapper";
 import { UserNav } from "@/domains/users/components/user-nav";
 import { useLayoutPreferences } from "@/lib/preferences/layout-preferences";
+import { ResourceProvider } from "@/components/auth/resource-context";
+import { usePathResource } from "@/hooks/use-path-resource";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -15,11 +17,16 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { layoutType } = useLayoutPreferences();
+  
+  // Auto-detect resource from current path
+  const pageResource = usePathResource();
 
   if (layoutType === "header") {
     return (
       <DashboardShell>
-        <ClientWrapper>{children}</ClientWrapper>
+        <ResourceProvider resource={pageResource}>
+          <ClientWrapper>{children}</ClientWrapper>
+        </ResourceProvider>
         <AIAssistantFloat />
       </DashboardShell>
     );
@@ -36,7 +43,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
         </div>
         <main className="flex-1 overflow-y-auto p-6">
-          <ClientWrapper>{children}</ClientWrapper>
+          <ResourceProvider resource={pageResource}>
+            <ClientWrapper>{children}</ClientWrapper>
+          </ResourceProvider>
         </main>
       </div>
       <AIAssistantFloat />

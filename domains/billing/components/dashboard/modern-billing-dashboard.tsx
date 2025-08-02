@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PermissionGuard } from "@/components/auth/permission-guard";
+import { type PermissionAction } from "@/components/auth/resource-context";
 import {
   DollarSign,
   Clock,
@@ -124,7 +125,7 @@ export function ModernBillingDashboard() {
       description: "Add new billable work",
       href: "/billing/items/new",
       icon: Plus,
-      permission: "billing.create",
+      action: "create",
       color: "bg-blue-600 hover:bg-blue-700",
     },
     {
@@ -132,7 +133,7 @@ export function ModernBillingDashboard() {
       description: "6-minute precision tracking",
       href: "/billing/time-tracking",
       icon: Clock,
-      permission: "billing.create",
+      action: "create",
       color: "bg-green-600 hover:bg-green-700",
     },
     {
@@ -140,7 +141,7 @@ export function ModernBillingDashboard() {
       description: "Create client invoices",
       href: "/billing/invoices/new",
       icon: FileText,
-      permission: "billing.admin",
+      action: "admin",
       color: "bg-purple-600 hover:bg-purple-700",
     },
     {
@@ -148,7 +149,7 @@ export function ModernBillingDashboard() {
       description: "Manage services & rates",
       href: "/billing/services",
       icon: Settings,
-      permission: "billing.admin",
+      action: "admin",
       color: "bg-gray-600 hover:bg-gray-700",
     },
   ];
@@ -191,7 +192,7 @@ export function ModernBillingDashboard() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {quickActions.map((action, index) => (
-              <PermissionGuard key={index} permission={action.permission}>
+              <PermissionGuard key={index} action={action.action as PermissionAction}>
                 <Link href={action.href}>
                   <Button
                     variant="outline"
@@ -308,7 +309,7 @@ export function ModernBillingDashboard() {
                 View and manage all billing items
               </p>
             </div>
-            <PermissionGuard permission="billing.create">
+            <PermissionGuard action="create">
               <Button asChild>
                 <Link href="/billing/items/new">
                   <Plus className="h-4 w-4 mr-2" />
@@ -370,7 +371,7 @@ export function ModernBillingDashboard() {
                 Generate and manage client invoices
               </p>
             </div>
-            <PermissionGuard permission="billing.admin">
+            <PermissionGuard action="admin">
               <Button asChild>
                 <Link href="/billing/invoices/new">
                   <Plus className="h-4 w-4 mr-2" />
@@ -389,7 +390,7 @@ export function ModernBillingDashboard() {
                 <p className="text-gray-500 mb-6">
                   Generate invoices from approved billing items
                 </p>
-                <PermissionGuard permission="billing.admin">
+                <PermissionGuard action="admin">
                   <Button asChild>
                     <Link href="/billing/invoices/new">
                       Start Invoice Generation

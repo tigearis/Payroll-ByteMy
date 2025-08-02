@@ -273,7 +273,7 @@ export default function SecurityPage() {
   };
 
   return (
-    <PermissionGuard permissions={["security.read"]}>
+    <PermissionGuard action="read">
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">

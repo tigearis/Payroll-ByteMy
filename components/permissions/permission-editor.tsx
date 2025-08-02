@@ -143,7 +143,7 @@ export function PermissionEditor({
   }, [currentUserRole, canAccessRole, userRole]);
 
   // Fetch all resources and permissions
-  const { data: resourcesData, loading: resourcesLoading } = useQuery(
+  const { data: resourcesData, loading: resourcesLoading, error: resourcesError } = useQuery(
     GetAllResourcesWithPermissionsDocument
   );
 
@@ -151,10 +151,24 @@ export function PermissionEditor({
   const { 
     data: userPermissionsData, 
     loading: userPermissionsLoading,
+    error: userPermissionsError,
     refetch: refetchUserPermissions 
   } = useQuery(GetUserEffectivePermissionsDocument, {
     variables: { userId },
     skip: !userId,
+  });
+
+  // Debug logging
+  console.log('🔍 PermissionEditor Debug:', {
+    userId,
+    resourcesLoading,
+    userPermissionsLoading,
+    resourcesError: resourcesError?.message,
+    userPermissionsError: userPermissionsError?.message,
+    resourcesData: resourcesData ? `${resourcesData.resources?.length || 0} resources` : 'no data',
+    userPermissionsData: userPermissionsData ? 
+      `${userPermissionsData.users?.length || 0} users, ${userPermissionsData.permissionOverrides?.length || 0} overrides` : 
+      'no data'
   });
 
   // Mutations
@@ -164,7 +178,18 @@ export function PermissionEditor({
 
   // Calculate effective permissions
   const effectivePermissions = useMemo(() => {
-    if (!resourcesData?.resources || !userPermissionsData) return {};
+    console.log('🧮 Calculating effectivePermissions:', {
+      hasResourcesData: !!resourcesData?.resources,
+      hasUserPermissionsData: !!userPermissionsData,
+      resourcesCount: resourcesData?.resources?.length || 0,
+      usersCount: userPermissionsData?.users?.length || 0,
+      userPermissionsData: userPermissionsData
+    });
+
+    if (!resourcesData?.resources || !userPermissionsData) {
+      console.log('❌ Missing data for effectivePermissions calculation');
+      return {};
+    }
 
     const permissions: Record<string, Record<string, {
       hasPermission: boolean;
@@ -174,13 +199,31 @@ export function PermissionEditor({
 
     // Get role permissions
     const rolePermissions = new Set<string>();
-    userPermissionsData.users[0]?.roleAssignments?.forEach((roleAssignment: any) => {
+    const user = userPermissionsData.users[0];
+    console.log('👤 Processing user:', {
+      user: user?.id,
+      roleAssignments: user?.roleAssignments?.length || 0
+    });
+
+    user?.roleAssignments?.forEach((roleAssignment: any) => {
+      console.log('🎭 Processing role assignment:', {
+        roleId: roleAssignment.roleId,
+        roleName: roleAssignment.role?.name,
+        rolePermissionsCount: roleAssignment.role?.rolePermissions?.length || 0
+      });
+      
       roleAssignment.role?.rolePermissions?.forEach((rolePermission: any) => {
         const permission = rolePermission.permission;
         if (permission?.resource?.name && permission?.action) {
-          rolePermissions.add(`${permission.resource.name}.${permission.action}`);
+          const permissionKey = `${permission.resource.name}.${permission.action}`;
+          rolePermissions.add(permissionKey);
         }
       });
+    });
+
+    console.log('✅ Role permissions extracted:', {
+      count: rolePermissions.size,
+      sample: Array.from(rolePermissions).slice(0, 5)
     });
 
     // Process each resource
@@ -209,6 +252,15 @@ export function PermissionEditor({
           };
         }
       });
+    });
+
+    console.log('✅ Final effectivePermissions calculated:', {
+      resourcesCount: Object.keys(permissions).length,
+      totalPermissions: Object.values(permissions).reduce((acc, resource) => acc + Object.keys(resource).length, 0),
+      sample: Object.keys(permissions).slice(0, 3).map(resource => ({
+        resource,
+        permissions: Object.keys(permissions[resource]).length
+      }))
     });
 
     return permissions;
@@ -443,10 +495,45 @@ export function PermissionEditor({
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
+            <div className="text-sm text-blue-600">
+              Loading permissions... (Resources: {resourcesLoading ? "loading" : "loaded"}, User: {userPermissionsLoading ? "loading" : "loaded"})
+            </div>
             <Skeleton className="h-10 w-full" />
             {[...Array(5)].map((_, i) => (
               <Skeleton key={i} className="h-16 w-full" />
             ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (resourcesError || userPermissionsError) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Shield className="w-5 h-5 mr-2" />
+            Permission Management - Error
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex items-center">
+                <AlertTriangle className="w-4 h-4 text-red-600 mr-2" />
+                <span className="text-sm font-medium text-red-800">Failed to Load Permissions</span>
+              </div>
+              {resourcesError && (
+                <p className="text-sm text-red-700 mt-1">Resources Error: {resourcesError.message}</p>
+              )}
+              {userPermissionsError && (
+                <p className="text-sm text-red-700 mt-1">User Permissions Error: {userPermissionsError.message}</p>
+              )}
+              <div className="mt-2 text-xs text-red-600">
+                Debug Info: userId={userId}, resourcesData={!!resourcesData}, userPermissionsData={!!userPermissionsData}
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -517,10 +604,18 @@ export function PermissionEditor({
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
+            <div className="text-xs text-gray-600 p-2 bg-gray-50 rounded">
+              Debug: {filteredResources.length} resources, {Object.keys(effectivePermissions).length} permission resources, 
+              userId: {userId}, search: "{searchTerm}"
+            </div>
             {filteredResources.length === 0 ? (
               <div className="text-center py-8">
                 <Shield className="w-12 h-12 mx-auto mb-4 text-gray-400" />
                 <p className="text-gray-500">No resources found matching your search.</p>
+                <div className="text-xs text-gray-400 mt-2">
+                  Available resources: {resourcesData?.resources?.length || 0}, 
+                  Effective permissions: {Object.keys(effectivePermissions).length}
+                </div>
               </div>
             ) : (
               filteredResources.map((resource) => (

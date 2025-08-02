@@ -13,7 +13,7 @@ export default function ProfitabilityPage() {
         </p>
       </div>
       
-      <PermissionGuard permission="billing.read">
+      <PermissionGuard action="read">
         <ProfitabilityDashboard />
       </PermissionGuard>
     </div>
