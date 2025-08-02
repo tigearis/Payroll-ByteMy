@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withAuthParams } from '@/lib/auth/api-auth';
 import { executeTypedQuery } from '@/lib/apollo/query-helpers';
-import { UpdateBillingItemDocument, UpdateBillingItemMutation } from '@/domains/billing/graphql/generated/graphql';
+import { UpdateBillingItemAdvancedDocument, type UpdateBillingItemAdvancedMutation } from '@/domains/billing/graphql/generated/graphql';
 
 /**
  * POST /api/billing/items/[id]/approve
@@ -25,8 +25,8 @@ export const POST = withAuthParams(async (req: NextRequest, { params }, session:
     }
 
     // Approve the billing item
-    const result = await executeTypedQuery<UpdateBillingItemMutation>(
-      UpdateBillingItemDocument,
+    const result = await executeTypedQuery<UpdateBillingItemAdvancedMutation>(
+      UpdateBillingItemAdvancedDocument,
       {
         id,
         updates: {

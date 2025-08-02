@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '@/lib/auth/api-auth';
 import { executeTypedQuery } from '@/lib/apollo/query-helpers';
 import { 
-  UpdateBillingItemDocument,
+  UpdateBillingItemAdvancedDocument,
   DeleteBillingItemAdvancedDocument,
   GetBillingItemsAdvancedDocument,
-  type UpdateBillingItemMutation,
+  type UpdateBillingItemAdvancedMutation,
   type DeleteBillingItemAdvancedMutation,
   type GetBillingItemsAdvancedQuery
 } from '@/domains/billing/graphql/generated/graphql';
@@ -88,8 +88,8 @@ export const POST = withAuth(async (req: NextRequest, session) => {
       case 'approve':
         for (const itemId of itemIds) {
           try {
-            const result = await executeTypedQuery<UpdateBillingItemMutation>(
-              UpdateBillingItemDocument,
+            const result = await executeTypedQuery<UpdateBillingItemAdvancedMutation>(
+              UpdateBillingItemAdvancedDocument,
               {
                 id: itemId,
                 updates: {
@@ -111,8 +111,8 @@ export const POST = withAuth(async (req: NextRequest, session) => {
       case 'reject':
         for (const itemId of itemIds) {
           try {
-            const result = await executeTypedQuery<UpdateBillingItemMutation>(
-              UpdateBillingItemDocument,
+            const result = await executeTypedQuery<UpdateBillingItemAdvancedMutation>(
+              UpdateBillingItemAdvancedDocument,
               {
                 id: itemId,
                 updates: {
@@ -155,8 +155,8 @@ export const POST = withAuth(async (req: NextRequest, session) => {
         
         for (const itemId of itemIds) {
           try {
-            const result = await executeTypedQuery<UpdateBillingItemMutation>(
-              UpdateBillingItemDocument,
+            const result = await executeTypedQuery<UpdateBillingItemAdvancedMutation>(
+              UpdateBillingItemAdvancedDocument,
               {
                 id: itemId,
                 updates: {

@@ -158,7 +158,8 @@ export function getReliableNameFromTicket(
 
 /**
  * Enhanced ticket validation that includes database invitation lookup
- * Combines JWT validation with database invitation data for complete user info
+ * This function should only be used on the server side (API routes)
+ * For client-side usage, use extractClerkTicketData() instead
  */
 export async function extractClerkTicketDataWithInvitation(clerkTicket: string): Promise<ClerkTicketValidationResult & { invitationData?: any }> {
   // First, validate the JWT ticket
@@ -168,18 +169,20 @@ export async function extractClerkTicketDataWithInvitation(clerkTicket: string):
     return jwtResult;
   }
 
+  // For server-side usage only - make API call instead of direct import
   try {
-    // Import GraphQL functions dynamically to avoid circular imports
-    const { executeTypedQuery } = await import('@/lib/apollo/query-helpers');
-    const { GetInvitationByClerkIdDocument } = await import('@/domains/auth/graphql/generated/graphql');
-    
-    // Fetch invitation data from database using the invitation ID from JWT
-    const invitationData = await executeTypedQuery(
-      GetInvitationByClerkIdDocument,
-      { clerkInvitationId: jwtResult.invitationId }
-    );
+    const response = await fetch('/api/invitations/lookup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clerkInvitationId: jwtResult.invitationId })
+    });
 
-    const invitation = (invitationData as any)?.userInvitations?.[0];
+    if (!response.ok) {
+      console.warn('Failed to fetch invitation data via API');
+      return jwtResult;
+    }
+
+    const { invitation } = await response.json();
 
     if (invitation) {
       // Merge JWT data with database invitation data
