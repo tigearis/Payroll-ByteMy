@@ -27,7 +27,6 @@ import {
 } from "@/lib/invitation-utils";
 import { 
   extractClerkTicketData,
-  extractClerkTicketDataWithInvitation,
   isTicketExpired,
   type ClerkTicketUserData 
 } from "@/lib/clerk-ticket-utils";
@@ -284,8 +283,8 @@ export default function SignUpPage() {
           // Add small delay to prevent UI flashing
           await new Promise(resolve => setTimeout(resolve, 100));
           
-          // Use enhanced ticket validation that includes database invitation lookup
-          const validation = await extractClerkTicketDataWithInvitation(newInvitationState.ticketData.ticket);
+          // Use standard ticket validation (server-side enhancement handled in API)
+          const validation = extractClerkTicketData(newInvitationState.ticketData.ticket);
           const validationResult = {
             isValid: validation.isValid,
             isExpired: validation.isValid && validation.userData ? isTicketExpired(validation.userData) : false,
