@@ -172,6 +172,17 @@ export function PermissionEditor({
     rawUserPermissionsData: userPermissionsData
   });
 
+  // Enhanced debugging for resources structure
+  if (resourcesData?.resources) {
+    console.log('📋 Resources Data Structure:', {
+      resourceCount: resourcesData.resources.length,
+      sampleResource: resourcesData.resources[0],
+      resourcesWithPermissions: resourcesData.resources.filter(r => r.permissions && r.permissions.length > 0).length,
+      firstResourcePermissions: resourcesData.resources[0]?.permissions,
+      allResourceNames: resourcesData.resources.map(r => ({ name: r.name, permissionCount: r.permissions?.length || 0 }))
+    });
+  }
+
   // Additional debug for query states
   if (!userPermissionsLoading && userPermissionsData) {
     console.log('📊 User Permissions Query Result:', {
@@ -280,10 +291,16 @@ export function PermissionEditor({
     resourcesData.resources.forEach((resource, resourceIndex) => {
       console.log(`📋 Processing resource ${resourceIndex + 1}: ${resource.name}`, {
         resource: resource,
-        permissionsCount: resource.permissions?.length || 0
+        permissionsCount: resource.permissions?.length || 0,
+        permissions: resource.permissions
       });
       
       permissions[resource.name] = {};
+      
+      if (!resource.permissions || resource.permissions.length === 0) {
+        console.warn(`⚠️ Resource ${resource.name} has no permissions!`);
+        return;
+      }
       
       resource.permissions?.forEach((permission: any, permIndex: number) => {
         const permissionKey = `${resource.name}.${permission.action}`;
@@ -335,13 +352,28 @@ export function PermissionEditor({
   const filteredResources = useMemo(() => {
     if (!resourcesData?.resources) return [];
     
-    if (!searchTerm) return resourcesData.resources;
+    const filtered = !searchTerm 
+      ? resourcesData.resources 
+      : resourcesData.resources.filter(resource =>
+          resource.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          resource.displayName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          resource.description?.toLowerCase().includes(searchTerm.toLowerCase())
+        );
     
-    return resourcesData.resources.filter(resource =>
-      resource.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      resource.displayName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      resource.description?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // Debug filtered resources
+    console.log('🔍 Filtered Resources:', {
+      totalResources: resourcesData.resources.length,
+      filteredCount: filtered.length,
+      searchTerm: searchTerm,
+      filteredResources: filtered.map(r => ({
+        name: r.name,
+        displayName: r.displayName,
+        permissionCount: r.permissions?.length || 0,
+        hasPermissions: !!r.permissions && r.permissions.length > 0
+      }))
+    });
+    
+    return filtered;
   }, [resourcesData?.resources, searchTerm]);
 
   // Handle permission change

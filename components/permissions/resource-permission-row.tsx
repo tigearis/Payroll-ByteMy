@@ -13,7 +13,7 @@ interface Resource {
   name: string;
   displayName?: string | null;
   description?: string | null;
-  availablePermissions?: Array<{
+  permissions?: Array<{
     id: string;
     action: string;
     description?: string | null;
@@ -78,7 +78,17 @@ export function ResourcePermissionRow({
 }: ResourcePermissionRowProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const permissions = resource.availablePermissions || [];
+  const permissions = resource.permissions || [];
+  
+  // Debug logging for resource data
+  console.log(`🏗️ ResourcePermissionRow for ${resource.name}:`, {
+    resource: resource,
+    permissionsCount: permissions.length,
+    permissions: permissions,
+    effectivePermissions: effectivePermissions,
+    effectivePermissionsCount: Object.keys(effectivePermissions).length,
+    pendingChanges: pendingChanges
+  });
   
   // Calculate resource-level access summary
   const permissionSummary = React.useMemo(() => {
