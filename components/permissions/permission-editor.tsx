@@ -172,6 +172,27 @@ export function PermissionEditor({
     rawUserPermissionsData: userPermissionsData
   });
 
+  // Additional debug for query states
+  if (!userPermissionsLoading && userPermissionsData) {
+    console.log('📊 User Permissions Query Result:', {
+      query: 'GetUserEffectivePermissions',
+      variables: { userId },
+      usersFound: userPermissionsData.users?.length || 0,
+      users: userPermissionsData.users,
+      overridesFound: userPermissionsData.permissionOverrides?.length || 0,
+      overrides: userPermissionsData.permissionOverrides
+    });
+  }
+
+  if (userPermissionsError) {
+    console.error('❌ GetUserEffectivePermissions Error:', {
+      error: userPermissionsError,
+      message: userPermissionsError.message,
+      graphQLErrors: userPermissionsError.graphQLErrors,
+      networkError: userPermissionsError.networkError
+    });
+  }
+
   // Mutations
   const [createOverride] = useMutation(CreatePermissionOverrideDocument);
   const [deleteOverride] = useMutation(DeletePermissionOverrideDocument);
@@ -221,14 +242,25 @@ export function PermissionEditor({
       console.log('🎭 Processing role assignment:', {
         roleId: roleAssignment.roleId,
         roleName: roleAssignment.role?.name,
-        rolePermissionsCount: roleAssignment.role?.rolePermissions?.length || 0
+        rolePermissionsCount: roleAssignment.role?.rolePermissions?.length || 0,
+        fullRole: roleAssignment.role
       });
       
-      roleAssignment.role?.rolePermissions?.forEach((rolePermission: any) => {
+      roleAssignment.role?.rolePermissions?.forEach((rolePermission: any, index: number) => {
         const permission = rolePermission.permission;
+        console.log(`🔑 Processing role permission ${index + 1}:`, {
+          permission: permission,
+          resourceName: permission?.resource?.name,
+          action: permission?.action,
+          permissionKey: permission?.resource?.name && permission?.action ? `${permission.resource.name}.${permission.action}` : 'INVALID'
+        });
+        
         if (permission?.resource?.name && permission?.action) {
           const permissionKey = `${permission.resource.name}.${permission.action}`;
           rolePermissions.add(permissionKey);
+          console.log(`✅ Added permission: ${permissionKey}`);
+        } else {
+          console.warn('⚠️ Skipped invalid permission:', permission);
         }
       });
     });
@@ -239,12 +271,31 @@ export function PermissionEditor({
     });
 
     // Process each resource
-    resourcesData.resources.forEach(resource => {
+    console.log('🏗️ Processing resources:', {
+      resourceCount: resourcesData.resources.length,
+      rolePermissionsCount: rolePermissions.size,
+      rolePermissionsList: Array.from(rolePermissions)
+    });
+
+    resourcesData.resources.forEach((resource, resourceIndex) => {
+      console.log(`📋 Processing resource ${resourceIndex + 1}: ${resource.name}`, {
+        resource: resource,
+        permissionsCount: resource.permissions?.length || 0
+      });
+      
       permissions[resource.name] = {};
       
-      resource.permissions?.forEach((permission: any) => {
+      resource.permissions?.forEach((permission: any, permIndex: number) => {
         const permissionKey = `${resource.name}.${permission.action}`;
         const hasRolePermission = rolePermissions.has(permissionKey);
+        
+        console.log(`  🔍 Checking permission ${permIndex + 1}:`, {
+          resourceName: resource.name,
+          action: permission.action,
+          permissionKey: permissionKey,
+          hasRolePermission: hasRolePermission,
+          rolePermissionsInclude: Array.from(rolePermissions).includes(permissionKey)
+        });
         
         // Check for overrides
         const override = userPermissionsData.permissionOverrides?.find(
@@ -252,12 +303,14 @@ export function PermissionEditor({
         );
 
         if (override) {
+          console.log(`  🔄 Found override for ${permissionKey}:`, override);
           permissions[resource.name][permission.action] = {
             hasPermission: override.granted,
             source: override.granted ? 'override_granted' : 'override_denied',
             overrideId: override.id,
           };
         } else {
+          console.log(`  ${hasRolePermission ? '✅' : '❌'} Role permission for ${permissionKey}: ${hasRolePermission}`);
           permissions[resource.name][permission.action] = {
             hasPermission: hasRolePermission,
             source: 'role',

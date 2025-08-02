@@ -67,7 +67,7 @@ import { useDynamicLoading } from "@/lib/hooks/use-dynamic-loading";
 
 type ViewMode = "cards" | "table" | "list";
 
-// Column definitions - matching user requirements: Payroll name, status, client name, schedule (formatted), employees, primary consultant
+// Column definitions - matching user requirements: Payroll name, status, client name, schedule (formatted), employees, primary consultant, manager
 const COLUMN_DEFINITIONS = [
   { key: "name", label: "Payroll Name", sortable: true, defaultVisible: true },
   { key: "status", label: "Status", sortable: true, defaultVisible: true },
@@ -91,10 +91,10 @@ const COLUMN_DEFINITIONS = [
     defaultVisible: true,
   },
   {
-    key: "lastUpdated",
-    label: "Last Updated",
-    sortable: true,
-    defaultVisible: false,
+    key: "manager",
+    label: "Manager",
+    sortable: false,
+    defaultVisible: true,
   },
   {
     key: "nextEftDate",

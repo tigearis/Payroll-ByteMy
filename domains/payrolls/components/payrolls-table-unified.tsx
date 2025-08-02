@@ -8,7 +8,6 @@ import {
   Edit,
   Copy,
   UserCheck,
-  Calculator,
   CalendarDays,
 } from "lucide-react";
 import Link from "next/link";
@@ -22,55 +21,7 @@ import { getScheduleSummary } from "@/domains/payrolls/utils/schedule-helpers";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
-// Payroll data type (based on GraphQL GetPayrollsTableEnhanced query)
-interface Payroll {
-  id: string;
-  name: string;
-  status: string;
-  employeeCount?: number;
-  dateValue?: number;
-  processingDaysBeforeEft?: number;
-  createdAt: string;
-  updatedAt: string;
-  client?: {
-    id: string;
-    name: string;
-    active?: boolean;
-  };
-  payrollCycle?: {
-    id: string;
-    name: string;
-    description?: string;
-  };
-  payrollDateType?: {
-    id: string;
-    name: string;
-    description?: string;
-  };
-  primaryConsultant?: {
-    id: string;
-    firstName?: string;
-    lastName?: string;
-    computedName?: string;
-    email?: string;
-    role?: string;
-  };
-  backupConsultant?: {
-    id: string;
-    firstName?: string;
-    lastName?: string;
-    computedName?: string;
-    email?: string;
-    role?: string;
-  };
-  nextEftDate?: Array<{
-    id: string;
-    originalEftDate: string;
-    adjustedEftDate: string;
-    processingDate?: string;
-    notes?: string;
-  }>;
-}
+// Note: Using any[] for payrolls to handle GraphQL data flexibility
 
 interface PayrollsTableProps {
   payrolls: any[]; // More flexible to handle GraphQL data
@@ -89,23 +40,31 @@ interface PayrollsTableProps {
 const renderPayrollStatus = (status: string) => {
   const getStatusVariant = (status: string) => {
     const normalizedStatus = status?.toLowerCase();
-    if (['active', 'completed', 'approved'].includes(normalizedStatus)) return 'default';
-    if (['draft', 'pending_approval', 'implementation'].includes(normalizedStatus)) return 'secondary';
-    if (['failed', 'inactive'].includes(normalizedStatus)) return 'destructive';
-    return 'outline';
+    if (["active", "completed", "approved"].includes(normalizedStatus))
+      return "default";
+    if (
+      ["draft", "pending_approval", "implementation"].includes(normalizedStatus)
+    )
+      return "secondary";
+    if (["failed", "inactive"].includes(normalizedStatus)) return "destructive";
+    return "outline";
   };
 
   const getStatusIcon = (status: string) => {
     const normalizedStatus = status?.toLowerCase();
-    if (['active', 'completed', 'approved'].includes(normalizedStatus)) return CheckCircle;
-    if (['failed'].includes(normalizedStatus)) return AlertTriangle;
+    if (["active", "completed", "approved"].includes(normalizedStatus))
+      return CheckCircle;
+    if (["failed"].includes(normalizedStatus)) return AlertTriangle;
     return Clock;
   };
 
   const StatusIcon = getStatusIcon(status);
-  
+
   return (
-    <Badge variant={getStatusVariant(status)} className="flex items-center gap-1">
+    <Badge
+      variant={getStatusVariant(status)}
+      className="flex items-center gap-1"
+    >
       <StatusIcon className="w-3 h-3" />
       {status}
     </Badge>
@@ -119,16 +78,32 @@ const renderUserAvatar = (user: {
   firstName?: string;
   lastName?: string;
 }) => {
-  const displayName = user.computedName ||
+  const displayName =
+    user.computedName ||
     `${user.firstName || ""} ${user.lastName || ""}`.trim() ||
     "Unknown User";
-    
+
+  // Generate initials similar to UserNav component
+  const getUserInitials = () => {
+    if (!displayName || displayName === "Unknown User") {
+      return "U";
+    }
+
+    const nameParts = displayName.split(" ");
+    if (nameParts.length === 1) {
+      return nameParts[0].charAt(0).toUpperCase();
+    }
+    return (
+      nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)
+    ).toUpperCase();
+  };
+
   return (
     <div className="flex items-center space-x-3">
       <Avatar className="h-8 w-8">
         <AvatarImage src={user.imageUrl} alt={displayName} />
-        <AvatarFallback>
-          {displayName.split(" ").map((n: string) => n[0]).join("").toUpperCase()}
+        <AvatarFallback className="bg-gray-100 text-gray-600 font-medium">
+          {getUserInitials()}
         </AvatarFallback>
       </Avatar>
       <div className="min-w-0">
@@ -148,12 +123,12 @@ export function PayrollsTableUnified({
   loading = false,
   onRefresh,
   selectedPayrolls = [],
-  onSelectPayroll,
+  onSelectPayroll: _onSelectPayroll,
   onSelectAll,
-  visibleColumns,
-  sortField,
-  sortDirection,
-  onSort,
+  visibleColumns: _visibleColumns,
+  sortField: _sortField,
+  sortDirection: _sortDirection,
+  onSort: _onSort,
 }: PayrollsTableProps) {
   const router = useRouter();
 
@@ -178,21 +153,21 @@ export function PayrollsTableUnified({
       header: "Status",
       type: "badge",
       sortable: true,
-      render: (value) => renderPayrollStatus(value),
+      render: value => renderPayrollStatus(value),
     },
     {
       accessorKey: "client",
       header: "Client Name",
       type: "text",
       sortable: true,
-      render: (client) => client?.name || "—",
+      render: client => client?.name || "—",
     },
     {
       accessorKey: "payrollSchedule",
       header: "Schedule",
       type: "text",
       sortable: false,
-      render: (value, row) => {
+      render: (_value, row) => {
         // Generate schedule summary from payroll data
         const schedule = getScheduleSummary(row);
         return (
@@ -209,30 +184,42 @@ export function PayrollsTableUnified({
       type: "number",
       sortable: true,
       align: "center",
-      render: (count) =>
+      render: count =>
         count ? (
           <div className="flex items-center gap-1 text-sm text-muted-foreground">
             <span className="font-medium text-foreground">{count}</span>
             {count === 1 ? "employee" : "employees"}
           </div>
-        ) : "—",
+        ) : (
+          "—"
+        ),
     },
     {
       accessorKey: "primaryConsultant",
       header: "Primary Consultant",
       type: "text",
       sortable: true,
-      render: (primaryConsultant) =>
+      render: primaryConsultant =>
         primaryConsultant ? renderUserAvatar(primaryConsultant) : "—",
     },
-    // Hidden columns that can be toggled on if needed
+    // Manager column - shows the client's assigned manager or consultant's manager
     {
       accessorKey: "manager",
       header: "Manager",
       type: "text",
       sortable: true,
-      render: (manager) =>
-        manager ? renderUserAvatar(manager) : "—",
+      render: (_value, row) => {
+        // Use the assignedManager field directly from the GraphQL query
+        const manager = row.assignedManager;
+
+        return manager ? (
+          renderUserAvatar(manager)
+        ) : (
+          <span className="text-muted-foreground text-sm">
+            No manager assigned
+          </span>
+        );
+      },
     },
     {
       accessorKey: "processingDaysBeforeEft",
@@ -240,46 +227,15 @@ export function PayrollsTableUnified({
       type: "number",
       sortable: true,
       align: "center",
-      render: (days) => days ? (
-        <div className="flex items-center gap-1 text-sm text-muted-foreground">
-          <span className="font-medium text-foreground">{days}</span>
-          {days === 1 ? "day" : "days"}
-        </div>
-      ) : "—",
-    },
-    {
-      accessorKey: "payrollSystem",
-      header: "System",
-      type: "text",
-      sortable: true,
-      render: (system) => (
-        <div className="flex items-center gap-2">
-          <Calculator className="w-4 h-4 text-gray-500" />
-          <span>{system || "Not Set"}</span>
-        </div>
-      ),
-    },
-    {
-      accessorKey: "goLiveDate",
-      header: "Go Live Date",
-      type: "date",
-      sortable: true,
-      render: (date) => date ? new Date(date).toLocaleDateString() : "—",
-    },
-    {
-      accessorKey: "updatedAt",
-      header: "Last Updated",
-      type: "date",
-      sortable: true,
-      render: (date) => {
-        const dateObj = new Date(date);
-        return (
-          <div className="text-sm">
-            <div>{dateObj.toLocaleDateString()}</div>
-            <div className="text-muted-foreground">{dateObj.toLocaleTimeString()}</div>
+      render: days =>
+        days ? (
+          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+            <span className="font-medium text-foreground">{days}</span>
+            {days === 1 ? "day" : "days"}
           </div>
-        );
-      },
+        ) : (
+          "—"
+        ),
     },
   ];
 
@@ -333,7 +289,7 @@ export function PayrollsTableUnified({
       emptyMessage="No payrolls found. Create your first payroll to get started."
       selectable={true}
       selectedRows={payrolls.filter(p => selectedPayrolls.includes(p.id))}
-      onSelectionChange={(rows) => {
+      onSelectionChange={rows => {
         // Convert selected rows back to IDs for backwards compatibility
         const ids = rows.map(row => row.id);
         onSelectAll?.(ids.length === payrolls.length);
@@ -345,7 +301,7 @@ export function PayrollsTableUnified({
       {...(onRefresh && { onRefresh })}
       refreshing={loading}
       exportable={true}
-      onExport={(format) => {
+      onExport={format => {
         console.log("Export payrolls as:", format);
       }}
     />
