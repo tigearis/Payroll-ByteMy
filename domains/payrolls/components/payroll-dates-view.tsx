@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation } from "@apollo/client";
 import { useUser } from "@clerk/nextjs";
+import { useDatabaseUserId } from "@/hooks/use-database-user-id";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -132,6 +133,7 @@ function PayrollDatesTable({
   refetch: () => void;
 }) {
   const { user } = useUser();
+  const { databaseUserId, isReady } = useDatabaseUserId();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -152,9 +154,9 @@ function PayrollDatesTable({
   });
 
   const handleCompletePayrollDate = async (payrollDateId: string) => {
-    if (!user?.id) {
-      console.error("User not authenticated");
-      toast.error("User not authenticated");
+    if (!user?.id || !databaseUserId || !isReady) {
+      console.error("User not authenticated or database user ID not resolved");
+      toast.error("User authentication error - please try again");
       return;
     }
     
@@ -162,7 +164,7 @@ function PayrollDatesTable({
       await completePayrollDate({
         variables: {
           id: payrollDateId,
-          completedBy: user.id,
+          completedBy: databaseUserId,
         },
       });
       toast.success("Payroll date completed successfully");
