@@ -49,7 +49,7 @@ const ServiceEditor: React.FC<ServiceEditorProps> = ({ service, onSave, onCancel
   const [formData, setFormData] = useState({
     name: service?.name || '',
     description: service?.description || '',
-    standardRate: service?.standardRate?.toString() || '',
+    standardRate: service?.defaultRate?.toString() || '',
     billingUnit: service?.billingUnit || 'Per Payroll',
     category: service?.category || 'Processing',
     isActive: service?.isActive ?? true,
@@ -339,9 +339,9 @@ export const ServiceCatalogManager: React.FC<ServiceCatalogManagerProps> = ({
         </div>
       ) : (
         <div className="grid gap-4">
-          {data?.billingPlan?.filter(service => 
+          {data?.services?.filter((service: any) => 
             !filterCategory || filterCategory === "all" || service.category === filterCategory
-          ).map((service) => (
+          ).map((service: any) => (
             <Card key={service.id}>
               <CardContent className="p-6">
                 <div className="flex justify-between items-start">

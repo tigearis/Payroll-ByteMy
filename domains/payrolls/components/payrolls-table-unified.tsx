@@ -14,13 +14,13 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  UnifiedDataTable,
-  DataTableColumn,
-  DataTableAction,
-  StatusConfig,
-  createCellRenderers,
-} from "@/components/ui/unified-data-table";
+  EnhancedUnifiedTable,
+  UnifiedTableColumn,
+  UnifiedTableAction,
+} from "@/components/ui/enhanced-unified-table";
 import { getScheduleSummary } from "@/domains/payrolls/utils/schedule-helpers";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 
 // Payroll data type (based on GraphQL GetPayrollsTableEnhanced query)
 interface Payroll {
@@ -85,56 +85,62 @@ interface PayrollsTableProps {
   onSort?: (field: string) => void;
 }
 
-// Status configuration for payrolls (updated to match database enum values)
-const payrollStatusConfig: Record<string, StatusConfig> = {
-  // Original database values
-  Active: {
-    variant: "default",
-    icon: CheckCircle,
-    className: "bg-green-50 text-green-700 border-green-200",
-  },
-  Implementation: {
-    variant: "secondary",
-    icon: Clock,
-    className: "bg-yellow-50 text-yellow-700 border-yellow-200",
-  },
-  Inactive: {
-    variant: "outline",
-    icon: Clock,
-    className: "bg-gray-50 text-gray-700 border-gray-200",
-  },
+// Helper functions for rendering cells
+const renderPayrollStatus = (status: string) => {
+  const getStatusVariant = (status: string) => {
+    const normalizedStatus = status?.toLowerCase();
+    if (['active', 'completed', 'approved'].includes(normalizedStatus)) return 'default';
+    if (['draft', 'pending_approval', 'implementation'].includes(normalizedStatus)) return 'secondary';
+    if (['failed', 'inactive'].includes(normalizedStatus)) return 'destructive';
+    return 'outline';
+  };
 
-  // New workflow values
-  draft: {
-    variant: "secondary",
-    icon: Clock,
-    className: "bg-blue-50 text-blue-700 border-blue-200",
-  },
-  pending_approval: {
-    variant: "secondary",
-    icon: AlertTriangle,
-    className: "bg-orange-50 text-orange-700 border-orange-200",
-  },
-  approved: {
-    variant: "default",
-    icon: CheckCircle,
-    className: "bg-green-50 text-green-700 border-green-200",
-  },
-  processing: {
-    variant: "default",
-    icon: Clock,
-    className: "bg-purple-50 text-purple-700 border-purple-200",
-  },
-  completed: {
-    variant: "default",
-    icon: CheckCircle,
-    className: "bg-green-50 text-green-700 border-green-200",
-  },
-  failed: {
-    variant: "destructive",
-    icon: AlertTriangle,
-    className: "bg-red-50 text-red-700 border-red-200",
-  },
+  const getStatusIcon = (status: string) => {
+    const normalizedStatus = status?.toLowerCase();
+    if (['active', 'completed', 'approved'].includes(normalizedStatus)) return CheckCircle;
+    if (['failed'].includes(normalizedStatus)) return AlertTriangle;
+    return Clock;
+  };
+
+  const StatusIcon = getStatusIcon(status);
+  
+  return (
+    <Badge variant={getStatusVariant(status)} className="flex items-center gap-1">
+      <StatusIcon className="w-3 h-3" />
+      {status}
+    </Badge>
+  );
+};
+
+const renderUserAvatar = (user: {
+  imageUrl?: string;
+  email?: string;
+  computedName?: string;
+  firstName?: string;
+  lastName?: string;
+}) => {
+  const displayName = user.computedName ||
+    `${user.firstName || ""} ${user.lastName || ""}`.trim() ||
+    "Unknown User";
+    
+  return (
+    <div className="flex items-center space-x-3">
+      <Avatar className="h-8 w-8">
+        <AvatarImage src={user.imageUrl} alt={displayName} />
+        <AvatarFallback>
+          {displayName.split(" ").map((n: string) => n[0]).join("").toUpperCase()}
+        </AvatarFallback>
+      </Avatar>
+      <div className="min-w-0">
+        <div className="font-medium truncate">{displayName}</div>
+        {user.email && (
+          <div className="text-sm text-muted-foreground truncate">
+            {user.email}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export function PayrollsTableUnified({
@@ -150,17 +156,15 @@ export function PayrollsTableUnified({
   onSort,
 }: PayrollsTableProps) {
   const router = useRouter();
-  // Create cell renderers with status config
-  const cellRenderers = createCellRenderers<any>(payrollStatusConfig);
 
   // Column definitions - matching user requirements: Payroll name, status, client name, schedule (formatted), employees, primary consultant
-  const columns: DataTableColumn<any>[] = [
+  const columns: UnifiedTableColumn<any>[] = [
     {
-      key: "name",
-      label: "Payroll Name",
+      accessorKey: "name",
+      header: "Payroll Name",
+      type: "text",
       sortable: true,
-      defaultVisible: true,
-      cellRenderer: (value, row) => (
+      render: (value, row) => (
         <Link
           href={`/payrolls/${row.id}`}
           className="font-medium text-blue-600 hover:underline"
@@ -170,25 +174,25 @@ export function PayrollsTableUnified({
       ),
     },
     {
-      key: "status",
-      label: "Status",
+      accessorKey: "status",
+      header: "Status",
+      type: "badge",
       sortable: true,
-      defaultVisible: true,
-      cellRenderer: value => cellRenderers.badge(value),
+      render: (value) => renderPayrollStatus(value),
     },
     {
-      key: "client",
-      label: "Client Name",
+      accessorKey: "client",
+      header: "Client Name",
+      type: "text",
       sortable: true,
-      defaultVisible: true,
-      cellRenderer: client => client?.name || "—",
+      render: (client) => client?.name || "—",
     },
     {
-      key: "payrollSchedule",
-      label: "Schedule",
+      accessorKey: "payrollSchedule",
+      header: "Schedule",
+      type: "text",
       sortable: false,
-      defaultVisible: true,
-      cellRenderer: (value, row) => {
+      render: (value, row) => {
         // Generate schedule summary from payroll data
         const schedule = getScheduleSummary(row);
         return (
@@ -200,96 +204,98 @@ export function PayrollsTableUnified({
       },
     },
     {
-      key: "employeeCount",
-      label: "Employees",
+      accessorKey: "employeeCount",
+      header: "Employees",
+      type: "number",
       sortable: true,
-      defaultVisible: true,
       align: "center",
-      cellRenderer: count =>
-        count ? cellRenderers.count(count, "employee") : "—",
+      render: (count) =>
+        count ? (
+          <div className="flex items-center gap-1 text-sm text-muted-foreground">
+            <span className="font-medium text-foreground">{count}</span>
+            {count === 1 ? "employee" : "employees"}
+          </div>
+        ) : "—",
     },
     {
-      key: "primaryConsultant",
-      label: "Primary Consultant",
-      sortable: false,
-      defaultVisible: true,
-      cellRenderer: consultant =>
-        consultant
-          ? cellRenderers.avatar({
-              name:
-                consultant.computedName ||
-                (consultant
-                  ? `${consultant.firstName || ""} ${consultant.lastName || ""}`.trim()
-                  : "") ||
-                "Unassigned",
-              email: consultant.email,
-            })
-          : "—",
+      accessorKey: "primaryConsultant",
+      header: "Primary Consultant",
+      type: "text",
+      sortable: true,
+      render: (primaryConsultant) =>
+        primaryConsultant ? renderUserAvatar(primaryConsultant) : "—",
     },
     // Hidden columns that can be toggled on if needed
     {
-      key: "manager",
-      label: "Manager",
-      sortable: false,
-      defaultVisible: false,
-      cellRenderer: manager =>
-        manager
-          ? cellRenderers.avatar({
-              name:
-                manager.computedName ||
-                (manager
-                  ? `${manager.firstName || ""} ${manager.lastName || ""}`.trim()
-                  : "") ||
-                "Unassigned",
-              email: manager.email,
-            })
-          : "—",
+      accessorKey: "manager",
+      header: "Manager",
+      type: "text",
+      sortable: true,
+      render: (manager) =>
+        manager ? renderUserAvatar(manager) : "—",
     },
     {
-      key: "processingDaysBeforeEft",
-      label: "Processing Days",
+      accessorKey: "processingDaysBeforeEft",
+      header: "Processing Days",
+      type: "number",
       sortable: true,
-      defaultVisible: false,
       align: "center",
-      cellRenderer: days => (days ? cellRenderers.count(days, "day") : "—"),
+      render: (days) => days ? (
+        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+          <span className="font-medium text-foreground">{days}</span>
+          {days === 1 ? "day" : "days"}
+        </div>
+      ) : "—",
     },
     {
-      key: "payrollSystem",
-      label: "System",
+      accessorKey: "payrollSystem",
+      header: "System",
+      type: "text",
       sortable: true,
-      defaultVisible: false,
-      cellRenderer: system =>
-        cellRenderers.iconText(system || "Not Set", Calculator),
+      render: (system) => (
+        <div className="flex items-center gap-2">
+          <Calculator className="w-4 h-4 text-gray-500" />
+          <span>{system || "Not Set"}</span>
+        </div>
+      ),
     },
     {
-      key: "goLiveDate",
-      label: "Go Live Date",
+      accessorKey: "goLiveDate",
+      header: "Go Live Date",
+      type: "date",
       sortable: true,
-      defaultVisible: false,
-      cellRenderer: date => (date ? cellRenderers.simpleDate(date) : "—"),
+      render: (date) => date ? new Date(date).toLocaleDateString() : "—",
     },
     {
-      key: "updatedAt",
-      label: "Last Updated",
+      accessorKey: "updatedAt",
+      header: "Last Updated",
+      type: "date",
       sortable: true,
-      defaultVisible: false,
-      cellRenderer: date => cellRenderers.date(date),
+      render: (date) => {
+        const dateObj = new Date(date);
+        return (
+          <div className="text-sm">
+            <div>{dateObj.toLocaleDateString()}</div>
+            <div className="text-muted-foreground">{dateObj.toLocaleTimeString()}</div>
+          </div>
+        );
+      },
     },
   ];
 
   // Action definitions
-  const actions: DataTableAction<Payroll>[] = [
+  const actions: UnifiedTableAction<any>[] = [
     {
       label: "View Details",
       icon: Eye,
-      onClick: payroll => {
+      onClick: (payroll: any) => {
         router.push(`/payrolls/${payroll.id}`);
       },
     },
     {
       label: "Edit Payroll",
       icon: Edit,
-      onClick: payroll => {
+      onClick: (payroll: any) => {
         // Handle edit action
         console.log("Edit payroll:", payroll.id);
       },
@@ -297,23 +303,22 @@ export function PayrollsTableUnified({
     {
       label: "View Dates",
       icon: CalendarDays,
-      onClick: payroll => {
+      onClick: (payroll: any) => {
         router.push(`/payroll-dates/${payroll.id}`);
       },
     },
     {
       label: "Assign Consultant",
       icon: UserCheck,
-      onClick: payroll => {
+      onClick: (payroll: any) => {
         // Handle assign consultant
         console.log("Assign consultant to:", payroll.id);
       },
-      separator: true,
     },
     {
       label: "Duplicate Payroll",
       icon: Copy,
-      onClick: payroll => {
+      onClick: (payroll: any) => {
         // Handle duplicate
         console.log("Duplicate payroll:", payroll.id);
       },
@@ -321,24 +326,28 @@ export function PayrollsTableUnified({
   ];
 
   return (
-    <UnifiedDataTable
+    <EnhancedUnifiedTable
       data={payrolls}
       columns={columns}
       loading={loading}
       emptyMessage="No payrolls found. Create your first payroll to get started."
       selectable={true}
-      selectedItems={selectedPayrolls}
-      onSelectItem={onSelectPayroll || (() => {})}
-      onSelectAll={onSelectAll || (() => {})}
-      sortField={sortField || ""}
-      sortDirection={sortDirection || "ASC"}
-      onSort={onSort || (() => {})}
-      visibleColumns={visibleColumns || []}
+      selectedRows={payrolls.filter(p => selectedPayrolls.includes(p.id))}
+      onSelectionChange={(rows) => {
+        // Convert selected rows back to IDs for backwards compatibility
+        const ids = rows.map(row => row.id);
+        onSelectAll?.(ids.length === payrolls.length);
+      }}
       actions={actions}
-      statusConfig={payrollStatusConfig}
       title="Payrolls"
-      onRefresh={onRefresh || (() => {})}
-      getRowId={payroll => payroll.id}
+      searchable={true}
+      searchPlaceholder="Search payrolls..."
+      {...(onRefresh && { onRefresh })}
+      refreshing={loading}
+      exportable={true}
+      onExport={(format) => {
+        console.log("Export payrolls as:", format);
+      }}
     />
   );
 }

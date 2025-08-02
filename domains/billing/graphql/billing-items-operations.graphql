@@ -50,7 +50,16 @@ fragment BillingItemWithRelations on BillingItems {
     name
     status
   }
-  # Service relationship temporarily removed due to multiple foreign key constraints
+  service {
+    id
+    name
+    description
+    category
+    billingUnit
+    defaultRate
+    currency
+    serviceType
+  }
 }
 
 fragment BillingItemStats on BillingItemsAggregate {
@@ -300,6 +309,85 @@ subscription BillingItemsStatsSubscriptionAdvanced(
 ) {
   billingItemsAggregate(where: $where) {
     ...BillingItemStats
+  }
+}
+
+# Payroll Date Completion Operations
+mutation CompletePayrollDate($id: uuid!, $completedBy: uuid!) {
+  updatePayrollDatesByPk(
+    pkColumns: { id: $id }
+    _set: { 
+      status: "completed"
+      completedAt: "now()"
+      completedBy: $completedBy
+    }
+  ) {
+    id
+    status
+    completedAt
+    completedBy
+    payrollId
+    originalEftDate
+    adjustedEftDate
+    processingDate
+  }
+}
+
+mutation UpdatePayrollDateStatus($id: uuid!, $status: String!, $updatedBy: uuid) {
+  updatePayrollDatesByPk(
+    pkColumns: { id: $id }
+    _set: { 
+      status: $status
+      updatedAt: "now()"
+      completedBy: $updatedBy
+    }
+  ) {
+    id
+    status
+    completedAt
+    completedBy
+    payrollId
+  }
+}
+
+query GetPayrollDatesByStatus($payrollId: uuid!, $status: String) {
+  payrollDates(
+    where: { 
+      payrollId: { _eq: $payrollId }
+      _and: { status: { _eq: $status } }
+    }
+    orderBy: { adjustedEftDate: ASC }
+  ) {
+    id
+    payrollId
+    originalEftDate
+    adjustedEftDate
+    processingDate
+    status
+    completedAt
+    completedBy
+    notes
+    createdAt
+    updatedAt
+  }
+}
+
+query GetPayrollDatesWithStatus($payrollId: uuid!) {
+  payrollDates(
+    where: { payrollId: { _eq: $payrollId } }
+    orderBy: { adjustedEftDate: ASC }
+  ) {
+    id
+    payrollId
+    originalEftDate
+    adjustedEftDate
+    processingDate
+    status
+    completedAt
+    completedBy
+    notes
+    createdAt
+    updatedAt
   }
 }
 

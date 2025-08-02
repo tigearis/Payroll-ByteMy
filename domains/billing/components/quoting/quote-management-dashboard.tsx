@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation, gql } from "@apollo/client";
 import {
   FileText,
   Plus,
@@ -57,7 +57,7 @@ import {
 import { cn } from "@/lib/utils";
 
 // GraphQL operations (these would be imported from generated types)
-const GET_QUOTES = `
+const GET_QUOTES = gql`
   query GetQuotes($limit: Int, $offset: Int, $where: QuotesBoolExp, $orderBy: [QuotesOrderBy!]) {
     quotes(limit: $limit, offset: $offset, where: $where, orderBy: $orderBy) {
       id
@@ -97,7 +97,7 @@ const GET_QUOTES = `
   }
 `;
 
-const GET_QUOTE_ANALYTICS = `
+const GET_QUOTE_ANALYTICS = gql`
   query GetQuoteAnalytics($where: QuoteAnalyticsBoolExp) {
     quoteAnalytics(where: $where, orderBy: {createdAt: DESC}) {
       id
@@ -117,7 +117,7 @@ const GET_QUOTE_ANALYTICS = `
   }
 `;
 
-const UPDATE_QUOTE_STATUS = `
+const UPDATE_QUOTE_STATUS = gql`
   mutation UpdateQuoteStatus($id: uuid!, $status: String!) {
     updateQuotesByPk(pkColumns: {id: $id}, _set: {status: $status}) {
       id

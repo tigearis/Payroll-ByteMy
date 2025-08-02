@@ -104,8 +104,8 @@ export const ServiceAssignmentManager: React.FC<ServiceAssignmentManagerProps> =
   // Mutation for bulk updating agreements
   const [bulkUpdateAgreements] = useMutation(BulkUpdateClientServiceAgreementsDocument);
 
-  const services = serviceCatalog?.billingPlan || [];
-  const currentAgreements = existingAgreements?.clientBillingAssignment || [];
+  const services = serviceCatalog?.services || [];
+  const currentAgreements = existingAgreements?.clientServiceAgreements || [];
 
   // Initialize service assignments
   useEffect(() => {
@@ -113,14 +113,14 @@ export const ServiceAssignmentManager: React.FC<ServiceAssignmentManagerProps> =
       const assignments = services.map(service => {
         // Check if this service already has an agreement
         const existingAgreement = currentAgreements.find(
-          agreement => agreement.billingPlanId === service.id
+          agreement => agreement.serviceId === service.id
         );
 
         return {
           serviceId: service.id,
           serviceName: service.name,
           category: service.category || 'Processing',
-          standardRate: service.standardRate,
+          standardRate: service.defaultRate,
           billingUnit: service.billingUnit || 'hour',
           customRate: existingAgreement?.customRate ?? 0,
           billingFrequency: existingAgreement?.billingFrequency || defaultBillingFrequency,
@@ -222,7 +222,7 @@ export const ServiceAssignmentManager: React.FC<ServiceAssignmentManagerProps> =
     try {
       const agreements = selectedAssignments.map(assignment => ({
         clientId: clientId,
-        billingPlanId: assignment.serviceId,
+        serviceId: assignment.serviceId,
         customRate: assignment.customRate || assignment.standardRate,
         billingFrequency: assignment.billingFrequency,
         effectiveDate: new Date().toISOString().split('T')[0],

@@ -388,6 +388,44 @@ mutation UpdatePayrollDateNotes($id: uuid!, $notes: String) {
   }
 }
 
+# Payroll Date Completion Operations
+mutation CompletePayrollDate($id: uuid!, $completedBy: uuid!) {
+  updatePayrollDatesByPk(
+    pkColumns: { id: $id }
+    _set: { 
+      status: "completed"
+      completedAt: "now()"
+      completedBy: $completedBy
+    }
+  ) {
+    id
+    status
+    completedAt
+    completedBy
+    payrollId
+    originalEftDate
+    adjustedEftDate
+    processingDate
+  }
+}
+
+mutation UpdatePayrollDateStatus($id: uuid!, $status: String!, $updatedBy: uuid) {
+  updatePayrollDatesByPk(
+    pkColumns: { id: $id }
+    _set: { 
+      status: $status
+      updatedAt: "now()"
+      completedBy: $updatedBy
+    }
+  ) {
+    id
+    status
+    completedAt
+    completedBy
+    payrollId
+  }
+}
+
 mutation BulkCreatePayrollDates($objects: [PayrollDatesInsertInput!]!) {
   insertPayrollDates(objects: $objects) {
     returning {

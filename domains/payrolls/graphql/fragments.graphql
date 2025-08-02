@@ -153,6 +153,9 @@ fragment PayrollDate on PayrollDates {
   adjustedEftDate
   processingDate
   notes
+  status
+  completedAt
+  completedBy
   createdAt
   payroll {
     id

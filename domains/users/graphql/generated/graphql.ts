@@ -18,7 +18,7 @@
  * ✓ Client Preset v4.8+ for optimal type safety
  * ✓ Zero type conflicts with modern codegen
  * 
- * Generated: 2025-08-01T13:57:07.330Z
+ * Generated: 2025-08-01T23:24:16.804Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Client Preset v4.0
  */
@@ -8439,6 +8439,8 @@ export type PayrollDatesBoolExp = {
   assignmentDetails?: InputMaybe<PayrollAssignmentsBoolExp>;
   billingItems?: InputMaybe<BillingItemsBoolExp>;
   billingItemsAggregate?: InputMaybe<BillingItemsAggregateBoolExp>;
+  completedAt?: InputMaybe<TimestamptzComparisonExp>;
+  completedBy?: InputMaybe<UuidComparisonExp>;
   createdAt?: InputMaybe<TimestamptzComparisonExp>;
   id?: InputMaybe<UuidComparisonExp>;
   notes?: InputMaybe<StringComparisonExp>;
@@ -8448,9 +8450,11 @@ export type PayrollDatesBoolExp = {
   payrollAssignmentsAggregate?: InputMaybe<PayrollAssignmentAuditAggregateBoolExp>;
   payrollId?: InputMaybe<UuidComparisonExp>;
   processingDate?: InputMaybe<DateComparisonExp>;
+  status?: InputMaybe<StringComparisonExp>;
   timeEntries?: InputMaybe<TimeEntriesBoolExp>;
   timeEntriesAggregate?: InputMaybe<TimeEntriesAggregateBoolExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+  user?: InputMaybe<UsersBoolExp>;
 };
 
 /** unique or primary key constraints on table "payroll_dates" */
@@ -8467,6 +8471,8 @@ export type PayrollDatesInsertInput = {
   adjustedEftDate?: InputMaybe<Scalars['date']['input']>;
   assignmentDetails?: InputMaybe<PayrollAssignmentsObjRelInsertInput>;
   billingItems?: InputMaybe<BillingItemsArrRelInsertInput>;
+  completedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  completedBy?: InputMaybe<Scalars['uuid']['input']>;
   /** Timestamp when the date record was created */
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Unique identifier for the payroll date */
@@ -8481,15 +8487,19 @@ export type PayrollDatesInsertInput = {
   payrollId?: InputMaybe<Scalars['uuid']['input']>;
   /** Date when payroll processing must be completed */
   processingDate?: InputMaybe<Scalars['date']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
   timeEntries?: InputMaybe<TimeEntriesArrRelInsertInput>;
   /** Timestamp when the date record was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  user?: InputMaybe<UsersObjRelInsertInput>;
 };
 
 /** order by max() on columns of table "payroll_dates" */
 export type PayrollDatesMaxOrderBy = {
   /** Final EFT date after holiday and weekend adjustments */
   adjustedEftDate?: InputMaybe<OrderBy>;
+  completedAt?: InputMaybe<OrderBy>;
+  completedBy?: InputMaybe<OrderBy>;
   /** Timestamp when the date record was created */
   createdAt?: InputMaybe<OrderBy>;
   /** Unique identifier for the payroll date */
@@ -8502,6 +8512,7 @@ export type PayrollDatesMaxOrderBy = {
   payrollId?: InputMaybe<OrderBy>;
   /** Date when payroll processing must be completed */
   processingDate?: InputMaybe<OrderBy>;
+  status?: InputMaybe<OrderBy>;
   /** Timestamp when the date record was last updated */
   updatedAt?: InputMaybe<OrderBy>;
 };
@@ -8510,6 +8521,8 @@ export type PayrollDatesMaxOrderBy = {
 export type PayrollDatesMinOrderBy = {
   /** Final EFT date after holiday and weekend adjustments */
   adjustedEftDate?: InputMaybe<OrderBy>;
+  completedAt?: InputMaybe<OrderBy>;
+  completedBy?: InputMaybe<OrderBy>;
   /** Timestamp when the date record was created */
   createdAt?: InputMaybe<OrderBy>;
   /** Unique identifier for the payroll date */
@@ -8522,6 +8535,7 @@ export type PayrollDatesMinOrderBy = {
   payrollId?: InputMaybe<OrderBy>;
   /** Date when payroll processing must be completed */
   processingDate?: InputMaybe<OrderBy>;
+  status?: InputMaybe<OrderBy>;
   /** Timestamp when the date record was last updated */
   updatedAt?: InputMaybe<OrderBy>;
 };
@@ -8545,6 +8559,8 @@ export type PayrollDatesOrderBy = {
   adjustedEftDate?: InputMaybe<OrderBy>;
   assignmentDetails?: InputMaybe<PayrollAssignmentsOrderBy>;
   billingItemsAggregate?: InputMaybe<BillingItemsAggregateOrderBy>;
+  completedAt?: InputMaybe<OrderBy>;
+  completedBy?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   notes?: InputMaybe<OrderBy>;
@@ -8553,8 +8569,10 @@ export type PayrollDatesOrderBy = {
   payrollAssignmentsAggregate?: InputMaybe<PayrollAssignmentAuditAggregateOrderBy>;
   payrollId?: InputMaybe<OrderBy>;
   processingDate?: InputMaybe<OrderBy>;
+  status?: InputMaybe<OrderBy>;
   timeEntriesAggregate?: InputMaybe<TimeEntriesAggregateOrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
+  user?: InputMaybe<UsersOrderBy>;
 };
 
 /** primary key columns input for table: payroll_dates */
@@ -8568,6 +8586,10 @@ export type PayrollDatesSelectColumn =
   /** column name */
   | 'adjustedEftDate'
   /** column name */
+  | 'completedAt'
+  /** column name */
+  | 'completedBy'
+  /** column name */
   | 'createdAt'
   /** column name */
   | 'id'
@@ -8580,6 +8602,8 @@ export type PayrollDatesSelectColumn =
   /** column name */
   | 'processingDate'
   /** column name */
+  | 'status'
+  /** column name */
   | 'updatedAt'
   | '%future added value';
 
@@ -8587,6 +8611,8 @@ export type PayrollDatesSelectColumn =
 export type PayrollDatesSetInput = {
   /** Final EFT date after holiday and weekend adjustments */
   adjustedEftDate?: InputMaybe<Scalars['date']['input']>;
+  completedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  completedBy?: InputMaybe<Scalars['uuid']['input']>;
   /** Timestamp when the date record was created */
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Unique identifier for the payroll date */
@@ -8599,6 +8625,7 @@ export type PayrollDatesSetInput = {
   payrollId?: InputMaybe<Scalars['uuid']['input']>;
   /** Date when payroll processing must be completed */
   processingDate?: InputMaybe<Scalars['date']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
   /** Timestamp when the date record was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
@@ -8615,6 +8642,8 @@ export type PayrollDatesStreamCursorInput = {
 export type PayrollDatesStreamCursorValueInput = {
   /** Final EFT date after holiday and weekend adjustments */
   adjustedEftDate?: InputMaybe<Scalars['date']['input']>;
+  completedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  completedBy?: InputMaybe<Scalars['uuid']['input']>;
   /** Timestamp when the date record was created */
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Unique identifier for the payroll date */
@@ -8627,6 +8656,7 @@ export type PayrollDatesStreamCursorValueInput = {
   payrollId?: InputMaybe<Scalars['uuid']['input']>;
   /** Date when payroll processing must be completed */
   processingDate?: InputMaybe<Scalars['date']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
   /** Timestamp when the date record was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
@@ -8635,6 +8665,10 @@ export type PayrollDatesStreamCursorValueInput = {
 export type PayrollDatesUpdateColumn =
   /** column name */
   | 'adjustedEftDate'
+  /** column name */
+  | 'completedAt'
+  /** column name */
+  | 'completedBy'
   /** column name */
   | 'createdAt'
   /** column name */
@@ -8647,6 +8681,8 @@ export type PayrollDatesUpdateColumn =
   | 'payrollId'
   /** column name */
   | 'processingDate'
+  /** column name */
+  | 'status'
   /** column name */
   | 'updatedAt'
   | '%future added value';
@@ -17050,6 +17086,8 @@ export type UsersBoolExp = {
   managerId?: InputMaybe<UuidComparisonExp>;
   originalConsultantAssignments?: InputMaybe<PayrollAssignmentsBoolExp>;
   originalConsultantAssignmentsAggregate?: InputMaybe<PayrollAssignmentsAggregateBoolExp>;
+  payrollDates?: InputMaybe<PayrollDatesBoolExp>;
+  payrollDatesAggregate?: InputMaybe<PayrollDatesAggregateBoolExp>;
   permissionAuditLogs?: InputMaybe<PermissionAuditLogBoolExp>;
   permissionAuditLogsAggregate?: InputMaybe<PermissionAuditLogAggregateBoolExp>;
   permissionOverrides?: InputMaybe<PermissionOverridesBoolExp>;
@@ -17184,6 +17222,7 @@ export type UsersInsertInput = {
   /** Reference to the user's manager */
   managerId?: InputMaybe<Scalars['uuid']['input']>;
   originalConsultantAssignments?: InputMaybe<PayrollAssignmentsArrRelInsertInput>;
+  payrollDates?: InputMaybe<PayrollDatesArrRelInsertInput>;
   permissionAuditLogs?: InputMaybe<PermissionAuditLogArrRelInsertInput>;
   permissionOverrides?: InputMaybe<PermissionOverridesArrRelInsertInput>;
   /** User contact phone number */
@@ -17379,6 +17418,7 @@ export type UsersOrderBy = {
   manager?: InputMaybe<UsersOrderBy>;
   managerId?: InputMaybe<OrderBy>;
   originalConsultantAssignmentsAggregate?: InputMaybe<PayrollAssignmentsAggregateOrderBy>;
+  payrollDatesAggregate?: InputMaybe<PayrollDatesAggregateOrderBy>;
   permissionAuditLogsAggregate?: InputMaybe<PermissionAuditLogAggregateOrderBy>;
   permissionOverridesAggregate?: InputMaybe<PermissionOverridesAggregateOrderBy>;
   phone?: InputMaybe<OrderBy>;

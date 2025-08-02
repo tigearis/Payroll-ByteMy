@@ -1,2 +1,2 @@
 // Billing Dashboard Components
-export { BillingDashboard } from './billing-dashboard';
+export { ModernBillingDashboard } from './modern-billing-dashboard';

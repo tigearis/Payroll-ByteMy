@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation, gql } from "@apollo/client";
 import {
   Clock,
   Plus,
@@ -86,7 +86,7 @@ const timeEntrySchema = z.object({
   workDate: z.string().min(1, "Work date is required"),
   timeUnits: z.number().min(1, "Time must be at least 6 minutes").max(240, "Maximum 24 hours per entry"),
   description: z.string().min(1, "Description is required"),
-  isBillable: z.boolean().default(true),
+  isBillable: z.boolean(),
   billingNotes: z.string().optional(),
 });
 
@@ -118,7 +118,7 @@ interface TimeEntry {
   payrollName?: string;
 }
 
-const GET_CLIENTS_FOR_TIME = `
+const GET_CLIENTS_FOR_TIME = gql`
   query GetClientsForTime {
     clients(where: {active: {_eq: true}}, orderBy: {name: ASC}) {
       id
@@ -127,7 +127,7 @@ const GET_CLIENTS_FOR_TIME = `
   }
 `;
 
-const GET_PAYROLLS_FOR_CLIENT = `
+const GET_PAYROLLS_FOR_CLIENT = gql`
   query GetPayrollsForClient($clientId: uuid!) {
     payrolls(
       where: {clientId: {_eq: $clientId}, status: {_in: ["Active", "Processing"]}}
@@ -140,7 +140,7 @@ const GET_PAYROLLS_FOR_CLIENT = `
   }
 `;
 
-const GET_TIME_TRACKING_SUMMARY = `
+const GET_TIME_TRACKING_SUMMARY = gql`
   query GetTimeTrackingSummary(
     $startDate: date!
     $endDate: date!
@@ -171,7 +171,7 @@ const GET_TIME_TRACKING_SUMMARY = `
   }
 `;
 
-const CREATE_TIME_ENTRY = `
+const CREATE_TIME_ENTRY = gql`
   mutation CreateTimeEntryWithUnits($input: TimeEntriesInsertInput!) {
     insertTimeEntriesOne(object: $input) {
       id
@@ -203,6 +203,8 @@ export function EnhancedTimeEntry({
       workDate: new Date().toISOString().split('T')[0],
       timeUnits: 10, // Default to 1 hour
       isBillable: true,
+      clientId: '',
+      description: '',
     },
   });
 

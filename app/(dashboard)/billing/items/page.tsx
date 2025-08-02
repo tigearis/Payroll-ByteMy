@@ -8,10 +8,44 @@ import { PermissionGuard } from '@/components/auth/permission-guard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BillingItemsDashboard } from '@/domains/billing/components/items/billing-items-dashboard';
+import { BillingItemsTable } from '@/domains/billing/components/items/billing-items-table';
+import { GetBillingItemsAdvancedDocument, GetBillingItemsStatsAdvancedDocument } from '@/domains/billing/graphql/generated/graphql';
 
 export default function BillingItemsPage() {
   const [activeTab, setActiveTab] = useState('dashboard');
+
+  // Fetch billing data
+  const { data: billingItemsData, loading: itemsLoading, refetch } = useQuery(
+    GetBillingItemsAdvancedDocument,
+    {
+      variables: {
+        limit: 100,
+        offset: 0,
+        orderBy: [{ createdAt: "DESC" }],
+      },
+      fetchPolicy: "cache-and-network",
+    }
+  );
+
+  const { data: statsData, loading: statsLoading } = useQuery(
+    GetBillingItemsStatsAdvancedDocument,
+    {
+      variables: { where: {} },
+      fetchPolicy: "cache-and-network",
+    }
+  );
+
+  const billingItems = billingItemsData?.billingItems || [];
+  const stats = statsData?.billingItemsAggregate?.aggregate;
+  const pendingStats = statsData?.pending?.aggregate;
+  const approvedStats = statsData?.approved?.aggregate;
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-AU", {
+      style: "currency",
+      currency: "AUD",
+    }).format(amount);
+  };
 
   return (
     <PermissionGuard resource="billing_items" action="read" fallback={
@@ -54,9 +88,11 @@ export default function BillingItemsPage() {
               <DollarSign className="h-4 w-4 text-gray-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">--</div>
+              <div className="text-2xl font-bold">
+                {itemsLoading ? "..." : (stats?.count || 0)}
+              </div>
               <p className="text-xs text-gray-600">
-                All billing items
+                {formatCurrency(stats?.sum?.amount || 0)}
               </p>
             </CardContent>
           </Card>
@@ -67,9 +103,11 @@ export default function BillingItemsPage() {
               <Clock className="h-4 w-4 text-orange-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">--</div>
+              <div className="text-2xl font-bold">
+                {statsLoading ? "..." : (pendingStats?.count || 0)}
+              </div>
               <p className="text-xs text-gray-600">
-                Awaiting manager approval
+                {formatCurrency(pendingStats?.sum?.amount || 0)}
               </p>
             </CardContent>
           </Card>
@@ -80,9 +118,11 @@ export default function BillingItemsPage() {
               <CheckCircle className="h-4 w-4 text-green-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">--</div>
+              <div className="text-2xl font-bold">
+                {statsLoading ? "..." : (approvedStats?.count || 0)}
+              </div>
               <p className="text-xs text-gray-600">
-                Ready for invoicing
+                {formatCurrency(approvedStats?.sum?.amount || 0)}
               </p>
             </CardContent>
           </Card>
@@ -93,9 +133,11 @@ export default function BillingItemsPage() {
               <DollarSign className="h-4 w-4 text-blue-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">$--</div>
+              <div className="text-2xl font-bold">
+                {formatCurrency(stats?.sum?.amount || 0)}
+              </div>
               <p className="text-xs text-gray-600">
-                This month
+                All time
               </p>
             </CardContent>
           </Card>
@@ -119,15 +161,23 @@ export default function BillingItemsPage() {
           </TabsList>
 
           <TabsContent value="dashboard">
-            <BillingItemsDashboard />
+            <BillingItemsTable data={billingItems} loading={itemsLoading} refetch={refetch} />
           </TabsContent>
 
           <TabsContent value="draft">
-            <BillingItemsDashboard status="draft" />
+            <BillingItemsTable 
+              data={billingItems.filter(item => !item.isApproved)} 
+              loading={itemsLoading} 
+              refetch={refetch} 
+            />
           </TabsContent>
 
           <TabsContent value="confirmed">
-            <BillingItemsDashboard status="confirmed" />
+            <BillingItemsTable 
+              data={billingItems.filter(item => item.isApproved)} 
+              loading={itemsLoading} 
+              refetch={refetch} 
+            />
           </TabsContent>
         </Tabs>
       </div>

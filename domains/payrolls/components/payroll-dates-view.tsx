@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -22,6 +22,8 @@ import {
   RefreshCw,
   RotateCcw,
   AlertCircle,
+  CheckCircle,
+  Clock,
 } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
@@ -47,6 +49,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   GetPayrollFamilyDatesDocument,
   GetPayrollDatesDocument,
+  CompletePayrollDateDocument,
+  UpdatePayrollDateStatusDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
 import { NotesListModal } from "./notes-list-modal";
 // Fragment masking disabled - no longer needed
@@ -57,6 +61,9 @@ interface PayrollDate {
   adjusted_eft_date: string;
   processing_date: string;
   notes?: string;
+  status?: string;
+  completed_at?: string;
+  completed_by?: string;
   payroll_id: string;
   payroll?: {
     id: string;
@@ -130,6 +137,30 @@ function PayrollDatesTable({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+
+  // Mutation for completing payroll dates
+  const [completePayrollDate] = useMutation(CompletePayrollDateDocument, {
+    onCompleted: () => {
+      toast.success("Payroll date marked as completed");
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(`Failed to complete payroll date: ${error.message}`);
+    },
+  });
+
+  const handleCompletePayrollDate = async (payrollDateId: string) => {
+    try {
+      await completePayrollDate({
+        variables: {
+          id: payrollDateId,
+          completedBy: "current-user-id", // TODO: Get actual user ID from session
+        },
+      });
+    } catch (error) {
+      console.error("Error completing payroll date:", error);
+    }
+  };
 
   const columns: ColumnDef<PayrollDate>[] = [
     {
@@ -254,6 +285,47 @@ function PayrollDatesTable({
             </Badge>
             {isSuperseded && (
               <span className="text-xs text-gray-400">(superseded)</span>
+            )}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const status = row.original.status || "pending";
+        const isCompleted = status === "completed";
+        
+        return (
+          <div className="flex items-center gap-2">
+            <Badge 
+              variant={isCompleted ? "default" : "secondary"}
+              className={isCompleted ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}
+            >
+              {isCompleted ? (
+                <>
+                  <CheckCircle className="w-3 h-3 mr-1" />
+                  Completed
+                </>
+              ) : (
+                <>
+                  <Clock className="w-3 h-3 mr-1" />
+                  Pending
+                </>
+              )}
+            </Badge>
+            {!isCompleted && (
+              <PermissionGuard permission="payrolls.manage">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleCompletePayrollDate(row.original.id)}
+                  className="h-6 px-2 text-xs"
+                >
+                  Complete
+                </Button>
+              </PermissionGuard>
             )}
           </div>
         );

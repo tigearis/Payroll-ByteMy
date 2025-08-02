@@ -14224,6 +14224,8 @@ type PayrollDates {
     """filter the rows returned"""
     where: BillingItemsBoolExp
   ): BillingItemsAggregate!
+  completedAt: timestamptz
+  completedBy: uuid
   """Timestamp when the date record was created"""
   createdAt: timestamptz
   """Unique identifier for the payroll date"""
@@ -14264,6 +14266,7 @@ type PayrollDates {
   payrollId: uuid!
   """Date when payroll processing must be completed"""
   processingDate: date!
+  status: String
   """An array relationship"""
   timeEntries(
     """distinct select on columns"""
@@ -14292,6 +14295,8 @@ type PayrollDates {
   ): TimeEntriesAggregate!
   """Timestamp when the date record was last updated"""
   updatedAt: timestamptz
+  """An object relationship"""
+  user: Users
 }
 
 """
@@ -14344,6 +14349,8 @@ input PayrollDatesBoolExp {
   assignmentDetails: PayrollAssignmentsBoolExp
   billingItems: BillingItemsBoolExp
   billingItemsAggregate: BillingItemsAggregateBoolExp
+  completedAt: TimestamptzComparisonExp
+  completedBy: UuidComparisonExp
   createdAt: TimestamptzComparisonExp
   id: UuidComparisonExp
   notes: StringComparisonExp
@@ -14353,9 +14360,11 @@ input PayrollDatesBoolExp {
   payrollAssignmentsAggregate: PayrollAssignmentAuditAggregateBoolExp
   payrollId: UuidComparisonExp
   processingDate: DateComparisonExp
+  status: StringComparisonExp
   timeEntries: TimeEntriesBoolExp
   timeEntriesAggregate: TimeEntriesAggregateBoolExp
   updatedAt: TimestamptzComparisonExp
+  user: UsersBoolExp
 }
 
 """
@@ -14380,6 +14389,8 @@ input PayrollDatesInsertInput {
   adjustedEftDate: date
   assignmentDetails: PayrollAssignmentsObjRelInsertInput
   billingItems: BillingItemsArrRelInsertInput
+  completedAt: timestamptz
+  completedBy: uuid
   """Timestamp when the date record was created"""
   createdAt: timestamptz
   """Unique identifier for the payroll date"""
@@ -14394,15 +14405,19 @@ input PayrollDatesInsertInput {
   payrollId: uuid
   """Date when payroll processing must be completed"""
   processingDate: date
+  status: String
   timeEntries: TimeEntriesArrRelInsertInput
   """Timestamp when the date record was last updated"""
   updatedAt: timestamptz
+  user: UsersObjRelInsertInput
 }
 
 """aggregate max on columns"""
 type PayrollDatesMaxFields {
   """Final EFT date after holiday and weekend adjustments"""
   adjustedEftDate: date
+  completedAt: timestamptz
+  completedBy: uuid
   """Timestamp when the date record was created"""
   createdAt: timestamptz
   """Unique identifier for the payroll date"""
@@ -14415,6 +14430,7 @@ type PayrollDatesMaxFields {
   payrollId: uuid
   """Date when payroll processing must be completed"""
   processingDate: date
+  status: String
   """Timestamp when the date record was last updated"""
   updatedAt: timestamptz
 }
@@ -14425,6 +14441,8 @@ order by max() on columns of table "payroll_dates"
 input PayrollDatesMaxOrderBy {
   """Final EFT date after holiday and weekend adjustments"""
   adjustedEftDate: OrderBy
+  completedAt: OrderBy
+  completedBy: OrderBy
   """Timestamp when the date record was created"""
   createdAt: OrderBy
   """Unique identifier for the payroll date"""
@@ -14437,6 +14455,7 @@ input PayrollDatesMaxOrderBy {
   payrollId: OrderBy
   """Date when payroll processing must be completed"""
   processingDate: OrderBy
+  status: OrderBy
   """Timestamp when the date record was last updated"""
   updatedAt: OrderBy
 }
@@ -14445,6 +14464,8 @@ input PayrollDatesMaxOrderBy {
 type PayrollDatesMinFields {
   """Final EFT date after holiday and weekend adjustments"""
   adjustedEftDate: date
+  completedAt: timestamptz
+  completedBy: uuid
   """Timestamp when the date record was created"""
   createdAt: timestamptz
   """Unique identifier for the payroll date"""
@@ -14457,6 +14478,7 @@ type PayrollDatesMinFields {
   payrollId: uuid
   """Date when payroll processing must be completed"""
   processingDate: date
+  status: String
   """Timestamp when the date record was last updated"""
   updatedAt: timestamptz
 }
@@ -14467,6 +14489,8 @@ order by min() on columns of table "payroll_dates"
 input PayrollDatesMinOrderBy {
   """Final EFT date after holiday and weekend adjustments"""
   adjustedEftDate: OrderBy
+  completedAt: OrderBy
+  completedBy: OrderBy
   """Timestamp when the date record was created"""
   createdAt: OrderBy
   """Unique identifier for the payroll date"""
@@ -14479,6 +14503,7 @@ input PayrollDatesMinOrderBy {
   payrollId: OrderBy
   """Date when payroll processing must be completed"""
   processingDate: OrderBy
+  status: OrderBy
   """Timestamp when the date record was last updated"""
   updatedAt: OrderBy
 }
@@ -14516,6 +14541,8 @@ input PayrollDatesOrderBy {
   adjustedEftDate: OrderBy
   assignmentDetails: PayrollAssignmentsOrderBy
   billingItemsAggregate: BillingItemsAggregateOrderBy
+  completedAt: OrderBy
+  completedBy: OrderBy
   createdAt: OrderBy
   id: OrderBy
   notes: OrderBy
@@ -14524,8 +14551,10 @@ input PayrollDatesOrderBy {
   payrollAssignmentsAggregate: PayrollAssignmentAuditAggregateOrderBy
   payrollId: OrderBy
   processingDate: OrderBy
+  status: OrderBy
   timeEntriesAggregate: TimeEntriesAggregateOrderBy
   updatedAt: OrderBy
+  user: UsersOrderBy
 }
 
 """primary key columns input for table: payroll_dates"""
@@ -14541,6 +14570,10 @@ enum PayrollDatesSelectColumn {
   """column name"""
   adjustedEftDate
   """column name"""
+  completedAt
+  """column name"""
+  completedBy
+  """column name"""
   createdAt
   """column name"""
   id
@@ -14553,6 +14586,8 @@ enum PayrollDatesSelectColumn {
   """column name"""
   processingDate
   """column name"""
+  status
+  """column name"""
   updatedAt
 }
 
@@ -14562,6 +14597,8 @@ input type for updating data in table "payroll_dates"
 input PayrollDatesSetInput {
   """Final EFT date after holiday and weekend adjustments"""
   adjustedEftDate: date
+  completedAt: timestamptz
+  completedBy: uuid
   """Timestamp when the date record was created"""
   createdAt: timestamptz
   """Unique identifier for the payroll date"""
@@ -14574,6 +14611,7 @@ input PayrollDatesSetInput {
   payrollId: uuid
   """Date when payroll processing must be completed"""
   processingDate: date
+  status: String
   """Timestamp when the date record was last updated"""
   updatedAt: timestamptz
 }
@@ -14592,6 +14630,8 @@ input PayrollDatesStreamCursorInput {
 input PayrollDatesStreamCursorValueInput {
   """Final EFT date after holiday and weekend adjustments"""
   adjustedEftDate: date
+  completedAt: timestamptz
+  completedBy: uuid
   """Timestamp when the date record was created"""
   createdAt: timestamptz
   """Unique identifier for the payroll date"""
@@ -14604,6 +14644,7 @@ input PayrollDatesStreamCursorValueInput {
   payrollId: uuid
   """Date when payroll processing must be completed"""
   processingDate: date
+  status: String
   """Timestamp when the date record was last updated"""
   updatedAt: timestamptz
 }
@@ -14614,6 +14655,10 @@ update columns of table "payroll_dates"
 enum PayrollDatesUpdateColumn {
   """column name"""
   adjustedEftDate
+  """column name"""
+  completedAt
+  """column name"""
+  completedBy
   """column name"""
   createdAt
   """column name"""
@@ -14626,6 +14671,8 @@ enum PayrollDatesUpdateColumn {
   payrollId
   """column name"""
   processingDate
+  """column name"""
+  status
   """column name"""
   updatedAt
 }
@@ -29670,6 +29717,32 @@ type Users {
     where: PayrollAssignmentsBoolExp
   ): PayrollAssignmentsAggregate!
   """An array relationship"""
+  payrollDates(
+    """distinct select on columns"""
+    distinctOn: [PayrollDatesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollDatesOrderBy!]
+    """filter the rows returned"""
+    where: PayrollDatesBoolExp
+  ): [PayrollDates!]!
+  """An aggregate relationship"""
+  payrollDatesAggregate(
+    """distinct select on columns"""
+    distinctOn: [PayrollDatesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollDatesOrderBy!]
+    """filter the rows returned"""
+    where: PayrollDatesBoolExp
+  ): PayrollDatesAggregate!
+  """An array relationship"""
   permissionAuditLogs(
     """distinct select on columns"""
     distinctOn: [PermissionAuditLogSelectColumn!]
@@ -30488,6 +30561,8 @@ input UsersBoolExp {
   managerId: UuidComparisonExp
   originalConsultantAssignments: PayrollAssignmentsBoolExp
   originalConsultantAssignmentsAggregate: PayrollAssignmentsAggregateBoolExp
+  payrollDates: PayrollDatesBoolExp
+  payrollDatesAggregate: PayrollDatesAggregateBoolExp
   permissionAuditLogs: PermissionAuditLogBoolExp
   permissionAuditLogsAggregate: PermissionAuditLogAggregateBoolExp
   permissionOverrides: PermissionOverridesBoolExp
@@ -30636,6 +30711,7 @@ input UsersInsertInput {
   """Reference to the user's manager"""
   managerId: uuid
   originalConsultantAssignments: PayrollAssignmentsArrRelInsertInput
+  payrollDates: PayrollDatesArrRelInsertInput
   permissionAuditLogs: PermissionAuditLogArrRelInsertInput
   permissionOverrides: PermissionOverridesArrRelInsertInput
   """User contact phone number"""
@@ -30939,6 +31015,7 @@ input UsersOrderBy {
   manager: UsersOrderBy
   managerId: OrderBy
   originalConsultantAssignmentsAggregate: PayrollAssignmentsAggregateOrderBy
+  payrollDatesAggregate: PayrollDatesAggregateOrderBy
   permissionAuditLogsAggregate: PermissionAuditLogAggregateOrderBy
   permissionOverridesAggregate: PermissionOverridesAggregateOrderBy
   phone: OrderBy

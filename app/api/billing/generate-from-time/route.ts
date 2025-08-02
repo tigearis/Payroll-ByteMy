@@ -74,7 +74,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
         GetClientServicesWithRatesDocument,
         { clientId: cId }
       );
-      clientServices.set(cId, servicesData?.clientBillingAssignment || []);
+      clientServices.set(cId, servicesData?.clientServiceAgreements || []);
     }
 
     const generatedItems = [];
@@ -105,10 +105,10 @@ export const POST = withAuth(async (req: NextRequest, session) => {
       for (const [key, group] of groupedEntries) {
         const services = clientServices.get(group.clientId) || [];
         const hourlyService = services.find((s: any) => 
-          s.assignedBillingPlan?.billingUnit?.toLowerCase().includes('hour')
+          s.service?.billingUnit?.toLowerCase().includes('hour')
         );
         
-        const hourlyRate = hourlyService?.customRate || hourlyService?.assignedBillingPlan?.standardRate || 150;
+        const hourlyRate = hourlyService?.customRate || hourlyService?.service?.defaultRate || 150;
         
         const billingItemData = {
           description: `Professional Services - ${Array.from(group.descriptions).join(', ')}`,
@@ -117,7 +117,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
           clientId: group.clientId,
           staffUserId: group.staffUserId,
           payrollId,
-          serviceName: hourlyService?.assignedBillingPlan?.name || 'Professional Services',
+          serviceName: hourlyService?.service?.name || 'Professional Services',
           hourlyRate,
           status: 'draft',
           notes: `Generated from ${group.entries.length} time entries`
@@ -135,10 +135,10 @@ export const POST = withAuth(async (req: NextRequest, session) => {
       for (const entry of timeEntries) {
         const services = clientServices.get(entry.clientId) || [];
         const hourlyService = services.find((s: any) => 
-          s.assignedBillingPlan?.billingUnit?.toLowerCase().includes('hour')
+          s.service?.billingUnit?.toLowerCase().includes('hour')
         );
         
-        const hourlyRate = hourlyService?.customRate || hourlyService?.assignedBillingPlan?.standardRate || 150;
+        const hourlyRate = hourlyService?.customRate || hourlyService?.service?.defaultRate || 150;
         
         const billingItemData = {
           description: entry.description || 'Professional Services',
@@ -147,7 +147,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
           clientId: entry.clientId,
           staffUserId: entry.staffUserId,
           payrollId,
-          serviceName: hourlyService?.assignedBillingPlan?.name || 'Professional Services',
+          serviceName: hourlyService?.service?.name || 'Professional Services',
           hourlyRate,
           status: 'draft',
           notes: `Generated from time entry on ${entry.workDate}`
