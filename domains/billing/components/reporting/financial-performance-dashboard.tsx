@@ -24,8 +24,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-// TODO: Missing GraphQL operations - temporarily disabled:
-// GetClientProfitabilityDocument -> GetClientProfitabilityAnalysisDocument
 import {
   GetFinancialPerformanceDataDocument,
   GetRevenueAnalyticsDocument,

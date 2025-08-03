@@ -447,6 +447,328 @@ query GetBillingItemAuditLogAdvanced(
   }
 }
 
+# Time Entries Operations for Billing Integration
+query GetTimeEntriesByPayrollDocument(
+  $payrollId: uuid!
+  $limit: Int = 100
+  $offset: Int = 0
+) {
+  timeEntries(
+    where: { payrollId: { _eq: $payrollId } }
+    limit: $limit
+    offset: $offset
+    orderBy: { workDate: DESC }
+  ) {
+    id
+    payrollId
+    clientId
+    staffUserId
+    hoursSpent
+    description
+    workDate
+    createdAt
+    updatedAt
+    client {
+      id
+      name
+      contactEmail
+    }
+    staffUser {
+      id
+      firstName
+      lastName
+      computedName
+      email
+    }
+    payroll {
+      id
+      name
+      status
+    }
+  }
+  
+  timeEntriesAggregate(
+    where: { payrollId: { _eq: $payrollId } }
+  ) {
+    aggregate {
+      count
+      sum {
+        hoursSpent
+      }
+      avg {
+        hoursSpent
+      }
+    }
+  }
+}
+
+query GetTimeEntriesByPayrollDateDocument(
+  $payrollDateId: uuid!
+  $limit: Int = 100
+  $offset: Int = 0
+) {
+  timeEntries(
+    where: { payrollDateId: { _eq: $payrollDateId } }
+    limit: $limit
+    offset: $offset
+    orderBy: { workDate: DESC }
+  ) {
+    id
+    payrollId
+    payrollDateId
+    clientId
+    staffUserId
+    hoursSpent
+    description
+    workDate
+    createdAt
+    client {
+      id
+      name
+    }
+    staffUser {
+      id
+      firstName
+      lastName
+      computedName
+    }
+  }
+}
+
+query GetTimeEntriesForBillingDocument(
+  $payrollId: uuid
+  $clientId: uuid
+  $staffUserId: uuid
+  $startDate: date
+  $endDate: date
+) {
+  timeEntries(
+    where: {
+      _and: [
+        { payrollId: { _eq: $payrollId } }
+        { clientId: { _eq: $clientId } }
+        { staffUserId: { _eq: $staffUserId } }
+        { workDate: { _gte: $startDate, _lte: $endDate } }
+      ]
+    }
+    orderBy: { workDate: DESC }
+  ) {
+    id
+    payrollId
+    clientId
+    staffUserId
+    hoursSpent
+    description
+    workDate
+    createdAt
+    client {
+      id
+      name
+    }
+    staffUser {
+      id
+      firstName
+      lastName
+      computedName
+      email
+    }
+  }
+  
+  timeEntriesAggregate(
+    where: {
+      _and: [
+        { payrollId: { _eq: $payrollId } }
+        { clientId: { _eq: $clientId } }
+        { staffUserId: { _eq: $staffUserId } }
+        { workDate: { _gte: $startDate, _lte: $endDate } }
+      ]
+    }
+  ) {
+    aggregate {
+      count
+      sum {
+        hoursSpent
+      }
+    }
+  }
+}
+
+# Time Entry Operations (removed fields that don't exist in schema)
+
+# Payroll Integration Operations for Billing System
+query GetPayrollDatesWithBillingStatusDocument(
+  $limit: Int = 50
+  $offset: Int = 0
+  $status: String
+  $includeCompleted: Boolean = true
+) {
+  payrollDates(
+    where: {
+      _and: [
+        { status: { _eq: $status } }
+        { adjustedEftDate: { _gte: "date_trunc('day', now() - interval '30 days')" } }
+      ]
+    }
+    limit: $limit
+    offset: $offset
+    orderBy: { adjustedEftDate: DESC }
+  ) {
+    id
+    payrollId
+    originalEftDate
+    adjustedEftDate
+    processingDate
+    status
+    completedAt
+    completedBy
+    notes
+    createdAt
+    updatedAt
+    payroll {
+      id
+      name
+      status
+      clientId
+      employeeCount
+      client {
+        id
+        name
+        contactEmail
+      }
+      primaryConsultant {
+        id
+        firstName
+        lastName
+        computedName
+      }
+      backupConsultant {
+        id
+        firstName
+        lastName
+        computedName
+      }
+    }
+    # Check if billing has been generated for this payroll date
+    billingItems: billingItemsAggregate(
+      where: { payrollId: { _eq: payrollId } }
+    ) {
+      aggregate {
+        count
+      }
+    }
+  }
+}
+
+query GetPayrollCompletionStatsDocument {
+  # All pending payroll dates
+  pendingPayrollDates: payrollDatesAggregate(
+    where: { 
+      status: { _in: ["pending", "processing"] }
+      adjustedEftDate: { _gte: "date_trunc('day', now() - interval '30 days')" }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  # All completed payroll dates
+  completedPayrollDates: payrollDatesAggregate(
+    where: { 
+      status: { _eq: "completed" }
+      adjustedEftDate: { _gte: "date_trunc('day', now() - interval '30 days')" }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  # Completed but billing not generated
+  readyForBilling: payrollDatesAggregate(
+    where: {
+      _and: [
+        { status: { _eq: "completed" } }
+        { adjustedEftDate: { _gte: "date_trunc('day', now() - interval '30 days')" } }
+        { _not: { billingItems: {} } }
+      ]
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  # Completed with billing generated
+  billingGenerated: payrollDatesAggregate(
+    where: {
+      _and: [
+        { status: { _eq: "completed" } }
+        { adjustedEftDate: { _gte: "date_trunc('day', now() - interval '30 days')" } }
+        { billingItems: {} }
+      ]
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+query GetPayrollDatesBillingReadyDocument(
+  $limit: Int = 20
+) {
+  payrollDates(
+    where: {
+      _and: [
+        { status: { _eq: "completed" } }
+        { adjustedEftDate: { _gte: "date_trunc('day', now() - interval '7 days')" } }
+        { _not: { billingItems: {} } }
+      ]
+    }
+    limit: $limit
+    orderBy: { completedAt: DESC }
+  ) {
+    id
+    payrollId
+    adjustedEftDate
+    completedAt
+    completedBy
+    payroll {
+      id
+      name
+      client {
+        id
+        name
+      }
+    }
+  }
+}
+
+# Generate billing items from completed payroll date (simplified approach)
+mutation GenerateBillingFromPayrollDateDocument(
+  $payrollDateId: uuid!
+  $generatedBy: uuid!
+) {
+  # This mutation will need to be implemented as an API endpoint
+  # For now, we'll create a simple billing item as a placeholder
+  insertBillingItemsOne(
+    object: {
+      description: "Auto-generated from payroll completion"
+      quantity: 1
+      unitPrice: 0
+      totalAmount: 0
+      status: "draft"
+      staffUserId: $generatedBy
+    }
+  ) {
+    id
+    description
+    status
+    createdAt
+  }
+}
+
 # Profitability Analytics Operations
 query GetPayrollProfitabilityAnalytics(
   $clientId: uuid

@@ -299,15 +299,31 @@ export default function WorkSchedulePage() {
   // Handler functions for work schedule updates
   const handleUpdateWorkSchedule = async (scheduleId: string, updates: any) => {
     try {
-      // Calculate payroll capacity hours (work hours - admin hours)
-      const workHours = updates.workHours ?? 8;
+      // Critical Fix: Ensure userId is provided and valid
+      if (!updates.userId) {
+        console.error("WORK_SCHEDULE_UPDATE_ERROR: Missing userId in updates:", { 
+          scheduleId, 
+          updates,
+          currentUserId 
+        });
+        setOperationStatus({
+          type: "error",
+          message: "Unable to identify target user for schedule update",
+        });
+        setTimeout(() => setOperationStatus({ type: null, message: "" }), 5000);
+        return;
+      }
+
+      const userId = updates.userId;
+      
+      // Validate input ranges
+      const workHours = Math.max(0, Math.min(24, updates.workHours ?? 8));
       const adminTimeHours = updates.usesDefaultAdminTime
         ? (workHours * (updates.defaultAdminTimePercentage || 12.5)) / 100
-        : (updates.adminTimeHours ?? 1);
+        : Math.max(0, Math.min(workHours, updates.adminTimeHours ?? 1));
       const payrollCapacityHours = Math.max(0, workHours - adminTimeHours);
 
-      // Extract user ID and work day from the schedule
-      // For new schedules, scheduleId format is "new-{dayIndex}"
+      // Extract work day information
       const isNewSchedule = scheduleId.startsWith("new-");
       const dayIndex = isNewSchedule
         ? scheduleId.split("-")[1]
@@ -316,7 +332,7 @@ export default function WorkSchedulePage() {
       // Convert day index to day name for database storage
       const daysOfWeek = [
         "Monday",
-        "Tuesday",
+        "Tuesday", 
         "Wednesday",
         "Thursday",
         "Friday",
@@ -327,10 +343,21 @@ export default function WorkSchedulePage() {
         ? daysOfWeek[parseInt(dayIndex)]
         : updates.workDay || "Monday";
 
-      // Find the user ID from the team member being edited
-      const userId = updates.userId || currentUserId; // Fallback to current user for now
+      // Enhanced logging for debugging
+      console.log("WORK_SCHEDULE_UPDATE_DEBUG:", {
+        scheduleId,
+        userId,
+        workDay,
+        workHours,
+        adminTimeHours,
+        payrollCapacityHours,
+        usesDefaultAdminTime: updates.usesDefaultAdminTime ?? true,
+        isNewSchedule,
+        originalUpdates: updates,
+        currentUserId
+      });
 
-      await upsertWorkSchedule({
+      const result = await upsertWorkSchedule({
         variables: {
           userId,
           workDay,
@@ -341,32 +368,95 @@ export default function WorkSchedulePage() {
         },
       });
 
+      console.log("WORK_SCHEDULE_UPDATE_SUCCESS:", {
+        scheduleId,
+        userId,
+        workDay,
+        result: result.data
+      });
+
       // Refresh all data to show updated capacity
       refetchWorkload();
       refetchConsultants();
 
       setOperationStatus({
         type: "success",
-        message: "Work schedule updated successfully",
+        message: `Work schedule updated successfully for ${workDay}`,
       });
       setTimeout(() => setOperationStatus({ type: null, message: "" }), 3000);
     } catch (error) {
-      console.error("Failed to update work schedule:", error);
+      console.error("WORK_SCHEDULE_UPDATE_FAILED:", {
+        scheduleId,
+        updates,
+        error: error,
+        graphQLErrors: (error as any)?.graphQLErrors,
+        networkError: (error as any)?.networkError,
+        currentUserId
+      });
+      
+      // Enhanced error message based on error type
+      let errorMessage = "Failed to update work schedule";
+      if ((error as any)?.graphQLErrors?.length > 0) {
+        const graphQLError = (error as any).graphQLErrors[0];
+        if (graphQLError.message.includes("permission")) {
+          errorMessage = "Permission denied: Cannot update this user's schedule";
+        } else if (graphQLError.message.includes("constraint")) {
+          errorMessage = "Invalid schedule data: Please check your input values";
+        } else {
+          errorMessage = `Database error: ${graphQLError.message}`;
+        }
+      } else if ((error as any)?.networkError) {
+        errorMessage = "Network error: Please check your connection and try again";
+      }
+
       setOperationStatus({
         type: "error",
-        message: "Failed to update work schedule",
+        message: errorMessage,
       });
-      setTimeout(() => setOperationStatus({ type: null, message: "" }), 5000);
+      setTimeout(() => setOperationStatus({ type: null, message: "" }), 7000);
     }
   };
 
   const handleUpdateAdminTime = async (userId: string, percentage: number) => {
     try {
-      await updateUserAdminTime({
+      // Validate input parameters
+      if (!userId) {
+        console.error("ADMIN_TIME_UPDATE_ERROR: Missing userId:", { userId, percentage });
+        setOperationStatus({
+          type: "error",
+          message: "Unable to identify target user for admin time update",
+        });
+        setTimeout(() => setOperationStatus({ type: null, message: "" }), 5000);
+        return;
+      }
+
+      // Validate percentage range (0-50% is reasonable for admin time)
+      const validatedPercentage = Math.max(0, Math.min(50, percentage));
+      if (validatedPercentage !== percentage) {
+        console.warn("ADMIN_TIME_UPDATE_WARNING: Percentage adjusted:", { 
+          original: percentage, 
+          adjusted: validatedPercentage 
+        });
+      }
+
+      console.log("ADMIN_TIME_UPDATE_DEBUG:", {
+        userId,
+        originalPercentage: percentage,
+        validatedPercentage,
+        currentUserId
+      });
+
+      const result = await updateUserAdminTime({
         variables: {
           userId,
-          defaultAdminTimePercentage: percentage,
+          defaultAdminTimePercentage: validatedPercentage,
         },
+      });
+
+      console.log("ADMIN_TIME_UPDATE_SUCCESS:", {
+        userId,
+        percentage: validatedPercentage,
+        result: result.data
       });
 
       // Refresh all data to show updated capacity
@@ -375,16 +465,39 @@ export default function WorkSchedulePage() {
 
       setOperationStatus({
         type: "success",
-        message: "Default admin time updated successfully",
+        message: `Default admin time updated to ${validatedPercentage}%`,
       });
       setTimeout(() => setOperationStatus({ type: null, message: "" }), 3000);
     } catch (error) {
-      console.error("Failed to update admin time:", error);
+      console.error("ADMIN_TIME_UPDATE_FAILED:", {
+        userId,
+        percentage,
+        error: error,
+        graphQLErrors: (error as any)?.graphQLErrors,
+        networkError: (error as any)?.networkError,
+        currentUserId
+      });
+      
+      // Enhanced error message based on error type
+      let errorMessage = "Failed to update admin time";
+      if ((error as any)?.graphQLErrors?.length > 0) {
+        const graphQLError = (error as any).graphQLErrors[0];
+        if (graphQLError.message.includes("permission")) {
+          errorMessage = "Permission denied: Cannot update this user's admin time";
+        } else if (graphQLError.message.includes("constraint")) {
+          errorMessage = "Invalid admin time percentage: Must be between 0% and 50%";
+        } else {
+          errorMessage = `Database error: ${graphQLError.message}`;
+        }
+      } else if ((error as any)?.networkError) {
+        errorMessage = "Network error: Please check your connection and try again";
+      }
+
       setOperationStatus({
         type: "error",
-        message: "Failed to update admin time",
+        message: errorMessage,
       });
-      setTimeout(() => setOperationStatus({ type: null, message: "" }), 5000);
+      setTimeout(() => setOperationStatus({ type: null, message: "" }), 7000);
     }
   };
 

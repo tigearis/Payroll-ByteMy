@@ -1,6 +1,8 @@
 import { format, parseISO, isSameDay, isSameWeek, isSameMonth, startOfWeek, addDays, startOfMonth, addWeeks } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateApiRequest } from "@/lib/auth/api-auth";
+import { serverApolloClient } from "@/lib/apollo/unified-client";
+import { GetWorkSchedulesByDateRangeDocument, GetTeamWorkloadOptimizedDocument } from "@/domains/work-schedule/graphql/generated/graphql";
 
 interface WorkloadMetricsInput {
   userId: string;
@@ -52,10 +54,92 @@ interface CapacitySummary {
 }
 
 async function getWorkScheduleData(userId: string, startDate: string, endDate: string): Promise<WorkScheduleDay[]> {
-  // TODO: Replace with actual database query
-  // This would typically query the work_schedule table joined with assignments
-  // For now, returning mock data structure
-  return [];
+  try {
+    const client = serverApolloClient;
+    
+    // Get work schedules for the date range
+    const { data: scheduleData } = await client.query({
+      query: GetWorkSchedulesByDateRangeDocument,
+      variables: {
+        startDate,
+        endDate
+      },
+      fetchPolicy: 'network-only'
+    });
+
+    // Get team workload data with assignments if the user is a manager
+    const { data: workloadData } = await client.query({
+      query: GetTeamWorkloadOptimizedDocument,
+      variables: {
+        managerId: userId
+      },
+      fetchPolicy: 'network-only'
+    });
+
+    // Filter work schedules for the specific user or their team
+    const relevantSchedules = scheduleData.workSchedule.filter((schedule: any) => 
+      schedule.userId === userId || 
+      workloadData.users.some((user: any) => user.id === schedule.userId)
+    );
+
+    // Transform the data to match our interface
+    const workScheduleDays: WorkScheduleDay[] = relevantSchedules.map((schedule: any) => {
+      // Get assignments for this user from the workload data
+      const userWorkload = workloadData.users.find((user: any) => user.id === schedule.userId);
+      const assignments: AssignmentDetails[] = [];
+
+      if (userWorkload) {
+        // Add primary payroll assignments
+        userWorkload.primaryPayrollAssignments.forEach((payroll: any) => {
+          payroll.payrollDates.forEach((date: any) => {
+            if (isSameDay(parseISO(date.processingDate), parseISO(schedule.workDay))) {
+              assignments.push({
+                id: payroll.id,
+                name: payroll.name,
+                clientName: payroll.client.name,
+                processingTime: payroll.processingTime,
+                processingDaysBeforeEft: payroll.processingDaysBeforeEft,
+                eftDate: date.adjustedEftDate || date.originalEftDate,
+                status: payroll.status === 'active' ? 'active' : 'pending',
+                priority: 'high' // Primary assignments are high priority
+              });
+            }
+          });
+        });
+
+        // Add backup payroll assignments
+        userWorkload.backupPayrollAssignments.forEach((payroll: any) => {
+          payroll.payrollDates.forEach((date: any) => {
+            if (isSameDay(parseISO(date.processingDate), parseISO(schedule.workDay))) {
+              assignments.push({
+                id: `backup-${payroll.id}`,
+                name: `${payroll.name} (Backup)`,
+                clientName: payroll.client.name,
+                processingTime: payroll.processingTime * 0.3, // Backup assignments take less time
+                processingDaysBeforeEft: payroll.processingDaysBeforeEft,
+                eftDate: date.adjustedEftDate || date.originalEftDate,
+                status: payroll.status === 'active' ? 'active' : 'pending',
+                priority: 'medium' // Backup assignments are medium priority
+              });
+            }
+          });
+        });
+      }
+
+      return {
+        date: schedule.workDay,
+        workHours: schedule.workHours || 8,
+        adminTimeHours: schedule.adminTimeHours || 0,
+        payrollCapacityHours: schedule.payrollCapacityHours || (schedule.workHours || 8) * 0.8,
+        assignments
+      };
+    });
+
+    return workScheduleDays;
+  } catch (error) {
+    console.error('Error fetching work schedule data:', error);
+    return []; // Return empty array on error to prevent breaking the API
+  }
 }
 
 function aggregateDataByPeriod(

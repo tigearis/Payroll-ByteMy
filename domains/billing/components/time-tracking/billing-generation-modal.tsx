@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-// import { useQuery, useMutation } from '@apollo/client';
+import { useQuery, useMutation } from '@apollo/client';
 import { Clock, DollarSign, FileText, Users, Zap, CheckCircle, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,11 +12,14 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
+import { useDatabaseUserId } from '@/hooks/use-database-user-id';
 import { formatCurrency } from '@/lib/utils';
-// TODO: Missing GraphQL operations - using mock data instead:
-// GetTimeEntriesByPayrollDocument -> Not available
-// GetClientsForBillingDocument -> GetClientBillingStatsDocument
-// import { GetClientBillingStatsDocument } from '../../graphql/generated/graphql';
+import { 
+  GetTimeEntriesByPayrollDocumentDocument,
+  GetClientsForBillingItemsAdvancedDocument,
+  GetUsersForBillingItemsAdvancedDocument,
+  CreateBillingItemAdvancedDocument
+} from '../../graphql/generated/graphql';
 
 // Mock types
 interface TimeEntry {
@@ -62,6 +65,7 @@ export function BillingGenerationModal({
   trigger 
 }: BillingGenerationModalProps) {
   const { toast } = useToast();
+  const { databaseUserId } = useDatabaseUserId();
   const [isOpen, setIsOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedClientId, setSelectedClientId] = useState<string>('all');
@@ -72,75 +76,66 @@ export function BillingGenerationModal({
     totalTimeEntries: number;
   } | null>(null);
 
-  // Mock loading states
-  const [timeEntriesLoading, setTimeEntriesLoading] = useState(true);
-
-  // Mock data for time entries
-  const mockTimeEntries: TimeEntry[] = [
+  // Real GraphQL queries re-enabled
+  const { data: timeEntriesData, loading: timeEntriesLoading, refetch: refetchTimeEntries } = useQuery(
+    GetTimeEntriesByPayrollDocumentDocument,
     {
-      id: 'time-1',
-      clientId: 'client-1', 
-      staffUserId: 'staff-1',
-      hoursSpent: 4.5,
-      description: 'Payroll processing and compliance review',
-      workDate: '2024-01-15'
-    },
-    {
-      id: 'time-2',
-      clientId: 'client-2',
-      staffUserId: 'staff-1', 
-      hoursSpent: 2.0,
-      description: 'Employee onboarding setup',
-      workDate: '2024-01-16'
-    },
-    {
-      id: 'time-3',
-      clientId: 'client-1',
-      staffUserId: 'staff-2',
-      hoursSpent: 3.0,
-      description: 'Monthly compliance reporting',
-      workDate: '2024-01-17'
+      variables: { payrollId },
+      skip: !payrollId,
+      fetchPolicy: "cache-and-network",
     }
-  ];
+  );
 
-  // Mock data for clients
-  const mockClients: Client[] = [
-    { id: 'client-1', name: 'ABC Company' },
-    { id: 'client-2', name: 'XYZ Corp' },
-    { id: 'client-3', name: 'Tech Solutions Ltd' }
-  ];
+  const { data: clientsData, loading: clientsLoading } = useQuery(
+    GetClientsForBillingItemsAdvancedDocument,
+    { fetchPolicy: "cache-and-network" }
+  );
 
-  // Mock loading effect
-  useEffect(() => {
-    if (isOpen) {
-      setTimeEntriesLoading(true);
-      const timer = setTimeout(() => {
-        setTimeEntriesLoading(false);
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-    return undefined;
-  }, [isOpen]);
+  const { data: usersData, loading: usersLoading } = useQuery(
+    GetUsersForBillingItemsAdvancedDocument,
+    { fetchPolicy: "cache-and-network" }
+  );
 
-  const timeEntries = mockTimeEntries;
-  const clients = mockClients;
+  const [createBillingItem] = useMutation(CreateBillingItemAdvancedDocument, {
+    onCompleted: () => {
+      toast({
+        title: "Success",
+        description: "Billing item created successfully",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: `Failed to create billing item: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
 
-  // Calculate generation statistics
+  // Process real data from GraphQL queries
+  const timeEntries = timeEntriesData?.timeEntries || [];
+  const clients = clientsData?.clients || [];
+  const staffMembers = usersData?.users || [];
+  
+  // Use all time entries (no need to filter by processing status for now)
+  const availableTimeEntries = timeEntries;
+
+  // Calculate generation statistics using real data
   const stats: GenerationStats = React.useMemo(() => {
-    let filteredEntries = timeEntries;
+    let filteredEntries = availableTimeEntries;
     
     if (selectedClientId !== 'all') {
-      filteredEntries = filteredEntries.filter((entry: TimeEntry) => entry.clientId === selectedClientId);
+      filteredEntries = filteredEntries.filter((entry: any) => entry.clientId === selectedClientId);
     }
     
     if (selectedStaffId !== 'all') {
-      filteredEntries = filteredEntries.filter((entry: TimeEntry) => entry.staffUserId === selectedStaffId);
+      filteredEntries = filteredEntries.filter((entry: any) => entry.staffUserId === selectedStaffId);
     }
 
-    const totalHours = filteredEntries.reduce((sum: number, entry: TimeEntry) => sum + entry.hoursSpent, 0);
+    const totalHours = filteredEntries.reduce((sum: number, entry: any) => sum + (entry.hoursSpent || 0), 0);
     const estimatedRevenue = totalHours * 150; // Default hourly rate
-    const clientsInvolved = new Set(filteredEntries.map((entry: TimeEntry) => entry.clientId)).size;
-    const staffInvolved = new Set(filteredEntries.map((entry: TimeEntry) => entry.staffUserId)).size;
+    const clientsInvolved = new Set(filteredEntries.map((entry: any) => entry.clientId)).size;
+    const staffInvolved = new Set(filteredEntries.map((entry: any) => entry.staffUserId)).size;
 
     return {
       totalTimeEntries: filteredEntries.length,
@@ -149,7 +144,7 @@ export function BillingGenerationModal({
       clientsInvolved,
       staffInvolved
     };
-  }, [timeEntries, selectedClientId, selectedStaffId]);
+  }, [availableTimeEntries, selectedClientId, selectedStaffId]);
 
   const handleGenerate = async () => {
     setIsGenerating(true);
@@ -200,21 +195,11 @@ export function BillingGenerationModal({
     setConsolidateByService(true);
   };
 
-  // Get unique staff members
-  const staffMembers = React.useMemo(() => {
-    const uniqueStaff = new Map<string, StaffMember>();
-    timeEntries.forEach((entry: TimeEntry) => {
-      if (entry.staffUserId && !uniqueStaff.has(entry.staffUserId)) {
-        uniqueStaff.set(entry.staffUserId, { 
-          id: entry.staffUserId, 
-          firstName: 'Mock',
-          lastName: `Staff ${entry.staffUserId}`,
-          computedName: `Mock Staff ${entry.staffUserId}`
-        });
-      }
-    });
-    return Array.from(uniqueStaff.entries());
-  }, [timeEntries]);
+  // Get unique staff members who have time entries for this payroll
+  const payrollStaffMembers = React.useMemo(() => {
+    const staffIds = new Set(availableTimeEntries.map((entry: any) => entry.staffUserId));
+    return staffMembers.filter((staff: any) => staffIds.has(staff.id));
+  }, [availableTimeEntries, staffMembers]);
 
   const defaultTrigger = (
     <Button variant="outline" size="sm">
@@ -291,7 +276,7 @@ export function BillingGenerationModal({
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {timeEntriesLoading ? (
+                {(timeEntriesLoading || clientsLoading || usersLoading) ? (
                   <div className="space-y-2">
                     <Skeleton className="h-4 w-full" />
                     <Skeleton className="h-4 w-3/4" />
@@ -357,8 +342,8 @@ export function BillingGenerationModal({
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">All Staff</SelectItem>
-                        {staffMembers.map(([staffId, staff]: [string, StaffMember]) => (
-                          <SelectItem key={staffId} value={staffId}>
+                        {payrollStaffMembers.map((staff: any) => (
+                          <SelectItem key={staff.id} value={staff.id}>
                             {staff.computedName || `${staff.firstName} ${staff.lastName}`}
                           </SelectItem>
                         ))}

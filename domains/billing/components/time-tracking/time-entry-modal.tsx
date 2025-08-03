@@ -1,6 +1,6 @@
 'use client';
 
-// import { useMutation, useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { Plus, Trash2, Save, X } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
@@ -10,13 +10,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
-// TODO: Missing GraphQL operations - using mock data instead:
-// GetTimeEntriesByPayrollDocument -> Not available
-// CreateTimeEntryDocument -> Not available
-// import {
-//   GetTimeEntriesByPayrollDocument,
-//   CreateTimeEntryDocument
-// } from '../../graphql/generated/graphql';
+import { useDatabaseUserId } from '@/hooks/use-database-user-id';
+import { 
+  GetTimeEntriesByPayrollDocumentDocument,
+  CreateTimeEntryWithUnitsDocument
+} from '../../graphql/generated/graphql';
 
 interface TimeEntry {
   id?: string;
@@ -38,6 +36,7 @@ export const TimeEntryModal: React.FC<TimeEntryModalProps> = ({
   onClose,
   onTimeEntriesUpdate
 }) => {
+  const { databaseUserId } = useDatabaseUserId();
   const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
   const [newEntry, setNewEntry] = useState<TimeEntry>({
     work_date: new Date().toISOString().split('T')[0],
@@ -45,48 +44,34 @@ export const TimeEntryModal: React.FC<TimeEntryModalProps> = ({
     description: ''
   });
 
-  // Mock existing time entries data
-  const mockExistingEntries = {
-    timeEntries: [
-      {
-        id: 'time-entry-1',
-        work_date: '2024-01-15',
-        hours_spent: 3.5,
-        description: 'Initial payroll setup and configuration'
-      },
-      {
-        id: 'time-entry-2', 
-        work_date: '2024-01-16',
-        hours_spent: 2.0,
-        description: 'Employee data entry and verification'
-      }
-    ]
-  };
+  // Real GraphQL queries and mutations
+  const { data: timeEntriesData, loading: timeEntriesLoading, refetch } = useQuery(GetTimeEntriesByPayrollDocumentDocument, {
+    variables: { payrollId },
+    fetchPolicy: "cache-and-network"
+  });
 
-  // Mock createTimeEntry mutation
-  const createTimeEntry = async (options: any) => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    return {
-      data: {
-        timeEntry: {
-          id: `time-entry-${Date.now()}`,
-          ...options.variables.input
-        }
-      }
-    };
-  };
+  const [createTimeEntry] = useMutation(CreateTimeEntryWithUnitsDocument, {
+    onCompleted: (data) => {
+      toast.success('Time entry created successfully');
+      refetch(); // Refresh time entries list
+    },
+    onError: (error) => {
+      toast.error(`Failed to create time entry: ${error.message}`);
+    }
+  });
 
-  // Load mock existing entries on component mount
+  // Load existing time entries from GraphQL data
   useEffect(() => {
-    const entries = mockExistingEntries.timeEntries.map((entry: typeof mockExistingEntries.timeEntries[0]) => ({
-      id: entry.id,
-      work_date: entry.work_date,
-      hours_spent: entry.hours_spent,
-      description: entry.description || ''
-    }));
-    setTimeEntries(entries);
-  }, []);
+    if (timeEntriesData?.timeEntries) {
+      const entries = timeEntriesData.timeEntries.map((entry: any) => ({
+        id: entry.id,
+        work_date: entry.workDate,
+        hours_spent: entry.hoursSpent,
+        description: entry.description || ''
+      }));
+      setTimeEntries(entries);
+    }
+  }, [timeEntriesData]);
 
   const addTimeEntry = () => {
     if (!newEntry.work_date || newEntry.hours_spent <= 0) {
@@ -129,27 +114,24 @@ export const TimeEntryModal: React.FC<TimeEntryModalProps> = ({
       return;
     }
 
-    try {
-      const entriesToCreate = newEntries.map(entry => ({
-        staff_user_id: '', // Will be set from current user context
-        client_id: clientId,
-        payroll_id: payrollId,
-        work_date: entry.work_date,
-        hours_spent: entry.hours_spent,
-        description: entry.description
-      }));
+    if (!databaseUserId) {
+      toast.error('User authentication required');
+      return;
+    }
 
-      // Create entries one by one since we don't have bulk create
-      for (const entry of entriesToCreate) {
+    try {
+      // Create entries one by one using real GraphQL mutation
+      for (const entry of newEntries) {
         await createTimeEntry({
           variables: {
             input: {
-              staffUserId: entry.staff_user_id,
-              clientId: entry.client_id,
-              payrollId: entry.payroll_id,
+              staffUserId: databaseUserId,
+              clientId: clientId,
+              payrollId: payrollId,
               workDate: entry.work_date,
               hoursSpent: entry.hours_spent,
-              description: entry.description
+              description: entry.description,
+              isBillable: true
             }
           }
         });
@@ -163,6 +145,22 @@ export const TimeEntryModal: React.FC<TimeEntryModalProps> = ({
       console.error('Time entries save error:', error);
     }
   };
+
+  if (timeEntriesLoading) {
+    return (
+      <Dialog open onOpenChange={() => onClose()}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Time Tracking</DialogTitle>
+            <DialogDescription>
+              Log time spent on this payroll job for profitability analysis
+            </DialogDescription>
+          </DialogHeader>
+          <div className="text-center py-8">Loading time entries...</div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog open onOpenChange={() => onClose()}>
