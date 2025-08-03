@@ -31,32 +31,7 @@ interface BillingItemDetailsProps {
   itemId: string;
 }
 
-// Mock data - will be replaced with GraphQL query
-const mockBillingItem = {
-  id: '1',
-  description: 'Web Development Services - Q1 2024',
-  amount: 4500.00,
-  quantity: 1,
-  unit: 'project',
-  status: 'pending',
-  client: { 
-    id: '1', 
-    name: 'Acme Corp',
-    email: 'contact@acmecorp.com'
-  },
-  createdBy: { 
-    id: '1', 
-    firstName: 'John', 
-    lastName: 'Doe',
-    email: 'john.doe@company.com'
-  },
-  createdAt: '2024-01-15T10:30:00Z',
-  updatedAt: '2024-01-15T10:30:00Z',
-  approvedAt: null,
-  approvedBy: null as { firstName: string; lastName: string } | null,
-  notes: 'Complete redesign of company website including responsive design, new branding implementation, and content management system integration.',
-  totalAmount: 4500.00,
-};
+import { GetBillingItemByIdAdvancedDocument, UpdateBillingItemAdvancedDocument, DeleteBillingItemAdvancedDocument, ApproveBillingItemAdvancedDocument } from '../../graphql/generated/graphql';
 
 export function BillingItemDetails({ itemId }: BillingItemDetailsProps) {
   const router = useRouter();
@@ -64,9 +39,31 @@ export function BillingItemDetails({ itemId }: BillingItemDetailsProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  // In real implementation, this would be a GraphQL query
-  const isLoading = false;
-  const item = mockBillingItem;
+  // Real GraphQL query
+  const { data, loading: isLoading, error } = useQuery(GetBillingItemByIdAdvancedDocument, {
+    variables: { id: itemId },
+    fetchPolicy: "cache-and-network"
+  });
+
+  // Real mutations
+  const [deleteBillingItem] = useMutation(DeleteBillingItemAdvancedDocument, {
+    onCompleted: () => {
+      toast({
+        title: 'Item Deleted',
+        description: 'The billing item has been deleted successfully.',
+      });
+      router.push('/billing/items');
+    },
+    onError: (error) => {
+      toast({
+        title: 'Error',
+        description: `Failed to delete item: ${error.message}`,
+        variant: 'destructive',
+      });
+    }
+  });
+
+  const item = data?.billingItemsByPk;
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -117,21 +114,11 @@ export function BillingItemDetails({ itemId }: BillingItemDetailsProps) {
     setIsDeleting(true);
 
     try {
-      // In real implementation, this would be a GraphQL mutation
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-      
-      toast({
-        title: 'Item Deleted',
-        description: 'The billing item has been deleted successfully.',
+      await deleteBillingItem({
+        variables: { id: itemId }
       });
-      
-      router.push('/billing/items');
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to delete billing item. Please try again.',
-        variant: 'destructive',
-      });
+      console.error('Delete billing item error:', error);
     } finally {
       setIsDeleting(false);
       setDeleteDialogOpen(false);
@@ -141,41 +128,29 @@ export function BillingItemDetails({ itemId }: BillingItemDetailsProps) {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <Card>
-          <CardHeader>
-            <Skeleton className="h-6 w-3/4" />
-            <Skeleton className="h-4 w-1/2" />
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-2/3" />
-              <Skeleton className="h-4 w-1/2" />
-            </div>
-          </CardContent>
-        </Card>
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-32 w-full" />
       </div>
     );
   }
 
-  if (!item) {
+  if (error || !item) {
     return (
-      <Card>
-        <CardContent className="text-center py-12">
-          <DollarSign className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-          <h3 className="text-lg font-medium mb-2 text-gray-800">
-            Billing Item Not Found
-          </h3>
-          <p className="text-gray-600 mb-4">
-            The billing item you're looking for doesn't exist or has been removed.
+      <div className="text-center py-8">
+        <div className="text-amber-600 mb-4">
+          <h3 className="text-lg font-semibold">Billing Item Not Found</h3>
+          <p className="text-sm">
+            The billing item could not be loaded. It may have been deleted or you may not have permission to view it.
           </p>
-          <Link href="/billing/items">
-            <Button>Return to Billing Items</Button>
-          </Link>
-        </CardContent>
-      </Card>
+        </div>
+        <Button onClick={() => router.push('/billing/items')}>
+          Back to Billing Items
+        </Button>
+      </div>
     );
   }
+
 
   return (
     <div className="space-y-6">
@@ -186,7 +161,7 @@ export function BillingItemDetails({ itemId }: BillingItemDetailsProps) {
             <div className="space-y-2">
               <CardTitle className="text-2xl">{item.description}</CardTitle>
               <div className="flex items-center space-x-4">
-                {getStatusBadge(item.status)}
+                {getStatusBadge(item.status || 'pending')}
                 <div className="flex items-center text-sm text-gray-500">
                   <Hash className="w-4 h-4 mr-1" />
                   ID: {item.id}
@@ -195,10 +170,10 @@ export function BillingItemDetails({ itemId }: BillingItemDetailsProps) {
             </div>
             <div className="text-right">
               <div className="text-3xl font-bold text-gray-900">
-                {formatCurrency(item.totalAmount)}
+                {formatCurrency(item.totalAmount || 0)}
               </div>
               <div className="text-sm text-gray-500">
-                {item.quantity} {item.unit}{item.quantity !== 1 ? 's' : ''} × {formatCurrency(item.amount)}
+                {item.quantity || 0} units{(item.quantity || 0) !== 1 ? '' : ''} × {formatCurrency(item.unitPrice || 0)}
               </div>
             </div>
           </div>
@@ -214,17 +189,19 @@ export function BillingItemDetails({ itemId }: BillingItemDetailsProps) {
               <div className="space-y-2 text-sm">
                 <div>
                   <span className="font-medium">Name:</span>
-                  <span className="ml-2">{item.client.name}</span>
+                  <span className="ml-2">{item.client?.name || 'N/A'}</span>
                 </div>
                 <div>
                   <span className="font-medium">Email:</span>
                   <span className="ml-2">
-                    <a 
-                      href={`mailto:${item.client.email}`}
-                      className="text-blue-600 hover:text-blue-800 hover:underline"
-                    >
-                      {item.client.email}
-                    </a>
+                    {item.client?.contactEmail ? (
+                      <a 
+                        href={`mailto:${item.client.contactEmail}`}
+                        className="text-blue-600 hover:text-blue-800 hover:underline"
+                      >
+                        {item.client.contactEmail}
+                      </a>
+                    ) : 'N/A'}
                   </span>
                 </div>
               </div>
@@ -239,17 +216,19 @@ export function BillingItemDetails({ itemId }: BillingItemDetailsProps) {
               <div className="space-y-2 text-sm">
                 <div>
                   <span className="font-medium">Name:</span>
-                  <span className="ml-2">{item.createdBy.firstName} {item.createdBy.lastName}</span>
+                  <span className="ml-2">{item.staffUser?.firstName || ''} {item.staffUser?.lastName || ''}</span>
                 </div>
                 <div>
                   <span className="font-medium">Email:</span>
                   <span className="ml-2">
-                    <a 
-                      href={`mailto:${item.createdBy.email}`}
-                      className="text-blue-600 hover:text-blue-800 hover:underline"
-                    >
-                      {item.createdBy.email}
-                    </a>
+                    {item.staffUser?.email ? (
+                      <a 
+                        href={`mailto:${item.staffUser.email}`}
+                        className="text-blue-600 hover:text-blue-800 hover:underline"
+                      >
+                        {item.staffUser.email}
+                      </a>
+                    ) : 'N/A'}
                   </span>
                 </div>
               </div>
@@ -274,11 +253,11 @@ export function BillingItemDetails({ itemId }: BillingItemDetailsProps) {
                 <div className="text-sm text-gray-500">Item was created and submitted</div>
               </div>
               <div className="text-sm text-gray-600">
-                {formatDate(item.createdAt)}
+                {item.createdAt ? formatDate(item.createdAt) : 'N/A'}
               </div>
             </div>
             
-            {item.updatedAt !== item.createdAt && (
+            {item.updatedAt && item.updatedAt !== item.createdAt && (
               <div className="flex items-center justify-between py-2 border-b">
                 <div>
                   <div className="font-medium">Last Updated</div>
@@ -290,21 +269,21 @@ export function BillingItemDetails({ itemId }: BillingItemDetailsProps) {
               </div>
             )}
 
-            {item.approvedAt && item.approvedBy && (
+            {item.approvalDate && item.approvedByUser && (
               <div className="flex items-center justify-between py-2">
                 <div>
                   <div className="font-medium text-green-700">Approved</div>
                   <div className="text-sm text-gray-500">
-                    Approved by {item.approvedBy?.firstName || 'N/A'} {item.approvedBy?.lastName || ''}
+                    Approved by {item.approvedByUser?.firstName || 'N/A'} {item.approvedByUser?.lastName || ''}
                   </div>
                 </div>
                 <div className="text-sm text-gray-600">
-                  {formatDate(item.approvedAt)}
+                  {item.approvalDate ? formatDate(item.approvalDate) : 'N/A'}
                 </div>
               </div>
             )}
 
-            {item.status === 'pending' && (
+            {(item.status || 'pending') === 'pending' && (
               <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
                 <div className="flex items-center text-orange-700">
                   <Clock className="w-4 h-4 mr-2" />

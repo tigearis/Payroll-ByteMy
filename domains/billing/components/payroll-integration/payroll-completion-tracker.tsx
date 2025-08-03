@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { useQuery } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
+import { toast } from "sonner";
 import {
   Card,
   CardContent,
@@ -23,72 +24,69 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { PermissionGuard } from "@/components/auth/permission-guard";
-import { GetPayrollsDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import { 
+  GetPayrollDatesWithBillingStatusDocumentDocument,
+  GetPayrollCompletionStatsDocumentDocument,
+  GenerateBillingFromPayrollDateDocumentDocument
+} from "../../graphql/generated/graphql";
+import { useDatabaseUserId } from "@/hooks/use-database-user-id";
 
 export function PayrollCompletionTracker() {
-  // Fetch payrolls data
-  const { data: payrollsData, loading } = useQuery(GetPayrollsDocument, {
+  const { databaseUserId } = useDatabaseUserId();
+  
+  // Real GraphQL queries re-enabled
+  const { data: payrollDatesData, loading: payrollDatesLoading, refetch } = useQuery(GetPayrollDatesWithBillingStatusDocumentDocument, {
     variables: {
-      limit: 20,
-      offset: 0,
-      where: {
-        status: { _in: ["Active", "Processing"] },
-        supersededDate: { _isNull: true },
-      },
+      status: "completed",
+      includeCompleted: true
     },
-    fetchPolicy: "cache-and-network",
+    fetchPolicy: "cache-and-network"
+  });
+  
+  const { data: statsData } = useQuery(GetPayrollCompletionStatsDocumentDocument, {
+    fetchPolicy: "cache-and-network"
+  });
+  
+  const [generateBilling] = useMutation(GenerateBillingFromPayrollDateDocumentDocument, {
+    onCompleted: () => {
+      toast.success('Billing generated successfully');
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(`Failed to generate billing: ${error.message}`);
+    }
   });
 
-  const payrolls = payrollsData?.payrolls || [];
 
-  // Mock data for payroll dates completion status
-  // In real implementation, this would come from a proper query
-  const mockPayrollDates = [
-    {
-      id: "1",
-      payrollId: "p1",
-      payrollName: "ABC Corp Weekly",
-      clientName: "ABC Corporation",
-      eftDate: "2025-08-08",
-      status: "completed",
-      completedAt: "2025-08-01T10:00:00Z",
-      billingGenerated: true,
-    },
-    {
-      id: "2",
-      payrollId: "p2",
-      payrollName: "XYZ Ltd Fortnightly",
-      clientName: "XYZ Limited",
-      eftDate: "2025-08-10",
-      status: "pending",
-      completedAt: null,
-      billingGenerated: false,
-    },
-    {
-      id: "3",
-      payrollId: "p3",
-      payrollName: "Tech Start Monthly",
-      clientName: "Tech Startup Inc",
-      eftDate: "2025-08-15",
-      status: "pending",
-      completedAt: null,
-      billingGenerated: false,
-    },
-    {
-      id: "4",
-      payrollId: "p4",
-      payrollName: "Retail Chain Weekly",
-      clientName: "Retail Chain Pty",
-      eftDate: "2025-08-12",
-      status: "completed",
-      completedAt: "2025-07-30T14:30:00Z",
-      billingGenerated: true,
-    },
-  ];
+  const payrollDates = payrollDatesData?.payrollDates || [];
 
-  const completedCount = mockPayrollDates.filter(pd => pd.status === "completed").length;
-  const pendingCount = mockPayrollDates.filter(pd => pd.status === "pending").length;
-  const completionRate = (completedCount / mockPayrollDates.length) * 100;
+  // Calculate real statistics from the data
+  const completedCount = statsData?.completedPayrollDates?.aggregate?.count || 0;
+  const pendingCount = statsData?.pendingPayrollDates?.aggregate?.count || 0;
+  const readyForBillingCount = statsData?.readyForBilling?.aggregate?.count || 0;
+  const billingGeneratedCount = statsData?.billingGenerated?.aggregate?.count || 0;
+  
+  const totalCount = completedCount + pendingCount;
+  const completionRate = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
+  
+  // Handle billing generation
+  const handleGenerateBilling = async (payrollDateId: string) => {
+    if (!databaseUserId) {
+      toast.error("User authentication required");
+      return;
+    }
+    
+    try {
+      await generateBilling({
+        variables: {
+          payrollDateId,
+          generatedBy: databaseUserId,
+        },
+      });
+    } catch (error) {
+      console.error("Billing generation error:", error);
+    }
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -101,7 +99,10 @@ export function PayrollCompletionTracker() {
     }
   };
 
-  const getStatusBadge = (status: string, billingGenerated: boolean) => {
+  const getStatusBadge = (payrollDate: any) => {
+    const status = payrollDate.status;
+    const billingGenerated = (payrollDate.billingItems?.aggregate?.count || 0) > 0;
+    
     if (status === "completed") {
       if (billingGenerated) {
         return (
@@ -126,7 +127,7 @@ export function PayrollCompletionTracker() {
     );
   };
 
-  if (loading) {
+  if (payrollDatesLoading) {
     return (
       <Card>
         <CardContent className="p-6">
@@ -154,7 +155,7 @@ export function PayrollCompletionTracker() {
             <div className="text-2xl font-bold">{completionRate.toFixed(0)}%</div>
             <Progress value={completionRate} className="mt-2" />
             <p className="text-xs text-muted-foreground mt-2">
-              {completedCount} of {mockPayrollDates.length} payrolls completed
+              {completedCount} of {totalCount} payrolls completed
             </p>
           </CardContent>
         </Card>
@@ -179,7 +180,7 @@ export function PayrollCompletionTracker() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">
-              {mockPayrollDates.filter(pd => pd.status === "completed" && !pd.billingGenerated).length}
+              {readyForBillingCount}
             </div>
             <p className="text-xs text-muted-foreground mt-2">
               Completed payrolls ready for billing
@@ -210,48 +211,60 @@ export function PayrollCompletionTracker() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {mockPayrollDates.map((payrollDate) => (
-              <div
-                key={payrollDate.id}
-                className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <div className="flex items-center space-x-4">
-                  {getStatusIcon(payrollDate.status)}
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2">
-                      <h4 className="font-medium">{payrollDate.payrollName}</h4>
-                      <ArrowRight className="h-3 w-3 text-gray-400" />
-                      <span className="text-sm text-gray-600">
-                        {payrollDate.clientName}
-                      </span>
-                    </div>
-                    <div className="flex items-center space-x-4 mt-1">
-                      <span className="text-sm text-gray-500">
-                        EFT Date: {new Date(payrollDate.eftDate).toLocaleDateString()}
-                      </span>
-                      {payrollDate.completedAt && (
-                        <span className="text-sm text-gray-500">
-                          Completed: {new Date(payrollDate.completedAt).toLocaleDateString()}
+            {payrollDates.map((payrollDate: any) => {
+              const billingGenerated = (payrollDate.billingItems?.aggregate?.count || 0) > 0;
+              return (
+                <div
+                  key={payrollDate.id}
+                  className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  <div className="flex items-center space-x-4">
+                    {getStatusIcon(payrollDate.status)}
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2">
+                        <h4 className="font-medium">{payrollDate.payroll?.name}</h4>
+                        <ArrowRight className="h-3 w-3 text-gray-400" />
+                        <span className="text-sm text-gray-600">
+                          {payrollDate.payroll?.client?.name}
                         </span>
-                      )}
+                      </div>
+                      <div className="flex items-center space-x-4 mt-1">
+                        <span className="text-sm text-gray-500">
+                          EFT Date: {new Date(payrollDate.adjustedEftDate).toLocaleDateString()}
+                        </span>
+                        {payrollDate.completedAt && (
+                          <span className="text-sm text-gray-500">
+                            Completed: {new Date(payrollDate.completedAt).toLocaleDateString()}
+                          </span>
+                        )}
+                        {payrollDate.completedByUser && (
+                          <span className="text-sm text-gray-500">
+                            by {payrollDate.completedByUser.computedName}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
+                  <div className="flex items-center space-x-3">
+                    {getStatusBadge(payrollDate)}
+                    {payrollDate.status === "completed" && !billingGenerated && (
+                      <PermissionGuard action="create">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleGenerateBilling(payrollDate.id)}
+                        >
+                          Generate Billing
+                        </Button>
+                      </PermissionGuard>
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center space-x-3">
-                  {getStatusBadge(payrollDate.status, payrollDate.billingGenerated)}
-                  {payrollDate.status === "completed" && !payrollDate.billingGenerated && (
-                    <PermissionGuard action="create">
-                      <Button size="sm" variant="outline">
-                        Generate Billing
-                      </Button>
-                    </PermissionGuard>
-                  )}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
-          {mockPayrollDates.length === 0 && (
+          {payrollDates.length === 0 && (
             <div className="text-center py-12">
               <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">

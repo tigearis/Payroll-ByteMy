@@ -409,8 +409,8 @@ export function TeamMetricsOverview({ metrics, teamSize }: TeamMetricsOverviewPr
 interface MemberDetailsViewProps {
   member?: TeamMember;
   capacity?: ConsultantCapacity;
-  onUpdateWorkSchedule: (scheduleId: string, updates: Partial<WorkScheduleWithCapacity>) => void;
-  onUpdateAdminTime: (percentage: number) => void;
+  onUpdateWorkSchedule: (scheduleId: string, updates: Partial<WorkScheduleWithCapacity>) => Promise<void>;
+  onUpdateAdminTime: (percentage: number) => Promise<void>;
   onPayrollClick?: (payrollId: string) => void;
   onClose: () => void;
 }
@@ -427,20 +427,30 @@ function MemberDetailsView({
   const [editingAdminTime, setEditingAdminTime] = useState(false);
   const [tempAdminPercentage, setTempAdminPercentage] = useState(member?.defaultAdminTimePercentage || 12.5);
   const [scheduleUpdates, setScheduleUpdates] = useState<Record<string, Partial<WorkScheduleWithCapacity>>>({});
+  // Loading states for better UX
+  const [savingSchedule, setSavingSchedule] = useState<string | null>(null);
+  const [savingAdminTime, setSavingAdminTime] = useState(false);
 
   if (!member || !capacity) {
     return null;
   }
 
-  const handleSaveSchedule = (scheduleId: string) => {
+  const handleSaveSchedule = async (scheduleId: string) => {
     const updates = scheduleUpdates[scheduleId];
     if (updates) {
-      onUpdateWorkSchedule(scheduleId, updates);
-      setEditingSchedule(null);
-      setScheduleUpdates(prev => {
-        const { [scheduleId]: _, ...rest } = prev;
-        return rest;
-      });
+      setSavingSchedule(scheduleId);
+      try {
+        await onUpdateWorkSchedule(scheduleId, updates);
+        setEditingSchedule(null);
+        setScheduleUpdates(prev => {
+          const { [scheduleId]: _, ...rest } = prev;
+          return rest;
+        });
+      } catch (error) {
+        console.error("Failed to save schedule:", error);
+      } finally {
+        setSavingSchedule(null);
+      }
     }
   };
 
@@ -454,9 +464,16 @@ function MemberDetailsView({
     }));
   };
 
-  const handleSaveAdminTime = () => {
-    onUpdateAdminTime(tempAdminPercentage);
-    setEditingAdminTime(false);
+  const handleSaveAdminTime = async () => {
+    setSavingAdminTime(true);
+    try {
+      await onUpdateAdminTime(tempAdminPercentage);
+      setEditingAdminTime(false);
+    } catch (error) {
+      console.error("Failed to save admin time:", error);
+    } finally {
+      setSavingAdminTime(false);
+    }
   };
 
   const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -542,9 +559,13 @@ function MemberDetailsView({
                 }}>
                   Cancel
                 </Button>
-                <Button size="sm" onClick={handleSaveAdminTime}>
-                  <Save className="w-4 h-4 mr-1" />
-                  Save
+                <Button size="sm" onClick={handleSaveAdminTime} disabled={savingAdminTime}>
+                  {savingAdminTime ? (
+                    <div className="w-4 h-4 mr-1 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  ) : (
+                    <Save className="w-4 h-4 mr-1" />
+                  )}
+                  {savingAdminTime ? "Saving..." : "Save"}
                 </Button>
               </div>
             )}
@@ -628,8 +649,16 @@ function MemberDetailsView({
                         <Button 
                           size="sm" 
                           onClick={() => handleSaveSchedule(schedule?.id || `new-${index}`)}
+                          disabled={savingSchedule === (schedule?.id || `new-${index}`)}
                         >
-                          Save
+                          {savingSchedule === (schedule?.id || `new-${index}`) ? (
+                            <>
+                              <div className="w-4 h-4 mr-1 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                              Saving...
+                            </>
+                          ) : (
+                            "Save"
+                          )}
                         </Button>
                       </div>
                     )}

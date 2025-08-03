@@ -33,9 +33,6 @@ import { PermissionGuard } from '@/components/auth/permission-guard';
 import { formatCurrency } from '@/lib/utils';
 
 // Import the GraphQL operations
-// TODO: Missing GraphQL operations - temporarily disabled:
-// GetServiceCatalogDocument -> GetNewServiceCatalogDocument
-// GetServiceCatalogQuery -> GetNewServiceCatalogQuery
 import { 
   GetNewServiceCatalogDocument,
   CreateNewServiceDocument,

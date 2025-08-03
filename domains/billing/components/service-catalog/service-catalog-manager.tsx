@@ -12,16 +12,11 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-// TODO: Missing GraphQL operations - temporarily disabled:
-// GetServiceCatalogDocument -> GetNewServiceCatalogDocument
-// CreateServiceDocument -> CreateNewServiceDocument
-// UpdateServiceDocument -> UpdateNewServiceDocument
-// DeleteServiceDocument -> DeleteFileDocument (wrong name)
 import { 
   GetNewServiceCatalogDocument, 
   CreateNewServiceDocument, 
   UpdateNewServiceDocument, 
-  // DeleteServiceDocument, // Not available
+  DeactivateServiceDocument,
   type ServiceCatalogFragmentFragment 
 } from '../../../billing/graphql/generated/graphql';
 
@@ -255,97 +250,24 @@ export const ServiceCatalogManager: React.FC<ServiceCatalogManagerProps> = ({
   const [showEditor, setShowEditor] = useState(showCreateForm);
   const [filterCategory, setFilterCategory] = useState<string>('');
 
-  // Mock loading state and data
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-  
-  // Mock service catalog data
-  const data = {
-    services: [
-      {
-        id: 'service-1',
-        name: 'Payroll Processing',
-        description: 'Complete payroll processing service including calculations and compliance',
-        defaultRate: 150.00,
-        billingUnit: 'Per Payslip',
-        category: 'Processing',
-        isActive: true,
-        currency: 'AUD',
-        serviceType: 'standard'
-      },
-      {
-        id: 'service-2',
-        name: 'Employee Onboarding',
-        description: 'Setup new employees in the payroll system',
-        defaultRate: 45.00,
-        billingUnit: 'Per Employee',
-        category: 'Employee Management',
-        isActive: true,
-        currency: 'AUD',
-        serviceType: 'standard'
-      },
-      {
-        id: 'service-3',
-        name: 'Compliance Review',
-        description: 'Monthly compliance review and reporting',
-        defaultRate: 200.00,
-        billingUnit: 'Per Payroll',
-        category: 'Compliance & Reporting',
-        isActive: true,
-        currency: 'AUD',
-        serviceType: 'standard'
-      },
-      {
-        id: 'service-4',
-        name: 'Payroll Setup',
-        description: 'Initial payroll system setup and configuration',
-        defaultRate: 350.00,
-        billingUnit: 'Once Off',
-        category: 'Setup & Configuration',
-        isActive: true,
-        currency: 'AUD',
-        serviceType: 'standard'
-      },
-      {
-        id: 'service-5',
-        name: 'HR Consulting',
-        description: 'Strategic HR consulting and advisory services',
-        defaultRate: 250.00,
-        billingUnit: 'Per Hour',
-        category: 'Consulting',
-        isActive: true,
-        currency: 'AUD',
-        serviceType: 'standard'
-      }
-    ]
-  };
+  // Real GraphQL queries
+  const { data, loading, error, refetch } = useQuery(GetNewServiceCatalogDocument, {
+    variables: {
+      ...(filterCategory && { category: filterCategory })
+    },
+    fetchPolicy: "cache-and-network"
+  });
 
-  // Mock loading effect
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Mock refetch function
-  const refetch = async () => {
-    setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 500));
-    setLoading(false);
-  };
-  
-  // Mock delete service function
-  const deleteService = async (options: any) => {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    return {
-      data: {
-        deleteService: {
-          id: options.variables.id
-        }
-      }
-    };
-  };
+  // Real mutation for deactivating services (since we don't have delete, we deactivate)
+  const [deactivateService] = useMutation(DeactivateServiceDocument, {
+    onCompleted: () => {
+      toast.success('Service deactivated successfully');
+      // Refetch will be handled automatically by Apollo cache
+    },
+    onError: (error) => {
+      toast.error(`Failed to deactivate service: ${error.message}`);
+    }
+  });
 
   const handleEdit = (service: ServiceCatalogFragmentFragment) => {
     setEditingService(service);
@@ -358,21 +280,18 @@ export const ServiceCatalogManager: React.FC<ServiceCatalogManagerProps> = ({
     }
 
     try {
-      await deleteService({
+      await deactivateService({
         variables: { id: service.id }
       });
-      toast.success('Service deactivated successfully');
-      refetch();
     } catch (error) {
-      toast.error('Failed to deactivate service');
-      console.error('Service delete error:', error);
+      console.error('Service deactivate error:', error);
     }
   };
 
   const handleSave = () => {
     setShowEditor(false);
     setEditingService(null);
-    refetch();
+    // Apollo cache will automatically update the list
   };
 
   const handleCancel = () => {

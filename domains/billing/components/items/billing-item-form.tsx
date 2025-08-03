@@ -19,7 +19,7 @@ import { formatCurrency } from '@/lib/utils';
 import { 
   CreateBillingItemAdvancedDocument, 
   UpdateBillingItemAdvancedDocument, 
-  GetNewServiceCatalogDocument,
+  GetServiceCatalogForQuotesDocument,
   GetClientsForBillingItemsAdvancedDocument
 } from '../../graphql/generated/graphql';
 // import { EnhancedServiceCatalog } from '../services/enhanced-service-catalog';
@@ -79,8 +79,8 @@ export function BillingItemForm({ itemId, preselectedClientId }: BillingItemForm
   const { data: clientsData, loading: clientsLoading } = useQuery(GetClientsForBillingItemsAdvancedDocument);
   
   // Get services for selection
-  const { data: servicesData, loading: servicesLoading } = useQuery(GetNewServiceCatalogDocument, {
-    variables: { limit: 100 }
+  const { data: servicesData, loading: servicesLoading } = useQuery(GetServiceCatalogForQuotesDocument, {
+    fetchPolicy: "cache-and-network"
   });
   
   // GraphQL mutations

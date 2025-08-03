@@ -1,6 +1,6 @@
 'use client';
 
-// import { useQuery, useMutation } from '@apollo/client';
+import { useQuery, useMutation } from '@apollo/client';
 import { Clock, DollarSign, Users, FileText, Save, Check } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
@@ -13,14 +13,12 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
-// TODO: Missing GraphQL operations - temporarily disabled:
-// GetPayrollForBillingDocument -> GetPayrollBillingStatusDocument
-// GetClientServicesWithRatesDocument -> GetNewclientServiceAgreementsDocument
-// CreatePayrollBillingDocument -> Not available
-// CreateTimeEntryDocument -> Not available
-// import {
-//   type PayrollBillingFragmentFragment
-// } from '../../../billing/graphql/generated/graphql';
+import { useDatabaseUserId } from '@/hooks/use-database-user-id';
+import { 
+  GetPayrollBillingStatusDocument,
+  GetNewclientServiceAgreementsDocument,
+  CreateBillingItemAdvancedDocument
+} from '../../graphql/generated/graphql';
 import { TimeEntryModal } from '../time-tracking/time-entry-modal';
 
 interface ServiceSelection {
@@ -44,103 +42,44 @@ export const PayrollBillingInterface: React.FC<PayrollBillingInterfaceProps> = (
   payrollId,
   onBillingCompleted
 }) => {
+  const { databaseUserId } = useDatabaseUserId();
   const [serviceSelections, setServiceSelections] = useState<ServiceSelection[]>([]);
   const [totalHours, setTotalHours] = useState(0);
   const [showTimeModal, setShowTimeModal] = useState(false);
   const [timeEntries, setTimeEntries] = useState<any[]>([]);
 
-  // Mock data for payroll details
-  const [payrollLoading, setPayrollLoading] = useState(true);
-  const [servicesLoading, setServicesLoading] = useState(true);
-  
-  // Mock payroll data
-  const mockPayroll = {
-    id: payrollId,
-    name: `Payroll ${new Date().toLocaleDateString()}`,
-    clientId: 'mock-client-id',
-    primaryConsultantUserId: 'mock-consultant-id',
-    employeeCount: 25,
-    status: 'Implementation',
-    client: {
-      name: 'Mock Client Company'
-    }
-  };
+  // Real GraphQL queries - filter by payroll ID to get the specific payroll
+  const { data: payrollData, loading: payrollLoading } = useQuery(GetPayrollBillingStatusDocument, {
+    fetchPolicy: "cache-and-network"
+  });
 
-  // Mock client services
-  const mockClientServices = [
-    {
-      serviceId: 'service-1',
-      customRate: 150,
-      service: {
-        name: 'Payroll Processing',
-        billingUnit: 'Per Payslip',
-        defaultRate: 8.50
-      }
+  const { data: servicesData, loading: servicesLoading } = useQuery(GetNewclientServiceAgreementsDocument, {
+    variables: { 
+      ...(payrollData?.payrolls?.[0]?.clientId && { clientId: payrollData.payrolls[0].clientId })
     },
-    {
-      serviceId: 'service-2',
-      customRate: null,
-      service: {
-        name: 'Employee Onboarding',
-        billingUnit: 'Per Employee',
-        defaultRate: 45.00
-      }
+    skip: !payrollData?.payrolls?.[0]?.clientId,
+    fetchPolicy: "cache-and-network"
+  });
+
+  // Real mutation for creating billing items
+  const [createBillingItem] = useMutation(CreateBillingItemAdvancedDocument, {
+    onCompleted: (data) => {
+      toast.success(`Created billing item: ${data.insertBillingItemsOne?.description}`);
+      onBillingCompleted?.();
     },
-    {
-      serviceId: 'service-3',
-      customRate: 200,
-      service: {
-        name: 'Compliance Review',
-        billingUnit: 'Per Payroll',
-        defaultRate: 180.00
-      }
+    onError: (error) => {
+      toast.error(`Failed to create billing item: ${error.message}`);
     }
-  ];
+  });
 
-  // Mock loading effect
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setPayrollLoading(false);
-      setServicesLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Mock mutation functions
-  const createPayrollBilling = async (options: any) => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    return {
-      data: {
-        billingItems: {
-          returning: options.variables.billingItems.map((item: any, index: number) => ({
-            id: `billing-item-${index + 1}`,
-            ...item
-          })),
-          affectedRows: options.variables.billingItems.length
-        }
-      }
-    };
-  };
-
-  const createTimeEntry = async (options: any) => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
-    return {
-      data: {
-        timeEntry: {
-          id: `time-entry-${Date.now()}`,
-          ...options.variables.input
-        }
-      }
-    };
-  };
-
-  const payroll = mockPayroll;
-  const clientServices = mockClientServices;
+  // Find the specific payroll by ID from the results
+  const payroll = payrollData?.payrolls?.find(p => p.id === payrollId);
+  const clientServices = servicesData?.clientServiceAgreements || [];
 
   // Calculate auto-quantities based on payroll data and service type
-  const calculateAutoQuantity = (billingUnit: string, payrollData: typeof mockPayroll): number => {
+  const calculateAutoQuantity = (billingUnit: string, payrollData: any): number => {
+    if (!payrollData) return 1;
+    
     switch (billingUnit) {
       case 'Per Payslip':
         // Use employee count as approximation for payslip count
@@ -148,11 +87,9 @@ export const PayrollBillingInterface: React.FC<PayrollBillingInterfaceProps> = (
       case 'Per Employee':
         return payrollData.employeeCount || 0;
       case 'Per New Employee':
-        // This would need custom logic, default to 0 for now
-        return 0;
+        return payrollData.newEmployees || 0;
       case 'Per Terminated Employee':
-        // This would need custom logic, default to 0 for now
-        return 0;
+        return payrollData.terminatedEmployees || 0;
       case 'Per Payroll':
       case 'Per Month':
       case 'Once Off':
@@ -165,15 +102,15 @@ export const PayrollBillingInterface: React.FC<PayrollBillingInterfaceProps> = (
   // Initialize service selections when data loads
   useEffect(() => {
     if (payroll && clientServices.length > 0) {
-      const selections = clientServices.map((service: typeof mockClientServices[0]) => {
-        const serviceData = service.service;
-        const effectiveRate = service.customRate || serviceData.defaultRate;
-        const autoQuantity = calculateAutoQuantity(serviceData.billingUnit || 'hour', payroll);
+      const selections = clientServices.map((serviceAgreement: any) => {
+        const serviceData = serviceAgreement.service;
+        const effectiveRate = serviceAgreement.customRate || serviceData?.defaultRate || 0;
+        const autoQuantity = calculateAutoQuantity(serviceData?.billingUnit || 'hour', payroll);
         return {
-          service_id: service.serviceId || '',
-          service_name: serviceData.name,
-          billing_unit: serviceData.billingUnit || 'hour',
-          standard_rate: serviceData.defaultRate,
+          service_id: serviceAgreement.serviceId || serviceData?.id || '',
+          service_name: serviceData?.name || 'Unknown Service',
+          billing_unit: serviceData?.billingUnit || 'hour',
+          standard_rate: serviceData?.defaultRate || 0,
           effective_rate: effectiveRate,
           auto_quantity: autoQuantity,
           quantity: autoQuantity,
@@ -221,7 +158,10 @@ export const PayrollBillingInterface: React.FC<PayrollBillingInterfaceProps> = (
   };
 
   const handleSaveBilling = async () => {
-    if (!payroll) return;
+    if (!payroll || !databaseUserId) {
+      toast.error('Required data not available');
+      return;
+    }
 
     const selectedServices = getSelectedServices();
     if (selectedServices.length === 0) {
@@ -230,74 +170,45 @@ export const PayrollBillingInterface: React.FC<PayrollBillingInterfaceProps> = (
     }
 
     try {
-      const billingItems = selectedServices.map((selection: ServiceSelection) => {
-        const item: any = {
+      let createdItemsCount = 0;
+
+      // Create each billing item individually using the real mutation
+      for (const selection of selectedServices) {
+        const itemData = {
           payrollId: payrollId,
           clientId: payroll.clientId,
-          billingPlanId: selection.service_id,
+          serviceId: selection.service_id,
           description: selection.service_name,
           quantity: selection.quantity,
           unitPrice: selection.effective_rate,
+          totalAmount: selection.quantity * selection.effective_rate,
           amount: selection.quantity * selection.effective_rate,
           serviceName: selection.service_name,
           hourlyRate: selection.effective_rate,
           status: 'draft',
-          isApproved: false
+          isApproved: false,
+          staffUserId: databaseUserId,
+          notes: selection.notes || null
         };
-        
-        // Only add optional fields if they have values (avoid explicit undefined)
-        if (payroll.primaryConsultantUserId) {
-          item.staffUserId = payroll.primaryConsultantUserId;
-        }
-        if (selection.notes) {
-          item.notes = selection.notes;
-        }
-        
-        return item;
-      });
 
-      const result = await createPayrollBilling({
-        variables: {
-          payrollId,
-          billingItems
-        }
-      });
-
-      const createdBillingItems = result.data?.billingItems?.returning || [];
-      let timeEntriesCreated = 0;
-
-      // Create time entries if any exist and link them to the first billing item
-      if (timeEntries.length > 0 && createdBillingItems.length > 0) {
-        const primaryBillingItem = createdBillingItems[0];
-        
-        for (const timeEntry of timeEntries) {
-          try {
-            await createTimeEntry({
-              variables: {
-                input: {
-                  staffUserId: payroll.primaryConsultantUserId || '',
-                  clientId: payroll.clientId,
-                  payrollId: payrollId,
-                  billingItemId: primaryBillingItem.id,
-                  workDate: timeEntry.work_date,
-                  hoursSpent: timeEntry.hours_spent,
-                  description: timeEntry.description
-                }
-              }
-            });
-            timeEntriesCreated++;
-          } catch (timeEntryError) {
-            console.error('Failed to create time entry:', timeEntryError);
-            // Continue with other time entries even if one fails
+        await createBillingItem({
+          variables: {
+            input: itemData
           }
-        }
+        });
+        
+        createdItemsCount++;
       }
 
-      const successMessage = timeEntriesCreated > 0 
-        ? `Created ${result.data?.billingItems?.affectedRows} billing items and ${timeEntriesCreated} time entries successfully`
-        : `Created ${result.data?.billingItems?.affectedRows} billing items successfully`;
-      
+      // Note: Time entry creation would need a separate GraphQL operation
+      // For now, focusing on billing items creation
+
+      const successMessage = `Created ${createdItemsCount} billing item${createdItemsCount > 1 ? 's' : ''} successfully`;
       toast.success(successMessage);
+      
+      // Reset selections
+      setServiceSelections(prev => prev.map(s => ({ ...s, selected: false })));
+      
       onBillingCompleted?.();
     } catch (error) {
       toast.error('Failed to create billing items');
@@ -373,20 +284,20 @@ export const PayrollBillingInterface: React.FC<PayrollBillingInterfaceProps> = (
               <Users className="h-4 w-4 text-green-600" />
               <div>
                 <p className="text-sm text-gray-600">New Employees</p>
-                <p className="font-semibold">0</p>
+                <p className="font-semibold">{payroll.newEmployees || 0}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-red-600" />
               <div>
                 <p className="text-sm text-gray-600">Terminated</p>
-                <p className="font-semibold">0</p>
+                <p className="font-semibold">{payroll.terminatedEmployees || 0}</p>
               </div>
             </div>
           </div>
           <div className="mt-4">
-            <Badge variant={payroll.status === 'Implementation' ? 'secondary' : 'default'}>
-              {payroll.status || 'Implementation'}
+            <Badge variant={payroll.billingStatus === 'ready_to_bill' ? 'default' : 'secondary'}>
+              {payroll.billingStatus || 'Pending'}
             </Badge>
           </div>
         </CardContent>

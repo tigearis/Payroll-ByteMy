@@ -101,6 +101,25 @@ query GetNewServiceCatalog($limit: Int = 50, $offset: Int = 0, $category: String
   }
 }
 
+# Simple service catalog query for dropdowns (no category filter)
+query GetAllActiveServices($limit: Int = 100) {
+  services(
+    limit: $limit
+    where: { isActive: { _eq: true } }
+    orderBy: [{ name: ASC }]
+  ) {
+    id
+    name
+    description
+    category
+    billingUnit
+    defaultRate
+    currency
+    serviceType
+    isActive
+  }
+}
+
 # Get service by ID
 query GetNewServiceById($id: uuid!) {
   servicesByPk(id: $id) {

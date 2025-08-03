@@ -16,11 +16,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Textarea } from '@/components/ui/textarea';
 import {
   CreateBillingItemAdvancedDocument,
+  GetNewclientServiceAgreementsDocument,
+  GetNewServiceCatalogDocument,
+  CreateTimeEntryWithUnitsDocument
 } from '../../graphql/generated/graphql';
-// TODO: Missing GraphQL operations - temporarily disabled:
-// GetClientServiceAgreementsDocument -> GetNewclientServiceAgreementsDocument
-// GetServiceCatalogDocument -> GetNewServiceCatalogDocument  
-// CreateTimeEntryDocument -> Not available
 import { TimeEntryModal } from '../time-tracking/time-entry-modal';
 
 interface BillingItem {
@@ -61,19 +60,26 @@ export const ClientBillingInterface: React.FC<ClientBillingInterfaceProps> = ({
   });
 
   // Get client service agreements for service catalog
-  // TODO: GetClientServiceAgreementsDocument not available - using mock data
-  const serviceAgreements: any = null;
-  const agreementsLoading = false;
+  const { data: serviceAgreements, loading: agreementsLoading } = useQuery(GetNewclientServiceAgreementsDocument, {
+    variables: { clientId },
+    fetchPolicy: "cache-and-network"
+  });
 
   // Get full service catalog for adding new services
-  // TODO: GetServiceCatalogDocument not available - using mock data
-  const serviceCatalog: any = null;
-  const catalogLoading = false;
+  const { data: serviceCatalog, loading: catalogLoading } = useQuery(GetNewServiceCatalogDocument, {
+    fetchPolicy: "cache-and-network"
+  });
 
   // Mutations
   const [createBillingItem] = useMutation(CreateBillingItemAdvancedDocument);
-  // TODO: CreateTimeEntryDocument not available - stubbed out
-  const createTimeEntry = (_vars: any) => Promise.resolve({ data: null });
+  const [createTimeEntry] = useMutation(CreateTimeEntryWithUnitsDocument, {
+    onCompleted: () => {
+      toast.success('Time entry created successfully');
+    },
+    onError: (error) => {
+      toast.error(`Failed to create time entry: ${error.message}`);
+    }
+  });
 
   const clientServices = serviceAgreements?.clientServiceAgreements || [];
   const availableServices = serviceCatalog?.services || [];
