@@ -11,6 +11,12 @@ import type {
   WorkScheduleEmailContext
 } from '../types';
 
+// GraphQL imports
+import { GetPayrollByIdDocument } from '@/domains/payrolls/graphql/generated/graphql';
+import { GetClientByIdDocument } from '@/domains/clients/graphql/generated/graphql';
+import { GetBillingItemByIdAdvancedDocument } from '@/domains/billing/graphql/generated/graphql';
+import { serverApolloClient } from '@/lib/apollo/unified-client';
+
 interface VariableProcessorOptions {
   category: EmailCategory;
   businessContext?: Record<string, any>;
@@ -402,20 +408,111 @@ class VariableProcessor {
     }
   }
 
-  // Placeholder methods for data fetching (to be implemented with actual GraphQL queries)
+  // Data fetching methods using real GraphQL queries
   private async fetchPayrollData(payrollId: string): Promise<any> {
-    // TODO: Implement GraphQL query to fetch payroll data
-    return null;
+    try {
+      console.log(`📊 Fetching payroll data for email template: ${payrollId}`);
+      
+      const { data, errors } = await serverApolloClient.query({
+        query: GetPayrollByIdDocument,
+        variables: { id: payrollId },
+        fetchPolicy: 'network-only'
+      });
+
+      if (errors && errors.length > 0) {
+        console.error('❌ GraphQL errors fetching payroll data:', errors);
+        throw new Error(`Failed to fetch payroll data: ${errors.map(e => e.message).join(', ')}`);
+      }
+
+      const payroll = data?.payrollsByPk;
+      if (!payroll) {
+        console.warn(`⚠️ Payroll not found: ${payrollId}`);
+        return null;
+      }
+
+      console.log(`✅ Fetched payroll data: ${payroll.name}`);
+      return payroll;
+
+    } catch (error: any) {
+      console.error(`❌ Error fetching payroll data for ${payrollId}:`, error);
+      throw error;
+    }
   }
 
   private async fetchClientData(clientId: string): Promise<any> {
-    // TODO: Implement GraphQL query to fetch client data
-    return null;
+    try {
+      console.log(`🏢 Fetching client data for email template: ${clientId}`);
+      
+      const { data, errors } = await serverApolloClient.query({
+        query: GetClientByIdDocument,
+        variables: { id: clientId },
+        fetchPolicy: 'network-only'
+      });
+
+      if (errors && errors.length > 0) {
+        console.error('❌ GraphQL errors fetching client data:', errors);
+        throw new Error(`Failed to fetch client data: ${errors.map(e => e.message).join(', ')}`);
+      }
+
+      const client = data?.client;
+      if (!client) {
+        console.warn(`⚠️ Client not found: ${clientId}`);
+        return null;
+      }
+
+      console.log(`✅ Fetched client data: ${client.name}`);
+      return client;
+
+    } catch (error: any) {
+      console.error(`❌ Error fetching client data for ${clientId}:`, error);
+      throw error;
+    }
   }
 
   private async fetchInvoiceData(invoiceId: string): Promise<any> {
-    // TODO: Implement GraphQL query to fetch invoice data
-    return null;
+    try {
+      console.log(`💰 Fetching billing/invoice data for email template: ${invoiceId}`);
+      
+      // Using billing item as invoice data since invoices aren't fully implemented yet
+      const { data, errors } = await serverApolloClient.query({
+        query: GetBillingItemByIdAdvancedDocument,
+        variables: { id: invoiceId },
+        fetchPolicy: 'network-only'
+      });
+
+      if (errors && errors.length > 0) {
+        console.error('❌ GraphQL errors fetching billing data:', errors);
+        throw new Error(`Failed to fetch billing data: ${errors.map(e => e.message).join(', ')}`);
+      }
+
+      const billingItem = data?.billingItemsByPk;
+      if (!billingItem) {
+        console.warn(`⚠️ Billing item not found: ${invoiceId}`);
+        return null;
+      }
+
+      // Map billing item to invoice-like structure for email templates
+      const invoiceData = {
+        id: billingItem.id,
+        number: `BI-${billingItem.id.substring(0, 8)}`, // Generate invoice number from billing item
+        invoice_number: `BI-${billingItem.id.substring(0, 8)}`,
+        amount: billingItem.totalAmount || billingItem.amount,
+        total_amount: billingItem.totalAmount || billingItem.amount,
+        due_date: billingItem.createdAt, // Use creation date as placeholder
+        dueDate: billingItem.createdAt,
+        period: new Date(billingItem.createdAt).toLocaleDateString('en-AU', { month: 'long', year: 'numeric' }),
+        billing_period: new Date(billingItem.createdAt).toLocaleDateString('en-AU', { month: 'long', year: 'numeric' }),
+        description: billingItem.description,
+        status: billingItem.status
+      };
+
+      console.log(`✅ Fetched billing data: ${invoiceData.number}`);
+      return invoiceData;
+
+    } catch (error: any) {
+      console.error(`❌ Error fetching billing data for ${invoiceId}:`, error);
+      throw error;
+    }
   }
 }
 

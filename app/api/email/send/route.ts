@@ -17,6 +17,7 @@ import { variableProcessor } from "@/domains/email/services/variable-processor";
 import type { EmailComposition, EmailCategory } from "@/domains/email/types";
 import { executeTypedMutation, executeTypedQuery } from "@/lib/apollo/query-helpers";
 import { withAuthParams } from "@/lib/auth/api-auth";
+import { getHierarchicalPermissionsFromDatabase, hasHierarchicalPermission } from "@/lib/permissions/hierarchical-permissions";
 
 interface EmailSendRequest {
   templateId?: string;
@@ -67,6 +68,30 @@ export const POST = withAuthParams(async (req: NextRequest, {}, session) => {
       hasContent: !!htmlContent,
       category: businessContext?.category
     });
+
+    // Check permission to send emails
+    try {
+      const permissionData = await getHierarchicalPermissionsFromDatabase(session.userId);
+      const canSendEmails = hasHierarchicalPermission(
+        permissionData.role,
+        'email.create',
+        permissionData.excludedPermissions
+      );
+
+      if (!canSendEmails) {
+        console.warn(`⚠️ User ${session.userId} attempted to send email without permission`);
+        return NextResponse.json<EmailSendResponse>(
+          { success: false, error: "Insufficient permissions to send emails" },
+          { status: 403 }
+        );
+      }
+    } catch (permissionError: any) {
+      console.error('❌ Error checking email permissions:', permissionError);
+      return NextResponse.json<EmailSendResponse>(
+        { success: false, error: "Unable to verify permissions" },
+        { status: 500 }
+      );
+    }
 
     // Validate request
     if (!recipientEmails || recipientEmails.length === 0) {
@@ -297,6 +322,19 @@ export const POST = withAuthParams(async (req: NextRequest, {}, session) => {
 // GET endpoint to check email sending capabilities
 export const GET = withAuthParams(async (req: NextRequest, {}, session) => {
   try {
+    // Check actual email permissions
+    let canSendEmails = false;
+    try {
+      const permissionData = await getHierarchicalPermissionsFromDatabase(session.userId);
+      canSendEmails = hasHierarchicalPermission(
+        permissionData.role,
+        'email.create',
+        permissionData.excludedPermissions
+      );
+    } catch (permissionError) {
+      console.warn('Failed to check email permissions for capabilities check:', permissionError);
+    }
+
     return NextResponse.json({
       success: true,
       capabilities: {
@@ -308,7 +346,7 @@ export const GET = withAuthParams(async (req: NextRequest, {}, session) => {
       },
       user: {
         id: session.userId,
-        canSendEmails: true // TODO: Add permission check
+        canSendEmails
       }
     });
   } catch (error: any) {

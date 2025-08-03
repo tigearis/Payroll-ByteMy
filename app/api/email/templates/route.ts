@@ -18,6 +18,7 @@ import type { EmailCategory, EmailTemplate } from "@/domains/email/types";
 import { EMAIL_CATEGORIES } from "@/domains/email/types/template-types";
 import { executeTypedMutation, executeTypedQuery } from "@/lib/apollo/query-helpers";
 import { withAuthParams } from "@/lib/auth/api-auth";
+import { getHierarchicalPermissionsFromDatabase, hasHierarchicalPermission } from "@/lib/permissions/hierarchical-permissions";
 
 interface CreateTemplateRequest {
   name: string;
@@ -58,6 +59,30 @@ export const GET = withAuthParams(async (req: NextRequest, {}, session) => {
       systemOnly,
       search
     });
+
+    // Check permission to read email templates
+    try {
+      const permissionData = await getHierarchicalPermissionsFromDatabase(session.userId);
+      const canReadTemplates = hasHierarchicalPermission(
+        permissionData.role,
+        'email.read',
+        permissionData.excludedPermissions
+      );
+
+      if (!canReadTemplates) {
+        console.warn(`⚠️ User ${session.userId} attempted to access templates without permission`);
+        return NextResponse.json<TemplateResponse>(
+          { success: false, error: "Insufficient permissions to access email templates" },
+          { status: 403 }
+        );
+      }
+    } catch (permissionError: any) {
+      console.error('❌ Error checking template read permissions:', permissionError);
+      return NextResponse.json<TemplateResponse>(
+        { success: false, error: "Unable to verify permissions" },
+        { status: 500 }
+      );
+    }
 
     let templatesData;
 
@@ -129,6 +154,30 @@ export const POST = withAuthParams(async (req: NextRequest, {}, session) => {
     } = body;
 
     console.log(`📧 Creating template "${name}" for user ${session.userId}`);
+
+    // Check permission to create email templates
+    try {
+      const permissionData = await getHierarchicalPermissionsFromDatabase(session.userId);
+      const canCreateTemplates = hasHierarchicalPermission(
+        permissionData.role,
+        'email.create',
+        permissionData.excludedPermissions
+      );
+
+      if (!canCreateTemplates) {
+        console.warn(`⚠️ User ${session.userId} attempted to create template without permission`);
+        return NextResponse.json<TemplateResponse>(
+          { success: false, error: "Insufficient permissions to create email templates" },
+          { status: 403 }
+        );
+      }
+    } catch (permissionError: any) {
+      console.error('❌ Error checking template creation permissions:', permissionError);
+      return NextResponse.json<TemplateResponse>(
+        { success: false, error: "Unable to verify permissions" },
+        { status: 500 }
+      );
+    }
 
     // Validate template data
     const templateValidationData = {
@@ -215,6 +264,35 @@ export const OPTIONS = withAuthParams(async (req: NextRequest, {}, session) => {
   try {
     const categories = Object.values(EMAIL_CATEGORIES);
     
+    // Check actual permissions instead of using hard-coded values
+    let canCreate = false;
+    let canCreateSystem = false;
+    let canApprove = false;
+    
+    try {
+      const permissionData = await getHierarchicalPermissionsFromDatabase(session.userId);
+      
+      canCreate = hasHierarchicalPermission(
+        permissionData.role,
+        'email.create',
+        permissionData.excludedPermissions
+      );
+      
+      canCreateSystem = hasHierarchicalPermission(
+        permissionData.role,
+        'email.manage',
+        permissionData.excludedPermissions
+      );
+      
+      canApprove = hasHierarchicalPermission(
+        permissionData.role,
+        'email.manage',
+        permissionData.excludedPermissions
+      );
+    } catch (permissionError) {
+      console.warn('Failed to check template permissions for OPTIONS check:', permissionError);
+    }
+    
     return NextResponse.json({
       success: true,
       categories,
@@ -231,9 +309,9 @@ export const OPTIONS = withAuthParams(async (req: NextRequest, {}, session) => {
         }
       ],
       permissions: {
-        canCreate: true, // TODO: Add permission check
-        canCreateSystem: ['org_admin', 'developer'].includes(req.headers.get('x-user-role') || 'viewer'),
-        canApprove: ['org_admin', 'manager'].includes(req.headers.get('x-user-role') || 'viewer')
+        canCreate,
+        canCreateSystem,
+        canApprove
       }
     });
 

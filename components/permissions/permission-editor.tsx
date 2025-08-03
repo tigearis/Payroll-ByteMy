@@ -30,6 +30,7 @@ import {
   type UserRole 
 } from "@/lib/permissions/hierarchical-permissions";
 import { useHierarchicalPermissions } from "@/hooks/use-hierarchical-permissions";
+import { useDatabaseUserIdOnly } from "@/hooks/use-database-user-id";
 import { ResourcePermissionRow } from "./resource-permission-row";
 
 // Helper functions for API calls
@@ -132,6 +133,7 @@ export function PermissionEditor({
   const [saveError, setSaveError] = useState<string | null>(null);
 
   const { userRole: currentUserRole, canAccessRole } = useHierarchicalPermissions();
+  const currentDatabaseUserId = useDatabaseUserIdOnly();
 
   // Check if current user can edit this user's permissions
   const canEditPermissions = useMemo(() => {
@@ -326,6 +328,12 @@ export function PermissionEditor({
   const saveAllChanges = async () => {
     if (pendingChanges.length === 0) return;
 
+    // Ensure we have current user ID for audit compliance
+    if (!currentDatabaseUserId) {
+      setSaveError("Cannot save permission changes - unable to identify current user for audit trail. Please refresh and try again.");
+      return;
+    }
+
     setIsSaving(true);
     setSaveError(null);
 
@@ -359,18 +367,22 @@ export function PermissionEditor({
             );
           }
 
-          // Create audit log entry
-          await createAuditLog({
-            variables: {
-              input: {
-                changeType: change.granted ? 'GRANT_PERMISSION' : 'DENY_PERMISSION',
-                permissionType: `${change.resource}.${change.operation}`,
-                targetUserId: userId,
-                changedByUserId: '00000000-0000-0000-0000-000000000000', // TODO: Get from session
-                changedAt: new Date().toISOString(),
+          // Create audit log entry - only if we have the current user ID for compliance
+          if (currentDatabaseUserId) {
+            await createAuditLog({
+              variables: {
+                input: {
+                  changeType: change.granted ? 'GRANT_PERMISSION' : 'DENY_PERMISSION',
+                  permissionType: `${change.resource}.${change.operation}`,
+                  targetUserId: userId,
+                  changedByUserId: currentDatabaseUserId,
+                  changedAt: new Date().toISOString(),
+                }
               }
-            }
-          });
+            });
+          } else {
+            console.warn('⚠️ Audit log skipped - current user ID not available for compliance tracking');
+          }
 
           successCount++;
         } catch (changeError: any) {

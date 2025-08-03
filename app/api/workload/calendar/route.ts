@@ -43,13 +43,54 @@ async function getWorkScheduleForCalendar(
   startDate: string,
   endDate: string
 ): Promise<WorkScheduleDay[]> {
-  // TODO: Replace with actual database query
-  // This would typically query the work_schedule table with:
-  // - JOIN to get user assignments for the date range
-  // - Filter by userId and date range
-  // - Include all necessary fields for calendar display
-  
-  return [];
+  try {
+    console.log(`📅 Fetching work schedule for calendar: user ${userId}`);
+    
+    // Delegate to the metrics endpoint which has real GraphQL implementation
+    // Use 'day' period for calendar granularity
+    const metricsResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/workload/metrics`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        input: {
+          userId,
+          period: 'day', // Use daily granularity for calendar
+          startDate,
+          endDate
+        }
+      })
+    });
+
+    if (!metricsResponse.ok) {
+      console.error('❌ Failed to fetch workload metrics for calendar:', metricsResponse.statusText);
+      return [];
+    }
+
+    const metricsData = await metricsResponse.json();
+    
+    if (!metricsData.success || !metricsData.periods) {
+      console.warn('⚠️ Metrics endpoint returned unsuccessful response or no periods');
+      return [];
+    }
+
+    // Convert metrics data to calendar format
+    const workScheduleDays: WorkScheduleDay[] = metricsData.periods.map((period: any) => ({
+      date: period.date,
+      workHours: period.workHours,
+      adminTimeHours: period.adminTimeHours,
+      payrollCapacityHours: period.payrollCapacityHours,
+      assignments: period.assignments || []
+    }));
+
+    console.log(`✅ Retrieved ${workScheduleDays.length} calendar days from metrics endpoint`);
+    return workScheduleDays;
+
+  } catch (error: any) {
+    console.error('❌ Error fetching work schedule for calendar:', error);
+    return [];
+  }
 }
 
 function processCalendarData(workSchedule: WorkScheduleDay[]): CalendarDay[] {

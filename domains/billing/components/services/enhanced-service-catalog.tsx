@@ -35,6 +35,7 @@ import { formatCurrency } from '@/lib/utils';
 // Import the GraphQL operations
 import { 
   GetNewServiceCatalogDocument,
+  GetServiceCatalogForQuotesDocument,
   CreateNewServiceDocument,
   UpdateNewServiceDocument,
   DeactivateServiceDocument,
@@ -332,13 +333,9 @@ export const EnhancedServiceCatalog: React.FC<EnhancedServiceCatalogProps> = ({
     searchTerm: ''
   });
 
-  // Services query
-  const { data: servicesData, loading: servicesLoading, refetch: refetchServices } = useQuery(GetNewServiceCatalogDocument, {
-    variables: {
-      ...(filters.category && filters.category !== "all" && { category: filters.category }),
-      limit: 100,
-      offset: 0
-    }
+  // Services query - use the quotes document that doesn't have hardcoded category filter
+  const { data: servicesData, loading: servicesLoading, refetch: refetchServices } = useQuery(GetServiceCatalogForQuotesDocument, {
+    fetchPolicy: "cache-and-network"
   });
 
   // Service templates query
@@ -350,8 +347,42 @@ export const EnhancedServiceCatalog: React.FC<EnhancedServiceCatalogProps> = ({
 
   const [deactivateService] = useMutation(DeactivateServiceDocument);
 
-  const services = servicesData?.services || [];
+  const allServices = servicesData?.services || [];
   const templates = templatesData?.serviceTemplates || [];
+
+  // Filter services client-side based on filters
+  const services = useMemo(() => {
+    return allServices.filter((service: any) => {
+      // Category filter
+      if (filters.category && filters.category !== "all") {
+        if (service.category !== filters.category) return false;
+      }
+      
+      // Service type filter
+      if (filters.serviceType && filters.serviceType !== "all") {
+        if (service.serviceType !== filters.serviceType) return false;
+      }
+      
+      // Active filter
+      if (service.isActive !== filters.isActive) return false;
+      
+      // Template filter
+      if (filters.isTemplate !== null) {
+        if (service.isTemplate !== filters.isTemplate) return false;
+      }
+      
+      // Search term filter
+      if (filters.searchTerm) {
+        const searchLower = filters.searchTerm.toLowerCase();
+        const nameMatch = service.name?.toLowerCase().includes(searchLower);
+        const descMatch = service.description?.toLowerCase().includes(searchLower);
+        const categoryMatch = service.category?.toLowerCase().includes(searchLower);
+        if (!nameMatch && !descMatch && !categoryMatch) return false;
+      }
+      
+      return true;
+    });
+  }, [allServices, filters]);
 
   // Group services by category
   const servicesByCategory = useMemo(() => {

@@ -13,7 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { 
-  GetNewServiceCatalogDocument, 
+  GetNewServiceCatalogDocument,
+  GetServiceCatalogForQuotesDocument,
   CreateNewServiceDocument, 
   UpdateNewServiceDocument, 
   DeactivateServiceDocument,
@@ -250,11 +251,8 @@ export const ServiceCatalogManager: React.FC<ServiceCatalogManagerProps> = ({
   const [showEditor, setShowEditor] = useState(showCreateForm);
   const [filterCategory, setFilterCategory] = useState<string>('');
 
-  // Real GraphQL queries
-  const { data, loading, error, refetch } = useQuery(GetNewServiceCatalogDocument, {
-    variables: {
-      ...(filterCategory && { category: filterCategory })
-    },
+  // Real GraphQL queries - use the quotes document that doesn't have hardcoded category filter
+  const { data, loading, error, refetch } = useQuery(GetServiceCatalogForQuotesDocument, {
     fetchPolicy: "cache-and-network"
   });
 
@@ -402,14 +400,14 @@ export const ServiceCatalogManager: React.FC<ServiceCatalogManagerProps> = ({
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleEdit(service)}
+                      onClick={() => handleEdit(service as ServiceCatalogFragmentFragment)}
                     >
                       <Edit2 className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleDelete(service)}
+                      onClick={() => handleDelete(service as ServiceCatalogFragmentFragment)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
