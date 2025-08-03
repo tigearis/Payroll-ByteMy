@@ -106,8 +106,46 @@ mutation UpdateAdminTime(
   }
 }
 
-# Upsert work schedule - creates if doesn't exist, updates if exists
+# Upsert work schedule - try update first, then insert if no rows affected
 mutation UpsertWorkSchedule(
+  $userId: uuid!
+  $workDay: String!
+  $workHours: numeric!
+  $adminTimeHours: numeric!
+  $payrollCapacityHours: numeric!
+  $usesDefaultAdminTime: Boolean!
+) {
+  # Try to update existing record first
+  updateWorkSchedule(
+    where: { 
+      userId: { _eq: $userId }
+      workDay: { _eq: $workDay }
+    }
+    _set: {
+      workHours: $workHours
+      adminTimeHours: $adminTimeHours
+      payrollCapacityHours: $payrollCapacityHours
+      usesDefaultAdminTime: $usesDefaultAdminTime
+      updatedAt: "now()"
+    }
+  ) {
+    returning {
+      id
+      userId
+      workDay
+      workHours
+      adminTimeHours
+      payrollCapacityHours
+      usesDefaultAdminTime
+      createdAt
+      updatedAt
+    }
+    affectedRows
+  }
+}
+
+# Simple insert mutation for new work schedules
+mutation InsertWorkSchedule(
   $userId: uuid!
   $workDay: String!
   $workHours: numeric!
@@ -124,17 +162,16 @@ mutation UpsertWorkSchedule(
       payrollCapacityHours: $payrollCapacityHours
       usesDefaultAdminTime: $usesDefaultAdminTime
     }
-    onConflict: {
-      constraint: unique_user_work_day
-      updateColumns: [
-        workHours
-        adminTimeHours
-        payrollCapacityHours
-        usesDefaultAdminTime
-      ]
-    }
   ) {
-    ...WorkScheduleComplete
+    id
+    userId
+    workDay
+    workHours
+    adminTimeHours
+    payrollCapacityHours
+    usesDefaultAdminTime
+    createdAt
+    updatedAt
   }
 }
 

@@ -681,12 +681,14 @@ export async function createPermissionOverrideWithSync(
     try {
       const { data: overrideData, errors } = await adminApolloClient.mutate({
         mutation: gql`
-          mutation CreatePermissionOverride($input: permissionOverridesInsertInput!) {
-            insertPermissionOverride(object: $input) {
-              id
-              resource
-              operation
-              granted
+          mutation CreatePermissionOverride($input: PermissionOverridesInsertInput!) {
+            insertPermissionOverrides(objects: [$input]) {
+              returning {
+                id
+                resource
+                operation
+                granted
+              }
             }
           }
         `,
@@ -706,7 +708,7 @@ export async function createPermissionOverrideWithSync(
         throw new Error(`Database error: ${errors.map(e => e.message).join(', ')}`);
       }
 
-      overrideId = overrideData?.insertPermissionOverride?.id;
+      overrideId = overrideData?.insertPermissionOverrides?.returning?.[0]?.id;
       
       if (!overrideId) {
         throw new Error("Failed to create permission override - no ID returned from database");
@@ -731,7 +733,7 @@ export async function createPermissionOverrideWithSync(
         await adminApolloClient.mutate({
           mutation: gql`
             mutation RollbackPermissionOverride($id: uuid!) {
-              deletePermissionOverrideById(id: $id) {
+              deletePermissionOverridesByPk(id: $id) {
                 id
               }
             }
@@ -780,7 +782,7 @@ export async function deletePermissionOverrideWithSync(
       const { data: backupData } = await adminApolloClient.query({
         query: gql`
           query GetOverrideForBackup($id: uuid!) {
-            permissionOverrideById(id: $id) {
+            permissionOverridesByPk(id: $id) {
               id
               userId
               resource
@@ -795,7 +797,7 @@ export async function deletePermissionOverrideWithSync(
         fetchPolicy: 'network-only'
       });
 
-      overrideBackup = backupData?.permissionOverrideById;
+      overrideBackup = backupData?.permissionOverridesByPk;
       
       if (!overrideBackup) {
         throw new Error(`Permission override ${overrideId} not found - may have been already deleted`);
@@ -812,7 +814,7 @@ export async function deletePermissionOverrideWithSync(
       const { data: deleteData, errors } = await adminApolloClient.mutate({
         mutation: gql`
           mutation DeletePermissionOverride($id: uuid!) {
-            deletePermissionOverrideById(id: $id) {
+            deletePermissionOverridesByPk(id: $id) {
               id
             }
           }
@@ -824,7 +826,7 @@ export async function deletePermissionOverrideWithSync(
         throw new Error(`Database error: ${errors.map(e => e.message).join(', ')}`);
       }
 
-      if (!deleteData?.deletePermissionOverrideById?.id) {
+      if (!deleteData?.deletePermissionOverridesByPk?.id) {
         throw new Error("Failed to delete permission override - no confirmation from database");
       }
 
@@ -847,9 +849,11 @@ export async function deletePermissionOverrideWithSync(
           console.log(`🔄 Rolling back deletion - recreating override ${overrideId}`);
           await adminApolloClient.mutate({
             mutation: gql`
-              mutation RestorePermissionOverride($input: permissionOverridesInsertInput!) {
-                insertPermissionOverride(object: $input) {
-                  id
+              mutation RestorePermissionOverride($input: PermissionOverridesInsertInput!) {
+                insertPermissionOverrides(objects: [$input]) {
+                  returning {
+                    id
+                  }
                 }
               }
             `,

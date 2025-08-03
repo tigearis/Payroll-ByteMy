@@ -721,13 +721,35 @@ export default function AdvancedPayrollScheduler() {
     targetDate: string
   ) => {
     e.preventDefault();
-    if (!isPreviewMode) return;
+    
+    console.log("🎯 SCHEDULER_DEBUG: handleDrop called", {
+      isPreviewMode,
+      targetConsultantId,
+      targetDate,
+      draggedPayroll: dragState.draggedPayroll?.id,
+      draggedPayrollName: dragState.draggedPayroll?.payrollName
+    });
+    
+    if (!isPreviewMode) {
+      console.warn("🚫 SCHEDULER_DEBUG: handleDrop ignored - not in preview mode");
+      return;
+    }
 
     const { draggedPayroll } = dragState;
-    if (!draggedPayroll) return;
+    if (!draggedPayroll) {
+      console.warn("🚫 SCHEDULER_DEBUG: handleDrop ignored - no dragged payroll");
+      return;
+    }
     
     // Find the target consultant name
     const targetConsultantName = consultants.find(c => c.id === targetConsultantId)?.name || "Unknown";
+    
+    console.log("🎯 SCHEDULER_DEBUG: Processing drop", {
+      draggedPayrollId: draggedPayroll.payrollId,
+      targetConsultantId,
+      targetConsultantName,
+      moveAsGroup
+    });
 
     setAssignments(prev => {
       if (moveAsGroup) {
@@ -748,12 +770,29 @@ export default function AdvancedPayrollScheduler() {
                 consultantName: targetConsultantName,
               };
               
-              // Save to global edits immediately
-              const editKey = `${a.payrollId}-${a.adjustedEftDate}`;
-              setGlobalEdits(prev => new Map(prev).set(editKey, {
-                consultantId: targetConsultantId,
-                consultantName: targetConsultantName
-              }));
+              // Save to global edits immediately - use safer delimiter
+              const editKey = `${a.payrollId}|||${a.adjustedEftDate}`;
+              console.log("🔄 SCHEDULER_DEBUG: Adding to globalEdits (moveAsGroup)", {
+                editKey,
+                payrollId: a.payrollId,
+                adjustedEftDate: a.adjustedEftDate,
+                fromConsultantId: a.consultantId,
+                toConsultantId: targetConsultantId,
+                toConsultantName: targetConsultantName
+              });
+              
+              setGlobalEdits(prev => {
+                const newMap = new Map(prev).set(editKey, {
+                  consultantId: targetConsultantId,
+                  consultantName: targetConsultantName
+                });
+                console.log("🔄 SCHEDULER_DEBUG: globalEdits updated", {
+                  editKey,
+                  newMapSize: newMap.size,
+                  allKeys: Array.from(newMap.keys())
+                });
+                return newMap;
+              });
               
               return updated;
             }
@@ -780,12 +819,29 @@ export default function AdvancedPayrollScheduler() {
                 adjustedEftDate: targetDate,
               };
               
-              // Save to global edits immediately
-              const editKey = `${a.payrollId}-${targetDate}`;
-              setGlobalEdits(prev => new Map(prev).set(editKey, {
-                consultantId: targetConsultantId,
-                consultantName: targetConsultantName
-              }));
+              // Save to global edits immediately - use safer delimiter
+              const editKey = `${a.payrollId}|||${targetDate}`;
+              console.log("🔄 SCHEDULER_DEBUG: Adding to globalEdits (single move)", {
+                editKey,
+                payrollId: a.payrollId,
+                targetDate,
+                fromConsultantId: a.consultantId,
+                toConsultantId: targetConsultantId,
+                toConsultantName: targetConsultantName
+              });
+              
+              setGlobalEdits(prev => {
+                const newMap = new Map(prev).set(editKey, {
+                  consultantId: targetConsultantId,
+                  consultantName: targetConsultantName
+                });
+                console.log("🔄 SCHEDULER_DEBUG: globalEdits updated", {
+                  editKey,
+                  newMapSize: newMap.size,
+                  allKeys: Array.from(newMap.keys())
+                });
+                return newMap;
+              });
               
               return updated;
             }
@@ -824,23 +880,96 @@ export default function AdvancedPayrollScheduler() {
 
   // Calculate pending changes
   const pendingChanges = useMemo(() => {
+    console.log("📊 SCHEDULER_DEBUG: Calculating pendingChanges", {
+      globalEditsSize: globalEdits.size,
+      dataAvailable: !!data,
+      payrollsCount: data?.payrolls?.length || 0,
+      globalEditsKeys: Array.from(globalEdits.keys())
+    });
+
     const changesMap = new Map<string, PendingChange>();
+
+    // Early return if no data available
+    if (!data || !data.payrolls || data.payrolls.length === 0) {
+      console.warn("⚠️ SCHEDULER_DEBUG: No data available for pendingChanges calculation");
+      return [];
+    }
 
     // Look at all global edits across all periods
     if (globalEdits.size > 0) {
       globalEdits.forEach((edit, editKey) => {
-        const [payrollId, date] = editKey.split('-');
+        console.log("🔍 SCHEDULER_DEBUG: Processing edit", {
+          editKey,
+          edit,
+          originalEditKey: editKey
+        });
+
+        // Validate edit structure
+        if (!edit || !edit.consultantId || !edit.consultantName) {
+          console.error("❌ SCHEDULER_DEBUG: Invalid edit structure", {
+            editKey,
+            edit,
+            hasConsultantId: !!edit?.consultantId,
+            hasConsultantName: !!edit?.consultantName
+          });
+          return; // Skip invalid edits
+        }
+
+        // Use safer parsing with robust delimiter
+        const splitResult = editKey.split('|||');
+        if (splitResult.length !== 2) {
+          console.error("❌ SCHEDULER_DEBUG: Invalid editKey format", {
+            editKey,
+            splitResult,
+            expectedLength: 2,
+            actualLength: splitResult.length
+          });
+          return; // Skip this edit if key format is invalid
+        }
+        
+        const [payrollId, date] = splitResult;
+        
+        // Validate parsed values
+        if (!payrollId || !date) {
+          console.error("❌ SCHEDULER_DEBUG: Invalid parsed values", {
+            editKey,
+            payrollId,
+            date,
+            splitResult
+          });
+          return; // Skip invalid parsed values
+        }
+        
+        console.log("🔍 SCHEDULER_DEBUG: Parsed editKey", {
+          editKey,
+          payrollId,
+          date,
+          splitResult
+        });
         
         // Find the original assignment info from the data
         const payroll = data?.payrolls?.find((p: any) => p.id === payrollId);
+        console.log("🔍 SCHEDULER_DEBUG: Payroll lookup", {
+          payrollId,
+          payrollFound: !!payroll,
+          payrollName: payroll?.name,
+          primaryConsultant: payroll?.primaryConsultant
+        });
+
         if (payroll) {
           const originalConsultant = payroll.primaryConsultant;
           
+          console.log("🔍 SCHEDULER_DEBUG: Consultant comparison", {
+            originalConsultantId: originalConsultant?.id,
+            editConsultantId: edit.consultantId,
+            isDifferent: originalConsultant && edit.consultantId !== originalConsultant.id
+          });
+
           if (originalConsultant && edit.consultantId !== originalConsultant.id) {
             const changeKey = payrollId;
             
             if (!changesMap.has(changeKey)) {
-              changesMap.set(changeKey, {
+              const change = {
                 payrollId: payrollId,
                 payrollName: payroll.name,
                 fromConsultantId: originalConsultant.id,
@@ -848,20 +977,60 @@ export default function AdvancedPayrollScheduler() {
                 fromConsultantName: originalConsultant.computedName || `${originalConsultant.firstName} ${originalConsultant.lastName}`.trim(),
                 toConsultantName: edit.consultantName,
                 affectedDates: [date],
-              });
+              };
+              changesMap.set(changeKey, change);
+              console.log("✅ SCHEDULER_DEBUG: Added new change", change);
             } else {
               const existingChange = changesMap.get(changeKey)!;
               if (!existingChange.affectedDates.includes(date)) {
                 existingChange.affectedDates.push(date);
               }
+              console.log("✅ SCHEDULER_DEBUG: Updated existing change", existingChange);
             }
+          } else {
+            console.log("❌ SCHEDULER_DEBUG: Skipping - no consultant change or missing data");
           }
+        } else {
+          console.log("❌ SCHEDULER_DEBUG: Skipping - payroll not found");
         }
       });
+    } else {
+      console.log("❌ SCHEDULER_DEBUG: No global edits to process");
     }
 
-    return Array.from(changesMap.values());
-  }, [globalEdits, data]);
+    const changes = Array.from(changesMap.values());
+    console.log("📊 SCHEDULER_DEBUG: Final pending changes", {
+      changesCount: changes.length,
+      changes: changes.map(c => ({
+        payroll: c.payrollName,
+        from: c.fromConsultantName,
+        to: c.toConsultantName
+      }))
+    });
+
+    return changes;
+  }, [globalEdits, data?.payrolls]);
+
+  // Debug effect to track globalEdits changes
+  useEffect(() => {
+    console.log("🔔 SCHEDULER_DEBUG: globalEdits changed", {
+      size: globalEdits.size,
+      keys: Array.from(globalEdits.keys()),
+      values: Array.from(globalEdits.values())
+    });
+  }, [globalEdits]);
+
+  // Debug effect to track pendingChanges updates
+  useEffect(() => {
+    console.log("🔔 SCHEDULER_DEBUG: pendingChanges updated", {
+      count: pendingChanges.length,
+      changes: pendingChanges.map(c => ({
+        payroll: c.payrollName,
+        from: c.fromConsultantName,
+        to: c.toConsultantName
+      }))
+    });
+  }, [pendingChanges]);
 
   // Commit changes
   const commitChanges = async () => {
@@ -951,6 +1120,10 @@ export default function AdvancedPayrollScheduler() {
 
   // Enter preview mode
   const enterPreviewMode = () => {
+    console.log("🔄 SCHEDULER_DEBUG: Entering preview mode", {
+      currentGlobalEditsSize: globalEdits.size,
+      assignmentsCount: assignments.length
+    });
     setIsPreviewMode(true);
     // Remove any existing ghosts
     setAssignments(prev => removeGhosts(prev));

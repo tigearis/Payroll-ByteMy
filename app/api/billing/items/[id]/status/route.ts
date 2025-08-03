@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withAuthParams } from '@/lib/auth/api-auth';
-import { executeTypedQuery } from '@/lib/apollo/query-helpers';
+import { executeTypedQuery, executeTypedMutation } from '@/lib/apollo/query-helpers';
 import { 
   GetBillingItemByIdAdvancedDocument,
   GetBillingItemByIdAdvancedQuery,
   UpdateBillingItemAdvancedDocument,
   UpdateBillingItemAdvancedMutation
 } from '@/domains/billing/graphql/generated/graphql';
+import { CreateAuditLogDocument, CreateAuditLogMutation } from '@/domains/audit/graphql/generated/graphql';
 
 interface StatusTransitionRequest {
   newStatus: 'draft' | 'confirmed' | 'invoiced' | 'paid' | 'rejected';
@@ -149,9 +150,37 @@ export const PUT = withAuthParams(async (req: NextRequest, { params }, session: 
       throw new Error('Failed to update billing item status');
     }
 
-    // TODO: Create audit log entry - CreateBillingItemLogDocument not available
-    // This functionality is temporarily disabled until the GraphQL operation is recreated
-    console.log(`Status changed from ${currentStatus} to ${newStatus} by user ${session.userId}`)
+    // Create audit log entry for SOC2 compliance
+    try {
+      const auditMetadata = {
+        billingItemId: id,
+        previousStatus: currentStatus,
+        newStatus: newStatus,
+        reason: reason || notes || 'Status change',
+        clientId: billingItem.clientId,
+        amount: billingItem.totalAmount || billingItem.amount,
+        timestamp: new Date().toISOString()
+      };
+
+      await executeTypedMutation<CreateAuditLogMutation>(
+        CreateAuditLogDocument,
+        {
+          userId: session.userId,
+          action: `STATUS_CHANGE_${currentStatus.toUpperCase()}_TO_${newStatus.toUpperCase()}`,
+          resourceType: 'billing_item',
+          resourceId: id,
+          metadata: auditMetadata,
+          ipAddress: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || '127.0.0.1',
+          userAgent: req.headers.get('user-agent') || 'Unknown'
+        }
+      );
+
+      console.log(`✅ Audit log created: Billing item ${id} status changed from ${currentStatus} to ${newStatus} by user ${session.userId}`);
+    } catch (auditError: any) {
+      console.error('❌ Failed to create audit log for billing status change:', auditError);
+      // Don't fail the entire operation for audit log failures, but log the error
+      // In production, this might be escalated to monitoring systems
+    }
 
     return NextResponse.json({
       success: true,

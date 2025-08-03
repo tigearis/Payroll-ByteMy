@@ -53,12 +53,14 @@ import { IndividualWorkloadCard } from "@/domains/work-schedule/components/indiv
 import {
   GetAvailableConsultantsDocument,
   UpsertWorkScheduleDocument,
+  InsertWorkScheduleDocument,
   UpdateUserDefaultAdminTimeDocument,
   GetAllStaffWorkloadDocument,
   AssignPayrollToConsultantDocument,
   BulkAssignPayrollsDocument,
   type GetAvailableConsultantsQuery,
   type UpsertWorkScheduleMutation,
+  type InsertWorkScheduleMutation,
   type UpdateUserDefaultAdminTimeMutation,
   type GetAllStaffWorkloadQuery,
   type AssignPayrollToConsultantMutation,
@@ -159,6 +161,9 @@ export default function WorkSchedulePage() {
   // GraphQL mutations for work schedule management
   const [upsertWorkSchedule] = useMutation<UpsertWorkScheduleMutation>(
     UpsertWorkScheduleDocument
+  );
+  const [insertWorkSchedule] = useMutation<InsertWorkScheduleMutation>(
+    InsertWorkScheduleDocument
   );
   const [updateUserAdminTime] = useMutation<UpdateUserDefaultAdminTimeMutation>(
     UpdateUserDefaultAdminTimeDocument
@@ -357,7 +362,8 @@ export default function WorkSchedulePage() {
         currentUserId
       });
 
-      const result = await upsertWorkSchedule({
+      // Try update first
+      const updateResult = await upsertWorkSchedule({
         variables: {
           userId,
           workDay,
@@ -367,6 +373,23 @@ export default function WorkSchedulePage() {
           usesDefaultAdminTime: updates.usesDefaultAdminTime ?? true,
         },
       });
+
+      let result = updateResult;
+
+      // If no rows were affected by update, insert a new record
+      if (updateResult.data?.updateWorkSchedule?.affectedRows === 0) {
+        console.log("WORK_SCHEDULE_UPDATE_DEBUG: No existing record found, inserting new one");
+        result = await insertWorkSchedule({
+          variables: {
+            userId,
+            workDay,
+            workHours,
+            adminTimeHours,
+            payrollCapacityHours,
+            usesDefaultAdminTime: updates.usesDefaultAdminTime ?? true,
+          },
+        });
+      }
 
       console.log("WORK_SCHEDULE_UPDATE_SUCCESS:", {
         scheduleId,

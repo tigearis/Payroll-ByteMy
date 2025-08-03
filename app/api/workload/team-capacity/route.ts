@@ -56,13 +56,63 @@ async function getTeamMembersWorkload(
   startDate: string,
   endDate: string
 ): Promise<{ userId: string; userName: string; userRole: string; workloadData: WorkloadMetricsResponse }[]> {
-  // TODO: Replace with actual database queries
-  // This would typically:
-  // 1. Query team members from the users table
-  // 2. For each member, call the workload metrics calculation
-  // 3. Return aggregated results
-  
-  return [];
+  try {
+    console.log(`👥 Fetching team workload data for ${teamIds.length} members`);
+    
+    const teamMembersWorkload = [];
+
+    // For each team member, fetch their individual workload data
+    for (const userId of teamIds) {
+      try {
+        // Call the metrics endpoint which has real GraphQL implementation
+        const metricsResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/workload/metrics`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            input: {
+              userId,
+              period,
+              startDate,
+              endDate
+            }
+          })
+        });
+
+        if (!metricsResponse.ok) {
+          console.error(`❌ Failed to fetch workload metrics for user ${userId}:`, metricsResponse.statusText);
+          continue;
+        }
+
+        const metricsData = await metricsResponse.json();
+        
+        // Create a placeholder name - in a real implementation, this would come from user data
+        const userName = `User ${userId.substring(0, 8)}`;
+        const userRole = 'consultant'; // Default role
+        
+        teamMembersWorkload.push({
+          userId,
+          userName,
+          userRole,
+          workloadData: metricsData
+        });
+
+        console.log(`✅ Retrieved workload data for user ${userId}`);
+
+      } catch (userError: any) {
+        console.error(`❌ Error fetching workload for user ${userId}:`, userError);
+        continue;
+      }
+    }
+
+    console.log(`✅ Retrieved workload data for ${teamMembersWorkload.length} team members`);
+    return teamMembersWorkload;
+
+  } catch (error: any) {
+    console.error('❌ Error fetching team workload data:', error);
+    return [];
+  }
 }
 
 function calculateTeamSummary(teamMembers: { workloadData: WorkloadMetricsResponse }[]): CapacitySummary {

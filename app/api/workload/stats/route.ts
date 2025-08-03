@@ -49,10 +49,44 @@ async function getWorkloadDataForStats(
   startDate: string,
   endDate: string
 ): Promise<WorkloadPeriodData[]> {
-  // TODO: Replace with actual database query or call to metrics endpoint
-  // This could reuse the logic from the metrics endpoint
-  // For now, returning empty array
-  return [];
+  try {
+    console.log(`📊 Fetching workload data for stats: user ${userId}, period ${period}`);
+    
+    // Delegate to the metrics endpoint which has real GraphQL implementation
+    const metricsResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/workload/metrics`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        input: {
+          userId,
+          period,
+          startDate,
+          endDate
+        }
+      })
+    });
+
+    if (!metricsResponse.ok) {
+      console.error('❌ Failed to fetch workload metrics:', metricsResponse.statusText);
+      return [];
+    }
+
+    const metricsData = await metricsResponse.json();
+    
+    if (!metricsData.success || !metricsData.periods) {
+      console.warn('⚠️ Metrics endpoint returned unsuccessful response or no periods');
+      return [];
+    }
+
+    console.log(`✅ Retrieved ${metricsData.periods.length} periods from metrics endpoint`);
+    return metricsData.periods;
+
+  } catch (error: any) {
+    console.error('❌ Error fetching workload data for stats:', error);
+    return [];
+  }
 }
 
 function calculateDetailedStats(periods: WorkloadPeriodData[]): {
