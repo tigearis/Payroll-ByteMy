@@ -15,6 +15,7 @@ import {
   CreditCard,
   Calendar,
   Settings,
+  RefreshCw,
 } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -35,9 +36,11 @@ import { RevenueMetrics } from "../analytics/revenue-metrics";
 import { ServicePerformanceChart } from "../analytics/service-performance-chart";
 import { BillingItemsTable } from "../items/billing-items-table";
 import { PayrollCompletionTracker } from "../payroll-integration/payroll-completion-tracker";
+import { RecurringServicesManager } from "../recurring-services/recurring-services-manager";
 
 export function ModernBillingDashboard() {
   const [selectedTimeRange, setSelectedTimeRange] = useState("30d");
+  const [selectedClient, setSelectedClient] = useState<{id: string, name: string} | null>(null);
 
   // Fetch billing data
   const { data: billingItemsData, loading: itemsLoading, refetch } = useQuery(
@@ -217,7 +220,7 @@ export function ModernBillingDashboard() {
 
       {/* Main Dashboard Tabs */}
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <Activity className="h-4 w-4" />
             Overview
@@ -229,6 +232,10 @@ export function ModernBillingDashboard() {
           <TabsTrigger value="payroll-integration" className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
             Payroll Integration
+          </TabsTrigger>
+          <TabsTrigger value="recurring-services" className="flex items-center gap-2">
+            <RefreshCw className="h-4 w-4" />
+            Recurring Services
           </TabsTrigger>
           <TabsTrigger value="analytics" className="flex items-center gap-2">
             <TrendingUp className="h-4 w-4" />
@@ -330,6 +337,78 @@ export function ModernBillingDashboard() {
             </p>
           </div>
           <PayrollCompletionTracker />
+        </TabsContent>
+
+        {/* Recurring Services Tab */}
+        <TabsContent value="recurring-services" className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold">Recurring Services Management</h3>
+              <p className="text-sm text-gray-500">
+                Manage monthly recurring services and automated billing
+              </p>
+            </div>
+            <PermissionGuard action="admin">
+              <Button 
+                variant="outline"
+                onClick={async () => {
+                  try {
+                    const response = await fetch('/api/billing/recurring/generate', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        billingMonth: new Date().toISOString().split('T')[0].substring(0, 7) + '-01',
+                        dryRun: false
+                      }),
+                    });
+                    const result = await response.json();
+                    if (response.ok) {
+                      alert(`Generated ${result.itemsCreated} recurring billing items totaling $${result.totalAmount?.toFixed(2) || 0}`);
+                    } else {
+                      alert(`Error: ${result.error}`);
+                    }
+                  } catch (error: any) {
+                    alert(`Failed to generate billing: ${error.message}`);
+                  }
+                }}
+              >
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Generate Monthly Billing
+              </Button>
+            </PermissionGuard>
+          </div>
+          
+          {selectedClient ? (
+            <RecurringServicesManager 
+              clientId={selectedClient.id}
+              clientName={selectedClient.name}
+            />
+          ) : (
+            <Card>
+              <CardContent className="p-6">
+                <div className="text-center py-12">
+                  <RefreshCw className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    Recurring Services Management
+                  </h3>
+                  <p className="text-gray-500 mb-6">
+                    Select a client to manage their recurring service subscriptions
+                  </p>
+                  <Button 
+                    onClick={() => {
+                      // For demo purposes, use a sample client
+                      setSelectedClient({
+                        id: '11111111-1111-1111-1111-111111111111',
+                        name: 'Sample Client'
+                      });
+                    }}
+                  >
+                    Select Sample Client
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         {/* Analytics Tab */}
