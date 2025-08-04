@@ -225,9 +225,9 @@ export async function deleteDocument(
     try {
       const deleteResult = await executeTypedQuery(DeleteFileDocument, {
         id: documentId
-      }) as { deleteFileById: { id: string } | null };
+      }) as { deleteFilesByPk: { id: string; filename: string; objectKey: string } | null };
 
-      if (deleteResult?.deleteFileById) {
+      if (deleteResult?.deleteFilesByPk) {
         databaseDeleted = true;
         console.log(`🗑️ Document deleted from database: ${documentId}`);
       } else {
