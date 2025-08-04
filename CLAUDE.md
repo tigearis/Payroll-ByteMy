@@ -192,3 +192,14 @@ pnpm run lint        # Clean linting required
 - `/docs/business-logic/` - Business logic and workflow documentation
 - `/docs/user-guides/` - Role-specific user guides
 - `/docs/deployment/` - Deployment and infrastructure guides
+- `/docs/storage/` - File storage and management documentation
+
+## 🗄️ File Storage & Deletion System
+
+**CRITICAL**: Always use proper deletion methods to maintain storage consistency.
+
+- **Primary Reference**: `/docs/storage/FILE_DELETION_GUIDE.md`
+- **Recommended Approach**: Use API endpoints (`DELETE /api/documents/[id]`) or service layer (`deleteDocument()`)
+- **Safety Features**: Hasura event triggers + scheduled cleanup ensure MinIO cleanup
+- **Admin Tools**: Manual cleanup via `/api/admin/file-cleanup`
+- **Monitoring**: Daily scheduled cleanup at 4 AM UTC

@@ -107,7 +107,7 @@
     "Client Preset v4.8+ for optimal type safety",
     "Zero type conflicts with modern codegen"
   ],
-  "generatedAt": "2025-08-04T03:25:30.743Z",
+  "generatedAt": "2025-08-04T04:39:15.181Z",
   "codegenVersion": "Client Preset v4.0",
   "architectureFixes": [
     "Migrated to client preset for better type safety",

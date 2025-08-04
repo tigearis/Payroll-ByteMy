@@ -71,6 +71,9 @@ mutation UpdateFileMetadata($id: uuid!, $updates: FilesSetInput!) {
 }
 
 # Delete a file
+# WARNING: This mutation only deletes the database record. 
+# MinIO cleanup is handled by Hasura event trigger.
+# For programmatic deletion, use the deleteDocument service instead.
 mutation DeleteFile($id: uuid!) {
   deleteFilesByPk(id: $id) {
     id
