@@ -10,14 +10,14 @@ import {
   AlertTriangle,
   Settings,
 } from "lucide-react";
+import { useState } from "react";
 import {
   EnhancedUnifiedTable,
   UnifiedTableColumn,
   UnifiedTableAction,
 } from "@/components/ui/enhanced-unified-table";
-import { PayrollWithCycle } from "@/types";
 import { getScheduleSummary } from "@/domains/payrolls/utils/schedule-helpers";
-import { useState } from "react";
+import { PayrollWithCycle } from "@/types";
 
 // Payroll data type for client payrolls
 interface ClientPayroll {

@@ -22,14 +22,14 @@ import { Icons } from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { 
-  getInvitationFlowState, 
-  logInvitationFlow 
-} from "@/lib/invitation-utils";
-import { 
   extractClerkTicketData,
   isTicketExpired,
   type ClerkTicketUserData 
 } from "@/lib/clerk-ticket-utils";
+import { 
+  getInvitationFlowState, 
+  logInvitationFlow 
+} from "@/lib/invitation-utils";
 
 // Custom invitation sign-up form using ticket strategy
 interface InvitationSignUpFormProps {

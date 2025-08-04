@@ -1,8 +1,8 @@
 import { format, parseISO, isSameDay, isSameWeek, isSameMonth, startOfWeek, addDays, startOfMonth, addWeeks } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
-import { authenticateApiRequest } from "@/lib/auth/api-auth";
-import { serverApolloClient } from "@/lib/apollo/unified-client";
 import { GetWorkSchedulesByDateRangeDocument, GetTeamWorkloadOptimizedDocument } from "@/domains/work-schedule/graphql/generated/graphql";
+import { serverApolloClient } from "@/lib/apollo/unified-client";
+import { authenticateApiRequest } from "@/lib/auth/api-auth";
 
 interface WorkloadMetricsInput {
   userId: string;

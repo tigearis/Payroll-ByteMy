@@ -2,11 +2,11 @@ import { executeTypedQuery } from '@/lib/apollo/query-helpers';
 import { auditLogger } from '@/lib/audit/audit-logger';
 import { getJWTClaims } from '@/lib/auth';
 import { hasHierarchicalPermission, UserRole } from '@/lib/permissions/hierarchical-permissions';
+import { Users } from '@/shared/types/generated/graphql';
 import { 
   DeleteUserDocument,
   DeactivateUserWithReasonDocument,
 } from '../graphql/generated/graphql';
-import { Users } from '@/shared/types/generated/graphql';
 
 /**
  * Delete user function (soft delete - deactivates user)

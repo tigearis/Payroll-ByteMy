@@ -3,7 +3,7 @@
 import { useQuery } from '@apollo/client';
 import { Plus, DollarSign, Clock, CheckCircle, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { PermissionGuard } from '@/components/auth/permission-guard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,17 +14,18 @@ import { GetBillingItemsAdvancedDocument, GetBillingItemsStatsAdvancedDocument }
 export default function BillingItemsPage() {
   const [activeTab, setActiveTab] = useState('dashboard');
 
-  // Fetch billing data
+  // Fetch billing data with optimized pagination
   const { data: billingItemsData, loading: itemsLoading, refetch } = useQuery(
     GetBillingItemsAdvancedDocument,
     {
       variables: {
-        limit: 100,
+        limit: 25, // Reduced from 100 to prevent loops
         offset: 0,
         orderBy: [{ createdAt: "DESC" }],
       },
       fetchPolicy: "cache-first",
       nextFetchPolicy: "cache-first",
+      notifyOnNetworkStatusChange: false, // Prevent re-renders on network status change
     }
   );
 
@@ -37,17 +38,22 @@ export default function BillingItemsPage() {
     }
   );
 
-  const billingItems = billingItemsData?.billingItems || [];
-  const stats = statsData?.billingItemsAggregate?.aggregate;
-  const pendingStats = statsData?.pending?.aggregate;
-  const approvedStats = statsData?.approved?.aggregate;
+  // Memoize data processing to prevent unnecessary re-calculations
+  const billingItems = useMemo(() => billingItemsData?.billingItems || [], [billingItemsData?.billingItems]);
+  const stats = useMemo(() => statsData?.billingItemsAggregate?.aggregate, [statsData?.billingItemsAggregate?.aggregate]);
+  const pendingStats = useMemo(() => statsData?.pending?.aggregate, [statsData?.pending?.aggregate]);
+  const approvedStats = useMemo(() => statsData?.approved?.aggregate, [statsData?.approved?.aggregate]);
 
-  const formatCurrency = (amount: number) => {
+  // Memoize currency formatter and filtering functions
+  const formatCurrency = useCallback((amount: number) => {
     return new Intl.NumberFormat("en-AU", {
       style: "currency",
       currency: "AUD",
     }).format(amount);
-  };
+  }, []);
+
+  const draftItems = useMemo(() => billingItems.filter(item => !item.isApproved), [billingItems]);
+  const confirmedItems = useMemo(() => billingItems.filter(item => item.isApproved), [billingItems]);
 
   return (
     <PermissionGuard resource="billing_items" action="read" fallback={
@@ -168,7 +174,7 @@ export default function BillingItemsPage() {
 
           <TabsContent value="draft">
             <BillingItemsTable 
-              data={billingItems.filter(item => !item.isApproved)} 
+              data={draftItems} 
               loading={itemsLoading} 
               refetch={refetch} 
             />
@@ -176,7 +182,7 @@ export default function BillingItemsPage() {
 
           <TabsContent value="confirmed">
             <BillingItemsTable 
-              data={billingItems.filter(item => item.isApproved)} 
+              data={confirmedItems} 
               loading={itemsLoading} 
               refetch={refetch} 
             />

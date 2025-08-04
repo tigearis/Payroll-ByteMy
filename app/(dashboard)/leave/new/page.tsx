@@ -1,10 +1,11 @@
 "use client";
 
+import { useQuery } from "@apollo/client";
 import { ArrowLeft, Calendar, FileText, User, Clock, AlertTriangle, Users, Check } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useQuery } from "@apollo/client";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -16,18 +17,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
-import { useCurrentUser } from "@/hooks/use-current-user";
-import { usePermissions } from "@/hooks/use-permissions";
-import { useToast } from "@/hooks/use-toast";
+import { Textarea } from "@/components/ui/textarea";
 import { 
   GetManagerTeamForLeaveDocument, 
   GetAllUsersForLeaveDocument,
   type GetManagerTeamForLeaveQuery,
   type GetAllUsersForLeaveQuery
 } from "@/domains/leave/graphql/generated/graphql";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { usePermissions } from "@/hooks/use-permissions";
+import { useToast } from "@/hooks/use-toast";
 
 interface LeaveFormData {
   startDate: string;

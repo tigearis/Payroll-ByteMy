@@ -8,8 +8,8 @@
  * - SOC2 compliance reporting
  */
 
-import { adminApolloClient } from '@/lib/apollo/unified-client';
 import { gql } from '@apollo/client';
+import { adminApolloClient } from '@/lib/apollo/unified-client';
 
 export interface AuditLogEntry {
   userId?: string;

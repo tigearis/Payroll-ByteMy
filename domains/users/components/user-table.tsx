@@ -39,8 +39,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Users } from "@/shared/types/generated/graphql";
 import { deleteUser, canEditUserSync as canEditUser, canDeleteUserSync as canDeleteUser } from "@/domains/users/services/user-management";
+import { Users } from "@/shared/types/generated/graphql";
 
 interface UserTableProps {
   users: Users[];

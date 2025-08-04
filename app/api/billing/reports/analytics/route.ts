@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from '@/lib/auth/api-auth';
-import { executeTypedQuery } from '@/lib/apollo/query-helpers';
 import { 
   GetBillingAnalyticsDocument,
   GetClientBillingStatsDocument,
   GetStaffAnalyticsPerformanceDocument
 } from '@/domains/billing/graphql/generated/graphql';
+import { executeTypedQuery } from '@/lib/apollo/query-helpers';
+import { withAuth } from '@/lib/auth/api-auth';
 
 interface AnalyticsRequest {
   dateFrom?: string;

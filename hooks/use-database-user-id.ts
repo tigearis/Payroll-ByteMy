@@ -1,7 +1,7 @@
 'use client';
 
-import { useUser } from '@clerk/nextjs';
 import { useQuery } from '@apollo/client';
+import { useUser } from '@clerk/nextjs';
 import { GetUserByClerkIdCompleteDocument } from '@/domains/users/graphql/generated/graphql';
 
 /**

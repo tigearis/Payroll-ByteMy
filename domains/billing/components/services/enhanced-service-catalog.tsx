@@ -19,17 +19,17 @@ import {
 } from 'lucide-react';
 import React, { useState, useMemo } from 'react';
 import { toast } from 'sonner';
+import { PermissionGuard } from '@/components/auth/permission-guard';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { PermissionGuard } from '@/components/auth/permission-guard';
+import { Textarea } from '@/components/ui/textarea';
 import { formatCurrency } from '@/lib/utils';
 
 // Import the GraphQL operations

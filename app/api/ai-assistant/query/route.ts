@@ -13,8 +13,8 @@ import {
 } from "../../../../lib/ai/hasura-query-generator";
 import { langChainService } from "../../../../lib/ai/langchain-service";
 import { securityValidator } from "../../../../lib/ai/security-validator";
-import { checkFeatureFlag } from "../../../../lib/feature-flags/api-guard";
 import { auditLogger } from "../../../../lib/audit/audit-logger";
+import { checkFeatureFlag } from "../../../../lib/feature-flags/api-guard";
 
 // Rate limiting for queries (stricter than chat)
 const queryRateLimits = new Map<string, { count: number; resetTime: number }>();

@@ -3,13 +3,13 @@
 
 import type React from "react";
 import { AIAssistantFloat } from "@/components/ai-assistant-float";
+import { ResourceProvider } from "@/components/auth/resource-context";
 import { DashboardShell } from "@/components/dashboard-shell";
 import { Sidebar } from "@/components/sidebar";
 import { ClientWrapper } from "@/domains/clients/components/client-wrapper";
 import { UserNav } from "@/domains/users/components/user-nav";
-import { useLayoutPreferences } from "@/lib/preferences/layout-preferences";
-import { ResourceProvider } from "@/components/auth/resource-context";
 import { usePathResource } from "@/hooks/use-path-resource";
+import { useLayoutPreferences } from "@/lib/preferences/layout-preferences";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;

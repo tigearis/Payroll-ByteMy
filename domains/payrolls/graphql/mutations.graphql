@@ -50,6 +50,35 @@ mutation UpdatePayroll($id: uuid!, $set: PayrollsSetInput!) {
   }
 }
 
+# Simplified mutation for scheduler updates to avoid fragment issues
+mutation UpdatePayrollSimple($id: uuid!, $set: PayrollsSetInput!) {
+  updatePayrollsByPk(pkColumns: { id: $id }, _set: $set) {
+    id
+    name
+    status
+    primaryConsultantUserId
+    backupConsultantUserId
+    managerUserId
+    updatedAt
+    client {
+      id
+      name
+    }
+    primaryConsultant {
+      id
+      firstName
+      lastName
+      computedName
+    }
+    backupConsultant {
+      id
+      firstName
+      lastName
+      computedName
+    }
+  }
+}
+
 mutation DeletePayroll($id: uuid!) {
   updatePayrollsByPk(
     pkColumns: { id: $id }

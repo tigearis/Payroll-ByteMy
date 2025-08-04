@@ -1,6 +1,5 @@
 "use client";
 
-import React, { useState } from "react";
 import { useMutation } from "@apollo/client";
 import { useUser } from "@clerk/nextjs";
 import {
@@ -29,9 +28,12 @@ import {
   User,
   Building2,
 } from "lucide-react";
+import React, { useState } from "react";
 import { toast } from "sonner";
+import { PermissionGuard } from "@/components/auth/permission-guard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
@@ -51,8 +53,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PermissionGuard } from "@/components/auth/permission-guard";
 import { UpdateBillingItemAdvancedDocument, ApproveBillingItemAdvancedDocument } from "../../graphql/generated/graphql";
 
 interface BillingItem {

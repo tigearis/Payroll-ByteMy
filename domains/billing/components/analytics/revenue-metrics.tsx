@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
 import { useQuery } from "@apollo/client";
+import { format, subDays, startOfDay, endOfDay } from "date-fns";
+import React from "react";
 import {
   LineChart,
   Line,
@@ -12,7 +13,6 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { GetBillingItemsAdvancedDocument } from "../../graphql/generated/graphql";
-import { format, subDays, startOfDay, endOfDay } from "date-fns";
 
 export function RevenueMetrics() {
   const { data, loading } = useQuery(GetBillingItemsAdvancedDocument, {

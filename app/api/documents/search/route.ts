@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from '@/lib/auth/api-auth';
 import { executeTypedQuery } from '@/lib/apollo/query-helpers';
+import { withAuth } from '@/lib/auth/api-auth';
 
 interface DocumentSearchResponse {
   success: boolean;

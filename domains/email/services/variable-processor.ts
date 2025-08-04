@@ -2,6 +2,12 @@
 // Security Classification: HIGH - Dynamic content processing
 // SOC2 Compliance: Variable validation and audit logging
 
+
+// GraphQL imports
+import { GetBillingItemByIdAdvancedDocument } from '@/domains/billing/graphql/generated/graphql';
+import { GetClientByIdDocument } from '@/domains/clients/graphql/generated/graphql';
+import { GetPayrollByIdDocument } from '@/domains/payrolls/graphql/generated/graphql';
+import { serverApolloClient } from '@/lib/apollo/unified-client';
 import type { 
   EmailCategory,
   PayrollEmailContext,
@@ -10,12 +16,6 @@ import type {
   LeaveEmailContext,
   WorkScheduleEmailContext
 } from '../types';
-
-// GraphQL imports
-import { GetPayrollByIdDocument } from '@/domains/payrolls/graphql/generated/graphql';
-import { GetClientByIdDocument } from '@/domains/clients/graphql/generated/graphql';
-import { GetBillingItemByIdAdvancedDocument } from '@/domains/billing/graphql/generated/graphql';
-import { serverApolloClient } from '@/lib/apollo/unified-client';
 
 interface VariableProcessorOptions {
   category: EmailCategory;

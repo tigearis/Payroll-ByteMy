@@ -1,8 +1,8 @@
 "use client";
 
-import { EnhancedTimeEntry } from "@/domains/billing/components/time-tracking/enhanced-time-entry";
-import { PermissionGuard } from "@/components/auth/permission-guard";
 import { useUser } from "@clerk/nextjs";
+import { PermissionGuard } from "@/components/auth/permission-guard";
+import { EnhancedTimeEntry } from "@/domains/billing/components/time-tracking/enhanced-time-entry";
 
 export default function TimeTrackingPage() {
   const { user, isLoaded } = useUser();

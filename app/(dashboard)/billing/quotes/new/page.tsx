@@ -1,10 +1,10 @@
 "use client";
 
-import { QuoteBuilder } from "@/domains/billing/components/quoting/quote-builder";
-import { PermissionGuard } from "@/components/auth/permission-guard";
 import { ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { PermissionGuard } from "@/components/auth/permission-guard";
+import { Button } from "@/components/ui/button";
+import { QuoteBuilder } from "@/domains/billing/components/quoting/quote-builder";
 
 export default function NewQuotePage() {
   return (

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { minioClient } from '@/lib/storage/minio-client';
 import { auditLogger } from '@/lib/audit/audit-logger';
+import { minioClient } from '@/lib/storage/minio-client';
 
 /**
  * Hasura Event Trigger webhook for file cleanup

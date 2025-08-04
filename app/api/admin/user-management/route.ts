@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { createClerkClient } from "@clerk/backend";
 import { gql } from "@apollo/client";
+import { createClerkClient } from "@clerk/backend";
+import { NextRequest, NextResponse } from "next/server";
 import { executeTypedQuery, executeTypedMutation } from "@/lib/apollo/query-helpers";
 import { withAuth } from "@/lib/auth/api-auth";
 

@@ -2,7 +2,6 @@
 
 import { useQuery, useMutation } from "@apollo/client";
 import { useUser } from "@clerk/nextjs";
-import { useDatabaseUserId } from "@/hooks/use-database-user-id";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -32,12 +31,15 @@ import { toast } from "sonner";
 import { PermissionGuard } from "@/components/auth/permission-guard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -48,10 +50,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   GetPayrollFamilyDatesDocument,
   GetPayrollDatesDocument,
@@ -60,6 +59,7 @@ import {
   AddPayrollDateTimeEntryDocument,
   UpdatePayrollDateStatusDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
+import { useDatabaseUserId } from "@/hooks/use-database-user-id";
 import { NotesListModal } from "./notes-list-modal";
 // Fragment masking disabled - no longer needed
 

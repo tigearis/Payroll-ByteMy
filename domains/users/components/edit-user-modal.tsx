@@ -35,9 +35,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Manager, UserPermissions } from "@/domains/users/types";
 import { useUserManagement } from "@/hooks/use-user-management";
 import { Users as UsersType } from "@/shared/types/generated/graphql";
-import { Manager, UserPermissions } from "@/domains/users/types";
 
 const editUserSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),

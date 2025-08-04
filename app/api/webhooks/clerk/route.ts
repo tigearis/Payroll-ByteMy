@@ -1,9 +1,9 @@
 // app/api/webhooks/clerk/route.ts
+import { gql } from "@apollo/client";
 import { createClerkClient } from "@clerk/backend";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { Webhook } from "svix";
-import { gql } from "@apollo/client";
 import { UpdateUserRoleFromClerkDocument } from "@/domains/users/graphql/generated/graphql";
 import { syncUserWithDatabase } from "@/domains/users/services/user-sync";
 import type { UserRole } from "@/domains/users/services/user-sync";

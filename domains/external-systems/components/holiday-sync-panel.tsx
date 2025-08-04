@@ -2,6 +2,8 @@
 
 import { Calendar, RefreshCw, CheckCircle, AlertCircle, Clock } from "lucide-react";
 import { useState } from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ByteMySpinner } from "@/components/ui/bytemy-loading-icon";
 import {
@@ -12,8 +14,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface SyncResult {
   success: boolean;

@@ -46,9 +46,10 @@ const SkillsEditModal = dynamic(() => import("@/components/skills-edit-modal").t
   loading: () => <div>Loading...</div>,
   ssr: false
 });
+import { DocumentUploadModal, DocumentList } from "@/components/documents";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -78,7 +79,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { NotesListWithAdd } from "@/domains/notes/components/notes-list";
-import { DocumentUploadModal, DocumentList } from "@/components/documents";
 import { PayrollDatesView } from "@/domains/payrolls/components/payroll-dates-view";
 import { PayrollForm, PayrollFormData } from "@/domains/payrolls/components/payroll-form";
 
@@ -106,6 +106,14 @@ const BillingGenerationModal = dynamic(
     ssr: false
   }
 );
+
+const PayrollServiceOverrides = dynamic(
+  () => import("@/domains/billing/components/payroll-billing/payroll-service-overrides").then(mod => ({ default: mod.default })),
+  {
+    loading: () => <div>Loading service overrides...</div>,
+    ssr: false
+  }
+);
 import {
   GetPayrollByIdDocument,
   GetPayrollForEditDocument,
@@ -121,6 +129,7 @@ import { GetPayrollDateTypesDocument } from "@/domains/payrolls/graphql/generate
 import { GetLatestPayrollVersionDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { GeneratePayrollDatesDocument } from "@/domains/payrolls/graphql/generated/graphql";
 // Schedule helper utilities imported on-demand
+import { getScheduleSummary } from "@/domains/payrolls/utils/schedule-helpers";
 import { GetAllUsersListDocument } from "@/domains/users/graphql/generated/graphql";
 import {
   usePayrollVersioning,
@@ -132,7 +141,6 @@ import { QueryOptimizer } from "@/lib/apollo/query-optimization";
 import { PermissionGuard, CanUpdate, CanDelete } from "@/components/auth/permission-guard";
 import { PayrollCycleType, PayrollDateType } from "@/types/enums";
 import { QuickEmailDialog } from "@/domains/email/components/quick-email-dialog";
-import { getScheduleSummary } from "@/domains/payrolls/utils/schedule-helpers";
 
 // Enhanced error boundary for version checking
 function VersionCheckErrorBoundary({ children }: { children: React.ReactNode }) {
@@ -1545,6 +1553,9 @@ export default function PayrollPage() {
             >
               <Calculator className="w-4 h-4 mr-2" />
               Billing
+              <Badge variant="secondary" className="ml-2 bg-blue-100 text-blue-800">
+                Overrides
+              </Badge>
             </TabsTrigger>
             <TabsTrigger
               value="dates"
@@ -1812,6 +1823,36 @@ export default function PayrollPage() {
                 refetch();
               }}
             />
+
+            {/* Service Overrides Section */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <FileText className="w-5 h-5" />
+                      Payroll Service Overrides
+                    </CardTitle>
+                    <CardDescription className="mt-2">
+                      Manage service-specific billing rates and configurations that override client defaults for this payroll.
+                      These overrides will take precedence over the client's default service agreements.
+                    </CardDescription>
+                  </div>
+                  <div className="text-right text-sm text-gray-500">
+                    <div>Client: {(client as any)?.name}</div>
+                    <Link 
+                      href={`/clients/${(client as any)?.id}#service-agreements`}
+                      className="text-blue-600 hover:text-blue-800 underline"
+                    >
+                      View Client Service Agreements →
+                    </Link>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <PayrollServiceOverrides payrollId={id} />
+              </CardContent>
+            </Card>
             
             {/* Profitability Dashboard */}
             <ProfitabilityDashboard 

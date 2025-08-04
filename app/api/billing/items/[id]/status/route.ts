@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuthParams } from '@/lib/auth/api-auth';
-import { executeTypedQuery, executeTypedMutation } from '@/lib/apollo/query-helpers';
+import { CreateAuditLogDocument, CreateAuditLogMutation } from '@/domains/audit/graphql/generated/graphql';
 import { 
   GetBillingItemByIdAdvancedDocument,
   GetBillingItemByIdAdvancedQuery,
   UpdateBillingItemAdvancedDocument,
   UpdateBillingItemAdvancedMutation
 } from '@/domains/billing/graphql/generated/graphql';
-import { CreateAuditLogDocument, CreateAuditLogMutation } from '@/domains/audit/graphql/generated/graphql';
+import { executeTypedQuery, executeTypedMutation } from '@/lib/apollo/query-helpers';
+import { withAuthParams } from '@/lib/auth/api-auth';
 
 interface StatusTransitionRequest {
   newStatus: 'draft' | 'confirmed' | 'invoiced' | 'paid' | 'rejected';

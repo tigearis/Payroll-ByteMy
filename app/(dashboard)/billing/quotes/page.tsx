@@ -1,7 +1,7 @@
 "use client";
 
-import { QuoteManagementDashboard } from "@/domains/billing/components/quoting/quote-management-dashboard";
 import { PermissionGuard } from "@/components/auth/permission-guard";
+import { QuoteManagementDashboard } from "@/domains/billing/components/quoting/quote-management-dashboard";
 
 export default function QuotesPage() {
   return (
