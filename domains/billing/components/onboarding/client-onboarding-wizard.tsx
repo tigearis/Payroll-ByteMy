@@ -28,7 +28,7 @@ import {
   FileCheck,
   Zap
 } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 // GraphQL Queries and Mutations
 const GET_ONBOARDING_DATA = gql`
@@ -238,6 +238,7 @@ const ClientOnboardingWizard: React.FC<ClientOnboardingWizardProps> = ({
   onComplete,
   onCancel
 }) => {
+  const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(0);
   const [onboardingSessionId, setOnboardingSessionId] = useState<string | null>(null);
   const [formData, setFormData] = useState<OnboardingFormData>({
@@ -299,7 +300,7 @@ const ClientOnboardingWizard: React.FC<ClientOnboardingWizardProps> = ({
     if (selectedBundle) {
       const newSelections: Record<string, ServiceSelection> = {};
       
-      selectedBundle.bundleAssignments.forEach(assignment => {
+      selectedBundle.bundleAssignments.forEach((assignment: any) => {
         newSelections[assignment.template.id] = {
           templateId: assignment.template.id,
           isSelected: assignment.isDefaultEnabled,
@@ -576,7 +577,7 @@ const ClientOnboardingWizard: React.FC<ClientOnboardingWizardProps> = ({
 
       case 2: // Service Configuration
         const availableTemplates = formData.selectedBundleId ? 
-          selectedBundle?.bundleAssignments.map(a => a.template) || [] :
+          selectedBundle?.bundleAssignments.map((a: any) => a.template) || [] :
           templates;
           
         return (
@@ -656,9 +657,12 @@ const ClientOnboardingWizard: React.FC<ClientOnboardingWizardProps> = ({
                                       min="0"
                                       placeholder={template.defaultRate?.toString() || '0'}
                                       value={selection?.customRate || ''}
-                                      onChange={(e) => handleServiceSelectionChange(template.id, {
-                                        customRate: parseFloat(e.target.value) || undefined
-                                      })}
+                                      onChange={(e) => {
+                                        const value = parseFloat(e.target.value);
+                                        handleServiceSelectionChange(template.id, {
+                                          ...(value > 0 && { customRate: value })
+                                        });
+                                      }}
                                       className="mt-1"
                                     />
                                   </div>
@@ -689,9 +693,12 @@ const ClientOnboardingWizard: React.FC<ClientOnboardingWizardProps> = ({
                                   <Textarea
                                     placeholder="Optional custom description for this service..."
                                     value={selection?.customDescription || ''}
-                                    onChange={(e) => handleServiceSelectionChange(template.id, {
-                                      customDescription: e.target.value || undefined
-                                    })}
+                                    onChange={(e) => {
+                                      const value = e.target.value.trim();
+                                      handleServiceSelectionChange(template.id, {
+                                        ...(value && { customDescription: value })
+                                      });
+                                    }}
                                     className="mt-1"
                                     rows={2}
                                   />

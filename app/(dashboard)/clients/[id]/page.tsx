@@ -90,7 +90,7 @@ import {
 } from "@/domains/clients/graphql/generated/graphql";
 import { QuickEmailDialog } from "@/domains/email/components/quick-email-dialog";
 import { NotesListWithAdd } from "@/domains/notes/components/notes-list";
-import { DocumentUpload, DocumentList } from "@/components/documents";
+import { DocumentUploadModal, DocumentList } from "@/components/documents";
 import { type PayrollListItemFragment } from "@/domains/payrolls/graphql/generated/graphql";
 import { useSmartPolling } from "@/hooks/use-polling";
 import { safeFormatDate } from "@/lib/utils/date-utils";
@@ -178,6 +178,7 @@ export default function ClientDetailPage() {
   const [activeTab, setActiveTab] = useState("overview");
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
   const [selectedPayrolls, setSelectedPayrolls] = useState<string[]>([]);
   const [showEmailDialog, setShowEmailDialog] = useState(false);
 
@@ -1034,26 +1035,16 @@ export default function ClientDetailPage() {
 
         {/* Documents Tab */}
         <TabsContent value="documents" className="space-y-6">
-          <div className="space-y-6">
-            {/* Document Upload */}
-            <DocumentUpload
-              clientId={id}
-              onUploadComplete={() => {
-                // Refresh document list when upload completes
-                window.location.reload();
-              }}
-            />
-            
-            {/* Document List */}
-            <DocumentList
-              clientId={id}
-              showFilters={true}
-              onDocumentUpdate={() => {
-                // Refresh when documents are updated or deleted
-                window.location.reload();
-              }}
-            />
-          </div>
+          <DocumentList
+            clientId={id}
+            showFilters={true}
+            showUploadButton={true}
+            onUploadClick={() => setShowUploadModal(true)}
+            onDocumentUpdate={() => {
+              // Refresh when documents are updated or deleted
+              window.location.reload();
+            }}
+          />
         </TabsContent>
       </Tabs>
 
@@ -1206,6 +1197,17 @@ export default function ClientDetailPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Document Upload Modal */}
+      <DocumentUploadModal
+        isOpen={showUploadModal}
+        onClose={() => setShowUploadModal(false)}
+        clientId={id}
+        onUploadComplete={(documents) => {
+          // Refresh document list when upload completes
+          window.location.reload();
+        }}
+      />
     </div>
   );
 }

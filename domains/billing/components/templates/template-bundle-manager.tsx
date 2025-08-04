@@ -16,7 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Edit, Trash2, Star, Package, Users, Building, Settings2 } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 // GraphQL Queries and Mutations
 const GET_TEMPLATE_BUNDLES = gql`
@@ -228,13 +228,14 @@ interface BundleFormData {
 }
 
 const TemplateBundleManager: React.FC = () => {
+  const { toast } = useToast();
   const [selectedClientSize, setSelectedClientSize] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingBundle, setEditingBundle] = useState<TemplateBundle | null>(null);
   const [selectedTemplates, setSelectedTemplates] = useState<Set<string>>(new Set());
-  const [assignmentSettings, setAssignmentSettings] = useState<Record<string, { isRequired: boolean; isDefaultEnabled: boolean; customRate?: number }>({});
+  const [assignmentSettings, setAssignmentSettings] = useState<{[key: string]: { isRequired: boolean; isDefaultEnabled: boolean; customRate?: number }}>({});
   
   const [formData, setFormData] = useState<BundleFormData>({
     bundleName: '',
@@ -441,12 +442,12 @@ const TemplateBundleManager: React.FC = () => {
     const templateIds = new Set(bundle.bundleAssignments.map(a => a.template.id));
     setSelectedTemplates(templateIds);
     
-    const settings: Record<string, { isRequired: boolean; isDefaultEnabled: boolean; customRate?: number }> = {};
+    const settings: {[key: string]: { isRequired: boolean; isDefaultEnabled: boolean; customRate?: number }} = {};
     bundle.bundleAssignments.forEach(assignment => {
       settings[assignment.template.id] = {
         isRequired: assignment.isRequired,
         isDefaultEnabled: assignment.isDefaultEnabled,
-        customRate: assignment.customRate || undefined
+        ...(assignment.customRate !== null && assignment.customRate !== undefined && { customRate: assignment.customRate })
       };
     });
     setAssignmentSettings(settings);
@@ -475,7 +476,7 @@ const TemplateBundleManager: React.FC = () => {
     if (checked) {
       newSelected.add(templateId);
       if (!assignmentSettings[templateId]) {
-        setAssignmentSettings(prev => ({
+        setAssignmentSettings((prev: {[key: string]: { isRequired: boolean; isDefaultEnabled: boolean; customRate?: number }}) => ({
           ...prev,
           [templateId]: { isRequired: false, isDefaultEnabled: true }
         }));
@@ -489,8 +490,8 @@ const TemplateBundleManager: React.FC = () => {
     setSelectedTemplates(newSelected);
   };
 
-  const updateAssignmentSetting = (templateId: string, key: string, value: any) => {
-    setAssignmentSettings(prev => ({
+  const updateAssignmentSetting = (templateId: string, key: string, value: boolean | number | undefined) => {
+    setAssignmentSettings((prev: {[key: string]: { isRequired: boolean; isDefaultEnabled: boolean; customRate?: number }}) => ({
       ...prev,
       [templateId]: {
         ...prev[templateId],
@@ -871,8 +872,11 @@ const TemplateBundleManager: React.FC = () => {
                                     step="0.01"
                                     min="0"
                                     placeholder={template.defaultRate?.toString() || '0'}
-                                    value={assignmentSettings[template.id]?.customRate || ''}
-                                    onChange={(e) => updateAssignmentSetting(template.id, 'customRate', parseFloat(e.target.value) || undefined)}
+                                    value={assignmentSettings[template.id]?.customRate?.toString() || ''}
+                                    onChange={(e) => {
+                                      const val = e.target.value;
+                                      updateAssignmentSetting(template.id, 'customRate', val ? parseFloat(val) : undefined);
+                                    }}
                                     className="mt-1"
                                   />
                                 </div>
@@ -930,7 +934,7 @@ const TemplateBundleManager: React.FC = () => {
                     <div className="flex justify-between">
                       <span>Required Services:</span>
                       <span>
-                        {Object.values(assignmentSettings).filter(s => s.isRequired).length}
+                        {Object.values(assignmentSettings).filter((s: { isRequired: boolean; isDefaultEnabled: boolean; customRate?: number }) => s.isRequired).length}
                       </span>
                     </div>
                     {formData.bundleDiscountPercentage > 0 && (

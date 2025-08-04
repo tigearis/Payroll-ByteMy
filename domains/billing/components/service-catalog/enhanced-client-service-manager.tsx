@@ -31,7 +31,7 @@ import {
   BarChart3,
   Filter
 } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 // GraphQL Queries and Mutations
 const GET_CLIENT_SERVICE_AGREEMENTS = gql`
@@ -265,7 +265,6 @@ interface Service {
   id: string;
   name: string;
   description?: string;
-  category: string;
   billingUnit: string;
   defaultRate?: number;
   currency: string;
@@ -315,6 +314,7 @@ interface EnhancedClientServiceManagerProps {
 const EnhancedClientServiceManager: React.FC<EnhancedClientServiceManagerProps> = ({
   clientId
 }) => {
+  const { toast } = useToast();
   const [activeFilter, setActiveFilter] = useState<boolean | undefined>(true);
   const [categoryFilter, setCategoryFilter] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -326,7 +326,6 @@ const EnhancedClientServiceManager: React.FC<EnhancedClientServiceManagerProps> 
   
   const [formData, setFormData] = useState<AgreementFormData>({
     serviceId: '',
-    customRate: undefined,
     billingFrequency: 'per_use',
     isEnabled: true,
     startDate: '',
@@ -363,7 +362,7 @@ const EnhancedClientServiceManager: React.FC<EnhancedClientServiceManagerProps> 
 
   // Get services not already assigned to client
   const unassignedServices = availableServices.filter((service: Service) =>
-    !agreements.find(agreement => agreement.serviceId === service.id && agreement.isActive)
+    !agreements.find((agreement: ClientServiceAgreement) => agreement.serviceId === service.id && agreement.isActive)
   );
 
   const handleCreateAgreement = async () => {
@@ -516,7 +515,7 @@ const EnhancedClientServiceManager: React.FC<EnhancedClientServiceManagerProps> 
     setEditingAgreement(agreement);
     setFormData({
       serviceId: agreement.serviceId,
-      customRate: agreement.customRate || undefined,
+      ...(agreement.customRate !== null && agreement.customRate !== undefined && { customRate: agreement.customRate }),
       billingFrequency: agreement.billingFrequency,
       isEnabled: agreement.isEnabled,
       startDate: agreement.startDate || '',
@@ -530,7 +529,6 @@ const EnhancedClientServiceManager: React.FC<EnhancedClientServiceManagerProps> 
   const resetFormData = () => {
     setFormData({
       serviceId: '',
-      customRate: undefined,
       billingFrequency: 'per_use',
       isEnabled: true,
       startDate: '',
@@ -654,7 +652,7 @@ const EnhancedClientServiceManager: React.FC<EnhancedClientServiceManagerProps> 
                 <div>
                   <p className="text-sm text-gray-600">Active Services</p>
                   <p className="text-2xl font-bold">
-                    {agreements.filter(a => a.isActive && a.isEnabled).length}
+                    {agreements.filter((a: ClientServiceAgreement) => a.isActive && a.isEnabled).length}
                   </p>
                 </div>
               </div>
@@ -668,7 +666,7 @@ const EnhancedClientServiceManager: React.FC<EnhancedClientServiceManagerProps> 
                 <div>
                   <p className="text-sm text-gray-600">Total Billed</p>
                   <p className="text-2xl font-bold">
-                    ${agreements.reduce((sum, a) => sum + (a.totalBilled || 0), 0).toFixed(2)}
+                    ${agreements.reduce((sum: number, a: ClientServiceAgreement) => sum + (a.totalBilled || 0), 0).toFixed(2)}
                   </p>
                 </div>
               </div>
@@ -763,7 +761,7 @@ const EnhancedClientServiceManager: React.FC<EnhancedClientServiceManagerProps> 
                           {agreement.service.billingTier.replace('_', ' ')}
                         </Badge>
                       </div>
-                      <p className="text-sm text-gray-600">{agreement.service.category.name}</p>
+                      <p className="text-sm text-gray-600">{agreement.service.category?.name || 'Unknown Category'}</p>
                       <p className="text-sm text-gray-500 mt-1">
                         {agreement.service.description || 'No description available'}
                       </p>
@@ -936,7 +934,7 @@ const EnhancedClientServiceManager: React.FC<EnhancedClientServiceManagerProps> 
                           <SelectItem key={service.id} value={service.id}>
                             <div>
                               <div className="font-medium">{service.name}</div>
-                              <div className="text-sm text-gray-500">{service.category.name}</div>
+                              <div className="text-sm text-gray-500">{service.category?.name || 'Unknown Category'}</div>
                             </div>
                           </SelectItem>
                         ))}
@@ -988,7 +986,13 @@ const EnhancedClientServiceManager: React.FC<EnhancedClientServiceManagerProps> 
                     step="0.01"
                     min="0"
                     value={formData.customRate || ''}
-                    onChange={(e) => setFormData(prev => ({ ...prev, customRate: parseFloat(e.target.value) || undefined }))}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setFormData(prev => ({
+                        ...prev,
+                        ...(val ? { customRate: parseFloat(val) } : {})
+                      }));
+                    }}
                     placeholder="Leave empty to use default rate"
                   />
                 </div>

@@ -67,7 +67,10 @@ export const ClientServiceAgreements: React.FC<ClientServiceAgreementsProps> = (
     loading: servicesLoading, 
     error: servicesError 
   } = useQuery(GetNewServiceCatalogDocument, {
-    variables: { limit: 100 },
+    variables: { 
+      limit: 100,
+      offset: 0
+    },
     errorPolicy: 'all'
   });
 

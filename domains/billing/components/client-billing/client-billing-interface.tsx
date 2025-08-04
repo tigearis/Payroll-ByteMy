@@ -67,6 +67,10 @@ export const ClientBillingInterface: React.FC<ClientBillingInterfaceProps> = ({
 
   // Get full service catalog for adding new services
   const { data: serviceCatalog, loading: catalogLoading } = useQuery(GetNewServiceCatalogDocument, {
+    variables: {
+      limit: 100,
+      offset: 0
+    },
     fetchPolicy: "cache-and-network"
   });
 

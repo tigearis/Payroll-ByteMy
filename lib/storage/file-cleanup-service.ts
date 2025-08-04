@@ -1,6 +1,7 @@
 import { minioClient } from './minio-client';
 import { executeTypedQuery } from '@/lib/apollo/query-helpers';
 import { auditLogger } from '@/lib/audit/audit-logger';
+import { gql } from '@apollo/client';
 
 /**
  * File Cleanup Service
@@ -55,7 +56,7 @@ const DEFAULT_OPTIONS: Required<CleanupOptions> = {
  * Get all file object keys from the database
  */
 async function getDatabaseFileKeys(): Promise<Set<string>> {
-  const query = `
+  const query = gql`
     query GetAllFileObjectKeys {
       files {
         objectKey

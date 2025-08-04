@@ -416,19 +416,45 @@ export default function AdvancedPayrollScheduler() {
       
       // Apply global edits if in preview mode
       if (isPreviewMode && globalEdits.size > 0) {
+        console.log("🔄 SCHEDULER_DEBUG: Applying global edits to create ghosts", {
+          globalEditsSize: globalEdits.size,
+          globalEditsKeys: Array.from(globalEdits.keys()),
+          assignmentsCount: freshAssignments.length
+        });
+        
         freshAssignments = freshAssignments.map(assignment => {
-          const editKey = `${assignment.payrollId}-${assignment.adjustedEftDate}`;
+          // Use consistent triple-pipe delimiter format
+          const editKey = `${assignment.payrollId}|||${assignment.adjustedEftDate}`;
           const edit = globalEdits.get(editKey);
+          
+          console.log("🔍 SCHEDULER_DEBUG: Checking assignment for ghost creation", {
+            assignmentId: assignment.id,
+            payrollName: assignment.payrollName,
+            editKey,
+            hasEdit: !!edit,
+            originalConsultant: assignment.consultantName,
+            newConsultant: edit?.consultantName
+          });
           
           if (edit && edit.consultantId !== assignment.consultantId) {
             // Create a ghost for the original position
-            ghostAssignments.push({
+            const ghostAssignment = {
               ...assignment,
               id: `ghost-${assignment.id}-${Date.now()}`,
               isGhost: true,
               ghostFromConsultant: edit.consultantName,
               ghostFromDate: assignment.adjustedEftDate,
+            };
+            
+            console.log("👻 SCHEDULER_DEBUG: Creating ghost assignment", {
+              originalId: assignment.id,
+              ghostId: ghostAssignment.id,
+              originalConsultant: assignment.consultantName,
+              newConsultant: edit.consultantName,
+              payrollName: assignment.payrollName
             });
+            
+            ghostAssignments.push(ghostAssignment);
             
             // Return the moved assignment
             return {
@@ -1061,16 +1087,36 @@ export default function AdvancedPayrollScheduler() {
       // Update each payroll individually since UpdatePayrollDocument only handles one at a time
       const results = [];
       for (const update of updates) {
+        console.log("🔧 MUTATION_DEBUG: About to execute mutation", {
+          id: update.where.id._eq,
+          set: update._set
+        });
+        
         const result = await updatePayrollConsultants({
           variables: {
             id: update.where.id._eq,
             set: update._set,
           },
         });
+        
+        console.log("🔧 MUTATION_DEBUG: Raw mutation result", {
+          hasData: !!result.data,
+          data: result.data,
+          hasErrors: !!result.errors,
+          errors: result.errors,
+          hasUpdatePayrollsByPk: !!result.data?.updatePayrollsByPk,
+          updatePayrollsByPk: result.data?.updatePayrollsByPk
+        });
+        
         results.push(result);
       }
 
-      console.log("✅ Update results:", results);
+      console.log("✅ Update results summary:", {
+        totalUpdates: results.length,
+        resultsWithData: results.filter(r => r.data).length,
+        resultsWithUpdatePayrollsByPk: results.filter(r => r.data?.updatePayrollsByPk).length,
+        resultsWithErrors: results.filter(r => r.errors && r.errors.length > 0).length
+      });
 
       // Check if all updates were successful
       const successfulUpdates = results.filter(
@@ -1099,10 +1145,31 @@ export default function AdvancedPayrollScheduler() {
         // Refresh data
         refetch();
       } else {
-        throw new Error("No data returned from update mutation");
+        // More detailed error for debugging
+        const failedResults = results.filter(r => !r.data?.updatePayrollsByPk);
+        console.error("❌ MUTATION_DEBUG: No data returned from mutations", {
+          totalResults: results.length,
+          failedResults: failedResults.length,
+          failedResultsDetail: failedResults.map(r => ({
+            hasData: !!r.data,
+            data: r.data,
+            hasErrors: !!r.errors,
+            errors: r.errors
+          }))
+        });
+        
+        throw new Error(`No data returned from update mutation. ${failedResults.length}/${results.length} mutations failed.`);
       }
     } catch (error) {
       console.error("❌ Commit failed:", error);
+      
+      // Log any GraphQL errors specifically
+      if (error && typeof error === 'object' && 'graphQLErrors' in error) {
+        console.error("❌ GraphQL Errors:", error.graphQLErrors);
+      }
+      if (error && typeof error === 'object' && 'networkError' in error) {
+        console.error("❌ Network Error:", error.networkError);
+      }
 
       // Show user-friendly error
       const errorMessage =

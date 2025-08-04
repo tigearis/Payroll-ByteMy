@@ -78,7 +78,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { NotesListWithAdd } from "@/domains/notes/components/notes-list";
-import { DocumentUpload, DocumentList } from "@/components/documents";
+import { DocumentUploadModal, DocumentList } from "@/components/documents";
 import { PayrollDatesView } from "@/domains/payrolls/components/payroll-dates-view";
 import { PayrollForm, PayrollFormData } from "@/domains/payrolls/components/payroll-form";
 
@@ -410,6 +410,7 @@ export default function PayrollPage() {
   const [showScheduleChangeDialog, setShowScheduleChangeDialog] =
     useState(false);
   const [showEmailDialog, setShowEmailDialog] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
   const [newStatus, setNewStatus] = useState("");
   const [statusNote, setStatusNote] = useState("");
   const [editedPayroll, setEditedPayroll] = useState<any>({});
@@ -1829,26 +1830,16 @@ export default function PayrollPage() {
 
           {/* Documents Tab */}
           <TabsContent value="documents" className="space-y-6">
-            <div className="space-y-6">
-              {/* Document Upload */}
-              <DocumentUpload
-                payrollId={id}
-                onUploadComplete={() => {
-                  // Refresh document list when upload completes
-                  window.location.reload();
-                }}
-              />
-              
-              {/* Document List */}
-              <DocumentList
-                payrollId={id}
-                showFilters={true}
-                onDocumentUpdate={() => {
-                  // Refresh when documents are updated or deleted
-                  window.location.reload();
-                }}
-              />
-            </div>
+            <DocumentList
+              payrollId={id}
+              showFilters={true}
+              showUploadButton={true}
+              onUploadClick={() => setShowUploadModal(true)}
+              onDocumentUpdate={() => {
+                // Refresh when documents are updated or deleted
+                window.location.reload();
+              }}
+            />
           </TabsContent>
         </Tabs>
 
@@ -1987,6 +1978,17 @@ export default function PayrollPage() {
           type="payroll"
           entityId={id}
           entityName={(payroll as any)?.name || ""}
+        />
+
+        {/* Document Upload Modal */}
+        <DocumentUploadModal
+          isOpen={showUploadModal}
+          onClose={() => setShowUploadModal(false)}
+          payrollId={id}
+          onUploadComplete={(documents) => {
+            // Refresh document list when upload completes
+            window.location.reload();
+          }}
         />
       </div>
       </ErrorBoundary>
