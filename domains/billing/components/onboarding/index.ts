@@ -1,0 +1,1 @@
+export { default as ClientOnboardingWizard } from './client-onboarding-wizard';
