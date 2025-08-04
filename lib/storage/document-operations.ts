@@ -89,18 +89,20 @@ export async function uploadDocument(
     // Insert file record into database
     const result = await executeTypedQuery(InsertFileDocument, {
       input: documentData
-    }) as { insertFile: DocumentRecord };
+    }) as { insertFiles: { returning: DocumentRecord[] } };
 
-    if (!result?.insertFile) {
+    if (!result?.insertFiles?.returning?.[0]) {
       throw new Error('Failed to create document record in database');
     }
+
+    const insertedFile = result.insertFiles.returning[0];
 
     // Log successful document upload for audit
     await auditLogger.log({
       userId: options.uploadedBy,
       action: 'DOCUMENT_UPLOAD',
       entityType: 'file',
-      entityId: result.insertFile.id,
+      entityId: insertedFile.id,
       success: true,
       metadata: {
         filename: options.filename,
@@ -111,9 +113,9 @@ export async function uploadDocument(
       }
     });
 
-    console.log(`📄 Document record created in database: ${options.filename} (ID: ${result.insertFile.id})`);
+    console.log(`📄 Document record created in database: ${options.filename} (ID: ${insertedFile.id})`);
 
-    return result.insertFile;
+    return insertedFile;
   } catch (error) {
     console.error('❌ Document upload operation failed:', error);
     

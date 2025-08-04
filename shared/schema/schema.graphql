@@ -5140,6 +5140,8 @@ input BillingItemsVarianceOrderBy {
 Billing periods for consolidating multiple payroll jobs into client invoices
 """
 type BillingPeriods {
+  autoBillingEnabled: Boolean
+  billingGeneratedAt: timestamptz
   """An array relationship"""
   billingInvoices(
     """distinct select on columns"""
@@ -5166,18 +5168,57 @@ type BillingPeriods {
     """filter the rows returned"""
     where: BillingInvoiceBoolExp
   ): BillingInvoiceAggregate!
+  """First day of the billing month for easy grouping"""
+  billingMonth: date
   """An object relationship"""
   client: Clients!
   """Client this billing period is for"""
   clientId: uuid!
+  completedPayrollDates: Int
+  completedPayrolls: Int
   createdAt: timestamptz
   id: uuid!
+  lastCheckedAt: timestamptz
+  metadata(
+    """JSON select path"""
+    path: String
+  ): jsonb
+  """An array relationship"""
+  monthlyBillingCompletions(
+    """distinct select on columns"""
+    distinctOn: [MonthlyBillingCompletionSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [MonthlyBillingCompletionOrderBy!]
+    """filter the rows returned"""
+    where: MonthlyBillingCompletionBoolExp
+  ): [MonthlyBillingCompletion!]!
+  """An aggregate relationship"""
+  monthlyBillingCompletionsAggregate(
+    """distinct select on columns"""
+    distinctOn: [MonthlyBillingCompletionSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [MonthlyBillingCompletionOrderBy!]
+    """filter the rows returned"""
+    where: MonthlyBillingCompletionBoolExp
+  ): MonthlyBillingCompletionAggregate!
+  """Current status of monthly billing cycle"""
+  monthlyStatus: monthly_billing_status
   """End date of billing period"""
   periodEnd: date!
   """Start date of billing period"""
   periodStart: date!
   """Status: open, ready_to_invoice, invoiced, paid"""
   status: String
+  totalPayrollDates: Int
+  totalPayrolls: Int
   updatedAt: timestamptz
 }
 
@@ -5190,6 +5231,8 @@ type BillingPeriodsAggregate {
 }
 
 input BillingPeriodsAggregateBoolExp {
+  bool_and: billingPeriodsAggregateBoolExpBool_and
+  bool_or: billingPeriodsAggregateBoolExpBool_or
   count: billingPeriodsAggregateBoolExpCount
 }
 
@@ -5197,18 +5240,39 @@ input BillingPeriodsAggregateBoolExp {
 aggregate fields of "billing_periods"
 """
 type BillingPeriodsAggregateFields {
+  avg: BillingPeriodsAvgFields
   count(columns: [BillingPeriodsSelectColumn!], distinct: Boolean): Int!
   max: BillingPeriodsMaxFields
   min: BillingPeriodsMinFields
+  stddev: BillingPeriodsStddevFields
+  stddevPop: BillingPeriodsStddevPopFields
+  stddevSamp: BillingPeriodsStddevSampFields
+  sum: BillingPeriodsSumFields
+  varPop: BillingPeriodsVarPopFields
+  varSamp: BillingPeriodsVarSampFields
+  variance: BillingPeriodsVarianceFields
 }
 
 """
 order by aggregate values of table "billing_periods"
 """
 input BillingPeriodsAggregateOrderBy {
+  avg: BillingPeriodsAvgOrderBy
   count: OrderBy
   max: BillingPeriodsMaxOrderBy
   min: BillingPeriodsMinOrderBy
+  stddev: BillingPeriodsStddevOrderBy
+  stddevPop: BillingPeriodsStddevPopOrderBy
+  stddevSamp: BillingPeriodsStddevSampOrderBy
+  sum: BillingPeriodsSumOrderBy
+  varPop: BillingPeriodsVarPopOrderBy
+  varSamp: BillingPeriodsVarSampOrderBy
+  variance: BillingPeriodsVarianceOrderBy
+}
+
+"""append existing jsonb value of filtered columns with new jsonb value"""
+input BillingPeriodsAppendInput {
+  metadata: jsonb
 }
 
 """
@@ -5220,6 +5284,24 @@ input BillingPeriodsArrRelInsertInput {
   onConflict: BillingPeriodsOnConflict
 }
 
+"""aggregate avg on columns"""
+type BillingPeriodsAvgFields {
+  completedPayrollDates: Float
+  completedPayrolls: Float
+  totalPayrollDates: Float
+  totalPayrolls: Float
+}
+
+"""
+order by avg() on columns of table "billing_periods"
+"""
+input BillingPeriodsAvgOrderBy {
+  completedPayrollDates: OrderBy
+  completedPayrolls: OrderBy
+  totalPayrollDates: OrderBy
+  totalPayrolls: OrderBy
+}
+
 """
 Boolean expression to filter rows from the table "billing_periods". All fields are combined with a logical 'AND'.
 """
@@ -5227,15 +5309,27 @@ input BillingPeriodsBoolExp {
   _and: [BillingPeriodsBoolExp!]
   _not: BillingPeriodsBoolExp
   _or: [BillingPeriodsBoolExp!]
+  autoBillingEnabled: BooleanComparisonExp
+  billingGeneratedAt: TimestamptzComparisonExp
   billingInvoices: BillingInvoiceBoolExp
   billingInvoicesAggregate: BillingInvoiceAggregateBoolExp
+  billingMonth: DateComparisonExp
   client: ClientsBoolExp
   clientId: UuidComparisonExp
+  completedPayrollDates: IntComparisonExp
+  completedPayrolls: IntComparisonExp
   createdAt: TimestamptzComparisonExp
   id: UuidComparisonExp
+  lastCheckedAt: TimestamptzComparisonExp
+  metadata: JsonbComparisonExp
+  monthlyBillingCompletions: MonthlyBillingCompletionBoolExp
+  monthlyBillingCompletionsAggregate: MonthlyBillingCompletionAggregateBoolExp
+  monthlyStatus: MonthlyBillingStatusComparisonExp
   periodEnd: DateComparisonExp
   periodStart: DateComparisonExp
   status: StringComparisonExp
+  totalPayrollDates: IntComparisonExp
+  totalPayrolls: IntComparisonExp
   updatedAt: TimestamptzComparisonExp
 }
 
@@ -5254,36 +5348,90 @@ enum BillingPeriodsConstraint {
 }
 
 """
+delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+"""
+input BillingPeriodsDeleteAtPathInput {
+  metadata: [String!]
+}
+
+"""
+delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+"""
+input BillingPeriodsDeleteElemInput {
+  metadata: Int
+}
+
+"""
+delete key/value pair or string element. key/value pairs are matched based on their key value
+"""
+input BillingPeriodsDeleteKeyInput {
+  metadata: String
+}
+
+"""
+input type for incrementing numeric columns in table "billing_periods"
+"""
+input BillingPeriodsIncInput {
+  completedPayrollDates: Int
+  completedPayrolls: Int
+  totalPayrollDates: Int
+  totalPayrolls: Int
+}
+
+"""
 input type for inserting data into table "billing_periods"
 """
 input BillingPeriodsInsertInput {
+  autoBillingEnabled: Boolean
+  billingGeneratedAt: timestamptz
   billingInvoices: BillingInvoiceArrRelInsertInput
+  """First day of the billing month for easy grouping"""
+  billingMonth: date
   client: ClientsObjRelInsertInput
   """Client this billing period is for"""
   clientId: uuid
+  completedPayrollDates: Int
+  completedPayrolls: Int
   createdAt: timestamptz
   id: uuid
+  lastCheckedAt: timestamptz
+  metadata: jsonb
+  monthlyBillingCompletions: MonthlyBillingCompletionArrRelInsertInput
+  """Current status of monthly billing cycle"""
+  monthlyStatus: monthly_billing_status
   """End date of billing period"""
   periodEnd: date
   """Start date of billing period"""
   periodStart: date
   """Status: open, ready_to_invoice, invoiced, paid"""
   status: String
+  totalPayrollDates: Int
+  totalPayrolls: Int
   updatedAt: timestamptz
 }
 
 """aggregate max on columns"""
 type BillingPeriodsMaxFields {
+  billingGeneratedAt: timestamptz
+  """First day of the billing month for easy grouping"""
+  billingMonth: date
   """Client this billing period is for"""
   clientId: uuid
+  completedPayrollDates: Int
+  completedPayrolls: Int
   createdAt: timestamptz
   id: uuid
+  lastCheckedAt: timestamptz
+  """Current status of monthly billing cycle"""
+  monthlyStatus: monthly_billing_status
   """End date of billing period"""
   periodEnd: date
   """Start date of billing period"""
   periodStart: date
   """Status: open, ready_to_invoice, invoiced, paid"""
   status: String
+  totalPayrollDates: Int
+  totalPayrolls: Int
   updatedAt: timestamptz
 }
 
@@ -5291,31 +5439,51 @@ type BillingPeriodsMaxFields {
 order by max() on columns of table "billing_periods"
 """
 input BillingPeriodsMaxOrderBy {
+  billingGeneratedAt: OrderBy
+  """First day of the billing month for easy grouping"""
+  billingMonth: OrderBy
   """Client this billing period is for"""
   clientId: OrderBy
+  completedPayrollDates: OrderBy
+  completedPayrolls: OrderBy
   createdAt: OrderBy
   id: OrderBy
+  lastCheckedAt: OrderBy
+  """Current status of monthly billing cycle"""
+  monthlyStatus: OrderBy
   """End date of billing period"""
   periodEnd: OrderBy
   """Start date of billing period"""
   periodStart: OrderBy
   """Status: open, ready_to_invoice, invoiced, paid"""
   status: OrderBy
+  totalPayrollDates: OrderBy
+  totalPayrolls: OrderBy
   updatedAt: OrderBy
 }
 
 """aggregate min on columns"""
 type BillingPeriodsMinFields {
+  billingGeneratedAt: timestamptz
+  """First day of the billing month for easy grouping"""
+  billingMonth: date
   """Client this billing period is for"""
   clientId: uuid
+  completedPayrollDates: Int
+  completedPayrolls: Int
   createdAt: timestamptz
   id: uuid
+  lastCheckedAt: timestamptz
+  """Current status of monthly billing cycle"""
+  monthlyStatus: monthly_billing_status
   """End date of billing period"""
   periodEnd: date
   """Start date of billing period"""
   periodStart: date
   """Status: open, ready_to_invoice, invoiced, paid"""
   status: String
+  totalPayrollDates: Int
+  totalPayrolls: Int
   updatedAt: timestamptz
 }
 
@@ -5323,16 +5491,26 @@ type BillingPeriodsMinFields {
 order by min() on columns of table "billing_periods"
 """
 input BillingPeriodsMinOrderBy {
+  billingGeneratedAt: OrderBy
+  """First day of the billing month for easy grouping"""
+  billingMonth: OrderBy
   """Client this billing period is for"""
   clientId: OrderBy
+  completedPayrollDates: OrderBy
+  completedPayrolls: OrderBy
   createdAt: OrderBy
   id: OrderBy
+  lastCheckedAt: OrderBy
+  """Current status of monthly billing cycle"""
+  monthlyStatus: OrderBy
   """End date of billing period"""
   periodEnd: OrderBy
   """Start date of billing period"""
   periodStart: OrderBy
   """Status: open, ready_to_invoice, invoiced, paid"""
   status: OrderBy
+  totalPayrollDates: OrderBy
+  totalPayrolls: OrderBy
   updatedAt: OrderBy
 }
 
@@ -5366,14 +5544,25 @@ input BillingPeriodsOnConflict {
 
 """Ordering options when selecting data from "billing_periods"."""
 input BillingPeriodsOrderBy {
+  autoBillingEnabled: OrderBy
+  billingGeneratedAt: OrderBy
   billingInvoicesAggregate: BillingInvoiceAggregateOrderBy
+  billingMonth: OrderBy
   client: ClientsOrderBy
   clientId: OrderBy
+  completedPayrollDates: OrderBy
+  completedPayrolls: OrderBy
   createdAt: OrderBy
   id: OrderBy
+  lastCheckedAt: OrderBy
+  metadata: OrderBy
+  monthlyBillingCompletionsAggregate: MonthlyBillingCompletionAggregateOrderBy
+  monthlyStatus: OrderBy
   periodEnd: OrderBy
   periodStart: OrderBy
   status: OrderBy
+  totalPayrollDates: OrderBy
+  totalPayrolls: OrderBy
   updatedAt: OrderBy
 }
 
@@ -5382,16 +5571,37 @@ input BillingPeriodsPkColumnsInput {
   id: uuid!
 }
 
+"""prepend existing jsonb value of filtered columns with new jsonb value"""
+input BillingPeriodsPrependInput {
+  metadata: jsonb
+}
+
 """
 select columns of table "billing_periods"
 """
 enum BillingPeriodsSelectColumn {
   """column name"""
+  autoBillingEnabled
+  """column name"""
+  billingGeneratedAt
+  """column name"""
+  billingMonth
+  """column name"""
   clientId
+  """column name"""
+  completedPayrollDates
+  """column name"""
+  completedPayrolls
   """column name"""
   createdAt
   """column name"""
   id
+  """column name"""
+  lastCheckedAt
+  """column name"""
+  metadata
+  """column name"""
+  monthlyStatus
   """column name"""
   periodEnd
   """column name"""
@@ -5399,24 +5609,110 @@ enum BillingPeriodsSelectColumn {
   """column name"""
   status
   """column name"""
+  totalPayrollDates
+  """column name"""
+  totalPayrolls
+  """column name"""
   updatedAt
+}
+
+"""
+select "billingPeriodsAggregateBoolExpBool_andArgumentsColumns" columns of table "billing_periods"
+"""
+enum BillingPeriodsSelectColumnBillingPeriodsAggregateBoolExpBool_andArgumentsColumns {
+  """column name"""
+  autoBillingEnabled
+}
+
+"""
+select "billingPeriodsAggregateBoolExpBool_orArgumentsColumns" columns of table "billing_periods"
+"""
+enum BillingPeriodsSelectColumnBillingPeriodsAggregateBoolExpBool_orArgumentsColumns {
+  """column name"""
+  autoBillingEnabled
 }
 
 """
 input type for updating data in table "billing_periods"
 """
 input BillingPeriodsSetInput {
+  autoBillingEnabled: Boolean
+  billingGeneratedAt: timestamptz
+  """First day of the billing month for easy grouping"""
+  billingMonth: date
   """Client this billing period is for"""
   clientId: uuid
+  completedPayrollDates: Int
+  completedPayrolls: Int
   createdAt: timestamptz
   id: uuid
+  lastCheckedAt: timestamptz
+  metadata: jsonb
+  """Current status of monthly billing cycle"""
+  monthlyStatus: monthly_billing_status
   """End date of billing period"""
   periodEnd: date
   """Start date of billing period"""
   periodStart: date
   """Status: open, ready_to_invoice, invoiced, paid"""
   status: String
+  totalPayrollDates: Int
+  totalPayrolls: Int
   updatedAt: timestamptz
+}
+
+"""aggregate stddev on columns"""
+type BillingPeriodsStddevFields {
+  completedPayrollDates: Float
+  completedPayrolls: Float
+  totalPayrollDates: Float
+  totalPayrolls: Float
+}
+
+"""
+order by stddev() on columns of table "billing_periods"
+"""
+input BillingPeriodsStddevOrderBy {
+  completedPayrollDates: OrderBy
+  completedPayrolls: OrderBy
+  totalPayrollDates: OrderBy
+  totalPayrolls: OrderBy
+}
+
+"""aggregate stddevPop on columns"""
+type BillingPeriodsStddevPopFields {
+  completedPayrollDates: Float
+  completedPayrolls: Float
+  totalPayrollDates: Float
+  totalPayrolls: Float
+}
+
+"""
+order by stddevPop() on columns of table "billing_periods"
+"""
+input BillingPeriodsStddevPopOrderBy {
+  completedPayrollDates: OrderBy
+  completedPayrolls: OrderBy
+  totalPayrollDates: OrderBy
+  totalPayrolls: OrderBy
+}
+
+"""aggregate stddevSamp on columns"""
+type BillingPeriodsStddevSampFields {
+  completedPayrollDates: Float
+  completedPayrolls: Float
+  totalPayrollDates: Float
+  totalPayrolls: Float
+}
+
+"""
+order by stddevSamp() on columns of table "billing_periods"
+"""
+input BillingPeriodsStddevSampOrderBy {
+  completedPayrollDates: OrderBy
+  completedPayrolls: OrderBy
+  totalPayrollDates: OrderBy
+  totalPayrolls: OrderBy
 }
 
 """
@@ -5431,17 +5727,47 @@ input BillingPeriodsStreamCursorInput {
 
 """Initial value of the column from where the streaming should start"""
 input BillingPeriodsStreamCursorValueInput {
+  autoBillingEnabled: Boolean
+  billingGeneratedAt: timestamptz
+  """First day of the billing month for easy grouping"""
+  billingMonth: date
   """Client this billing period is for"""
   clientId: uuid
+  completedPayrollDates: Int
+  completedPayrolls: Int
   createdAt: timestamptz
   id: uuid
+  lastCheckedAt: timestamptz
+  metadata: jsonb
+  """Current status of monthly billing cycle"""
+  monthlyStatus: monthly_billing_status
   """End date of billing period"""
   periodEnd: date
   """Start date of billing period"""
   periodStart: date
   """Status: open, ready_to_invoice, invoiced, paid"""
   status: String
+  totalPayrollDates: Int
+  totalPayrolls: Int
   updatedAt: timestamptz
+}
+
+"""aggregate sum on columns"""
+type BillingPeriodsSumFields {
+  completedPayrollDates: Int
+  completedPayrolls: Int
+  totalPayrollDates: Int
+  totalPayrolls: Int
+}
+
+"""
+order by sum() on columns of table "billing_periods"
+"""
+input BillingPeriodsSumOrderBy {
+  completedPayrollDates: OrderBy
+  completedPayrolls: OrderBy
+  totalPayrollDates: OrderBy
+  totalPayrolls: OrderBy
 }
 
 """
@@ -5449,11 +5775,27 @@ update columns of table "billing_periods"
 """
 enum BillingPeriodsUpdateColumn {
   """column name"""
+  autoBillingEnabled
+  """column name"""
+  billingGeneratedAt
+  """column name"""
+  billingMonth
+  """column name"""
   clientId
+  """column name"""
+  completedPayrollDates
+  """column name"""
+  completedPayrolls
   """column name"""
   createdAt
   """column name"""
   id
+  """column name"""
+  lastCheckedAt
+  """column name"""
+  metadata
+  """column name"""
+  monthlyStatus
   """column name"""
   periodEnd
   """column name"""
@@ -5461,14 +5803,105 @@ enum BillingPeriodsUpdateColumn {
   """column name"""
   status
   """column name"""
+  totalPayrollDates
+  """column name"""
+  totalPayrolls
+  """column name"""
   updatedAt
 }
 
 input BillingPeriodsUpdates {
+  """append existing jsonb value of filtered columns with new jsonb value"""
+  _append: BillingPeriodsAppendInput
+  """
+  delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+  """
+  _deleteAtPath: BillingPeriodsDeleteAtPathInput
+  """
+  delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+  """
+  _deleteElem: BillingPeriodsDeleteElemInput
+  """
+  delete key/value pair or string element. key/value pairs are matched based on their key value
+  """
+  _deleteKey: BillingPeriodsDeleteKeyInput
+  """increments the numeric columns with given value of the filtered values"""
+  _inc: BillingPeriodsIncInput
+  """prepend existing jsonb value of filtered columns with new jsonb value"""
+  _prepend: BillingPeriodsPrependInput
   """sets the columns of the filtered rows to the given values"""
   _set: BillingPeriodsSetInput
   """filter the rows which have to be updated"""
   where: BillingPeriodsBoolExp!
+}
+
+"""aggregate varPop on columns"""
+type BillingPeriodsVarPopFields {
+  completedPayrollDates: Float
+  completedPayrolls: Float
+  totalPayrollDates: Float
+  totalPayrolls: Float
+}
+
+"""
+order by varPop() on columns of table "billing_periods"
+"""
+input BillingPeriodsVarPopOrderBy {
+  completedPayrollDates: OrderBy
+  completedPayrolls: OrderBy
+  totalPayrollDates: OrderBy
+  totalPayrolls: OrderBy
+}
+
+"""aggregate varSamp on columns"""
+type BillingPeriodsVarSampFields {
+  completedPayrollDates: Float
+  completedPayrolls: Float
+  totalPayrollDates: Float
+  totalPayrolls: Float
+}
+
+"""
+order by varSamp() on columns of table "billing_periods"
+"""
+input BillingPeriodsVarSampOrderBy {
+  completedPayrollDates: OrderBy
+  completedPayrolls: OrderBy
+  totalPayrollDates: OrderBy
+  totalPayrolls: OrderBy
+}
+
+"""aggregate variance on columns"""
+type BillingPeriodsVarianceFields {
+  completedPayrollDates: Float
+  completedPayrolls: Float
+  totalPayrollDates: Float
+  totalPayrolls: Float
+}
+
+"""
+order by variance() on columns of table "billing_periods"
+"""
+input BillingPeriodsVarianceOrderBy {
+  completedPayrollDates: OrderBy
+  completedPayrolls: OrderBy
+  totalPayrollDates: OrderBy
+  totalPayrolls: OrderBy
+}
+
+"""
+Boolean expression to compare columns of type "billing_tier_level". All fields are combined with logical 'AND'.
+"""
+input BillingTierLevelComparisonExp {
+  _eq: billing_tier_level
+  _gt: billing_tier_level
+  _gte: billing_tier_level
+  _in: [billing_tier_level!]
+  _isNull: Boolean
+  _lt: billing_tier_level
+  _lte: billing_tier_level
+  _neq: billing_tier_level
+  _nin: [billing_tier_level!]
 }
 
 """
@@ -5854,6 +6287,32 @@ type ClientServiceAgreements {
   id: uuid!
   isActive: Boolean
   isEnabled: Boolean
+  """An array relationship"""
+  payrollServiceAgreements(
+    """distinct select on columns"""
+    distinctOn: [PayrollServiceAgreementsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollServiceAgreementsOrderBy!]
+    """filter the rows returned"""
+    where: PayrollServiceAgreementsBoolExp
+  ): [PayrollServiceAgreements!]!
+  """An aggregate relationship"""
+  payrollServiceAgreementsAggregate(
+    """distinct select on columns"""
+    distinctOn: [PayrollServiceAgreementsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollServiceAgreementsOrderBy!]
+    """filter the rows returned"""
+    where: PayrollServiceAgreementsBoolExp
+  ): PayrollServiceAgreementsAggregate!
   """An object relationship"""
   service: Services!
   serviceConfiguration(
@@ -5960,6 +6419,8 @@ input ClientServiceAgreementsBoolExp {
   id: UuidComparisonExp
   isActive: BooleanComparisonExp
   isEnabled: BooleanComparisonExp
+  payrollServiceAgreements: PayrollServiceAgreementsBoolExp
+  payrollServiceAgreementsAggregate: PayrollServiceAgreementsAggregateBoolExp
   service: ServicesBoolExp
   serviceConfiguration: JsonbComparisonExp
   serviceId: UuidComparisonExp
@@ -6029,6 +6490,7 @@ input ClientServiceAgreementsInsertInput {
   id: uuid
   isActive: Boolean
   isEnabled: Boolean
+  payrollServiceAgreements: PayrollServiceAgreementsArrRelInsertInput
   service: ServicesObjRelInsertInput
   serviceConfiguration: jsonb
   serviceId: uuid
@@ -6106,6 +6568,15 @@ type ClientServiceAgreementsMutationResponse {
 }
 
 """
+input type for inserting object relation for remote table "client_service_agreements"
+"""
+input ClientServiceAgreementsObjRelInsertInput {
+  data: ClientServiceAgreementsInsertInput!
+  """upsert condition"""
+  onConflict: ClientServiceAgreementsOnConflict
+}
+
+"""
 on_conflict condition type for table "client_service_agreements"
 """
 input ClientServiceAgreementsOnConflict {
@@ -6130,6 +6601,7 @@ input ClientServiceAgreementsOrderBy {
   id: OrderBy
   isActive: OrderBy
   isEnabled: OrderBy
+  payrollServiceAgreementsAggregate: PayrollServiceAgreementsAggregateOrderBy
   service: ServicesOrderBy
   serviceConfiguration: OrderBy
   serviceId: OrderBy
@@ -6820,6 +7292,32 @@ type Clients {
   ): FilesAggregate!
   """Unique identifier for the client"""
   id: uuid!
+  """An array relationship"""
+  monthlyBillingCompletions(
+    """distinct select on columns"""
+    distinctOn: [MonthlyBillingCompletionSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [MonthlyBillingCompletionOrderBy!]
+    """filter the rows returned"""
+    where: MonthlyBillingCompletionBoolExp
+  ): [MonthlyBillingCompletion!]!
+  """An aggregate relationship"""
+  monthlyBillingCompletionsAggregate(
+    """distinct select on columns"""
+    distinctOn: [MonthlyBillingCompletionSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [MonthlyBillingCompletionOrderBy!]
+    """filter the rows returned"""
+    where: MonthlyBillingCompletionBoolExp
+  ): MonthlyBillingCompletionAggregate!
   """Client company name"""
   name: String!
   """An array relationship"""
@@ -6998,6 +7496,8 @@ input ClientsBoolExp {
   files: FilesBoolExp
   filesAggregate: FilesAggregateBoolExp
   id: UuidComparisonExp
+  monthlyBillingCompletions: MonthlyBillingCompletionBoolExp
+  monthlyBillingCompletionsAggregate: MonthlyBillingCompletionAggregateBoolExp
   name: StringComparisonExp
   payrolls: PayrollsBoolExp
   payrollsAggregate: PayrollsAggregateBoolExp
@@ -7044,6 +7544,7 @@ input ClientsInsertInput {
   files: FilesArrRelInsertInput
   """Unique identifier for the client"""
   id: uuid
+  monthlyBillingCompletions: MonthlyBillingCompletionArrRelInsertInput
   """Client company name"""
   name: String
   payrolls: PayrollsArrRelInsertInput
@@ -7133,6 +7634,7 @@ input ClientsOrderBy {
   externalSystemConnectionsAggregate: ClientExternalSystemsAggregateOrderBy
   filesAggregate: FilesAggregateOrderBy
   id: OrderBy
+  monthlyBillingCompletionsAggregate: MonthlyBillingCompletionAggregateOrderBy
   name: OrderBy
   payrollsAggregate: PayrollsAggregateOrderBy
   quoteConversionsAggregate: QuoteConversionsAggregateOrderBy
@@ -12087,6 +12589,1032 @@ input LeaveUpdates {
 }
 
 """
+Tracks monthly billing completion status for each client, enabling 3-tier billing automation
+"""
+type MonthlyBillingCompletion {
+  autoBillingEnabled: Boolean
+  billingGeneratedAt: timestamptz
+  billingMonth: date!
+  """An object relationship"""
+  billingPeriod: BillingPeriods
+  billingPeriodId: uuid
+  billingReadyAt: timestamptz
+  """An object relationship"""
+  client: Clients!
+  clientId: uuid!
+  completedPayrollDates: Int
+  completedPayrolls: Int
+  completionNotes: String
+  createdAt: timestamptz
+  firstPayrollCompletedAt: timestamptz
+  id: uuid!
+  lastPayrollCompletedAt: timestamptz
+  overrideCompletionDate: date
+  pendingPayrollDateIds: [uuid!]
+  pendingPayrollIds: [uuid!]
+  status: monthly_billing_status
+  tier1BillingGenerated: Boolean
+  tier2BillingGenerated: Boolean
+  tier3BillingGenerated: Boolean
+  totalPayrollDates: Int
+  totalPayrolls: Int
+  updatedAt: timestamptz
+}
+
+"""
+aggregated selection of "monthly_billing_completion"
+"""
+type MonthlyBillingCompletionAggregate {
+  aggregate: MonthlyBillingCompletionAggregateFields
+  nodes: [MonthlyBillingCompletion!]!
+}
+
+input MonthlyBillingCompletionAggregateBoolExp {
+  bool_and: monthlyBillingCompletionAggregateBoolExpBool_and
+  bool_or: monthlyBillingCompletionAggregateBoolExpBool_or
+  count: monthlyBillingCompletionAggregateBoolExpCount
+}
+
+"""
+aggregate fields of "monthly_billing_completion"
+"""
+type MonthlyBillingCompletionAggregateFields {
+  avg: MonthlyBillingCompletionAvgFields
+  count(columns: [MonthlyBillingCompletionSelectColumn!], distinct: Boolean): Int!
+  max: MonthlyBillingCompletionMaxFields
+  min: MonthlyBillingCompletionMinFields
+  stddev: MonthlyBillingCompletionStddevFields
+  stddevPop: MonthlyBillingCompletionStddevPopFields
+  stddevSamp: MonthlyBillingCompletionStddevSampFields
+  sum: MonthlyBillingCompletionSumFields
+  varPop: MonthlyBillingCompletionVarPopFields
+  varSamp: MonthlyBillingCompletionVarSampFields
+  variance: MonthlyBillingCompletionVarianceFields
+}
+
+"""
+order by aggregate values of table "monthly_billing_completion"
+"""
+input MonthlyBillingCompletionAggregateOrderBy {
+  avg: MonthlyBillingCompletionAvgOrderBy
+  count: OrderBy
+  max: MonthlyBillingCompletionMaxOrderBy
+  min: MonthlyBillingCompletionMinOrderBy
+  stddev: MonthlyBillingCompletionStddevOrderBy
+  stddevPop: MonthlyBillingCompletionStddevPopOrderBy
+  stddevSamp: MonthlyBillingCompletionStddevSampOrderBy
+  sum: MonthlyBillingCompletionSumOrderBy
+  varPop: MonthlyBillingCompletionVarPopOrderBy
+  varSamp: MonthlyBillingCompletionVarSampOrderBy
+  variance: MonthlyBillingCompletionVarianceOrderBy
+}
+
+"""
+input type for inserting array relation for remote table "monthly_billing_completion"
+"""
+input MonthlyBillingCompletionArrRelInsertInput {
+  data: [MonthlyBillingCompletionInsertInput!]!
+  """upsert condition"""
+  onConflict: MonthlyBillingCompletionOnConflict
+}
+
+"""aggregate avg on columns"""
+type MonthlyBillingCompletionAvgFields {
+  completedPayrollDates: Float
+  completedPayrolls: Float
+  totalPayrollDates: Float
+  totalPayrolls: Float
+}
+
+"""
+order by avg() on columns of table "monthly_billing_completion"
+"""
+input MonthlyBillingCompletionAvgOrderBy {
+  completedPayrollDates: OrderBy
+  completedPayrolls: OrderBy
+  totalPayrollDates: OrderBy
+  totalPayrolls: OrderBy
+}
+
+"""
+Boolean expression to filter rows from the table "monthly_billing_completion". All fields are combined with a logical 'AND'.
+"""
+input MonthlyBillingCompletionBoolExp {
+  _and: [MonthlyBillingCompletionBoolExp!]
+  _not: MonthlyBillingCompletionBoolExp
+  _or: [MonthlyBillingCompletionBoolExp!]
+  autoBillingEnabled: BooleanComparisonExp
+  billingGeneratedAt: TimestamptzComparisonExp
+  billingMonth: DateComparisonExp
+  billingPeriod: BillingPeriodsBoolExp
+  billingPeriodId: UuidComparisonExp
+  billingReadyAt: TimestamptzComparisonExp
+  client: ClientsBoolExp
+  clientId: UuidComparisonExp
+  completedPayrollDates: IntComparisonExp
+  completedPayrolls: IntComparisonExp
+  completionNotes: StringComparisonExp
+  createdAt: TimestamptzComparisonExp
+  firstPayrollCompletedAt: TimestamptzComparisonExp
+  id: UuidComparisonExp
+  lastPayrollCompletedAt: TimestamptzComparisonExp
+  overrideCompletionDate: DateComparisonExp
+  pendingPayrollDateIds: UuidArrayComparisonExp
+  pendingPayrollIds: UuidArrayComparisonExp
+  status: MonthlyBillingStatusComparisonExp
+  tier1BillingGenerated: BooleanComparisonExp
+  tier2BillingGenerated: BooleanComparisonExp
+  tier3BillingGenerated: BooleanComparisonExp
+  totalPayrollDates: IntComparisonExp
+  totalPayrolls: IntComparisonExp
+  updatedAt: TimestamptzComparisonExp
+}
+
+"""
+unique or primary key constraints on table "monthly_billing_completion"
+"""
+enum MonthlyBillingCompletionConstraint {
+  """
+  unique or primary key constraint on columns "billing_month", "client_id"
+  """
+  monthly_billing_completion_client_id_billing_month_key
+  """
+  unique or primary key constraint on columns "id"
+  """
+  monthly_billing_completion_pkey
+}
+
+"""
+input type for incrementing numeric columns in table "monthly_billing_completion"
+"""
+input MonthlyBillingCompletionIncInput {
+  completedPayrollDates: Int
+  completedPayrolls: Int
+  totalPayrollDates: Int
+  totalPayrolls: Int
+}
+
+"""
+input type for inserting data into table "monthly_billing_completion"
+"""
+input MonthlyBillingCompletionInsertInput {
+  autoBillingEnabled: Boolean
+  billingGeneratedAt: timestamptz
+  billingMonth: date
+  billingPeriod: BillingPeriodsObjRelInsertInput
+  billingPeriodId: uuid
+  billingReadyAt: timestamptz
+  client: ClientsObjRelInsertInput
+  clientId: uuid
+  completedPayrollDates: Int
+  completedPayrolls: Int
+  completionNotes: String
+  createdAt: timestamptz
+  firstPayrollCompletedAt: timestamptz
+  id: uuid
+  lastPayrollCompletedAt: timestamptz
+  overrideCompletionDate: date
+  pendingPayrollDateIds: [uuid!]
+  pendingPayrollIds: [uuid!]
+  status: monthly_billing_status
+  tier1BillingGenerated: Boolean
+  tier2BillingGenerated: Boolean
+  tier3BillingGenerated: Boolean
+  totalPayrollDates: Int
+  totalPayrolls: Int
+  updatedAt: timestamptz
+}
+
+"""aggregate max on columns"""
+type MonthlyBillingCompletionMaxFields {
+  billingGeneratedAt: timestamptz
+  billingMonth: date
+  billingPeriodId: uuid
+  billingReadyAt: timestamptz
+  clientId: uuid
+  completedPayrollDates: Int
+  completedPayrolls: Int
+  completionNotes: String
+  createdAt: timestamptz
+  firstPayrollCompletedAt: timestamptz
+  id: uuid
+  lastPayrollCompletedAt: timestamptz
+  overrideCompletionDate: date
+  pendingPayrollDateIds: [uuid!]
+  pendingPayrollIds: [uuid!]
+  status: monthly_billing_status
+  totalPayrollDates: Int
+  totalPayrolls: Int
+  updatedAt: timestamptz
+}
+
+"""
+order by max() on columns of table "monthly_billing_completion"
+"""
+input MonthlyBillingCompletionMaxOrderBy {
+  billingGeneratedAt: OrderBy
+  billingMonth: OrderBy
+  billingPeriodId: OrderBy
+  billingReadyAt: OrderBy
+  clientId: OrderBy
+  completedPayrollDates: OrderBy
+  completedPayrolls: OrderBy
+  completionNotes: OrderBy
+  createdAt: OrderBy
+  firstPayrollCompletedAt: OrderBy
+  id: OrderBy
+  lastPayrollCompletedAt: OrderBy
+  overrideCompletionDate: OrderBy
+  pendingPayrollDateIds: OrderBy
+  pendingPayrollIds: OrderBy
+  status: OrderBy
+  totalPayrollDates: OrderBy
+  totalPayrolls: OrderBy
+  updatedAt: OrderBy
+}
+
+"""aggregate min on columns"""
+type MonthlyBillingCompletionMinFields {
+  billingGeneratedAt: timestamptz
+  billingMonth: date
+  billingPeriodId: uuid
+  billingReadyAt: timestamptz
+  clientId: uuid
+  completedPayrollDates: Int
+  completedPayrolls: Int
+  completionNotes: String
+  createdAt: timestamptz
+  firstPayrollCompletedAt: timestamptz
+  id: uuid
+  lastPayrollCompletedAt: timestamptz
+  overrideCompletionDate: date
+  pendingPayrollDateIds: [uuid!]
+  pendingPayrollIds: [uuid!]
+  status: monthly_billing_status
+  totalPayrollDates: Int
+  totalPayrolls: Int
+  updatedAt: timestamptz
+}
+
+"""
+order by min() on columns of table "monthly_billing_completion"
+"""
+input MonthlyBillingCompletionMinOrderBy {
+  billingGeneratedAt: OrderBy
+  billingMonth: OrderBy
+  billingPeriodId: OrderBy
+  billingReadyAt: OrderBy
+  clientId: OrderBy
+  completedPayrollDates: OrderBy
+  completedPayrolls: OrderBy
+  completionNotes: OrderBy
+  createdAt: OrderBy
+  firstPayrollCompletedAt: OrderBy
+  id: OrderBy
+  lastPayrollCompletedAt: OrderBy
+  overrideCompletionDate: OrderBy
+  pendingPayrollDateIds: OrderBy
+  pendingPayrollIds: OrderBy
+  status: OrderBy
+  totalPayrollDates: OrderBy
+  totalPayrolls: OrderBy
+  updatedAt: OrderBy
+}
+
+"""
+response of any mutation on the table "monthly_billing_completion"
+"""
+type MonthlyBillingCompletionMutationResponse {
+  """number of rows affected by the mutation"""
+  affectedRows: Int!
+  """data from the rows affected by the mutation"""
+  returning: [MonthlyBillingCompletion!]!
+}
+
+"""
+on_conflict condition type for table "monthly_billing_completion"
+"""
+input MonthlyBillingCompletionOnConflict {
+  constraint: MonthlyBillingCompletionConstraint!
+  updateColumns: [MonthlyBillingCompletionUpdateColumn!]! = []
+  where: MonthlyBillingCompletionBoolExp
+}
+
+"""
+Ordering options when selecting data from "monthly_billing_completion".
+"""
+input MonthlyBillingCompletionOrderBy {
+  autoBillingEnabled: OrderBy
+  billingGeneratedAt: OrderBy
+  billingMonth: OrderBy
+  billingPeriod: BillingPeriodsOrderBy
+  billingPeriodId: OrderBy
+  billingReadyAt: OrderBy
+  client: ClientsOrderBy
+  clientId: OrderBy
+  completedPayrollDates: OrderBy
+  completedPayrolls: OrderBy
+  completionNotes: OrderBy
+  createdAt: OrderBy
+  firstPayrollCompletedAt: OrderBy
+  id: OrderBy
+  lastPayrollCompletedAt: OrderBy
+  overrideCompletionDate: OrderBy
+  pendingPayrollDateIds: OrderBy
+  pendingPayrollIds: OrderBy
+  status: OrderBy
+  tier1BillingGenerated: OrderBy
+  tier2BillingGenerated: OrderBy
+  tier3BillingGenerated: OrderBy
+  totalPayrollDates: OrderBy
+  totalPayrolls: OrderBy
+  updatedAt: OrderBy
+}
+
+"""primary key columns input for table: monthly_billing_completion"""
+input MonthlyBillingCompletionPkColumnsInput {
+  id: uuid!
+}
+
+"""
+select columns of table "monthly_billing_completion"
+"""
+enum MonthlyBillingCompletionSelectColumn {
+  """column name"""
+  autoBillingEnabled
+  """column name"""
+  billingGeneratedAt
+  """column name"""
+  billingMonth
+  """column name"""
+  billingPeriodId
+  """column name"""
+  billingReadyAt
+  """column name"""
+  clientId
+  """column name"""
+  completedPayrollDates
+  """column name"""
+  completedPayrolls
+  """column name"""
+  completionNotes
+  """column name"""
+  createdAt
+  """column name"""
+  firstPayrollCompletedAt
+  """column name"""
+  id
+  """column name"""
+  lastPayrollCompletedAt
+  """column name"""
+  overrideCompletionDate
+  """column name"""
+  pendingPayrollDateIds
+  """column name"""
+  pendingPayrollIds
+  """column name"""
+  status
+  """column name"""
+  tier1BillingGenerated
+  """column name"""
+  tier2BillingGenerated
+  """column name"""
+  tier3BillingGenerated
+  """column name"""
+  totalPayrollDates
+  """column name"""
+  totalPayrolls
+  """column name"""
+  updatedAt
+}
+
+"""
+select "monthlyBillingCompletionAggregateBoolExpBool_andArgumentsColumns" columns of table "monthly_billing_completion"
+"""
+enum MonthlyBillingCompletionSelectColumnMonthlyBillingCompletionAggregateBoolExpBool_andArgumentsColumns {
+  """column name"""
+  autoBillingEnabled
+  """column name"""
+  tier1BillingGenerated
+  """column name"""
+  tier2BillingGenerated
+  """column name"""
+  tier3BillingGenerated
+}
+
+"""
+select "monthlyBillingCompletionAggregateBoolExpBool_orArgumentsColumns" columns of table "monthly_billing_completion"
+"""
+enum MonthlyBillingCompletionSelectColumnMonthlyBillingCompletionAggregateBoolExpBool_orArgumentsColumns {
+  """column name"""
+  autoBillingEnabled
+  """column name"""
+  tier1BillingGenerated
+  """column name"""
+  tier2BillingGenerated
+  """column name"""
+  tier3BillingGenerated
+}
+
+"""
+input type for updating data in table "monthly_billing_completion"
+"""
+input MonthlyBillingCompletionSetInput {
+  autoBillingEnabled: Boolean
+  billingGeneratedAt: timestamptz
+  billingMonth: date
+  billingPeriodId: uuid
+  billingReadyAt: timestamptz
+  clientId: uuid
+  completedPayrollDates: Int
+  completedPayrolls: Int
+  completionNotes: String
+  createdAt: timestamptz
+  firstPayrollCompletedAt: timestamptz
+  id: uuid
+  lastPayrollCompletedAt: timestamptz
+  overrideCompletionDate: date
+  pendingPayrollDateIds: [uuid!]
+  pendingPayrollIds: [uuid!]
+  status: monthly_billing_status
+  tier1BillingGenerated: Boolean
+  tier2BillingGenerated: Boolean
+  tier3BillingGenerated: Boolean
+  totalPayrollDates: Int
+  totalPayrolls: Int
+  updatedAt: timestamptz
+}
+
+"""aggregate stddev on columns"""
+type MonthlyBillingCompletionStddevFields {
+  completedPayrollDates: Float
+  completedPayrolls: Float
+  totalPayrollDates: Float
+  totalPayrolls: Float
+}
+
+"""
+order by stddev() on columns of table "monthly_billing_completion"
+"""
+input MonthlyBillingCompletionStddevOrderBy {
+  completedPayrollDates: OrderBy
+  completedPayrolls: OrderBy
+  totalPayrollDates: OrderBy
+  totalPayrolls: OrderBy
+}
+
+"""aggregate stddevPop on columns"""
+type MonthlyBillingCompletionStddevPopFields {
+  completedPayrollDates: Float
+  completedPayrolls: Float
+  totalPayrollDates: Float
+  totalPayrolls: Float
+}
+
+"""
+order by stddevPop() on columns of table "monthly_billing_completion"
+"""
+input MonthlyBillingCompletionStddevPopOrderBy {
+  completedPayrollDates: OrderBy
+  completedPayrolls: OrderBy
+  totalPayrollDates: OrderBy
+  totalPayrolls: OrderBy
+}
+
+"""aggregate stddevSamp on columns"""
+type MonthlyBillingCompletionStddevSampFields {
+  completedPayrollDates: Float
+  completedPayrolls: Float
+  totalPayrollDates: Float
+  totalPayrolls: Float
+}
+
+"""
+order by stddevSamp() on columns of table "monthly_billing_completion"
+"""
+input MonthlyBillingCompletionStddevSampOrderBy {
+  completedPayrollDates: OrderBy
+  completedPayrolls: OrderBy
+  totalPayrollDates: OrderBy
+  totalPayrolls: OrderBy
+}
+
+"""
+Streaming cursor of the table "monthly_billing_completion"
+"""
+input MonthlyBillingCompletionStreamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: MonthlyBillingCompletionStreamCursorValueInput!
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input MonthlyBillingCompletionStreamCursorValueInput {
+  autoBillingEnabled: Boolean
+  billingGeneratedAt: timestamptz
+  billingMonth: date
+  billingPeriodId: uuid
+  billingReadyAt: timestamptz
+  clientId: uuid
+  completedPayrollDates: Int
+  completedPayrolls: Int
+  completionNotes: String
+  createdAt: timestamptz
+  firstPayrollCompletedAt: timestamptz
+  id: uuid
+  lastPayrollCompletedAt: timestamptz
+  overrideCompletionDate: date
+  pendingPayrollDateIds: [uuid!]
+  pendingPayrollIds: [uuid!]
+  status: monthly_billing_status
+  tier1BillingGenerated: Boolean
+  tier2BillingGenerated: Boolean
+  tier3BillingGenerated: Boolean
+  totalPayrollDates: Int
+  totalPayrolls: Int
+  updatedAt: timestamptz
+}
+
+"""aggregate sum on columns"""
+type MonthlyBillingCompletionSumFields {
+  completedPayrollDates: Int
+  completedPayrolls: Int
+  totalPayrollDates: Int
+  totalPayrolls: Int
+}
+
+"""
+order by sum() on columns of table "monthly_billing_completion"
+"""
+input MonthlyBillingCompletionSumOrderBy {
+  completedPayrollDates: OrderBy
+  completedPayrolls: OrderBy
+  totalPayrollDates: OrderBy
+  totalPayrolls: OrderBy
+}
+
+"""
+update columns of table "monthly_billing_completion"
+"""
+enum MonthlyBillingCompletionUpdateColumn {
+  """column name"""
+  autoBillingEnabled
+  """column name"""
+  billingGeneratedAt
+  """column name"""
+  billingMonth
+  """column name"""
+  billingPeriodId
+  """column name"""
+  billingReadyAt
+  """column name"""
+  clientId
+  """column name"""
+  completedPayrollDates
+  """column name"""
+  completedPayrolls
+  """column name"""
+  completionNotes
+  """column name"""
+  createdAt
+  """column name"""
+  firstPayrollCompletedAt
+  """column name"""
+  id
+  """column name"""
+  lastPayrollCompletedAt
+  """column name"""
+  overrideCompletionDate
+  """column name"""
+  pendingPayrollDateIds
+  """column name"""
+  pendingPayrollIds
+  """column name"""
+  status
+  """column name"""
+  tier1BillingGenerated
+  """column name"""
+  tier2BillingGenerated
+  """column name"""
+  tier3BillingGenerated
+  """column name"""
+  totalPayrollDates
+  """column name"""
+  totalPayrolls
+  """column name"""
+  updatedAt
+}
+
+input MonthlyBillingCompletionUpdates {
+  """increments the numeric columns with given value of the filtered values"""
+  _inc: MonthlyBillingCompletionIncInput
+  """sets the columns of the filtered rows to the given values"""
+  _set: MonthlyBillingCompletionSetInput
+  """filter the rows which have to be updated"""
+  where: MonthlyBillingCompletionBoolExp!
+}
+
+"""aggregate varPop on columns"""
+type MonthlyBillingCompletionVarPopFields {
+  completedPayrollDates: Float
+  completedPayrolls: Float
+  totalPayrollDates: Float
+  totalPayrolls: Float
+}
+
+"""
+order by varPop() on columns of table "monthly_billing_completion"
+"""
+input MonthlyBillingCompletionVarPopOrderBy {
+  completedPayrollDates: OrderBy
+  completedPayrolls: OrderBy
+  totalPayrollDates: OrderBy
+  totalPayrolls: OrderBy
+}
+
+"""aggregate varSamp on columns"""
+type MonthlyBillingCompletionVarSampFields {
+  completedPayrollDates: Float
+  completedPayrolls: Float
+  totalPayrollDates: Float
+  totalPayrolls: Float
+}
+
+"""
+order by varSamp() on columns of table "monthly_billing_completion"
+"""
+input MonthlyBillingCompletionVarSampOrderBy {
+  completedPayrollDates: OrderBy
+  completedPayrolls: OrderBy
+  totalPayrollDates: OrderBy
+  totalPayrolls: OrderBy
+}
+
+"""aggregate variance on columns"""
+type MonthlyBillingCompletionVarianceFields {
+  completedPayrollDates: Float
+  completedPayrolls: Float
+  totalPayrollDates: Float
+  totalPayrolls: Float
+}
+
+"""
+order by variance() on columns of table "monthly_billing_completion"
+"""
+input MonthlyBillingCompletionVarianceOrderBy {
+  completedPayrollDates: OrderBy
+  completedPayrolls: OrderBy
+  totalPayrollDates: OrderBy
+  totalPayrolls: OrderBy
+}
+
+"""
+Comprehensive dashboard view for monthly billing management and oversight
+"""
+type MonthlyBillingDashboard {
+  activeServiceAgreements: bigint
+  billingGeneratedAt: timestamptz
+  billingItemsCount: bigint
+  billingMonth: date
+  billingMonthDisplay: String
+  billingReadyAt: timestamptz
+  clientId: uuid
+  clientName: String
+  completedPayrollDates: Int
+  completedPayrolls: Int
+  completionPercentage: numeric
+  daysReadyForBilling: Int
+  id: uuid
+  status: monthly_billing_status
+  tier1BillingGenerated: Boolean
+  tier2BillingGenerated: Boolean
+  tier3BillingGenerated: Boolean
+  totalBillingAmount: numeric
+  totalPayrollDates: Int
+  totalPayrolls: Int
+}
+
+"""
+aggregated selection of "monthly_billing_dashboard"
+"""
+type MonthlyBillingDashboardAggregate {
+  aggregate: MonthlyBillingDashboardAggregateFields
+  nodes: [MonthlyBillingDashboard!]!
+}
+
+"""
+aggregate fields of "monthly_billing_dashboard"
+"""
+type MonthlyBillingDashboardAggregateFields {
+  avg: MonthlyBillingDashboardAvgFields
+  count(columns: [MonthlyBillingDashboardSelectColumn!], distinct: Boolean): Int!
+  max: MonthlyBillingDashboardMaxFields
+  min: MonthlyBillingDashboardMinFields
+  stddev: MonthlyBillingDashboardStddevFields
+  stddevPop: MonthlyBillingDashboardStddevPopFields
+  stddevSamp: MonthlyBillingDashboardStddevSampFields
+  sum: MonthlyBillingDashboardSumFields
+  varPop: MonthlyBillingDashboardVarPopFields
+  varSamp: MonthlyBillingDashboardVarSampFields
+  variance: MonthlyBillingDashboardVarianceFields
+}
+
+"""aggregate avg on columns"""
+type MonthlyBillingDashboardAvgFields {
+  activeServiceAgreements: Float
+  billingItemsCount: Float
+  completedPayrollDates: Float
+  completedPayrolls: Float
+  completionPercentage: Float
+  daysReadyForBilling: Float
+  totalBillingAmount: Float
+  totalPayrollDates: Float
+  totalPayrolls: Float
+}
+
+"""
+Boolean expression to filter rows from the table "monthly_billing_dashboard". All fields are combined with a logical 'AND'.
+"""
+input MonthlyBillingDashboardBoolExp {
+  _and: [MonthlyBillingDashboardBoolExp!]
+  _not: MonthlyBillingDashboardBoolExp
+  _or: [MonthlyBillingDashboardBoolExp!]
+  activeServiceAgreements: BigintComparisonExp
+  billingGeneratedAt: TimestamptzComparisonExp
+  billingItemsCount: BigintComparisonExp
+  billingMonth: DateComparisonExp
+  billingMonthDisplay: StringComparisonExp
+  billingReadyAt: TimestamptzComparisonExp
+  clientId: UuidComparisonExp
+  clientName: StringComparisonExp
+  completedPayrollDates: IntComparisonExp
+  completedPayrolls: IntComparisonExp
+  completionPercentage: NumericComparisonExp
+  daysReadyForBilling: IntComparisonExp
+  id: UuidComparisonExp
+  status: MonthlyBillingStatusComparisonExp
+  tier1BillingGenerated: BooleanComparisonExp
+  tier2BillingGenerated: BooleanComparisonExp
+  tier3BillingGenerated: BooleanComparisonExp
+  totalBillingAmount: NumericComparisonExp
+  totalPayrollDates: IntComparisonExp
+  totalPayrolls: IntComparisonExp
+}
+
+"""aggregate max on columns"""
+type MonthlyBillingDashboardMaxFields {
+  activeServiceAgreements: bigint
+  billingGeneratedAt: timestamptz
+  billingItemsCount: bigint
+  billingMonth: date
+  billingMonthDisplay: String
+  billingReadyAt: timestamptz
+  clientId: uuid
+  clientName: String
+  completedPayrollDates: Int
+  completedPayrolls: Int
+  completionPercentage: numeric
+  daysReadyForBilling: Int
+  id: uuid
+  status: monthly_billing_status
+  totalBillingAmount: numeric
+  totalPayrollDates: Int
+  totalPayrolls: Int
+}
+
+"""aggregate min on columns"""
+type MonthlyBillingDashboardMinFields {
+  activeServiceAgreements: bigint
+  billingGeneratedAt: timestamptz
+  billingItemsCount: bigint
+  billingMonth: date
+  billingMonthDisplay: String
+  billingReadyAt: timestamptz
+  clientId: uuid
+  clientName: String
+  completedPayrollDates: Int
+  completedPayrolls: Int
+  completionPercentage: numeric
+  daysReadyForBilling: Int
+  id: uuid
+  status: monthly_billing_status
+  totalBillingAmount: numeric
+  totalPayrollDates: Int
+  totalPayrolls: Int
+}
+
+"""Ordering options when selecting data from "monthly_billing_dashboard"."""
+input MonthlyBillingDashboardOrderBy {
+  activeServiceAgreements: OrderBy
+  billingGeneratedAt: OrderBy
+  billingItemsCount: OrderBy
+  billingMonth: OrderBy
+  billingMonthDisplay: OrderBy
+  billingReadyAt: OrderBy
+  clientId: OrderBy
+  clientName: OrderBy
+  completedPayrollDates: OrderBy
+  completedPayrolls: OrderBy
+  completionPercentage: OrderBy
+  daysReadyForBilling: OrderBy
+  id: OrderBy
+  status: OrderBy
+  tier1BillingGenerated: OrderBy
+  tier2BillingGenerated: OrderBy
+  tier3BillingGenerated: OrderBy
+  totalBillingAmount: OrderBy
+  totalPayrollDates: OrderBy
+  totalPayrolls: OrderBy
+}
+
+"""
+select columns of table "monthly_billing_dashboard"
+"""
+enum MonthlyBillingDashboardSelectColumn {
+  """column name"""
+  activeServiceAgreements
+  """column name"""
+  billingGeneratedAt
+  """column name"""
+  billingItemsCount
+  """column name"""
+  billingMonth
+  """column name"""
+  billingMonthDisplay
+  """column name"""
+  billingReadyAt
+  """column name"""
+  clientId
+  """column name"""
+  clientName
+  """column name"""
+  completedPayrollDates
+  """column name"""
+  completedPayrolls
+  """column name"""
+  completionPercentage
+  """column name"""
+  daysReadyForBilling
+  """column name"""
+  id
+  """column name"""
+  status
+  """column name"""
+  tier1BillingGenerated
+  """column name"""
+  tier2BillingGenerated
+  """column name"""
+  tier3BillingGenerated
+  """column name"""
+  totalBillingAmount
+  """column name"""
+  totalPayrollDates
+  """column name"""
+  totalPayrolls
+}
+
+"""aggregate stddev on columns"""
+type MonthlyBillingDashboardStddevFields {
+  activeServiceAgreements: Float
+  billingItemsCount: Float
+  completedPayrollDates: Float
+  completedPayrolls: Float
+  completionPercentage: Float
+  daysReadyForBilling: Float
+  totalBillingAmount: Float
+  totalPayrollDates: Float
+  totalPayrolls: Float
+}
+
+"""aggregate stddevPop on columns"""
+type MonthlyBillingDashboardStddevPopFields {
+  activeServiceAgreements: Float
+  billingItemsCount: Float
+  completedPayrollDates: Float
+  completedPayrolls: Float
+  completionPercentage: Float
+  daysReadyForBilling: Float
+  totalBillingAmount: Float
+  totalPayrollDates: Float
+  totalPayrolls: Float
+}
+
+"""aggregate stddevSamp on columns"""
+type MonthlyBillingDashboardStddevSampFields {
+  activeServiceAgreements: Float
+  billingItemsCount: Float
+  completedPayrollDates: Float
+  completedPayrolls: Float
+  completionPercentage: Float
+  daysReadyForBilling: Float
+  totalBillingAmount: Float
+  totalPayrollDates: Float
+  totalPayrolls: Float
+}
+
+"""
+Streaming cursor of the table "monthly_billing_dashboard"
+"""
+input MonthlyBillingDashboardStreamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: MonthlyBillingDashboardStreamCursorValueInput!
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input MonthlyBillingDashboardStreamCursorValueInput {
+  activeServiceAgreements: bigint
+  billingGeneratedAt: timestamptz
+  billingItemsCount: bigint
+  billingMonth: date
+  billingMonthDisplay: String
+  billingReadyAt: timestamptz
+  clientId: uuid
+  clientName: String
+  completedPayrollDates: Int
+  completedPayrolls: Int
+  completionPercentage: numeric
+  daysReadyForBilling: Int
+  id: uuid
+  status: monthly_billing_status
+  tier1BillingGenerated: Boolean
+  tier2BillingGenerated: Boolean
+  tier3BillingGenerated: Boolean
+  totalBillingAmount: numeric
+  totalPayrollDates: Int
+  totalPayrolls: Int
+}
+
+"""aggregate sum on columns"""
+type MonthlyBillingDashboardSumFields {
+  activeServiceAgreements: bigint
+  billingItemsCount: bigint
+  completedPayrollDates: Int
+  completedPayrolls: Int
+  completionPercentage: numeric
+  daysReadyForBilling: Int
+  totalBillingAmount: numeric
+  totalPayrollDates: Int
+  totalPayrolls: Int
+}
+
+"""aggregate varPop on columns"""
+type MonthlyBillingDashboardVarPopFields {
+  activeServiceAgreements: Float
+  billingItemsCount: Float
+  completedPayrollDates: Float
+  completedPayrolls: Float
+  completionPercentage: Float
+  daysReadyForBilling: Float
+  totalBillingAmount: Float
+  totalPayrollDates: Float
+  totalPayrolls: Float
+}
+
+"""aggregate varSamp on columns"""
+type MonthlyBillingDashboardVarSampFields {
+  activeServiceAgreements: Float
+  billingItemsCount: Float
+  completedPayrollDates: Float
+  completedPayrolls: Float
+  completionPercentage: Float
+  daysReadyForBilling: Float
+  totalBillingAmount: Float
+  totalPayrollDates: Float
+  totalPayrolls: Float
+}
+
+"""aggregate variance on columns"""
+type MonthlyBillingDashboardVarianceFields {
+  activeServiceAgreements: Float
+  billingItemsCount: Float
+  completedPayrollDates: Float
+  completedPayrolls: Float
+  completionPercentage: Float
+  daysReadyForBilling: Float
+  totalBillingAmount: Float
+  totalPayrollDates: Float
+  totalPayrolls: Float
+}
+
+"""
+Boolean expression to compare columns of type "monthly_billing_status". All fields are combined with logical 'AND'.
+"""
+input MonthlyBillingStatusComparisonExp {
+  _eq: monthly_billing_status
+  _gt: monthly_billing_status
+  _gte: monthly_billing_status
+  _in: [monthly_billing_status!]
+  _isNull: Boolean
+  _lt: monthly_billing_status
+  _lte: monthly_billing_status
+  _neq: monthly_billing_status
+  _nin: [monthly_billing_status!]
+}
+
+"""
 Boolean expression to compare columns of type "name". All fields are combined with logical 'AND'.
 """
 input NameComparisonExp {
@@ -13377,6 +14905,340 @@ input PayrollAssignmentsUpdates {
   where: PayrollAssignmentsBoolExp!
 }
 
+"""Comprehensive cost vs revenue analysis for payroll dates"""
+type PayrollCostAnalysis {
+  billingItemsCount: bigint
+  billingMonth: timestamptz
+  clientId: uuid
+  clientName: String
+  completedAt: timestamptz
+  completedBy: uuid
+  costPerHour: numeric
+  estimatedProfit: numeric
+  payrollDateId: uuid
+  payrollDateStatus: String
+  payrollId: uuid
+  payrollName: String
+  profitMarginPercentage: numeric
+  revenuePerHour: numeric
+  totalHours: numeric
+  totalInternalCost: numeric
+  totalRevenue: numeric
+  totalTimeMinutes: bigint
+  uniqueUsersWorked: bigint
+}
+
+"""
+aggregated selection of "payroll_cost_analysis"
+"""
+type PayrollCostAnalysisAggregate {
+  aggregate: PayrollCostAnalysisAggregateFields
+  nodes: [PayrollCostAnalysis!]!
+}
+
+"""
+aggregate fields of "payroll_cost_analysis"
+"""
+type PayrollCostAnalysisAggregateFields {
+  avg: PayrollCostAnalysisAvgFields
+  count(columns: [PayrollCostAnalysisSelectColumn!], distinct: Boolean): Int!
+  max: PayrollCostAnalysisMaxFields
+  min: PayrollCostAnalysisMinFields
+  stddev: PayrollCostAnalysisStddevFields
+  stddevPop: PayrollCostAnalysisStddevPopFields
+  stddevSamp: PayrollCostAnalysisStddevSampFields
+  sum: PayrollCostAnalysisSumFields
+  varPop: PayrollCostAnalysisVarPopFields
+  varSamp: PayrollCostAnalysisVarSampFields
+  variance: PayrollCostAnalysisVarianceFields
+}
+
+"""aggregate avg on columns"""
+type PayrollCostAnalysisAvgFields {
+  billingItemsCount: Float
+  costPerHour: Float
+  estimatedProfit: Float
+  profitMarginPercentage: Float
+  revenuePerHour: Float
+  totalHours: Float
+  totalInternalCost: Float
+  totalRevenue: Float
+  totalTimeMinutes: Float
+  uniqueUsersWorked: Float
+}
+
+"""
+Boolean expression to filter rows from the table "payroll_cost_analysis". All fields are combined with a logical 'AND'.
+"""
+input PayrollCostAnalysisBoolExp {
+  _and: [PayrollCostAnalysisBoolExp!]
+  _not: PayrollCostAnalysisBoolExp
+  _or: [PayrollCostAnalysisBoolExp!]
+  billingItemsCount: BigintComparisonExp
+  billingMonth: TimestamptzComparisonExp
+  clientId: UuidComparisonExp
+  clientName: StringComparisonExp
+  completedAt: TimestamptzComparisonExp
+  completedBy: UuidComparisonExp
+  costPerHour: NumericComparisonExp
+  estimatedProfit: NumericComparisonExp
+  payrollDateId: UuidComparisonExp
+  payrollDateStatus: StringComparisonExp
+  payrollId: UuidComparisonExp
+  payrollName: StringComparisonExp
+  profitMarginPercentage: NumericComparisonExp
+  revenuePerHour: NumericComparisonExp
+  totalHours: NumericComparisonExp
+  totalInternalCost: NumericComparisonExp
+  totalRevenue: NumericComparisonExp
+  totalTimeMinutes: BigintComparisonExp
+  uniqueUsersWorked: BigintComparisonExp
+}
+
+"""aggregate max on columns"""
+type PayrollCostAnalysisMaxFields {
+  billingItemsCount: bigint
+  billingMonth: timestamptz
+  clientId: uuid
+  clientName: String
+  completedAt: timestamptz
+  completedBy: uuid
+  costPerHour: numeric
+  estimatedProfit: numeric
+  payrollDateId: uuid
+  payrollDateStatus: String
+  payrollId: uuid
+  payrollName: String
+  profitMarginPercentage: numeric
+  revenuePerHour: numeric
+  totalHours: numeric
+  totalInternalCost: numeric
+  totalRevenue: numeric
+  totalTimeMinutes: bigint
+  uniqueUsersWorked: bigint
+}
+
+"""aggregate min on columns"""
+type PayrollCostAnalysisMinFields {
+  billingItemsCount: bigint
+  billingMonth: timestamptz
+  clientId: uuid
+  clientName: String
+  completedAt: timestamptz
+  completedBy: uuid
+  costPerHour: numeric
+  estimatedProfit: numeric
+  payrollDateId: uuid
+  payrollDateStatus: String
+  payrollId: uuid
+  payrollName: String
+  profitMarginPercentage: numeric
+  revenuePerHour: numeric
+  totalHours: numeric
+  totalInternalCost: numeric
+  totalRevenue: numeric
+  totalTimeMinutes: bigint
+  uniqueUsersWorked: bigint
+}
+
+"""Ordering options when selecting data from "payroll_cost_analysis"."""
+input PayrollCostAnalysisOrderBy {
+  billingItemsCount: OrderBy
+  billingMonth: OrderBy
+  clientId: OrderBy
+  clientName: OrderBy
+  completedAt: OrderBy
+  completedBy: OrderBy
+  costPerHour: OrderBy
+  estimatedProfit: OrderBy
+  payrollDateId: OrderBy
+  payrollDateStatus: OrderBy
+  payrollId: OrderBy
+  payrollName: OrderBy
+  profitMarginPercentage: OrderBy
+  revenuePerHour: OrderBy
+  totalHours: OrderBy
+  totalInternalCost: OrderBy
+  totalRevenue: OrderBy
+  totalTimeMinutes: OrderBy
+  uniqueUsersWorked: OrderBy
+}
+
+"""
+select columns of table "payroll_cost_analysis"
+"""
+enum PayrollCostAnalysisSelectColumn {
+  """column name"""
+  billingItemsCount
+  """column name"""
+  billingMonth
+  """column name"""
+  clientId
+  """column name"""
+  clientName
+  """column name"""
+  completedAt
+  """column name"""
+  completedBy
+  """column name"""
+  costPerHour
+  """column name"""
+  estimatedProfit
+  """column name"""
+  payrollDateId
+  """column name"""
+  payrollDateStatus
+  """column name"""
+  payrollId
+  """column name"""
+  payrollName
+  """column name"""
+  profitMarginPercentage
+  """column name"""
+  revenuePerHour
+  """column name"""
+  totalHours
+  """column name"""
+  totalInternalCost
+  """column name"""
+  totalRevenue
+  """column name"""
+  totalTimeMinutes
+  """column name"""
+  uniqueUsersWorked
+}
+
+"""aggregate stddev on columns"""
+type PayrollCostAnalysisStddevFields {
+  billingItemsCount: Float
+  costPerHour: Float
+  estimatedProfit: Float
+  profitMarginPercentage: Float
+  revenuePerHour: Float
+  totalHours: Float
+  totalInternalCost: Float
+  totalRevenue: Float
+  totalTimeMinutes: Float
+  uniqueUsersWorked: Float
+}
+
+"""aggregate stddevPop on columns"""
+type PayrollCostAnalysisStddevPopFields {
+  billingItemsCount: Float
+  costPerHour: Float
+  estimatedProfit: Float
+  profitMarginPercentage: Float
+  revenuePerHour: Float
+  totalHours: Float
+  totalInternalCost: Float
+  totalRevenue: Float
+  totalTimeMinutes: Float
+  uniqueUsersWorked: Float
+}
+
+"""aggregate stddevSamp on columns"""
+type PayrollCostAnalysisStddevSampFields {
+  billingItemsCount: Float
+  costPerHour: Float
+  estimatedProfit: Float
+  profitMarginPercentage: Float
+  revenuePerHour: Float
+  totalHours: Float
+  totalInternalCost: Float
+  totalRevenue: Float
+  totalTimeMinutes: Float
+  uniqueUsersWorked: Float
+}
+
+"""
+Streaming cursor of the table "payroll_cost_analysis"
+"""
+input PayrollCostAnalysisStreamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: PayrollCostAnalysisStreamCursorValueInput!
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input PayrollCostAnalysisStreamCursorValueInput {
+  billingItemsCount: bigint
+  billingMonth: timestamptz
+  clientId: uuid
+  clientName: String
+  completedAt: timestamptz
+  completedBy: uuid
+  costPerHour: numeric
+  estimatedProfit: numeric
+  payrollDateId: uuid
+  payrollDateStatus: String
+  payrollId: uuid
+  payrollName: String
+  profitMarginPercentage: numeric
+  revenuePerHour: numeric
+  totalHours: numeric
+  totalInternalCost: numeric
+  totalRevenue: numeric
+  totalTimeMinutes: bigint
+  uniqueUsersWorked: bigint
+}
+
+"""aggregate sum on columns"""
+type PayrollCostAnalysisSumFields {
+  billingItemsCount: bigint
+  costPerHour: numeric
+  estimatedProfit: numeric
+  profitMarginPercentage: numeric
+  revenuePerHour: numeric
+  totalHours: numeric
+  totalInternalCost: numeric
+  totalRevenue: numeric
+  totalTimeMinutes: bigint
+  uniqueUsersWorked: bigint
+}
+
+"""aggregate varPop on columns"""
+type PayrollCostAnalysisVarPopFields {
+  billingItemsCount: Float
+  costPerHour: Float
+  estimatedProfit: Float
+  profitMarginPercentage: Float
+  revenuePerHour: Float
+  totalHours: Float
+  totalInternalCost: Float
+  totalRevenue: Float
+  totalTimeMinutes: Float
+  uniqueUsersWorked: Float
+}
+
+"""aggregate varSamp on columns"""
+type PayrollCostAnalysisVarSampFields {
+  billingItemsCount: Float
+  costPerHour: Float
+  estimatedProfit: Float
+  profitMarginPercentage: Float
+  revenuePerHour: Float
+  totalHours: Float
+  totalInternalCost: Float
+  totalRevenue: Float
+  totalTimeMinutes: Float
+  uniqueUsersWorked: Float
+}
+
+"""aggregate variance on columns"""
+type PayrollCostAnalysisVarianceFields {
+  billingItemsCount: Float
+  costPerHour: Float
+  estimatedProfit: Float
+  profitMarginPercentage: Float
+  revenuePerHour: Float
+  totalHours: Float
+  totalInternalCost: Float
+  totalRevenue: Float
+  totalTimeMinutes: Float
+  uniqueUsersWorked: Float
+}
+
 """
 Boolean expression to compare columns of type "payroll_cycle_type". All fields are combined with logical 'AND'.
 """
@@ -14204,13 +16066,21 @@ type PayrollDateCompletionAnalyticsVarianceFields {
 
 """Detailed time tracking for individual users working on payroll dates"""
 type PayrollDateTimeEntries {
+  billingNotes: String
+  costCenter: String
   createdAt: timestamptz
   description: String
+  """Hourly rate applied when this time entry was created"""
+  hourlyRateUsed: numeric
   id: uuid!
+  """Whether this time should be included in client billing"""
+  isBillable: Boolean
   """An object relationship"""
   payrollDate: PayrollDates!
   payrollDateId: uuid!
   timeSpentMinutes: Int!
+  """Calculated internal cost (time * rate)"""
+  totalCost: numeric
   updatedAt: timestamptz
   """An object relationship"""
   user: Users!
@@ -14227,6 +16097,8 @@ type PayrollDateTimeEntriesAggregate {
 }
 
 input PayrollDateTimeEntriesAggregateBoolExp {
+  bool_and: payrollDateTimeEntriesAggregateBoolExpBool_and
+  bool_or: payrollDateTimeEntriesAggregateBoolExpBool_or
   count: payrollDateTimeEntriesAggregateBoolExpCount
 }
 
@@ -14275,14 +16147,22 @@ input PayrollDateTimeEntriesArrRelInsertInput {
 
 """aggregate avg on columns"""
 type PayrollDateTimeEntriesAvgFields {
+  """Hourly rate applied when this time entry was created"""
+  hourlyRateUsed: Float
   timeSpentMinutes: Float
+  """Calculated internal cost (time * rate)"""
+  totalCost: Float
 }
 
 """
 order by avg() on columns of table "payroll_date_time_entries"
 """
 input PayrollDateTimeEntriesAvgOrderBy {
+  """Hourly rate applied when this time entry was created"""
+  hourlyRateUsed: OrderBy
   timeSpentMinutes: OrderBy
+  """Calculated internal cost (time * rate)"""
+  totalCost: OrderBy
 }
 
 """
@@ -14292,12 +16172,17 @@ input PayrollDateTimeEntriesBoolExp {
   _and: [PayrollDateTimeEntriesBoolExp!]
   _not: PayrollDateTimeEntriesBoolExp
   _or: [PayrollDateTimeEntriesBoolExp!]
+  billingNotes: StringComparisonExp
+  costCenter: StringComparisonExp
   createdAt: TimestamptzComparisonExp
   description: StringComparisonExp
+  hourlyRateUsed: NumericComparisonExp
   id: UuidComparisonExp
+  isBillable: BooleanComparisonExp
   payrollDate: PayrollDatesBoolExp
   payrollDateId: UuidComparisonExp
   timeSpentMinutes: IntComparisonExp
+  totalCost: NumericComparisonExp
   updatedAt: TimestamptzComparisonExp
   user: UsersBoolExp
   userId: UuidComparisonExp
@@ -14322,6 +16207,8 @@ enum PayrollDateTimeEntriesConstraint {
 input type for incrementing numeric columns in table "payroll_date_time_entries"
 """
 input PayrollDateTimeEntriesIncInput {
+  """Hourly rate applied when this time entry was created"""
+  hourlyRateUsed: numeric
   timeSpentMinutes: Int
 }
 
@@ -14329,9 +16216,15 @@ input PayrollDateTimeEntriesIncInput {
 input type for inserting data into table "payroll_date_time_entries"
 """
 input PayrollDateTimeEntriesInsertInput {
+  billingNotes: String
+  costCenter: String
   createdAt: timestamptz
   description: String
+  """Hourly rate applied when this time entry was created"""
+  hourlyRateUsed: numeric
   id: uuid
+  """Whether this time should be included in client billing"""
+  isBillable: Boolean
   payrollDate: PayrollDatesObjRelInsertInput
   payrollDateId: uuid
   timeSpentMinutes: Int
@@ -14343,11 +16236,17 @@ input PayrollDateTimeEntriesInsertInput {
 
 """aggregate max on columns"""
 type PayrollDateTimeEntriesMaxFields {
+  billingNotes: String
+  costCenter: String
   createdAt: timestamptz
   description: String
+  """Hourly rate applied when this time entry was created"""
+  hourlyRateUsed: numeric
   id: uuid
   payrollDateId: uuid
   timeSpentMinutes: Int
+  """Calculated internal cost (time * rate)"""
+  totalCost: numeric
   updatedAt: timestamptz
   userId: uuid
   workDate: date
@@ -14357,11 +16256,17 @@ type PayrollDateTimeEntriesMaxFields {
 order by max() on columns of table "payroll_date_time_entries"
 """
 input PayrollDateTimeEntriesMaxOrderBy {
+  billingNotes: OrderBy
+  costCenter: OrderBy
   createdAt: OrderBy
   description: OrderBy
+  """Hourly rate applied when this time entry was created"""
+  hourlyRateUsed: OrderBy
   id: OrderBy
   payrollDateId: OrderBy
   timeSpentMinutes: OrderBy
+  """Calculated internal cost (time * rate)"""
+  totalCost: OrderBy
   updatedAt: OrderBy
   userId: OrderBy
   workDate: OrderBy
@@ -14369,11 +16274,17 @@ input PayrollDateTimeEntriesMaxOrderBy {
 
 """aggregate min on columns"""
 type PayrollDateTimeEntriesMinFields {
+  billingNotes: String
+  costCenter: String
   createdAt: timestamptz
   description: String
+  """Hourly rate applied when this time entry was created"""
+  hourlyRateUsed: numeric
   id: uuid
   payrollDateId: uuid
   timeSpentMinutes: Int
+  """Calculated internal cost (time * rate)"""
+  totalCost: numeric
   updatedAt: timestamptz
   userId: uuid
   workDate: date
@@ -14383,11 +16294,17 @@ type PayrollDateTimeEntriesMinFields {
 order by min() on columns of table "payroll_date_time_entries"
 """
 input PayrollDateTimeEntriesMinOrderBy {
+  billingNotes: OrderBy
+  costCenter: OrderBy
   createdAt: OrderBy
   description: OrderBy
+  """Hourly rate applied when this time entry was created"""
+  hourlyRateUsed: OrderBy
   id: OrderBy
   payrollDateId: OrderBy
   timeSpentMinutes: OrderBy
+  """Calculated internal cost (time * rate)"""
+  totalCost: OrderBy
   updatedAt: OrderBy
   userId: OrderBy
   workDate: OrderBy
@@ -14414,12 +16331,17 @@ input PayrollDateTimeEntriesOnConflict {
 
 """Ordering options when selecting data from "payroll_date_time_entries"."""
 input PayrollDateTimeEntriesOrderBy {
+  billingNotes: OrderBy
+  costCenter: OrderBy
   createdAt: OrderBy
   description: OrderBy
+  hourlyRateUsed: OrderBy
   id: OrderBy
+  isBillable: OrderBy
   payrollDate: PayrollDatesOrderBy
   payrollDateId: OrderBy
   timeSpentMinutes: OrderBy
+  totalCost: OrderBy
   updatedAt: OrderBy
   user: UsersOrderBy
   userId: OrderBy
@@ -14436,15 +16358,25 @@ select columns of table "payroll_date_time_entries"
 """
 enum PayrollDateTimeEntriesSelectColumn {
   """column name"""
+  billingNotes
+  """column name"""
+  costCenter
+  """column name"""
   createdAt
   """column name"""
   description
   """column name"""
+  hourlyRateUsed
+  """column name"""
   id
+  """column name"""
+  isBillable
   """column name"""
   payrollDateId
   """column name"""
   timeSpentMinutes
+  """column name"""
+  totalCost
   """column name"""
   updatedAt
   """column name"""
@@ -14454,12 +16386,34 @@ enum PayrollDateTimeEntriesSelectColumn {
 }
 
 """
+select "payrollDateTimeEntriesAggregateBoolExpBool_andArgumentsColumns" columns of table "payroll_date_time_entries"
+"""
+enum PayrollDateTimeEntriesSelectColumnPayrollDateTimeEntriesAggregateBoolExpBool_andArgumentsColumns {
+  """column name"""
+  isBillable
+}
+
+"""
+select "payrollDateTimeEntriesAggregateBoolExpBool_orArgumentsColumns" columns of table "payroll_date_time_entries"
+"""
+enum PayrollDateTimeEntriesSelectColumnPayrollDateTimeEntriesAggregateBoolExpBool_orArgumentsColumns {
+  """column name"""
+  isBillable
+}
+
+"""
 input type for updating data in table "payroll_date_time_entries"
 """
 input PayrollDateTimeEntriesSetInput {
+  billingNotes: String
+  costCenter: String
   createdAt: timestamptz
   description: String
+  """Hourly rate applied when this time entry was created"""
+  hourlyRateUsed: numeric
   id: uuid
+  """Whether this time should be included in client billing"""
+  isBillable: Boolean
   payrollDateId: uuid
   timeSpentMinutes: Int
   updatedAt: timestamptz
@@ -14469,38 +16423,62 @@ input PayrollDateTimeEntriesSetInput {
 
 """aggregate stddev on columns"""
 type PayrollDateTimeEntriesStddevFields {
+  """Hourly rate applied when this time entry was created"""
+  hourlyRateUsed: Float
   timeSpentMinutes: Float
+  """Calculated internal cost (time * rate)"""
+  totalCost: Float
 }
 
 """
 order by stddev() on columns of table "payroll_date_time_entries"
 """
 input PayrollDateTimeEntriesStddevOrderBy {
+  """Hourly rate applied when this time entry was created"""
+  hourlyRateUsed: OrderBy
   timeSpentMinutes: OrderBy
+  """Calculated internal cost (time * rate)"""
+  totalCost: OrderBy
 }
 
 """aggregate stddevPop on columns"""
 type PayrollDateTimeEntriesStddevPopFields {
+  """Hourly rate applied when this time entry was created"""
+  hourlyRateUsed: Float
   timeSpentMinutes: Float
+  """Calculated internal cost (time * rate)"""
+  totalCost: Float
 }
 
 """
 order by stddevPop() on columns of table "payroll_date_time_entries"
 """
 input PayrollDateTimeEntriesStddevPopOrderBy {
+  """Hourly rate applied when this time entry was created"""
+  hourlyRateUsed: OrderBy
   timeSpentMinutes: OrderBy
+  """Calculated internal cost (time * rate)"""
+  totalCost: OrderBy
 }
 
 """aggregate stddevSamp on columns"""
 type PayrollDateTimeEntriesStddevSampFields {
+  """Hourly rate applied when this time entry was created"""
+  hourlyRateUsed: Float
   timeSpentMinutes: Float
+  """Calculated internal cost (time * rate)"""
+  totalCost: Float
 }
 
 """
 order by stddevSamp() on columns of table "payroll_date_time_entries"
 """
 input PayrollDateTimeEntriesStddevSampOrderBy {
+  """Hourly rate applied when this time entry was created"""
+  hourlyRateUsed: OrderBy
   timeSpentMinutes: OrderBy
+  """Calculated internal cost (time * rate)"""
+  totalCost: OrderBy
 }
 
 """
@@ -14515,11 +16493,19 @@ input PayrollDateTimeEntriesStreamCursorInput {
 
 """Initial value of the column from where the streaming should start"""
 input PayrollDateTimeEntriesStreamCursorValueInput {
+  billingNotes: String
+  costCenter: String
   createdAt: timestamptz
   description: String
+  """Hourly rate applied when this time entry was created"""
+  hourlyRateUsed: numeric
   id: uuid
+  """Whether this time should be included in client billing"""
+  isBillable: Boolean
   payrollDateId: uuid
   timeSpentMinutes: Int
+  """Calculated internal cost (time * rate)"""
+  totalCost: numeric
   updatedAt: timestamptz
   userId: uuid
   workDate: date
@@ -14527,14 +16513,22 @@ input PayrollDateTimeEntriesStreamCursorValueInput {
 
 """aggregate sum on columns"""
 type PayrollDateTimeEntriesSumFields {
+  """Hourly rate applied when this time entry was created"""
+  hourlyRateUsed: numeric
   timeSpentMinutes: Int
+  """Calculated internal cost (time * rate)"""
+  totalCost: numeric
 }
 
 """
 order by sum() on columns of table "payroll_date_time_entries"
 """
 input PayrollDateTimeEntriesSumOrderBy {
+  """Hourly rate applied when this time entry was created"""
+  hourlyRateUsed: OrderBy
   timeSpentMinutes: OrderBy
+  """Calculated internal cost (time * rate)"""
+  totalCost: OrderBy
 }
 
 """
@@ -14542,11 +16536,19 @@ update columns of table "payroll_date_time_entries"
 """
 enum PayrollDateTimeEntriesUpdateColumn {
   """column name"""
+  billingNotes
+  """column name"""
+  costCenter
+  """column name"""
   createdAt
   """column name"""
   description
   """column name"""
+  hourlyRateUsed
+  """column name"""
   id
+  """column name"""
+  isBillable
   """column name"""
   payrollDateId
   """column name"""
@@ -14570,38 +16572,62 @@ input PayrollDateTimeEntriesUpdates {
 
 """aggregate varPop on columns"""
 type PayrollDateTimeEntriesVarPopFields {
+  """Hourly rate applied when this time entry was created"""
+  hourlyRateUsed: Float
   timeSpentMinutes: Float
+  """Calculated internal cost (time * rate)"""
+  totalCost: Float
 }
 
 """
 order by varPop() on columns of table "payroll_date_time_entries"
 """
 input PayrollDateTimeEntriesVarPopOrderBy {
+  """Hourly rate applied when this time entry was created"""
+  hourlyRateUsed: OrderBy
   timeSpentMinutes: OrderBy
+  """Calculated internal cost (time * rate)"""
+  totalCost: OrderBy
 }
 
 """aggregate varSamp on columns"""
 type PayrollDateTimeEntriesVarSampFields {
+  """Hourly rate applied when this time entry was created"""
+  hourlyRateUsed: Float
   timeSpentMinutes: Float
+  """Calculated internal cost (time * rate)"""
+  totalCost: Float
 }
 
 """
 order by varSamp() on columns of table "payroll_date_time_entries"
 """
 input PayrollDateTimeEntriesVarSampOrderBy {
+  """Hourly rate applied when this time entry was created"""
+  hourlyRateUsed: OrderBy
   timeSpentMinutes: OrderBy
+  """Calculated internal cost (time * rate)"""
+  totalCost: OrderBy
 }
 
 """aggregate variance on columns"""
 type PayrollDateTimeEntriesVarianceFields {
+  """Hourly rate applied when this time entry was created"""
+  hourlyRateUsed: Float
   timeSpentMinutes: Float
+  """Calculated internal cost (time * rate)"""
+  totalCost: Float
 }
 
 """
 order by variance() on columns of table "payroll_date_time_entries"
 """
 input PayrollDateTimeEntriesVarianceOrderBy {
+  """Hourly rate applied when this time entry was created"""
+  hourlyRateUsed: OrderBy
   timeSpentMinutes: OrderBy
+  """Calculated internal cost (time * rate)"""
+  totalCost: OrderBy
 }
 
 """
@@ -16072,6 +18098,656 @@ input PayrollRequiredSkillsUpdates {
   where: PayrollRequiredSkillsBoolExp!
 }
 
+"""Payroll-level service agreement overrides for tier 2 billing"""
+type PayrollServiceAgreements {
+  autoBillingEnabled: Boolean
+  billingFrequency: String
+  billingItemsGenerated: Boolean
+  billingNotes: String
+  """An object relationship"""
+  clientServiceAgreement: ClientServiceAgreements
+  clientServiceAgreementId: uuid
+  createdAt: timestamptz
+  createdBy: uuid
+  customDescription: String
+  customQuantity: Int
+  customRate: numeric
+  generatedAt: timestamptz
+  generatedBy: uuid
+  id: uuid!
+  isActive: Boolean
+  isOneTime: Boolean
+  payrollId: uuid!
+  """An object relationship"""
+  payrollServiceAgreementsByServiceId: Services!
+  """An object relationship"""
+  payrollServiceAgreementsForPayroll: Payrolls!
+  """An object relationship"""
+  serviceAgreementCreatedByUser: Users
+  """An object relationship"""
+  serviceAgreementGeneratedByUser: Users
+  serviceConfiguration(
+    """JSON select path"""
+    path: String
+  ): jsonb
+  serviceId: uuid!
+  updatedAt: timestamptz
+}
+
+"""
+aggregated selection of "payroll_service_agreements"
+"""
+type PayrollServiceAgreementsAggregate {
+  aggregate: PayrollServiceAgreementsAggregateFields
+  nodes: [PayrollServiceAgreements!]!
+}
+
+input PayrollServiceAgreementsAggregateBoolExp {
+  bool_and: payrollServiceAgreementsAggregateBoolExpBool_and
+  bool_or: payrollServiceAgreementsAggregateBoolExpBool_or
+  count: payrollServiceAgreementsAggregateBoolExpCount
+}
+
+"""
+aggregate fields of "payroll_service_agreements"
+"""
+type PayrollServiceAgreementsAggregateFields {
+  avg: PayrollServiceAgreementsAvgFields
+  count(columns: [PayrollServiceAgreementsSelectColumn!], distinct: Boolean): Int!
+  max: PayrollServiceAgreementsMaxFields
+  min: PayrollServiceAgreementsMinFields
+  stddev: PayrollServiceAgreementsStddevFields
+  stddevPop: PayrollServiceAgreementsStddevPopFields
+  stddevSamp: PayrollServiceAgreementsStddevSampFields
+  sum: PayrollServiceAgreementsSumFields
+  varPop: PayrollServiceAgreementsVarPopFields
+  varSamp: PayrollServiceAgreementsVarSampFields
+  variance: PayrollServiceAgreementsVarianceFields
+}
+
+"""
+order by aggregate values of table "payroll_service_agreements"
+"""
+input PayrollServiceAgreementsAggregateOrderBy {
+  avg: PayrollServiceAgreementsAvgOrderBy
+  count: OrderBy
+  max: PayrollServiceAgreementsMaxOrderBy
+  min: PayrollServiceAgreementsMinOrderBy
+  stddev: PayrollServiceAgreementsStddevOrderBy
+  stddevPop: PayrollServiceAgreementsStddevPopOrderBy
+  stddevSamp: PayrollServiceAgreementsStddevSampOrderBy
+  sum: PayrollServiceAgreementsSumOrderBy
+  varPop: PayrollServiceAgreementsVarPopOrderBy
+  varSamp: PayrollServiceAgreementsVarSampOrderBy
+  variance: PayrollServiceAgreementsVarianceOrderBy
+}
+
+"""append existing jsonb value of filtered columns with new jsonb value"""
+input PayrollServiceAgreementsAppendInput {
+  serviceConfiguration: jsonb
+}
+
+"""
+input type for inserting array relation for remote table "payroll_service_agreements"
+"""
+input PayrollServiceAgreementsArrRelInsertInput {
+  data: [PayrollServiceAgreementsInsertInput!]!
+  """upsert condition"""
+  onConflict: PayrollServiceAgreementsOnConflict
+}
+
+"""aggregate avg on columns"""
+type PayrollServiceAgreementsAvgFields {
+  customQuantity: Float
+  customRate: Float
+}
+
+"""
+order by avg() on columns of table "payroll_service_agreements"
+"""
+input PayrollServiceAgreementsAvgOrderBy {
+  customQuantity: OrderBy
+  customRate: OrderBy
+}
+
+"""
+Boolean expression to filter rows from the table "payroll_service_agreements". All fields are combined with a logical 'AND'.
+"""
+input PayrollServiceAgreementsBoolExp {
+  _and: [PayrollServiceAgreementsBoolExp!]
+  _not: PayrollServiceAgreementsBoolExp
+  _or: [PayrollServiceAgreementsBoolExp!]
+  autoBillingEnabled: BooleanComparisonExp
+  billingFrequency: StringComparisonExp
+  billingItemsGenerated: BooleanComparisonExp
+  billingNotes: StringComparisonExp
+  clientServiceAgreement: ClientServiceAgreementsBoolExp
+  clientServiceAgreementId: UuidComparisonExp
+  createdAt: TimestamptzComparisonExp
+  createdBy: UuidComparisonExp
+  customDescription: StringComparisonExp
+  customQuantity: IntComparisonExp
+  customRate: NumericComparisonExp
+  generatedAt: TimestamptzComparisonExp
+  generatedBy: UuidComparisonExp
+  id: UuidComparisonExp
+  isActive: BooleanComparisonExp
+  isOneTime: BooleanComparisonExp
+  payrollId: UuidComparisonExp
+  payrollServiceAgreementsByServiceId: ServicesBoolExp
+  payrollServiceAgreementsForPayroll: PayrollsBoolExp
+  serviceAgreementCreatedByUser: UsersBoolExp
+  serviceAgreementGeneratedByUser: UsersBoolExp
+  serviceConfiguration: JsonbComparisonExp
+  serviceId: UuidComparisonExp
+  updatedAt: TimestamptzComparisonExp
+}
+
+"""
+unique or primary key constraints on table "payroll_service_agreements"
+"""
+enum PayrollServiceAgreementsConstraint {
+  """
+  unique or primary key constraint on columns "payroll_id", "service_id"
+  """
+  payroll_service_agreements_payroll_id_service_id_key
+  """
+  unique or primary key constraint on columns "id"
+  """
+  payroll_service_agreements_pkey
+}
+
+"""
+delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+"""
+input PayrollServiceAgreementsDeleteAtPathInput {
+  serviceConfiguration: [String!]
+}
+
+"""
+delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+"""
+input PayrollServiceAgreementsDeleteElemInput {
+  serviceConfiguration: Int
+}
+
+"""
+delete key/value pair or string element. key/value pairs are matched based on their key value
+"""
+input PayrollServiceAgreementsDeleteKeyInput {
+  serviceConfiguration: String
+}
+
+"""
+input type for incrementing numeric columns in table "payroll_service_agreements"
+"""
+input PayrollServiceAgreementsIncInput {
+  customQuantity: Int
+  customRate: numeric
+}
+
+"""
+input type for inserting data into table "payroll_service_agreements"
+"""
+input PayrollServiceAgreementsInsertInput {
+  autoBillingEnabled: Boolean
+  billingFrequency: String
+  billingItemsGenerated: Boolean
+  billingNotes: String
+  clientServiceAgreement: ClientServiceAgreementsObjRelInsertInput
+  clientServiceAgreementId: uuid
+  createdAt: timestamptz
+  createdBy: uuid
+  customDescription: String
+  customQuantity: Int
+  customRate: numeric
+  generatedAt: timestamptz
+  generatedBy: uuid
+  id: uuid
+  isActive: Boolean
+  isOneTime: Boolean
+  payrollId: uuid
+  payrollServiceAgreementsByServiceId: ServicesObjRelInsertInput
+  payrollServiceAgreementsForPayroll: PayrollsObjRelInsertInput
+  serviceAgreementCreatedByUser: UsersObjRelInsertInput
+  serviceAgreementGeneratedByUser: UsersObjRelInsertInput
+  serviceConfiguration: jsonb
+  serviceId: uuid
+  updatedAt: timestamptz
+}
+
+"""aggregate max on columns"""
+type PayrollServiceAgreementsMaxFields {
+  billingFrequency: String
+  billingNotes: String
+  clientServiceAgreementId: uuid
+  createdAt: timestamptz
+  createdBy: uuid
+  customDescription: String
+  customQuantity: Int
+  customRate: numeric
+  generatedAt: timestamptz
+  generatedBy: uuid
+  id: uuid
+  payrollId: uuid
+  serviceId: uuid
+  updatedAt: timestamptz
+}
+
+"""
+order by max() on columns of table "payroll_service_agreements"
+"""
+input PayrollServiceAgreementsMaxOrderBy {
+  billingFrequency: OrderBy
+  billingNotes: OrderBy
+  clientServiceAgreementId: OrderBy
+  createdAt: OrderBy
+  createdBy: OrderBy
+  customDescription: OrderBy
+  customQuantity: OrderBy
+  customRate: OrderBy
+  generatedAt: OrderBy
+  generatedBy: OrderBy
+  id: OrderBy
+  payrollId: OrderBy
+  serviceId: OrderBy
+  updatedAt: OrderBy
+}
+
+"""aggregate min on columns"""
+type PayrollServiceAgreementsMinFields {
+  billingFrequency: String
+  billingNotes: String
+  clientServiceAgreementId: uuid
+  createdAt: timestamptz
+  createdBy: uuid
+  customDescription: String
+  customQuantity: Int
+  customRate: numeric
+  generatedAt: timestamptz
+  generatedBy: uuid
+  id: uuid
+  payrollId: uuid
+  serviceId: uuid
+  updatedAt: timestamptz
+}
+
+"""
+order by min() on columns of table "payroll_service_agreements"
+"""
+input PayrollServiceAgreementsMinOrderBy {
+  billingFrequency: OrderBy
+  billingNotes: OrderBy
+  clientServiceAgreementId: OrderBy
+  createdAt: OrderBy
+  createdBy: OrderBy
+  customDescription: OrderBy
+  customQuantity: OrderBy
+  customRate: OrderBy
+  generatedAt: OrderBy
+  generatedBy: OrderBy
+  id: OrderBy
+  payrollId: OrderBy
+  serviceId: OrderBy
+  updatedAt: OrderBy
+}
+
+"""
+response of any mutation on the table "payroll_service_agreements"
+"""
+type PayrollServiceAgreementsMutationResponse {
+  """number of rows affected by the mutation"""
+  affectedRows: Int!
+  """data from the rows affected by the mutation"""
+  returning: [PayrollServiceAgreements!]!
+}
+
+"""
+on_conflict condition type for table "payroll_service_agreements"
+"""
+input PayrollServiceAgreementsOnConflict {
+  constraint: PayrollServiceAgreementsConstraint!
+  updateColumns: [PayrollServiceAgreementsUpdateColumn!]! = []
+  where: PayrollServiceAgreementsBoolExp
+}
+
+"""
+Ordering options when selecting data from "payroll_service_agreements".
+"""
+input PayrollServiceAgreementsOrderBy {
+  autoBillingEnabled: OrderBy
+  billingFrequency: OrderBy
+  billingItemsGenerated: OrderBy
+  billingNotes: OrderBy
+  clientServiceAgreement: ClientServiceAgreementsOrderBy
+  clientServiceAgreementId: OrderBy
+  createdAt: OrderBy
+  createdBy: OrderBy
+  customDescription: OrderBy
+  customQuantity: OrderBy
+  customRate: OrderBy
+  generatedAt: OrderBy
+  generatedBy: OrderBy
+  id: OrderBy
+  isActive: OrderBy
+  isOneTime: OrderBy
+  payrollId: OrderBy
+  payrollServiceAgreementsByServiceId: ServicesOrderBy
+  payrollServiceAgreementsForPayroll: PayrollsOrderBy
+  serviceAgreementCreatedByUser: UsersOrderBy
+  serviceAgreementGeneratedByUser: UsersOrderBy
+  serviceConfiguration: OrderBy
+  serviceId: OrderBy
+  updatedAt: OrderBy
+}
+
+"""primary key columns input for table: payroll_service_agreements"""
+input PayrollServiceAgreementsPkColumnsInput {
+  id: uuid!
+}
+
+"""prepend existing jsonb value of filtered columns with new jsonb value"""
+input PayrollServiceAgreementsPrependInput {
+  serviceConfiguration: jsonb
+}
+
+"""
+select columns of table "payroll_service_agreements"
+"""
+enum PayrollServiceAgreementsSelectColumn {
+  """column name"""
+  autoBillingEnabled
+  """column name"""
+  billingFrequency
+  """column name"""
+  billingItemsGenerated
+  """column name"""
+  billingNotes
+  """column name"""
+  clientServiceAgreementId
+  """column name"""
+  createdAt
+  """column name"""
+  createdBy
+  """column name"""
+  customDescription
+  """column name"""
+  customQuantity
+  """column name"""
+  customRate
+  """column name"""
+  generatedAt
+  """column name"""
+  generatedBy
+  """column name"""
+  id
+  """column name"""
+  isActive
+  """column name"""
+  isOneTime
+  """column name"""
+  payrollId
+  """column name"""
+  serviceConfiguration
+  """column name"""
+  serviceId
+  """column name"""
+  updatedAt
+}
+
+"""
+select "payrollServiceAgreementsAggregateBoolExpBool_andArgumentsColumns" columns of table "payroll_service_agreements"
+"""
+enum PayrollServiceAgreementsSelectColumnPayrollServiceAgreementsAggregateBoolExpBool_andArgumentsColumns {
+  """column name"""
+  autoBillingEnabled
+  """column name"""
+  billingItemsGenerated
+  """column name"""
+  isActive
+  """column name"""
+  isOneTime
+}
+
+"""
+select "payrollServiceAgreementsAggregateBoolExpBool_orArgumentsColumns" columns of table "payroll_service_agreements"
+"""
+enum PayrollServiceAgreementsSelectColumnPayrollServiceAgreementsAggregateBoolExpBool_orArgumentsColumns {
+  """column name"""
+  autoBillingEnabled
+  """column name"""
+  billingItemsGenerated
+  """column name"""
+  isActive
+  """column name"""
+  isOneTime
+}
+
+"""
+input type for updating data in table "payroll_service_agreements"
+"""
+input PayrollServiceAgreementsSetInput {
+  autoBillingEnabled: Boolean
+  billingFrequency: String
+  billingItemsGenerated: Boolean
+  billingNotes: String
+  clientServiceAgreementId: uuid
+  createdAt: timestamptz
+  createdBy: uuid
+  customDescription: String
+  customQuantity: Int
+  customRate: numeric
+  generatedAt: timestamptz
+  generatedBy: uuid
+  id: uuid
+  isActive: Boolean
+  isOneTime: Boolean
+  payrollId: uuid
+  serviceConfiguration: jsonb
+  serviceId: uuid
+  updatedAt: timestamptz
+}
+
+"""aggregate stddev on columns"""
+type PayrollServiceAgreementsStddevFields {
+  customQuantity: Float
+  customRate: Float
+}
+
+"""
+order by stddev() on columns of table "payroll_service_agreements"
+"""
+input PayrollServiceAgreementsStddevOrderBy {
+  customQuantity: OrderBy
+  customRate: OrderBy
+}
+
+"""aggregate stddevPop on columns"""
+type PayrollServiceAgreementsStddevPopFields {
+  customQuantity: Float
+  customRate: Float
+}
+
+"""
+order by stddevPop() on columns of table "payroll_service_agreements"
+"""
+input PayrollServiceAgreementsStddevPopOrderBy {
+  customQuantity: OrderBy
+  customRate: OrderBy
+}
+
+"""aggregate stddevSamp on columns"""
+type PayrollServiceAgreementsStddevSampFields {
+  customQuantity: Float
+  customRate: Float
+}
+
+"""
+order by stddevSamp() on columns of table "payroll_service_agreements"
+"""
+input PayrollServiceAgreementsStddevSampOrderBy {
+  customQuantity: OrderBy
+  customRate: OrderBy
+}
+
+"""
+Streaming cursor of the table "payroll_service_agreements"
+"""
+input PayrollServiceAgreementsStreamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: PayrollServiceAgreementsStreamCursorValueInput!
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input PayrollServiceAgreementsStreamCursorValueInput {
+  autoBillingEnabled: Boolean
+  billingFrequency: String
+  billingItemsGenerated: Boolean
+  billingNotes: String
+  clientServiceAgreementId: uuid
+  createdAt: timestamptz
+  createdBy: uuid
+  customDescription: String
+  customQuantity: Int
+  customRate: numeric
+  generatedAt: timestamptz
+  generatedBy: uuid
+  id: uuid
+  isActive: Boolean
+  isOneTime: Boolean
+  payrollId: uuid
+  serviceConfiguration: jsonb
+  serviceId: uuid
+  updatedAt: timestamptz
+}
+
+"""aggregate sum on columns"""
+type PayrollServiceAgreementsSumFields {
+  customQuantity: Int
+  customRate: numeric
+}
+
+"""
+order by sum() on columns of table "payroll_service_agreements"
+"""
+input PayrollServiceAgreementsSumOrderBy {
+  customQuantity: OrderBy
+  customRate: OrderBy
+}
+
+"""
+update columns of table "payroll_service_agreements"
+"""
+enum PayrollServiceAgreementsUpdateColumn {
+  """column name"""
+  autoBillingEnabled
+  """column name"""
+  billingFrequency
+  """column name"""
+  billingItemsGenerated
+  """column name"""
+  billingNotes
+  """column name"""
+  clientServiceAgreementId
+  """column name"""
+  createdAt
+  """column name"""
+  createdBy
+  """column name"""
+  customDescription
+  """column name"""
+  customQuantity
+  """column name"""
+  customRate
+  """column name"""
+  generatedAt
+  """column name"""
+  generatedBy
+  """column name"""
+  id
+  """column name"""
+  isActive
+  """column name"""
+  isOneTime
+  """column name"""
+  payrollId
+  """column name"""
+  serviceConfiguration
+  """column name"""
+  serviceId
+  """column name"""
+  updatedAt
+}
+
+input PayrollServiceAgreementsUpdates {
+  """append existing jsonb value of filtered columns with new jsonb value"""
+  _append: PayrollServiceAgreementsAppendInput
+  """
+  delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+  """
+  _deleteAtPath: PayrollServiceAgreementsDeleteAtPathInput
+  """
+  delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+  """
+  _deleteElem: PayrollServiceAgreementsDeleteElemInput
+  """
+  delete key/value pair or string element. key/value pairs are matched based on their key value
+  """
+  _deleteKey: PayrollServiceAgreementsDeleteKeyInput
+  """increments the numeric columns with given value of the filtered values"""
+  _inc: PayrollServiceAgreementsIncInput
+  """prepend existing jsonb value of filtered columns with new jsonb value"""
+  _prepend: PayrollServiceAgreementsPrependInput
+  """sets the columns of the filtered rows to the given values"""
+  _set: PayrollServiceAgreementsSetInput
+  """filter the rows which have to be updated"""
+  where: PayrollServiceAgreementsBoolExp!
+}
+
+"""aggregate varPop on columns"""
+type PayrollServiceAgreementsVarPopFields {
+  customQuantity: Float
+  customRate: Float
+}
+
+"""
+order by varPop() on columns of table "payroll_service_agreements"
+"""
+input PayrollServiceAgreementsVarPopOrderBy {
+  customQuantity: OrderBy
+  customRate: OrderBy
+}
+
+"""aggregate varSamp on columns"""
+type PayrollServiceAgreementsVarSampFields {
+  customQuantity: Float
+  customRate: Float
+}
+
+"""
+order by varSamp() on columns of table "payroll_service_agreements"
+"""
+input PayrollServiceAgreementsVarSampOrderBy {
+  customQuantity: OrderBy
+  customRate: OrderBy
+}
+
+"""aggregate variance on columns"""
+type PayrollServiceAgreementsVarianceFields {
+  customQuantity: Float
+  customRate: Float
+}
+
+"""
+order by variance() on columns of table "payroll_service_agreements"
+"""
+input PayrollServiceAgreementsVarianceOrderBy {
+  customQuantity: OrderBy
+  customRate: OrderBy
+}
+
 """
 Boolean expression to compare columns of type "payroll_status". All fields are combined with logical 'AND'.
 """
@@ -17266,6 +19942,32 @@ type Payrolls {
     """filter the rows returned"""
     where: PayrollDatesBoolExp
   ): PayrollDatesAggregate!
+  """An array relationship"""
+  payrollServiceAgreementsForPayroll(
+    """distinct select on columns"""
+    distinctOn: [PayrollServiceAgreementsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollServiceAgreementsOrderBy!]
+    """filter the rows returned"""
+    where: PayrollServiceAgreementsBoolExp
+  ): [PayrollServiceAgreements!]!
+  """An aggregate relationship"""
+  payrollServiceAgreementsForPayrollAggregate(
+    """distinct select on columns"""
+    distinctOn: [PayrollServiceAgreementsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollServiceAgreementsOrderBy!]
+    """filter the rows returned"""
+    where: PayrollServiceAgreementsBoolExp
+  ): PayrollServiceAgreementsAggregate!
   """External payroll system used for this client"""
   payrollSystem: String
   """Number of payslips processed in this payroll run"""
@@ -17488,6 +20190,8 @@ input PayrollsBoolExp {
   payrollDateType: PayrollDateTypesBoolExp
   payrollDates: PayrollDatesBoolExp
   payrollDatesAggregate: PayrollDatesAggregateBoolExp
+  payrollServiceAgreementsForPayroll: PayrollServiceAgreementsBoolExp
+  payrollServiceAgreementsForPayrollAggregate: PayrollServiceAgreementsAggregateBoolExp
   payrollSystem: StringComparisonExp
   payslipCount: IntComparisonExp
   primaryConsultant: UsersBoolExp
@@ -17592,6 +20296,7 @@ input PayrollsInsertInput {
   payrollCycle: PayrollCyclesObjRelInsertInput
   payrollDateType: PayrollDateTypesObjRelInsertInput
   payrollDates: PayrollDatesArrRelInsertInput
+  payrollServiceAgreementsForPayroll: PayrollServiceAgreementsArrRelInsertInput
   """External payroll system used for this client"""
   payrollSystem: String
   """Number of payslips processed in this payroll run"""
@@ -17909,6 +20614,7 @@ input PayrollsOrderBy {
   payrollCycle: PayrollCyclesOrderBy
   payrollDateType: PayrollDateTypesOrderBy
   payrollDatesAggregate: PayrollDatesAggregateOrderBy
+  payrollServiceAgreementsForPayrollAggregate: PayrollServiceAgreementsAggregateOrderBy
   payrollSystem: OrderBy
   payslipCount: OrderBy
   primaryConsultant: UsersOrderBy
@@ -25571,6 +28277,8 @@ type Services {
     """filter the rows returned"""
     where: BillingItemsBoolExp
   ): BillingItemsAggregate!
+  """Billing tier: payroll_date, payroll, or client_monthly"""
+  billingTier: billing_tier_level
   """How this service is billed: Per Payroll, Per Employee, Per Hour, etc."""
   billingUnit: String!
   category: String!
@@ -25619,6 +28327,32 @@ type Services {
     path: String
   ): jsonb
   name: String!
+  """An array relationship"""
+  payrollServiceAgreementsForService(
+    """distinct select on columns"""
+    distinctOn: [PayrollServiceAgreementsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollServiceAgreementsOrderBy!]
+    """filter the rows returned"""
+    where: PayrollServiceAgreementsBoolExp
+  ): [PayrollServiceAgreements!]!
+  """An aggregate relationship"""
+  payrollServiceAgreementsForServiceAggregate(
+    """distinct select on columns"""
+    distinctOn: [PayrollServiceAgreementsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollServiceAgreementsOrderBy!]
+    """filter the rows returned"""
+    where: PayrollServiceAgreementsBoolExp
+  ): PayrollServiceAgreementsAggregate!
   """JSONB field for complex pricing logic"""
   pricingRules(
     """JSON select path"""
@@ -25650,6 +28384,8 @@ type Services {
     """filter the rows returned"""
     where: QuoteLineItemsBoolExp
   ): QuoteLineItemsAggregate!
+  requiresMonthlyCompletion: Boolean
+  requiresPayrollCompletion: Boolean
   """An array relationship"""
   servicePricingRules(
     """distinct select on columns"""
@@ -25680,6 +28416,8 @@ type Services {
   standard: regular service, template: reusable template, custom: client-specific
   """
   serviceType: String!
+  """Priority within tier (lower number = higher priority)"""
+  tierPriority: Int
   updatedAt: timestamptz
   updatedBy: uuid
   """An object relationship"""
@@ -25754,6 +28492,8 @@ input ServicesArrRelInsertInput {
 """aggregate avg on columns"""
 type ServicesAvgFields {
   defaultRate: Float
+  """Priority within tier (lower number = higher priority)"""
+  tierPriority: Float
 }
 
 """
@@ -25761,6 +28501,8 @@ order by avg() on columns of table "services"
 """
 input ServicesAvgOrderBy {
   defaultRate: OrderBy
+  """Priority within tier (lower number = higher priority)"""
+  tierPriority: OrderBy
 }
 
 """
@@ -25772,6 +28514,7 @@ input ServicesBoolExp {
   _or: [ServicesBoolExp!]
   billingItems: BillingItemsBoolExp
   billingItemsAggregate: BillingItemsAggregateBoolExp
+  billingTier: BillingTierLevelComparisonExp
   billingUnit: StringComparisonExp
   category: StringComparisonExp
   clientAgreements: ClientServiceAgreementsBoolExp
@@ -25788,12 +28531,17 @@ input ServicesBoolExp {
   isTemplate: BooleanComparisonExp
   metadata: JsonbComparisonExp
   name: StringComparisonExp
+  payrollServiceAgreementsForService: PayrollServiceAgreementsBoolExp
+  payrollServiceAgreementsForServiceAggregate: PayrollServiceAgreementsAggregateBoolExp
   pricingRules: JsonbComparisonExp
   quoteLineItems: QuoteLineItemsBoolExp
   quoteLineItemsAggregate: QuoteLineItemsAggregateBoolExp
+  requiresMonthlyCompletion: BooleanComparisonExp
+  requiresPayrollCompletion: BooleanComparisonExp
   servicePricingRules: ServicePricingRulesBoolExp
   servicePricingRulesAggregate: ServicePricingRulesAggregateBoolExp
   serviceType: StringComparisonExp
+  tierPriority: IntComparisonExp
   updatedAt: TimestamptzComparisonExp
   updatedBy: UuidComparisonExp
   updatedByUser: UsersBoolExp
@@ -25848,6 +28596,8 @@ input type for incrementing numeric columns in table "services"
 """
 input ServicesIncInput {
   defaultRate: numeric
+  """Priority within tier (lower number = higher priority)"""
+  tierPriority: Int
 }
 
 """
@@ -25855,6 +28605,8 @@ input type for inserting data into table "services"
 """
 input ServicesInsertInput {
   billingItems: BillingItemsArrRelInsertInput
+  """Billing tier: payroll_date, payroll, or client_monthly"""
+  billingTier: billing_tier_level
   """How this service is billed: Per Payroll, Per Employee, Per Hour, etc."""
   billingUnit: String
   category: String
@@ -25871,14 +28623,19 @@ input ServicesInsertInput {
   isTemplate: Boolean
   metadata: jsonb
   name: String
+  payrollServiceAgreementsForService: PayrollServiceAgreementsArrRelInsertInput
   """JSONB field for complex pricing logic"""
   pricingRules: jsonb
   quoteLineItems: QuoteLineItemsArrRelInsertInput
+  requiresMonthlyCompletion: Boolean
+  requiresPayrollCompletion: Boolean
   servicePricingRules: ServicePricingRulesArrRelInsertInput
   """
   standard: regular service, template: reusable template, custom: client-specific
   """
   serviceType: String
+  """Priority within tier (lower number = higher priority)"""
+  tierPriority: Int
   updatedAt: timestamptz
   updatedBy: uuid
   updatedByUser: UsersObjRelInsertInput
@@ -25886,6 +28643,8 @@ input ServicesInsertInput {
 
 """aggregate max on columns"""
 type ServicesMaxFields {
+  """Billing tier: payroll_date, payroll, or client_monthly"""
+  billingTier: billing_tier_level
   """How this service is billed: Per Payroll, Per Employee, Per Hour, etc."""
   billingUnit: String
   category: String
@@ -25900,6 +28659,8 @@ type ServicesMaxFields {
   standard: regular service, template: reusable template, custom: client-specific
   """
   serviceType: String
+  """Priority within tier (lower number = higher priority)"""
+  tierPriority: Int
   updatedAt: timestamptz
   updatedBy: uuid
 }
@@ -25908,6 +28669,8 @@ type ServicesMaxFields {
 order by max() on columns of table "services"
 """
 input ServicesMaxOrderBy {
+  """Billing tier: payroll_date, payroll, or client_monthly"""
+  billingTier: OrderBy
   """How this service is billed: Per Payroll, Per Employee, Per Hour, etc."""
   billingUnit: OrderBy
   category: OrderBy
@@ -25922,12 +28685,16 @@ input ServicesMaxOrderBy {
   standard: regular service, template: reusable template, custom: client-specific
   """
   serviceType: OrderBy
+  """Priority within tier (lower number = higher priority)"""
+  tierPriority: OrderBy
   updatedAt: OrderBy
   updatedBy: OrderBy
 }
 
 """aggregate min on columns"""
 type ServicesMinFields {
+  """Billing tier: payroll_date, payroll, or client_monthly"""
+  billingTier: billing_tier_level
   """How this service is billed: Per Payroll, Per Employee, Per Hour, etc."""
   billingUnit: String
   category: String
@@ -25942,6 +28709,8 @@ type ServicesMinFields {
   standard: regular service, template: reusable template, custom: client-specific
   """
   serviceType: String
+  """Priority within tier (lower number = higher priority)"""
+  tierPriority: Int
   updatedAt: timestamptz
   updatedBy: uuid
 }
@@ -25950,6 +28719,8 @@ type ServicesMinFields {
 order by min() on columns of table "services"
 """
 input ServicesMinOrderBy {
+  """Billing tier: payroll_date, payroll, or client_monthly"""
+  billingTier: OrderBy
   """How this service is billed: Per Payroll, Per Employee, Per Hour, etc."""
   billingUnit: OrderBy
   category: OrderBy
@@ -25964,6 +28735,8 @@ input ServicesMinOrderBy {
   standard: regular service, template: reusable template, custom: client-specific
   """
   serviceType: OrderBy
+  """Priority within tier (lower number = higher priority)"""
+  tierPriority: OrderBy
   updatedAt: OrderBy
   updatedBy: OrderBy
 }
@@ -25999,6 +28772,7 @@ input ServicesOnConflict {
 """Ordering options when selecting data from "services"."""
 input ServicesOrderBy {
   billingItemsAggregate: BillingItemsAggregateOrderBy
+  billingTier: OrderBy
   billingUnit: OrderBy
   category: OrderBy
   clientAgreementsAggregate: ClientServiceAgreementsAggregateOrderBy
@@ -26014,10 +28788,14 @@ input ServicesOrderBy {
   isTemplate: OrderBy
   metadata: OrderBy
   name: OrderBy
+  payrollServiceAgreementsForServiceAggregate: PayrollServiceAgreementsAggregateOrderBy
   pricingRules: OrderBy
   quoteLineItemsAggregate: QuoteLineItemsAggregateOrderBy
+  requiresMonthlyCompletion: OrderBy
+  requiresPayrollCompletion: OrderBy
   servicePricingRulesAggregate: ServicePricingRulesAggregateOrderBy
   serviceType: OrderBy
+  tierPriority: OrderBy
   updatedAt: OrderBy
   updatedBy: OrderBy
   updatedByUser: UsersOrderBy
@@ -26041,6 +28819,8 @@ select columns of table "services"
 """
 enum ServicesSelectColumn {
   """column name"""
+  billingTier
+  """column name"""
   billingUnit
   """column name"""
   category
@@ -26069,7 +28849,13 @@ enum ServicesSelectColumn {
   """column name"""
   pricingRules
   """column name"""
+  requiresMonthlyCompletion
+  """column name"""
+  requiresPayrollCompletion
+  """column name"""
   serviceType
+  """column name"""
+  tierPriority
   """column name"""
   updatedAt
   """column name"""
@@ -26084,6 +28870,10 @@ enum ServicesSelectColumnServicesAggregateBoolExpBool_andArgumentsColumns {
   isActive
   """column name"""
   isTemplate
+  """column name"""
+  requiresMonthlyCompletion
+  """column name"""
+  requiresPayrollCompletion
 }
 
 """
@@ -26094,12 +28884,18 @@ enum ServicesSelectColumnServicesAggregateBoolExpBool_orArgumentsColumns {
   isActive
   """column name"""
   isTemplate
+  """column name"""
+  requiresMonthlyCompletion
+  """column name"""
+  requiresPayrollCompletion
 }
 
 """
 input type for updating data in table "services"
 """
 input ServicesSetInput {
+  """Billing tier: payroll_date, payroll, or client_monthly"""
+  billingTier: billing_tier_level
   """How this service is billed: Per Payroll, Per Employee, Per Hour, etc."""
   billingUnit: String
   category: String
@@ -26116,10 +28912,14 @@ input ServicesSetInput {
   name: String
   """JSONB field for complex pricing logic"""
   pricingRules: jsonb
+  requiresMonthlyCompletion: Boolean
+  requiresPayrollCompletion: Boolean
   """
   standard: regular service, template: reusable template, custom: client-specific
   """
   serviceType: String
+  """Priority within tier (lower number = higher priority)"""
+  tierPriority: Int
   updatedAt: timestamptz
   updatedBy: uuid
 }
@@ -26127,6 +28927,8 @@ input ServicesSetInput {
 """aggregate stddev on columns"""
 type ServicesStddevFields {
   defaultRate: Float
+  """Priority within tier (lower number = higher priority)"""
+  tierPriority: Float
 }
 
 """
@@ -26134,11 +28936,15 @@ order by stddev() on columns of table "services"
 """
 input ServicesStddevOrderBy {
   defaultRate: OrderBy
+  """Priority within tier (lower number = higher priority)"""
+  tierPriority: OrderBy
 }
 
 """aggregate stddevPop on columns"""
 type ServicesStddevPopFields {
   defaultRate: Float
+  """Priority within tier (lower number = higher priority)"""
+  tierPriority: Float
 }
 
 """
@@ -26146,11 +28952,15 @@ order by stddevPop() on columns of table "services"
 """
 input ServicesStddevPopOrderBy {
   defaultRate: OrderBy
+  """Priority within tier (lower number = higher priority)"""
+  tierPriority: OrderBy
 }
 
 """aggregate stddevSamp on columns"""
 type ServicesStddevSampFields {
   defaultRate: Float
+  """Priority within tier (lower number = higher priority)"""
+  tierPriority: Float
 }
 
 """
@@ -26158,6 +28968,8 @@ order by stddevSamp() on columns of table "services"
 """
 input ServicesStddevSampOrderBy {
   defaultRate: OrderBy
+  """Priority within tier (lower number = higher priority)"""
+  tierPriority: OrderBy
 }
 
 """
@@ -26172,6 +28984,8 @@ input ServicesStreamCursorInput {
 
 """Initial value of the column from where the streaming should start"""
 input ServicesStreamCursorValueInput {
+  """Billing tier: payroll_date, payroll, or client_monthly"""
+  billingTier: billing_tier_level
   """How this service is billed: Per Payroll, Per Employee, Per Hour, etc."""
   billingUnit: String
   category: String
@@ -26188,10 +29002,14 @@ input ServicesStreamCursorValueInput {
   name: String
   """JSONB field for complex pricing logic"""
   pricingRules: jsonb
+  requiresMonthlyCompletion: Boolean
+  requiresPayrollCompletion: Boolean
   """
   standard: regular service, template: reusable template, custom: client-specific
   """
   serviceType: String
+  """Priority within tier (lower number = higher priority)"""
+  tierPriority: Int
   updatedAt: timestamptz
   updatedBy: uuid
 }
@@ -26199,6 +29017,8 @@ input ServicesStreamCursorValueInput {
 """aggregate sum on columns"""
 type ServicesSumFields {
   defaultRate: numeric
+  """Priority within tier (lower number = higher priority)"""
+  tierPriority: Int
 }
 
 """
@@ -26206,12 +29026,16 @@ order by sum() on columns of table "services"
 """
 input ServicesSumOrderBy {
   defaultRate: OrderBy
+  """Priority within tier (lower number = higher priority)"""
+  tierPriority: OrderBy
 }
 
 """
 update columns of table "services"
 """
 enum ServicesUpdateColumn {
+  """column name"""
+  billingTier
   """column name"""
   billingUnit
   """column name"""
@@ -26241,7 +29065,13 @@ enum ServicesUpdateColumn {
   """column name"""
   pricingRules
   """column name"""
+  requiresMonthlyCompletion
+  """column name"""
+  requiresPayrollCompletion
+  """column name"""
   serviceType
+  """column name"""
+  tierPriority
   """column name"""
   updatedAt
   """column name"""
@@ -26276,6 +29106,8 @@ input ServicesUpdates {
 """aggregate varPop on columns"""
 type ServicesVarPopFields {
   defaultRate: Float
+  """Priority within tier (lower number = higher priority)"""
+  tierPriority: Float
 }
 
 """
@@ -26283,11 +29115,15 @@ order by varPop() on columns of table "services"
 """
 input ServicesVarPopOrderBy {
   defaultRate: OrderBy
+  """Priority within tier (lower number = higher priority)"""
+  tierPriority: OrderBy
 }
 
 """aggregate varSamp on columns"""
 type ServicesVarSampFields {
   defaultRate: Float
+  """Priority within tier (lower number = higher priority)"""
+  tierPriority: Float
 }
 
 """
@@ -26295,11 +29131,15 @@ order by varSamp() on columns of table "services"
 """
 input ServicesVarSampOrderBy {
   defaultRate: OrderBy
+  """Priority within tier (lower number = higher priority)"""
+  tierPriority: OrderBy
 }
 
 """aggregate variance on columns"""
 type ServicesVarianceFields {
   defaultRate: Float
+  """Priority within tier (lower number = higher priority)"""
+  tierPriority: Float
 }
 
 """
@@ -26307,6 +29147,8 @@ order by variance() on columns of table "services"
 """
 input ServicesVarianceOrderBy {
   defaultRate: OrderBy
+  """Priority within tier (lower number = higher priority)"""
+  tierPriority: OrderBy
 }
 
 """
@@ -29163,6 +32005,726 @@ input UserPositionComparisonExp {
   _nin: [user_position!]
 }
 
+"""User productivity and profitability metrics"""
+type UserProductivityAnalysis {
+  billingCategory: String
+  computedName: String
+  costCenter: String
+  defaultHourlyRate: numeric
+  efficiencyRatio30d: numeric
+  firstName: String
+  lastName: String
+  payrollDatesWorked30d: bigint
+  profitGenerated30d: numeric
+  revenuePerHour30d: numeric
+  totalHoursLast30Days: numeric
+  totalInternalCost30d: numeric
+  totalRevenueGenerated30d: numeric
+  userId: uuid
+}
+
+"""
+aggregated selection of "user_productivity_analysis"
+"""
+type UserProductivityAnalysisAggregate {
+  aggregate: UserProductivityAnalysisAggregateFields
+  nodes: [UserProductivityAnalysis!]!
+}
+
+"""
+aggregate fields of "user_productivity_analysis"
+"""
+type UserProductivityAnalysisAggregateFields {
+  avg: UserProductivityAnalysisAvgFields
+  count(columns: [UserProductivityAnalysisSelectColumn!], distinct: Boolean): Int!
+  max: UserProductivityAnalysisMaxFields
+  min: UserProductivityAnalysisMinFields
+  stddev: UserProductivityAnalysisStddevFields
+  stddevPop: UserProductivityAnalysisStddevPopFields
+  stddevSamp: UserProductivityAnalysisStddevSampFields
+  sum: UserProductivityAnalysisSumFields
+  varPop: UserProductivityAnalysisVarPopFields
+  varSamp: UserProductivityAnalysisVarSampFields
+  variance: UserProductivityAnalysisVarianceFields
+}
+
+"""aggregate avg on columns"""
+type UserProductivityAnalysisAvgFields {
+  defaultHourlyRate: Float
+  efficiencyRatio30d: Float
+  payrollDatesWorked30d: Float
+  profitGenerated30d: Float
+  revenuePerHour30d: Float
+  totalHoursLast30Days: Float
+  totalInternalCost30d: Float
+  totalRevenueGenerated30d: Float
+}
+
+"""
+Boolean expression to filter rows from the table "user_productivity_analysis". All fields are combined with a logical 'AND'.
+"""
+input UserProductivityAnalysisBoolExp {
+  _and: [UserProductivityAnalysisBoolExp!]
+  _not: UserProductivityAnalysisBoolExp
+  _or: [UserProductivityAnalysisBoolExp!]
+  billingCategory: StringComparisonExp
+  computedName: StringComparisonExp
+  costCenter: StringComparisonExp
+  defaultHourlyRate: NumericComparisonExp
+  efficiencyRatio30d: NumericComparisonExp
+  firstName: StringComparisonExp
+  lastName: StringComparisonExp
+  payrollDatesWorked30d: BigintComparisonExp
+  profitGenerated30d: NumericComparisonExp
+  revenuePerHour30d: NumericComparisonExp
+  totalHoursLast30Days: NumericComparisonExp
+  totalInternalCost30d: NumericComparisonExp
+  totalRevenueGenerated30d: NumericComparisonExp
+  userId: UuidComparisonExp
+}
+
+"""aggregate max on columns"""
+type UserProductivityAnalysisMaxFields {
+  billingCategory: String
+  computedName: String
+  costCenter: String
+  defaultHourlyRate: numeric
+  efficiencyRatio30d: numeric
+  firstName: String
+  lastName: String
+  payrollDatesWorked30d: bigint
+  profitGenerated30d: numeric
+  revenuePerHour30d: numeric
+  totalHoursLast30Days: numeric
+  totalInternalCost30d: numeric
+  totalRevenueGenerated30d: numeric
+  userId: uuid
+}
+
+"""aggregate min on columns"""
+type UserProductivityAnalysisMinFields {
+  billingCategory: String
+  computedName: String
+  costCenter: String
+  defaultHourlyRate: numeric
+  efficiencyRatio30d: numeric
+  firstName: String
+  lastName: String
+  payrollDatesWorked30d: bigint
+  profitGenerated30d: numeric
+  revenuePerHour30d: numeric
+  totalHoursLast30Days: numeric
+  totalInternalCost30d: numeric
+  totalRevenueGenerated30d: numeric
+  userId: uuid
+}
+
+"""
+Ordering options when selecting data from "user_productivity_analysis".
+"""
+input UserProductivityAnalysisOrderBy {
+  billingCategory: OrderBy
+  computedName: OrderBy
+  costCenter: OrderBy
+  defaultHourlyRate: OrderBy
+  efficiencyRatio30d: OrderBy
+  firstName: OrderBy
+  lastName: OrderBy
+  payrollDatesWorked30d: OrderBy
+  profitGenerated30d: OrderBy
+  revenuePerHour30d: OrderBy
+  totalHoursLast30Days: OrderBy
+  totalInternalCost30d: OrderBy
+  totalRevenueGenerated30d: OrderBy
+  userId: OrderBy
+}
+
+"""
+select columns of table "user_productivity_analysis"
+"""
+enum UserProductivityAnalysisSelectColumn {
+  """column name"""
+  billingCategory
+  """column name"""
+  computedName
+  """column name"""
+  costCenter
+  """column name"""
+  defaultHourlyRate
+  """column name"""
+  efficiencyRatio30d
+  """column name"""
+  firstName
+  """column name"""
+  lastName
+  """column name"""
+  payrollDatesWorked30d
+  """column name"""
+  profitGenerated30d
+  """column name"""
+  revenuePerHour30d
+  """column name"""
+  totalHoursLast30Days
+  """column name"""
+  totalInternalCost30d
+  """column name"""
+  totalRevenueGenerated30d
+  """column name"""
+  userId
+}
+
+"""aggregate stddev on columns"""
+type UserProductivityAnalysisStddevFields {
+  defaultHourlyRate: Float
+  efficiencyRatio30d: Float
+  payrollDatesWorked30d: Float
+  profitGenerated30d: Float
+  revenuePerHour30d: Float
+  totalHoursLast30Days: Float
+  totalInternalCost30d: Float
+  totalRevenueGenerated30d: Float
+}
+
+"""aggregate stddevPop on columns"""
+type UserProductivityAnalysisStddevPopFields {
+  defaultHourlyRate: Float
+  efficiencyRatio30d: Float
+  payrollDatesWorked30d: Float
+  profitGenerated30d: Float
+  revenuePerHour30d: Float
+  totalHoursLast30Days: Float
+  totalInternalCost30d: Float
+  totalRevenueGenerated30d: Float
+}
+
+"""aggregate stddevSamp on columns"""
+type UserProductivityAnalysisStddevSampFields {
+  defaultHourlyRate: Float
+  efficiencyRatio30d: Float
+  payrollDatesWorked30d: Float
+  profitGenerated30d: Float
+  revenuePerHour30d: Float
+  totalHoursLast30Days: Float
+  totalInternalCost30d: Float
+  totalRevenueGenerated30d: Float
+}
+
+"""
+Streaming cursor of the table "user_productivity_analysis"
+"""
+input UserProductivityAnalysisStreamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: UserProductivityAnalysisStreamCursorValueInput!
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input UserProductivityAnalysisStreamCursorValueInput {
+  billingCategory: String
+  computedName: String
+  costCenter: String
+  defaultHourlyRate: numeric
+  efficiencyRatio30d: numeric
+  firstName: String
+  lastName: String
+  payrollDatesWorked30d: bigint
+  profitGenerated30d: numeric
+  revenuePerHour30d: numeric
+  totalHoursLast30Days: numeric
+  totalInternalCost30d: numeric
+  totalRevenueGenerated30d: numeric
+  userId: uuid
+}
+
+"""aggregate sum on columns"""
+type UserProductivityAnalysisSumFields {
+  defaultHourlyRate: numeric
+  efficiencyRatio30d: numeric
+  payrollDatesWorked30d: bigint
+  profitGenerated30d: numeric
+  revenuePerHour30d: numeric
+  totalHoursLast30Days: numeric
+  totalInternalCost30d: numeric
+  totalRevenueGenerated30d: numeric
+}
+
+"""aggregate varPop on columns"""
+type UserProductivityAnalysisVarPopFields {
+  defaultHourlyRate: Float
+  efficiencyRatio30d: Float
+  payrollDatesWorked30d: Float
+  profitGenerated30d: Float
+  revenuePerHour30d: Float
+  totalHoursLast30Days: Float
+  totalInternalCost30d: Float
+  totalRevenueGenerated30d: Float
+}
+
+"""aggregate varSamp on columns"""
+type UserProductivityAnalysisVarSampFields {
+  defaultHourlyRate: Float
+  efficiencyRatio30d: Float
+  payrollDatesWorked30d: Float
+  profitGenerated30d: Float
+  revenuePerHour30d: Float
+  totalHoursLast30Days: Float
+  totalInternalCost30d: Float
+  totalRevenueGenerated30d: Float
+}
+
+"""aggregate variance on columns"""
+type UserProductivityAnalysisVarianceFields {
+  defaultHourlyRate: Float
+  efficiencyRatio30d: Float
+  payrollDatesWorked30d: Float
+  profitGenerated30d: Float
+  revenuePerHour30d: Float
+  totalHoursLast30Days: Float
+  totalInternalCost30d: Float
+  totalRevenueGenerated30d: Float
+}
+
+"""Historical tracking of user hourly rates for accurate cost analysis"""
+type UserRateHistory {
+  billingCategory: String
+  costCenter: String
+  createdAt: timestamptz
+  createdBy: uuid
+  effectiveFrom: date!
+  effectiveTo: date
+  hourlyRate: numeric!
+  id: uuid!
+  notes: String
+  """An object relationship"""
+  rateHistoryByUser: Users
+  rateType: String
+  """An object relationship"""
+  user: Users!
+  userId: uuid!
+}
+
+"""
+aggregated selection of "user_rate_history"
+"""
+type UserRateHistoryAggregate {
+  aggregate: UserRateHistoryAggregateFields
+  nodes: [UserRateHistory!]!
+}
+
+input UserRateHistoryAggregateBoolExp {
+  count: userRateHistoryAggregateBoolExpCount
+}
+
+"""
+aggregate fields of "user_rate_history"
+"""
+type UserRateHistoryAggregateFields {
+  avg: UserRateHistoryAvgFields
+  count(columns: [UserRateHistorySelectColumn!], distinct: Boolean): Int!
+  max: UserRateHistoryMaxFields
+  min: UserRateHistoryMinFields
+  stddev: UserRateHistoryStddevFields
+  stddevPop: UserRateHistoryStddevPopFields
+  stddevSamp: UserRateHistoryStddevSampFields
+  sum: UserRateHistorySumFields
+  varPop: UserRateHistoryVarPopFields
+  varSamp: UserRateHistoryVarSampFields
+  variance: UserRateHistoryVarianceFields
+}
+
+"""
+order by aggregate values of table "user_rate_history"
+"""
+input UserRateHistoryAggregateOrderBy {
+  avg: UserRateHistoryAvgOrderBy
+  count: OrderBy
+  max: UserRateHistoryMaxOrderBy
+  min: UserRateHistoryMinOrderBy
+  stddev: UserRateHistoryStddevOrderBy
+  stddevPop: UserRateHistoryStddevPopOrderBy
+  stddevSamp: UserRateHistoryStddevSampOrderBy
+  sum: UserRateHistorySumOrderBy
+  varPop: UserRateHistoryVarPopOrderBy
+  varSamp: UserRateHistoryVarSampOrderBy
+  variance: UserRateHistoryVarianceOrderBy
+}
+
+"""
+input type for inserting array relation for remote table "user_rate_history"
+"""
+input UserRateHistoryArrRelInsertInput {
+  data: [UserRateHistoryInsertInput!]!
+  """upsert condition"""
+  onConflict: UserRateHistoryOnConflict
+}
+
+"""aggregate avg on columns"""
+type UserRateHistoryAvgFields {
+  hourlyRate: Float
+}
+
+"""
+order by avg() on columns of table "user_rate_history"
+"""
+input UserRateHistoryAvgOrderBy {
+  hourlyRate: OrderBy
+}
+
+"""
+Boolean expression to filter rows from the table "user_rate_history". All fields are combined with a logical 'AND'.
+"""
+input UserRateHistoryBoolExp {
+  _and: [UserRateHistoryBoolExp!]
+  _not: UserRateHistoryBoolExp
+  _or: [UserRateHistoryBoolExp!]
+  billingCategory: StringComparisonExp
+  costCenter: StringComparisonExp
+  createdAt: TimestamptzComparisonExp
+  createdBy: UuidComparisonExp
+  effectiveFrom: DateComparisonExp
+  effectiveTo: DateComparisonExp
+  hourlyRate: NumericComparisonExp
+  id: UuidComparisonExp
+  notes: StringComparisonExp
+  rateHistoryByUser: UsersBoolExp
+  rateType: StringComparisonExp
+  user: UsersBoolExp
+  userId: UuidComparisonExp
+}
+
+"""
+unique or primary key constraints on table "user_rate_history"
+"""
+enum UserRateHistoryConstraint {
+  """
+  unique or primary key constraint on columns "id"
+  """
+  user_rate_history_pkey
+}
+
+"""
+input type for incrementing numeric columns in table "user_rate_history"
+"""
+input UserRateHistoryIncInput {
+  hourlyRate: numeric
+}
+
+"""
+input type for inserting data into table "user_rate_history"
+"""
+input UserRateHistoryInsertInput {
+  billingCategory: String
+  costCenter: String
+  createdAt: timestamptz
+  createdBy: uuid
+  effectiveFrom: date
+  effectiveTo: date
+  hourlyRate: numeric
+  id: uuid
+  notes: String
+  rateHistoryByUser: UsersObjRelInsertInput
+  rateType: String
+  user: UsersObjRelInsertInput
+  userId: uuid
+}
+
+"""aggregate max on columns"""
+type UserRateHistoryMaxFields {
+  billingCategory: String
+  costCenter: String
+  createdAt: timestamptz
+  createdBy: uuid
+  effectiveFrom: date
+  effectiveTo: date
+  hourlyRate: numeric
+  id: uuid
+  notes: String
+  rateType: String
+  userId: uuid
+}
+
+"""
+order by max() on columns of table "user_rate_history"
+"""
+input UserRateHistoryMaxOrderBy {
+  billingCategory: OrderBy
+  costCenter: OrderBy
+  createdAt: OrderBy
+  createdBy: OrderBy
+  effectiveFrom: OrderBy
+  effectiveTo: OrderBy
+  hourlyRate: OrderBy
+  id: OrderBy
+  notes: OrderBy
+  rateType: OrderBy
+  userId: OrderBy
+}
+
+"""aggregate min on columns"""
+type UserRateHistoryMinFields {
+  billingCategory: String
+  costCenter: String
+  createdAt: timestamptz
+  createdBy: uuid
+  effectiveFrom: date
+  effectiveTo: date
+  hourlyRate: numeric
+  id: uuid
+  notes: String
+  rateType: String
+  userId: uuid
+}
+
+"""
+order by min() on columns of table "user_rate_history"
+"""
+input UserRateHistoryMinOrderBy {
+  billingCategory: OrderBy
+  costCenter: OrderBy
+  createdAt: OrderBy
+  createdBy: OrderBy
+  effectiveFrom: OrderBy
+  effectiveTo: OrderBy
+  hourlyRate: OrderBy
+  id: OrderBy
+  notes: OrderBy
+  rateType: OrderBy
+  userId: OrderBy
+}
+
+"""
+response of any mutation on the table "user_rate_history"
+"""
+type UserRateHistoryMutationResponse {
+  """number of rows affected by the mutation"""
+  affectedRows: Int!
+  """data from the rows affected by the mutation"""
+  returning: [UserRateHistory!]!
+}
+
+"""
+on_conflict condition type for table "user_rate_history"
+"""
+input UserRateHistoryOnConflict {
+  constraint: UserRateHistoryConstraint!
+  updateColumns: [UserRateHistoryUpdateColumn!]! = []
+  where: UserRateHistoryBoolExp
+}
+
+"""Ordering options when selecting data from "user_rate_history"."""
+input UserRateHistoryOrderBy {
+  billingCategory: OrderBy
+  costCenter: OrderBy
+  createdAt: OrderBy
+  createdBy: OrderBy
+  effectiveFrom: OrderBy
+  effectiveTo: OrderBy
+  hourlyRate: OrderBy
+  id: OrderBy
+  notes: OrderBy
+  rateHistoryByUser: UsersOrderBy
+  rateType: OrderBy
+  user: UsersOrderBy
+  userId: OrderBy
+}
+
+"""primary key columns input for table: user_rate_history"""
+input UserRateHistoryPkColumnsInput {
+  id: uuid!
+}
+
+"""
+select columns of table "user_rate_history"
+"""
+enum UserRateHistorySelectColumn {
+  """column name"""
+  billingCategory
+  """column name"""
+  costCenter
+  """column name"""
+  createdAt
+  """column name"""
+  createdBy
+  """column name"""
+  effectiveFrom
+  """column name"""
+  effectiveTo
+  """column name"""
+  hourlyRate
+  """column name"""
+  id
+  """column name"""
+  notes
+  """column name"""
+  rateType
+  """column name"""
+  userId
+}
+
+"""
+input type for updating data in table "user_rate_history"
+"""
+input UserRateHistorySetInput {
+  billingCategory: String
+  costCenter: String
+  createdAt: timestamptz
+  createdBy: uuid
+  effectiveFrom: date
+  effectiveTo: date
+  hourlyRate: numeric
+  id: uuid
+  notes: String
+  rateType: String
+  userId: uuid
+}
+
+"""aggregate stddev on columns"""
+type UserRateHistoryStddevFields {
+  hourlyRate: Float
+}
+
+"""
+order by stddev() on columns of table "user_rate_history"
+"""
+input UserRateHistoryStddevOrderBy {
+  hourlyRate: OrderBy
+}
+
+"""aggregate stddevPop on columns"""
+type UserRateHistoryStddevPopFields {
+  hourlyRate: Float
+}
+
+"""
+order by stddevPop() on columns of table "user_rate_history"
+"""
+input UserRateHistoryStddevPopOrderBy {
+  hourlyRate: OrderBy
+}
+
+"""aggregate stddevSamp on columns"""
+type UserRateHistoryStddevSampFields {
+  hourlyRate: Float
+}
+
+"""
+order by stddevSamp() on columns of table "user_rate_history"
+"""
+input UserRateHistoryStddevSampOrderBy {
+  hourlyRate: OrderBy
+}
+
+"""
+Streaming cursor of the table "user_rate_history"
+"""
+input UserRateHistoryStreamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: UserRateHistoryStreamCursorValueInput!
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input UserRateHistoryStreamCursorValueInput {
+  billingCategory: String
+  costCenter: String
+  createdAt: timestamptz
+  createdBy: uuid
+  effectiveFrom: date
+  effectiveTo: date
+  hourlyRate: numeric
+  id: uuid
+  notes: String
+  rateType: String
+  userId: uuid
+}
+
+"""aggregate sum on columns"""
+type UserRateHistorySumFields {
+  hourlyRate: numeric
+}
+
+"""
+order by sum() on columns of table "user_rate_history"
+"""
+input UserRateHistorySumOrderBy {
+  hourlyRate: OrderBy
+}
+
+"""
+update columns of table "user_rate_history"
+"""
+enum UserRateHistoryUpdateColumn {
+  """column name"""
+  billingCategory
+  """column name"""
+  costCenter
+  """column name"""
+  createdAt
+  """column name"""
+  createdBy
+  """column name"""
+  effectiveFrom
+  """column name"""
+  effectiveTo
+  """column name"""
+  hourlyRate
+  """column name"""
+  id
+  """column name"""
+  notes
+  """column name"""
+  rateType
+  """column name"""
+  userId
+}
+
+input UserRateHistoryUpdates {
+  """increments the numeric columns with given value of the filtered values"""
+  _inc: UserRateHistoryIncInput
+  """sets the columns of the filtered rows to the given values"""
+  _set: UserRateHistorySetInput
+  """filter the rows which have to be updated"""
+  where: UserRateHistoryBoolExp!
+}
+
+"""aggregate varPop on columns"""
+type UserRateHistoryVarPopFields {
+  hourlyRate: Float
+}
+
+"""
+order by varPop() on columns of table "user_rate_history"
+"""
+input UserRateHistoryVarPopOrderBy {
+  hourlyRate: OrderBy
+}
+
+"""aggregate varSamp on columns"""
+type UserRateHistoryVarSampFields {
+  hourlyRate: Float
+}
+
+"""
+order by varSamp() on columns of table "user_rate_history"
+"""
+input UserRateHistoryVarSampOrderBy {
+  hourlyRate: OrderBy
+}
+
+"""aggregate variance on columns"""
+type UserRateHistoryVarianceFields {
+  hourlyRate: Float
+}
+
+"""
+order by variance() on columns of table "user_rate_history"
+"""
+input UserRateHistoryVarianceOrderBy {
+  hourlyRate: OrderBy
+}
+
 """
 Boolean expression to compare columns of type "user_role". All fields are combined with logical 'AND'.
 """
@@ -30164,6 +33726,8 @@ type Users {
     """filter the rows returned"""
     where: PayrollsBoolExp
   ): PayrollsAggregate!
+  """Category for billing purposes (consultant, manager, etc.)"""
+  billingCategory: String
   """User biography or description"""
   bio: String
   """External identifier from Clerk authentication service"""
@@ -30221,6 +33785,8 @@ type Users {
     """filter the rows returned"""
     where: PayrollAssignmentsBoolExp
   ): PayrollAssignmentsAggregate!
+  """Cost center for internal accounting"""
+  costCenter: String
   """Timestamp when the user was created"""
   createdAt: timestamptz
   """An array relationship"""
@@ -30435,6 +34001,8 @@ type Users {
   deactivatedBy: String
   """Default admin time percentage for this user"""
   defaultAdminTimePercentage: numeric
+  """Default hourly rate for cost calculations"""
+  defaultHourlyRate: numeric
   """User's email address (unique)"""
   email: String!
   """An array relationship"""
@@ -30737,6 +34305,58 @@ type Users {
     where: PayrollDatesBoolExp
   ): PayrollDatesAggregate!
   """An array relationship"""
+  payrollServiceAgreementsCreatedBy(
+    """distinct select on columns"""
+    distinctOn: [PayrollServiceAgreementsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollServiceAgreementsOrderBy!]
+    """filter the rows returned"""
+    where: PayrollServiceAgreementsBoolExp
+  ): [PayrollServiceAgreements!]!
+  """An aggregate relationship"""
+  payrollServiceAgreementsCreatedByAggregate(
+    """distinct select on columns"""
+    distinctOn: [PayrollServiceAgreementsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollServiceAgreementsOrderBy!]
+    """filter the rows returned"""
+    where: PayrollServiceAgreementsBoolExp
+  ): PayrollServiceAgreementsAggregate!
+  """An array relationship"""
+  payrollServiceAgreementsGeneratedBy(
+    """distinct select on columns"""
+    distinctOn: [PayrollServiceAgreementsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollServiceAgreementsOrderBy!]
+    """filter the rows returned"""
+    where: PayrollServiceAgreementsBoolExp
+  ): [PayrollServiceAgreements!]!
+  """An aggregate relationship"""
+  payrollServiceAgreementsGeneratedByAggregate(
+    """distinct select on columns"""
+    distinctOn: [PayrollServiceAgreementsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollServiceAgreementsOrderBy!]
+    """filter the rows returned"""
+    where: PayrollServiceAgreementsBoolExp
+  ): PayrollServiceAgreementsAggregate!
+  """An array relationship"""
   permissionAuditLogs(
     """distinct select on columns"""
     distinctOn: [PermissionAuditLogSelectColumn!]
@@ -30896,6 +34516,7 @@ type Users {
     """filter the rows returned"""
     where: QuotesBoolExp
   ): QuotesAggregate!
+  rateEffectiveFrom: date
   """An array relationship"""
   resolvedSecurityAlerts(
     """distinct select on columns"""
@@ -31327,6 +34948,58 @@ type Users {
     where: FilesBoolExp
   ): FilesAggregate!
   """An array relationship"""
+  userRateHistories(
+    """distinct select on columns"""
+    distinctOn: [UserRateHistorySelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [UserRateHistoryOrderBy!]
+    """filter the rows returned"""
+    where: UserRateHistoryBoolExp
+  ): [UserRateHistory!]!
+  """An aggregate relationship"""
+  userRateHistoriesAggregate(
+    """distinct select on columns"""
+    distinctOn: [UserRateHistorySelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [UserRateHistoryOrderBy!]
+    """filter the rows returned"""
+    where: UserRateHistoryBoolExp
+  ): UserRateHistoryAggregate!
+  """An array relationship"""
+  userRateHistoriesCreatedBy(
+    """distinct select on columns"""
+    distinctOn: [UserRateHistorySelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [UserRateHistoryOrderBy!]
+    """filter the rows returned"""
+    where: UserRateHistoryBoolExp
+  ): [UserRateHistory!]!
+  """An aggregate relationship"""
+  userRateHistoriesCreatedByAggregate(
+    """distinct select on columns"""
+    distinctOn: [UserRateHistorySelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [UserRateHistoryOrderBy!]
+    """filter the rows returned"""
+    where: UserRateHistoryBoolExp
+  ): UserRateHistoryAggregate!
+  """An array relationship"""
   userSessions(
     """distinct select on columns"""
     distinctOn: [UserSessionsSelectColumn!]
@@ -31469,6 +35142,8 @@ input UsersArrRelInsertInput {
 type UsersAvgFields {
   """Default admin time percentage for this user"""
   defaultAdminTimePercentage: Float
+  """Default hourly rate for cost calculations"""
+  defaultHourlyRate: Float
 }
 
 """
@@ -31477,6 +35152,8 @@ order by avg() on columns of table "users"
 input UsersAvgOrderBy {
   """Default admin time percentage for this user"""
   defaultAdminTimePercentage: OrderBy
+  """Default hourly rate for cost calculations"""
+  defaultHourlyRate: OrderBy
 }
 
 """
@@ -31501,6 +35178,7 @@ input UsersBoolExp {
   authoredNotesAggregate: NotesAggregateBoolExp
   backupPayrollAssignments: PayrollsBoolExp
   backupPayrollAssignmentsAggregate: PayrollsAggregateBoolExp
+  billingCategory: StringComparisonExp
   bio: StringComparisonExp
   clerkUserId: StringComparisonExp
   computedName: StringComparisonExp
@@ -31508,6 +35186,7 @@ input UsersBoolExp {
   confirmedBillingItemsAggregate: BillingItemsAggregateBoolExp
   consultantAssignments: PayrollAssignmentsBoolExp
   consultantAssignmentsAggregate: PayrollAssignmentsAggregateBoolExp
+  costCenter: StringComparisonExp
   createdAt: TimestamptzComparisonExp
   createdBillingEventLogs: BillingEventLogBoolExp
   createdBillingEventLogsAggregate: BillingEventLogAggregateBoolExp
@@ -31528,6 +35207,7 @@ input UsersBoolExp {
   deactivatedAt: TimestamptzComparisonExp
   deactivatedBy: StringComparisonExp
   defaultAdminTimePercentage: NumericComparisonExp
+  defaultHourlyRate: NumericComparisonExp
   email: StringComparisonExp
   emailDrafts: EmailDraftsBoolExp
   emailDraftsAggregate: EmailDraftsAggregateBoolExp
@@ -31559,6 +35239,10 @@ input UsersBoolExp {
   payrollDateTimeEntriesAggregate: PayrollDateTimeEntriesAggregateBoolExp
   payrollDates: PayrollDatesBoolExp
   payrollDatesAggregate: PayrollDatesAggregateBoolExp
+  payrollServiceAgreementsCreatedBy: PayrollServiceAgreementsBoolExp
+  payrollServiceAgreementsCreatedByAggregate: PayrollServiceAgreementsAggregateBoolExp
+  payrollServiceAgreementsGeneratedBy: PayrollServiceAgreementsBoolExp
+  payrollServiceAgreementsGeneratedByAggregate: PayrollServiceAgreementsAggregateBoolExp
   permissionAuditLogs: PermissionAuditLogBoolExp
   permissionAuditLogsAggregate: PermissionAuditLogAggregateBoolExp
   permissionOverrides: PermissionOverridesBoolExp
@@ -31573,6 +35257,7 @@ input UsersBoolExp {
   quoteTemplatesAggregate: QuoteTemplatesAggregateBoolExp
   quotes: QuotesBoolExp
   quotesAggregate: QuotesAggregateBoolExp
+  rateEffectiveFrom: DateComparisonExp
   resolvedSecurityAlerts: SecurityAlertsBoolExp
   resolvedSecurityAlertsAggregate: SecurityAlertsAggregateBoolExp
   revokedInvitations: UserInvitationsBoolExp
@@ -31612,6 +35297,10 @@ input UsersBoolExp {
   updatedServicesAggregate: ServicesAggregateBoolExp
   uploadedFiles: FilesBoolExp
   uploadedFilesAggregate: FilesAggregateBoolExp
+  userRateHistories: UserRateHistoryBoolExp
+  userRateHistoriesAggregate: UserRateHistoryAggregateBoolExp
+  userRateHistoriesCreatedBy: UserRateHistoryBoolExp
+  userRateHistoriesCreatedByAggregate: UserRateHistoryAggregateBoolExp
   userSessions: UserSessionsBoolExp
   userSessionsAggregate: UserSessionsAggregateBoolExp
   username: StringComparisonExp
@@ -31649,6 +35338,8 @@ input type for incrementing numeric columns in table "users"
 input UsersIncInput {
   """Default admin time percentage for this user"""
   defaultAdminTimePercentage: numeric
+  """Default hourly rate for cost calculations"""
+  defaultHourlyRate: numeric
 }
 
 """
@@ -31664,12 +35355,16 @@ input UsersInsertInput {
   assignmentsMade: PayrollAssignmentsArrRelInsertInput
   authoredNotes: NotesArrRelInsertInput
   backupPayrollAssignments: PayrollsArrRelInsertInput
+  """Category for billing purposes (consultant, manager, etc.)"""
+  billingCategory: String
   """User biography or description"""
   bio: String
   """External identifier from Clerk authentication service"""
   clerkUserId: String
   confirmedBillingItems: BillingItemsArrRelInsertInput
   consultantAssignments: PayrollAssignmentsArrRelInsertInput
+  """Cost center for internal accounting"""
+  costCenter: String
   """Timestamp when the user was created"""
   createdAt: timestamptz
   createdBillingEventLogs: BillingEventLogArrRelInsertInput
@@ -31684,6 +35379,8 @@ input UsersInsertInput {
   deactivatedBy: String
   """Default admin time percentage for this user"""
   defaultAdminTimePercentage: numeric
+  """Default hourly rate for cost calculations"""
+  defaultHourlyRate: numeric
   """User's email address (unique)"""
   email: String
   emailDrafts: EmailDraftsArrRelInsertInput
@@ -31709,6 +35406,8 @@ input UsersInsertInput {
   originalConsultantAssignments: PayrollAssignmentsArrRelInsertInput
   payrollDateTimeEntries: PayrollDateTimeEntriesArrRelInsertInput
   payrollDates: PayrollDatesArrRelInsertInput
+  payrollServiceAgreementsCreatedBy: PayrollServiceAgreementsArrRelInsertInput
+  payrollServiceAgreementsGeneratedBy: PayrollServiceAgreementsArrRelInsertInput
   permissionAuditLogs: PermissionAuditLogArrRelInsertInput
   permissionOverrides: PermissionOverridesArrRelInsertInput
   """User contact phone number"""
@@ -31719,6 +35418,7 @@ input UsersInsertInput {
   quoteConversions: QuoteConversionsArrRelInsertInput
   quoteTemplates: QuoteTemplatesArrRelInsertInput
   quotes: QuotesArrRelInsertInput
+  rateEffectiveFrom: date
   resolvedSecurityAlerts: SecurityAlertsArrRelInsertInput
   revokedInvitations: UserInvitationsArrRelInsertInput
   """User's system role (viewer, consultant, manager, org_admin)"""
@@ -31748,6 +35448,8 @@ input UsersInsertInput {
   updatedServiceTemplates: ServiceTemplatesArrRelInsertInput
   updatedServices: ServicesArrRelInsertInput
   uploadedFiles: FilesArrRelInsertInput
+  userRateHistories: UserRateHistoryArrRelInsertInput
+  userRateHistoriesCreatedBy: UserRateHistoryArrRelInsertInput
   userSessions: UserSessionsArrRelInsertInput
   """User's unique username for login"""
   username: String
@@ -31759,17 +35461,23 @@ input UsersInsertInput {
 type UsersMaxFields {
   """User address or location"""
   address: String
+  """Category for billing purposes (consultant, manager, etc.)"""
+  billingCategory: String
   """User biography or description"""
   bio: String
   """External identifier from Clerk authentication service"""
   clerkUserId: String
   computedName: String
+  """Cost center for internal accounting"""
+  costCenter: String
   """Timestamp when the user was created"""
   createdAt: timestamptz
   deactivatedAt: timestamptz
   deactivatedBy: String
   """Default admin time percentage for this user"""
   defaultAdminTimePercentage: numeric
+  """Default hourly rate for cost calculations"""
+  defaultHourlyRate: numeric
   """User's email address (unique)"""
   email: String
   firstName: String
@@ -31784,6 +35492,7 @@ type UsersMaxFields {
   phone: String
   """Organizational position affecting admin time allocation"""
   position: user_position
+  rateEffectiveFrom: date
   """User's system role (viewer, consultant, manager, org_admin)"""
   role: user_role
   """Current user status - must be consistent with isActive field"""
@@ -31806,17 +35515,23 @@ order by max() on columns of table "users"
 input UsersMaxOrderBy {
   """User address or location"""
   address: OrderBy
+  """Category for billing purposes (consultant, manager, etc.)"""
+  billingCategory: OrderBy
   """User biography or description"""
   bio: OrderBy
   """External identifier from Clerk authentication service"""
   clerkUserId: OrderBy
   computedName: OrderBy
+  """Cost center for internal accounting"""
+  costCenter: OrderBy
   """Timestamp when the user was created"""
   createdAt: OrderBy
   deactivatedAt: OrderBy
   deactivatedBy: OrderBy
   """Default admin time percentage for this user"""
   defaultAdminTimePercentage: OrderBy
+  """Default hourly rate for cost calculations"""
+  defaultHourlyRate: OrderBy
   """User's email address (unique)"""
   email: OrderBy
   firstName: OrderBy
@@ -31831,6 +35546,7 @@ input UsersMaxOrderBy {
   phone: OrderBy
   """Organizational position affecting admin time allocation"""
   position: OrderBy
+  rateEffectiveFrom: OrderBy
   """User's system role (viewer, consultant, manager, org_admin)"""
   role: OrderBy
   """Current user status - must be consistent with isActive field"""
@@ -31851,17 +35567,23 @@ input UsersMaxOrderBy {
 type UsersMinFields {
   """User address or location"""
   address: String
+  """Category for billing purposes (consultant, manager, etc.)"""
+  billingCategory: String
   """User biography or description"""
   bio: String
   """External identifier from Clerk authentication service"""
   clerkUserId: String
   computedName: String
+  """Cost center for internal accounting"""
+  costCenter: String
   """Timestamp when the user was created"""
   createdAt: timestamptz
   deactivatedAt: timestamptz
   deactivatedBy: String
   """Default admin time percentage for this user"""
   defaultAdminTimePercentage: numeric
+  """Default hourly rate for cost calculations"""
+  defaultHourlyRate: numeric
   """User's email address (unique)"""
   email: String
   firstName: String
@@ -31876,6 +35598,7 @@ type UsersMinFields {
   phone: String
   """Organizational position affecting admin time allocation"""
   position: user_position
+  rateEffectiveFrom: date
   """User's system role (viewer, consultant, manager, org_admin)"""
   role: user_role
   """Current user status - must be consistent with isActive field"""
@@ -31898,17 +35621,23 @@ order by min() on columns of table "users"
 input UsersMinOrderBy {
   """User address or location"""
   address: OrderBy
+  """Category for billing purposes (consultant, manager, etc.)"""
+  billingCategory: OrderBy
   """User biography or description"""
   bio: OrderBy
   """External identifier from Clerk authentication service"""
   clerkUserId: OrderBy
   computedName: OrderBy
+  """Cost center for internal accounting"""
+  costCenter: OrderBy
   """Timestamp when the user was created"""
   createdAt: OrderBy
   deactivatedAt: OrderBy
   deactivatedBy: OrderBy
   """Default admin time percentage for this user"""
   defaultAdminTimePercentage: OrderBy
+  """Default hourly rate for cost calculations"""
+  defaultHourlyRate: OrderBy
   """User's email address (unique)"""
   email: OrderBy
   firstName: OrderBy
@@ -31923,6 +35652,7 @@ input UsersMinOrderBy {
   phone: OrderBy
   """Organizational position affecting admin time allocation"""
   position: OrderBy
+  rateEffectiveFrom: OrderBy
   """User's system role (viewer, consultant, manager, org_admin)"""
   role: OrderBy
   """Current user status - must be consistent with isActive field"""
@@ -31977,11 +35707,13 @@ input UsersOrderBy {
   assignmentsMadeAggregate: PayrollAssignmentsAggregateOrderBy
   authoredNotesAggregate: NotesAggregateOrderBy
   backupPayrollAssignmentsAggregate: PayrollsAggregateOrderBy
+  billingCategory: OrderBy
   bio: OrderBy
   clerkUserId: OrderBy
   computedName: OrderBy
   confirmedBillingItemsAggregate: BillingItemsAggregateOrderBy
   consultantAssignmentsAggregate: PayrollAssignmentsAggregateOrderBy
+  costCenter: OrderBy
   createdAt: OrderBy
   createdBillingEventLogsAggregate: BillingEventLogAggregateOrderBy
   createdClientServiceAgreementsAggregate: ClientServiceAgreementsAggregateOrderBy
@@ -31994,6 +35726,7 @@ input UsersOrderBy {
   deactivatedAt: OrderBy
   deactivatedBy: OrderBy
   defaultAdminTimePercentage: OrderBy
+  defaultHourlyRate: OrderBy
   email: OrderBy
   emailDraftsAggregate: EmailDraftsAggregateOrderBy
   emailTemplateFavoritesAggregate: UserEmailTemplateFavoritesAggregateOrderBy
@@ -32014,6 +35747,8 @@ input UsersOrderBy {
   originalConsultantAssignmentsAggregate: PayrollAssignmentsAggregateOrderBy
   payrollDateTimeEntriesAggregate: PayrollDateTimeEntriesAggregateOrderBy
   payrollDatesAggregate: PayrollDatesAggregateOrderBy
+  payrollServiceAgreementsCreatedByAggregate: PayrollServiceAgreementsAggregateOrderBy
+  payrollServiceAgreementsGeneratedByAggregate: PayrollServiceAgreementsAggregateOrderBy
   permissionAuditLogsAggregate: PermissionAuditLogAggregateOrderBy
   permissionOverridesAggregate: PermissionOverridesAggregateOrderBy
   phone: OrderBy
@@ -32022,6 +35757,7 @@ input UsersOrderBy {
   quoteConversionsAggregate: QuoteConversionsAggregateOrderBy
   quoteTemplatesAggregate: QuoteTemplatesAggregateOrderBy
   quotesAggregate: QuotesAggregateOrderBy
+  rateEffectiveFrom: OrderBy
   resolvedSecurityAlertsAggregate: SecurityAlertsAggregateOrderBy
   revokedInvitationsAggregate: UserInvitationsAggregateOrderBy
   role: OrderBy
@@ -32045,6 +35781,8 @@ input UsersOrderBy {
   updatedServiceTemplatesAggregate: ServiceTemplatesAggregateOrderBy
   updatedServicesAggregate: ServicesAggregateOrderBy
   uploadedFilesAggregate: FilesAggregateOrderBy
+  userRateHistoriesAggregate: UserRateHistoryAggregateOrderBy
+  userRateHistoriesCreatedByAggregate: UserRateHistoryAggregateOrderBy
   userSessionsAggregate: UserSessionsAggregateOrderBy
   username: OrderBy
   usersWithStatusChangesAggregate: UsersAggregateOrderBy
@@ -32197,11 +35935,15 @@ enum UsersSelectColumn {
   """column name"""
   address
   """column name"""
+  billingCategory
+  """column name"""
   bio
   """column name"""
   clerkUserId
   """column name"""
   computedName
+  """column name"""
+  costCenter
   """column name"""
   createdAt
   """column name"""
@@ -32210,6 +35952,8 @@ enum UsersSelectColumn {
   deactivatedBy
   """column name"""
   defaultAdminTimePercentage
+  """column name"""
+  defaultHourlyRate
   """column name"""
   email
   """column name"""
@@ -32230,6 +35974,8 @@ enum UsersSelectColumn {
   phone
   """column name"""
   position
+  """column name"""
+  rateEffectiveFrom
   """column name"""
   role
   """column name"""
@@ -32272,16 +36018,22 @@ input type for updating data in table "users"
 input UsersSetInput {
   """User address or location"""
   address: String
+  """Category for billing purposes (consultant, manager, etc.)"""
+  billingCategory: String
   """User biography or description"""
   bio: String
   """External identifier from Clerk authentication service"""
   clerkUserId: String
+  """Cost center for internal accounting"""
+  costCenter: String
   """Timestamp when the user was created"""
   createdAt: timestamptz
   deactivatedAt: timestamptz
   deactivatedBy: String
   """Default admin time percentage for this user"""
   defaultAdminTimePercentage: numeric
+  """Default hourly rate for cost calculations"""
+  defaultHourlyRate: numeric
   """User's email address (unique)"""
   email: String
   firstName: String
@@ -32299,6 +36051,7 @@ input UsersSetInput {
   phone: String
   """Organizational position affecting admin time allocation"""
   position: user_position
+  rateEffectiveFrom: date
   """User's system role (viewer, consultant, manager, org_admin)"""
   role: user_role
   """Current user status - must be consistent with isActive field"""
@@ -32319,6 +36072,8 @@ input UsersSetInput {
 type UsersStddevFields {
   """Default admin time percentage for this user"""
   defaultAdminTimePercentage: Float
+  """Default hourly rate for cost calculations"""
+  defaultHourlyRate: Float
 }
 
 """
@@ -32327,12 +36082,16 @@ order by stddev() on columns of table "users"
 input UsersStddevOrderBy {
   """Default admin time percentage for this user"""
   defaultAdminTimePercentage: OrderBy
+  """Default hourly rate for cost calculations"""
+  defaultHourlyRate: OrderBy
 }
 
 """aggregate stddevPop on columns"""
 type UsersStddevPopFields {
   """Default admin time percentage for this user"""
   defaultAdminTimePercentage: Float
+  """Default hourly rate for cost calculations"""
+  defaultHourlyRate: Float
 }
 
 """
@@ -32341,12 +36100,16 @@ order by stddevPop() on columns of table "users"
 input UsersStddevPopOrderBy {
   """Default admin time percentage for this user"""
   defaultAdminTimePercentage: OrderBy
+  """Default hourly rate for cost calculations"""
+  defaultHourlyRate: OrderBy
 }
 
 """aggregate stddevSamp on columns"""
 type UsersStddevSampFields {
   """Default admin time percentage for this user"""
   defaultAdminTimePercentage: Float
+  """Default hourly rate for cost calculations"""
+  defaultHourlyRate: Float
 }
 
 """
@@ -32355,6 +36118,8 @@ order by stddevSamp() on columns of table "users"
 input UsersStddevSampOrderBy {
   """Default admin time percentage for this user"""
   defaultAdminTimePercentage: OrderBy
+  """Default hourly rate for cost calculations"""
+  defaultHourlyRate: OrderBy
 }
 
 """
@@ -32371,17 +36136,23 @@ input UsersStreamCursorInput {
 input UsersStreamCursorValueInput {
   """User address or location"""
   address: String
+  """Category for billing purposes (consultant, manager, etc.)"""
+  billingCategory: String
   """User biography or description"""
   bio: String
   """External identifier from Clerk authentication service"""
   clerkUserId: String
   computedName: String
+  """Cost center for internal accounting"""
+  costCenter: String
   """Timestamp when the user was created"""
   createdAt: timestamptz
   deactivatedAt: timestamptz
   deactivatedBy: String
   """Default admin time percentage for this user"""
   defaultAdminTimePercentage: numeric
+  """Default hourly rate for cost calculations"""
+  defaultHourlyRate: numeric
   """User's email address (unique)"""
   email: String
   firstName: String
@@ -32399,6 +36170,7 @@ input UsersStreamCursorValueInput {
   phone: String
   """Organizational position affecting admin time allocation"""
   position: user_position
+  rateEffectiveFrom: date
   """User's system role (viewer, consultant, manager, org_admin)"""
   role: user_role
   """Current user status - must be consistent with isActive field"""
@@ -32419,6 +36191,8 @@ input UsersStreamCursorValueInput {
 type UsersSumFields {
   """Default admin time percentage for this user"""
   defaultAdminTimePercentage: numeric
+  """Default hourly rate for cost calculations"""
+  defaultHourlyRate: numeric
 }
 
 """
@@ -32427,6 +36201,8 @@ order by sum() on columns of table "users"
 input UsersSumOrderBy {
   """Default admin time percentage for this user"""
   defaultAdminTimePercentage: OrderBy
+  """Default hourly rate for cost calculations"""
+  defaultHourlyRate: OrderBy
 }
 
 """
@@ -32436,9 +36212,13 @@ enum UsersUpdateColumn {
   """column name"""
   address
   """column name"""
+  billingCategory
+  """column name"""
   bio
   """column name"""
   clerkUserId
+  """column name"""
+  costCenter
   """column name"""
   createdAt
   """column name"""
@@ -32447,6 +36227,8 @@ enum UsersUpdateColumn {
   deactivatedBy
   """column name"""
   defaultAdminTimePercentage
+  """column name"""
+  defaultHourlyRate
   """column name"""
   email
   """column name"""
@@ -32467,6 +36249,8 @@ enum UsersUpdateColumn {
   phone
   """column name"""
   position
+  """column name"""
+  rateEffectiveFrom
   """column name"""
   role
   """column name"""
@@ -32496,6 +36280,8 @@ input UsersUpdates {
 type UsersVarPopFields {
   """Default admin time percentage for this user"""
   defaultAdminTimePercentage: Float
+  """Default hourly rate for cost calculations"""
+  defaultHourlyRate: Float
 }
 
 """
@@ -32504,12 +36290,16 @@ order by varPop() on columns of table "users"
 input UsersVarPopOrderBy {
   """Default admin time percentage for this user"""
   defaultAdminTimePercentage: OrderBy
+  """Default hourly rate for cost calculations"""
+  defaultHourlyRate: OrderBy
 }
 
 """aggregate varSamp on columns"""
 type UsersVarSampFields {
   """Default admin time percentage for this user"""
   defaultAdminTimePercentage: Float
+  """Default hourly rate for cost calculations"""
+  defaultHourlyRate: Float
 }
 
 """
@@ -32518,12 +36308,16 @@ order by varSamp() on columns of table "users"
 input UsersVarSampOrderBy {
   """Default admin time percentage for this user"""
   defaultAdminTimePercentage: OrderBy
+  """Default hourly rate for cost calculations"""
+  defaultHourlyRate: OrderBy
 }
 
 """aggregate variance on columns"""
 type UsersVarianceFields {
   """Default admin time percentage for this user"""
   defaultAdminTimePercentage: Float
+  """Default hourly rate for cost calculations"""
+  defaultHourlyRate: Float
 }
 
 """
@@ -32532,6 +36326,27 @@ order by variance() on columns of table "users"
 input UsersVarianceOrderBy {
   """Default admin time percentage for this user"""
   defaultAdminTimePercentage: OrderBy
+  """Default hourly rate for cost calculations"""
+  defaultHourlyRate: OrderBy
+}
+
+"""
+Boolean expression to compare columns of type "uuid". All fields are combined with logical 'AND'.
+"""
+input UuidArrayComparisonExp {
+  """is the array contained in the given array value"""
+  _containedIn: [uuid!]
+  """does the array contain the given value"""
+  _contains: [uuid!]
+  _eq: [uuid!]
+  _gt: [uuid!]
+  _gte: [uuid!]
+  _in: [[uuid!]!]
+  _isNull: Boolean
+  _lt: [uuid!]
+  _lte: [uuid!]
+  _neq: [uuid!]
+  _nin: [[uuid!]!]
 }
 
 """
@@ -33186,12 +37001,28 @@ input billingItemsAggregateBoolExpCount {
   predicate: IntComparisonExp!
 }
 
+input billingPeriodsAggregateBoolExpBool_and {
+  arguments: BillingPeriodsSelectColumnBillingPeriodsAggregateBoolExpBool_andArgumentsColumns!
+  distinct: Boolean
+  filter: BillingPeriodsBoolExp
+  predicate: BooleanComparisonExp!
+}
+
+input billingPeriodsAggregateBoolExpBool_or {
+  arguments: BillingPeriodsSelectColumnBillingPeriodsAggregateBoolExpBool_orArgumentsColumns!
+  distinct: Boolean
+  filter: BillingPeriodsBoolExp
+  predicate: BooleanComparisonExp!
+}
+
 input billingPeriodsAggregateBoolExpCount {
   arguments: [BillingPeriodsSelectColumn!]
   distinct: Boolean
   filter: BillingPeriodsBoolExp
   predicate: IntComparisonExp!
 }
+
+scalar billing_tier_level
 
 scalar bpchar
 
@@ -33341,6 +37172,29 @@ input leaveAggregateBoolExpCount {
 }
 
 scalar leave_status_enum
+
+input monthlyBillingCompletionAggregateBoolExpBool_and {
+  arguments: MonthlyBillingCompletionSelectColumnMonthlyBillingCompletionAggregateBoolExpBool_andArgumentsColumns!
+  distinct: Boolean
+  filter: MonthlyBillingCompletionBoolExp
+  predicate: BooleanComparisonExp!
+}
+
+input monthlyBillingCompletionAggregateBoolExpBool_or {
+  arguments: MonthlyBillingCompletionSelectColumnMonthlyBillingCompletionAggregateBoolExpBool_orArgumentsColumns!
+  distinct: Boolean
+  filter: MonthlyBillingCompletionBoolExp
+  predicate: BooleanComparisonExp!
+}
+
+input monthlyBillingCompletionAggregateBoolExpCount {
+  arguments: [MonthlyBillingCompletionSelectColumn!]
+  distinct: Boolean
+  filter: MonthlyBillingCompletionBoolExp
+  predicate: IntComparisonExp!
+}
+
+scalar monthly_billing_status
 
 """mutation root"""
 type mutation_root {
@@ -33704,6 +37558,17 @@ type mutation_root {
     id: uuid!
   ): Leave
   """
+  delete data from the table: "monthly_billing_completion"
+  """
+  deleteMonthlyBillingCompletion(
+    """filter the rows which have to be deleted"""
+    where: MonthlyBillingCompletionBoolExp!
+  ): MonthlyBillingCompletionMutationResponse
+  """
+  delete single row from the table: "monthly_billing_completion"
+  """
+  deleteMonthlyBillingCompletionByPk(id: uuid!): MonthlyBillingCompletion
+  """
   delete data from the table: "notes"
   """
   deleteNotes(
@@ -33810,6 +37675,17 @@ type mutation_root {
     """filter the rows which have to be deleted"""
     where: PayrollRequiredSkillsBoolExp!
   ): PayrollRequiredSkillsMutationResponse
+  """
+  delete data from the table: "payroll_service_agreements"
+  """
+  deletePayrollServiceAgreements(
+    """filter the rows which have to be deleted"""
+    where: PayrollServiceAgreementsBoolExp!
+  ): PayrollServiceAgreementsMutationResponse
+  """
+  delete single row from the table: "payroll_service_agreements"
+  """
+  deletePayrollServiceAgreementsByPk(id: uuid!): PayrollServiceAgreements
   """
   delete data from the table: "payroll_version_history_results"
   """
@@ -34088,6 +37964,17 @@ type mutation_root {
   delete single row from the table: "user_invitations"
   """
   deleteUserInvitationsByPk(id: uuid!): UserInvitations
+  """
+  delete data from the table: "user_rate_history"
+  """
+  deleteUserRateHistory(
+    """filter the rows which have to be deleted"""
+    where: UserRateHistoryBoolExp!
+  ): UserRateHistoryMutationResponse
+  """
+  delete single row from the table: "user_rate_history"
+  """
+  deleteUserRateHistoryByPk(id: uuid!): UserRateHistory
   """
   delete data from the table: "user_roles"
   """
@@ -34636,6 +38523,24 @@ type mutation_root {
     onConflict: LeaveOnConflict
   ): Leave
   """
+  insert data into the table: "monthly_billing_completion"
+  """
+  insertMonthlyBillingCompletion(
+    """the rows to be inserted"""
+    objects: [MonthlyBillingCompletionInsertInput!]!
+    """upsert condition"""
+    onConflict: MonthlyBillingCompletionOnConflict
+  ): MonthlyBillingCompletionMutationResponse
+  """
+  insert a single row into the table: "monthly_billing_completion"
+  """
+  insertMonthlyBillingCompletionOne(
+    """the row to be inserted"""
+    object: MonthlyBillingCompletionInsertInput!
+    """upsert condition"""
+    onConflict: MonthlyBillingCompletionOnConflict
+  ): MonthlyBillingCompletion
+  """
   insert data into the table: "notes"
   """
   insertNotes(
@@ -34793,6 +38698,24 @@ type mutation_root {
     """the row to be inserted"""
     object: PayrollRequiredSkillsInsertInput!
   ): PayrollRequiredSkills
+  """
+  insert data into the table: "payroll_service_agreements"
+  """
+  insertPayrollServiceAgreements(
+    """the rows to be inserted"""
+    objects: [PayrollServiceAgreementsInsertInput!]!
+    """upsert condition"""
+    onConflict: PayrollServiceAgreementsOnConflict
+  ): PayrollServiceAgreementsMutationResponse
+  """
+  insert a single row into the table: "payroll_service_agreements"
+  """
+  insertPayrollServiceAgreementsOne(
+    """the row to be inserted"""
+    object: PayrollServiceAgreementsInsertInput!
+    """upsert condition"""
+    onConflict: PayrollServiceAgreementsOnConflict
+  ): PayrollServiceAgreements
   """
   insert data into the table: "payroll_version_history_results"
   """
@@ -35243,6 +39166,24 @@ type mutation_root {
     """upsert condition"""
     onConflict: UserInvitationsOnConflict
   ): UserInvitations
+  """
+  insert data into the table: "user_rate_history"
+  """
+  insertUserRateHistory(
+    """the rows to be inserted"""
+    objects: [UserRateHistoryInsertInput!]!
+    """upsert condition"""
+    onConflict: UserRateHistoryOnConflict
+  ): UserRateHistoryMutationResponse
+  """
+  insert a single row into the table: "user_rate_history"
+  """
+  insertUserRateHistoryOne(
+    """the row to be inserted"""
+    object: UserRateHistoryInsertInput!
+    """upsert condition"""
+    onConflict: UserRateHistoryOnConflict
+  ): UserRateHistory
   """
   insert data into the table: "user_roles"
   """
@@ -35803,6 +39744,24 @@ type mutation_root {
   update data of the table: "billing_periods"
   """
   updateBillingPeriods(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: BillingPeriodsAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: BillingPeriodsDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: BillingPeriodsDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: BillingPeriodsDeleteKeyInput
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: BillingPeriodsIncInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: BillingPeriodsPrependInput
     """sets the columns of the filtered rows to the given values"""
     _set: BillingPeriodsSetInput
     """filter the rows which have to be updated"""
@@ -35812,6 +39771,24 @@ type mutation_root {
   update single row of the table: "billing_periods"
   """
   updateBillingPeriodsByPk(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: BillingPeriodsAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: BillingPeriodsDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: BillingPeriodsDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: BillingPeriodsDeleteKeyInput
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: BillingPeriodsIncInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: BillingPeriodsPrependInput
     """sets the columns of the filtered rows to the given values"""
     _set: BillingPeriodsSetInput
     pkColumns: BillingPeriodsPkColumnsInput!
@@ -36380,6 +40357,34 @@ type mutation_root {
     updates: [LeaveUpdates!]!
   ): [LeaveMutationResponse]
   """
+  update data of the table: "monthly_billing_completion"
+  """
+  updateMonthlyBillingCompletion(
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: MonthlyBillingCompletionIncInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: MonthlyBillingCompletionSetInput
+    """filter the rows which have to be updated"""
+    where: MonthlyBillingCompletionBoolExp!
+  ): MonthlyBillingCompletionMutationResponse
+  """
+  update single row of the table: "monthly_billing_completion"
+  """
+  updateMonthlyBillingCompletionByPk(
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: MonthlyBillingCompletionIncInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: MonthlyBillingCompletionSetInput
+    pkColumns: MonthlyBillingCompletionPkColumnsInput!
+  ): MonthlyBillingCompletion
+  """
+  update multiples rows of table: "monthly_billing_completion"
+  """
+  updateMonthlyBillingCompletionMany(
+    """updates to execute, in order"""
+    updates: [MonthlyBillingCompletionUpdates!]!
+  ): [MonthlyBillingCompletionMutationResponse]
+  """
   update data of the table: "notes"
   """
   updateNotes(
@@ -36599,6 +40604,66 @@ type mutation_root {
     """updates to execute, in order"""
     updates: [PayrollRequiredSkillsUpdates!]!
   ): [PayrollRequiredSkillsMutationResponse]
+  """
+  update data of the table: "payroll_service_agreements"
+  """
+  updatePayrollServiceAgreements(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: PayrollServiceAgreementsAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: PayrollServiceAgreementsDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: PayrollServiceAgreementsDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: PayrollServiceAgreementsDeleteKeyInput
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: PayrollServiceAgreementsIncInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: PayrollServiceAgreementsPrependInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: PayrollServiceAgreementsSetInput
+    """filter the rows which have to be updated"""
+    where: PayrollServiceAgreementsBoolExp!
+  ): PayrollServiceAgreementsMutationResponse
+  """
+  update single row of the table: "payroll_service_agreements"
+  """
+  updatePayrollServiceAgreementsByPk(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: PayrollServiceAgreementsAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: PayrollServiceAgreementsDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: PayrollServiceAgreementsDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: PayrollServiceAgreementsDeleteKeyInput
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: PayrollServiceAgreementsIncInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: PayrollServiceAgreementsPrependInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: PayrollServiceAgreementsSetInput
+    pkColumns: PayrollServiceAgreementsPkColumnsInput!
+  ): PayrollServiceAgreements
+  """
+  update multiples rows of table: "payroll_service_agreements"
+  """
+  updatePayrollServiceAgreementsMany(
+    """updates to execute, in order"""
+    updates: [PayrollServiceAgreementsUpdates!]!
+  ): [PayrollServiceAgreementsMutationResponse]
   """
   update data of the table: "payroll_version_history_results"
   """
@@ -37676,6 +41741,34 @@ type mutation_root {
     updates: [UserInvitationsUpdates!]!
   ): [UserInvitationsMutationResponse]
   """
+  update data of the table: "user_rate_history"
+  """
+  updateUserRateHistory(
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: UserRateHistoryIncInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: UserRateHistorySetInput
+    """filter the rows which have to be updated"""
+    where: UserRateHistoryBoolExp!
+  ): UserRateHistoryMutationResponse
+  """
+  update single row of the table: "user_rate_history"
+  """
+  updateUserRateHistoryByPk(
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: UserRateHistoryIncInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: UserRateHistorySetInput
+    pkColumns: UserRateHistoryPkColumnsInput!
+  ): UserRateHistory
+  """
+  update multiples rows of table: "user_rate_history"
+  """
+  updateUserRateHistoryMany(
+    """updates to execute, in order"""
+    updates: [UserRateHistoryUpdates!]!
+  ): [UserRateHistoryMutationResponse]
+  """
   update data of the table: "user_roles"
   """
   updateUserRoles(
@@ -37898,6 +41991,20 @@ input payrollAssignmentsAggregateBoolExpCount {
   predicate: IntComparisonExp!
 }
 
+input payrollDateTimeEntriesAggregateBoolExpBool_and {
+  arguments: PayrollDateTimeEntriesSelectColumnPayrollDateTimeEntriesAggregateBoolExpBool_andArgumentsColumns!
+  distinct: Boolean
+  filter: PayrollDateTimeEntriesBoolExp
+  predicate: BooleanComparisonExp!
+}
+
+input payrollDateTimeEntriesAggregateBoolExpBool_or {
+  arguments: PayrollDateTimeEntriesSelectColumnPayrollDateTimeEntriesAggregateBoolExpBool_orArgumentsColumns!
+  distinct: Boolean
+  filter: PayrollDateTimeEntriesBoolExp
+  predicate: BooleanComparisonExp!
+}
+
 input payrollDateTimeEntriesAggregateBoolExpCount {
   arguments: [PayrollDateTimeEntriesSelectColumn!]
   distinct: Boolean
@@ -37916,6 +42023,27 @@ input payrollRequiredSkillsAggregateBoolExpCount {
   arguments: [PayrollRequiredSkillsSelectColumn!]
   distinct: Boolean
   filter: PayrollRequiredSkillsBoolExp
+  predicate: IntComparisonExp!
+}
+
+input payrollServiceAgreementsAggregateBoolExpBool_and {
+  arguments: PayrollServiceAgreementsSelectColumnPayrollServiceAgreementsAggregateBoolExpBool_andArgumentsColumns!
+  distinct: Boolean
+  filter: PayrollServiceAgreementsBoolExp
+  predicate: BooleanComparisonExp!
+}
+
+input payrollServiceAgreementsAggregateBoolExpBool_or {
+  arguments: PayrollServiceAgreementsSelectColumnPayrollServiceAgreementsAggregateBoolExpBool_orArgumentsColumns!
+  distinct: Boolean
+  filter: PayrollServiceAgreementsBoolExp
+  predicate: BooleanComparisonExp!
+}
+
+input payrollServiceAgreementsAggregateBoolExpCount {
+  arguments: [PayrollServiceAgreementsSelectColumn!]
+  distinct: Boolean
+  filter: PayrollServiceAgreementsBoolExp
   predicate: IntComparisonExp!
 }
 
@@ -39042,6 +43170,70 @@ type query_root {
     id: uuid!
   ): Leave
   """
+  fetch data from the table: "monthly_billing_completion"
+  """
+  monthlyBillingCompletion(
+    """distinct select on columns"""
+    distinctOn: [MonthlyBillingCompletionSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [MonthlyBillingCompletionOrderBy!]
+    """filter the rows returned"""
+    where: MonthlyBillingCompletionBoolExp
+  ): [MonthlyBillingCompletion!]!
+  """
+  fetch aggregated fields from the table: "monthly_billing_completion"
+  """
+  monthlyBillingCompletionAggregate(
+    """distinct select on columns"""
+    distinctOn: [MonthlyBillingCompletionSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [MonthlyBillingCompletionOrderBy!]
+    """filter the rows returned"""
+    where: MonthlyBillingCompletionBoolExp
+  ): MonthlyBillingCompletionAggregate!
+  """
+  fetch data from the table: "monthly_billing_completion" using primary key columns
+  """
+  monthlyBillingCompletionByPk(id: uuid!): MonthlyBillingCompletion
+  """
+  fetch data from the table: "monthly_billing_dashboard"
+  """
+  monthlyBillingDashboard(
+    """distinct select on columns"""
+    distinctOn: [MonthlyBillingDashboardSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [MonthlyBillingDashboardOrderBy!]
+    """filter the rows returned"""
+    where: MonthlyBillingDashboardBoolExp
+  ): [MonthlyBillingDashboard!]!
+  """
+  fetch aggregated fields from the table: "monthly_billing_dashboard"
+  """
+  monthlyBillingDashboardAggregate(
+    """distinct select on columns"""
+    distinctOn: [MonthlyBillingDashboardSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [MonthlyBillingDashboardOrderBy!]
+    """filter the rows returned"""
+    where: MonthlyBillingDashboardBoolExp
+  ): MonthlyBillingDashboardAggregate!
+  """
   fetch data from the table: "notes"
   """
   notes(
@@ -39178,6 +43370,36 @@ type query_root {
   fetch data from the table: "payroll_assignments" using primary key columns
   """
   payrollAssignmentsByPk(id: uuid!): PayrollAssignments
+  """
+  fetch data from the table: "payroll_cost_analysis"
+  """
+  payrollCostAnalysis(
+    """distinct select on columns"""
+    distinctOn: [PayrollCostAnalysisSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollCostAnalysisOrderBy!]
+    """filter the rows returned"""
+    where: PayrollCostAnalysisBoolExp
+  ): [PayrollCostAnalysis!]!
+  """
+  fetch aggregated fields from the table: "payroll_cost_analysis"
+  """
+  payrollCostAnalysisAggregate(
+    """distinct select on columns"""
+    distinctOn: [PayrollCostAnalysisSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollCostAnalysisOrderBy!]
+    """filter the rows returned"""
+    where: PayrollCostAnalysisBoolExp
+  ): PayrollCostAnalysisAggregate!
   """
   fetch data from the table: "payroll_cycles"
   """
@@ -39431,6 +43653,36 @@ type query_root {
     """filter the rows returned"""
     where: PayrollRequiredSkillsBoolExp
   ): PayrollRequiredSkillsAggregate!
+  """An array relationship"""
+  payrollServiceAgreements(
+    """distinct select on columns"""
+    distinctOn: [PayrollServiceAgreementsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollServiceAgreementsOrderBy!]
+    """filter the rows returned"""
+    where: PayrollServiceAgreementsBoolExp
+  ): [PayrollServiceAgreements!]!
+  """An aggregate relationship"""
+  payrollServiceAgreementsAggregate(
+    """distinct select on columns"""
+    distinctOn: [PayrollServiceAgreementsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollServiceAgreementsOrderBy!]
+    """filter the rows returned"""
+    where: PayrollServiceAgreementsBoolExp
+  ): PayrollServiceAgreementsAggregate!
+  """
+  fetch data from the table: "payroll_service_agreements" using primary key columns
+  """
+  payrollServiceAgreementsByPk(id: uuid!): PayrollServiceAgreements
   """
   fetch data from the table: "payroll_triggers_status"
   """
@@ -40424,6 +44676,70 @@ type query_root {
   fetch data from the table: "user_invitations" using primary key columns
   """
   userInvitationsByPk(id: uuid!): UserInvitations
+  """
+  fetch data from the table: "user_productivity_analysis"
+  """
+  userProductivityAnalysis(
+    """distinct select on columns"""
+    distinctOn: [UserProductivityAnalysisSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [UserProductivityAnalysisOrderBy!]
+    """filter the rows returned"""
+    where: UserProductivityAnalysisBoolExp
+  ): [UserProductivityAnalysis!]!
+  """
+  fetch aggregated fields from the table: "user_productivity_analysis"
+  """
+  userProductivityAnalysisAggregate(
+    """distinct select on columns"""
+    distinctOn: [UserProductivityAnalysisSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [UserProductivityAnalysisOrderBy!]
+    """filter the rows returned"""
+    where: UserProductivityAnalysisBoolExp
+  ): UserProductivityAnalysisAggregate!
+  """
+  fetch data from the table: "user_rate_history"
+  """
+  userRateHistory(
+    """distinct select on columns"""
+    distinctOn: [UserRateHistorySelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [UserRateHistoryOrderBy!]
+    """filter the rows returned"""
+    where: UserRateHistoryBoolExp
+  ): [UserRateHistory!]!
+  """
+  fetch aggregated fields from the table: "user_rate_history"
+  """
+  userRateHistoryAggregate(
+    """distinct select on columns"""
+    distinctOn: [UserRateHistorySelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [UserRateHistoryOrderBy!]
+    """filter the rows returned"""
+    where: UserRateHistoryBoolExp
+  ): UserRateHistoryAggregate!
+  """
+  fetch data from the table: "user_rate_history" using primary key columns
+  """
+  userRateHistoryByPk(id: uuid!): UserRateHistory
   """An array relationship"""
   userRoles(
     """distinct select on columns"""
@@ -42179,6 +46495,92 @@ type subscription_root {
     where: LeaveBoolExp
   ): [Leave!]!
   """
+  fetch data from the table: "monthly_billing_completion"
+  """
+  monthlyBillingCompletion(
+    """distinct select on columns"""
+    distinctOn: [MonthlyBillingCompletionSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [MonthlyBillingCompletionOrderBy!]
+    """filter the rows returned"""
+    where: MonthlyBillingCompletionBoolExp
+  ): [MonthlyBillingCompletion!]!
+  """
+  fetch aggregated fields from the table: "monthly_billing_completion"
+  """
+  monthlyBillingCompletionAggregate(
+    """distinct select on columns"""
+    distinctOn: [MonthlyBillingCompletionSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [MonthlyBillingCompletionOrderBy!]
+    """filter the rows returned"""
+    where: MonthlyBillingCompletionBoolExp
+  ): MonthlyBillingCompletionAggregate!
+  """
+  fetch data from the table: "monthly_billing_completion" using primary key columns
+  """
+  monthlyBillingCompletionByPk(id: uuid!): MonthlyBillingCompletion
+  """
+  fetch data from the table in a streaming manner: "monthly_billing_completion"
+  """
+  monthlyBillingCompletionStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+    """cursor to stream the results returned by the query"""
+    cursor: [MonthlyBillingCompletionStreamCursorInput]!
+    """filter the rows returned"""
+    where: MonthlyBillingCompletionBoolExp
+  ): [MonthlyBillingCompletion!]!
+  """
+  fetch data from the table: "monthly_billing_dashboard"
+  """
+  monthlyBillingDashboard(
+    """distinct select on columns"""
+    distinctOn: [MonthlyBillingDashboardSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [MonthlyBillingDashboardOrderBy!]
+    """filter the rows returned"""
+    where: MonthlyBillingDashboardBoolExp
+  ): [MonthlyBillingDashboard!]!
+  """
+  fetch aggregated fields from the table: "monthly_billing_dashboard"
+  """
+  monthlyBillingDashboardAggregate(
+    """distinct select on columns"""
+    distinctOn: [MonthlyBillingDashboardSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [MonthlyBillingDashboardOrderBy!]
+    """filter the rows returned"""
+    where: MonthlyBillingDashboardBoolExp
+  ): MonthlyBillingDashboardAggregate!
+  """
+  fetch data from the table in a streaming manner: "monthly_billing_dashboard"
+  """
+  monthlyBillingDashboardStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+    """cursor to stream the results returned by the query"""
+    cursor: [MonthlyBillingDashboardStreamCursorInput]!
+    """filter the rows returned"""
+    where: MonthlyBillingDashboardBoolExp
+  ): [MonthlyBillingDashboard!]!
+  """
   fetch data from the table: "notes"
   """
   notes(
@@ -42359,6 +46761,47 @@ type subscription_root {
     """filter the rows returned"""
     where: PayrollAssignmentsBoolExp
   ): [PayrollAssignments!]!
+  """
+  fetch data from the table: "payroll_cost_analysis"
+  """
+  payrollCostAnalysis(
+    """distinct select on columns"""
+    distinctOn: [PayrollCostAnalysisSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollCostAnalysisOrderBy!]
+    """filter the rows returned"""
+    where: PayrollCostAnalysisBoolExp
+  ): [PayrollCostAnalysis!]!
+  """
+  fetch aggregated fields from the table: "payroll_cost_analysis"
+  """
+  payrollCostAnalysisAggregate(
+    """distinct select on columns"""
+    distinctOn: [PayrollCostAnalysisSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollCostAnalysisOrderBy!]
+    """filter the rows returned"""
+    where: PayrollCostAnalysisBoolExp
+  ): PayrollCostAnalysisAggregate!
+  """
+  fetch data from the table in a streaming manner: "payroll_cost_analysis"
+  """
+  payrollCostAnalysisStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+    """cursor to stream the results returned by the query"""
+    cursor: [PayrollCostAnalysisStreamCursorInput]!
+    """filter the rows returned"""
+    where: PayrollCostAnalysisBoolExp
+  ): [PayrollCostAnalysis!]!
   """
   fetch data from the table: "payroll_cycles"
   """
@@ -42700,6 +47143,47 @@ type subscription_root {
     """filter the rows returned"""
     where: PayrollRequiredSkillsBoolExp
   ): [PayrollRequiredSkills!]!
+  """An array relationship"""
+  payrollServiceAgreements(
+    """distinct select on columns"""
+    distinctOn: [PayrollServiceAgreementsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollServiceAgreementsOrderBy!]
+    """filter the rows returned"""
+    where: PayrollServiceAgreementsBoolExp
+  ): [PayrollServiceAgreements!]!
+  """An aggregate relationship"""
+  payrollServiceAgreementsAggregate(
+    """distinct select on columns"""
+    distinctOn: [PayrollServiceAgreementsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollServiceAgreementsOrderBy!]
+    """filter the rows returned"""
+    where: PayrollServiceAgreementsBoolExp
+  ): PayrollServiceAgreementsAggregate!
+  """
+  fetch data from the table: "payroll_service_agreements" using primary key columns
+  """
+  payrollServiceAgreementsByPk(id: uuid!): PayrollServiceAgreements
+  """
+  fetch data from the table in a streaming manner: "payroll_service_agreements"
+  """
+  payrollServiceAgreementsStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+    """cursor to stream the results returned by the query"""
+    cursor: [PayrollServiceAgreementsStreamCursorInput]!
+    """filter the rows returned"""
+    where: PayrollServiceAgreementsBoolExp
+  ): [PayrollServiceAgreements!]!
   """
   fetch data from the table: "payroll_triggers_status"
   """
@@ -44045,6 +48529,92 @@ type subscription_root {
     """filter the rows returned"""
     where: UserInvitationsBoolExp
   ): [UserInvitations!]!
+  """
+  fetch data from the table: "user_productivity_analysis"
+  """
+  userProductivityAnalysis(
+    """distinct select on columns"""
+    distinctOn: [UserProductivityAnalysisSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [UserProductivityAnalysisOrderBy!]
+    """filter the rows returned"""
+    where: UserProductivityAnalysisBoolExp
+  ): [UserProductivityAnalysis!]!
+  """
+  fetch aggregated fields from the table: "user_productivity_analysis"
+  """
+  userProductivityAnalysisAggregate(
+    """distinct select on columns"""
+    distinctOn: [UserProductivityAnalysisSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [UserProductivityAnalysisOrderBy!]
+    """filter the rows returned"""
+    where: UserProductivityAnalysisBoolExp
+  ): UserProductivityAnalysisAggregate!
+  """
+  fetch data from the table in a streaming manner: "user_productivity_analysis"
+  """
+  userProductivityAnalysisStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+    """cursor to stream the results returned by the query"""
+    cursor: [UserProductivityAnalysisStreamCursorInput]!
+    """filter the rows returned"""
+    where: UserProductivityAnalysisBoolExp
+  ): [UserProductivityAnalysis!]!
+  """
+  fetch data from the table: "user_rate_history"
+  """
+  userRateHistory(
+    """distinct select on columns"""
+    distinctOn: [UserRateHistorySelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [UserRateHistoryOrderBy!]
+    """filter the rows returned"""
+    where: UserRateHistoryBoolExp
+  ): [UserRateHistory!]!
+  """
+  fetch aggregated fields from the table: "user_rate_history"
+  """
+  userRateHistoryAggregate(
+    """distinct select on columns"""
+    distinctOn: [UserRateHistorySelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [UserRateHistoryOrderBy!]
+    """filter the rows returned"""
+    where: UserRateHistoryBoolExp
+  ): UserRateHistoryAggregate!
+  """
+  fetch data from the table: "user_rate_history" using primary key columns
+  """
+  userRateHistoryByPk(id: uuid!): UserRateHistory
+  """
+  fetch data from the table in a streaming manner: "user_rate_history"
+  """
+  userRateHistoryStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+    """cursor to stream the results returned by the query"""
+    cursor: [UserRateHistoryStreamCursorInput]!
+    """filter the rows returned"""
+    where: UserRateHistoryBoolExp
+  ): [UserRateHistory!]!
   """An array relationship"""
   userRoles(
     """distinct select on columns"""
@@ -44335,6 +48905,13 @@ input userInvitationsAggregateBoolExpCount {
   arguments: [UserInvitationsSelectColumn!]
   distinct: Boolean
   filter: UserInvitationsBoolExp
+  predicate: IntComparisonExp!
+}
+
+input userRateHistoryAggregateBoolExpCount {
+  arguments: [UserRateHistorySelectColumn!]
+  distinct: Boolean
+  filter: UserRateHistoryBoolExp
   predicate: IntComparisonExp!
 }
 

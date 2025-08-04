@@ -18,7 +18,7 @@
  * ✓ Client Preset v4.8+ for optimal type safety
  * ✓ Zero type conflicts with modern codegen
  * 
- * Generated: 2025-08-04T03:25:30.744Z
+ * Generated: 2025-08-04T04:39:15.182Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Client Preset v4.0
  */
@@ -39,6 +39,7 @@ export type Scalars = {
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   bigint: { input: string; output: string; }
+  billing_tier_level: { input: any; output: any; }
   bpchar: { input: any; output: any; }
   date: { input: string; output: string; }
   inet: { input: any; output: any; }
@@ -47,6 +48,7 @@ export type Scalars = {
   json: { input: any; output: any; }
   jsonb: { input: any; output: any; }
   leave_status_enum: { input: any; output: any; }
+  monthly_billing_status: { input: any; output: any; }
   name: { input: any; output: any; }
   numeric: { input: number; output: number; }
   payroll_cycle_type: { input: any; output: any; }
@@ -3130,14 +3132,29 @@ export type BillingItemsVarianceOrderBy = {
 };
 
 export type BillingPeriodsAggregateBoolExp = {
+  bool_and?: InputMaybe<BillingPeriodsAggregateBoolExpBool_And>;
+  bool_or?: InputMaybe<BillingPeriodsAggregateBoolExpBool_Or>;
   count?: InputMaybe<BillingPeriodsAggregateBoolExpCount>;
 };
 
 /** order by aggregate values of table "billing_periods" */
 export type BillingPeriodsAggregateOrderBy = {
+  avg?: InputMaybe<BillingPeriodsAvgOrderBy>;
   count?: InputMaybe<OrderBy>;
   max?: InputMaybe<BillingPeriodsMaxOrderBy>;
   min?: InputMaybe<BillingPeriodsMinOrderBy>;
+  stddev?: InputMaybe<BillingPeriodsStddevOrderBy>;
+  stddevPop?: InputMaybe<BillingPeriodsStddevPopOrderBy>;
+  stddevSamp?: InputMaybe<BillingPeriodsStddevSampOrderBy>;
+  sum?: InputMaybe<BillingPeriodsSumOrderBy>;
+  varPop?: InputMaybe<BillingPeriodsVarPopOrderBy>;
+  varSamp?: InputMaybe<BillingPeriodsVarSampOrderBy>;
+  variance?: InputMaybe<BillingPeriodsVarianceOrderBy>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type BillingPeriodsAppendInput = {
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
 };
 
 /** input type for inserting array relation for remote table "billing_periods" */
@@ -3147,20 +3164,40 @@ export type BillingPeriodsArrRelInsertInput = {
   onConflict?: InputMaybe<BillingPeriodsOnConflict>;
 };
 
+/** order by avg() on columns of table "billing_periods" */
+export type BillingPeriodsAvgOrderBy = {
+  completedPayrollDates?: InputMaybe<OrderBy>;
+  completedPayrolls?: InputMaybe<OrderBy>;
+  totalPayrollDates?: InputMaybe<OrderBy>;
+  totalPayrolls?: InputMaybe<OrderBy>;
+};
+
 /** Boolean expression to filter rows from the table "billing_periods". All fields are combined with a logical 'AND'. */
 export type BillingPeriodsBoolExp = {
   _and?: InputMaybe<Array<BillingPeriodsBoolExp>>;
   _not?: InputMaybe<BillingPeriodsBoolExp>;
   _or?: InputMaybe<Array<BillingPeriodsBoolExp>>;
+  autoBillingEnabled?: InputMaybe<BooleanComparisonExp>;
+  billingGeneratedAt?: InputMaybe<TimestamptzComparisonExp>;
   billingInvoices?: InputMaybe<BillingInvoiceBoolExp>;
   billingInvoicesAggregate?: InputMaybe<BillingInvoiceAggregateBoolExp>;
+  billingMonth?: InputMaybe<DateComparisonExp>;
   client?: InputMaybe<ClientsBoolExp>;
   clientId?: InputMaybe<UuidComparisonExp>;
+  completedPayrollDates?: InputMaybe<IntComparisonExp>;
+  completedPayrolls?: InputMaybe<IntComparisonExp>;
   createdAt?: InputMaybe<TimestamptzComparisonExp>;
   id?: InputMaybe<UuidComparisonExp>;
+  lastCheckedAt?: InputMaybe<TimestamptzComparisonExp>;
+  metadata?: InputMaybe<JsonbComparisonExp>;
+  monthlyBillingCompletions?: InputMaybe<MonthlyBillingCompletionBoolExp>;
+  monthlyBillingCompletionsAggregate?: InputMaybe<MonthlyBillingCompletionAggregateBoolExp>;
+  monthlyStatus?: InputMaybe<MonthlyBillingStatusComparisonExp>;
   periodEnd?: InputMaybe<DateComparisonExp>;
   periodStart?: InputMaybe<DateComparisonExp>;
   status?: InputMaybe<StringComparisonExp>;
+  totalPayrollDates?: InputMaybe<IntComparisonExp>;
+  totalPayrolls?: InputMaybe<IntComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
 };
 
@@ -3172,50 +3209,106 @@ export type BillingPeriodsConstraint =
   | 'billing_periods_pkey'
   | '%future added value';
 
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type BillingPeriodsDeleteAtPathInput = {
+  metadata?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type BillingPeriodsDeleteElemInput = {
+  metadata?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type BillingPeriodsDeleteKeyInput = {
+  metadata?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** input type for incrementing numeric columns in table "billing_periods" */
+export type BillingPeriodsIncInput = {
+  completedPayrollDates?: InputMaybe<Scalars['Int']['input']>;
+  completedPayrolls?: InputMaybe<Scalars['Int']['input']>;
+  totalPayrollDates?: InputMaybe<Scalars['Int']['input']>;
+  totalPayrolls?: InputMaybe<Scalars['Int']['input']>;
+};
+
 /** input type for inserting data into table "billing_periods" */
 export type BillingPeriodsInsertInput = {
+  autoBillingEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  billingGeneratedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   billingInvoices?: InputMaybe<BillingInvoiceArrRelInsertInput>;
+  /** First day of the billing month for easy grouping */
+  billingMonth?: InputMaybe<Scalars['date']['input']>;
   client?: InputMaybe<ClientsObjRelInsertInput>;
   /** Client this billing period is for */
   clientId?: InputMaybe<Scalars['uuid']['input']>;
+  completedPayrollDates?: InputMaybe<Scalars['Int']['input']>;
+  completedPayrolls?: InputMaybe<Scalars['Int']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
+  lastCheckedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  monthlyBillingCompletions?: InputMaybe<MonthlyBillingCompletionArrRelInsertInput>;
+  /** Current status of monthly billing cycle */
+  monthlyStatus?: InputMaybe<Scalars['monthly_billing_status']['input']>;
   /** End date of billing period */
   periodEnd?: InputMaybe<Scalars['date']['input']>;
   /** Start date of billing period */
   periodStart?: InputMaybe<Scalars['date']['input']>;
   /** Status: open, ready_to_invoice, invoiced, paid */
   status?: InputMaybe<Scalars['String']['input']>;
+  totalPayrollDates?: InputMaybe<Scalars['Int']['input']>;
+  totalPayrolls?: InputMaybe<Scalars['Int']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
 
 /** order by max() on columns of table "billing_periods" */
 export type BillingPeriodsMaxOrderBy = {
+  billingGeneratedAt?: InputMaybe<OrderBy>;
+  /** First day of the billing month for easy grouping */
+  billingMonth?: InputMaybe<OrderBy>;
   /** Client this billing period is for */
   clientId?: InputMaybe<OrderBy>;
+  completedPayrollDates?: InputMaybe<OrderBy>;
+  completedPayrolls?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
+  lastCheckedAt?: InputMaybe<OrderBy>;
+  /** Current status of monthly billing cycle */
+  monthlyStatus?: InputMaybe<OrderBy>;
   /** End date of billing period */
   periodEnd?: InputMaybe<OrderBy>;
   /** Start date of billing period */
   periodStart?: InputMaybe<OrderBy>;
   /** Status: open, ready_to_invoice, invoiced, paid */
   status?: InputMaybe<OrderBy>;
+  totalPayrollDates?: InputMaybe<OrderBy>;
+  totalPayrolls?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
 };
 
 /** order by min() on columns of table "billing_periods" */
 export type BillingPeriodsMinOrderBy = {
+  billingGeneratedAt?: InputMaybe<OrderBy>;
+  /** First day of the billing month for easy grouping */
+  billingMonth?: InputMaybe<OrderBy>;
   /** Client this billing period is for */
   clientId?: InputMaybe<OrderBy>;
+  completedPayrollDates?: InputMaybe<OrderBy>;
+  completedPayrolls?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
+  lastCheckedAt?: InputMaybe<OrderBy>;
+  /** Current status of monthly billing cycle */
+  monthlyStatus?: InputMaybe<OrderBy>;
   /** End date of billing period */
   periodEnd?: InputMaybe<OrderBy>;
   /** Start date of billing period */
   periodStart?: InputMaybe<OrderBy>;
   /** Status: open, ready_to_invoice, invoiced, paid */
   status?: InputMaybe<OrderBy>;
+  totalPayrollDates?: InputMaybe<OrderBy>;
+  totalPayrolls?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
 };
 
@@ -3235,14 +3328,25 @@ export type BillingPeriodsOnConflict = {
 
 /** Ordering options when selecting data from "billing_periods". */
 export type BillingPeriodsOrderBy = {
+  autoBillingEnabled?: InputMaybe<OrderBy>;
+  billingGeneratedAt?: InputMaybe<OrderBy>;
   billingInvoicesAggregate?: InputMaybe<BillingInvoiceAggregateOrderBy>;
+  billingMonth?: InputMaybe<OrderBy>;
   client?: InputMaybe<ClientsOrderBy>;
   clientId?: InputMaybe<OrderBy>;
+  completedPayrollDates?: InputMaybe<OrderBy>;
+  completedPayrolls?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
+  lastCheckedAt?: InputMaybe<OrderBy>;
+  metadata?: InputMaybe<OrderBy>;
+  monthlyBillingCompletionsAggregate?: InputMaybe<MonthlyBillingCompletionAggregateOrderBy>;
+  monthlyStatus?: InputMaybe<OrderBy>;
   periodEnd?: InputMaybe<OrderBy>;
   periodStart?: InputMaybe<OrderBy>;
   status?: InputMaybe<OrderBy>;
+  totalPayrollDates?: InputMaybe<OrderBy>;
+  totalPayrolls?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
 };
 
@@ -3251,14 +3355,35 @@ export type BillingPeriodsPkColumnsInput = {
   id: Scalars['uuid']['input'];
 };
 
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type BillingPeriodsPrependInput = {
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
 /** select columns of table "billing_periods" */
 export type BillingPeriodsSelectColumn =
   /** column name */
+  | 'autoBillingEnabled'
+  /** column name */
+  | 'billingGeneratedAt'
+  /** column name */
+  | 'billingMonth'
+  /** column name */
   | 'clientId'
+  /** column name */
+  | 'completedPayrollDates'
+  /** column name */
+  | 'completedPayrolls'
   /** column name */
   | 'createdAt'
   /** column name */
   | 'id'
+  /** column name */
+  | 'lastCheckedAt'
+  /** column name */
+  | 'metadata'
+  /** column name */
+  | 'monthlyStatus'
   /** column name */
   | 'periodEnd'
   /** column name */
@@ -3266,22 +3391,74 @@ export type BillingPeriodsSelectColumn =
   /** column name */
   | 'status'
   /** column name */
+  | 'totalPayrollDates'
+  /** column name */
+  | 'totalPayrolls'
+  /** column name */
   | 'updatedAt'
+  | '%future added value';
+
+/** select "billingPeriodsAggregateBoolExpBool_andArgumentsColumns" columns of table "billing_periods" */
+export type BillingPeriodsSelectColumnBillingPeriodsAggregateBoolExpBool_AndArgumentsColumns =
+  /** column name */
+  | 'autoBillingEnabled'
+  | '%future added value';
+
+/** select "billingPeriodsAggregateBoolExpBool_orArgumentsColumns" columns of table "billing_periods" */
+export type BillingPeriodsSelectColumnBillingPeriodsAggregateBoolExpBool_OrArgumentsColumns =
+  /** column name */
+  | 'autoBillingEnabled'
   | '%future added value';
 
 /** input type for updating data in table "billing_periods" */
 export type BillingPeriodsSetInput = {
+  autoBillingEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  billingGeneratedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** First day of the billing month for easy grouping */
+  billingMonth?: InputMaybe<Scalars['date']['input']>;
   /** Client this billing period is for */
   clientId?: InputMaybe<Scalars['uuid']['input']>;
+  completedPayrollDates?: InputMaybe<Scalars['Int']['input']>;
+  completedPayrolls?: InputMaybe<Scalars['Int']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
+  lastCheckedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  /** Current status of monthly billing cycle */
+  monthlyStatus?: InputMaybe<Scalars['monthly_billing_status']['input']>;
   /** End date of billing period */
   periodEnd?: InputMaybe<Scalars['date']['input']>;
   /** Start date of billing period */
   periodStart?: InputMaybe<Scalars['date']['input']>;
   /** Status: open, ready_to_invoice, invoiced, paid */
   status?: InputMaybe<Scalars['String']['input']>;
+  totalPayrollDates?: InputMaybe<Scalars['Int']['input']>;
+  totalPayrolls?: InputMaybe<Scalars['Int']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** order by stddev() on columns of table "billing_periods" */
+export type BillingPeriodsStddevOrderBy = {
+  completedPayrollDates?: InputMaybe<OrderBy>;
+  completedPayrolls?: InputMaybe<OrderBy>;
+  totalPayrollDates?: InputMaybe<OrderBy>;
+  totalPayrolls?: InputMaybe<OrderBy>;
+};
+
+/** order by stddevPop() on columns of table "billing_periods" */
+export type BillingPeriodsStddevPopOrderBy = {
+  completedPayrollDates?: InputMaybe<OrderBy>;
+  completedPayrolls?: InputMaybe<OrderBy>;
+  totalPayrollDates?: InputMaybe<OrderBy>;
+  totalPayrolls?: InputMaybe<OrderBy>;
+};
+
+/** order by stddevSamp() on columns of table "billing_periods" */
+export type BillingPeriodsStddevSampOrderBy = {
+  completedPayrollDates?: InputMaybe<OrderBy>;
+  completedPayrolls?: InputMaybe<OrderBy>;
+  totalPayrollDates?: InputMaybe<OrderBy>;
+  totalPayrolls?: InputMaybe<OrderBy>;
 };
 
 /** Streaming cursor of the table "billing_periods" */
@@ -3294,27 +3471,63 @@ export type BillingPeriodsStreamCursorInput = {
 
 /** Initial value of the column from where the streaming should start */
 export type BillingPeriodsStreamCursorValueInput = {
+  autoBillingEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  billingGeneratedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** First day of the billing month for easy grouping */
+  billingMonth?: InputMaybe<Scalars['date']['input']>;
   /** Client this billing period is for */
   clientId?: InputMaybe<Scalars['uuid']['input']>;
+  completedPayrollDates?: InputMaybe<Scalars['Int']['input']>;
+  completedPayrolls?: InputMaybe<Scalars['Int']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
+  lastCheckedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  metadata?: InputMaybe<Scalars['jsonb']['input']>;
+  /** Current status of monthly billing cycle */
+  monthlyStatus?: InputMaybe<Scalars['monthly_billing_status']['input']>;
   /** End date of billing period */
   periodEnd?: InputMaybe<Scalars['date']['input']>;
   /** Start date of billing period */
   periodStart?: InputMaybe<Scalars['date']['input']>;
   /** Status: open, ready_to_invoice, invoiced, paid */
   status?: InputMaybe<Scalars['String']['input']>;
+  totalPayrollDates?: InputMaybe<Scalars['Int']['input']>;
+  totalPayrolls?: InputMaybe<Scalars['Int']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** order by sum() on columns of table "billing_periods" */
+export type BillingPeriodsSumOrderBy = {
+  completedPayrollDates?: InputMaybe<OrderBy>;
+  completedPayrolls?: InputMaybe<OrderBy>;
+  totalPayrollDates?: InputMaybe<OrderBy>;
+  totalPayrolls?: InputMaybe<OrderBy>;
 };
 
 /** update columns of table "billing_periods" */
 export type BillingPeriodsUpdateColumn =
   /** column name */
+  | 'autoBillingEnabled'
+  /** column name */
+  | 'billingGeneratedAt'
+  /** column name */
+  | 'billingMonth'
+  /** column name */
   | 'clientId'
+  /** column name */
+  | 'completedPayrollDates'
+  /** column name */
+  | 'completedPayrolls'
   /** column name */
   | 'createdAt'
   /** column name */
   | 'id'
+  /** column name */
+  | 'lastCheckedAt'
+  /** column name */
+  | 'metadata'
+  /** column name */
+  | 'monthlyStatus'
   /** column name */
   | 'periodEnd'
   /** column name */
@@ -3322,14 +3535,67 @@ export type BillingPeriodsUpdateColumn =
   /** column name */
   | 'status'
   /** column name */
+  | 'totalPayrollDates'
+  /** column name */
+  | 'totalPayrolls'
+  /** column name */
   | 'updatedAt'
   | '%future added value';
 
 export type BillingPeriodsUpdates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<BillingPeriodsAppendInput>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _deleteAtPath?: InputMaybe<BillingPeriodsDeleteAtPathInput>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _deleteElem?: InputMaybe<BillingPeriodsDeleteElemInput>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _deleteKey?: InputMaybe<BillingPeriodsDeleteKeyInput>;
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<BillingPeriodsIncInput>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<BillingPeriodsPrependInput>;
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<BillingPeriodsSetInput>;
   /** filter the rows which have to be updated */
   where: BillingPeriodsBoolExp;
+};
+
+/** order by varPop() on columns of table "billing_periods" */
+export type BillingPeriodsVarPopOrderBy = {
+  completedPayrollDates?: InputMaybe<OrderBy>;
+  completedPayrolls?: InputMaybe<OrderBy>;
+  totalPayrollDates?: InputMaybe<OrderBy>;
+  totalPayrolls?: InputMaybe<OrderBy>;
+};
+
+/** order by varSamp() on columns of table "billing_periods" */
+export type BillingPeriodsVarSampOrderBy = {
+  completedPayrollDates?: InputMaybe<OrderBy>;
+  completedPayrolls?: InputMaybe<OrderBy>;
+  totalPayrollDates?: InputMaybe<OrderBy>;
+  totalPayrolls?: InputMaybe<OrderBy>;
+};
+
+/** order by variance() on columns of table "billing_periods" */
+export type BillingPeriodsVarianceOrderBy = {
+  completedPayrollDates?: InputMaybe<OrderBy>;
+  completedPayrolls?: InputMaybe<OrderBy>;
+  totalPayrollDates?: InputMaybe<OrderBy>;
+  totalPayrolls?: InputMaybe<OrderBy>;
+};
+
+/** Boolean expression to compare columns of type "billing_tier_level". All fields are combined with logical 'AND'. */
+export type BillingTierLevelComparisonExp = {
+  _eq?: InputMaybe<Scalars['billing_tier_level']['input']>;
+  _gt?: InputMaybe<Scalars['billing_tier_level']['input']>;
+  _gte?: InputMaybe<Scalars['billing_tier_level']['input']>;
+  _in?: InputMaybe<Array<Scalars['billing_tier_level']['input']>>;
+  _isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  _lt?: InputMaybe<Scalars['billing_tier_level']['input']>;
+  _lte?: InputMaybe<Scalars['billing_tier_level']['input']>;
+  _neq?: InputMaybe<Scalars['billing_tier_level']['input']>;
+  _nin?: InputMaybe<Array<Scalars['billing_tier_level']['input']>>;
 };
 
 /** Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'. */
@@ -3631,6 +3897,8 @@ export type ClientServiceAgreementsBoolExp = {
   id?: InputMaybe<UuidComparisonExp>;
   isActive?: InputMaybe<BooleanComparisonExp>;
   isEnabled?: InputMaybe<BooleanComparisonExp>;
+  payrollServiceAgreements?: InputMaybe<PayrollServiceAgreementsBoolExp>;
+  payrollServiceAgreementsAggregate?: InputMaybe<PayrollServiceAgreementsAggregateBoolExp>;
   service?: InputMaybe<ServicesBoolExp>;
   serviceConfiguration?: InputMaybe<JsonbComparisonExp>;
   serviceId?: InputMaybe<UuidComparisonExp>;
@@ -3684,6 +3952,7 @@ export type ClientServiceAgreementsInsertInput = {
   id?: InputMaybe<Scalars['uuid']['input']>;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   isEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  payrollServiceAgreements?: InputMaybe<PayrollServiceAgreementsArrRelInsertInput>;
   service?: InputMaybe<ServicesObjRelInsertInput>;
   serviceConfiguration?: InputMaybe<Scalars['jsonb']['input']>;
   serviceId?: InputMaybe<Scalars['uuid']['input']>;
@@ -3718,6 +3987,13 @@ export type ClientServiceAgreementsMinOrderBy = {
   updatedAt?: InputMaybe<OrderBy>;
 };
 
+/** input type for inserting object relation for remote table "client_service_agreements" */
+export type ClientServiceAgreementsObjRelInsertInput = {
+  data: ClientServiceAgreementsInsertInput;
+  /** upsert condition */
+  onConflict?: InputMaybe<ClientServiceAgreementsOnConflict>;
+};
+
 /** on_conflict condition type for table "client_service_agreements" */
 export type ClientServiceAgreementsOnConflict = {
   constraint: ClientServiceAgreementsConstraint;
@@ -3741,6 +4017,7 @@ export type ClientServiceAgreementsOrderBy = {
   id?: InputMaybe<OrderBy>;
   isActive?: InputMaybe<OrderBy>;
   isEnabled?: InputMaybe<OrderBy>;
+  payrollServiceAgreementsAggregate?: InputMaybe<PayrollServiceAgreementsAggregateOrderBy>;
   service?: InputMaybe<ServicesOrderBy>;
   serviceConfiguration?: InputMaybe<OrderBy>;
   serviceId?: InputMaybe<OrderBy>;
@@ -4071,6 +4348,8 @@ export type ClientsBoolExp = {
   files?: InputMaybe<FilesBoolExp>;
   filesAggregate?: InputMaybe<FilesAggregateBoolExp>;
   id?: InputMaybe<UuidComparisonExp>;
+  monthlyBillingCompletions?: InputMaybe<MonthlyBillingCompletionBoolExp>;
+  monthlyBillingCompletionsAggregate?: InputMaybe<MonthlyBillingCompletionAggregateBoolExp>;
   name?: InputMaybe<StringComparisonExp>;
   payrolls?: InputMaybe<PayrollsBoolExp>;
   payrollsAggregate?: InputMaybe<PayrollsAggregateBoolExp>;
@@ -4111,6 +4390,7 @@ export type ClientsInsertInput = {
   files?: InputMaybe<FilesArrRelInsertInput>;
   /** Unique identifier for the client */
   id?: InputMaybe<Scalars['uuid']['input']>;
+  monthlyBillingCompletions?: InputMaybe<MonthlyBillingCompletionArrRelInsertInput>;
   /** Client company name */
   name?: InputMaybe<Scalars['String']['input']>;
   payrolls?: InputMaybe<PayrollsArrRelInsertInput>;
@@ -4150,6 +4430,7 @@ export type ClientsOrderBy = {
   externalSystemConnectionsAggregate?: InputMaybe<ClientExternalSystemsAggregateOrderBy>;
   filesAggregate?: InputMaybe<FilesAggregateOrderBy>;
   id?: InputMaybe<OrderBy>;
+  monthlyBillingCompletionsAggregate?: InputMaybe<MonthlyBillingCompletionAggregateOrderBy>;
   name?: InputMaybe<OrderBy>;
   payrollsAggregate?: InputMaybe<PayrollsAggregateOrderBy>;
   quoteConversionsAggregate?: InputMaybe<QuoteConversionsAggregateOrderBy>;
@@ -7218,6 +7499,597 @@ export type LeaveUpdates = {
   where: LeaveBoolExp;
 };
 
+export type MonthlyBillingCompletionAggregateBoolExp = {
+  bool_and?: InputMaybe<MonthlyBillingCompletionAggregateBoolExpBool_And>;
+  bool_or?: InputMaybe<MonthlyBillingCompletionAggregateBoolExpBool_Or>;
+  count?: InputMaybe<MonthlyBillingCompletionAggregateBoolExpCount>;
+};
+
+/** order by aggregate values of table "monthly_billing_completion" */
+export type MonthlyBillingCompletionAggregateOrderBy = {
+  avg?: InputMaybe<MonthlyBillingCompletionAvgOrderBy>;
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<MonthlyBillingCompletionMaxOrderBy>;
+  min?: InputMaybe<MonthlyBillingCompletionMinOrderBy>;
+  stddev?: InputMaybe<MonthlyBillingCompletionStddevOrderBy>;
+  stddevPop?: InputMaybe<MonthlyBillingCompletionStddevPopOrderBy>;
+  stddevSamp?: InputMaybe<MonthlyBillingCompletionStddevSampOrderBy>;
+  sum?: InputMaybe<MonthlyBillingCompletionSumOrderBy>;
+  varPop?: InputMaybe<MonthlyBillingCompletionVarPopOrderBy>;
+  varSamp?: InputMaybe<MonthlyBillingCompletionVarSampOrderBy>;
+  variance?: InputMaybe<MonthlyBillingCompletionVarianceOrderBy>;
+};
+
+/** input type for inserting array relation for remote table "monthly_billing_completion" */
+export type MonthlyBillingCompletionArrRelInsertInput = {
+  data: Array<MonthlyBillingCompletionInsertInput>;
+  /** upsert condition */
+  onConflict?: InputMaybe<MonthlyBillingCompletionOnConflict>;
+};
+
+/** order by avg() on columns of table "monthly_billing_completion" */
+export type MonthlyBillingCompletionAvgOrderBy = {
+  completedPayrollDates?: InputMaybe<OrderBy>;
+  completedPayrolls?: InputMaybe<OrderBy>;
+  totalPayrollDates?: InputMaybe<OrderBy>;
+  totalPayrolls?: InputMaybe<OrderBy>;
+};
+
+/** Boolean expression to filter rows from the table "monthly_billing_completion". All fields are combined with a logical 'AND'. */
+export type MonthlyBillingCompletionBoolExp = {
+  _and?: InputMaybe<Array<MonthlyBillingCompletionBoolExp>>;
+  _not?: InputMaybe<MonthlyBillingCompletionBoolExp>;
+  _or?: InputMaybe<Array<MonthlyBillingCompletionBoolExp>>;
+  autoBillingEnabled?: InputMaybe<BooleanComparisonExp>;
+  billingGeneratedAt?: InputMaybe<TimestamptzComparisonExp>;
+  billingMonth?: InputMaybe<DateComparisonExp>;
+  billingPeriod?: InputMaybe<BillingPeriodsBoolExp>;
+  billingPeriodId?: InputMaybe<UuidComparisonExp>;
+  billingReadyAt?: InputMaybe<TimestamptzComparisonExp>;
+  client?: InputMaybe<ClientsBoolExp>;
+  clientId?: InputMaybe<UuidComparisonExp>;
+  completedPayrollDates?: InputMaybe<IntComparisonExp>;
+  completedPayrolls?: InputMaybe<IntComparisonExp>;
+  completionNotes?: InputMaybe<StringComparisonExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  firstPayrollCompletedAt?: InputMaybe<TimestamptzComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  lastPayrollCompletedAt?: InputMaybe<TimestamptzComparisonExp>;
+  overrideCompletionDate?: InputMaybe<DateComparisonExp>;
+  pendingPayrollDateIds?: InputMaybe<UuidArrayComparisonExp>;
+  pendingPayrollIds?: InputMaybe<UuidArrayComparisonExp>;
+  status?: InputMaybe<MonthlyBillingStatusComparisonExp>;
+  tier1BillingGenerated?: InputMaybe<BooleanComparisonExp>;
+  tier2BillingGenerated?: InputMaybe<BooleanComparisonExp>;
+  tier3BillingGenerated?: InputMaybe<BooleanComparisonExp>;
+  totalPayrollDates?: InputMaybe<IntComparisonExp>;
+  totalPayrolls?: InputMaybe<IntComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+};
+
+/** unique or primary key constraints on table "monthly_billing_completion" */
+export type MonthlyBillingCompletionConstraint =
+  /** unique or primary key constraint on columns "billing_month", "client_id" */
+  | 'monthly_billing_completion_client_id_billing_month_key'
+  /** unique or primary key constraint on columns "id" */
+  | 'monthly_billing_completion_pkey'
+  | '%future added value';
+
+/** input type for incrementing numeric columns in table "monthly_billing_completion" */
+export type MonthlyBillingCompletionIncInput = {
+  completedPayrollDates?: InputMaybe<Scalars['Int']['input']>;
+  completedPayrolls?: InputMaybe<Scalars['Int']['input']>;
+  totalPayrollDates?: InputMaybe<Scalars['Int']['input']>;
+  totalPayrolls?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** input type for inserting data into table "monthly_billing_completion" */
+export type MonthlyBillingCompletionInsertInput = {
+  autoBillingEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  billingGeneratedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  billingMonth?: InputMaybe<Scalars['date']['input']>;
+  billingPeriod?: InputMaybe<BillingPeriodsObjRelInsertInput>;
+  billingPeriodId?: InputMaybe<Scalars['uuid']['input']>;
+  billingReadyAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  client?: InputMaybe<ClientsObjRelInsertInput>;
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  completedPayrollDates?: InputMaybe<Scalars['Int']['input']>;
+  completedPayrolls?: InputMaybe<Scalars['Int']['input']>;
+  completionNotes?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  firstPayrollCompletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  lastPayrollCompletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  overrideCompletionDate?: InputMaybe<Scalars['date']['input']>;
+  pendingPayrollDateIds?: InputMaybe<Array<Scalars['uuid']['input']>>;
+  pendingPayrollIds?: InputMaybe<Array<Scalars['uuid']['input']>>;
+  status?: InputMaybe<Scalars['monthly_billing_status']['input']>;
+  tier1BillingGenerated?: InputMaybe<Scalars['Boolean']['input']>;
+  tier2BillingGenerated?: InputMaybe<Scalars['Boolean']['input']>;
+  tier3BillingGenerated?: InputMaybe<Scalars['Boolean']['input']>;
+  totalPayrollDates?: InputMaybe<Scalars['Int']['input']>;
+  totalPayrolls?: InputMaybe<Scalars['Int']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** order by max() on columns of table "monthly_billing_completion" */
+export type MonthlyBillingCompletionMaxOrderBy = {
+  billingGeneratedAt?: InputMaybe<OrderBy>;
+  billingMonth?: InputMaybe<OrderBy>;
+  billingPeriodId?: InputMaybe<OrderBy>;
+  billingReadyAt?: InputMaybe<OrderBy>;
+  clientId?: InputMaybe<OrderBy>;
+  completedPayrollDates?: InputMaybe<OrderBy>;
+  completedPayrolls?: InputMaybe<OrderBy>;
+  completionNotes?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  firstPayrollCompletedAt?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  lastPayrollCompletedAt?: InputMaybe<OrderBy>;
+  overrideCompletionDate?: InputMaybe<OrderBy>;
+  pendingPayrollDateIds?: InputMaybe<OrderBy>;
+  pendingPayrollIds?: InputMaybe<OrderBy>;
+  status?: InputMaybe<OrderBy>;
+  totalPayrollDates?: InputMaybe<OrderBy>;
+  totalPayrolls?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** order by min() on columns of table "monthly_billing_completion" */
+export type MonthlyBillingCompletionMinOrderBy = {
+  billingGeneratedAt?: InputMaybe<OrderBy>;
+  billingMonth?: InputMaybe<OrderBy>;
+  billingPeriodId?: InputMaybe<OrderBy>;
+  billingReadyAt?: InputMaybe<OrderBy>;
+  clientId?: InputMaybe<OrderBy>;
+  completedPayrollDates?: InputMaybe<OrderBy>;
+  completedPayrolls?: InputMaybe<OrderBy>;
+  completionNotes?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  firstPayrollCompletedAt?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  lastPayrollCompletedAt?: InputMaybe<OrderBy>;
+  overrideCompletionDate?: InputMaybe<OrderBy>;
+  pendingPayrollDateIds?: InputMaybe<OrderBy>;
+  pendingPayrollIds?: InputMaybe<OrderBy>;
+  status?: InputMaybe<OrderBy>;
+  totalPayrollDates?: InputMaybe<OrderBy>;
+  totalPayrolls?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** on_conflict condition type for table "monthly_billing_completion" */
+export type MonthlyBillingCompletionOnConflict = {
+  constraint: MonthlyBillingCompletionConstraint;
+  updateColumns?: Array<MonthlyBillingCompletionUpdateColumn>;
+  where?: InputMaybe<MonthlyBillingCompletionBoolExp>;
+};
+
+/** Ordering options when selecting data from "monthly_billing_completion". */
+export type MonthlyBillingCompletionOrderBy = {
+  autoBillingEnabled?: InputMaybe<OrderBy>;
+  billingGeneratedAt?: InputMaybe<OrderBy>;
+  billingMonth?: InputMaybe<OrderBy>;
+  billingPeriod?: InputMaybe<BillingPeriodsOrderBy>;
+  billingPeriodId?: InputMaybe<OrderBy>;
+  billingReadyAt?: InputMaybe<OrderBy>;
+  client?: InputMaybe<ClientsOrderBy>;
+  clientId?: InputMaybe<OrderBy>;
+  completedPayrollDates?: InputMaybe<OrderBy>;
+  completedPayrolls?: InputMaybe<OrderBy>;
+  completionNotes?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  firstPayrollCompletedAt?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  lastPayrollCompletedAt?: InputMaybe<OrderBy>;
+  overrideCompletionDate?: InputMaybe<OrderBy>;
+  pendingPayrollDateIds?: InputMaybe<OrderBy>;
+  pendingPayrollIds?: InputMaybe<OrderBy>;
+  status?: InputMaybe<OrderBy>;
+  tier1BillingGenerated?: InputMaybe<OrderBy>;
+  tier2BillingGenerated?: InputMaybe<OrderBy>;
+  tier3BillingGenerated?: InputMaybe<OrderBy>;
+  totalPayrollDates?: InputMaybe<OrderBy>;
+  totalPayrolls?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: monthly_billing_completion */
+export type MonthlyBillingCompletionPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** select columns of table "monthly_billing_completion" */
+export type MonthlyBillingCompletionSelectColumn =
+  /** column name */
+  | 'autoBillingEnabled'
+  /** column name */
+  | 'billingGeneratedAt'
+  /** column name */
+  | 'billingMonth'
+  /** column name */
+  | 'billingPeriodId'
+  /** column name */
+  | 'billingReadyAt'
+  /** column name */
+  | 'clientId'
+  /** column name */
+  | 'completedPayrollDates'
+  /** column name */
+  | 'completedPayrolls'
+  /** column name */
+  | 'completionNotes'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'firstPayrollCompletedAt'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'lastPayrollCompletedAt'
+  /** column name */
+  | 'overrideCompletionDate'
+  /** column name */
+  | 'pendingPayrollDateIds'
+  /** column name */
+  | 'pendingPayrollIds'
+  /** column name */
+  | 'status'
+  /** column name */
+  | 'tier1BillingGenerated'
+  /** column name */
+  | 'tier2BillingGenerated'
+  /** column name */
+  | 'tier3BillingGenerated'
+  /** column name */
+  | 'totalPayrollDates'
+  /** column name */
+  | 'totalPayrolls'
+  /** column name */
+  | 'updatedAt'
+  | '%future added value';
+
+/** select "monthlyBillingCompletionAggregateBoolExpBool_andArgumentsColumns" columns of table "monthly_billing_completion" */
+export type MonthlyBillingCompletionSelectColumnMonthlyBillingCompletionAggregateBoolExpBool_AndArgumentsColumns =
+  /** column name */
+  | 'autoBillingEnabled'
+  /** column name */
+  | 'tier1BillingGenerated'
+  /** column name */
+  | 'tier2BillingGenerated'
+  /** column name */
+  | 'tier3BillingGenerated'
+  | '%future added value';
+
+/** select "monthlyBillingCompletionAggregateBoolExpBool_orArgumentsColumns" columns of table "monthly_billing_completion" */
+export type MonthlyBillingCompletionSelectColumnMonthlyBillingCompletionAggregateBoolExpBool_OrArgumentsColumns =
+  /** column name */
+  | 'autoBillingEnabled'
+  /** column name */
+  | 'tier1BillingGenerated'
+  /** column name */
+  | 'tier2BillingGenerated'
+  /** column name */
+  | 'tier3BillingGenerated'
+  | '%future added value';
+
+/** input type for updating data in table "monthly_billing_completion" */
+export type MonthlyBillingCompletionSetInput = {
+  autoBillingEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  billingGeneratedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  billingMonth?: InputMaybe<Scalars['date']['input']>;
+  billingPeriodId?: InputMaybe<Scalars['uuid']['input']>;
+  billingReadyAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  completedPayrollDates?: InputMaybe<Scalars['Int']['input']>;
+  completedPayrolls?: InputMaybe<Scalars['Int']['input']>;
+  completionNotes?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  firstPayrollCompletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  lastPayrollCompletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  overrideCompletionDate?: InputMaybe<Scalars['date']['input']>;
+  pendingPayrollDateIds?: InputMaybe<Array<Scalars['uuid']['input']>>;
+  pendingPayrollIds?: InputMaybe<Array<Scalars['uuid']['input']>>;
+  status?: InputMaybe<Scalars['monthly_billing_status']['input']>;
+  tier1BillingGenerated?: InputMaybe<Scalars['Boolean']['input']>;
+  tier2BillingGenerated?: InputMaybe<Scalars['Boolean']['input']>;
+  tier3BillingGenerated?: InputMaybe<Scalars['Boolean']['input']>;
+  totalPayrollDates?: InputMaybe<Scalars['Int']['input']>;
+  totalPayrolls?: InputMaybe<Scalars['Int']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** order by stddev() on columns of table "monthly_billing_completion" */
+export type MonthlyBillingCompletionStddevOrderBy = {
+  completedPayrollDates?: InputMaybe<OrderBy>;
+  completedPayrolls?: InputMaybe<OrderBy>;
+  totalPayrollDates?: InputMaybe<OrderBy>;
+  totalPayrolls?: InputMaybe<OrderBy>;
+};
+
+/** order by stddevPop() on columns of table "monthly_billing_completion" */
+export type MonthlyBillingCompletionStddevPopOrderBy = {
+  completedPayrollDates?: InputMaybe<OrderBy>;
+  completedPayrolls?: InputMaybe<OrderBy>;
+  totalPayrollDates?: InputMaybe<OrderBy>;
+  totalPayrolls?: InputMaybe<OrderBy>;
+};
+
+/** order by stddevSamp() on columns of table "monthly_billing_completion" */
+export type MonthlyBillingCompletionStddevSampOrderBy = {
+  completedPayrollDates?: InputMaybe<OrderBy>;
+  completedPayrolls?: InputMaybe<OrderBy>;
+  totalPayrollDates?: InputMaybe<OrderBy>;
+  totalPayrolls?: InputMaybe<OrderBy>;
+};
+
+/** Streaming cursor of the table "monthly_billing_completion" */
+export type MonthlyBillingCompletionStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: MonthlyBillingCompletionStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type MonthlyBillingCompletionStreamCursorValueInput = {
+  autoBillingEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  billingGeneratedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  billingMonth?: InputMaybe<Scalars['date']['input']>;
+  billingPeriodId?: InputMaybe<Scalars['uuid']['input']>;
+  billingReadyAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  completedPayrollDates?: InputMaybe<Scalars['Int']['input']>;
+  completedPayrolls?: InputMaybe<Scalars['Int']['input']>;
+  completionNotes?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  firstPayrollCompletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  lastPayrollCompletedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  overrideCompletionDate?: InputMaybe<Scalars['date']['input']>;
+  pendingPayrollDateIds?: InputMaybe<Array<Scalars['uuid']['input']>>;
+  pendingPayrollIds?: InputMaybe<Array<Scalars['uuid']['input']>>;
+  status?: InputMaybe<Scalars['monthly_billing_status']['input']>;
+  tier1BillingGenerated?: InputMaybe<Scalars['Boolean']['input']>;
+  tier2BillingGenerated?: InputMaybe<Scalars['Boolean']['input']>;
+  tier3BillingGenerated?: InputMaybe<Scalars['Boolean']['input']>;
+  totalPayrollDates?: InputMaybe<Scalars['Int']['input']>;
+  totalPayrolls?: InputMaybe<Scalars['Int']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** order by sum() on columns of table "monthly_billing_completion" */
+export type MonthlyBillingCompletionSumOrderBy = {
+  completedPayrollDates?: InputMaybe<OrderBy>;
+  completedPayrolls?: InputMaybe<OrderBy>;
+  totalPayrollDates?: InputMaybe<OrderBy>;
+  totalPayrolls?: InputMaybe<OrderBy>;
+};
+
+/** update columns of table "monthly_billing_completion" */
+export type MonthlyBillingCompletionUpdateColumn =
+  /** column name */
+  | 'autoBillingEnabled'
+  /** column name */
+  | 'billingGeneratedAt'
+  /** column name */
+  | 'billingMonth'
+  /** column name */
+  | 'billingPeriodId'
+  /** column name */
+  | 'billingReadyAt'
+  /** column name */
+  | 'clientId'
+  /** column name */
+  | 'completedPayrollDates'
+  /** column name */
+  | 'completedPayrolls'
+  /** column name */
+  | 'completionNotes'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'firstPayrollCompletedAt'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'lastPayrollCompletedAt'
+  /** column name */
+  | 'overrideCompletionDate'
+  /** column name */
+  | 'pendingPayrollDateIds'
+  /** column name */
+  | 'pendingPayrollIds'
+  /** column name */
+  | 'status'
+  /** column name */
+  | 'tier1BillingGenerated'
+  /** column name */
+  | 'tier2BillingGenerated'
+  /** column name */
+  | 'tier3BillingGenerated'
+  /** column name */
+  | 'totalPayrollDates'
+  /** column name */
+  | 'totalPayrolls'
+  /** column name */
+  | 'updatedAt'
+  | '%future added value';
+
+export type MonthlyBillingCompletionUpdates = {
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<MonthlyBillingCompletionIncInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<MonthlyBillingCompletionSetInput>;
+  /** filter the rows which have to be updated */
+  where: MonthlyBillingCompletionBoolExp;
+};
+
+/** order by varPop() on columns of table "monthly_billing_completion" */
+export type MonthlyBillingCompletionVarPopOrderBy = {
+  completedPayrollDates?: InputMaybe<OrderBy>;
+  completedPayrolls?: InputMaybe<OrderBy>;
+  totalPayrollDates?: InputMaybe<OrderBy>;
+  totalPayrolls?: InputMaybe<OrderBy>;
+};
+
+/** order by varSamp() on columns of table "monthly_billing_completion" */
+export type MonthlyBillingCompletionVarSampOrderBy = {
+  completedPayrollDates?: InputMaybe<OrderBy>;
+  completedPayrolls?: InputMaybe<OrderBy>;
+  totalPayrollDates?: InputMaybe<OrderBy>;
+  totalPayrolls?: InputMaybe<OrderBy>;
+};
+
+/** order by variance() on columns of table "monthly_billing_completion" */
+export type MonthlyBillingCompletionVarianceOrderBy = {
+  completedPayrollDates?: InputMaybe<OrderBy>;
+  completedPayrolls?: InputMaybe<OrderBy>;
+  totalPayrollDates?: InputMaybe<OrderBy>;
+  totalPayrolls?: InputMaybe<OrderBy>;
+};
+
+/** Boolean expression to filter rows from the table "monthly_billing_dashboard". All fields are combined with a logical 'AND'. */
+export type MonthlyBillingDashboardBoolExp = {
+  _and?: InputMaybe<Array<MonthlyBillingDashboardBoolExp>>;
+  _not?: InputMaybe<MonthlyBillingDashboardBoolExp>;
+  _or?: InputMaybe<Array<MonthlyBillingDashboardBoolExp>>;
+  activeServiceAgreements?: InputMaybe<BigintComparisonExp>;
+  billingGeneratedAt?: InputMaybe<TimestamptzComparisonExp>;
+  billingItemsCount?: InputMaybe<BigintComparisonExp>;
+  billingMonth?: InputMaybe<DateComparisonExp>;
+  billingMonthDisplay?: InputMaybe<StringComparisonExp>;
+  billingReadyAt?: InputMaybe<TimestamptzComparisonExp>;
+  clientId?: InputMaybe<UuidComparisonExp>;
+  clientName?: InputMaybe<StringComparisonExp>;
+  completedPayrollDates?: InputMaybe<IntComparisonExp>;
+  completedPayrolls?: InputMaybe<IntComparisonExp>;
+  completionPercentage?: InputMaybe<NumericComparisonExp>;
+  daysReadyForBilling?: InputMaybe<IntComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  status?: InputMaybe<MonthlyBillingStatusComparisonExp>;
+  tier1BillingGenerated?: InputMaybe<BooleanComparisonExp>;
+  tier2BillingGenerated?: InputMaybe<BooleanComparisonExp>;
+  tier3BillingGenerated?: InputMaybe<BooleanComparisonExp>;
+  totalBillingAmount?: InputMaybe<NumericComparisonExp>;
+  totalPayrollDates?: InputMaybe<IntComparisonExp>;
+  totalPayrolls?: InputMaybe<IntComparisonExp>;
+};
+
+/** Ordering options when selecting data from "monthly_billing_dashboard". */
+export type MonthlyBillingDashboardOrderBy = {
+  activeServiceAgreements?: InputMaybe<OrderBy>;
+  billingGeneratedAt?: InputMaybe<OrderBy>;
+  billingItemsCount?: InputMaybe<OrderBy>;
+  billingMonth?: InputMaybe<OrderBy>;
+  billingMonthDisplay?: InputMaybe<OrderBy>;
+  billingReadyAt?: InputMaybe<OrderBy>;
+  clientId?: InputMaybe<OrderBy>;
+  clientName?: InputMaybe<OrderBy>;
+  completedPayrollDates?: InputMaybe<OrderBy>;
+  completedPayrolls?: InputMaybe<OrderBy>;
+  completionPercentage?: InputMaybe<OrderBy>;
+  daysReadyForBilling?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  status?: InputMaybe<OrderBy>;
+  tier1BillingGenerated?: InputMaybe<OrderBy>;
+  tier2BillingGenerated?: InputMaybe<OrderBy>;
+  tier3BillingGenerated?: InputMaybe<OrderBy>;
+  totalBillingAmount?: InputMaybe<OrderBy>;
+  totalPayrollDates?: InputMaybe<OrderBy>;
+  totalPayrolls?: InputMaybe<OrderBy>;
+};
+
+/** select columns of table "monthly_billing_dashboard" */
+export type MonthlyBillingDashboardSelectColumn =
+  /** column name */
+  | 'activeServiceAgreements'
+  /** column name */
+  | 'billingGeneratedAt'
+  /** column name */
+  | 'billingItemsCount'
+  /** column name */
+  | 'billingMonth'
+  /** column name */
+  | 'billingMonthDisplay'
+  /** column name */
+  | 'billingReadyAt'
+  /** column name */
+  | 'clientId'
+  /** column name */
+  | 'clientName'
+  /** column name */
+  | 'completedPayrollDates'
+  /** column name */
+  | 'completedPayrolls'
+  /** column name */
+  | 'completionPercentage'
+  /** column name */
+  | 'daysReadyForBilling'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'status'
+  /** column name */
+  | 'tier1BillingGenerated'
+  /** column name */
+  | 'tier2BillingGenerated'
+  /** column name */
+  | 'tier3BillingGenerated'
+  /** column name */
+  | 'totalBillingAmount'
+  /** column name */
+  | 'totalPayrollDates'
+  /** column name */
+  | 'totalPayrolls'
+  | '%future added value';
+
+/** Streaming cursor of the table "monthly_billing_dashboard" */
+export type MonthlyBillingDashboardStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: MonthlyBillingDashboardStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type MonthlyBillingDashboardStreamCursorValueInput = {
+  activeServiceAgreements?: InputMaybe<Scalars['bigint']['input']>;
+  billingGeneratedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  billingItemsCount?: InputMaybe<Scalars['bigint']['input']>;
+  billingMonth?: InputMaybe<Scalars['date']['input']>;
+  billingMonthDisplay?: InputMaybe<Scalars['String']['input']>;
+  billingReadyAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  clientName?: InputMaybe<Scalars['String']['input']>;
+  completedPayrollDates?: InputMaybe<Scalars['Int']['input']>;
+  completedPayrolls?: InputMaybe<Scalars['Int']['input']>;
+  completionPercentage?: InputMaybe<Scalars['numeric']['input']>;
+  daysReadyForBilling?: InputMaybe<Scalars['Int']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  status?: InputMaybe<Scalars['monthly_billing_status']['input']>;
+  tier1BillingGenerated?: InputMaybe<Scalars['Boolean']['input']>;
+  tier2BillingGenerated?: InputMaybe<Scalars['Boolean']['input']>;
+  tier3BillingGenerated?: InputMaybe<Scalars['Boolean']['input']>;
+  totalBillingAmount?: InputMaybe<Scalars['numeric']['input']>;
+  totalPayrollDates?: InputMaybe<Scalars['Int']['input']>;
+  totalPayrolls?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** Boolean expression to compare columns of type "monthly_billing_status". All fields are combined with logical 'AND'. */
+export type MonthlyBillingStatusComparisonExp = {
+  _eq?: InputMaybe<Scalars['monthly_billing_status']['input']>;
+  _gt?: InputMaybe<Scalars['monthly_billing_status']['input']>;
+  _gte?: InputMaybe<Scalars['monthly_billing_status']['input']>;
+  _in?: InputMaybe<Array<Scalars['monthly_billing_status']['input']>>;
+  _isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  _lt?: InputMaybe<Scalars['monthly_billing_status']['input']>;
+  _lte?: InputMaybe<Scalars['monthly_billing_status']['input']>;
+  _neq?: InputMaybe<Scalars['monthly_billing_status']['input']>;
+  _nin?: InputMaybe<Array<Scalars['monthly_billing_status']['input']>>;
+};
+
 /** Boolean expression to compare columns of type "name". All fields are combined with logical 'AND'. */
 export type NameComparisonExp = {
   _eq?: InputMaybe<Scalars['name']['input']>;
@@ -8027,6 +8899,128 @@ export type PayrollAssignmentsUpdates = {
   where: PayrollAssignmentsBoolExp;
 };
 
+/** Boolean expression to filter rows from the table "payroll_cost_analysis". All fields are combined with a logical 'AND'. */
+export type PayrollCostAnalysisBoolExp = {
+  _and?: InputMaybe<Array<PayrollCostAnalysisBoolExp>>;
+  _not?: InputMaybe<PayrollCostAnalysisBoolExp>;
+  _or?: InputMaybe<Array<PayrollCostAnalysisBoolExp>>;
+  billingItemsCount?: InputMaybe<BigintComparisonExp>;
+  billingMonth?: InputMaybe<TimestamptzComparisonExp>;
+  clientId?: InputMaybe<UuidComparisonExp>;
+  clientName?: InputMaybe<StringComparisonExp>;
+  completedAt?: InputMaybe<TimestamptzComparisonExp>;
+  completedBy?: InputMaybe<UuidComparisonExp>;
+  costPerHour?: InputMaybe<NumericComparisonExp>;
+  estimatedProfit?: InputMaybe<NumericComparisonExp>;
+  payrollDateId?: InputMaybe<UuidComparisonExp>;
+  payrollDateStatus?: InputMaybe<StringComparisonExp>;
+  payrollId?: InputMaybe<UuidComparisonExp>;
+  payrollName?: InputMaybe<StringComparisonExp>;
+  profitMarginPercentage?: InputMaybe<NumericComparisonExp>;
+  revenuePerHour?: InputMaybe<NumericComparisonExp>;
+  totalHours?: InputMaybe<NumericComparisonExp>;
+  totalInternalCost?: InputMaybe<NumericComparisonExp>;
+  totalRevenue?: InputMaybe<NumericComparisonExp>;
+  totalTimeMinutes?: InputMaybe<BigintComparisonExp>;
+  uniqueUsersWorked?: InputMaybe<BigintComparisonExp>;
+};
+
+/** Ordering options when selecting data from "payroll_cost_analysis". */
+export type PayrollCostAnalysisOrderBy = {
+  billingItemsCount?: InputMaybe<OrderBy>;
+  billingMonth?: InputMaybe<OrderBy>;
+  clientId?: InputMaybe<OrderBy>;
+  clientName?: InputMaybe<OrderBy>;
+  completedAt?: InputMaybe<OrderBy>;
+  completedBy?: InputMaybe<OrderBy>;
+  costPerHour?: InputMaybe<OrderBy>;
+  estimatedProfit?: InputMaybe<OrderBy>;
+  payrollDateId?: InputMaybe<OrderBy>;
+  payrollDateStatus?: InputMaybe<OrderBy>;
+  payrollId?: InputMaybe<OrderBy>;
+  payrollName?: InputMaybe<OrderBy>;
+  profitMarginPercentage?: InputMaybe<OrderBy>;
+  revenuePerHour?: InputMaybe<OrderBy>;
+  totalHours?: InputMaybe<OrderBy>;
+  totalInternalCost?: InputMaybe<OrderBy>;
+  totalRevenue?: InputMaybe<OrderBy>;
+  totalTimeMinutes?: InputMaybe<OrderBy>;
+  uniqueUsersWorked?: InputMaybe<OrderBy>;
+};
+
+/** select columns of table "payroll_cost_analysis" */
+export type PayrollCostAnalysisSelectColumn =
+  /** column name */
+  | 'billingItemsCount'
+  /** column name */
+  | 'billingMonth'
+  /** column name */
+  | 'clientId'
+  /** column name */
+  | 'clientName'
+  /** column name */
+  | 'completedAt'
+  /** column name */
+  | 'completedBy'
+  /** column name */
+  | 'costPerHour'
+  /** column name */
+  | 'estimatedProfit'
+  /** column name */
+  | 'payrollDateId'
+  /** column name */
+  | 'payrollDateStatus'
+  /** column name */
+  | 'payrollId'
+  /** column name */
+  | 'payrollName'
+  /** column name */
+  | 'profitMarginPercentage'
+  /** column name */
+  | 'revenuePerHour'
+  /** column name */
+  | 'totalHours'
+  /** column name */
+  | 'totalInternalCost'
+  /** column name */
+  | 'totalRevenue'
+  /** column name */
+  | 'totalTimeMinutes'
+  /** column name */
+  | 'uniqueUsersWorked'
+  | '%future added value';
+
+/** Streaming cursor of the table "payroll_cost_analysis" */
+export type PayrollCostAnalysisStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: PayrollCostAnalysisStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type PayrollCostAnalysisStreamCursorValueInput = {
+  billingItemsCount?: InputMaybe<Scalars['bigint']['input']>;
+  billingMonth?: InputMaybe<Scalars['timestamptz']['input']>;
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  clientName?: InputMaybe<Scalars['String']['input']>;
+  completedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  completedBy?: InputMaybe<Scalars['uuid']['input']>;
+  costPerHour?: InputMaybe<Scalars['numeric']['input']>;
+  estimatedProfit?: InputMaybe<Scalars['numeric']['input']>;
+  payrollDateId?: InputMaybe<Scalars['uuid']['input']>;
+  payrollDateStatus?: InputMaybe<Scalars['String']['input']>;
+  payrollId?: InputMaybe<Scalars['uuid']['input']>;
+  payrollName?: InputMaybe<Scalars['String']['input']>;
+  profitMarginPercentage?: InputMaybe<Scalars['numeric']['input']>;
+  revenuePerHour?: InputMaybe<Scalars['numeric']['input']>;
+  totalHours?: InputMaybe<Scalars['numeric']['input']>;
+  totalInternalCost?: InputMaybe<Scalars['numeric']['input']>;
+  totalRevenue?: InputMaybe<Scalars['numeric']['input']>;
+  totalTimeMinutes?: InputMaybe<Scalars['bigint']['input']>;
+  uniqueUsersWorked?: InputMaybe<Scalars['bigint']['input']>;
+};
+
 /** Boolean expression to compare columns of type "payroll_cycle_type". All fields are combined with logical 'AND'. */
 export type PayrollCycleTypeComparisonExp = {
   _eq?: InputMaybe<Scalars['payroll_cycle_type']['input']>;
@@ -8392,6 +9386,8 @@ export type PayrollDateCompletionAnalyticsStreamCursorValueInput = {
 };
 
 export type PayrollDateTimeEntriesAggregateBoolExp = {
+  bool_and?: InputMaybe<PayrollDateTimeEntriesAggregateBoolExpBool_And>;
+  bool_or?: InputMaybe<PayrollDateTimeEntriesAggregateBoolExpBool_Or>;
   count?: InputMaybe<PayrollDateTimeEntriesAggregateBoolExpCount>;
 };
 
@@ -8419,7 +9415,11 @@ export type PayrollDateTimeEntriesArrRelInsertInput = {
 
 /** order by avg() on columns of table "payroll_date_time_entries" */
 export type PayrollDateTimeEntriesAvgOrderBy = {
+  /** Hourly rate applied when this time entry was created */
+  hourlyRateUsed?: InputMaybe<OrderBy>;
   timeSpentMinutes?: InputMaybe<OrderBy>;
+  /** Calculated internal cost (time * rate) */
+  totalCost?: InputMaybe<OrderBy>;
 };
 
 /** Boolean expression to filter rows from the table "payroll_date_time_entries". All fields are combined with a logical 'AND'. */
@@ -8427,12 +9427,17 @@ export type PayrollDateTimeEntriesBoolExp = {
   _and?: InputMaybe<Array<PayrollDateTimeEntriesBoolExp>>;
   _not?: InputMaybe<PayrollDateTimeEntriesBoolExp>;
   _or?: InputMaybe<Array<PayrollDateTimeEntriesBoolExp>>;
+  billingNotes?: InputMaybe<StringComparisonExp>;
+  costCenter?: InputMaybe<StringComparisonExp>;
   createdAt?: InputMaybe<TimestamptzComparisonExp>;
   description?: InputMaybe<StringComparisonExp>;
+  hourlyRateUsed?: InputMaybe<NumericComparisonExp>;
   id?: InputMaybe<UuidComparisonExp>;
+  isBillable?: InputMaybe<BooleanComparisonExp>;
   payrollDate?: InputMaybe<PayrollDatesBoolExp>;
   payrollDateId?: InputMaybe<UuidComparisonExp>;
   timeSpentMinutes?: InputMaybe<IntComparisonExp>;
+  totalCost?: InputMaybe<NumericComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
   user?: InputMaybe<UsersBoolExp>;
   userId?: InputMaybe<UuidComparisonExp>;
@@ -8449,14 +9454,22 @@ export type PayrollDateTimeEntriesConstraint =
 
 /** input type for incrementing numeric columns in table "payroll_date_time_entries" */
 export type PayrollDateTimeEntriesIncInput = {
+  /** Hourly rate applied when this time entry was created */
+  hourlyRateUsed?: InputMaybe<Scalars['numeric']['input']>;
   timeSpentMinutes?: InputMaybe<Scalars['Int']['input']>;
 };
 
 /** input type for inserting data into table "payroll_date_time_entries" */
 export type PayrollDateTimeEntriesInsertInput = {
+  billingNotes?: InputMaybe<Scalars['String']['input']>;
+  costCenter?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  /** Hourly rate applied when this time entry was created */
+  hourlyRateUsed?: InputMaybe<Scalars['numeric']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
+  /** Whether this time should be included in client billing */
+  isBillable?: InputMaybe<Scalars['Boolean']['input']>;
   payrollDate?: InputMaybe<PayrollDatesObjRelInsertInput>;
   payrollDateId?: InputMaybe<Scalars['uuid']['input']>;
   timeSpentMinutes?: InputMaybe<Scalars['Int']['input']>;
@@ -8468,11 +9481,17 @@ export type PayrollDateTimeEntriesInsertInput = {
 
 /** order by max() on columns of table "payroll_date_time_entries" */
 export type PayrollDateTimeEntriesMaxOrderBy = {
+  billingNotes?: InputMaybe<OrderBy>;
+  costCenter?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   description?: InputMaybe<OrderBy>;
+  /** Hourly rate applied when this time entry was created */
+  hourlyRateUsed?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   payrollDateId?: InputMaybe<OrderBy>;
   timeSpentMinutes?: InputMaybe<OrderBy>;
+  /** Calculated internal cost (time * rate) */
+  totalCost?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
   userId?: InputMaybe<OrderBy>;
   workDate?: InputMaybe<OrderBy>;
@@ -8480,11 +9499,17 @@ export type PayrollDateTimeEntriesMaxOrderBy = {
 
 /** order by min() on columns of table "payroll_date_time_entries" */
 export type PayrollDateTimeEntriesMinOrderBy = {
+  billingNotes?: InputMaybe<OrderBy>;
+  costCenter?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   description?: InputMaybe<OrderBy>;
+  /** Hourly rate applied when this time entry was created */
+  hourlyRateUsed?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   payrollDateId?: InputMaybe<OrderBy>;
   timeSpentMinutes?: InputMaybe<OrderBy>;
+  /** Calculated internal cost (time * rate) */
+  totalCost?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
   userId?: InputMaybe<OrderBy>;
   workDate?: InputMaybe<OrderBy>;
@@ -8499,12 +9524,17 @@ export type PayrollDateTimeEntriesOnConflict = {
 
 /** Ordering options when selecting data from "payroll_date_time_entries". */
 export type PayrollDateTimeEntriesOrderBy = {
+  billingNotes?: InputMaybe<OrderBy>;
+  costCenter?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   description?: InputMaybe<OrderBy>;
+  hourlyRateUsed?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
+  isBillable?: InputMaybe<OrderBy>;
   payrollDate?: InputMaybe<PayrollDatesOrderBy>;
   payrollDateId?: InputMaybe<OrderBy>;
   timeSpentMinutes?: InputMaybe<OrderBy>;
+  totalCost?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
   user?: InputMaybe<UsersOrderBy>;
   userId?: InputMaybe<OrderBy>;
@@ -8519,15 +9549,25 @@ export type PayrollDateTimeEntriesPkColumnsInput = {
 /** select columns of table "payroll_date_time_entries" */
 export type PayrollDateTimeEntriesSelectColumn =
   /** column name */
+  | 'billingNotes'
+  /** column name */
+  | 'costCenter'
+  /** column name */
   | 'createdAt'
   /** column name */
   | 'description'
   /** column name */
+  | 'hourlyRateUsed'
+  /** column name */
   | 'id'
+  /** column name */
+  | 'isBillable'
   /** column name */
   | 'payrollDateId'
   /** column name */
   | 'timeSpentMinutes'
+  /** column name */
+  | 'totalCost'
   /** column name */
   | 'updatedAt'
   /** column name */
@@ -8536,11 +9576,29 @@ export type PayrollDateTimeEntriesSelectColumn =
   | 'workDate'
   | '%future added value';
 
+/** select "payrollDateTimeEntriesAggregateBoolExpBool_andArgumentsColumns" columns of table "payroll_date_time_entries" */
+export type PayrollDateTimeEntriesSelectColumnPayrollDateTimeEntriesAggregateBoolExpBool_AndArgumentsColumns =
+  /** column name */
+  | 'isBillable'
+  | '%future added value';
+
+/** select "payrollDateTimeEntriesAggregateBoolExpBool_orArgumentsColumns" columns of table "payroll_date_time_entries" */
+export type PayrollDateTimeEntriesSelectColumnPayrollDateTimeEntriesAggregateBoolExpBool_OrArgumentsColumns =
+  /** column name */
+  | 'isBillable'
+  | '%future added value';
+
 /** input type for updating data in table "payroll_date_time_entries" */
 export type PayrollDateTimeEntriesSetInput = {
+  billingNotes?: InputMaybe<Scalars['String']['input']>;
+  costCenter?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  /** Hourly rate applied when this time entry was created */
+  hourlyRateUsed?: InputMaybe<Scalars['numeric']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
+  /** Whether this time should be included in client billing */
+  isBillable?: InputMaybe<Scalars['Boolean']['input']>;
   payrollDateId?: InputMaybe<Scalars['uuid']['input']>;
   timeSpentMinutes?: InputMaybe<Scalars['Int']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
@@ -8550,17 +9608,29 @@ export type PayrollDateTimeEntriesSetInput = {
 
 /** order by stddev() on columns of table "payroll_date_time_entries" */
 export type PayrollDateTimeEntriesStddevOrderBy = {
+  /** Hourly rate applied when this time entry was created */
+  hourlyRateUsed?: InputMaybe<OrderBy>;
   timeSpentMinutes?: InputMaybe<OrderBy>;
+  /** Calculated internal cost (time * rate) */
+  totalCost?: InputMaybe<OrderBy>;
 };
 
 /** order by stddevPop() on columns of table "payroll_date_time_entries" */
 export type PayrollDateTimeEntriesStddevPopOrderBy = {
+  /** Hourly rate applied when this time entry was created */
+  hourlyRateUsed?: InputMaybe<OrderBy>;
   timeSpentMinutes?: InputMaybe<OrderBy>;
+  /** Calculated internal cost (time * rate) */
+  totalCost?: InputMaybe<OrderBy>;
 };
 
 /** order by stddevSamp() on columns of table "payroll_date_time_entries" */
 export type PayrollDateTimeEntriesStddevSampOrderBy = {
+  /** Hourly rate applied when this time entry was created */
+  hourlyRateUsed?: InputMaybe<OrderBy>;
   timeSpentMinutes?: InputMaybe<OrderBy>;
+  /** Calculated internal cost (time * rate) */
+  totalCost?: InputMaybe<OrderBy>;
 };
 
 /** Streaming cursor of the table "payroll_date_time_entries" */
@@ -8573,11 +9643,19 @@ export type PayrollDateTimeEntriesStreamCursorInput = {
 
 /** Initial value of the column from where the streaming should start */
 export type PayrollDateTimeEntriesStreamCursorValueInput = {
+  billingNotes?: InputMaybe<Scalars['String']['input']>;
+  costCenter?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  /** Hourly rate applied when this time entry was created */
+  hourlyRateUsed?: InputMaybe<Scalars['numeric']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
+  /** Whether this time should be included in client billing */
+  isBillable?: InputMaybe<Scalars['Boolean']['input']>;
   payrollDateId?: InputMaybe<Scalars['uuid']['input']>;
   timeSpentMinutes?: InputMaybe<Scalars['Int']['input']>;
+  /** Calculated internal cost (time * rate) */
+  totalCost?: InputMaybe<Scalars['numeric']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   userId?: InputMaybe<Scalars['uuid']['input']>;
   workDate?: InputMaybe<Scalars['date']['input']>;
@@ -8585,17 +9663,29 @@ export type PayrollDateTimeEntriesStreamCursorValueInput = {
 
 /** order by sum() on columns of table "payroll_date_time_entries" */
 export type PayrollDateTimeEntriesSumOrderBy = {
+  /** Hourly rate applied when this time entry was created */
+  hourlyRateUsed?: InputMaybe<OrderBy>;
   timeSpentMinutes?: InputMaybe<OrderBy>;
+  /** Calculated internal cost (time * rate) */
+  totalCost?: InputMaybe<OrderBy>;
 };
 
 /** update columns of table "payroll_date_time_entries" */
 export type PayrollDateTimeEntriesUpdateColumn =
   /** column name */
+  | 'billingNotes'
+  /** column name */
+  | 'costCenter'
+  /** column name */
   | 'createdAt'
   /** column name */
   | 'description'
   /** column name */
+  | 'hourlyRateUsed'
+  /** column name */
   | 'id'
+  /** column name */
+  | 'isBillable'
   /** column name */
   | 'payrollDateId'
   /** column name */
@@ -8619,17 +9709,29 @@ export type PayrollDateTimeEntriesUpdates = {
 
 /** order by varPop() on columns of table "payroll_date_time_entries" */
 export type PayrollDateTimeEntriesVarPopOrderBy = {
+  /** Hourly rate applied when this time entry was created */
+  hourlyRateUsed?: InputMaybe<OrderBy>;
   timeSpentMinutes?: InputMaybe<OrderBy>;
+  /** Calculated internal cost (time * rate) */
+  totalCost?: InputMaybe<OrderBy>;
 };
 
 /** order by varSamp() on columns of table "payroll_date_time_entries" */
 export type PayrollDateTimeEntriesVarSampOrderBy = {
+  /** Hourly rate applied when this time entry was created */
+  hourlyRateUsed?: InputMaybe<OrderBy>;
   timeSpentMinutes?: InputMaybe<OrderBy>;
+  /** Calculated internal cost (time * rate) */
+  totalCost?: InputMaybe<OrderBy>;
 };
 
 /** order by variance() on columns of table "payroll_date_time_entries" */
 export type PayrollDateTimeEntriesVarianceOrderBy = {
+  /** Hourly rate applied when this time entry was created */
+  hourlyRateUsed?: InputMaybe<OrderBy>;
   timeSpentMinutes?: InputMaybe<OrderBy>;
+  /** Calculated internal cost (time * rate) */
+  totalCost?: InputMaybe<OrderBy>;
 };
 
 /** Boolean expression to compare columns of type "payroll_date_type". All fields are combined with logical 'AND'. */
@@ -9367,6 +10469,437 @@ export type PayrollRequiredSkillsUpdates = {
   where: PayrollRequiredSkillsBoolExp;
 };
 
+export type PayrollServiceAgreementsAggregateBoolExp = {
+  bool_and?: InputMaybe<PayrollServiceAgreementsAggregateBoolExpBool_And>;
+  bool_or?: InputMaybe<PayrollServiceAgreementsAggregateBoolExpBool_Or>;
+  count?: InputMaybe<PayrollServiceAgreementsAggregateBoolExpCount>;
+};
+
+/** order by aggregate values of table "payroll_service_agreements" */
+export type PayrollServiceAgreementsAggregateOrderBy = {
+  avg?: InputMaybe<PayrollServiceAgreementsAvgOrderBy>;
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<PayrollServiceAgreementsMaxOrderBy>;
+  min?: InputMaybe<PayrollServiceAgreementsMinOrderBy>;
+  stddev?: InputMaybe<PayrollServiceAgreementsStddevOrderBy>;
+  stddevPop?: InputMaybe<PayrollServiceAgreementsStddevPopOrderBy>;
+  stddevSamp?: InputMaybe<PayrollServiceAgreementsStddevSampOrderBy>;
+  sum?: InputMaybe<PayrollServiceAgreementsSumOrderBy>;
+  varPop?: InputMaybe<PayrollServiceAgreementsVarPopOrderBy>;
+  varSamp?: InputMaybe<PayrollServiceAgreementsVarSampOrderBy>;
+  variance?: InputMaybe<PayrollServiceAgreementsVarianceOrderBy>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type PayrollServiceAgreementsAppendInput = {
+  serviceConfiguration?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** input type for inserting array relation for remote table "payroll_service_agreements" */
+export type PayrollServiceAgreementsArrRelInsertInput = {
+  data: Array<PayrollServiceAgreementsInsertInput>;
+  /** upsert condition */
+  onConflict?: InputMaybe<PayrollServiceAgreementsOnConflict>;
+};
+
+/** order by avg() on columns of table "payroll_service_agreements" */
+export type PayrollServiceAgreementsAvgOrderBy = {
+  customQuantity?: InputMaybe<OrderBy>;
+  customRate?: InputMaybe<OrderBy>;
+};
+
+/** Boolean expression to filter rows from the table "payroll_service_agreements". All fields are combined with a logical 'AND'. */
+export type PayrollServiceAgreementsBoolExp = {
+  _and?: InputMaybe<Array<PayrollServiceAgreementsBoolExp>>;
+  _not?: InputMaybe<PayrollServiceAgreementsBoolExp>;
+  _or?: InputMaybe<Array<PayrollServiceAgreementsBoolExp>>;
+  autoBillingEnabled?: InputMaybe<BooleanComparisonExp>;
+  billingFrequency?: InputMaybe<StringComparisonExp>;
+  billingItemsGenerated?: InputMaybe<BooleanComparisonExp>;
+  billingNotes?: InputMaybe<StringComparisonExp>;
+  clientServiceAgreement?: InputMaybe<ClientServiceAgreementsBoolExp>;
+  clientServiceAgreementId?: InputMaybe<UuidComparisonExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  createdBy?: InputMaybe<UuidComparisonExp>;
+  customDescription?: InputMaybe<StringComparisonExp>;
+  customQuantity?: InputMaybe<IntComparisonExp>;
+  customRate?: InputMaybe<NumericComparisonExp>;
+  generatedAt?: InputMaybe<TimestamptzComparisonExp>;
+  generatedBy?: InputMaybe<UuidComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  isActive?: InputMaybe<BooleanComparisonExp>;
+  isOneTime?: InputMaybe<BooleanComparisonExp>;
+  payrollId?: InputMaybe<UuidComparisonExp>;
+  payrollServiceAgreementsByServiceId?: InputMaybe<ServicesBoolExp>;
+  payrollServiceAgreementsForPayroll?: InputMaybe<PayrollsBoolExp>;
+  serviceAgreementCreatedByUser?: InputMaybe<UsersBoolExp>;
+  serviceAgreementGeneratedByUser?: InputMaybe<UsersBoolExp>;
+  serviceConfiguration?: InputMaybe<JsonbComparisonExp>;
+  serviceId?: InputMaybe<UuidComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+};
+
+/** unique or primary key constraints on table "payroll_service_agreements" */
+export type PayrollServiceAgreementsConstraint =
+  /** unique or primary key constraint on columns "payroll_id", "service_id" */
+  | 'payroll_service_agreements_payroll_id_service_id_key'
+  /** unique or primary key constraint on columns "id" */
+  | 'payroll_service_agreements_pkey'
+  | '%future added value';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type PayrollServiceAgreementsDeleteAtPathInput = {
+  serviceConfiguration?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type PayrollServiceAgreementsDeleteElemInput = {
+  serviceConfiguration?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type PayrollServiceAgreementsDeleteKeyInput = {
+  serviceConfiguration?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** input type for incrementing numeric columns in table "payroll_service_agreements" */
+export type PayrollServiceAgreementsIncInput = {
+  customQuantity?: InputMaybe<Scalars['Int']['input']>;
+  customRate?: InputMaybe<Scalars['numeric']['input']>;
+};
+
+/** input type for inserting data into table "payroll_service_agreements" */
+export type PayrollServiceAgreementsInsertInput = {
+  autoBillingEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  billingFrequency?: InputMaybe<Scalars['String']['input']>;
+  billingItemsGenerated?: InputMaybe<Scalars['Boolean']['input']>;
+  billingNotes?: InputMaybe<Scalars['String']['input']>;
+  clientServiceAgreement?: InputMaybe<ClientServiceAgreementsObjRelInsertInput>;
+  clientServiceAgreementId?: InputMaybe<Scalars['uuid']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  customDescription?: InputMaybe<Scalars['String']['input']>;
+  customQuantity?: InputMaybe<Scalars['Int']['input']>;
+  customRate?: InputMaybe<Scalars['numeric']['input']>;
+  generatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  generatedBy?: InputMaybe<Scalars['uuid']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  isOneTime?: InputMaybe<Scalars['Boolean']['input']>;
+  payrollId?: InputMaybe<Scalars['uuid']['input']>;
+  payrollServiceAgreementsByServiceId?: InputMaybe<ServicesObjRelInsertInput>;
+  payrollServiceAgreementsForPayroll?: InputMaybe<PayrollsObjRelInsertInput>;
+  serviceAgreementCreatedByUser?: InputMaybe<UsersObjRelInsertInput>;
+  serviceAgreementGeneratedByUser?: InputMaybe<UsersObjRelInsertInput>;
+  serviceConfiguration?: InputMaybe<Scalars['jsonb']['input']>;
+  serviceId?: InputMaybe<Scalars['uuid']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** order by max() on columns of table "payroll_service_agreements" */
+export type PayrollServiceAgreementsMaxOrderBy = {
+  billingFrequency?: InputMaybe<OrderBy>;
+  billingNotes?: InputMaybe<OrderBy>;
+  clientServiceAgreementId?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  createdBy?: InputMaybe<OrderBy>;
+  customDescription?: InputMaybe<OrderBy>;
+  customQuantity?: InputMaybe<OrderBy>;
+  customRate?: InputMaybe<OrderBy>;
+  generatedAt?: InputMaybe<OrderBy>;
+  generatedBy?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  payrollId?: InputMaybe<OrderBy>;
+  serviceId?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** order by min() on columns of table "payroll_service_agreements" */
+export type PayrollServiceAgreementsMinOrderBy = {
+  billingFrequency?: InputMaybe<OrderBy>;
+  billingNotes?: InputMaybe<OrderBy>;
+  clientServiceAgreementId?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  createdBy?: InputMaybe<OrderBy>;
+  customDescription?: InputMaybe<OrderBy>;
+  customQuantity?: InputMaybe<OrderBy>;
+  customRate?: InputMaybe<OrderBy>;
+  generatedAt?: InputMaybe<OrderBy>;
+  generatedBy?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  payrollId?: InputMaybe<OrderBy>;
+  serviceId?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** on_conflict condition type for table "payroll_service_agreements" */
+export type PayrollServiceAgreementsOnConflict = {
+  constraint: PayrollServiceAgreementsConstraint;
+  updateColumns?: Array<PayrollServiceAgreementsUpdateColumn>;
+  where?: InputMaybe<PayrollServiceAgreementsBoolExp>;
+};
+
+/** Ordering options when selecting data from "payroll_service_agreements". */
+export type PayrollServiceAgreementsOrderBy = {
+  autoBillingEnabled?: InputMaybe<OrderBy>;
+  billingFrequency?: InputMaybe<OrderBy>;
+  billingItemsGenerated?: InputMaybe<OrderBy>;
+  billingNotes?: InputMaybe<OrderBy>;
+  clientServiceAgreement?: InputMaybe<ClientServiceAgreementsOrderBy>;
+  clientServiceAgreementId?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  createdBy?: InputMaybe<OrderBy>;
+  customDescription?: InputMaybe<OrderBy>;
+  customQuantity?: InputMaybe<OrderBy>;
+  customRate?: InputMaybe<OrderBy>;
+  generatedAt?: InputMaybe<OrderBy>;
+  generatedBy?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  isActive?: InputMaybe<OrderBy>;
+  isOneTime?: InputMaybe<OrderBy>;
+  payrollId?: InputMaybe<OrderBy>;
+  payrollServiceAgreementsByServiceId?: InputMaybe<ServicesOrderBy>;
+  payrollServiceAgreementsForPayroll?: InputMaybe<PayrollsOrderBy>;
+  serviceAgreementCreatedByUser?: InputMaybe<UsersOrderBy>;
+  serviceAgreementGeneratedByUser?: InputMaybe<UsersOrderBy>;
+  serviceConfiguration?: InputMaybe<OrderBy>;
+  serviceId?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: payroll_service_agreements */
+export type PayrollServiceAgreementsPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type PayrollServiceAgreementsPrependInput = {
+  serviceConfiguration?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** select columns of table "payroll_service_agreements" */
+export type PayrollServiceAgreementsSelectColumn =
+  /** column name */
+  | 'autoBillingEnabled'
+  /** column name */
+  | 'billingFrequency'
+  /** column name */
+  | 'billingItemsGenerated'
+  /** column name */
+  | 'billingNotes'
+  /** column name */
+  | 'clientServiceAgreementId'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'createdBy'
+  /** column name */
+  | 'customDescription'
+  /** column name */
+  | 'customQuantity'
+  /** column name */
+  | 'customRate'
+  /** column name */
+  | 'generatedAt'
+  /** column name */
+  | 'generatedBy'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isOneTime'
+  /** column name */
+  | 'payrollId'
+  /** column name */
+  | 'serviceConfiguration'
+  /** column name */
+  | 'serviceId'
+  /** column name */
+  | 'updatedAt'
+  | '%future added value';
+
+/** select "payrollServiceAgreementsAggregateBoolExpBool_andArgumentsColumns" columns of table "payroll_service_agreements" */
+export type PayrollServiceAgreementsSelectColumnPayrollServiceAgreementsAggregateBoolExpBool_AndArgumentsColumns =
+  /** column name */
+  | 'autoBillingEnabled'
+  /** column name */
+  | 'billingItemsGenerated'
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isOneTime'
+  | '%future added value';
+
+/** select "payrollServiceAgreementsAggregateBoolExpBool_orArgumentsColumns" columns of table "payroll_service_agreements" */
+export type PayrollServiceAgreementsSelectColumnPayrollServiceAgreementsAggregateBoolExpBool_OrArgumentsColumns =
+  /** column name */
+  | 'autoBillingEnabled'
+  /** column name */
+  | 'billingItemsGenerated'
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isOneTime'
+  | '%future added value';
+
+/** input type for updating data in table "payroll_service_agreements" */
+export type PayrollServiceAgreementsSetInput = {
+  autoBillingEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  billingFrequency?: InputMaybe<Scalars['String']['input']>;
+  billingItemsGenerated?: InputMaybe<Scalars['Boolean']['input']>;
+  billingNotes?: InputMaybe<Scalars['String']['input']>;
+  clientServiceAgreementId?: InputMaybe<Scalars['uuid']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  customDescription?: InputMaybe<Scalars['String']['input']>;
+  customQuantity?: InputMaybe<Scalars['Int']['input']>;
+  customRate?: InputMaybe<Scalars['numeric']['input']>;
+  generatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  generatedBy?: InputMaybe<Scalars['uuid']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  isOneTime?: InputMaybe<Scalars['Boolean']['input']>;
+  payrollId?: InputMaybe<Scalars['uuid']['input']>;
+  serviceConfiguration?: InputMaybe<Scalars['jsonb']['input']>;
+  serviceId?: InputMaybe<Scalars['uuid']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** order by stddev() on columns of table "payroll_service_agreements" */
+export type PayrollServiceAgreementsStddevOrderBy = {
+  customQuantity?: InputMaybe<OrderBy>;
+  customRate?: InputMaybe<OrderBy>;
+};
+
+/** order by stddevPop() on columns of table "payroll_service_agreements" */
+export type PayrollServiceAgreementsStddevPopOrderBy = {
+  customQuantity?: InputMaybe<OrderBy>;
+  customRate?: InputMaybe<OrderBy>;
+};
+
+/** order by stddevSamp() on columns of table "payroll_service_agreements" */
+export type PayrollServiceAgreementsStddevSampOrderBy = {
+  customQuantity?: InputMaybe<OrderBy>;
+  customRate?: InputMaybe<OrderBy>;
+};
+
+/** Streaming cursor of the table "payroll_service_agreements" */
+export type PayrollServiceAgreementsStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: PayrollServiceAgreementsStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type PayrollServiceAgreementsStreamCursorValueInput = {
+  autoBillingEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  billingFrequency?: InputMaybe<Scalars['String']['input']>;
+  billingItemsGenerated?: InputMaybe<Scalars['Boolean']['input']>;
+  billingNotes?: InputMaybe<Scalars['String']['input']>;
+  clientServiceAgreementId?: InputMaybe<Scalars['uuid']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  customDescription?: InputMaybe<Scalars['String']['input']>;
+  customQuantity?: InputMaybe<Scalars['Int']['input']>;
+  customRate?: InputMaybe<Scalars['numeric']['input']>;
+  generatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  generatedBy?: InputMaybe<Scalars['uuid']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  isOneTime?: InputMaybe<Scalars['Boolean']['input']>;
+  payrollId?: InputMaybe<Scalars['uuid']['input']>;
+  serviceConfiguration?: InputMaybe<Scalars['jsonb']['input']>;
+  serviceId?: InputMaybe<Scalars['uuid']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** order by sum() on columns of table "payroll_service_agreements" */
+export type PayrollServiceAgreementsSumOrderBy = {
+  customQuantity?: InputMaybe<OrderBy>;
+  customRate?: InputMaybe<OrderBy>;
+};
+
+/** update columns of table "payroll_service_agreements" */
+export type PayrollServiceAgreementsUpdateColumn =
+  /** column name */
+  | 'autoBillingEnabled'
+  /** column name */
+  | 'billingFrequency'
+  /** column name */
+  | 'billingItemsGenerated'
+  /** column name */
+  | 'billingNotes'
+  /** column name */
+  | 'clientServiceAgreementId'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'createdBy'
+  /** column name */
+  | 'customDescription'
+  /** column name */
+  | 'customQuantity'
+  /** column name */
+  | 'customRate'
+  /** column name */
+  | 'generatedAt'
+  /** column name */
+  | 'generatedBy'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isOneTime'
+  /** column name */
+  | 'payrollId'
+  /** column name */
+  | 'serviceConfiguration'
+  /** column name */
+  | 'serviceId'
+  /** column name */
+  | 'updatedAt'
+  | '%future added value';
+
+export type PayrollServiceAgreementsUpdates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<PayrollServiceAgreementsAppendInput>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _deleteAtPath?: InputMaybe<PayrollServiceAgreementsDeleteAtPathInput>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _deleteElem?: InputMaybe<PayrollServiceAgreementsDeleteElemInput>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _deleteKey?: InputMaybe<PayrollServiceAgreementsDeleteKeyInput>;
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<PayrollServiceAgreementsIncInput>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<PayrollServiceAgreementsPrependInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<PayrollServiceAgreementsSetInput>;
+  /** filter the rows which have to be updated */
+  where: PayrollServiceAgreementsBoolExp;
+};
+
+/** order by varPop() on columns of table "payroll_service_agreements" */
+export type PayrollServiceAgreementsVarPopOrderBy = {
+  customQuantity?: InputMaybe<OrderBy>;
+  customRate?: InputMaybe<OrderBy>;
+};
+
+/** order by varSamp() on columns of table "payroll_service_agreements" */
+export type PayrollServiceAgreementsVarSampOrderBy = {
+  customQuantity?: InputMaybe<OrderBy>;
+  customRate?: InputMaybe<OrderBy>;
+};
+
+/** order by variance() on columns of table "payroll_service_agreements" */
+export type PayrollServiceAgreementsVarianceOrderBy = {
+  customQuantity?: InputMaybe<OrderBy>;
+  customRate?: InputMaybe<OrderBy>;
+};
+
 /** Boolean expression to compare columns of type "payroll_status". All fields are combined with logical 'AND'. */
 export type PayrollStatusComparisonExp = {
   _eq?: InputMaybe<Scalars['payroll_status']['input']>;
@@ -9963,6 +11496,8 @@ export type PayrollsBoolExp = {
   payrollDateType?: InputMaybe<PayrollDateTypesBoolExp>;
   payrollDates?: InputMaybe<PayrollDatesBoolExp>;
   payrollDatesAggregate?: InputMaybe<PayrollDatesAggregateBoolExp>;
+  payrollServiceAgreementsForPayroll?: InputMaybe<PayrollServiceAgreementsBoolExp>;
+  payrollServiceAgreementsForPayrollAggregate?: InputMaybe<PayrollServiceAgreementsAggregateBoolExp>;
   payrollSystem?: InputMaybe<StringComparisonExp>;
   payslipCount?: InputMaybe<IntComparisonExp>;
   primaryConsultant?: InputMaybe<UsersBoolExp>;
@@ -10059,6 +11594,7 @@ export type PayrollsInsertInput = {
   payrollCycle?: InputMaybe<PayrollCyclesObjRelInsertInput>;
   payrollDateType?: InputMaybe<PayrollDateTypesObjRelInsertInput>;
   payrollDates?: InputMaybe<PayrollDatesArrRelInsertInput>;
+  payrollServiceAgreementsForPayroll?: InputMaybe<PayrollServiceAgreementsArrRelInsertInput>;
   /** External payroll system used for this client */
   payrollSystem?: InputMaybe<Scalars['String']['input']>;
   /** Number of payslips processed in this payroll run */
@@ -10244,6 +11780,7 @@ export type PayrollsOrderBy = {
   payrollCycle?: InputMaybe<PayrollCyclesOrderBy>;
   payrollDateType?: InputMaybe<PayrollDateTypesOrderBy>;
   payrollDatesAggregate?: InputMaybe<PayrollDatesAggregateOrderBy>;
+  payrollServiceAgreementsForPayrollAggregate?: InputMaybe<PayrollServiceAgreementsAggregateOrderBy>;
   payrollSystem?: InputMaybe<OrderBy>;
   payslipCount?: InputMaybe<OrderBy>;
   primaryConsultant?: InputMaybe<UsersOrderBy>;
@@ -14919,6 +16456,8 @@ export type ServicesArrRelInsertInput = {
 /** order by avg() on columns of table "services" */
 export type ServicesAvgOrderBy = {
   defaultRate?: InputMaybe<OrderBy>;
+  /** Priority within tier (lower number = higher priority) */
+  tierPriority?: InputMaybe<OrderBy>;
 };
 
 /** Boolean expression to filter rows from the table "services". All fields are combined with a logical 'AND'. */
@@ -14928,6 +16467,7 @@ export type ServicesBoolExp = {
   _or?: InputMaybe<Array<ServicesBoolExp>>;
   billingItems?: InputMaybe<BillingItemsBoolExp>;
   billingItemsAggregate?: InputMaybe<BillingItemsAggregateBoolExp>;
+  billingTier?: InputMaybe<BillingTierLevelComparisonExp>;
   billingUnit?: InputMaybe<StringComparisonExp>;
   category?: InputMaybe<StringComparisonExp>;
   clientAgreements?: InputMaybe<ClientServiceAgreementsBoolExp>;
@@ -14944,12 +16484,17 @@ export type ServicesBoolExp = {
   isTemplate?: InputMaybe<BooleanComparisonExp>;
   metadata?: InputMaybe<JsonbComparisonExp>;
   name?: InputMaybe<StringComparisonExp>;
+  payrollServiceAgreementsForService?: InputMaybe<PayrollServiceAgreementsBoolExp>;
+  payrollServiceAgreementsForServiceAggregate?: InputMaybe<PayrollServiceAgreementsAggregateBoolExp>;
   pricingRules?: InputMaybe<JsonbComparisonExp>;
   quoteLineItems?: InputMaybe<QuoteLineItemsBoolExp>;
   quoteLineItemsAggregate?: InputMaybe<QuoteLineItemsAggregateBoolExp>;
+  requiresMonthlyCompletion?: InputMaybe<BooleanComparisonExp>;
+  requiresPayrollCompletion?: InputMaybe<BooleanComparisonExp>;
   servicePricingRules?: InputMaybe<ServicePricingRulesBoolExp>;
   servicePricingRulesAggregate?: InputMaybe<ServicePricingRulesAggregateBoolExp>;
   serviceType?: InputMaybe<StringComparisonExp>;
+  tierPriority?: InputMaybe<IntComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
   updatedBy?: InputMaybe<UuidComparisonExp>;
   updatedByUser?: InputMaybe<UsersBoolExp>;
@@ -14990,11 +16535,15 @@ export type ServicesDeleteKeyInput = {
 /** input type for incrementing numeric columns in table "services" */
 export type ServicesIncInput = {
   defaultRate?: InputMaybe<Scalars['numeric']['input']>;
+  /** Priority within tier (lower number = higher priority) */
+  tierPriority?: InputMaybe<Scalars['Int']['input']>;
 };
 
 /** input type for inserting data into table "services" */
 export type ServicesInsertInput = {
   billingItems?: InputMaybe<BillingItemsArrRelInsertInput>;
+  /** Billing tier: payroll_date, payroll, or client_monthly */
+  billingTier?: InputMaybe<Scalars['billing_tier_level']['input']>;
   /** How this service is billed: Per Payroll, Per Employee, Per Hour, etc. */
   billingUnit?: InputMaybe<Scalars['String']['input']>;
   category?: InputMaybe<Scalars['String']['input']>;
@@ -15011,12 +16560,17 @@ export type ServicesInsertInput = {
   isTemplate?: InputMaybe<Scalars['Boolean']['input']>;
   metadata?: InputMaybe<Scalars['jsonb']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
+  payrollServiceAgreementsForService?: InputMaybe<PayrollServiceAgreementsArrRelInsertInput>;
   /** JSONB field for complex pricing logic */
   pricingRules?: InputMaybe<Scalars['jsonb']['input']>;
   quoteLineItems?: InputMaybe<QuoteLineItemsArrRelInsertInput>;
+  requiresMonthlyCompletion?: InputMaybe<Scalars['Boolean']['input']>;
+  requiresPayrollCompletion?: InputMaybe<Scalars['Boolean']['input']>;
   servicePricingRules?: InputMaybe<ServicePricingRulesArrRelInsertInput>;
   /** standard: regular service, template: reusable template, custom: client-specific */
   serviceType?: InputMaybe<Scalars['String']['input']>;
+  /** Priority within tier (lower number = higher priority) */
+  tierPriority?: InputMaybe<Scalars['Int']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
   updatedByUser?: InputMaybe<UsersObjRelInsertInput>;
@@ -15024,6 +16578,8 @@ export type ServicesInsertInput = {
 
 /** order by max() on columns of table "services" */
 export type ServicesMaxOrderBy = {
+  /** Billing tier: payroll_date, payroll, or client_monthly */
+  billingTier?: InputMaybe<OrderBy>;
   /** How this service is billed: Per Payroll, Per Employee, Per Hour, etc. */
   billingUnit?: InputMaybe<OrderBy>;
   category?: InputMaybe<OrderBy>;
@@ -15036,12 +16592,16 @@ export type ServicesMaxOrderBy = {
   name?: InputMaybe<OrderBy>;
   /** standard: regular service, template: reusable template, custom: client-specific */
   serviceType?: InputMaybe<OrderBy>;
+  /** Priority within tier (lower number = higher priority) */
+  tierPriority?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
   updatedBy?: InputMaybe<OrderBy>;
 };
 
 /** order by min() on columns of table "services" */
 export type ServicesMinOrderBy = {
+  /** Billing tier: payroll_date, payroll, or client_monthly */
+  billingTier?: InputMaybe<OrderBy>;
   /** How this service is billed: Per Payroll, Per Employee, Per Hour, etc. */
   billingUnit?: InputMaybe<OrderBy>;
   category?: InputMaybe<OrderBy>;
@@ -15054,6 +16614,8 @@ export type ServicesMinOrderBy = {
   name?: InputMaybe<OrderBy>;
   /** standard: regular service, template: reusable template, custom: client-specific */
   serviceType?: InputMaybe<OrderBy>;
+  /** Priority within tier (lower number = higher priority) */
+  tierPriority?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
   updatedBy?: InputMaybe<OrderBy>;
 };
@@ -15075,6 +16637,7 @@ export type ServicesOnConflict = {
 /** Ordering options when selecting data from "services". */
 export type ServicesOrderBy = {
   billingItemsAggregate?: InputMaybe<BillingItemsAggregateOrderBy>;
+  billingTier?: InputMaybe<OrderBy>;
   billingUnit?: InputMaybe<OrderBy>;
   category?: InputMaybe<OrderBy>;
   clientAgreementsAggregate?: InputMaybe<ClientServiceAgreementsAggregateOrderBy>;
@@ -15090,10 +16653,14 @@ export type ServicesOrderBy = {
   isTemplate?: InputMaybe<OrderBy>;
   metadata?: InputMaybe<OrderBy>;
   name?: InputMaybe<OrderBy>;
+  payrollServiceAgreementsForServiceAggregate?: InputMaybe<PayrollServiceAgreementsAggregateOrderBy>;
   pricingRules?: InputMaybe<OrderBy>;
   quoteLineItemsAggregate?: InputMaybe<QuoteLineItemsAggregateOrderBy>;
+  requiresMonthlyCompletion?: InputMaybe<OrderBy>;
+  requiresPayrollCompletion?: InputMaybe<OrderBy>;
   servicePricingRulesAggregate?: InputMaybe<ServicePricingRulesAggregateOrderBy>;
   serviceType?: InputMaybe<OrderBy>;
+  tierPriority?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
   updatedBy?: InputMaybe<OrderBy>;
   updatedByUser?: InputMaybe<UsersOrderBy>;
@@ -15115,6 +16682,8 @@ export type ServicesPrependInput = {
 /** select columns of table "services" */
 export type ServicesSelectColumn =
   /** column name */
+  | 'billingTier'
+  /** column name */
   | 'billingUnit'
   /** column name */
   | 'category'
@@ -15143,7 +16712,13 @@ export type ServicesSelectColumn =
   /** column name */
   | 'pricingRules'
   /** column name */
+  | 'requiresMonthlyCompletion'
+  /** column name */
+  | 'requiresPayrollCompletion'
+  /** column name */
   | 'serviceType'
+  /** column name */
+  | 'tierPriority'
   /** column name */
   | 'updatedAt'
   /** column name */
@@ -15156,6 +16731,10 @@ export type ServicesSelectColumnServicesAggregateBoolExpBool_AndArgumentsColumns
   | 'isActive'
   /** column name */
   | 'isTemplate'
+  /** column name */
+  | 'requiresMonthlyCompletion'
+  /** column name */
+  | 'requiresPayrollCompletion'
   | '%future added value';
 
 /** select "servicesAggregateBoolExpBool_orArgumentsColumns" columns of table "services" */
@@ -15164,10 +16743,16 @@ export type ServicesSelectColumnServicesAggregateBoolExpBool_OrArgumentsColumns 
   | 'isActive'
   /** column name */
   | 'isTemplate'
+  /** column name */
+  | 'requiresMonthlyCompletion'
+  /** column name */
+  | 'requiresPayrollCompletion'
   | '%future added value';
 
 /** input type for updating data in table "services" */
 export type ServicesSetInput = {
+  /** Billing tier: payroll_date, payroll, or client_monthly */
+  billingTier?: InputMaybe<Scalars['billing_tier_level']['input']>;
   /** How this service is billed: Per Payroll, Per Employee, Per Hour, etc. */
   billingUnit?: InputMaybe<Scalars['String']['input']>;
   category?: InputMaybe<Scalars['String']['input']>;
@@ -15184,8 +16769,12 @@ export type ServicesSetInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   /** JSONB field for complex pricing logic */
   pricingRules?: InputMaybe<Scalars['jsonb']['input']>;
+  requiresMonthlyCompletion?: InputMaybe<Scalars['Boolean']['input']>;
+  requiresPayrollCompletion?: InputMaybe<Scalars['Boolean']['input']>;
   /** standard: regular service, template: reusable template, custom: client-specific */
   serviceType?: InputMaybe<Scalars['String']['input']>;
+  /** Priority within tier (lower number = higher priority) */
+  tierPriority?: InputMaybe<Scalars['Int']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
@@ -15193,16 +16782,22 @@ export type ServicesSetInput = {
 /** order by stddev() on columns of table "services" */
 export type ServicesStddevOrderBy = {
   defaultRate?: InputMaybe<OrderBy>;
+  /** Priority within tier (lower number = higher priority) */
+  tierPriority?: InputMaybe<OrderBy>;
 };
 
 /** order by stddevPop() on columns of table "services" */
 export type ServicesStddevPopOrderBy = {
   defaultRate?: InputMaybe<OrderBy>;
+  /** Priority within tier (lower number = higher priority) */
+  tierPriority?: InputMaybe<OrderBy>;
 };
 
 /** order by stddevSamp() on columns of table "services" */
 export type ServicesStddevSampOrderBy = {
   defaultRate?: InputMaybe<OrderBy>;
+  /** Priority within tier (lower number = higher priority) */
+  tierPriority?: InputMaybe<OrderBy>;
 };
 
 /** Streaming cursor of the table "services" */
@@ -15215,6 +16810,8 @@ export type ServicesStreamCursorInput = {
 
 /** Initial value of the column from where the streaming should start */
 export type ServicesStreamCursorValueInput = {
+  /** Billing tier: payroll_date, payroll, or client_monthly */
+  billingTier?: InputMaybe<Scalars['billing_tier_level']['input']>;
   /** How this service is billed: Per Payroll, Per Employee, Per Hour, etc. */
   billingUnit?: InputMaybe<Scalars['String']['input']>;
   category?: InputMaybe<Scalars['String']['input']>;
@@ -15231,8 +16828,12 @@ export type ServicesStreamCursorValueInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   /** JSONB field for complex pricing logic */
   pricingRules?: InputMaybe<Scalars['jsonb']['input']>;
+  requiresMonthlyCompletion?: InputMaybe<Scalars['Boolean']['input']>;
+  requiresPayrollCompletion?: InputMaybe<Scalars['Boolean']['input']>;
   /** standard: regular service, template: reusable template, custom: client-specific */
   serviceType?: InputMaybe<Scalars['String']['input']>;
+  /** Priority within tier (lower number = higher priority) */
+  tierPriority?: InputMaybe<Scalars['Int']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   updatedBy?: InputMaybe<Scalars['uuid']['input']>;
 };
@@ -15240,10 +16841,14 @@ export type ServicesStreamCursorValueInput = {
 /** order by sum() on columns of table "services" */
 export type ServicesSumOrderBy = {
   defaultRate?: InputMaybe<OrderBy>;
+  /** Priority within tier (lower number = higher priority) */
+  tierPriority?: InputMaybe<OrderBy>;
 };
 
 /** update columns of table "services" */
 export type ServicesUpdateColumn =
+  /** column name */
+  | 'billingTier'
   /** column name */
   | 'billingUnit'
   /** column name */
@@ -15273,7 +16878,13 @@ export type ServicesUpdateColumn =
   /** column name */
   | 'pricingRules'
   /** column name */
+  | 'requiresMonthlyCompletion'
+  /** column name */
+  | 'requiresPayrollCompletion'
+  /** column name */
   | 'serviceType'
+  /** column name */
+  | 'tierPriority'
   /** column name */
   | 'updatedAt'
   /** column name */
@@ -15302,16 +16913,22 @@ export type ServicesUpdates = {
 /** order by varPop() on columns of table "services" */
 export type ServicesVarPopOrderBy = {
   defaultRate?: InputMaybe<OrderBy>;
+  /** Priority within tier (lower number = higher priority) */
+  tierPriority?: InputMaybe<OrderBy>;
 };
 
 /** order by varSamp() on columns of table "services" */
 export type ServicesVarSampOrderBy = {
   defaultRate?: InputMaybe<OrderBy>;
+  /** Priority within tier (lower number = higher priority) */
+  tierPriority?: InputMaybe<OrderBy>;
 };
 
 /** order by variance() on columns of table "services" */
 export type ServicesVarianceOrderBy = {
   defaultRate?: InputMaybe<OrderBy>;
+  /** Priority within tier (lower number = higher priority) */
+  tierPriority?: InputMaybe<OrderBy>;
 };
 
 /** Boolean expression to filter rows from the table "staff_billing_performance". All fields are combined with a logical 'AND'. */
@@ -16934,6 +18551,375 @@ export type UserPositionComparisonExp = {
   _nin?: InputMaybe<Array<Scalars['user_position']['input']>>;
 };
 
+/** Boolean expression to filter rows from the table "user_productivity_analysis". All fields are combined with a logical 'AND'. */
+export type UserProductivityAnalysisBoolExp = {
+  _and?: InputMaybe<Array<UserProductivityAnalysisBoolExp>>;
+  _not?: InputMaybe<UserProductivityAnalysisBoolExp>;
+  _or?: InputMaybe<Array<UserProductivityAnalysisBoolExp>>;
+  billingCategory?: InputMaybe<StringComparisonExp>;
+  computedName?: InputMaybe<StringComparisonExp>;
+  costCenter?: InputMaybe<StringComparisonExp>;
+  defaultHourlyRate?: InputMaybe<NumericComparisonExp>;
+  efficiencyRatio30d?: InputMaybe<NumericComparisonExp>;
+  firstName?: InputMaybe<StringComparisonExp>;
+  lastName?: InputMaybe<StringComparisonExp>;
+  payrollDatesWorked30d?: InputMaybe<BigintComparisonExp>;
+  profitGenerated30d?: InputMaybe<NumericComparisonExp>;
+  revenuePerHour30d?: InputMaybe<NumericComparisonExp>;
+  totalHoursLast30Days?: InputMaybe<NumericComparisonExp>;
+  totalInternalCost30d?: InputMaybe<NumericComparisonExp>;
+  totalRevenueGenerated30d?: InputMaybe<NumericComparisonExp>;
+  userId?: InputMaybe<UuidComparisonExp>;
+};
+
+/** Ordering options when selecting data from "user_productivity_analysis". */
+export type UserProductivityAnalysisOrderBy = {
+  billingCategory?: InputMaybe<OrderBy>;
+  computedName?: InputMaybe<OrderBy>;
+  costCenter?: InputMaybe<OrderBy>;
+  defaultHourlyRate?: InputMaybe<OrderBy>;
+  efficiencyRatio30d?: InputMaybe<OrderBy>;
+  firstName?: InputMaybe<OrderBy>;
+  lastName?: InputMaybe<OrderBy>;
+  payrollDatesWorked30d?: InputMaybe<OrderBy>;
+  profitGenerated30d?: InputMaybe<OrderBy>;
+  revenuePerHour30d?: InputMaybe<OrderBy>;
+  totalHoursLast30Days?: InputMaybe<OrderBy>;
+  totalInternalCost30d?: InputMaybe<OrderBy>;
+  totalRevenueGenerated30d?: InputMaybe<OrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** select columns of table "user_productivity_analysis" */
+export type UserProductivityAnalysisSelectColumn =
+  /** column name */
+  | 'billingCategory'
+  /** column name */
+  | 'computedName'
+  /** column name */
+  | 'costCenter'
+  /** column name */
+  | 'defaultHourlyRate'
+  /** column name */
+  | 'efficiencyRatio30d'
+  /** column name */
+  | 'firstName'
+  /** column name */
+  | 'lastName'
+  /** column name */
+  | 'payrollDatesWorked30d'
+  /** column name */
+  | 'profitGenerated30d'
+  /** column name */
+  | 'revenuePerHour30d'
+  /** column name */
+  | 'totalHoursLast30Days'
+  /** column name */
+  | 'totalInternalCost30d'
+  /** column name */
+  | 'totalRevenueGenerated30d'
+  /** column name */
+  | 'userId'
+  | '%future added value';
+
+/** Streaming cursor of the table "user_productivity_analysis" */
+export type UserProductivityAnalysisStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: UserProductivityAnalysisStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type UserProductivityAnalysisStreamCursorValueInput = {
+  billingCategory?: InputMaybe<Scalars['String']['input']>;
+  computedName?: InputMaybe<Scalars['String']['input']>;
+  costCenter?: InputMaybe<Scalars['String']['input']>;
+  defaultHourlyRate?: InputMaybe<Scalars['numeric']['input']>;
+  efficiencyRatio30d?: InputMaybe<Scalars['numeric']['input']>;
+  firstName?: InputMaybe<Scalars['String']['input']>;
+  lastName?: InputMaybe<Scalars['String']['input']>;
+  payrollDatesWorked30d?: InputMaybe<Scalars['bigint']['input']>;
+  profitGenerated30d?: InputMaybe<Scalars['numeric']['input']>;
+  revenuePerHour30d?: InputMaybe<Scalars['numeric']['input']>;
+  totalHoursLast30Days?: InputMaybe<Scalars['numeric']['input']>;
+  totalInternalCost30d?: InputMaybe<Scalars['numeric']['input']>;
+  totalRevenueGenerated30d?: InputMaybe<Scalars['numeric']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+export type UserRateHistoryAggregateBoolExp = {
+  count?: InputMaybe<UserRateHistoryAggregateBoolExpCount>;
+};
+
+/** order by aggregate values of table "user_rate_history" */
+export type UserRateHistoryAggregateOrderBy = {
+  avg?: InputMaybe<UserRateHistoryAvgOrderBy>;
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<UserRateHistoryMaxOrderBy>;
+  min?: InputMaybe<UserRateHistoryMinOrderBy>;
+  stddev?: InputMaybe<UserRateHistoryStddevOrderBy>;
+  stddevPop?: InputMaybe<UserRateHistoryStddevPopOrderBy>;
+  stddevSamp?: InputMaybe<UserRateHistoryStddevSampOrderBy>;
+  sum?: InputMaybe<UserRateHistorySumOrderBy>;
+  varPop?: InputMaybe<UserRateHistoryVarPopOrderBy>;
+  varSamp?: InputMaybe<UserRateHistoryVarSampOrderBy>;
+  variance?: InputMaybe<UserRateHistoryVarianceOrderBy>;
+};
+
+/** input type for inserting array relation for remote table "user_rate_history" */
+export type UserRateHistoryArrRelInsertInput = {
+  data: Array<UserRateHistoryInsertInput>;
+  /** upsert condition */
+  onConflict?: InputMaybe<UserRateHistoryOnConflict>;
+};
+
+/** order by avg() on columns of table "user_rate_history" */
+export type UserRateHistoryAvgOrderBy = {
+  hourlyRate?: InputMaybe<OrderBy>;
+};
+
+/** Boolean expression to filter rows from the table "user_rate_history". All fields are combined with a logical 'AND'. */
+export type UserRateHistoryBoolExp = {
+  _and?: InputMaybe<Array<UserRateHistoryBoolExp>>;
+  _not?: InputMaybe<UserRateHistoryBoolExp>;
+  _or?: InputMaybe<Array<UserRateHistoryBoolExp>>;
+  billingCategory?: InputMaybe<StringComparisonExp>;
+  costCenter?: InputMaybe<StringComparisonExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  createdBy?: InputMaybe<UuidComparisonExp>;
+  effectiveFrom?: InputMaybe<DateComparisonExp>;
+  effectiveTo?: InputMaybe<DateComparisonExp>;
+  hourlyRate?: InputMaybe<NumericComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  notes?: InputMaybe<StringComparisonExp>;
+  rateHistoryByUser?: InputMaybe<UsersBoolExp>;
+  rateType?: InputMaybe<StringComparisonExp>;
+  user?: InputMaybe<UsersBoolExp>;
+  userId?: InputMaybe<UuidComparisonExp>;
+};
+
+/** unique or primary key constraints on table "user_rate_history" */
+export type UserRateHistoryConstraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'user_rate_history_pkey'
+  | '%future added value';
+
+/** input type for incrementing numeric columns in table "user_rate_history" */
+export type UserRateHistoryIncInput = {
+  hourlyRate?: InputMaybe<Scalars['numeric']['input']>;
+};
+
+/** input type for inserting data into table "user_rate_history" */
+export type UserRateHistoryInsertInput = {
+  billingCategory?: InputMaybe<Scalars['String']['input']>;
+  costCenter?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  effectiveFrom?: InputMaybe<Scalars['date']['input']>;
+  effectiveTo?: InputMaybe<Scalars['date']['input']>;
+  hourlyRate?: InputMaybe<Scalars['numeric']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  notes?: InputMaybe<Scalars['String']['input']>;
+  rateHistoryByUser?: InputMaybe<UsersObjRelInsertInput>;
+  rateType?: InputMaybe<Scalars['String']['input']>;
+  user?: InputMaybe<UsersObjRelInsertInput>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** order by max() on columns of table "user_rate_history" */
+export type UserRateHistoryMaxOrderBy = {
+  billingCategory?: InputMaybe<OrderBy>;
+  costCenter?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  createdBy?: InputMaybe<OrderBy>;
+  effectiveFrom?: InputMaybe<OrderBy>;
+  effectiveTo?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  notes?: InputMaybe<OrderBy>;
+  rateType?: InputMaybe<OrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** order by min() on columns of table "user_rate_history" */
+export type UserRateHistoryMinOrderBy = {
+  billingCategory?: InputMaybe<OrderBy>;
+  costCenter?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  createdBy?: InputMaybe<OrderBy>;
+  effectiveFrom?: InputMaybe<OrderBy>;
+  effectiveTo?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  notes?: InputMaybe<OrderBy>;
+  rateType?: InputMaybe<OrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** on_conflict condition type for table "user_rate_history" */
+export type UserRateHistoryOnConflict = {
+  constraint: UserRateHistoryConstraint;
+  updateColumns?: Array<UserRateHistoryUpdateColumn>;
+  where?: InputMaybe<UserRateHistoryBoolExp>;
+};
+
+/** Ordering options when selecting data from "user_rate_history". */
+export type UserRateHistoryOrderBy = {
+  billingCategory?: InputMaybe<OrderBy>;
+  costCenter?: InputMaybe<OrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  createdBy?: InputMaybe<OrderBy>;
+  effectiveFrom?: InputMaybe<OrderBy>;
+  effectiveTo?: InputMaybe<OrderBy>;
+  hourlyRate?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  notes?: InputMaybe<OrderBy>;
+  rateHistoryByUser?: InputMaybe<UsersOrderBy>;
+  rateType?: InputMaybe<OrderBy>;
+  user?: InputMaybe<UsersOrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: user_rate_history */
+export type UserRateHistoryPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** select columns of table "user_rate_history" */
+export type UserRateHistorySelectColumn =
+  /** column name */
+  | 'billingCategory'
+  /** column name */
+  | 'costCenter'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'createdBy'
+  /** column name */
+  | 'effectiveFrom'
+  /** column name */
+  | 'effectiveTo'
+  /** column name */
+  | 'hourlyRate'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'notes'
+  /** column name */
+  | 'rateType'
+  /** column name */
+  | 'userId'
+  | '%future added value';
+
+/** input type for updating data in table "user_rate_history" */
+export type UserRateHistorySetInput = {
+  billingCategory?: InputMaybe<Scalars['String']['input']>;
+  costCenter?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  effectiveFrom?: InputMaybe<Scalars['date']['input']>;
+  effectiveTo?: InputMaybe<Scalars['date']['input']>;
+  hourlyRate?: InputMaybe<Scalars['numeric']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  notes?: InputMaybe<Scalars['String']['input']>;
+  rateType?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** order by stddev() on columns of table "user_rate_history" */
+export type UserRateHistoryStddevOrderBy = {
+  hourlyRate?: InputMaybe<OrderBy>;
+};
+
+/** order by stddevPop() on columns of table "user_rate_history" */
+export type UserRateHistoryStddevPopOrderBy = {
+  hourlyRate?: InputMaybe<OrderBy>;
+};
+
+/** order by stddevSamp() on columns of table "user_rate_history" */
+export type UserRateHistoryStddevSampOrderBy = {
+  hourlyRate?: InputMaybe<OrderBy>;
+};
+
+/** Streaming cursor of the table "user_rate_history" */
+export type UserRateHistoryStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: UserRateHistoryStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type UserRateHistoryStreamCursorValueInput = {
+  billingCategory?: InputMaybe<Scalars['String']['input']>;
+  costCenter?: InputMaybe<Scalars['String']['input']>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  effectiveFrom?: InputMaybe<Scalars['date']['input']>;
+  effectiveTo?: InputMaybe<Scalars['date']['input']>;
+  hourlyRate?: InputMaybe<Scalars['numeric']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  notes?: InputMaybe<Scalars['String']['input']>;
+  rateType?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** order by sum() on columns of table "user_rate_history" */
+export type UserRateHistorySumOrderBy = {
+  hourlyRate?: InputMaybe<OrderBy>;
+};
+
+/** update columns of table "user_rate_history" */
+export type UserRateHistoryUpdateColumn =
+  /** column name */
+  | 'billingCategory'
+  /** column name */
+  | 'costCenter'
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'createdBy'
+  /** column name */
+  | 'effectiveFrom'
+  /** column name */
+  | 'effectiveTo'
+  /** column name */
+  | 'hourlyRate'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'notes'
+  /** column name */
+  | 'rateType'
+  /** column name */
+  | 'userId'
+  | '%future added value';
+
+export type UserRateHistoryUpdates = {
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<UserRateHistoryIncInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<UserRateHistorySetInput>;
+  /** filter the rows which have to be updated */
+  where: UserRateHistoryBoolExp;
+};
+
+/** order by varPop() on columns of table "user_rate_history" */
+export type UserRateHistoryVarPopOrderBy = {
+  hourlyRate?: InputMaybe<OrderBy>;
+};
+
+/** order by varSamp() on columns of table "user_rate_history" */
+export type UserRateHistoryVarSampOrderBy = {
+  hourlyRate?: InputMaybe<OrderBy>;
+};
+
+/** order by variance() on columns of table "user_rate_history" */
+export type UserRateHistoryVarianceOrderBy = {
+  hourlyRate?: InputMaybe<OrderBy>;
+};
+
 /** Boolean expression to compare columns of type "user_role". All fields are combined with logical 'AND'. */
 export type UserRoleComparisonExp = {
   _eq?: InputMaybe<Scalars['user_role']['input']>;
@@ -17500,6 +19486,8 @@ export type UsersArrRelInsertInput = {
 export type UsersAvgOrderBy = {
   /** Default admin time percentage for this user */
   defaultAdminTimePercentage?: InputMaybe<OrderBy>;
+  /** Default hourly rate for cost calculations */
+  defaultHourlyRate?: InputMaybe<OrderBy>;
 };
 
 /** Boolean expression to filter rows from the table "users". All fields are combined with a logical 'AND'. */
@@ -17522,6 +19510,7 @@ export type UsersBoolExp = {
   authoredNotesAggregate?: InputMaybe<NotesAggregateBoolExp>;
   backupPayrollAssignments?: InputMaybe<PayrollsBoolExp>;
   backupPayrollAssignmentsAggregate?: InputMaybe<PayrollsAggregateBoolExp>;
+  billingCategory?: InputMaybe<StringComparisonExp>;
   bio?: InputMaybe<StringComparisonExp>;
   clerkUserId?: InputMaybe<StringComparisonExp>;
   computedName?: InputMaybe<StringComparisonExp>;
@@ -17529,6 +19518,7 @@ export type UsersBoolExp = {
   confirmedBillingItemsAggregate?: InputMaybe<BillingItemsAggregateBoolExp>;
   consultantAssignments?: InputMaybe<PayrollAssignmentsBoolExp>;
   consultantAssignmentsAggregate?: InputMaybe<PayrollAssignmentsAggregateBoolExp>;
+  costCenter?: InputMaybe<StringComparisonExp>;
   createdAt?: InputMaybe<TimestamptzComparisonExp>;
   createdBillingEventLogs?: InputMaybe<BillingEventLogBoolExp>;
   createdBillingEventLogsAggregate?: InputMaybe<BillingEventLogAggregateBoolExp>;
@@ -17549,6 +19539,7 @@ export type UsersBoolExp = {
   deactivatedAt?: InputMaybe<TimestamptzComparisonExp>;
   deactivatedBy?: InputMaybe<StringComparisonExp>;
   defaultAdminTimePercentage?: InputMaybe<NumericComparisonExp>;
+  defaultHourlyRate?: InputMaybe<NumericComparisonExp>;
   email?: InputMaybe<StringComparisonExp>;
   emailDrafts?: InputMaybe<EmailDraftsBoolExp>;
   emailDraftsAggregate?: InputMaybe<EmailDraftsAggregateBoolExp>;
@@ -17580,6 +19571,10 @@ export type UsersBoolExp = {
   payrollDateTimeEntriesAggregate?: InputMaybe<PayrollDateTimeEntriesAggregateBoolExp>;
   payrollDates?: InputMaybe<PayrollDatesBoolExp>;
   payrollDatesAggregate?: InputMaybe<PayrollDatesAggregateBoolExp>;
+  payrollServiceAgreementsCreatedBy?: InputMaybe<PayrollServiceAgreementsBoolExp>;
+  payrollServiceAgreementsCreatedByAggregate?: InputMaybe<PayrollServiceAgreementsAggregateBoolExp>;
+  payrollServiceAgreementsGeneratedBy?: InputMaybe<PayrollServiceAgreementsBoolExp>;
+  payrollServiceAgreementsGeneratedByAggregate?: InputMaybe<PayrollServiceAgreementsAggregateBoolExp>;
   permissionAuditLogs?: InputMaybe<PermissionAuditLogBoolExp>;
   permissionAuditLogsAggregate?: InputMaybe<PermissionAuditLogAggregateBoolExp>;
   permissionOverrides?: InputMaybe<PermissionOverridesBoolExp>;
@@ -17594,6 +19589,7 @@ export type UsersBoolExp = {
   quoteTemplatesAggregate?: InputMaybe<QuoteTemplatesAggregateBoolExp>;
   quotes?: InputMaybe<QuotesBoolExp>;
   quotesAggregate?: InputMaybe<QuotesAggregateBoolExp>;
+  rateEffectiveFrom?: InputMaybe<DateComparisonExp>;
   resolvedSecurityAlerts?: InputMaybe<SecurityAlertsBoolExp>;
   resolvedSecurityAlertsAggregate?: InputMaybe<SecurityAlertsAggregateBoolExp>;
   revokedInvitations?: InputMaybe<UserInvitationsBoolExp>;
@@ -17633,6 +19629,10 @@ export type UsersBoolExp = {
   updatedServicesAggregate?: InputMaybe<ServicesAggregateBoolExp>;
   uploadedFiles?: InputMaybe<FilesBoolExp>;
   uploadedFilesAggregate?: InputMaybe<FilesAggregateBoolExp>;
+  userRateHistories?: InputMaybe<UserRateHistoryBoolExp>;
+  userRateHistoriesAggregate?: InputMaybe<UserRateHistoryAggregateBoolExp>;
+  userRateHistoriesCreatedBy?: InputMaybe<UserRateHistoryBoolExp>;
+  userRateHistoriesCreatedByAggregate?: InputMaybe<UserRateHistoryAggregateBoolExp>;
   userSessions?: InputMaybe<UserSessionsBoolExp>;
   userSessionsAggregate?: InputMaybe<UserSessionsAggregateBoolExp>;
   username?: InputMaybe<StringComparisonExp>;
@@ -17658,6 +19658,8 @@ export type UsersConstraint =
 export type UsersIncInput = {
   /** Default admin time percentage for this user */
   defaultAdminTimePercentage?: InputMaybe<Scalars['numeric']['input']>;
+  /** Default hourly rate for cost calculations */
+  defaultHourlyRate?: InputMaybe<Scalars['numeric']['input']>;
 };
 
 /** input type for inserting data into table "users" */
@@ -17671,12 +19673,16 @@ export type UsersInsertInput = {
   assignmentsMade?: InputMaybe<PayrollAssignmentsArrRelInsertInput>;
   authoredNotes?: InputMaybe<NotesArrRelInsertInput>;
   backupPayrollAssignments?: InputMaybe<PayrollsArrRelInsertInput>;
+  /** Category for billing purposes (consultant, manager, etc.) */
+  billingCategory?: InputMaybe<Scalars['String']['input']>;
   /** User biography or description */
   bio?: InputMaybe<Scalars['String']['input']>;
   /** External identifier from Clerk authentication service */
   clerkUserId?: InputMaybe<Scalars['String']['input']>;
   confirmedBillingItems?: InputMaybe<BillingItemsArrRelInsertInput>;
   consultantAssignments?: InputMaybe<PayrollAssignmentsArrRelInsertInput>;
+  /** Cost center for internal accounting */
+  costCenter?: InputMaybe<Scalars['String']['input']>;
   /** Timestamp when the user was created */
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   createdBillingEventLogs?: InputMaybe<BillingEventLogArrRelInsertInput>;
@@ -17691,6 +19697,8 @@ export type UsersInsertInput = {
   deactivatedBy?: InputMaybe<Scalars['String']['input']>;
   /** Default admin time percentage for this user */
   defaultAdminTimePercentage?: InputMaybe<Scalars['numeric']['input']>;
+  /** Default hourly rate for cost calculations */
+  defaultHourlyRate?: InputMaybe<Scalars['numeric']['input']>;
   /** User's email address (unique) */
   email?: InputMaybe<Scalars['String']['input']>;
   emailDrafts?: InputMaybe<EmailDraftsArrRelInsertInput>;
@@ -17716,6 +19724,8 @@ export type UsersInsertInput = {
   originalConsultantAssignments?: InputMaybe<PayrollAssignmentsArrRelInsertInput>;
   payrollDateTimeEntries?: InputMaybe<PayrollDateTimeEntriesArrRelInsertInput>;
   payrollDates?: InputMaybe<PayrollDatesArrRelInsertInput>;
+  payrollServiceAgreementsCreatedBy?: InputMaybe<PayrollServiceAgreementsArrRelInsertInput>;
+  payrollServiceAgreementsGeneratedBy?: InputMaybe<PayrollServiceAgreementsArrRelInsertInput>;
   permissionAuditLogs?: InputMaybe<PermissionAuditLogArrRelInsertInput>;
   permissionOverrides?: InputMaybe<PermissionOverridesArrRelInsertInput>;
   /** User contact phone number */
@@ -17726,6 +19736,7 @@ export type UsersInsertInput = {
   quoteConversions?: InputMaybe<QuoteConversionsArrRelInsertInput>;
   quoteTemplates?: InputMaybe<QuoteTemplatesArrRelInsertInput>;
   quotes?: InputMaybe<QuotesArrRelInsertInput>;
+  rateEffectiveFrom?: InputMaybe<Scalars['date']['input']>;
   resolvedSecurityAlerts?: InputMaybe<SecurityAlertsArrRelInsertInput>;
   revokedInvitations?: InputMaybe<UserInvitationsArrRelInsertInput>;
   /** User's system role (viewer, consultant, manager, org_admin) */
@@ -17755,6 +19766,8 @@ export type UsersInsertInput = {
   updatedServiceTemplates?: InputMaybe<ServiceTemplatesArrRelInsertInput>;
   updatedServices?: InputMaybe<ServicesArrRelInsertInput>;
   uploadedFiles?: InputMaybe<FilesArrRelInsertInput>;
+  userRateHistories?: InputMaybe<UserRateHistoryArrRelInsertInput>;
+  userRateHistoriesCreatedBy?: InputMaybe<UserRateHistoryArrRelInsertInput>;
   userSessions?: InputMaybe<UserSessionsArrRelInsertInput>;
   /** User's unique username for login */
   username?: InputMaybe<Scalars['String']['input']>;
@@ -17766,17 +19779,23 @@ export type UsersInsertInput = {
 export type UsersMaxOrderBy = {
   /** User address or location */
   address?: InputMaybe<OrderBy>;
+  /** Category for billing purposes (consultant, manager, etc.) */
+  billingCategory?: InputMaybe<OrderBy>;
   /** User biography or description */
   bio?: InputMaybe<OrderBy>;
   /** External identifier from Clerk authentication service */
   clerkUserId?: InputMaybe<OrderBy>;
   computedName?: InputMaybe<OrderBy>;
+  /** Cost center for internal accounting */
+  costCenter?: InputMaybe<OrderBy>;
   /** Timestamp when the user was created */
   createdAt?: InputMaybe<OrderBy>;
   deactivatedAt?: InputMaybe<OrderBy>;
   deactivatedBy?: InputMaybe<OrderBy>;
   /** Default admin time percentage for this user */
   defaultAdminTimePercentage?: InputMaybe<OrderBy>;
+  /** Default hourly rate for cost calculations */
+  defaultHourlyRate?: InputMaybe<OrderBy>;
   /** User's email address (unique) */
   email?: InputMaybe<OrderBy>;
   firstName?: InputMaybe<OrderBy>;
@@ -17791,6 +19810,7 @@ export type UsersMaxOrderBy = {
   phone?: InputMaybe<OrderBy>;
   /** Organizational position affecting admin time allocation */
   position?: InputMaybe<OrderBy>;
+  rateEffectiveFrom?: InputMaybe<OrderBy>;
   /** User's system role (viewer, consultant, manager, org_admin) */
   role?: InputMaybe<OrderBy>;
   /** Current user status - must be consistent with isActive field */
@@ -17811,17 +19831,23 @@ export type UsersMaxOrderBy = {
 export type UsersMinOrderBy = {
   /** User address or location */
   address?: InputMaybe<OrderBy>;
+  /** Category for billing purposes (consultant, manager, etc.) */
+  billingCategory?: InputMaybe<OrderBy>;
   /** User biography or description */
   bio?: InputMaybe<OrderBy>;
   /** External identifier from Clerk authentication service */
   clerkUserId?: InputMaybe<OrderBy>;
   computedName?: InputMaybe<OrderBy>;
+  /** Cost center for internal accounting */
+  costCenter?: InputMaybe<OrderBy>;
   /** Timestamp when the user was created */
   createdAt?: InputMaybe<OrderBy>;
   deactivatedAt?: InputMaybe<OrderBy>;
   deactivatedBy?: InputMaybe<OrderBy>;
   /** Default admin time percentage for this user */
   defaultAdminTimePercentage?: InputMaybe<OrderBy>;
+  /** Default hourly rate for cost calculations */
+  defaultHourlyRate?: InputMaybe<OrderBy>;
   /** User's email address (unique) */
   email?: InputMaybe<OrderBy>;
   firstName?: InputMaybe<OrderBy>;
@@ -17836,6 +19862,7 @@ export type UsersMinOrderBy = {
   phone?: InputMaybe<OrderBy>;
   /** Organizational position affecting admin time allocation */
   position?: InputMaybe<OrderBy>;
+  rateEffectiveFrom?: InputMaybe<OrderBy>;
   /** User's system role (viewer, consultant, manager, org_admin) */
   role?: InputMaybe<OrderBy>;
   /** Current user status - must be consistent with isActive field */
@@ -17876,11 +19903,13 @@ export type UsersOrderBy = {
   assignmentsMadeAggregate?: InputMaybe<PayrollAssignmentsAggregateOrderBy>;
   authoredNotesAggregate?: InputMaybe<NotesAggregateOrderBy>;
   backupPayrollAssignmentsAggregate?: InputMaybe<PayrollsAggregateOrderBy>;
+  billingCategory?: InputMaybe<OrderBy>;
   bio?: InputMaybe<OrderBy>;
   clerkUserId?: InputMaybe<OrderBy>;
   computedName?: InputMaybe<OrderBy>;
   confirmedBillingItemsAggregate?: InputMaybe<BillingItemsAggregateOrderBy>;
   consultantAssignmentsAggregate?: InputMaybe<PayrollAssignmentsAggregateOrderBy>;
+  costCenter?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   createdBillingEventLogsAggregate?: InputMaybe<BillingEventLogAggregateOrderBy>;
   createdClientServiceAgreementsAggregate?: InputMaybe<ClientServiceAgreementsAggregateOrderBy>;
@@ -17893,6 +19922,7 @@ export type UsersOrderBy = {
   deactivatedAt?: InputMaybe<OrderBy>;
   deactivatedBy?: InputMaybe<OrderBy>;
   defaultAdminTimePercentage?: InputMaybe<OrderBy>;
+  defaultHourlyRate?: InputMaybe<OrderBy>;
   email?: InputMaybe<OrderBy>;
   emailDraftsAggregate?: InputMaybe<EmailDraftsAggregateOrderBy>;
   emailTemplateFavoritesAggregate?: InputMaybe<UserEmailTemplateFavoritesAggregateOrderBy>;
@@ -17913,6 +19943,8 @@ export type UsersOrderBy = {
   originalConsultantAssignmentsAggregate?: InputMaybe<PayrollAssignmentsAggregateOrderBy>;
   payrollDateTimeEntriesAggregate?: InputMaybe<PayrollDateTimeEntriesAggregateOrderBy>;
   payrollDatesAggregate?: InputMaybe<PayrollDatesAggregateOrderBy>;
+  payrollServiceAgreementsCreatedByAggregate?: InputMaybe<PayrollServiceAgreementsAggregateOrderBy>;
+  payrollServiceAgreementsGeneratedByAggregate?: InputMaybe<PayrollServiceAgreementsAggregateOrderBy>;
   permissionAuditLogsAggregate?: InputMaybe<PermissionAuditLogAggregateOrderBy>;
   permissionOverridesAggregate?: InputMaybe<PermissionOverridesAggregateOrderBy>;
   phone?: InputMaybe<OrderBy>;
@@ -17921,6 +19953,7 @@ export type UsersOrderBy = {
   quoteConversionsAggregate?: InputMaybe<QuoteConversionsAggregateOrderBy>;
   quoteTemplatesAggregate?: InputMaybe<QuoteTemplatesAggregateOrderBy>;
   quotesAggregate?: InputMaybe<QuotesAggregateOrderBy>;
+  rateEffectiveFrom?: InputMaybe<OrderBy>;
   resolvedSecurityAlertsAggregate?: InputMaybe<SecurityAlertsAggregateOrderBy>;
   revokedInvitationsAggregate?: InputMaybe<UserInvitationsAggregateOrderBy>;
   role?: InputMaybe<OrderBy>;
@@ -17944,6 +19977,8 @@ export type UsersOrderBy = {
   updatedServiceTemplatesAggregate?: InputMaybe<ServiceTemplatesAggregateOrderBy>;
   updatedServicesAggregate?: InputMaybe<ServicesAggregateOrderBy>;
   uploadedFilesAggregate?: InputMaybe<FilesAggregateOrderBy>;
+  userRateHistoriesAggregate?: InputMaybe<UserRateHistoryAggregateOrderBy>;
+  userRateHistoriesCreatedByAggregate?: InputMaybe<UserRateHistoryAggregateOrderBy>;
   userSessionsAggregate?: InputMaybe<UserSessionsAggregateOrderBy>;
   username?: InputMaybe<OrderBy>;
   usersWithStatusChangesAggregate?: InputMaybe<UsersAggregateOrderBy>;
@@ -18031,11 +20066,15 @@ export type UsersSelectColumn =
   /** column name */
   | 'address'
   /** column name */
+  | 'billingCategory'
+  /** column name */
   | 'bio'
   /** column name */
   | 'clerkUserId'
   /** column name */
   | 'computedName'
+  /** column name */
+  | 'costCenter'
   /** column name */
   | 'createdAt'
   /** column name */
@@ -18044,6 +20083,8 @@ export type UsersSelectColumn =
   | 'deactivatedBy'
   /** column name */
   | 'defaultAdminTimePercentage'
+  /** column name */
+  | 'defaultHourlyRate'
   /** column name */
   | 'email'
   /** column name */
@@ -18064,6 +20105,8 @@ export type UsersSelectColumn =
   | 'phone'
   /** column name */
   | 'position'
+  /** column name */
+  | 'rateEffectiveFrom'
   /** column name */
   | 'role'
   /** column name */
@@ -18100,16 +20143,22 @@ export type UsersSelectColumnUsersAggregateBoolExpBool_OrArgumentsColumns =
 export type UsersSetInput = {
   /** User address or location */
   address?: InputMaybe<Scalars['String']['input']>;
+  /** Category for billing purposes (consultant, manager, etc.) */
+  billingCategory?: InputMaybe<Scalars['String']['input']>;
   /** User biography or description */
   bio?: InputMaybe<Scalars['String']['input']>;
   /** External identifier from Clerk authentication service */
   clerkUserId?: InputMaybe<Scalars['String']['input']>;
+  /** Cost center for internal accounting */
+  costCenter?: InputMaybe<Scalars['String']['input']>;
   /** Timestamp when the user was created */
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   deactivatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   deactivatedBy?: InputMaybe<Scalars['String']['input']>;
   /** Default admin time percentage for this user */
   defaultAdminTimePercentage?: InputMaybe<Scalars['numeric']['input']>;
+  /** Default hourly rate for cost calculations */
+  defaultHourlyRate?: InputMaybe<Scalars['numeric']['input']>;
   /** User's email address (unique) */
   email?: InputMaybe<Scalars['String']['input']>;
   firstName?: InputMaybe<Scalars['String']['input']>;
@@ -18127,6 +20176,7 @@ export type UsersSetInput = {
   phone?: InputMaybe<Scalars['String']['input']>;
   /** Organizational position affecting admin time allocation */
   position?: InputMaybe<Scalars['user_position']['input']>;
+  rateEffectiveFrom?: InputMaybe<Scalars['date']['input']>;
   /** User's system role (viewer, consultant, manager, org_admin) */
   role?: InputMaybe<Scalars['user_role']['input']>;
   /** Current user status - must be consistent with isActive field */
@@ -18147,18 +20197,24 @@ export type UsersSetInput = {
 export type UsersStddevOrderBy = {
   /** Default admin time percentage for this user */
   defaultAdminTimePercentage?: InputMaybe<OrderBy>;
+  /** Default hourly rate for cost calculations */
+  defaultHourlyRate?: InputMaybe<OrderBy>;
 };
 
 /** order by stddevPop() on columns of table "users" */
 export type UsersStddevPopOrderBy = {
   /** Default admin time percentage for this user */
   defaultAdminTimePercentage?: InputMaybe<OrderBy>;
+  /** Default hourly rate for cost calculations */
+  defaultHourlyRate?: InputMaybe<OrderBy>;
 };
 
 /** order by stddevSamp() on columns of table "users" */
 export type UsersStddevSampOrderBy = {
   /** Default admin time percentage for this user */
   defaultAdminTimePercentage?: InputMaybe<OrderBy>;
+  /** Default hourly rate for cost calculations */
+  defaultHourlyRate?: InputMaybe<OrderBy>;
 };
 
 /** Streaming cursor of the table "users" */
@@ -18173,17 +20229,23 @@ export type UsersStreamCursorInput = {
 export type UsersStreamCursorValueInput = {
   /** User address or location */
   address?: InputMaybe<Scalars['String']['input']>;
+  /** Category for billing purposes (consultant, manager, etc.) */
+  billingCategory?: InputMaybe<Scalars['String']['input']>;
   /** User biography or description */
   bio?: InputMaybe<Scalars['String']['input']>;
   /** External identifier from Clerk authentication service */
   clerkUserId?: InputMaybe<Scalars['String']['input']>;
   computedName?: InputMaybe<Scalars['String']['input']>;
+  /** Cost center for internal accounting */
+  costCenter?: InputMaybe<Scalars['String']['input']>;
   /** Timestamp when the user was created */
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   deactivatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   deactivatedBy?: InputMaybe<Scalars['String']['input']>;
   /** Default admin time percentage for this user */
   defaultAdminTimePercentage?: InputMaybe<Scalars['numeric']['input']>;
+  /** Default hourly rate for cost calculations */
+  defaultHourlyRate?: InputMaybe<Scalars['numeric']['input']>;
   /** User's email address (unique) */
   email?: InputMaybe<Scalars['String']['input']>;
   firstName?: InputMaybe<Scalars['String']['input']>;
@@ -18201,6 +20263,7 @@ export type UsersStreamCursorValueInput = {
   phone?: InputMaybe<Scalars['String']['input']>;
   /** Organizational position affecting admin time allocation */
   position?: InputMaybe<Scalars['user_position']['input']>;
+  rateEffectiveFrom?: InputMaybe<Scalars['date']['input']>;
   /** User's system role (viewer, consultant, manager, org_admin) */
   role?: InputMaybe<Scalars['user_role']['input']>;
   /** Current user status - must be consistent with isActive field */
@@ -18221,6 +20284,8 @@ export type UsersStreamCursorValueInput = {
 export type UsersSumOrderBy = {
   /** Default admin time percentage for this user */
   defaultAdminTimePercentage?: InputMaybe<OrderBy>;
+  /** Default hourly rate for cost calculations */
+  defaultHourlyRate?: InputMaybe<OrderBy>;
 };
 
 /** update columns of table "users" */
@@ -18228,9 +20293,13 @@ export type UsersUpdateColumn =
   /** column name */
   | 'address'
   /** column name */
+  | 'billingCategory'
+  /** column name */
   | 'bio'
   /** column name */
   | 'clerkUserId'
+  /** column name */
+  | 'costCenter'
   /** column name */
   | 'createdAt'
   /** column name */
@@ -18239,6 +20308,8 @@ export type UsersUpdateColumn =
   | 'deactivatedBy'
   /** column name */
   | 'defaultAdminTimePercentage'
+  /** column name */
+  | 'defaultHourlyRate'
   /** column name */
   | 'email'
   /** column name */
@@ -18259,6 +20330,8 @@ export type UsersUpdateColumn =
   | 'phone'
   /** column name */
   | 'position'
+  /** column name */
+  | 'rateEffectiveFrom'
   /** column name */
   | 'role'
   /** column name */
@@ -18288,18 +20361,41 @@ export type UsersUpdates = {
 export type UsersVarPopOrderBy = {
   /** Default admin time percentage for this user */
   defaultAdminTimePercentage?: InputMaybe<OrderBy>;
+  /** Default hourly rate for cost calculations */
+  defaultHourlyRate?: InputMaybe<OrderBy>;
 };
 
 /** order by varSamp() on columns of table "users" */
 export type UsersVarSampOrderBy = {
   /** Default admin time percentage for this user */
   defaultAdminTimePercentage?: InputMaybe<OrderBy>;
+  /** Default hourly rate for cost calculations */
+  defaultHourlyRate?: InputMaybe<OrderBy>;
 };
 
 /** order by variance() on columns of table "users" */
 export type UsersVarianceOrderBy = {
   /** Default admin time percentage for this user */
   defaultAdminTimePercentage?: InputMaybe<OrderBy>;
+  /** Default hourly rate for cost calculations */
+  defaultHourlyRate?: InputMaybe<OrderBy>;
+};
+
+/** Boolean expression to compare columns of type "uuid". All fields are combined with logical 'AND'. */
+export type UuidArrayComparisonExp = {
+  /** is the array contained in the given array value */
+  _containedIn?: InputMaybe<Array<Scalars['uuid']['input']>>;
+  /** does the array contain the given value */
+  _contains?: InputMaybe<Array<Scalars['uuid']['input']>>;
+  _eq?: InputMaybe<Array<Scalars['uuid']['input']>>;
+  _gt?: InputMaybe<Array<Scalars['uuid']['input']>>;
+  _gte?: InputMaybe<Array<Scalars['uuid']['input']>>;
+  _in?: InputMaybe<Array<Array<Scalars['uuid']['input']>>>;
+  _isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  _lt?: InputMaybe<Array<Scalars['uuid']['input']>>;
+  _lte?: InputMaybe<Array<Scalars['uuid']['input']>>;
+  _neq?: InputMaybe<Array<Scalars['uuid']['input']>>;
+  _nin?: InputMaybe<Array<Array<Scalars['uuid']['input']>>>;
 };
 
 /** Boolean expression to compare columns of type "uuid". All fields are combined with logical 'AND'. */
@@ -18714,6 +20810,20 @@ export type BillingItemsAggregateBoolExpCount = {
   predicate: IntComparisonExp;
 };
 
+export type BillingPeriodsAggregateBoolExpBool_And = {
+  arguments: BillingPeriodsSelectColumnBillingPeriodsAggregateBoolExpBool_AndArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<BillingPeriodsBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type BillingPeriodsAggregateBoolExpBool_Or = {
+  arguments: BillingPeriodsSelectColumnBillingPeriodsAggregateBoolExpBool_OrArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<BillingPeriodsBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
 export type BillingPeriodsAggregateBoolExpCount = {
   arguments?: InputMaybe<Array<BillingPeriodsSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
@@ -18854,6 +20964,27 @@ export type LeaveAggregateBoolExpCount = {
   predicate: IntComparisonExp;
 };
 
+export type MonthlyBillingCompletionAggregateBoolExpBool_And = {
+  arguments: MonthlyBillingCompletionSelectColumnMonthlyBillingCompletionAggregateBoolExpBool_AndArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<MonthlyBillingCompletionBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type MonthlyBillingCompletionAggregateBoolExpBool_Or = {
+  arguments: MonthlyBillingCompletionSelectColumnMonthlyBillingCompletionAggregateBoolExpBool_OrArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<MonthlyBillingCompletionBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type MonthlyBillingCompletionAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<MonthlyBillingCompletionSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<MonthlyBillingCompletionBoolExp>;
+  predicate: IntComparisonExp;
+};
+
 export type NotesAggregateBoolExpBool_And = {
   arguments: NotesSelectColumnNotesAggregateBoolExpBool_AndArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
@@ -18903,6 +21034,20 @@ export type PayrollAssignmentsAggregateBoolExpCount = {
   predicate: IntComparisonExp;
 };
 
+export type PayrollDateTimeEntriesAggregateBoolExpBool_And = {
+  arguments: PayrollDateTimeEntriesSelectColumnPayrollDateTimeEntriesAggregateBoolExpBool_AndArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<PayrollDateTimeEntriesBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type PayrollDateTimeEntriesAggregateBoolExpBool_Or = {
+  arguments: PayrollDateTimeEntriesSelectColumnPayrollDateTimeEntriesAggregateBoolExpBool_OrArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<PayrollDateTimeEntriesBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
 export type PayrollDateTimeEntriesAggregateBoolExpCount = {
   arguments?: InputMaybe<Array<PayrollDateTimeEntriesSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
@@ -18921,6 +21066,27 @@ export type PayrollRequiredSkillsAggregateBoolExpCount = {
   arguments?: InputMaybe<Array<PayrollRequiredSkillsSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<PayrollRequiredSkillsBoolExp>;
+  predicate: IntComparisonExp;
+};
+
+export type PayrollServiceAgreementsAggregateBoolExpBool_And = {
+  arguments: PayrollServiceAgreementsSelectColumnPayrollServiceAgreementsAggregateBoolExpBool_AndArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<PayrollServiceAgreementsBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type PayrollServiceAgreementsAggregateBoolExpBool_Or = {
+  arguments: PayrollServiceAgreementsSelectColumnPayrollServiceAgreementsAggregateBoolExpBool_OrArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<PayrollServiceAgreementsBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type PayrollServiceAgreementsAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<PayrollServiceAgreementsSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<PayrollServiceAgreementsBoolExp>;
   predicate: IntComparisonExp;
 };
 
@@ -19155,6 +21321,13 @@ export type UserInvitationsAggregateBoolExpCount = {
   predicate: IntComparisonExp;
 };
 
+export type UserRateHistoryAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<UserRateHistorySelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<UserRateHistoryBoolExp>;
+  predicate: IntComparisonExp;
+};
+
 export type UserRolesAggregateBoolExpCount = {
   arguments?: InputMaybe<Array<UserRolesSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
@@ -19231,6 +21404,213 @@ export type WorkScheduleAggregateBoolExpCount = {
   filter?: InputMaybe<WorkScheduleBoolExp>;
   predicate: IntComparisonExp;
 };
+
+export type MonthlyBillingCompletionFragmentFragment = { __typename?: 'MonthlyBillingCompletion', id: string, clientId: string, billingMonth: string, billingPeriodId?: string | null, totalPayrolls?: number | null, completedPayrolls?: number | null, pendingPayrollIds?: Array<string> | null, totalPayrollDates?: number | null, completedPayrollDates?: number | null, pendingPayrollDateIds?: Array<string> | null, status?: any | null, tier1BillingGenerated?: boolean | null, tier2BillingGenerated?: boolean | null, tier3BillingGenerated?: boolean | null, firstPayrollCompletedAt?: string | null, lastPayrollCompletedAt?: string | null, billingReadyAt?: string | null, billingGeneratedAt?: string | null, completionNotes?: string | null, autoBillingEnabled?: boolean | null, overrideCompletionDate?: string | null, createdAt?: string | null, updatedAt?: string | null };
+
+export type PayrollServiceAgreementFragmentFragment = { __typename?: 'PayrollServiceAgreements', id: string, payrollId: string, serviceId: string, clientServiceAgreementId?: string | null, customRate?: number | null, customQuantity?: number | null, customDescription?: string | null, isOneTime?: boolean | null, isActive?: boolean | null, billingFrequency?: string | null, autoBillingEnabled?: boolean | null, billingNotes?: string | null, billingItemsGenerated?: boolean | null, generatedAt?: string | null, generatedBy?: string | null, serviceConfiguration?: any | null, createdAt?: string | null, updatedAt?: string | null, createdBy?: string | null };
+
+export type ServiceWithTierFragmentFragment = { __typename?: 'Services', id: string, name: string, description?: string | null, category: string, billingUnit: string, defaultRate: number, currency: string, serviceType: string, isActive?: boolean | null, isTemplate?: boolean | null, metadata?: any | null, pricingRules?: any | null, dependencies?: any | null, billingTier?: any | null, tierPriority?: number | null, requiresPayrollCompletion?: boolean | null, requiresMonthlyCompletion?: boolean | null, createdAt?: string | null, updatedAt?: string | null, createdBy?: string | null, updatedBy?: string | null };
+
+export type UserRateHistoryFragmentFragment = { __typename?: 'UserRateHistory', id: string, userId: string, hourlyRate: number, effectiveFrom: string, effectiveTo?: string | null, rateType?: string | null, costCenter?: string | null, billingCategory?: string | null, notes?: string | null, createdAt?: string | null, createdBy?: string | null };
+
+export type TimeEntryWithCostFragmentFragment = { __typename?: 'PayrollDateTimeEntries', id: string, payrollDateId: string, userId: string, timeSpentMinutes: number, description?: string | null, workDate: string, hourlyRateUsed?: number | null, totalCost?: number | null, costCenter?: string | null, isBillable?: boolean | null, createdAt?: string | null, updatedAt?: string | null };
+
+export type MonthlyBillingDashboardFragmentFragment = { __typename?: 'MonthlyBillingDashboard', id?: string | null, clientId?: string | null, clientName?: string | null, billingMonth?: string | null, billingMonthDisplay?: string | null, totalPayrolls?: number | null, completedPayrolls?: number | null, totalPayrollDates?: number | null, completedPayrollDates?: number | null, status?: any | null, tier1BillingGenerated?: boolean | null, tier2BillingGenerated?: boolean | null, tier3BillingGenerated?: boolean | null, billingReadyAt?: string | null, billingGeneratedAt?: string | null, completionPercentage?: number | null, daysReadyForBilling?: number | null, billingItemsCount?: string | null, totalBillingAmount?: number | null, activeServiceAgreements?: string | null };
+
+export type PayrollCostAnalysisFragmentFragment = { __typename?: 'PayrollCostAnalysis', payrollDateId?: string | null, payrollId?: string | null, payrollName?: string | null, clientId?: string | null, clientName?: string | null, billingMonth?: string | null, payrollDateStatus?: string | null, completedAt?: string | null, completedBy?: string | null, totalTimeMinutes?: string | null, totalHours?: number | null, totalInternalCost?: number | null, uniqueUsersWorked?: string | null, totalRevenue?: number | null, billingItemsCount?: string | null, estimatedProfit?: number | null, profitMarginPercentage?: number | null, revenuePerHour?: number | null, costPerHour?: number | null };
+
+export type UserProductivityAnalysisFragmentFragment = { __typename?: 'UserProductivityAnalysis', userId?: string | null, firstName?: string | null, lastName?: string | null, computedName?: string | null, defaultHourlyRate?: number | null, costCenter?: string | null, billingCategory?: string | null, totalHoursLast30Days?: number | null, totalInternalCost30d?: number | null, payrollDatesWorked30d?: string | null, totalRevenueGenerated30d?: number | null, revenuePerHour30d?: number | null, profitGenerated30d?: number | null, efficiencyRatio30d?: number | null };
+
+export type GetMonthlyBillingDashboardQueryVariables = Exact<{
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  billingMonth?: InputMaybe<Scalars['date']['input']>;
+  status?: InputMaybe<Scalars['monthly_billing_status']['input']>;
+}>;
+
+
+export type GetMonthlyBillingDashboardQuery = { __typename?: 'query_root', monthlyBillingDashboard: Array<{ __typename?: 'MonthlyBillingDashboard', id?: string | null, clientId?: string | null, clientName?: string | null, billingMonth?: string | null, billingMonthDisplay?: string | null, totalPayrolls?: number | null, completedPayrolls?: number | null, totalPayrollDates?: number | null, completedPayrollDates?: number | null, status?: any | null, tier1BillingGenerated?: boolean | null, tier2BillingGenerated?: boolean | null, tier3BillingGenerated?: boolean | null, billingReadyAt?: string | null, billingGeneratedAt?: string | null, completionPercentage?: number | null, daysReadyForBilling?: number | null, billingItemsCount?: string | null, totalBillingAmount?: number | null, activeServiceAgreements?: string | null }> };
+
+export type GetMonthlyBillingCompletionQueryVariables = Exact<{
+  clientId: Scalars['uuid']['input'];
+  billingMonth: Scalars['date']['input'];
+}>;
+
+
+export type GetMonthlyBillingCompletionQuery = { __typename?: 'query_root', monthlyBillingCompletion: Array<{ __typename?: 'MonthlyBillingCompletion', id: string, clientId: string, billingMonth: string, billingPeriodId?: string | null, totalPayrolls?: number | null, completedPayrolls?: number | null, pendingPayrollIds?: Array<string> | null, totalPayrollDates?: number | null, completedPayrollDates?: number | null, pendingPayrollDateIds?: Array<string> | null, status?: any | null, tier1BillingGenerated?: boolean | null, tier2BillingGenerated?: boolean | null, tier3BillingGenerated?: boolean | null, firstPayrollCompletedAt?: string | null, lastPayrollCompletedAt?: string | null, billingReadyAt?: string | null, billingGeneratedAt?: string | null, completionNotes?: string | null, autoBillingEnabled?: boolean | null, overrideCompletionDate?: string | null, createdAt?: string | null, updatedAt?: string | null, client: { __typename?: 'Clients', id: string, name: string, contactEmail?: string | null } }> };
+
+export type GetClientsReadyForBillingQueryVariables = Exact<{
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  billingMonth?: InputMaybe<Scalars['date']['input']>;
+}>;
+
+
+export type GetClientsReadyForBillingQuery = { __typename?: 'query_root', monthlyBillingCompletion: Array<{ __typename?: 'MonthlyBillingCompletion', id: string, clientId: string, billingMonth: string, billingPeriodId?: string | null, totalPayrolls?: number | null, completedPayrolls?: number | null, pendingPayrollIds?: Array<string> | null, totalPayrollDates?: number | null, completedPayrollDates?: number | null, pendingPayrollDateIds?: Array<string> | null, status?: any | null, tier1BillingGenerated?: boolean | null, tier2BillingGenerated?: boolean | null, tier3BillingGenerated?: boolean | null, firstPayrollCompletedAt?: string | null, lastPayrollCompletedAt?: string | null, billingReadyAt?: string | null, billingGeneratedAt?: string | null, completionNotes?: string | null, autoBillingEnabled?: boolean | null, overrideCompletionDate?: string | null, createdAt?: string | null, updatedAt?: string | null, client: { __typename?: 'Clients', id: string, name: string, contactEmail?: string | null, active?: boolean | null } }> };
+
+export type GetPayrollServiceAgreementsQueryVariables = Exact<{
+  payrollId: Scalars['uuid']['input'];
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+}>;
+
+
+export type GetPayrollServiceAgreementsQuery = { __typename?: 'query_root', payrollServiceAgreements: Array<{ __typename?: 'PayrollServiceAgreements', id: string, payrollId: string, serviceId: string, clientServiceAgreementId?: string | null, customRate?: number | null, customQuantity?: number | null, customDescription?: string | null, isOneTime?: boolean | null, isActive?: boolean | null, billingFrequency?: string | null, autoBillingEnabled?: boolean | null, billingNotes?: string | null, billingItemsGenerated?: boolean | null, generatedAt?: string | null, generatedBy?: string | null, serviceConfiguration?: any | null, createdAt?: string | null, updatedAt?: string | null, createdBy?: string | null }> };
+
+export type GetServicesByTierQueryVariables = Exact<{
+  billingTier: Scalars['billing_tier_level']['input'];
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type GetServicesByTierQuery = { __typename?: 'query_root', services: Array<{ __typename?: 'Services', id: string, name: string, description?: string | null, category: string, billingUnit: string, defaultRate: number, currency: string, serviceType: string, isActive?: boolean | null, isTemplate?: boolean | null, metadata?: any | null, pricingRules?: any | null, dependencies?: any | null, billingTier?: any | null, tierPriority?: number | null, requiresPayrollCompletion?: boolean | null, requiresMonthlyCompletion?: boolean | null, createdAt?: string | null, updatedAt?: string | null, createdBy?: string | null, updatedBy?: string | null, clientAgreements: Array<{ __typename?: 'ClientServiceAgreements', id: string, clientId: string, customRate?: number | null, billingFrequency?: string | null, client: { __typename?: 'Clients', id: string, name: string } }> }> };
+
+export type GetUserRateHistoryQueryVariables = Exact<{
+  userId: Scalars['uuid']['input'];
+  limit?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type GetUserRateHistoryQuery = { __typename?: 'query_root', userRateHistory: Array<{ __typename?: 'UserRateHistory', id: string, userId: string, hourlyRate: number, effectiveFrom: string, effectiveTo?: string | null, rateType?: string | null, costCenter?: string | null, billingCategory?: string | null, notes?: string | null, createdAt?: string | null, createdBy?: string | null, user: { __typename?: 'Users', id: string, firstName: string, lastName: string, computedName?: string | null, defaultHourlyRate?: number | null, costCenter?: string | null, billingCategory?: string | null } }> };
+
+export type GetCurrentUserRatesQueryVariables = Exact<{
+  userIds?: InputMaybe<Array<Scalars['uuid']['input']> | Scalars['uuid']['input']>;
+  effectiveDate?: InputMaybe<Scalars['date']['input']>;
+}>;
+
+
+export type GetCurrentUserRatesQuery = { __typename?: 'query_root', users: Array<{ __typename?: 'Users', id: string, firstName: string, lastName: string, computedName?: string | null, defaultHourlyRate?: number | null, costCenter?: string | null, billingCategory?: string | null, rateEffectiveFrom?: string | null, currentRate: Array<{ __typename?: 'UserRateHistory', id: string, userId: string, hourlyRate: number, effectiveFrom: string, effectiveTo?: string | null, rateType?: string | null, costCenter?: string | null, billingCategory?: string | null, notes?: string | null, createdAt?: string | null, createdBy?: string | null }> }> };
+
+export type GetPayrollCostAnalysisQueryVariables = Exact<{
+  payrollDateId?: InputMaybe<Scalars['uuid']['input']>;
+  payrollId?: InputMaybe<Scalars['uuid']['input']>;
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  billingMonth?: InputMaybe<Scalars['timestamptz']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type GetPayrollCostAnalysisQuery = { __typename?: 'query_root', payrollCostAnalysis: Array<{ __typename?: 'PayrollCostAnalysis', payrollDateId?: string | null, payrollId?: string | null, payrollName?: string | null, clientId?: string | null, clientName?: string | null, billingMonth?: string | null, payrollDateStatus?: string | null, completedAt?: string | null, completedBy?: string | null, totalTimeMinutes?: string | null, totalHours?: number | null, totalInternalCost?: number | null, uniqueUsersWorked?: string | null, totalRevenue?: number | null, billingItemsCount?: string | null, estimatedProfit?: number | null, profitMarginPercentage?: number | null, revenuePerHour?: number | null, costPerHour?: number | null }> };
+
+export type GetUserProductivityAnalysisQueryVariables = Exact<{
+  userIds?: InputMaybe<Array<Scalars['uuid']['input']> | Scalars['uuid']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type GetUserProductivityAnalysisQuery = { __typename?: 'query_root', userProductivityAnalysis: Array<{ __typename?: 'UserProductivityAnalysis', userId?: string | null, firstName?: string | null, lastName?: string | null, computedName?: string | null, defaultHourlyRate?: number | null, costCenter?: string | null, billingCategory?: string | null, totalHoursLast30Days?: number | null, totalInternalCost30d?: number | null, payrollDatesWorked30d?: string | null, totalRevenueGenerated30d?: number | null, revenuePerHour30d?: number | null, profitGenerated30d?: number | null, efficiencyRatio30d?: number | null }> };
+
+export type GetTimeEntriesWithCostQueryVariables = Exact<{
+  payrollDateId?: InputMaybe<Scalars['uuid']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+  workDateFrom?: InputMaybe<Scalars['date']['input']>;
+  workDateTo?: InputMaybe<Scalars['date']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type GetTimeEntriesWithCostQuery = { __typename?: 'query_root', payrollDateTimeEntries: Array<{ __typename?: 'PayrollDateTimeEntries', id: string, payrollDateId: string, userId: string, timeSpentMinutes: number, description?: string | null, workDate: string, hourlyRateUsed?: number | null, totalCost?: number | null, costCenter?: string | null, isBillable?: boolean | null, createdAt?: string | null, updatedAt?: string | null, user: { __typename?: 'Users', id: string, firstName: string, lastName: string, computedName?: string | null, defaultHourlyRate?: number | null, costCenter?: string | null }, payrollDate: { __typename?: 'PayrollDates', id: string, payrollId: string, originalEftDate: string, adjustedEftDate: string, status?: string | null, payroll: { __typename?: 'Payrolls', id: string, name: string, client: { __typename?: 'Clients', id: string, name: string } } } }> };
+
+export type CreatePayrollServiceAgreementMutationVariables = Exact<{
+  input: PayrollServiceAgreementsInsertInput;
+}>;
+
+
+export type CreatePayrollServiceAgreementMutation = { __typename?: 'mutation_root', insertPayrollServiceAgreementsOne?: { __typename?: 'PayrollServiceAgreements', id: string, payrollId: string, serviceId: string, clientServiceAgreementId?: string | null, customRate?: number | null, customQuantity?: number | null, customDescription?: string | null, isOneTime?: boolean | null, isActive?: boolean | null, billingFrequency?: string | null, autoBillingEnabled?: boolean | null, billingNotes?: string | null, billingItemsGenerated?: boolean | null, generatedAt?: string | null, generatedBy?: string | null, serviceConfiguration?: any | null, createdAt?: string | null, updatedAt?: string | null, createdBy?: string | null } | null };
+
+export type UpdatePayrollServiceAgreementMutationVariables = Exact<{
+  id: Scalars['uuid']['input'];
+  updates: PayrollServiceAgreementsSetInput;
+}>;
+
+
+export type UpdatePayrollServiceAgreementMutation = { __typename?: 'mutation_root', updatePayrollServiceAgreementsByPk?: { __typename?: 'PayrollServiceAgreements', id: string, payrollId: string, serviceId: string, clientServiceAgreementId?: string | null, customRate?: number | null, customQuantity?: number | null, customDescription?: string | null, isOneTime?: boolean | null, isActive?: boolean | null, billingFrequency?: string | null, autoBillingEnabled?: boolean | null, billingNotes?: string | null, billingItemsGenerated?: boolean | null, generatedAt?: string | null, generatedBy?: string | null, serviceConfiguration?: any | null, createdAt?: string | null, updatedAt?: string | null, createdBy?: string | null } | null };
+
+export type DeletePayrollServiceAgreementMutationVariables = Exact<{
+  id: Scalars['uuid']['input'];
+}>;
+
+
+export type DeletePayrollServiceAgreementMutation = { __typename?: 'mutation_root', deletePayrollServiceAgreementsByPk?: { __typename?: 'PayrollServiceAgreements', id: string, payrollId: string, serviceId: string } | null };
+
+export type CreateUserRateHistoryMutationVariables = Exact<{
+  input: UserRateHistoryInsertInput;
+}>;
+
+
+export type CreateUserRateHistoryMutation = { __typename?: 'mutation_root', insertUserRateHistoryOne?: { __typename?: 'UserRateHistory', id: string, userId: string, hourlyRate: number, effectiveFrom: string, effectiveTo?: string | null, rateType?: string | null, costCenter?: string | null, billingCategory?: string | null, notes?: string | null, createdAt?: string | null, createdBy?: string | null } | null };
+
+export type UpdateUserHourlyRateMutationVariables = Exact<{
+  userId: Scalars['uuid']['input'];
+  defaultHourlyRate: Scalars['numeric']['input'];
+  rateEffectiveFrom?: InputMaybe<Scalars['date']['input']>;
+  costCenter?: InputMaybe<Scalars['String']['input']>;
+  billingCategory?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type UpdateUserHourlyRateMutation = { __typename?: 'mutation_root', updateUsersByPk?: { __typename?: 'Users', id: string, firstName: string, lastName: string, defaultHourlyRate?: number | null, rateEffectiveFrom?: string | null, costCenter?: string | null, billingCategory?: string | null } | null };
+
+export type UpdateMonthlyBillingCompletionMutationVariables = Exact<{
+  clientId: Scalars['uuid']['input'];
+  billingMonth: Scalars['date']['input'];
+  updates: MonthlyBillingCompletionSetInput;
+}>;
+
+
+export type UpdateMonthlyBillingCompletionMutation = { __typename?: 'mutation_root', updateMonthlyBillingCompletion?: { __typename?: 'MonthlyBillingCompletionMutationResponse', affectedRows: number, returning: Array<{ __typename?: 'MonthlyBillingCompletion', id: string, clientId: string, billingMonth: string, billingPeriodId?: string | null, totalPayrolls?: number | null, completedPayrolls?: number | null, pendingPayrollIds?: Array<string> | null, totalPayrollDates?: number | null, completedPayrollDates?: number | null, pendingPayrollDateIds?: Array<string> | null, status?: any | null, tier1BillingGenerated?: boolean | null, tier2BillingGenerated?: boolean | null, tier3BillingGenerated?: boolean | null, firstPayrollCompletedAt?: string | null, lastPayrollCompletedAt?: string | null, billingReadyAt?: string | null, billingGeneratedAt?: string | null, completionNotes?: string | null, autoBillingEnabled?: boolean | null, overrideCompletionDate?: string | null, createdAt?: string | null, updatedAt?: string | null }> } | null };
+
+export type OverrideMonthlyBillingCompletionMutationVariables = Exact<{
+  clientId: Scalars['uuid']['input'];
+  billingMonth: Scalars['date']['input'];
+  overrideCompletionDate: Scalars['date']['input'];
+  completionNotes?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type OverrideMonthlyBillingCompletionMutation = { __typename?: 'mutation_root', updateMonthlyBillingCompletion?: { __typename?: 'MonthlyBillingCompletionMutationResponse', affectedRows: number, returning: Array<{ __typename?: 'MonthlyBillingCompletion', id: string, clientId: string, billingMonth: string, billingPeriodId?: string | null, totalPayrolls?: number | null, completedPayrolls?: number | null, pendingPayrollIds?: Array<string> | null, totalPayrollDates?: number | null, completedPayrollDates?: number | null, pendingPayrollDateIds?: Array<string> | null, status?: any | null, tier1BillingGenerated?: boolean | null, tier2BillingGenerated?: boolean | null, tier3BillingGenerated?: boolean | null, firstPayrollCompletedAt?: string | null, lastPayrollCompletedAt?: string | null, billingReadyAt?: string | null, billingGeneratedAt?: string | null, completionNotes?: string | null, autoBillingEnabled?: boolean | null, overrideCompletionDate?: string | null, createdAt?: string | null, updatedAt?: string | null }> } | null };
+
+export type AddTimeEntryWithCostMutationVariables = Exact<{
+  input: PayrollDateTimeEntriesInsertInput;
+}>;
+
+
+export type AddTimeEntryWithCostMutation = { __typename?: 'mutation_root', insertPayrollDateTimeEntriesOne?: { __typename?: 'PayrollDateTimeEntries', id: string, payrollDateId: string, userId: string, timeSpentMinutes: number, description?: string | null, workDate: string, hourlyRateUsed?: number | null, totalCost?: number | null, costCenter?: string | null, isBillable?: boolean | null, createdAt?: string | null, updatedAt?: string | null } | null };
+
+export type UpdateServiceBillingTierMutationVariables = Exact<{
+  serviceId: Scalars['uuid']['input'];
+  billingTier: Scalars['billing_tier_level']['input'];
+  tierPriority?: InputMaybe<Scalars['Int']['input']>;
+  requiresPayrollCompletion?: InputMaybe<Scalars['Boolean']['input']>;
+  requiresMonthlyCompletion?: InputMaybe<Scalars['Boolean']['input']>;
+}>;
+
+
+export type UpdateServiceBillingTierMutation = { __typename?: 'mutation_root', updateServicesByPk?: { __typename?: 'Services', id: string, name: string, description?: string | null, category: string, billingUnit: string, defaultRate: number, currency: string, serviceType: string, isActive?: boolean | null, isTemplate?: boolean | null, metadata?: any | null, pricingRules?: any | null, dependencies?: any | null, billingTier?: any | null, tierPriority?: number | null, requiresPayrollCompletion?: boolean | null, requiresMonthlyCompletion?: boolean | null, createdAt?: string | null, updatedAt?: string | null, createdBy?: string | null, updatedBy?: string | null } | null };
+
+export type MonthlyBillingDashboardSubscriptionSubscriptionVariables = Exact<{
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  billingMonth?: InputMaybe<Scalars['date']['input']>;
+}>;
+
+
+export type MonthlyBillingDashboardSubscriptionSubscription = { __typename?: 'subscription_root', monthlyBillingDashboard: Array<{ __typename?: 'MonthlyBillingDashboard', id?: string | null, clientId?: string | null, clientName?: string | null, billingMonth?: string | null, billingMonthDisplay?: string | null, totalPayrolls?: number | null, completedPayrolls?: number | null, totalPayrollDates?: number | null, completedPayrollDates?: number | null, status?: any | null, tier1BillingGenerated?: boolean | null, tier2BillingGenerated?: boolean | null, tier3BillingGenerated?: boolean | null, billingReadyAt?: string | null, billingGeneratedAt?: string | null, completionPercentage?: number | null, daysReadyForBilling?: number | null, billingItemsCount?: string | null, totalBillingAmount?: number | null, activeServiceAgreements?: string | null }> };
+
+export type PayrollServiceAgreementsSubscriptionSubscriptionVariables = Exact<{
+  payrollId: Scalars['uuid']['input'];
+}>;
+
+
+export type PayrollServiceAgreementsSubscriptionSubscription = { __typename?: 'subscription_root', payrollServiceAgreements: Array<{ __typename?: 'PayrollServiceAgreements', id: string, payrollId: string, serviceId: string, clientServiceAgreementId?: string | null, customRate?: number | null, customQuantity?: number | null, customDescription?: string | null, isOneTime?: boolean | null, isActive?: boolean | null, billingFrequency?: string | null, autoBillingEnabled?: boolean | null, billingNotes?: string | null, billingItemsGenerated?: boolean | null, generatedAt?: string | null, generatedBy?: string | null, serviceConfiguration?: any | null, createdAt?: string | null, updatedAt?: string | null, createdBy?: string | null }> };
+
+export type TimeEntriesWithCostSubscriptionSubscriptionVariables = Exact<{
+  payrollDateId: Scalars['uuid']['input'];
+}>;
+
+
+export type TimeEntriesWithCostSubscriptionSubscription = { __typename?: 'subscription_root', payrollDateTimeEntries: Array<{ __typename?: 'PayrollDateTimeEntries', id: string, payrollDateId: string, userId: string, timeSpentMinutes: number, description?: string | null, workDate: string, hourlyRateUsed?: number | null, totalCost?: number | null, costCenter?: string | null, isBillable?: boolean | null, createdAt?: string | null, updatedAt?: string | null, user: { __typename?: 'Users', id: string, firstName: string, lastName: string, computedName?: string | null } }> };
 
 export type BillingItemCoreFragment = { __typename?: 'BillingItems', id: string, description?: string | null, amount?: number | null, quantity: number, unitPrice: number, totalAmount?: number | null, status?: string | null, notes?: string | null, createdAt?: any | null, updatedAt?: string | null, approvalDate?: string | null, isApproved?: boolean | null, clientId?: string | null, staffUserId?: string | null, approvedBy?: string | null, confirmedAt?: string | null, confirmedBy?: string | null, payrollId?: string | null, serviceId?: string | null, serviceName?: string | null, hourlyRate?: number | null, invoiceId?: string | null };
 
@@ -20388,6 +22768,14 @@ export type PermissionChangeStreamSubscriptionVariables = Exact<{ [key: string]:
 
 export type PermissionChangeStreamSubscription = { __typename?: 'subscription_root', auditPermissionChanges: Array<{ __typename?: 'AuditPermissionChanges', id: string, changedAt: string, changedByUserId: string, targetUserId?: string | null, targetRoleId?: string | null, changeType: string, permissionType?: string | null, oldPermissions?: any | null, newPermissions?: any | null, reason?: string | null, approvedByUserId?: string | null }> };
 
+export const MonthlyBillingCompletionFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MonthlyBillingCompletionFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MonthlyBillingCompletion"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"billingMonth"}},{"kind":"Field","name":{"kind":"Name","value":"billingPeriodId"}},{"kind":"Field","name":{"kind":"Name","value":"totalPayrolls"}},{"kind":"Field","name":{"kind":"Name","value":"completedPayrolls"}},{"kind":"Field","name":{"kind":"Name","value":"pendingPayrollIds"}},{"kind":"Field","name":{"kind":"Name","value":"totalPayrollDates"}},{"kind":"Field","name":{"kind":"Name","value":"completedPayrollDates"}},{"kind":"Field","name":{"kind":"Name","value":"pendingPayrollDateIds"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"tier1BillingGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"tier2BillingGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"tier3BillingGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"firstPayrollCompletedAt"}},{"kind":"Field","name":{"kind":"Name","value":"lastPayrollCompletedAt"}},{"kind":"Field","name":{"kind":"Name","value":"billingReadyAt"}},{"kind":"Field","name":{"kind":"Name","value":"billingGeneratedAt"}},{"kind":"Field","name":{"kind":"Name","value":"completionNotes"}},{"kind":"Field","name":{"kind":"Name","value":"autoBillingEnabled"}},{"kind":"Field","name":{"kind":"Name","value":"overrideCompletionDate"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<MonthlyBillingCompletionFragmentFragment, unknown>;
+export const PayrollServiceAgreementFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollServiceAgreementFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollServiceAgreements"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreementId"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"customQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"customDescription"}},{"kind":"Field","name":{"kind":"Name","value":"isOneTime"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"billingFrequency"}},{"kind":"Field","name":{"kind":"Name","value":"autoBillingEnabled"}},{"kind":"Field","name":{"kind":"Name","value":"billingNotes"}},{"kind":"Field","name":{"kind":"Name","value":"billingItemsGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"generatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"generatedBy"}},{"kind":"Field","name":{"kind":"Name","value":"serviceConfiguration"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}}]}}]} as unknown as DocumentNode<PayrollServiceAgreementFragmentFragment, unknown>;
+export const ServiceWithTierFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ServiceWithTierFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Services"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"defaultRate"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"serviceType"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isTemplate"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"}},{"kind":"Field","name":{"kind":"Name","value":"pricingRules"}},{"kind":"Field","name":{"kind":"Name","value":"dependencies"}},{"kind":"Field","name":{"kind":"Name","value":"billingTier"}},{"kind":"Field","name":{"kind":"Name","value":"tierPriority"}},{"kind":"Field","name":{"kind":"Name","value":"requiresPayrollCompletion"}},{"kind":"Field","name":{"kind":"Name","value":"requiresMonthlyCompletion"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"updatedBy"}}]}}]} as unknown as DocumentNode<ServiceWithTierFragmentFragment, unknown>;
+export const UserRateHistoryFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserRateHistoryFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UserRateHistory"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"hourlyRate"}},{"kind":"Field","name":{"kind":"Name","value":"effectiveFrom"}},{"kind":"Field","name":{"kind":"Name","value":"effectiveTo"}},{"kind":"Field","name":{"kind":"Name","value":"rateType"}},{"kind":"Field","name":{"kind":"Name","value":"costCenter"}},{"kind":"Field","name":{"kind":"Name","value":"billingCategory"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}}]}}]} as unknown as DocumentNode<UserRateHistoryFragmentFragment, unknown>;
+export const TimeEntryWithCostFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TimeEntryWithCostFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollDateTimeEntries"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollDateId"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"timeSpentMinutes"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"workDate"}},{"kind":"Field","name":{"kind":"Name","value":"hourlyRateUsed"}},{"kind":"Field","name":{"kind":"Name","value":"totalCost"}},{"kind":"Field","name":{"kind":"Name","value":"costCenter"}},{"kind":"Field","name":{"kind":"Name","value":"isBillable"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<TimeEntryWithCostFragmentFragment, unknown>;
+export const MonthlyBillingDashboardFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MonthlyBillingDashboardFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MonthlyBillingDashboard"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"clientName"}},{"kind":"Field","name":{"kind":"Name","value":"billingMonth"}},{"kind":"Field","name":{"kind":"Name","value":"billingMonthDisplay"}},{"kind":"Field","name":{"kind":"Name","value":"totalPayrolls"}},{"kind":"Field","name":{"kind":"Name","value":"completedPayrolls"}},{"kind":"Field","name":{"kind":"Name","value":"totalPayrollDates"}},{"kind":"Field","name":{"kind":"Name","value":"completedPayrollDates"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"tier1BillingGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"tier2BillingGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"tier3BillingGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"billingReadyAt"}},{"kind":"Field","name":{"kind":"Name","value":"billingGeneratedAt"}},{"kind":"Field","name":{"kind":"Name","value":"completionPercentage"}},{"kind":"Field","name":{"kind":"Name","value":"daysReadyForBilling"}},{"kind":"Field","name":{"kind":"Name","value":"billingItemsCount"}},{"kind":"Field","name":{"kind":"Name","value":"totalBillingAmount"}},{"kind":"Field","name":{"kind":"Name","value":"activeServiceAgreements"}}]}}]} as unknown as DocumentNode<MonthlyBillingDashboardFragmentFragment, unknown>;
+export const PayrollCostAnalysisFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollCostAnalysisFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollCostAnalysis"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrollDateId"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"payrollName"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"clientName"}},{"kind":"Field","name":{"kind":"Name","value":"billingMonth"}},{"kind":"Field","name":{"kind":"Name","value":"payrollDateStatus"}},{"kind":"Field","name":{"kind":"Name","value":"completedAt"}},{"kind":"Field","name":{"kind":"Name","value":"completedBy"}},{"kind":"Field","name":{"kind":"Name","value":"totalTimeMinutes"}},{"kind":"Field","name":{"kind":"Name","value":"totalHours"}},{"kind":"Field","name":{"kind":"Name","value":"totalInternalCost"}},{"kind":"Field","name":{"kind":"Name","value":"uniqueUsersWorked"}},{"kind":"Field","name":{"kind":"Name","value":"totalRevenue"}},{"kind":"Field","name":{"kind":"Name","value":"billingItemsCount"}},{"kind":"Field","name":{"kind":"Name","value":"estimatedProfit"}},{"kind":"Field","name":{"kind":"Name","value":"profitMarginPercentage"}},{"kind":"Field","name":{"kind":"Name","value":"revenuePerHour"}},{"kind":"Field","name":{"kind":"Name","value":"costPerHour"}}]}}]} as unknown as DocumentNode<PayrollCostAnalysisFragmentFragment, unknown>;
+export const UserProductivityAnalysisFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserProductivityAnalysisFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UserProductivityAnalysis"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}},{"kind":"Field","name":{"kind":"Name","value":"defaultHourlyRate"}},{"kind":"Field","name":{"kind":"Name","value":"costCenter"}},{"kind":"Field","name":{"kind":"Name","value":"billingCategory"}},{"kind":"Field","name":{"kind":"Name","value":"totalHoursLast30Days"}},{"kind":"Field","name":{"kind":"Name","value":"totalInternalCost30d"}},{"kind":"Field","name":{"kind":"Name","value":"payrollDatesWorked30d"}},{"kind":"Field","name":{"kind":"Name","value":"totalRevenueGenerated30d"}},{"kind":"Field","name":{"kind":"Name","value":"revenuePerHour30d"}},{"kind":"Field","name":{"kind":"Name","value":"profitGenerated30d"}},{"kind":"Field","name":{"kind":"Name","value":"efficiencyRatio30d"}}]}}]} as unknown as DocumentNode<UserProductivityAnalysisFragmentFragment, unknown>;
 export const BillingItemCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BillingItemCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BillingItems"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"unitPrice"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"approvalDate"}},{"kind":"Field","name":{"kind":"Name","value":"isApproved"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"staffUserId"}},{"kind":"Field","name":{"kind":"Name","value":"approvedBy"}},{"kind":"Field","name":{"kind":"Name","value":"confirmedAt"}},{"kind":"Field","name":{"kind":"Name","value":"confirmedBy"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceName"}},{"kind":"Field","name":{"kind":"Name","value":"hourlyRate"}},{"kind":"Field","name":{"kind":"Name","value":"invoiceId"}}]}}]} as unknown as DocumentNode<BillingItemCoreFragment, unknown>;
 export const BillingItemWithRelationsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BillingItemWithRelations"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BillingItems"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"BillingItemCore"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"contactEmail"}}]}},{"kind":"Field","name":{"kind":"Name","value":"staffUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"Field","name":{"kind":"Name","value":"approvedByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"defaultRate"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"serviceType"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BillingItemCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BillingItems"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"unitPrice"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"approvalDate"}},{"kind":"Field","name":{"kind":"Name","value":"isApproved"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"staffUserId"}},{"kind":"Field","name":{"kind":"Name","value":"approvedBy"}},{"kind":"Field","name":{"kind":"Name","value":"confirmedAt"}},{"kind":"Field","name":{"kind":"Name","value":"confirmedBy"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceName"}},{"kind":"Field","name":{"kind":"Name","value":"hourlyRate"}},{"kind":"Field","name":{"kind":"Name","value":"invoiceId"}}]}}]} as unknown as DocumentNode<BillingItemWithRelationsFragment, unknown>;
 export const BillingItemStatsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BillingItemStats"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BillingItemsAggregate"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}}]}},{"kind":"Field","name":{"kind":"Name","value":"avg"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}}]}}]}}]}}]} as unknown as DocumentNode<BillingItemStatsFragment, unknown>;
@@ -20435,6 +22823,28 @@ export const DataAccessLogFragmentDoc = {"kind":"Document","definitions":[{"kind
 export const PermissionChangeFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionChange"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"AuditPermissionChanges"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"changedAt"}},{"kind":"Field","name":{"kind":"Name","value":"changedByUserId"}},{"kind":"Field","name":{"kind":"Name","value":"targetUserId"}},{"kind":"Field","name":{"kind":"Name","value":"targetRoleId"}},{"kind":"Field","name":{"kind":"Name","value":"changeType"}},{"kind":"Field","name":{"kind":"Name","value":"permissionType"}},{"kind":"Field","name":{"kind":"Name","value":"oldPermissions"}},{"kind":"Field","name":{"kind":"Name","value":"newPermissions"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"approvedByUserId"}}]}}]} as unknown as DocumentNode<PermissionChangeFragment, unknown>;
 export const PayrollDateInfoFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollDateInfo"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollDates"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"originalEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"adjustedEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<PayrollDateInfoFragment, unknown>;
 export const PermissionOverrideInfoFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PermissionOverrideInfo"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PermissionOverrides"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"resource"}},{"kind":"Field","name":{"kind":"Name","value":"operation"}},{"kind":"Field","name":{"kind":"Name","value":"granted"}},{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"conditions"}},{"kind":"Field","name":{"kind":"Name","value":"expiresAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<PermissionOverrideInfoFragment, unknown>;
+export const GetMonthlyBillingDashboardDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetMonthlyBillingDashboard"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"50"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"0"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"billingMonth"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"status"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"monthly_billing_status"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"monthlyBillingDashboard"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}},{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"billingMonth"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"billingMonth"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"status"}}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"billingMonth"},"value":{"kind":"EnumValue","value":"DESC"}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientName"},"value":{"kind":"EnumValue","value":"ASC"}}]}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"MonthlyBillingDashboardFragment"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MonthlyBillingDashboardFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MonthlyBillingDashboard"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"clientName"}},{"kind":"Field","name":{"kind":"Name","value":"billingMonth"}},{"kind":"Field","name":{"kind":"Name","value":"billingMonthDisplay"}},{"kind":"Field","name":{"kind":"Name","value":"totalPayrolls"}},{"kind":"Field","name":{"kind":"Name","value":"completedPayrolls"}},{"kind":"Field","name":{"kind":"Name","value":"totalPayrollDates"}},{"kind":"Field","name":{"kind":"Name","value":"completedPayrollDates"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"tier1BillingGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"tier2BillingGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"tier3BillingGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"billingReadyAt"}},{"kind":"Field","name":{"kind":"Name","value":"billingGeneratedAt"}},{"kind":"Field","name":{"kind":"Name","value":"completionPercentage"}},{"kind":"Field","name":{"kind":"Name","value":"daysReadyForBilling"}},{"kind":"Field","name":{"kind":"Name","value":"billingItemsCount"}},{"kind":"Field","name":{"kind":"Name","value":"totalBillingAmount"}},{"kind":"Field","name":{"kind":"Name","value":"activeServiceAgreements"}}]}}]} as unknown as DocumentNode<GetMonthlyBillingDashboardQuery, GetMonthlyBillingDashboardQueryVariables>;
+export const GetMonthlyBillingCompletionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetMonthlyBillingCompletion"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"billingMonth"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"monthlyBillingCompletion"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"billingMonth"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"billingMonth"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"MonthlyBillingCompletionFragment"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"contactEmail"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MonthlyBillingCompletionFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MonthlyBillingCompletion"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"billingMonth"}},{"kind":"Field","name":{"kind":"Name","value":"billingPeriodId"}},{"kind":"Field","name":{"kind":"Name","value":"totalPayrolls"}},{"kind":"Field","name":{"kind":"Name","value":"completedPayrolls"}},{"kind":"Field","name":{"kind":"Name","value":"pendingPayrollIds"}},{"kind":"Field","name":{"kind":"Name","value":"totalPayrollDates"}},{"kind":"Field","name":{"kind":"Name","value":"completedPayrollDates"}},{"kind":"Field","name":{"kind":"Name","value":"pendingPayrollDateIds"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"tier1BillingGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"tier2BillingGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"tier3BillingGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"firstPayrollCompletedAt"}},{"kind":"Field","name":{"kind":"Name","value":"lastPayrollCompletedAt"}},{"kind":"Field","name":{"kind":"Name","value":"billingReadyAt"}},{"kind":"Field","name":{"kind":"Name","value":"billingGeneratedAt"}},{"kind":"Field","name":{"kind":"Name","value":"completionNotes"}},{"kind":"Field","name":{"kind":"Name","value":"autoBillingEnabled"}},{"kind":"Field","name":{"kind":"Name","value":"overrideCompletionDate"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<GetMonthlyBillingCompletionQuery, GetMonthlyBillingCompletionQueryVariables>;
+export const GetClientsReadyForBillingDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetClientsReadyForBilling"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"20"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"billingMonth"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"monthlyBillingCompletion"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"ready_to_bill","block":false}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"billingMonth"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"billingMonth"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"autoBillingEnabled"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"billingReadyAt"},"value":{"kind":"EnumValue","value":"ASC"}}]}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"MonthlyBillingCompletionFragment"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"contactEmail"}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MonthlyBillingCompletionFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MonthlyBillingCompletion"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"billingMonth"}},{"kind":"Field","name":{"kind":"Name","value":"billingPeriodId"}},{"kind":"Field","name":{"kind":"Name","value":"totalPayrolls"}},{"kind":"Field","name":{"kind":"Name","value":"completedPayrolls"}},{"kind":"Field","name":{"kind":"Name","value":"pendingPayrollIds"}},{"kind":"Field","name":{"kind":"Name","value":"totalPayrollDates"}},{"kind":"Field","name":{"kind":"Name","value":"completedPayrollDates"}},{"kind":"Field","name":{"kind":"Name","value":"pendingPayrollDateIds"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"tier1BillingGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"tier2BillingGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"tier3BillingGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"firstPayrollCompletedAt"}},{"kind":"Field","name":{"kind":"Name","value":"lastPayrollCompletedAt"}},{"kind":"Field","name":{"kind":"Name","value":"billingReadyAt"}},{"kind":"Field","name":{"kind":"Name","value":"billingGeneratedAt"}},{"kind":"Field","name":{"kind":"Name","value":"completionNotes"}},{"kind":"Field","name":{"kind":"Name","value":"autoBillingEnabled"}},{"kind":"Field","name":{"kind":"Name","value":"overrideCompletionDate"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<GetClientsReadyForBillingQuery, GetClientsReadyForBillingQueryVariables>;
+export const GetPayrollServiceAgreementsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPayrollServiceAgreements"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"isActive"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}},"defaultValue":{"kind":"BooleanValue","value":true}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreements"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"isActive"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollServiceAgreementFragment"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollServiceAgreementFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollServiceAgreements"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreementId"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"customQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"customDescription"}},{"kind":"Field","name":{"kind":"Name","value":"isOneTime"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"billingFrequency"}},{"kind":"Field","name":{"kind":"Name","value":"autoBillingEnabled"}},{"kind":"Field","name":{"kind":"Name","value":"billingNotes"}},{"kind":"Field","name":{"kind":"Name","value":"billingItemsGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"generatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"generatedBy"}},{"kind":"Field","name":{"kind":"Name","value":"serviceConfiguration"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}}]}}]} as unknown as DocumentNode<GetPayrollServiceAgreementsQuery, GetPayrollServiceAgreementsQueryVariables>;
+export const GetServicesByTierDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetServicesByTier"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"billingTier"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"billing_tier_level"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"isActive"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}},"defaultValue":{"kind":"BooleanValue","value":true}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"100"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"services"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"billingTier"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"billingTier"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"isActive"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"tierPriority"},"value":{"kind":"EnumValue","value":"ASC"}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ServiceWithTierFragment"}},{"kind":"Field","name":{"kind":"Name","value":"clientAgreements"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingFrequency"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ServiceWithTierFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Services"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"defaultRate"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"serviceType"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isTemplate"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"}},{"kind":"Field","name":{"kind":"Name","value":"pricingRules"}},{"kind":"Field","name":{"kind":"Name","value":"dependencies"}},{"kind":"Field","name":{"kind":"Name","value":"billingTier"}},{"kind":"Field","name":{"kind":"Name","value":"tierPriority"}},{"kind":"Field","name":{"kind":"Name","value":"requiresPayrollCompletion"}},{"kind":"Field","name":{"kind":"Name","value":"requiresMonthlyCompletion"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"updatedBy"}}]}}]} as unknown as DocumentNode<GetServicesByTierQuery, GetServicesByTierQueryVariables>;
+export const GetUserRateHistoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserRateHistory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"50"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userRateHistory"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"effectiveFrom"},"value":{"kind":"EnumValue","value":"DESC"}}]}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserRateHistoryFragment"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}},{"kind":"Field","name":{"kind":"Name","value":"defaultHourlyRate"}},{"kind":"Field","name":{"kind":"Name","value":"costCenter"}},{"kind":"Field","name":{"kind":"Name","value":"billingCategory"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserRateHistoryFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UserRateHistory"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"hourlyRate"}},{"kind":"Field","name":{"kind":"Name","value":"effectiveFrom"}},{"kind":"Field","name":{"kind":"Name","value":"effectiveTo"}},{"kind":"Field","name":{"kind":"Name","value":"rateType"}},{"kind":"Field","name":{"kind":"Name","value":"costCenter"}},{"kind":"Field","name":{"kind":"Name","value":"billingCategory"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}}]}}]} as unknown as DocumentNode<GetUserRateHistoryQuery, GetUserRateHistoryQueryVariables>;
+export const GetCurrentUserRatesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCurrentUserRates"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userIds"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"effectiveDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}},"defaultValue":{"kind":"StringValue","value":"now()","block":false}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userIds"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}},{"kind":"Field","name":{"kind":"Name","value":"defaultHourlyRate"}},{"kind":"Field","name":{"kind":"Name","value":"costCenter"}},{"kind":"Field","name":{"kind":"Name","value":"billingCategory"}},{"kind":"Field","name":{"kind":"Name","value":"rateEffectiveFrom"}},{"kind":"Field","alias":{"kind":"Name","value":"currentRate"},"name":{"kind":"Name","value":"userRateHistories"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"effectiveFrom"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_lte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"effectiveDate"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"effectiveTo"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"effectiveDate"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"effectiveTo"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"effectiveFrom"},"value":{"kind":"EnumValue","value":"DESC"}}]}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"1"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserRateHistoryFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserRateHistoryFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UserRateHistory"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"hourlyRate"}},{"kind":"Field","name":{"kind":"Name","value":"effectiveFrom"}},{"kind":"Field","name":{"kind":"Name","value":"effectiveTo"}},{"kind":"Field","name":{"kind":"Name","value":"rateType"}},{"kind":"Field","name":{"kind":"Name","value":"costCenter"}},{"kind":"Field","name":{"kind":"Name","value":"billingCategory"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}}]}}]} as unknown as DocumentNode<GetCurrentUserRatesQuery, GetCurrentUserRatesQueryVariables>;
+export const GetPayrollCostAnalysisDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPayrollCostAnalysis"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"billingMonth"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"timestamptz"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"50"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"0"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrollCostAnalysis"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDateId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"billingMonth"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"billingMonth"}}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"completedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollCostAnalysisFragment"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollCostAnalysisFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollCostAnalysis"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrollDateId"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"payrollName"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"clientName"}},{"kind":"Field","name":{"kind":"Name","value":"billingMonth"}},{"kind":"Field","name":{"kind":"Name","value":"payrollDateStatus"}},{"kind":"Field","name":{"kind":"Name","value":"completedAt"}},{"kind":"Field","name":{"kind":"Name","value":"completedBy"}},{"kind":"Field","name":{"kind":"Name","value":"totalTimeMinutes"}},{"kind":"Field","name":{"kind":"Name","value":"totalHours"}},{"kind":"Field","name":{"kind":"Name","value":"totalInternalCost"}},{"kind":"Field","name":{"kind":"Name","value":"uniqueUsersWorked"}},{"kind":"Field","name":{"kind":"Name","value":"totalRevenue"}},{"kind":"Field","name":{"kind":"Name","value":"billingItemsCount"}},{"kind":"Field","name":{"kind":"Name","value":"estimatedProfit"}},{"kind":"Field","name":{"kind":"Name","value":"profitMarginPercentage"}},{"kind":"Field","name":{"kind":"Name","value":"revenuePerHour"}},{"kind":"Field","name":{"kind":"Name","value":"costPerHour"}}]}}]} as unknown as DocumentNode<GetPayrollCostAnalysisQuery, GetPayrollCostAnalysisQueryVariables>;
+export const GetUserProductivityAnalysisDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserProductivityAnalysis"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userIds"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"50"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userProductivityAnalysis"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userIds"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"revenuePerHour30d"},"value":{"kind":"EnumValue","value":"DESC"}}]}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserProductivityAnalysisFragment"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserProductivityAnalysisFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UserProductivityAnalysis"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}},{"kind":"Field","name":{"kind":"Name","value":"defaultHourlyRate"}},{"kind":"Field","name":{"kind":"Name","value":"costCenter"}},{"kind":"Field","name":{"kind":"Name","value":"billingCategory"}},{"kind":"Field","name":{"kind":"Name","value":"totalHoursLast30Days"}},{"kind":"Field","name":{"kind":"Name","value":"totalInternalCost30d"}},{"kind":"Field","name":{"kind":"Name","value":"payrollDatesWorked30d"}},{"kind":"Field","name":{"kind":"Name","value":"totalRevenueGenerated30d"}},{"kind":"Field","name":{"kind":"Name","value":"revenuePerHour30d"}},{"kind":"Field","name":{"kind":"Name","value":"profitGenerated30d"}},{"kind":"Field","name":{"kind":"Name","value":"efficiencyRatio30d"}}]}}]} as unknown as DocumentNode<GetUserProductivityAnalysisQuery, GetUserProductivityAnalysisQueryVariables>;
+export const GetTimeEntriesWithCostDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTimeEntriesWithCost"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"workDateFrom"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"workDateTo"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"100"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"0"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrollDateTimeEntries"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDateId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"workDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"workDateFrom"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"workDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_lte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"workDateTo"}}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"workDate"},"value":{"kind":"EnumValue","value":"DESC"}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TimeEntryWithCostFragment"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}},{"kind":"Field","name":{"kind":"Name","value":"defaultHourlyRate"}},{"kind":"Field","name":{"kind":"Name","value":"costCenter"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollDate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"originalEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"adjustedEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"payroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TimeEntryWithCostFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollDateTimeEntries"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollDateId"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"timeSpentMinutes"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"workDate"}},{"kind":"Field","name":{"kind":"Name","value":"hourlyRateUsed"}},{"kind":"Field","name":{"kind":"Name","value":"totalCost"}},{"kind":"Field","name":{"kind":"Name","value":"costCenter"}},{"kind":"Field","name":{"kind":"Name","value":"isBillable"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<GetTimeEntriesWithCostQuery, GetTimeEntriesWithCostQueryVariables>;
+export const CreatePayrollServiceAgreementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreatePayrollServiceAgreement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollServiceAgreementsInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertPayrollServiceAgreementsOne"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollServiceAgreementFragment"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollServiceAgreementFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollServiceAgreements"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreementId"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"customQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"customDescription"}},{"kind":"Field","name":{"kind":"Name","value":"isOneTime"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"billingFrequency"}},{"kind":"Field","name":{"kind":"Name","value":"autoBillingEnabled"}},{"kind":"Field","name":{"kind":"Name","value":"billingNotes"}},{"kind":"Field","name":{"kind":"Name","value":"billingItemsGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"generatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"generatedBy"}},{"kind":"Field","name":{"kind":"Name","value":"serviceConfiguration"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}}]}}]} as unknown as DocumentNode<CreatePayrollServiceAgreementMutation, CreatePayrollServiceAgreementMutationVariables>;
+export const UpdatePayrollServiceAgreementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdatePayrollServiceAgreement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"updates"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollServiceAgreementsSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updatePayrollServiceAgreementsByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"updates"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollServiceAgreementFragment"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollServiceAgreementFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollServiceAgreements"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreementId"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"customQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"customDescription"}},{"kind":"Field","name":{"kind":"Name","value":"isOneTime"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"billingFrequency"}},{"kind":"Field","name":{"kind":"Name","value":"autoBillingEnabled"}},{"kind":"Field","name":{"kind":"Name","value":"billingNotes"}},{"kind":"Field","name":{"kind":"Name","value":"billingItemsGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"generatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"generatedBy"}},{"kind":"Field","name":{"kind":"Name","value":"serviceConfiguration"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}}]}}]} as unknown as DocumentNode<UpdatePayrollServiceAgreementMutation, UpdatePayrollServiceAgreementMutationVariables>;
+export const DeletePayrollServiceAgreementDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeletePayrollServiceAgreement"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deletePayrollServiceAgreementsByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}}]}}]}}]} as unknown as DocumentNode<DeletePayrollServiceAgreementMutation, DeletePayrollServiceAgreementMutationVariables>;
+export const CreateUserRateHistoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateUserRateHistory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UserRateHistoryInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertUserRateHistoryOne"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserRateHistoryFragment"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserRateHistoryFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UserRateHistory"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"hourlyRate"}},{"kind":"Field","name":{"kind":"Name","value":"effectiveFrom"}},{"kind":"Field","name":{"kind":"Name","value":"effectiveTo"}},{"kind":"Field","name":{"kind":"Name","value":"rateType"}},{"kind":"Field","name":{"kind":"Name","value":"costCenter"}},{"kind":"Field","name":{"kind":"Name","value":"billingCategory"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}}]}}]} as unknown as DocumentNode<CreateUserRateHistoryMutation, CreateUserRateHistoryMutationVariables>;
+export const UpdateUserHourlyRateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateUserHourlyRate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"defaultHourlyRate"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"numeric"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"rateEffectiveFrom"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}},"defaultValue":{"kind":"StringValue","value":"now()","block":false}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"costCenter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"billingCategory"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}},"defaultValue":{"kind":"StringValue","value":"consultant","block":false}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUsersByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"defaultHourlyRate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"defaultHourlyRate"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"rateEffectiveFrom"},"value":{"kind":"Variable","name":{"kind":"Name","value":"rateEffectiveFrom"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"costCenter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"costCenter"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"billingCategory"},"value":{"kind":"Variable","name":{"kind":"Name","value":"billingCategory"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"defaultHourlyRate"}},{"kind":"Field","name":{"kind":"Name","value":"rateEffectiveFrom"}},{"kind":"Field","name":{"kind":"Name","value":"costCenter"}},{"kind":"Field","name":{"kind":"Name","value":"billingCategory"}}]}}]}}]} as unknown as DocumentNode<UpdateUserHourlyRateMutation, UpdateUserHourlyRateMutationVariables>;
+export const UpdateMonthlyBillingCompletionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateMonthlyBillingCompletion"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"billingMonth"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"updates"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"MonthlyBillingCompletionSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateMonthlyBillingCompletion"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"billingMonth"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"billingMonth"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"updates"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"affectedRows"}},{"kind":"Field","name":{"kind":"Name","value":"returning"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"MonthlyBillingCompletionFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MonthlyBillingCompletionFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MonthlyBillingCompletion"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"billingMonth"}},{"kind":"Field","name":{"kind":"Name","value":"billingPeriodId"}},{"kind":"Field","name":{"kind":"Name","value":"totalPayrolls"}},{"kind":"Field","name":{"kind":"Name","value":"completedPayrolls"}},{"kind":"Field","name":{"kind":"Name","value":"pendingPayrollIds"}},{"kind":"Field","name":{"kind":"Name","value":"totalPayrollDates"}},{"kind":"Field","name":{"kind":"Name","value":"completedPayrollDates"}},{"kind":"Field","name":{"kind":"Name","value":"pendingPayrollDateIds"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"tier1BillingGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"tier2BillingGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"tier3BillingGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"firstPayrollCompletedAt"}},{"kind":"Field","name":{"kind":"Name","value":"lastPayrollCompletedAt"}},{"kind":"Field","name":{"kind":"Name","value":"billingReadyAt"}},{"kind":"Field","name":{"kind":"Name","value":"billingGeneratedAt"}},{"kind":"Field","name":{"kind":"Name","value":"completionNotes"}},{"kind":"Field","name":{"kind":"Name","value":"autoBillingEnabled"}},{"kind":"Field","name":{"kind":"Name","value":"overrideCompletionDate"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<UpdateMonthlyBillingCompletionMutation, UpdateMonthlyBillingCompletionMutationVariables>;
+export const OverrideMonthlyBillingCompletionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"OverrideMonthlyBillingCompletion"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"billingMonth"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"overrideCompletionDate"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"completionNotes"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateMonthlyBillingCompletion"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"billingMonth"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"billingMonth"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"StringValue","value":"ready_to_bill","block":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"overrideCompletionDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"overrideCompletionDate"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"completionNotes"},"value":{"kind":"Variable","name":{"kind":"Name","value":"completionNotes"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"billingReadyAt"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"affectedRows"}},{"kind":"Field","name":{"kind":"Name","value":"returning"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"MonthlyBillingCompletionFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MonthlyBillingCompletionFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MonthlyBillingCompletion"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"billingMonth"}},{"kind":"Field","name":{"kind":"Name","value":"billingPeriodId"}},{"kind":"Field","name":{"kind":"Name","value":"totalPayrolls"}},{"kind":"Field","name":{"kind":"Name","value":"completedPayrolls"}},{"kind":"Field","name":{"kind":"Name","value":"pendingPayrollIds"}},{"kind":"Field","name":{"kind":"Name","value":"totalPayrollDates"}},{"kind":"Field","name":{"kind":"Name","value":"completedPayrollDates"}},{"kind":"Field","name":{"kind":"Name","value":"pendingPayrollDateIds"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"tier1BillingGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"tier2BillingGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"tier3BillingGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"firstPayrollCompletedAt"}},{"kind":"Field","name":{"kind":"Name","value":"lastPayrollCompletedAt"}},{"kind":"Field","name":{"kind":"Name","value":"billingReadyAt"}},{"kind":"Field","name":{"kind":"Name","value":"billingGeneratedAt"}},{"kind":"Field","name":{"kind":"Name","value":"completionNotes"}},{"kind":"Field","name":{"kind":"Name","value":"autoBillingEnabled"}},{"kind":"Field","name":{"kind":"Name","value":"overrideCompletionDate"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<OverrideMonthlyBillingCompletionMutation, OverrideMonthlyBillingCompletionMutationVariables>;
+export const AddTimeEntryWithCostDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AddTimeEntryWithCost"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollDateTimeEntriesInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertPayrollDateTimeEntriesOne"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TimeEntryWithCostFragment"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TimeEntryWithCostFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollDateTimeEntries"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollDateId"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"timeSpentMinutes"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"workDate"}},{"kind":"Field","name":{"kind":"Name","value":"hourlyRateUsed"}},{"kind":"Field","name":{"kind":"Name","value":"totalCost"}},{"kind":"Field","name":{"kind":"Name","value":"costCenter"}},{"kind":"Field","name":{"kind":"Name","value":"isBillable"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<AddTimeEntryWithCostMutation, AddTimeEntryWithCostMutationVariables>;
+export const UpdateServiceBillingTierDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateServiceBillingTier"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"billingTier"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"billing_tier_level"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"tierPriority"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"100"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"requiresPayrollCompletion"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}},"defaultValue":{"kind":"BooleanValue","value":false}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"requiresMonthlyCompletion"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}},"defaultValue":{"kind":"BooleanValue","value":true}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateServicesByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"billingTier"},"value":{"kind":"Variable","name":{"kind":"Name","value":"billingTier"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"tierPriority"},"value":{"kind":"Variable","name":{"kind":"Name","value":"tierPriority"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"requiresPayrollCompletion"},"value":{"kind":"Variable","name":{"kind":"Name","value":"requiresPayrollCompletion"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"requiresMonthlyCompletion"},"value":{"kind":"Variable","name":{"kind":"Name","value":"requiresMonthlyCompletion"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ServiceWithTierFragment"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ServiceWithTierFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Services"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"defaultRate"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"serviceType"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isTemplate"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"}},{"kind":"Field","name":{"kind":"Name","value":"pricingRules"}},{"kind":"Field","name":{"kind":"Name","value":"dependencies"}},{"kind":"Field","name":{"kind":"Name","value":"billingTier"}},{"kind":"Field","name":{"kind":"Name","value":"tierPriority"}},{"kind":"Field","name":{"kind":"Name","value":"requiresPayrollCompletion"}},{"kind":"Field","name":{"kind":"Name","value":"requiresMonthlyCompletion"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"updatedBy"}}]}}]} as unknown as DocumentNode<UpdateServiceBillingTierMutation, UpdateServiceBillingTierMutationVariables>;
+export const MonthlyBillingDashboardSubscriptionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"MonthlyBillingDashboardSubscription"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"billingMonth"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"monthlyBillingDashboard"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"billingMonth"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"billingMonth"}}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"billingMonth"},"value":{"kind":"EnumValue","value":"DESC"}}]}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"MonthlyBillingDashboardFragment"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MonthlyBillingDashboardFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MonthlyBillingDashboard"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"clientName"}},{"kind":"Field","name":{"kind":"Name","value":"billingMonth"}},{"kind":"Field","name":{"kind":"Name","value":"billingMonthDisplay"}},{"kind":"Field","name":{"kind":"Name","value":"totalPayrolls"}},{"kind":"Field","name":{"kind":"Name","value":"completedPayrolls"}},{"kind":"Field","name":{"kind":"Name","value":"totalPayrollDates"}},{"kind":"Field","name":{"kind":"Name","value":"completedPayrollDates"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"tier1BillingGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"tier2BillingGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"tier3BillingGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"billingReadyAt"}},{"kind":"Field","name":{"kind":"Name","value":"billingGeneratedAt"}},{"kind":"Field","name":{"kind":"Name","value":"completionPercentage"}},{"kind":"Field","name":{"kind":"Name","value":"daysReadyForBilling"}},{"kind":"Field","name":{"kind":"Name","value":"billingItemsCount"}},{"kind":"Field","name":{"kind":"Name","value":"totalBillingAmount"}},{"kind":"Field","name":{"kind":"Name","value":"activeServiceAgreements"}}]}}]} as unknown as DocumentNode<MonthlyBillingDashboardSubscriptionSubscription, MonthlyBillingDashboardSubscriptionSubscriptionVariables>;
+export const PayrollServiceAgreementsSubscriptionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"PayrollServiceAgreementsSubscription"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreements"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollServiceAgreementFragment"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollServiceAgreementFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollServiceAgreements"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreementId"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"customQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"customDescription"}},{"kind":"Field","name":{"kind":"Name","value":"isOneTime"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"billingFrequency"}},{"kind":"Field","name":{"kind":"Name","value":"autoBillingEnabled"}},{"kind":"Field","name":{"kind":"Name","value":"billingNotes"}},{"kind":"Field","name":{"kind":"Name","value":"billingItemsGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"generatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"generatedBy"}},{"kind":"Field","name":{"kind":"Name","value":"serviceConfiguration"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}}]}}]} as unknown as DocumentNode<PayrollServiceAgreementsSubscriptionSubscription, PayrollServiceAgreementsSubscriptionSubscriptionVariables>;
+export const TimeEntriesWithCostSubscriptionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"TimeEntriesWithCostSubscription"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrollDateTimeEntries"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDateId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"workDate"},"value":{"kind":"EnumValue","value":"DESC"}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TimeEntryWithCostFragment"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TimeEntryWithCostFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollDateTimeEntries"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollDateId"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"timeSpentMinutes"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"workDate"}},{"kind":"Field","name":{"kind":"Name","value":"hourlyRateUsed"}},{"kind":"Field","name":{"kind":"Name","value":"totalCost"}},{"kind":"Field","name":{"kind":"Name","value":"costCenter"}},{"kind":"Field","name":{"kind":"Name","value":"isBillable"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<TimeEntriesWithCostSubscriptionSubscription, TimeEntriesWithCostSubscriptionSubscriptionVariables>;
 export const GetBillingItemsAdvancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetBillingItemsAdvanced"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"50"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"0"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"BillingItemsBoolExp"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BillingItemsOrderBy"}}}},"defaultValue":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"billingItems"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}},{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"BillingItemWithRelations"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BillingItemCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BillingItems"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"unitPrice"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"approvalDate"}},{"kind":"Field","name":{"kind":"Name","value":"isApproved"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"staffUserId"}},{"kind":"Field","name":{"kind":"Name","value":"approvedBy"}},{"kind":"Field","name":{"kind":"Name","value":"confirmedAt"}},{"kind":"Field","name":{"kind":"Name","value":"confirmedBy"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceName"}},{"kind":"Field","name":{"kind":"Name","value":"hourlyRate"}},{"kind":"Field","name":{"kind":"Name","value":"invoiceId"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BillingItemWithRelations"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BillingItems"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"BillingItemCore"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"contactEmail"}}]}},{"kind":"Field","name":{"kind":"Name","value":"staffUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"Field","name":{"kind":"Name","value":"approvedByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"defaultRate"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"serviceType"}}]}}]}}]} as unknown as DocumentNode<GetBillingItemsAdvancedQuery, GetBillingItemsAdvancedQueryVariables>;
 export const GetBillingItemByIdAdvancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetBillingItemByIdAdvanced"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"billingItemsByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"BillingItemWithRelations"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BillingItemCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BillingItems"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"unitPrice"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"approvalDate"}},{"kind":"Field","name":{"kind":"Name","value":"isApproved"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"staffUserId"}},{"kind":"Field","name":{"kind":"Name","value":"approvedBy"}},{"kind":"Field","name":{"kind":"Name","value":"confirmedAt"}},{"kind":"Field","name":{"kind":"Name","value":"confirmedBy"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceName"}},{"kind":"Field","name":{"kind":"Name","value":"hourlyRate"}},{"kind":"Field","name":{"kind":"Name","value":"invoiceId"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BillingItemWithRelations"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BillingItems"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"BillingItemCore"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"contactEmail"}}]}},{"kind":"Field","name":{"kind":"Name","value":"staffUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"Field","name":{"kind":"Name","value":"approvedByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"defaultRate"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"serviceType"}}]}}]}}]} as unknown as DocumentNode<GetBillingItemByIdAdvancedQuery, GetBillingItemByIdAdvancedQueryVariables>;
 export const GetBillingItemsStatsAdvancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetBillingItemsStatsAdvanced"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"BillingItemsBoolExp"}},"defaultValue":{"kind":"ObjectValue","fields":[]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"billingItemsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"BillingItemStats"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"pending"},"name":{"kind":"Name","value":"billingItemsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"Variable","name":{"kind":"Name","value":"where"}},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"pending","block":false}}]}}]}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"BillingItemStats"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"approved"},"name":{"kind":"Name","value":"billingItemsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"Variable","name":{"kind":"Name","value":"where"}},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"approved","block":false}}]}}]}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"BillingItemStats"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"rejected"},"name":{"kind":"Name","value":"billingItemsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"Variable","name":{"kind":"Name","value":"where"}},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"rejected","block":false}}]}}]}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"BillingItemStats"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BillingItemStats"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BillingItemsAggregate"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}}]}},{"kind":"Field","name":{"kind":"Name","value":"avg"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}}]}}]}}]}}]} as unknown as DocumentNode<GetBillingItemsStatsAdvancedQuery, GetBillingItemsStatsAdvancedQueryVariables>;
