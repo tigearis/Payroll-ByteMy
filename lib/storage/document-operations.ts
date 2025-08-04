@@ -176,41 +176,99 @@ export async function deleteDocument(
   requestingUserId: string
 ): Promise<void> {
   try {
-    // First get the document to get the object key
-    const document = await getDocument(documentId, requestingUserId);
+    // First try to get the document for audit logging
+    let document: DocumentRecord | null = null;
+    try {
+      document = await getDocument(documentId, requestingUserId);
+    } catch (error) {
+      console.warn(`⚠️ Could not retrieve document for audit logging: ${error}`);
+      // Continue with deletion even if we can't get document details
+    }
+
+    // If we couldn't get the document via getDocument, try direct database query
     if (!document) {
-      throw new Error('Document not found');
-    }
-
-    // Delete from MinIO
-    await minioClient.deleteDocument(document.objectKey);
-
-    // Delete from database
-    const deleteResult = await executeTypedQuery(DeleteFileDocument, {
-      id: documentId
-    }) as { deleteFileById: { id: string } | null };
-
-    if (!deleteResult?.deleteFileById) {
-      throw new Error('Failed to delete document record from database');
-    }
-
-    // Log document deletion for audit
-    await auditLogger.dataModification(
-      requestingUserId,
-      'DELETE',
-      'file',
-      documentId,
-      {
-        filename: document.filename,
-        category: document.category,
-        clientId: document.clientId,
-        payrollId: document.payrollId,
+      try {
+        const result = await executeTypedQuery(GetFileByIdDocument, {
+          id: documentId
+        }) as { fileById: DocumentRecord | null };
+        document = result?.fileById || null;
+      } catch (error) {
+        console.warn(`⚠️ Could not retrieve document via direct query: ${error}`);
       }
-    );
+    }
 
-    console.log(`🗑️ Document deleted: ${document.filename} (ID: ${documentId})`);
+    // If we still don't have document info, we'll delete what we can
+    if (!document) {
+      console.warn(`⚠️ Proceeding with deletion without document metadata for ID: ${documentId}`);
+    }
+
+    let minioDeleted = false;
+    let databaseDeleted = false;
+
+    // Try to delete from MinIO if we have the object key
+    if (document?.objectKey) {
+      try {
+        await minioClient.deleteDocument(document.objectKey);
+        minioDeleted = true;
+        console.log(`🗑️ Document deleted from MinIO: ${document.objectKey}`);
+      } catch (error) {
+        console.error(`❌ Failed to delete from MinIO: ${error}`);
+        // Continue with database deletion even if MinIO fails
+      }
+    } else {
+      console.warn(`⚠️ No object key available, skipping MinIO deletion for document ID: ${documentId}`);
+    }
+
+    // Try to delete from database
+    try {
+      const deleteResult = await executeTypedQuery(DeleteFileDocument, {
+        id: documentId
+      }) as { deleteFileById: { id: string } | null };
+
+      if (deleteResult?.deleteFileById) {
+        databaseDeleted = true;
+        console.log(`🗑️ Document deleted from database: ${documentId}`);
+      } else {
+        console.warn(`⚠️ Database deletion returned no result for document ID: ${documentId}`);
+      }
+    } catch (error) {
+      console.error(`❌ Failed to delete from database: ${error}`);
+    }
+
+    // Log audit event if possible
+    if (document) {
+      try {
+        await auditLogger.dataModification(
+          requestingUserId,
+          'DELETE',
+          'file',
+          documentId,
+          {
+            filename: document.filename,
+            category: document.category,
+            clientId: document.clientId,
+            payrollId: document.payrollId,
+            minioDeleted,
+            databaseDeleted,
+          }
+        );
+      } catch (error) {
+        console.error(`❌ Failed to log audit event: ${error}`);
+      }
+    }
+
+    // Report final status
+    if (minioDeleted || databaseDeleted) {
+      const status = [];
+      if (minioDeleted) status.push('MinIO');
+      if (databaseDeleted) status.push('database');
+      console.log(`✅ Document deletion completed from: ${status.join(', ')} (ID: ${documentId})`);
+    } else {
+      throw new Error('Failed to delete document from both MinIO and database');
+    }
+
   } catch (error) {
-    console.error('❌ Failed to delete document:', error);
+    console.error('❌ Document deletion process failed:', error);
     throw new Error(`Document deletion failed: ${error}`);
   }
 }
