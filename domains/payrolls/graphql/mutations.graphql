@@ -440,6 +440,7 @@ mutation CompletePayrollDateWithTime(
       completedAt: "now()"
       completedBy: $completedBy
       completionNotes: $completionNotes
+      totalTimeSpentMinutes: $timeSpentMinutes
     }
   ) {
     id
