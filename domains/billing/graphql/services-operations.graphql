@@ -137,12 +137,11 @@ query GetserviceTemplates($isPublic: Boolean) {
   }
 }
 
-# Get client service agreements
-query GetNewclientServiceAgreements($clientId: uuid, $serviceId: uuid) {
+# Get client service agreements  
+query GetNewclientServiceAgreements($clientId: uuid) {
   clientServiceAgreements(
     where: { 
       clientId: { _eq: $clientId }
-      serviceId: { _eq: $serviceId }
       isActive: { _eq: true }
     }
   ) {
