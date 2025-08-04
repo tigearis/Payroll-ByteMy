@@ -426,6 +426,67 @@ mutation UpdatePayrollDateStatus($id: uuid!, $status: String!, $updatedBy: uuid)
   }
 }
 
+# Complete payroll date with time tracking
+mutation CompletePayrollDateWithTime(
+  $id: uuid!
+  $completedBy: uuid!
+  $timeSpentMinutes: Int = 0
+  $completionNotes: String
+) {
+  updatePayrollDatesByPk(
+    pkColumns: { id: $id }
+    _set: { 
+      status: "completed"
+      completedAt: "now()"
+      completedBy: $completedBy
+      completionNotes: $completionNotes
+    }
+  ) {
+    id
+    status
+    completedAt
+    completedBy
+    totalTimeSpentMinutes
+    completionNotes
+    payrollId
+    originalEftDate
+    adjustedEftDate
+    processingDate
+  }
+}
+
+# Add time entry for payroll date work
+mutation AddPayrollDateTimeEntry(
+  $payrollDateId: uuid!
+  $userId: uuid!
+  $timeSpentMinutes: Int!
+  $description: String
+  $workDate: date
+) {
+  insertPayrollDateTimeEntriesOne(
+    object: {
+      payrollDateId: $payrollDateId
+      userId: $userId
+      timeSpentMinutes: $timeSpentMinutes
+      description: $description
+      workDate: $workDate
+    }
+    onConflict: {
+      constraint: payroll_date_time_entries_payroll_date_id_user_id_work_date_key
+      updateColumns: [timeSpentMinutes, description, updatedAt]
+    }
+  ) {
+    id
+    payrollDateId
+    userId
+    timeSpentMinutes
+    description
+    workDate
+    createdAt
+    updatedAt
+  }
+}
+
 mutation BulkCreatePayrollDates($objects: [PayrollDatesInsertInput!]!) {
   insertPayrollDates(objects: $objects) {
     returning {

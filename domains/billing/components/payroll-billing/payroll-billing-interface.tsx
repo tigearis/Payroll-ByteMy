@@ -15,7 +15,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { useDatabaseUserId } from '@/hooks/use-database-user-id';
 import { 
-  GetPayrollBillingStatusDocument,
+  GetPayrollByIdForBillingDocumentDocument,
   GetNewclientServiceAgreementsDocument,
   CreateBillingItemAdvancedDocument
 } from '../../graphql/generated/graphql';
@@ -48,16 +48,17 @@ export const PayrollBillingInterface: React.FC<PayrollBillingInterfaceProps> = (
   const [showTimeModal, setShowTimeModal] = useState(false);
   const [timeEntries, setTimeEntries] = useState<any[]>([]);
 
-  // Real GraphQL queries - filter by payroll ID to get the specific payroll
-  const { data: payrollData, loading: payrollLoading } = useQuery(GetPayrollBillingStatusDocument, {
+  // Real GraphQL queries - get the specific payroll by ID
+  const { data: payrollData, loading: payrollLoading } = useQuery(GetPayrollByIdForBillingDocumentDocument, {
+    variables: { payrollId },
     fetchPolicy: "cache-and-network"
   });
 
   const { data: servicesData, loading: servicesLoading } = useQuery(GetNewclientServiceAgreementsDocument, {
     variables: { 
-      ...(payrollData?.payrolls?.[0]?.clientId && { clientId: payrollData.payrolls[0].clientId })
+      ...(payrollData?.payrollsByPk?.clientId && { clientId: payrollData.payrollsByPk.clientId })
     },
-    skip: !payrollData?.payrolls?.[0]?.clientId,
+    skip: !payrollData?.payrollsByPk?.clientId,
     fetchPolicy: "cache-and-network"
   });
 
@@ -72,8 +73,8 @@ export const PayrollBillingInterface: React.FC<PayrollBillingInterfaceProps> = (
     }
   });
 
-  // Find the specific payroll by ID from the results
-  const payroll = payrollData?.payrolls?.find(p => p.id === payrollId);
+  // Get the specific payroll from the single record query
+  const payroll = payrollData?.payrollsByPk;
   const clientServices = servicesData?.clientServiceAgreements || [];
 
   // Calculate auto-quantities based on payroll data and service type

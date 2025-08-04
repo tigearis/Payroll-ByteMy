@@ -326,10 +326,73 @@ mutation CompletePayrollDate($id: uuid!, $completedBy: uuid!) {
     status
     completedAt
     completedBy
+    totalTimeSpentMinutes
+    completionNotes
     payrollId
     originalEftDate
     adjustedEftDate
     processingDate
+  }
+}
+
+# Complete payroll date with time tracking
+mutation CompletePayrollDateWithTime(
+  $id: uuid!
+  $completedBy: uuid!
+  $timeSpentMinutes: Int = 0
+  $completionNotes: String
+) {
+  updatePayrollDatesByPk(
+    pkColumns: { id: $id }
+    _set: { 
+      status: "completed"
+      completedAt: "now()"
+      completedBy: $completedBy
+      completionNotes: $completionNotes
+    }
+  ) {
+    id
+    status
+    completedAt
+    completedBy
+    totalTimeSpentMinutes
+    completionNotes
+    payrollId
+    originalEftDate
+    adjustedEftDate
+    processingDate
+  }
+}
+
+# Add time entry for payroll date work
+mutation AddPayrollDateTimeEntry(
+  $payrollDateId: uuid!
+  $userId: uuid!
+  $timeSpentMinutes: Int!
+  $description: String
+  $workDate: date
+) {
+  insertPayrollDateTimeEntriesOne(
+    object: {
+      payrollDateId: $payrollDateId
+      userId: $userId
+      timeSpentMinutes: $timeSpentMinutes
+      description: $description
+      workDate: $workDate
+    }
+    onConflict: {
+      constraint: payroll_date_time_entries_payroll_date_id_user_id_work_date_key
+      updateColumns: [timeSpentMinutes, description, updatedAt]
+    }
+  ) {
+    id
+    payrollDateId
+    userId
+    timeSpentMinutes
+    description
+    workDate
+    createdAt
+    updatedAt
   }
 }
 
@@ -596,6 +659,36 @@ query GetTimeEntriesForBillingDocument(
 # Time Entry Operations (removed fields that don't exist in schema)
 
 # Payroll Integration Operations for Billing System
+
+# Get a specific payroll by ID for billing interface
+query GetPayrollByIdForBillingDocument($payrollId: uuid!) {
+  payrollsByPk(id: $payrollId) {
+    id
+    name
+    clientId
+    billingStatus
+    payslipCount
+    employeeCount
+    newEmployees
+    terminatedEmployees
+    estimatedRevenue
+    actualRevenue
+    estimatedHours
+    actualHours
+    profitMargin
+    lastBilledDate
+    client {
+      id
+      name
+    }
+    billingItems(where: { status: { _neq: "draft" } }) {
+      id
+      amount
+      status
+    }
+  }
+}
+
 query GetPayrollDatesWithBillingStatusDocument(
   $limit: Int = 50
   $offset: Int = 0
@@ -621,6 +714,8 @@ query GetPayrollDatesWithBillingStatusDocument(
     status
     completedAt
     completedBy
+    totalTimeSpentMinutes
+    completionNotes
     notes
     createdAt
     updatedAt

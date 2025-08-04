@@ -4,9 +4,10 @@ import { uploadDocument, validateFileUpload } from '@/lib/storage/document-opera
 
 interface DocumentUploadResponse {
   success: boolean;
-  document?: any;
+  document?: any | any[]; // Can be single document or array for multi-upload
   message?: string;
   error?: string;
+  errors?: string[]; // For partial failures in multi-upload
 }
 
 /**
@@ -18,7 +19,18 @@ interface DocumentUploadResponse {
 export const POST = withAuth(async (req: NextRequest, session) => {
   try {
     const formData = await req.formData();
-    const file = formData.get('document') as File || formData.get('file') as File;
+    
+    // Handle both single and multiple file uploads
+    const files: File[] = [];
+    const documentFiles = formData.getAll('document') as File[];
+    const fileFiles = formData.getAll('file') as File[];
+    
+    // Combine both possible field names
+    files.push(...documentFiles, ...fileFiles);
+    
+    // Filter out non-File entries (in case form data contains other types)
+    const validFiles = files.filter(f => f instanceof File && f.size > 0);
+    
     const clientId = formData.get('clientId') as string | null;
     const payrollId = formData.get('payrollId') as string | null;
     const category = formData.get('category') as string | null;
@@ -27,9 +39,9 @@ export const POST = withAuth(async (req: NextRequest, session) => {
     const replaceDocumentId = formData.get('replaceDocumentId') as string | null;
 
     // Validate required fields
-    if (!file) {
+    if (validFiles.length === 0) {
       return NextResponse.json<DocumentUploadResponse>(
-        { success: false, error: 'No document provided' },
+        { success: false, error: 'No valid documents provided' },
         { status: 400 }
       );
     }
@@ -60,11 +72,21 @@ export const POST = withAuth(async (req: NextRequest, session) => {
       }
     }
 
-    // Validate file
-    const validation = validateFileUpload(file);
-    if (!validation.isValid) {
+    // Validate all files
+    const validationErrors: string[] = [];
+    for (const file of validFiles) {
+      const validation = validateFileUpload(file);
+      if (!validation.isValid) {
+        validationErrors.push(`${file.name}: ${validation.error}`);
+      }
+    }
+
+    if (validationErrors.length > 0) {
       return NextResponse.json<DocumentUploadResponse>(
-        { success: false, error: validation.error || 'File validation failed' },
+        { 
+          success: false, 
+          error: `File validation failed: ${validationErrors.join(', ')}` 
+        },
         { status: 400 }
       );
     }
@@ -82,10 +104,18 @@ export const POST = withAuth(async (req: NextRequest, session) => {
       );
     }
 
-    // Convert file to buffer
-    const fileBuffer = Buffer.from(await file.arrayBuffer());
-
+    // Handle single file replacement (only works with one file)
     if (replaceDocumentId) {
+      if (validFiles.length > 1) {
+        return NextResponse.json<DocumentUploadResponse>(
+          { success: false, error: 'Document replacement only supports single file upload' },
+          { status: 400 }
+        );
+      }
+
+      const file = validFiles[0];
+      // Convert file to buffer
+      const fileBuffer = Buffer.from(await file.arrayBuffer());
       console.log(`🔄 Replacing document: ${replaceDocumentId} with ${file.name} (${file.size} bytes)`);
       console.log(`👤 Replaced by: ${session.userId} (${userRole})`);
 
@@ -128,33 +158,67 @@ export const POST = withAuth(async (req: NextRequest, session) => {
         message: 'Document replaced successfully',
       });
     } else {
-      console.log(`📄 Uploading document: ${file.name} (${file.size} bytes)`);
+      // Multi-file upload handling
+      console.log(`📄 Uploading ${validFiles.length} document(s)`);
       console.log(`👤 Uploaded by: ${session.userId} (${userRole})`);
       console.log(`🏢 Client: ${clientId || 'none'}, 💼 Payroll: ${payrollId || 'none'}`);
 
-      // Upload document
-      const uploadOptions: any = {
-        filename: file.name,
-        fileBuffer,
-        category: (category as any) || 'other',
-        isPublic,
-        metadata,
-        uploadedBy: session.databaseId || session.userId || 'anonymous',
-      };
-      
-      if (clientId) {
-        uploadOptions.clientId = clientId;
+      const uploadResults: any[] = [];
+      const errors: string[] = [];
+
+      // Process each file
+      for (const file of validFiles) {
+        try {
+          // Convert file to buffer
+          const fileBuffer = Buffer.from(await file.arrayBuffer());
+
+          // Upload document
+          const uploadOptions: any = {
+            filename: file.name,
+            fileBuffer,
+            category: (category as any) || 'other',
+            isPublic,
+            metadata,
+            uploadedBy: session.databaseId || session.userId || 'anonymous',
+          };
+          
+          if (clientId) {
+            uploadOptions.clientId = clientId;
+          }
+          if (payrollId) {
+            uploadOptions.payrollId = payrollId;
+          }
+          
+          const document = await uploadDocument(uploadOptions);
+          uploadResults.push(document);
+          console.log(`✅ Successfully uploaded: ${file.name}`);
+        } catch (error) {
+          const errorMessage = `Failed to upload ${file.name}: ${error}`;
+          errors.push(errorMessage);
+          console.error(`❌ ${errorMessage}`);
+        }
       }
-      if (payrollId) {
-        uploadOptions.payrollId = payrollId;
+
+      // Return results
+      if (uploadResults.length === 0) {
+        return NextResponse.json<DocumentUploadResponse>(
+          {
+            success: false,
+            error: `All uploads failed: ${errors.join(', ')}`,
+          },
+          { status: 500 }
+        );
       }
-      
-      const document = await uploadDocument(uploadOptions);
+
+      const message = validFiles.length === 1 
+        ? 'Document uploaded successfully'
+        : `${uploadResults.length} of ${validFiles.length} documents uploaded successfully`;
 
       return NextResponse.json<DocumentUploadResponse>({
         success: true,
-        document,
-        message: 'Document uploaded successfully',
+        document: uploadResults.length === 1 ? uploadResults[0] : uploadResults,
+        message,
+        ...(errors.length > 0 && { errors }),
       });
     }
 

@@ -11404,6 +11404,21 @@ input InvitationStatusEnumComparisonExp {
   _nin: [invitation_status_enum!]
 }
 
+"""
+Boolean expression to compare columns of type "json". All fields are combined with logical 'AND'.
+"""
+input JsonComparisonExp {
+  _eq: json
+  _gt: json
+  _gte: json
+  _in: [json!]
+  _isNull: Boolean
+  _lt: json
+  _lte: json
+  _neq: json
+  _nin: [json!]
+}
+
 input JsonbCastExp {
   String: StringComparisonExp
 }
@@ -13889,6 +13904,707 @@ type PayrollDashboardStatsVarianceFields {
 }
 
 """
+Comprehensive analytics view for payroll date completion, time tracking, and cost/revenue analysis
+"""
+type PayrollDateCompletionAnalytics {
+  adjustedEftDate: date
+  clientId: uuid
+  clientName: String
+  completedAt: timestamptz
+  completedBy: uuid
+  completedByName: String
+  completionNotes: String
+  estimatedCost: numeric
+  estimatedProfit: numeric
+  id: uuid
+  originalEftDate: date
+  payrollId: uuid
+  payrollName: String
+  processingDate: date
+  status: String
+  timeBreakdown(
+    """JSON select path"""
+    path: String
+  ): json
+  totalHoursSpent: numeric
+  totalRevenue: numeric
+  totalTimeSpentMinutes: Int
+}
+
+"""
+aggregated selection of "payroll_date_completion_analytics"
+"""
+type PayrollDateCompletionAnalyticsAggregate {
+  aggregate: PayrollDateCompletionAnalyticsAggregateFields
+  nodes: [PayrollDateCompletionAnalytics!]!
+}
+
+"""
+aggregate fields of "payroll_date_completion_analytics"
+"""
+type PayrollDateCompletionAnalyticsAggregateFields {
+  avg: PayrollDateCompletionAnalyticsAvgFields
+  count(columns: [PayrollDateCompletionAnalyticsSelectColumn!], distinct: Boolean): Int!
+  max: PayrollDateCompletionAnalyticsMaxFields
+  min: PayrollDateCompletionAnalyticsMinFields
+  stddev: PayrollDateCompletionAnalyticsStddevFields
+  stddevPop: PayrollDateCompletionAnalyticsStddevPopFields
+  stddevSamp: PayrollDateCompletionAnalyticsStddevSampFields
+  sum: PayrollDateCompletionAnalyticsSumFields
+  varPop: PayrollDateCompletionAnalyticsVarPopFields
+  varSamp: PayrollDateCompletionAnalyticsVarSampFields
+  variance: PayrollDateCompletionAnalyticsVarianceFields
+}
+
+"""aggregate avg on columns"""
+type PayrollDateCompletionAnalyticsAvgFields {
+  estimatedCost: Float
+  estimatedProfit: Float
+  totalHoursSpent: Float
+  totalRevenue: Float
+  totalTimeSpentMinutes: Float
+}
+
+"""
+Boolean expression to filter rows from the table "payroll_date_completion_analytics". All fields are combined with a logical 'AND'.
+"""
+input PayrollDateCompletionAnalyticsBoolExp {
+  _and: [PayrollDateCompletionAnalyticsBoolExp!]
+  _not: PayrollDateCompletionAnalyticsBoolExp
+  _or: [PayrollDateCompletionAnalyticsBoolExp!]
+  adjustedEftDate: DateComparisonExp
+  clientId: UuidComparisonExp
+  clientName: StringComparisonExp
+  completedAt: TimestamptzComparisonExp
+  completedBy: UuidComparisonExp
+  completedByName: StringComparisonExp
+  completionNotes: StringComparisonExp
+  estimatedCost: NumericComparisonExp
+  estimatedProfit: NumericComparisonExp
+  id: UuidComparisonExp
+  originalEftDate: DateComparisonExp
+  payrollId: UuidComparisonExp
+  payrollName: StringComparisonExp
+  processingDate: DateComparisonExp
+  status: StringComparisonExp
+  timeBreakdown: JsonComparisonExp
+  totalHoursSpent: NumericComparisonExp
+  totalRevenue: NumericComparisonExp
+  totalTimeSpentMinutes: IntComparisonExp
+}
+
+"""aggregate max on columns"""
+type PayrollDateCompletionAnalyticsMaxFields {
+  adjustedEftDate: date
+  clientId: uuid
+  clientName: String
+  completedAt: timestamptz
+  completedBy: uuid
+  completedByName: String
+  completionNotes: String
+  estimatedCost: numeric
+  estimatedProfit: numeric
+  id: uuid
+  originalEftDate: date
+  payrollId: uuid
+  payrollName: String
+  processingDate: date
+  status: String
+  totalHoursSpent: numeric
+  totalRevenue: numeric
+  totalTimeSpentMinutes: Int
+}
+
+"""aggregate min on columns"""
+type PayrollDateCompletionAnalyticsMinFields {
+  adjustedEftDate: date
+  clientId: uuid
+  clientName: String
+  completedAt: timestamptz
+  completedBy: uuid
+  completedByName: String
+  completionNotes: String
+  estimatedCost: numeric
+  estimatedProfit: numeric
+  id: uuid
+  originalEftDate: date
+  payrollId: uuid
+  payrollName: String
+  processingDate: date
+  status: String
+  totalHoursSpent: numeric
+  totalRevenue: numeric
+  totalTimeSpentMinutes: Int
+}
+
+"""
+Ordering options when selecting data from "payroll_date_completion_analytics".
+"""
+input PayrollDateCompletionAnalyticsOrderBy {
+  adjustedEftDate: OrderBy
+  clientId: OrderBy
+  clientName: OrderBy
+  completedAt: OrderBy
+  completedBy: OrderBy
+  completedByName: OrderBy
+  completionNotes: OrderBy
+  estimatedCost: OrderBy
+  estimatedProfit: OrderBy
+  id: OrderBy
+  originalEftDate: OrderBy
+  payrollId: OrderBy
+  payrollName: OrderBy
+  processingDate: OrderBy
+  status: OrderBy
+  timeBreakdown: OrderBy
+  totalHoursSpent: OrderBy
+  totalRevenue: OrderBy
+  totalTimeSpentMinutes: OrderBy
+}
+
+"""
+select columns of table "payroll_date_completion_analytics"
+"""
+enum PayrollDateCompletionAnalyticsSelectColumn {
+  """column name"""
+  adjustedEftDate
+  """column name"""
+  clientId
+  """column name"""
+  clientName
+  """column name"""
+  completedAt
+  """column name"""
+  completedBy
+  """column name"""
+  completedByName
+  """column name"""
+  completionNotes
+  """column name"""
+  estimatedCost
+  """column name"""
+  estimatedProfit
+  """column name"""
+  id
+  """column name"""
+  originalEftDate
+  """column name"""
+  payrollId
+  """column name"""
+  payrollName
+  """column name"""
+  processingDate
+  """column name"""
+  status
+  """column name"""
+  timeBreakdown
+  """column name"""
+  totalHoursSpent
+  """column name"""
+  totalRevenue
+  """column name"""
+  totalTimeSpentMinutes
+}
+
+"""aggregate stddev on columns"""
+type PayrollDateCompletionAnalyticsStddevFields {
+  estimatedCost: Float
+  estimatedProfit: Float
+  totalHoursSpent: Float
+  totalRevenue: Float
+  totalTimeSpentMinutes: Float
+}
+
+"""aggregate stddevPop on columns"""
+type PayrollDateCompletionAnalyticsStddevPopFields {
+  estimatedCost: Float
+  estimatedProfit: Float
+  totalHoursSpent: Float
+  totalRevenue: Float
+  totalTimeSpentMinutes: Float
+}
+
+"""aggregate stddevSamp on columns"""
+type PayrollDateCompletionAnalyticsStddevSampFields {
+  estimatedCost: Float
+  estimatedProfit: Float
+  totalHoursSpent: Float
+  totalRevenue: Float
+  totalTimeSpentMinutes: Float
+}
+
+"""
+Streaming cursor of the table "payroll_date_completion_analytics"
+"""
+input PayrollDateCompletionAnalyticsStreamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: PayrollDateCompletionAnalyticsStreamCursorValueInput!
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input PayrollDateCompletionAnalyticsStreamCursorValueInput {
+  adjustedEftDate: date
+  clientId: uuid
+  clientName: String
+  completedAt: timestamptz
+  completedBy: uuid
+  completedByName: String
+  completionNotes: String
+  estimatedCost: numeric
+  estimatedProfit: numeric
+  id: uuid
+  originalEftDate: date
+  payrollId: uuid
+  payrollName: String
+  processingDate: date
+  status: String
+  timeBreakdown: json
+  totalHoursSpent: numeric
+  totalRevenue: numeric
+  totalTimeSpentMinutes: Int
+}
+
+"""aggregate sum on columns"""
+type PayrollDateCompletionAnalyticsSumFields {
+  estimatedCost: numeric
+  estimatedProfit: numeric
+  totalHoursSpent: numeric
+  totalRevenue: numeric
+  totalTimeSpentMinutes: Int
+}
+
+"""aggregate varPop on columns"""
+type PayrollDateCompletionAnalyticsVarPopFields {
+  estimatedCost: Float
+  estimatedProfit: Float
+  totalHoursSpent: Float
+  totalRevenue: Float
+  totalTimeSpentMinutes: Float
+}
+
+"""aggregate varSamp on columns"""
+type PayrollDateCompletionAnalyticsVarSampFields {
+  estimatedCost: Float
+  estimatedProfit: Float
+  totalHoursSpent: Float
+  totalRevenue: Float
+  totalTimeSpentMinutes: Float
+}
+
+"""aggregate variance on columns"""
+type PayrollDateCompletionAnalyticsVarianceFields {
+  estimatedCost: Float
+  estimatedProfit: Float
+  totalHoursSpent: Float
+  totalRevenue: Float
+  totalTimeSpentMinutes: Float
+}
+
+"""Detailed time tracking for individual users working on payroll dates"""
+type PayrollDateTimeEntries {
+  createdAt: timestamptz
+  description: String
+  id: uuid!
+  """An object relationship"""
+  payrollDate: PayrollDates!
+  payrollDateId: uuid!
+  timeSpentMinutes: Int!
+  updatedAt: timestamptz
+  """An object relationship"""
+  user: Users!
+  userId: uuid!
+  workDate: date!
+}
+
+"""
+aggregated selection of "payroll_date_time_entries"
+"""
+type PayrollDateTimeEntriesAggregate {
+  aggregate: PayrollDateTimeEntriesAggregateFields
+  nodes: [PayrollDateTimeEntries!]!
+}
+
+input PayrollDateTimeEntriesAggregateBoolExp {
+  count: payrollDateTimeEntriesAggregateBoolExpCount
+}
+
+"""
+aggregate fields of "payroll_date_time_entries"
+"""
+type PayrollDateTimeEntriesAggregateFields {
+  avg: PayrollDateTimeEntriesAvgFields
+  count(columns: [PayrollDateTimeEntriesSelectColumn!], distinct: Boolean): Int!
+  max: PayrollDateTimeEntriesMaxFields
+  min: PayrollDateTimeEntriesMinFields
+  stddev: PayrollDateTimeEntriesStddevFields
+  stddevPop: PayrollDateTimeEntriesStddevPopFields
+  stddevSamp: PayrollDateTimeEntriesStddevSampFields
+  sum: PayrollDateTimeEntriesSumFields
+  varPop: PayrollDateTimeEntriesVarPopFields
+  varSamp: PayrollDateTimeEntriesVarSampFields
+  variance: PayrollDateTimeEntriesVarianceFields
+}
+
+"""
+order by aggregate values of table "payroll_date_time_entries"
+"""
+input PayrollDateTimeEntriesAggregateOrderBy {
+  avg: PayrollDateTimeEntriesAvgOrderBy
+  count: OrderBy
+  max: PayrollDateTimeEntriesMaxOrderBy
+  min: PayrollDateTimeEntriesMinOrderBy
+  stddev: PayrollDateTimeEntriesStddevOrderBy
+  stddevPop: PayrollDateTimeEntriesStddevPopOrderBy
+  stddevSamp: PayrollDateTimeEntriesStddevSampOrderBy
+  sum: PayrollDateTimeEntriesSumOrderBy
+  varPop: PayrollDateTimeEntriesVarPopOrderBy
+  varSamp: PayrollDateTimeEntriesVarSampOrderBy
+  variance: PayrollDateTimeEntriesVarianceOrderBy
+}
+
+"""
+input type for inserting array relation for remote table "payroll_date_time_entries"
+"""
+input PayrollDateTimeEntriesArrRelInsertInput {
+  data: [PayrollDateTimeEntriesInsertInput!]!
+  """upsert condition"""
+  onConflict: PayrollDateTimeEntriesOnConflict
+}
+
+"""aggregate avg on columns"""
+type PayrollDateTimeEntriesAvgFields {
+  timeSpentMinutes: Float
+}
+
+"""
+order by avg() on columns of table "payroll_date_time_entries"
+"""
+input PayrollDateTimeEntriesAvgOrderBy {
+  timeSpentMinutes: OrderBy
+}
+
+"""
+Boolean expression to filter rows from the table "payroll_date_time_entries". All fields are combined with a logical 'AND'.
+"""
+input PayrollDateTimeEntriesBoolExp {
+  _and: [PayrollDateTimeEntriesBoolExp!]
+  _not: PayrollDateTimeEntriesBoolExp
+  _or: [PayrollDateTimeEntriesBoolExp!]
+  createdAt: TimestamptzComparisonExp
+  description: StringComparisonExp
+  id: UuidComparisonExp
+  payrollDate: PayrollDatesBoolExp
+  payrollDateId: UuidComparisonExp
+  timeSpentMinutes: IntComparisonExp
+  updatedAt: TimestamptzComparisonExp
+  user: UsersBoolExp
+  userId: UuidComparisonExp
+  workDate: DateComparisonExp
+}
+
+"""
+unique or primary key constraints on table "payroll_date_time_entries"
+"""
+enum PayrollDateTimeEntriesConstraint {
+  """
+  unique or primary key constraint on columns "user_id", "work_date", "payroll_date_id"
+  """
+  payroll_date_time_entries_payroll_date_id_user_id_work_date_key
+  """
+  unique or primary key constraint on columns "id"
+  """
+  payroll_date_time_entries_pkey
+}
+
+"""
+input type for incrementing numeric columns in table "payroll_date_time_entries"
+"""
+input PayrollDateTimeEntriesIncInput {
+  timeSpentMinutes: Int
+}
+
+"""
+input type for inserting data into table "payroll_date_time_entries"
+"""
+input PayrollDateTimeEntriesInsertInput {
+  createdAt: timestamptz
+  description: String
+  id: uuid
+  payrollDate: PayrollDatesObjRelInsertInput
+  payrollDateId: uuid
+  timeSpentMinutes: Int
+  updatedAt: timestamptz
+  user: UsersObjRelInsertInput
+  userId: uuid
+  workDate: date
+}
+
+"""aggregate max on columns"""
+type PayrollDateTimeEntriesMaxFields {
+  createdAt: timestamptz
+  description: String
+  id: uuid
+  payrollDateId: uuid
+  timeSpentMinutes: Int
+  updatedAt: timestamptz
+  userId: uuid
+  workDate: date
+}
+
+"""
+order by max() on columns of table "payroll_date_time_entries"
+"""
+input PayrollDateTimeEntriesMaxOrderBy {
+  createdAt: OrderBy
+  description: OrderBy
+  id: OrderBy
+  payrollDateId: OrderBy
+  timeSpentMinutes: OrderBy
+  updatedAt: OrderBy
+  userId: OrderBy
+  workDate: OrderBy
+}
+
+"""aggregate min on columns"""
+type PayrollDateTimeEntriesMinFields {
+  createdAt: timestamptz
+  description: String
+  id: uuid
+  payrollDateId: uuid
+  timeSpentMinutes: Int
+  updatedAt: timestamptz
+  userId: uuid
+  workDate: date
+}
+
+"""
+order by min() on columns of table "payroll_date_time_entries"
+"""
+input PayrollDateTimeEntriesMinOrderBy {
+  createdAt: OrderBy
+  description: OrderBy
+  id: OrderBy
+  payrollDateId: OrderBy
+  timeSpentMinutes: OrderBy
+  updatedAt: OrderBy
+  userId: OrderBy
+  workDate: OrderBy
+}
+
+"""
+response of any mutation on the table "payroll_date_time_entries"
+"""
+type PayrollDateTimeEntriesMutationResponse {
+  """number of rows affected by the mutation"""
+  affectedRows: Int!
+  """data from the rows affected by the mutation"""
+  returning: [PayrollDateTimeEntries!]!
+}
+
+"""
+on_conflict condition type for table "payroll_date_time_entries"
+"""
+input PayrollDateTimeEntriesOnConflict {
+  constraint: PayrollDateTimeEntriesConstraint!
+  updateColumns: [PayrollDateTimeEntriesUpdateColumn!]! = []
+  where: PayrollDateTimeEntriesBoolExp
+}
+
+"""Ordering options when selecting data from "payroll_date_time_entries"."""
+input PayrollDateTimeEntriesOrderBy {
+  createdAt: OrderBy
+  description: OrderBy
+  id: OrderBy
+  payrollDate: PayrollDatesOrderBy
+  payrollDateId: OrderBy
+  timeSpentMinutes: OrderBy
+  updatedAt: OrderBy
+  user: UsersOrderBy
+  userId: OrderBy
+  workDate: OrderBy
+}
+
+"""primary key columns input for table: payroll_date_time_entries"""
+input PayrollDateTimeEntriesPkColumnsInput {
+  id: uuid!
+}
+
+"""
+select columns of table "payroll_date_time_entries"
+"""
+enum PayrollDateTimeEntriesSelectColumn {
+  """column name"""
+  createdAt
+  """column name"""
+  description
+  """column name"""
+  id
+  """column name"""
+  payrollDateId
+  """column name"""
+  timeSpentMinutes
+  """column name"""
+  updatedAt
+  """column name"""
+  userId
+  """column name"""
+  workDate
+}
+
+"""
+input type for updating data in table "payroll_date_time_entries"
+"""
+input PayrollDateTimeEntriesSetInput {
+  createdAt: timestamptz
+  description: String
+  id: uuid
+  payrollDateId: uuid
+  timeSpentMinutes: Int
+  updatedAt: timestamptz
+  userId: uuid
+  workDate: date
+}
+
+"""aggregate stddev on columns"""
+type PayrollDateTimeEntriesStddevFields {
+  timeSpentMinutes: Float
+}
+
+"""
+order by stddev() on columns of table "payroll_date_time_entries"
+"""
+input PayrollDateTimeEntriesStddevOrderBy {
+  timeSpentMinutes: OrderBy
+}
+
+"""aggregate stddevPop on columns"""
+type PayrollDateTimeEntriesStddevPopFields {
+  timeSpentMinutes: Float
+}
+
+"""
+order by stddevPop() on columns of table "payroll_date_time_entries"
+"""
+input PayrollDateTimeEntriesStddevPopOrderBy {
+  timeSpentMinutes: OrderBy
+}
+
+"""aggregate stddevSamp on columns"""
+type PayrollDateTimeEntriesStddevSampFields {
+  timeSpentMinutes: Float
+}
+
+"""
+order by stddevSamp() on columns of table "payroll_date_time_entries"
+"""
+input PayrollDateTimeEntriesStddevSampOrderBy {
+  timeSpentMinutes: OrderBy
+}
+
+"""
+Streaming cursor of the table "payroll_date_time_entries"
+"""
+input PayrollDateTimeEntriesStreamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: PayrollDateTimeEntriesStreamCursorValueInput!
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input PayrollDateTimeEntriesStreamCursorValueInput {
+  createdAt: timestamptz
+  description: String
+  id: uuid
+  payrollDateId: uuid
+  timeSpentMinutes: Int
+  updatedAt: timestamptz
+  userId: uuid
+  workDate: date
+}
+
+"""aggregate sum on columns"""
+type PayrollDateTimeEntriesSumFields {
+  timeSpentMinutes: Int
+}
+
+"""
+order by sum() on columns of table "payroll_date_time_entries"
+"""
+input PayrollDateTimeEntriesSumOrderBy {
+  timeSpentMinutes: OrderBy
+}
+
+"""
+update columns of table "payroll_date_time_entries"
+"""
+enum PayrollDateTimeEntriesUpdateColumn {
+  """column name"""
+  createdAt
+  """column name"""
+  description
+  """column name"""
+  id
+  """column name"""
+  payrollDateId
+  """column name"""
+  timeSpentMinutes
+  """column name"""
+  updatedAt
+  """column name"""
+  userId
+  """column name"""
+  workDate
+}
+
+input PayrollDateTimeEntriesUpdates {
+  """increments the numeric columns with given value of the filtered values"""
+  _inc: PayrollDateTimeEntriesIncInput
+  """sets the columns of the filtered rows to the given values"""
+  _set: PayrollDateTimeEntriesSetInput
+  """filter the rows which have to be updated"""
+  where: PayrollDateTimeEntriesBoolExp!
+}
+
+"""aggregate varPop on columns"""
+type PayrollDateTimeEntriesVarPopFields {
+  timeSpentMinutes: Float
+}
+
+"""
+order by varPop() on columns of table "payroll_date_time_entries"
+"""
+input PayrollDateTimeEntriesVarPopOrderBy {
+  timeSpentMinutes: OrderBy
+}
+
+"""aggregate varSamp on columns"""
+type PayrollDateTimeEntriesVarSampFields {
+  timeSpentMinutes: Float
+}
+
+"""
+order by varSamp() on columns of table "payroll_date_time_entries"
+"""
+input PayrollDateTimeEntriesVarSampOrderBy {
+  timeSpentMinutes: OrderBy
+}
+
+"""aggregate variance on columns"""
+type PayrollDateTimeEntriesVarianceFields {
+  timeSpentMinutes: Float
+}
+
+"""
+order by variance() on columns of table "payroll_date_time_entries"
+"""
+input PayrollDateTimeEntriesVarianceOrderBy {
+  timeSpentMinutes: OrderBy
+}
+
+"""
 Boolean expression to compare columns of type "payroll_date_type". All fields are combined with logical 'AND'.
 """
 input PayrollDateTypeComparisonExp {
@@ -14224,8 +14940,12 @@ type PayrollDates {
     """filter the rows returned"""
     where: BillingItemsBoolExp
   ): BillingItemsAggregate!
+  """Timestamp when the payroll date was marked as completed"""
   completedAt: timestamptz
+  """User who marked the payroll date as completed"""
   completedBy: uuid
+  """Additional notes about the completion of this payroll date"""
+  completionNotes: String
   """Timestamp when the date record was created"""
   createdAt: timestamptz
   """Unique identifier for the payroll date"""
@@ -14262,10 +14982,39 @@ type PayrollDates {
     """filter the rows returned"""
     where: PayrollAssignmentAuditBoolExp
   ): PayrollAssignmentAuditAggregate!
+  """An array relationship"""
+  payrollDateTimeEntries(
+    """distinct select on columns"""
+    distinctOn: [PayrollDateTimeEntriesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollDateTimeEntriesOrderBy!]
+    """filter the rows returned"""
+    where: PayrollDateTimeEntriesBoolExp
+  ): [PayrollDateTimeEntries!]!
+  """An aggregate relationship"""
+  payrollDateTimeEntriesAggregate(
+    """distinct select on columns"""
+    distinctOn: [PayrollDateTimeEntriesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollDateTimeEntriesOrderBy!]
+    """filter the rows returned"""
+    where: PayrollDateTimeEntriesBoolExp
+  ): PayrollDateTimeEntriesAggregate!
   """Reference to the payroll this date belongs to"""
   payrollId: uuid!
   """Date when payroll processing must be completed"""
   processingDate: date!
+  """
+  Current status of the payroll date (pending, in_progress, completed, cancelled)
+  """
   status: String
   """An array relationship"""
   timeEntries(
@@ -14293,6 +15042,8 @@ type PayrollDates {
     """filter the rows returned"""
     where: TimeEntriesBoolExp
   ): TimeEntriesAggregate!
+  """Total time spent by all users on this payroll date (in minutes)"""
+  totalTimeSpentMinutes: Int
   """Timestamp when the date record was last updated"""
   updatedAt: timestamptz
   """An object relationship"""
@@ -14315,18 +15066,34 @@ input PayrollDatesAggregateBoolExp {
 aggregate fields of "payroll_dates"
 """
 type PayrollDatesAggregateFields {
+  avg: PayrollDatesAvgFields
   count(columns: [PayrollDatesSelectColumn!], distinct: Boolean): Int!
   max: PayrollDatesMaxFields
   min: PayrollDatesMinFields
+  stddev: PayrollDatesStddevFields
+  stddevPop: PayrollDatesStddevPopFields
+  stddevSamp: PayrollDatesStddevSampFields
+  sum: PayrollDatesSumFields
+  varPop: PayrollDatesVarPopFields
+  varSamp: PayrollDatesVarSampFields
+  variance: PayrollDatesVarianceFields
 }
 
 """
 order by aggregate values of table "payroll_dates"
 """
 input PayrollDatesAggregateOrderBy {
+  avg: PayrollDatesAvgOrderBy
   count: OrderBy
   max: PayrollDatesMaxOrderBy
   min: PayrollDatesMinOrderBy
+  stddev: PayrollDatesStddevOrderBy
+  stddevPop: PayrollDatesStddevPopOrderBy
+  stddevSamp: PayrollDatesStddevSampOrderBy
+  sum: PayrollDatesSumOrderBy
+  varPop: PayrollDatesVarPopOrderBy
+  varSamp: PayrollDatesVarSampOrderBy
+  variance: PayrollDatesVarianceOrderBy
 }
 
 """
@@ -14336,6 +15103,20 @@ input PayrollDatesArrRelInsertInput {
   data: [PayrollDatesInsertInput!]!
   """upsert condition"""
   onConflict: PayrollDatesOnConflict
+}
+
+"""aggregate avg on columns"""
+type PayrollDatesAvgFields {
+  """Total time spent by all users on this payroll date (in minutes)"""
+  totalTimeSpentMinutes: Float
+}
+
+"""
+order by avg() on columns of table "payroll_dates"
+"""
+input PayrollDatesAvgOrderBy {
+  """Total time spent by all users on this payroll date (in minutes)"""
+  totalTimeSpentMinutes: OrderBy
 }
 
 """
@@ -14351,6 +15132,7 @@ input PayrollDatesBoolExp {
   billingItemsAggregate: BillingItemsAggregateBoolExp
   completedAt: TimestamptzComparisonExp
   completedBy: UuidComparisonExp
+  completionNotes: StringComparisonExp
   createdAt: TimestamptzComparisonExp
   id: UuidComparisonExp
   notes: StringComparisonExp
@@ -14358,11 +15140,14 @@ input PayrollDatesBoolExp {
   payroll: PayrollsBoolExp
   payrollAssignments: PayrollAssignmentAuditBoolExp
   payrollAssignmentsAggregate: PayrollAssignmentAuditAggregateBoolExp
+  payrollDateTimeEntries: PayrollDateTimeEntriesBoolExp
+  payrollDateTimeEntriesAggregate: PayrollDateTimeEntriesAggregateBoolExp
   payrollId: UuidComparisonExp
   processingDate: DateComparisonExp
   status: StringComparisonExp
   timeEntries: TimeEntriesBoolExp
   timeEntriesAggregate: TimeEntriesAggregateBoolExp
+  totalTimeSpentMinutes: IntComparisonExp
   updatedAt: TimestamptzComparisonExp
   user: UsersBoolExp
 }
@@ -14382,6 +15167,14 @@ enum PayrollDatesConstraint {
 }
 
 """
+input type for incrementing numeric columns in table "payroll_dates"
+"""
+input PayrollDatesIncInput {
+  """Total time spent by all users on this payroll date (in minutes)"""
+  totalTimeSpentMinutes: Int
+}
+
+"""
 input type for inserting data into table "payroll_dates"
 """
 input PayrollDatesInsertInput {
@@ -14389,8 +15182,12 @@ input PayrollDatesInsertInput {
   adjustedEftDate: date
   assignmentDetails: PayrollAssignmentsObjRelInsertInput
   billingItems: BillingItemsArrRelInsertInput
+  """Timestamp when the payroll date was marked as completed"""
   completedAt: timestamptz
+  """User who marked the payroll date as completed"""
   completedBy: uuid
+  """Additional notes about the completion of this payroll date"""
+  completionNotes: String
   """Timestamp when the date record was created"""
   createdAt: timestamptz
   """Unique identifier for the payroll date"""
@@ -14401,12 +15198,18 @@ input PayrollDatesInsertInput {
   originalEftDate: date
   payroll: PayrollsObjRelInsertInput
   payrollAssignments: PayrollAssignmentAuditArrRelInsertInput
+  payrollDateTimeEntries: PayrollDateTimeEntriesArrRelInsertInput
   """Reference to the payroll this date belongs to"""
   payrollId: uuid
   """Date when payroll processing must be completed"""
   processingDate: date
+  """
+  Current status of the payroll date (pending, in_progress, completed, cancelled)
+  """
   status: String
   timeEntries: TimeEntriesArrRelInsertInput
+  """Total time spent by all users on this payroll date (in minutes)"""
+  totalTimeSpentMinutes: Int
   """Timestamp when the date record was last updated"""
   updatedAt: timestamptz
   user: UsersObjRelInsertInput
@@ -14416,8 +15219,12 @@ input PayrollDatesInsertInput {
 type PayrollDatesMaxFields {
   """Final EFT date after holiday and weekend adjustments"""
   adjustedEftDate: date
+  """Timestamp when the payroll date was marked as completed"""
   completedAt: timestamptz
+  """User who marked the payroll date as completed"""
   completedBy: uuid
+  """Additional notes about the completion of this payroll date"""
+  completionNotes: String
   """Timestamp when the date record was created"""
   createdAt: timestamptz
   """Unique identifier for the payroll date"""
@@ -14430,7 +15237,12 @@ type PayrollDatesMaxFields {
   payrollId: uuid
   """Date when payroll processing must be completed"""
   processingDate: date
+  """
+  Current status of the payroll date (pending, in_progress, completed, cancelled)
+  """
   status: String
+  """Total time spent by all users on this payroll date (in minutes)"""
+  totalTimeSpentMinutes: Int
   """Timestamp when the date record was last updated"""
   updatedAt: timestamptz
 }
@@ -14441,8 +15253,12 @@ order by max() on columns of table "payroll_dates"
 input PayrollDatesMaxOrderBy {
   """Final EFT date after holiday and weekend adjustments"""
   adjustedEftDate: OrderBy
+  """Timestamp when the payroll date was marked as completed"""
   completedAt: OrderBy
+  """User who marked the payroll date as completed"""
   completedBy: OrderBy
+  """Additional notes about the completion of this payroll date"""
+  completionNotes: OrderBy
   """Timestamp when the date record was created"""
   createdAt: OrderBy
   """Unique identifier for the payroll date"""
@@ -14455,7 +15271,12 @@ input PayrollDatesMaxOrderBy {
   payrollId: OrderBy
   """Date when payroll processing must be completed"""
   processingDate: OrderBy
+  """
+  Current status of the payroll date (pending, in_progress, completed, cancelled)
+  """
   status: OrderBy
+  """Total time spent by all users on this payroll date (in minutes)"""
+  totalTimeSpentMinutes: OrderBy
   """Timestamp when the date record was last updated"""
   updatedAt: OrderBy
 }
@@ -14464,8 +15285,12 @@ input PayrollDatesMaxOrderBy {
 type PayrollDatesMinFields {
   """Final EFT date after holiday and weekend adjustments"""
   adjustedEftDate: date
+  """Timestamp when the payroll date was marked as completed"""
   completedAt: timestamptz
+  """User who marked the payroll date as completed"""
   completedBy: uuid
+  """Additional notes about the completion of this payroll date"""
+  completionNotes: String
   """Timestamp when the date record was created"""
   createdAt: timestamptz
   """Unique identifier for the payroll date"""
@@ -14478,7 +15303,12 @@ type PayrollDatesMinFields {
   payrollId: uuid
   """Date when payroll processing must be completed"""
   processingDate: date
+  """
+  Current status of the payroll date (pending, in_progress, completed, cancelled)
+  """
   status: String
+  """Total time spent by all users on this payroll date (in minutes)"""
+  totalTimeSpentMinutes: Int
   """Timestamp when the date record was last updated"""
   updatedAt: timestamptz
 }
@@ -14489,8 +15319,12 @@ order by min() on columns of table "payroll_dates"
 input PayrollDatesMinOrderBy {
   """Final EFT date after holiday and weekend adjustments"""
   adjustedEftDate: OrderBy
+  """Timestamp when the payroll date was marked as completed"""
   completedAt: OrderBy
+  """User who marked the payroll date as completed"""
   completedBy: OrderBy
+  """Additional notes about the completion of this payroll date"""
+  completionNotes: OrderBy
   """Timestamp when the date record was created"""
   createdAt: OrderBy
   """Unique identifier for the payroll date"""
@@ -14503,7 +15337,12 @@ input PayrollDatesMinOrderBy {
   payrollId: OrderBy
   """Date when payroll processing must be completed"""
   processingDate: OrderBy
+  """
+  Current status of the payroll date (pending, in_progress, completed, cancelled)
+  """
   status: OrderBy
+  """Total time spent by all users on this payroll date (in minutes)"""
+  totalTimeSpentMinutes: OrderBy
   """Timestamp when the date record was last updated"""
   updatedAt: OrderBy
 }
@@ -14543,16 +15382,19 @@ input PayrollDatesOrderBy {
   billingItemsAggregate: BillingItemsAggregateOrderBy
   completedAt: OrderBy
   completedBy: OrderBy
+  completionNotes: OrderBy
   createdAt: OrderBy
   id: OrderBy
   notes: OrderBy
   originalEftDate: OrderBy
   payroll: PayrollsOrderBy
   payrollAssignmentsAggregate: PayrollAssignmentAuditAggregateOrderBy
+  payrollDateTimeEntriesAggregate: PayrollDateTimeEntriesAggregateOrderBy
   payrollId: OrderBy
   processingDate: OrderBy
   status: OrderBy
   timeEntriesAggregate: TimeEntriesAggregateOrderBy
+  totalTimeSpentMinutes: OrderBy
   updatedAt: OrderBy
   user: UsersOrderBy
 }
@@ -14574,6 +15416,8 @@ enum PayrollDatesSelectColumn {
   """column name"""
   completedBy
   """column name"""
+  completionNotes
+  """column name"""
   createdAt
   """column name"""
   id
@@ -14588,6 +15432,8 @@ enum PayrollDatesSelectColumn {
   """column name"""
   status
   """column name"""
+  totalTimeSpentMinutes
+  """column name"""
   updatedAt
 }
 
@@ -14597,8 +15443,12 @@ input type for updating data in table "payroll_dates"
 input PayrollDatesSetInput {
   """Final EFT date after holiday and weekend adjustments"""
   adjustedEftDate: date
+  """Timestamp when the payroll date was marked as completed"""
   completedAt: timestamptz
+  """User who marked the payroll date as completed"""
   completedBy: uuid
+  """Additional notes about the completion of this payroll date"""
+  completionNotes: String
   """Timestamp when the date record was created"""
   createdAt: timestamptz
   """Unique identifier for the payroll date"""
@@ -14611,9 +15461,56 @@ input PayrollDatesSetInput {
   payrollId: uuid
   """Date when payroll processing must be completed"""
   processingDate: date
+  """
+  Current status of the payroll date (pending, in_progress, completed, cancelled)
+  """
   status: String
+  """Total time spent by all users on this payroll date (in minutes)"""
+  totalTimeSpentMinutes: Int
   """Timestamp when the date record was last updated"""
   updatedAt: timestamptz
+}
+
+"""aggregate stddev on columns"""
+type PayrollDatesStddevFields {
+  """Total time spent by all users on this payroll date (in minutes)"""
+  totalTimeSpentMinutes: Float
+}
+
+"""
+order by stddev() on columns of table "payroll_dates"
+"""
+input PayrollDatesStddevOrderBy {
+  """Total time spent by all users on this payroll date (in minutes)"""
+  totalTimeSpentMinutes: OrderBy
+}
+
+"""aggregate stddevPop on columns"""
+type PayrollDatesStddevPopFields {
+  """Total time spent by all users on this payroll date (in minutes)"""
+  totalTimeSpentMinutes: Float
+}
+
+"""
+order by stddevPop() on columns of table "payroll_dates"
+"""
+input PayrollDatesStddevPopOrderBy {
+  """Total time spent by all users on this payroll date (in minutes)"""
+  totalTimeSpentMinutes: OrderBy
+}
+
+"""aggregate stddevSamp on columns"""
+type PayrollDatesStddevSampFields {
+  """Total time spent by all users on this payroll date (in minutes)"""
+  totalTimeSpentMinutes: Float
+}
+
+"""
+order by stddevSamp() on columns of table "payroll_dates"
+"""
+input PayrollDatesStddevSampOrderBy {
+  """Total time spent by all users on this payroll date (in minutes)"""
+  totalTimeSpentMinutes: OrderBy
 }
 
 """
@@ -14630,8 +15527,12 @@ input PayrollDatesStreamCursorInput {
 input PayrollDatesStreamCursorValueInput {
   """Final EFT date after holiday and weekend adjustments"""
   adjustedEftDate: date
+  """Timestamp when the payroll date was marked as completed"""
   completedAt: timestamptz
+  """User who marked the payroll date as completed"""
   completedBy: uuid
+  """Additional notes about the completion of this payroll date"""
+  completionNotes: String
   """Timestamp when the date record was created"""
   createdAt: timestamptz
   """Unique identifier for the payroll date"""
@@ -14644,9 +15545,28 @@ input PayrollDatesStreamCursorValueInput {
   payrollId: uuid
   """Date when payroll processing must be completed"""
   processingDate: date
+  """
+  Current status of the payroll date (pending, in_progress, completed, cancelled)
+  """
   status: String
+  """Total time spent by all users on this payroll date (in minutes)"""
+  totalTimeSpentMinutes: Int
   """Timestamp when the date record was last updated"""
   updatedAt: timestamptz
+}
+
+"""aggregate sum on columns"""
+type PayrollDatesSumFields {
+  """Total time spent by all users on this payroll date (in minutes)"""
+  totalTimeSpentMinutes: Int
+}
+
+"""
+order by sum() on columns of table "payroll_dates"
+"""
+input PayrollDatesSumOrderBy {
+  """Total time spent by all users on this payroll date (in minutes)"""
+  totalTimeSpentMinutes: OrderBy
 }
 
 """
@@ -14659,6 +15579,8 @@ enum PayrollDatesUpdateColumn {
   completedAt
   """column name"""
   completedBy
+  """column name"""
+  completionNotes
   """column name"""
   createdAt
   """column name"""
@@ -14674,14 +15596,60 @@ enum PayrollDatesUpdateColumn {
   """column name"""
   status
   """column name"""
+  totalTimeSpentMinutes
+  """column name"""
   updatedAt
 }
 
 input PayrollDatesUpdates {
+  """increments the numeric columns with given value of the filtered values"""
+  _inc: PayrollDatesIncInput
   """sets the columns of the filtered rows to the given values"""
   _set: PayrollDatesSetInput
   """filter the rows which have to be updated"""
   where: PayrollDatesBoolExp!
+}
+
+"""aggregate varPop on columns"""
+type PayrollDatesVarPopFields {
+  """Total time spent by all users on this payroll date (in minutes)"""
+  totalTimeSpentMinutes: Float
+}
+
+"""
+order by varPop() on columns of table "payroll_dates"
+"""
+input PayrollDatesVarPopOrderBy {
+  """Total time spent by all users on this payroll date (in minutes)"""
+  totalTimeSpentMinutes: OrderBy
+}
+
+"""aggregate varSamp on columns"""
+type PayrollDatesVarSampFields {
+  """Total time spent by all users on this payroll date (in minutes)"""
+  totalTimeSpentMinutes: Float
+}
+
+"""
+order by varSamp() on columns of table "payroll_dates"
+"""
+input PayrollDatesVarSampOrderBy {
+  """Total time spent by all users on this payroll date (in minutes)"""
+  totalTimeSpentMinutes: OrderBy
+}
+
+"""aggregate variance on columns"""
+type PayrollDatesVarianceFields {
+  """Total time spent by all users on this payroll date (in minutes)"""
+  totalTimeSpentMinutes: Float
+}
+
+"""
+order by variance() on columns of table "payroll_dates"
+"""
+input PayrollDatesVarianceOrderBy {
+  """Total time spent by all users on this payroll date (in minutes)"""
+  totalTimeSpentMinutes: OrderBy
 }
 
 """Profitability analysis for individual payroll jobs"""
@@ -29717,6 +30685,32 @@ type Users {
     where: PayrollAssignmentsBoolExp
   ): PayrollAssignmentsAggregate!
   """An array relationship"""
+  payrollDateTimeEntries(
+    """distinct select on columns"""
+    distinctOn: [PayrollDateTimeEntriesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollDateTimeEntriesOrderBy!]
+    """filter the rows returned"""
+    where: PayrollDateTimeEntriesBoolExp
+  ): [PayrollDateTimeEntries!]!
+  """An aggregate relationship"""
+  payrollDateTimeEntriesAggregate(
+    """distinct select on columns"""
+    distinctOn: [PayrollDateTimeEntriesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollDateTimeEntriesOrderBy!]
+    """filter the rows returned"""
+    where: PayrollDateTimeEntriesBoolExp
+  ): PayrollDateTimeEntriesAggregate!
+  """An array relationship"""
   payrollDates(
     """distinct select on columns"""
     distinctOn: [PayrollDatesSelectColumn!]
@@ -30561,6 +31555,8 @@ input UsersBoolExp {
   managerId: UuidComparisonExp
   originalConsultantAssignments: PayrollAssignmentsBoolExp
   originalConsultantAssignmentsAggregate: PayrollAssignmentsAggregateBoolExp
+  payrollDateTimeEntries: PayrollDateTimeEntriesBoolExp
+  payrollDateTimeEntriesAggregate: PayrollDateTimeEntriesAggregateBoolExp
   payrollDates: PayrollDatesBoolExp
   payrollDatesAggregate: PayrollDatesAggregateBoolExp
   permissionAuditLogs: PermissionAuditLogBoolExp
@@ -30711,6 +31707,7 @@ input UsersInsertInput {
   """Reference to the user's manager"""
   managerId: uuid
   originalConsultantAssignments: PayrollAssignmentsArrRelInsertInput
+  payrollDateTimeEntries: PayrollDateTimeEntriesArrRelInsertInput
   payrollDates: PayrollDatesArrRelInsertInput
   permissionAuditLogs: PermissionAuditLogArrRelInsertInput
   permissionOverrides: PermissionOverridesArrRelInsertInput
@@ -31015,6 +32012,7 @@ input UsersOrderBy {
   manager: UsersOrderBy
   managerId: OrderBy
   originalConsultantAssignmentsAggregate: PayrollAssignmentsAggregateOrderBy
+  payrollDateTimeEntriesAggregate: PayrollDateTimeEntriesAggregateOrderBy
   payrollDatesAggregate: PayrollDatesAggregateOrderBy
   permissionAuditLogsAggregate: PermissionAuditLogAggregateOrderBy
   permissionOverridesAggregate: PermissionOverridesAggregateOrderBy
@@ -32132,12 +33130,6 @@ input WorkScheduleVarianceOrderBy {
   workHours: OrderBy
 }
 
-"""Scalar _Any"""
-scalar _Any
-
-"""A union of all types that use the @key directive"""
-union _Entity = AdjustmentRules | AppSettings | AuditAuditLog | AuditAuthEvents | AuditDataAccessLog | AuditPermissionChanges | AuditSlowQueries | BillingEventLog | BillingInvoice | BillingInvoiceItem | BillingItems | BillingPeriods | ClientExternalSystems | ClientServiceAgreements | Clients | DataBackups | EmailDrafts | EmailSendLogs | EmailTemplates | ExternalSystems | FeatureFlags | Files | Holidays | LatestPayrollVersionResults | Leave | Notes | PayrollActivationResults | PayrollAssignmentAudit | PayrollAssignments | PayrollCycles | PayrollDateTypes | PayrollDates | PayrollVersionHistoryResults | PayrollVersionResults | Payrolls | PermissionAuditLog | PermissionOverrides | Permissions | PositionAdminDefaults | RateLimits | Resources | RolePermissions | Roles | SecurityAlerts | SecuritySettings | ServicePricingRules | ServiceTemplates | Services | SystemConfiguration | SystemHealth | TimeEntries | UserEmailTemplateFavorites | UserInvitations | UserRoles | UserSessions | Users | WorkSchedule
-
 type _Service {
   """SDL representation of schema"""
   sdl: String!
@@ -32336,6 +33328,8 @@ scalar inet
 scalar interval
 
 scalar invitation_status_enum
+
+scalar json
 
 scalar jsonb
 
@@ -32770,6 +33764,17 @@ type mutation_root {
     """Unique identifier for the payroll cycle"""
     id: uuid!
   ): PayrollCycles
+  """
+  delete data from the table: "payroll_date_time_entries"
+  """
+  deletePayrollDateTimeEntries(
+    """filter the rows which have to be deleted"""
+    where: PayrollDateTimeEntriesBoolExp!
+  ): PayrollDateTimeEntriesMutationResponse
+  """
+  delete single row from the table: "payroll_date_time_entries"
+  """
+  deletePayrollDateTimeEntriesByPk(id: uuid!): PayrollDateTimeEntries
   """
   delete data from the table: "payroll_date_types"
   """
@@ -33720,6 +34725,24 @@ type mutation_root {
     """upsert condition"""
     onConflict: PayrollCyclesOnConflict
   ): PayrollCycles
+  """
+  insert data into the table: "payroll_date_time_entries"
+  """
+  insertPayrollDateTimeEntries(
+    """the rows to be inserted"""
+    objects: [PayrollDateTimeEntriesInsertInput!]!
+    """upsert condition"""
+    onConflict: PayrollDateTimeEntriesOnConflict
+  ): PayrollDateTimeEntriesMutationResponse
+  """
+  insert a single row into the table: "payroll_date_time_entries"
+  """
+  insertPayrollDateTimeEntriesOne(
+    """the row to be inserted"""
+    object: PayrollDateTimeEntriesInsertInput!
+    """upsert condition"""
+    onConflict: PayrollDateTimeEntriesOnConflict
+  ): PayrollDateTimeEntries
   """
   insert data into the table: "payroll_date_types"
   """
@@ -35481,6 +36504,34 @@ type mutation_root {
     updates: [PayrollCyclesUpdates!]!
   ): [PayrollCyclesMutationResponse]
   """
+  update data of the table: "payroll_date_time_entries"
+  """
+  updatePayrollDateTimeEntries(
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: PayrollDateTimeEntriesIncInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: PayrollDateTimeEntriesSetInput
+    """filter the rows which have to be updated"""
+    where: PayrollDateTimeEntriesBoolExp!
+  ): PayrollDateTimeEntriesMutationResponse
+  """
+  update single row of the table: "payroll_date_time_entries"
+  """
+  updatePayrollDateTimeEntriesByPk(
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: PayrollDateTimeEntriesIncInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: PayrollDateTimeEntriesSetInput
+    pkColumns: PayrollDateTimeEntriesPkColumnsInput!
+  ): PayrollDateTimeEntries
+  """
+  update multiples rows of table: "payroll_date_time_entries"
+  """
+  updatePayrollDateTimeEntriesMany(
+    """updates to execute, in order"""
+    updates: [PayrollDateTimeEntriesUpdates!]!
+  ): [PayrollDateTimeEntriesMutationResponse]
+  """
   update data of the table: "payroll_date_types"
   """
   updatePayrollDateTypes(
@@ -35508,6 +36559,8 @@ type mutation_root {
   update data of the table: "payroll_dates"
   """
   updatePayrollDates(
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: PayrollDatesIncInput
     """sets the columns of the filtered rows to the given values"""
     _set: PayrollDatesSetInput
     """filter the rows which have to be updated"""
@@ -35517,6 +36570,8 @@ type mutation_root {
   update single row of the table: "payroll_dates"
   """
   updatePayrollDatesByPk(
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: PayrollDatesIncInput
     """sets the columns of the filtered rows to the given values"""
     _set: PayrollDatesSetInput
     pkColumns: PayrollDatesPkColumnsInput!
@@ -36843,6 +37898,13 @@ input payrollAssignmentsAggregateBoolExpCount {
   predicate: IntComparisonExp!
 }
 
+input payrollDateTimeEntriesAggregateBoolExpCount {
+  arguments: [PayrollDateTimeEntriesSelectColumn!]
+  distinct: Boolean
+  filter: PayrollDateTimeEntriesBoolExp
+  predicate: IntComparisonExp!
+}
+
 input payrollDatesAggregateBoolExpCount {
   arguments: [PayrollDatesSelectColumn!]
   distinct: Boolean
@@ -36908,8 +37970,6 @@ input permissionsAggregateBoolExpCount {
 }
 
 type query_root {
-  """query _Entity union"""
-  _entities(representations: [_Any!]!): _Entity
   _service: _Service!
   """An array relationship"""
   adjustmentRules(
@@ -38183,6 +39243,66 @@ type query_root {
     """filter the rows returned"""
     where: PayrollDashboardStatsBoolExp
   ): PayrollDashboardStatsAggregate!
+  """
+  fetch data from the table: "payroll_date_completion_analytics"
+  """
+  payrollDateCompletionAnalytics(
+    """distinct select on columns"""
+    distinctOn: [PayrollDateCompletionAnalyticsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollDateCompletionAnalyticsOrderBy!]
+    """filter the rows returned"""
+    where: PayrollDateCompletionAnalyticsBoolExp
+  ): [PayrollDateCompletionAnalytics!]!
+  """
+  fetch aggregated fields from the table: "payroll_date_completion_analytics"
+  """
+  payrollDateCompletionAnalyticsAggregate(
+    """distinct select on columns"""
+    distinctOn: [PayrollDateCompletionAnalyticsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollDateCompletionAnalyticsOrderBy!]
+    """filter the rows returned"""
+    where: PayrollDateCompletionAnalyticsBoolExp
+  ): PayrollDateCompletionAnalyticsAggregate!
+  """An array relationship"""
+  payrollDateTimeEntries(
+    """distinct select on columns"""
+    distinctOn: [PayrollDateTimeEntriesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollDateTimeEntriesOrderBy!]
+    """filter the rows returned"""
+    where: PayrollDateTimeEntriesBoolExp
+  ): [PayrollDateTimeEntries!]!
+  """An aggregate relationship"""
+  payrollDateTimeEntriesAggregate(
+    """distinct select on columns"""
+    distinctOn: [PayrollDateTimeEntriesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollDateTimeEntriesOrderBy!]
+    """filter the rows returned"""
+    where: PayrollDateTimeEntriesBoolExp
+  ): PayrollDateTimeEntriesAggregate!
+  """
+  fetch data from the table: "payroll_date_time_entries" using primary key columns
+  """
+  payrollDateTimeEntriesByPk(id: uuid!): PayrollDateTimeEntries
   """
   fetch data from the table: "payroll_date_types"
   """
@@ -41326,6 +42446,88 @@ type subscription_root {
     """filter the rows returned"""
     where: PayrollDashboardStatsBoolExp
   ): [PayrollDashboardStats!]!
+  """
+  fetch data from the table: "payroll_date_completion_analytics"
+  """
+  payrollDateCompletionAnalytics(
+    """distinct select on columns"""
+    distinctOn: [PayrollDateCompletionAnalyticsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollDateCompletionAnalyticsOrderBy!]
+    """filter the rows returned"""
+    where: PayrollDateCompletionAnalyticsBoolExp
+  ): [PayrollDateCompletionAnalytics!]!
+  """
+  fetch aggregated fields from the table: "payroll_date_completion_analytics"
+  """
+  payrollDateCompletionAnalyticsAggregate(
+    """distinct select on columns"""
+    distinctOn: [PayrollDateCompletionAnalyticsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollDateCompletionAnalyticsOrderBy!]
+    """filter the rows returned"""
+    where: PayrollDateCompletionAnalyticsBoolExp
+  ): PayrollDateCompletionAnalyticsAggregate!
+  """
+  fetch data from the table in a streaming manner: "payroll_date_completion_analytics"
+  """
+  payrollDateCompletionAnalyticsStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+    """cursor to stream the results returned by the query"""
+    cursor: [PayrollDateCompletionAnalyticsStreamCursorInput]!
+    """filter the rows returned"""
+    where: PayrollDateCompletionAnalyticsBoolExp
+  ): [PayrollDateCompletionAnalytics!]!
+  """An array relationship"""
+  payrollDateTimeEntries(
+    """distinct select on columns"""
+    distinctOn: [PayrollDateTimeEntriesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollDateTimeEntriesOrderBy!]
+    """filter the rows returned"""
+    where: PayrollDateTimeEntriesBoolExp
+  ): [PayrollDateTimeEntries!]!
+  """An aggregate relationship"""
+  payrollDateTimeEntriesAggregate(
+    """distinct select on columns"""
+    distinctOn: [PayrollDateTimeEntriesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollDateTimeEntriesOrderBy!]
+    """filter the rows returned"""
+    where: PayrollDateTimeEntriesBoolExp
+  ): PayrollDateTimeEntriesAggregate!
+  """
+  fetch data from the table: "payroll_date_time_entries" using primary key columns
+  """
+  payrollDateTimeEntriesByPk(id: uuid!): PayrollDateTimeEntries
+  """
+  fetch data from the table in a streaming manner: "payroll_date_time_entries"
+  """
+  payrollDateTimeEntriesStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+    """cursor to stream the results returned by the query"""
+    cursor: [PayrollDateTimeEntriesStreamCursorInput]!
+    """filter the rows returned"""
+    where: PayrollDateTimeEntriesBoolExp
+  ): [PayrollDateTimeEntries!]!
   """
   fetch data from the table: "payroll_date_types"
   """

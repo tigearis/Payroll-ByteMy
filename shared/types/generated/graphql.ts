@@ -18,7 +18,7 @@
  * ✓ Client Preset v4.8+ for optimal type safety
  * ✓ Zero type conflicts with modern codegen
  * 
- * Generated: 2025-08-04T02:20:14.290Z
+ * Generated: 2025-08-04T03:25:30.738Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Client Preset v4.0
  */
@@ -38,14 +38,13 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  /** Scalar _Any */
-  _Any: { input: any; output: any; }
   bigint: { input: string; output: string; }
   bpchar: { input: any; output: any; }
   date: { input: string; output: string; }
   inet: { input: any; output: any; }
   interval: { input: any; output: any; }
   invitation_status_enum: { input: any; output: any; }
+  json: { input: any; output: any; }
   jsonb: { input: any; output: any; }
   leave_status_enum: { input: any; output: any; }
   name: { input: any; output: any; }
@@ -10817,6 +10816,19 @@ export type InvitationStatusEnumComparisonExp = {
   _nin?: InputMaybe<Array<Scalars['invitation_status_enum']['input']>>;
 };
 
+/** Boolean expression to compare columns of type "json". All fields are combined with logical 'AND'. */
+export type JsonComparisonExp = {
+  _eq?: InputMaybe<Scalars['json']['input']>;
+  _gt?: InputMaybe<Scalars['json']['input']>;
+  _gte?: InputMaybe<Scalars['json']['input']>;
+  _in?: InputMaybe<Array<Scalars['json']['input']>>;
+  _isNull?: InputMaybe<Scalars['Boolean']['input']>;
+  _lt?: InputMaybe<Scalars['json']['input']>;
+  _lte?: InputMaybe<Scalars['json']['input']>;
+  _neq?: InputMaybe<Scalars['json']['input']>;
+  _nin?: InputMaybe<Array<Scalars['json']['input']>>;
+};
+
 export type JsonbCastExp = {
   String?: InputMaybe<StringComparisonExp>;
 };
@@ -13164,6 +13176,685 @@ export type PayrollDashboardStatsVarianceFields = {
   totalDates?: Maybe<Scalars['Float']['output']>;
 };
 
+/** Comprehensive analytics view for payroll date completion, time tracking, and cost/revenue analysis */
+export type PayrollDateCompletionAnalytics = {
+  __typename?: 'PayrollDateCompletionAnalytics';
+  adjustedEftDate?: Maybe<Scalars['date']['output']>;
+  clientId?: Maybe<Scalars['uuid']['output']>;
+  clientName?: Maybe<Scalars['String']['output']>;
+  completedAt?: Maybe<Scalars['timestamptz']['output']>;
+  completedBy?: Maybe<Scalars['uuid']['output']>;
+  completedByName?: Maybe<Scalars['String']['output']>;
+  completionNotes?: Maybe<Scalars['String']['output']>;
+  estimatedCost?: Maybe<Scalars['numeric']['output']>;
+  estimatedProfit?: Maybe<Scalars['numeric']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  originalEftDate?: Maybe<Scalars['date']['output']>;
+  payrollId?: Maybe<Scalars['uuid']['output']>;
+  payrollName?: Maybe<Scalars['String']['output']>;
+  processingDate?: Maybe<Scalars['date']['output']>;
+  status?: Maybe<Scalars['String']['output']>;
+  timeBreakdown?: Maybe<Scalars['json']['output']>;
+  totalHoursSpent?: Maybe<Scalars['numeric']['output']>;
+  totalRevenue?: Maybe<Scalars['numeric']['output']>;
+  totalTimeSpentMinutes?: Maybe<Scalars['Int']['output']>;
+};
+
+
+/** Comprehensive analytics view for payroll date completion, time tracking, and cost/revenue analysis */
+export type PayrollDateCompletionAnalyticsTimeBreakdownArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** aggregated selection of "payroll_date_completion_analytics" */
+export type PayrollDateCompletionAnalyticsAggregate = {
+  __typename?: 'PayrollDateCompletionAnalyticsAggregate';
+  aggregate?: Maybe<PayrollDateCompletionAnalyticsAggregateFields>;
+  nodes: Array<PayrollDateCompletionAnalytics>;
+};
+
+/** aggregate fields of "payroll_date_completion_analytics" */
+export type PayrollDateCompletionAnalyticsAggregateFields = {
+  __typename?: 'PayrollDateCompletionAnalyticsAggregateFields';
+  avg?: Maybe<PayrollDateCompletionAnalyticsAvgFields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<PayrollDateCompletionAnalyticsMaxFields>;
+  min?: Maybe<PayrollDateCompletionAnalyticsMinFields>;
+  stddev?: Maybe<PayrollDateCompletionAnalyticsStddevFields>;
+  stddevPop?: Maybe<PayrollDateCompletionAnalyticsStddevPopFields>;
+  stddevSamp?: Maybe<PayrollDateCompletionAnalyticsStddevSampFields>;
+  sum?: Maybe<PayrollDateCompletionAnalyticsSumFields>;
+  varPop?: Maybe<PayrollDateCompletionAnalyticsVarPopFields>;
+  varSamp?: Maybe<PayrollDateCompletionAnalyticsVarSampFields>;
+  variance?: Maybe<PayrollDateCompletionAnalyticsVarianceFields>;
+};
+
+
+/** aggregate fields of "payroll_date_completion_analytics" */
+export type PayrollDateCompletionAnalyticsAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<PayrollDateCompletionAnalyticsSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate avg on columns */
+export type PayrollDateCompletionAnalyticsAvgFields = {
+  __typename?: 'PayrollDateCompletionAnalyticsAvgFields';
+  estimatedCost?: Maybe<Scalars['Float']['output']>;
+  estimatedProfit?: Maybe<Scalars['Float']['output']>;
+  totalHoursSpent?: Maybe<Scalars['Float']['output']>;
+  totalRevenue?: Maybe<Scalars['Float']['output']>;
+  totalTimeSpentMinutes?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "payroll_date_completion_analytics". All fields are combined with a logical 'AND'. */
+export type PayrollDateCompletionAnalyticsBoolExp = {
+  _and?: InputMaybe<Array<PayrollDateCompletionAnalyticsBoolExp>>;
+  _not?: InputMaybe<PayrollDateCompletionAnalyticsBoolExp>;
+  _or?: InputMaybe<Array<PayrollDateCompletionAnalyticsBoolExp>>;
+  adjustedEftDate?: InputMaybe<DateComparisonExp>;
+  clientId?: InputMaybe<UuidComparisonExp>;
+  clientName?: InputMaybe<StringComparisonExp>;
+  completedAt?: InputMaybe<TimestamptzComparisonExp>;
+  completedBy?: InputMaybe<UuidComparisonExp>;
+  completedByName?: InputMaybe<StringComparisonExp>;
+  completionNotes?: InputMaybe<StringComparisonExp>;
+  estimatedCost?: InputMaybe<NumericComparisonExp>;
+  estimatedProfit?: InputMaybe<NumericComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  originalEftDate?: InputMaybe<DateComparisonExp>;
+  payrollId?: InputMaybe<UuidComparisonExp>;
+  payrollName?: InputMaybe<StringComparisonExp>;
+  processingDate?: InputMaybe<DateComparisonExp>;
+  status?: InputMaybe<StringComparisonExp>;
+  timeBreakdown?: InputMaybe<JsonComparisonExp>;
+  totalHoursSpent?: InputMaybe<NumericComparisonExp>;
+  totalRevenue?: InputMaybe<NumericComparisonExp>;
+  totalTimeSpentMinutes?: InputMaybe<IntComparisonExp>;
+};
+
+/** aggregate max on columns */
+export type PayrollDateCompletionAnalyticsMaxFields = {
+  __typename?: 'PayrollDateCompletionAnalyticsMaxFields';
+  adjustedEftDate?: Maybe<Scalars['date']['output']>;
+  clientId?: Maybe<Scalars['uuid']['output']>;
+  clientName?: Maybe<Scalars['String']['output']>;
+  completedAt?: Maybe<Scalars['timestamptz']['output']>;
+  completedBy?: Maybe<Scalars['uuid']['output']>;
+  completedByName?: Maybe<Scalars['String']['output']>;
+  completionNotes?: Maybe<Scalars['String']['output']>;
+  estimatedCost?: Maybe<Scalars['numeric']['output']>;
+  estimatedProfit?: Maybe<Scalars['numeric']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  originalEftDate?: Maybe<Scalars['date']['output']>;
+  payrollId?: Maybe<Scalars['uuid']['output']>;
+  payrollName?: Maybe<Scalars['String']['output']>;
+  processingDate?: Maybe<Scalars['date']['output']>;
+  status?: Maybe<Scalars['String']['output']>;
+  totalHoursSpent?: Maybe<Scalars['numeric']['output']>;
+  totalRevenue?: Maybe<Scalars['numeric']['output']>;
+  totalTimeSpentMinutes?: Maybe<Scalars['Int']['output']>;
+};
+
+/** aggregate min on columns */
+export type PayrollDateCompletionAnalyticsMinFields = {
+  __typename?: 'PayrollDateCompletionAnalyticsMinFields';
+  adjustedEftDate?: Maybe<Scalars['date']['output']>;
+  clientId?: Maybe<Scalars['uuid']['output']>;
+  clientName?: Maybe<Scalars['String']['output']>;
+  completedAt?: Maybe<Scalars['timestamptz']['output']>;
+  completedBy?: Maybe<Scalars['uuid']['output']>;
+  completedByName?: Maybe<Scalars['String']['output']>;
+  completionNotes?: Maybe<Scalars['String']['output']>;
+  estimatedCost?: Maybe<Scalars['numeric']['output']>;
+  estimatedProfit?: Maybe<Scalars['numeric']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  originalEftDate?: Maybe<Scalars['date']['output']>;
+  payrollId?: Maybe<Scalars['uuid']['output']>;
+  payrollName?: Maybe<Scalars['String']['output']>;
+  processingDate?: Maybe<Scalars['date']['output']>;
+  status?: Maybe<Scalars['String']['output']>;
+  totalHoursSpent?: Maybe<Scalars['numeric']['output']>;
+  totalRevenue?: Maybe<Scalars['numeric']['output']>;
+  totalTimeSpentMinutes?: Maybe<Scalars['Int']['output']>;
+};
+
+/** Ordering options when selecting data from "payroll_date_completion_analytics". */
+export type PayrollDateCompletionAnalyticsOrderBy = {
+  adjustedEftDate?: InputMaybe<OrderBy>;
+  clientId?: InputMaybe<OrderBy>;
+  clientName?: InputMaybe<OrderBy>;
+  completedAt?: InputMaybe<OrderBy>;
+  completedBy?: InputMaybe<OrderBy>;
+  completedByName?: InputMaybe<OrderBy>;
+  completionNotes?: InputMaybe<OrderBy>;
+  estimatedCost?: InputMaybe<OrderBy>;
+  estimatedProfit?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  originalEftDate?: InputMaybe<OrderBy>;
+  payrollId?: InputMaybe<OrderBy>;
+  payrollName?: InputMaybe<OrderBy>;
+  processingDate?: InputMaybe<OrderBy>;
+  status?: InputMaybe<OrderBy>;
+  timeBreakdown?: InputMaybe<OrderBy>;
+  totalHoursSpent?: InputMaybe<OrderBy>;
+  totalRevenue?: InputMaybe<OrderBy>;
+  totalTimeSpentMinutes?: InputMaybe<OrderBy>;
+};
+
+/** select columns of table "payroll_date_completion_analytics" */
+export type PayrollDateCompletionAnalyticsSelectColumn =
+  /** column name */
+  | 'adjustedEftDate'
+  /** column name */
+  | 'clientId'
+  /** column name */
+  | 'clientName'
+  /** column name */
+  | 'completedAt'
+  /** column name */
+  | 'completedBy'
+  /** column name */
+  | 'completedByName'
+  /** column name */
+  | 'completionNotes'
+  /** column name */
+  | 'estimatedCost'
+  /** column name */
+  | 'estimatedProfit'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'originalEftDate'
+  /** column name */
+  | 'payrollId'
+  /** column name */
+  | 'payrollName'
+  /** column name */
+  | 'processingDate'
+  /** column name */
+  | 'status'
+  /** column name */
+  | 'timeBreakdown'
+  /** column name */
+  | 'totalHoursSpent'
+  /** column name */
+  | 'totalRevenue'
+  /** column name */
+  | 'totalTimeSpentMinutes'
+  | '%future added value';
+
+/** aggregate stddev on columns */
+export type PayrollDateCompletionAnalyticsStddevFields = {
+  __typename?: 'PayrollDateCompletionAnalyticsStddevFields';
+  estimatedCost?: Maybe<Scalars['Float']['output']>;
+  estimatedProfit?: Maybe<Scalars['Float']['output']>;
+  totalHoursSpent?: Maybe<Scalars['Float']['output']>;
+  totalRevenue?: Maybe<Scalars['Float']['output']>;
+  totalTimeSpentMinutes?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddevPop on columns */
+export type PayrollDateCompletionAnalyticsStddevPopFields = {
+  __typename?: 'PayrollDateCompletionAnalyticsStddevPopFields';
+  estimatedCost?: Maybe<Scalars['Float']['output']>;
+  estimatedProfit?: Maybe<Scalars['Float']['output']>;
+  totalHoursSpent?: Maybe<Scalars['Float']['output']>;
+  totalRevenue?: Maybe<Scalars['Float']['output']>;
+  totalTimeSpentMinutes?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddevSamp on columns */
+export type PayrollDateCompletionAnalyticsStddevSampFields = {
+  __typename?: 'PayrollDateCompletionAnalyticsStddevSampFields';
+  estimatedCost?: Maybe<Scalars['Float']['output']>;
+  estimatedProfit?: Maybe<Scalars['Float']['output']>;
+  totalHoursSpent?: Maybe<Scalars['Float']['output']>;
+  totalRevenue?: Maybe<Scalars['Float']['output']>;
+  totalTimeSpentMinutes?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "payroll_date_completion_analytics" */
+export type PayrollDateCompletionAnalyticsStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: PayrollDateCompletionAnalyticsStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type PayrollDateCompletionAnalyticsStreamCursorValueInput = {
+  adjustedEftDate?: InputMaybe<Scalars['date']['input']>;
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+  clientName?: InputMaybe<Scalars['String']['input']>;
+  completedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  completedBy?: InputMaybe<Scalars['uuid']['input']>;
+  completedByName?: InputMaybe<Scalars['String']['input']>;
+  completionNotes?: InputMaybe<Scalars['String']['input']>;
+  estimatedCost?: InputMaybe<Scalars['numeric']['input']>;
+  estimatedProfit?: InputMaybe<Scalars['numeric']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  originalEftDate?: InputMaybe<Scalars['date']['input']>;
+  payrollId?: InputMaybe<Scalars['uuid']['input']>;
+  payrollName?: InputMaybe<Scalars['String']['input']>;
+  processingDate?: InputMaybe<Scalars['date']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
+  timeBreakdown?: InputMaybe<Scalars['json']['input']>;
+  totalHoursSpent?: InputMaybe<Scalars['numeric']['input']>;
+  totalRevenue?: InputMaybe<Scalars['numeric']['input']>;
+  totalTimeSpentMinutes?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** aggregate sum on columns */
+export type PayrollDateCompletionAnalyticsSumFields = {
+  __typename?: 'PayrollDateCompletionAnalyticsSumFields';
+  estimatedCost?: Maybe<Scalars['numeric']['output']>;
+  estimatedProfit?: Maybe<Scalars['numeric']['output']>;
+  totalHoursSpent?: Maybe<Scalars['numeric']['output']>;
+  totalRevenue?: Maybe<Scalars['numeric']['output']>;
+  totalTimeSpentMinutes?: Maybe<Scalars['Int']['output']>;
+};
+
+/** aggregate varPop on columns */
+export type PayrollDateCompletionAnalyticsVarPopFields = {
+  __typename?: 'PayrollDateCompletionAnalyticsVarPopFields';
+  estimatedCost?: Maybe<Scalars['Float']['output']>;
+  estimatedProfit?: Maybe<Scalars['Float']['output']>;
+  totalHoursSpent?: Maybe<Scalars['Float']['output']>;
+  totalRevenue?: Maybe<Scalars['Float']['output']>;
+  totalTimeSpentMinutes?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate varSamp on columns */
+export type PayrollDateCompletionAnalyticsVarSampFields = {
+  __typename?: 'PayrollDateCompletionAnalyticsVarSampFields';
+  estimatedCost?: Maybe<Scalars['Float']['output']>;
+  estimatedProfit?: Maybe<Scalars['Float']['output']>;
+  totalHoursSpent?: Maybe<Scalars['Float']['output']>;
+  totalRevenue?: Maybe<Scalars['Float']['output']>;
+  totalTimeSpentMinutes?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type PayrollDateCompletionAnalyticsVarianceFields = {
+  __typename?: 'PayrollDateCompletionAnalyticsVarianceFields';
+  estimatedCost?: Maybe<Scalars['Float']['output']>;
+  estimatedProfit?: Maybe<Scalars['Float']['output']>;
+  totalHoursSpent?: Maybe<Scalars['Float']['output']>;
+  totalRevenue?: Maybe<Scalars['Float']['output']>;
+  totalTimeSpentMinutes?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Detailed time tracking for individual users working on payroll dates */
+export type PayrollDateTimeEntries = {
+  __typename?: 'PayrollDateTimeEntries';
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['uuid']['output'];
+  /** An object relationship */
+  payrollDate: PayrollDates;
+  payrollDateId: Scalars['uuid']['output'];
+  timeSpentMinutes: Scalars['Int']['output'];
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  /** An object relationship */
+  user: Users;
+  userId: Scalars['uuid']['output'];
+  workDate: Scalars['date']['output'];
+};
+
+/** aggregated selection of "payroll_date_time_entries" */
+export type PayrollDateTimeEntriesAggregate = {
+  __typename?: 'PayrollDateTimeEntriesAggregate';
+  aggregate?: Maybe<PayrollDateTimeEntriesAggregateFields>;
+  nodes: Array<PayrollDateTimeEntries>;
+};
+
+export type PayrollDateTimeEntriesAggregateBoolExp = {
+  count?: InputMaybe<PayrollDateTimeEntriesAggregateBoolExpCount>;
+};
+
+/** aggregate fields of "payroll_date_time_entries" */
+export type PayrollDateTimeEntriesAggregateFields = {
+  __typename?: 'PayrollDateTimeEntriesAggregateFields';
+  avg?: Maybe<PayrollDateTimeEntriesAvgFields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<PayrollDateTimeEntriesMaxFields>;
+  min?: Maybe<PayrollDateTimeEntriesMinFields>;
+  stddev?: Maybe<PayrollDateTimeEntriesStddevFields>;
+  stddevPop?: Maybe<PayrollDateTimeEntriesStddevPopFields>;
+  stddevSamp?: Maybe<PayrollDateTimeEntriesStddevSampFields>;
+  sum?: Maybe<PayrollDateTimeEntriesSumFields>;
+  varPop?: Maybe<PayrollDateTimeEntriesVarPopFields>;
+  varSamp?: Maybe<PayrollDateTimeEntriesVarSampFields>;
+  variance?: Maybe<PayrollDateTimeEntriesVarianceFields>;
+};
+
+
+/** aggregate fields of "payroll_date_time_entries" */
+export type PayrollDateTimeEntriesAggregateFieldsCountArgs = {
+  columns?: InputMaybe<Array<PayrollDateTimeEntriesSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** order by aggregate values of table "payroll_date_time_entries" */
+export type PayrollDateTimeEntriesAggregateOrderBy = {
+  avg?: InputMaybe<PayrollDateTimeEntriesAvgOrderBy>;
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<PayrollDateTimeEntriesMaxOrderBy>;
+  min?: InputMaybe<PayrollDateTimeEntriesMinOrderBy>;
+  stddev?: InputMaybe<PayrollDateTimeEntriesStddevOrderBy>;
+  stddevPop?: InputMaybe<PayrollDateTimeEntriesStddevPopOrderBy>;
+  stddevSamp?: InputMaybe<PayrollDateTimeEntriesStddevSampOrderBy>;
+  sum?: InputMaybe<PayrollDateTimeEntriesSumOrderBy>;
+  varPop?: InputMaybe<PayrollDateTimeEntriesVarPopOrderBy>;
+  varSamp?: InputMaybe<PayrollDateTimeEntriesVarSampOrderBy>;
+  variance?: InputMaybe<PayrollDateTimeEntriesVarianceOrderBy>;
+};
+
+/** input type for inserting array relation for remote table "payroll_date_time_entries" */
+export type PayrollDateTimeEntriesArrRelInsertInput = {
+  data: Array<PayrollDateTimeEntriesInsertInput>;
+  /** upsert condition */
+  onConflict?: InputMaybe<PayrollDateTimeEntriesOnConflict>;
+};
+
+/** aggregate avg on columns */
+export type PayrollDateTimeEntriesAvgFields = {
+  __typename?: 'PayrollDateTimeEntriesAvgFields';
+  timeSpentMinutes?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by avg() on columns of table "payroll_date_time_entries" */
+export type PayrollDateTimeEntriesAvgOrderBy = {
+  timeSpentMinutes?: InputMaybe<OrderBy>;
+};
+
+/** Boolean expression to filter rows from the table "payroll_date_time_entries". All fields are combined with a logical 'AND'. */
+export type PayrollDateTimeEntriesBoolExp = {
+  _and?: InputMaybe<Array<PayrollDateTimeEntriesBoolExp>>;
+  _not?: InputMaybe<PayrollDateTimeEntriesBoolExp>;
+  _or?: InputMaybe<Array<PayrollDateTimeEntriesBoolExp>>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  description?: InputMaybe<StringComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  payrollDate?: InputMaybe<PayrollDatesBoolExp>;
+  payrollDateId?: InputMaybe<UuidComparisonExp>;
+  timeSpentMinutes?: InputMaybe<IntComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+  user?: InputMaybe<UsersBoolExp>;
+  userId?: InputMaybe<UuidComparisonExp>;
+  workDate?: InputMaybe<DateComparisonExp>;
+};
+
+/** unique or primary key constraints on table "payroll_date_time_entries" */
+export type PayrollDateTimeEntriesConstraint =
+  /** unique or primary key constraint on columns "user_id", "work_date", "payroll_date_id" */
+  | 'payroll_date_time_entries_payroll_date_id_user_id_work_date_key'
+  /** unique or primary key constraint on columns "id" */
+  | 'payroll_date_time_entries_pkey'
+  | '%future added value';
+
+/** input type for incrementing numeric columns in table "payroll_date_time_entries" */
+export type PayrollDateTimeEntriesIncInput = {
+  timeSpentMinutes?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** input type for inserting data into table "payroll_date_time_entries" */
+export type PayrollDateTimeEntriesInsertInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  payrollDate?: InputMaybe<PayrollDatesObjRelInsertInput>;
+  payrollDateId?: InputMaybe<Scalars['uuid']['input']>;
+  timeSpentMinutes?: InputMaybe<Scalars['Int']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  user?: InputMaybe<UsersObjRelInsertInput>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+  workDate?: InputMaybe<Scalars['date']['input']>;
+};
+
+/** aggregate max on columns */
+export type PayrollDateTimeEntriesMaxFields = {
+  __typename?: 'PayrollDateTimeEntriesMaxFields';
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  payrollDateId?: Maybe<Scalars['uuid']['output']>;
+  timeSpentMinutes?: Maybe<Scalars['Int']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  userId?: Maybe<Scalars['uuid']['output']>;
+  workDate?: Maybe<Scalars['date']['output']>;
+};
+
+/** order by max() on columns of table "payroll_date_time_entries" */
+export type PayrollDateTimeEntriesMaxOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
+  description?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  payrollDateId?: InputMaybe<OrderBy>;
+  timeSpentMinutes?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  userId?: InputMaybe<OrderBy>;
+  workDate?: InputMaybe<OrderBy>;
+};
+
+/** aggregate min on columns */
+export type PayrollDateTimeEntriesMinFields = {
+  __typename?: 'PayrollDateTimeEntriesMinFields';
+  createdAt?: Maybe<Scalars['timestamptz']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['uuid']['output']>;
+  payrollDateId?: Maybe<Scalars['uuid']['output']>;
+  timeSpentMinutes?: Maybe<Scalars['Int']['output']>;
+  updatedAt?: Maybe<Scalars['timestamptz']['output']>;
+  userId?: Maybe<Scalars['uuid']['output']>;
+  workDate?: Maybe<Scalars['date']['output']>;
+};
+
+/** order by min() on columns of table "payroll_date_time_entries" */
+export type PayrollDateTimeEntriesMinOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
+  description?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  payrollDateId?: InputMaybe<OrderBy>;
+  timeSpentMinutes?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  userId?: InputMaybe<OrderBy>;
+  workDate?: InputMaybe<OrderBy>;
+};
+
+/** response of any mutation on the table "payroll_date_time_entries" */
+export type PayrollDateTimeEntriesMutationResponse = {
+  __typename?: 'PayrollDateTimeEntriesMutationResponse';
+  /** number of rows affected by the mutation */
+  affectedRows: Scalars['Int']['output'];
+  /** data from the rows affected by the mutation */
+  returning: Array<PayrollDateTimeEntries>;
+};
+
+/** on_conflict condition type for table "payroll_date_time_entries" */
+export type PayrollDateTimeEntriesOnConflict = {
+  constraint: PayrollDateTimeEntriesConstraint;
+  updateColumns?: Array<PayrollDateTimeEntriesUpdateColumn>;
+  where?: InputMaybe<PayrollDateTimeEntriesBoolExp>;
+};
+
+/** Ordering options when selecting data from "payroll_date_time_entries". */
+export type PayrollDateTimeEntriesOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
+  description?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  payrollDate?: InputMaybe<PayrollDatesOrderBy>;
+  payrollDateId?: InputMaybe<OrderBy>;
+  timeSpentMinutes?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  user?: InputMaybe<UsersOrderBy>;
+  userId?: InputMaybe<OrderBy>;
+  workDate?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: payroll_date_time_entries */
+export type PayrollDateTimeEntriesPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** select columns of table "payroll_date_time_entries" */
+export type PayrollDateTimeEntriesSelectColumn =
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'payrollDateId'
+  /** column name */
+  | 'timeSpentMinutes'
+  /** column name */
+  | 'updatedAt'
+  /** column name */
+  | 'userId'
+  /** column name */
+  | 'workDate'
+  | '%future added value';
+
+/** input type for updating data in table "payroll_date_time_entries" */
+export type PayrollDateTimeEntriesSetInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  payrollDateId?: InputMaybe<Scalars['uuid']['input']>;
+  timeSpentMinutes?: InputMaybe<Scalars['Int']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+  workDate?: InputMaybe<Scalars['date']['input']>;
+};
+
+/** aggregate stddev on columns */
+export type PayrollDateTimeEntriesStddevFields = {
+  __typename?: 'PayrollDateTimeEntriesStddevFields';
+  timeSpentMinutes?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddev() on columns of table "payroll_date_time_entries" */
+export type PayrollDateTimeEntriesStddevOrderBy = {
+  timeSpentMinutes?: InputMaybe<OrderBy>;
+};
+
+/** aggregate stddevPop on columns */
+export type PayrollDateTimeEntriesStddevPopFields = {
+  __typename?: 'PayrollDateTimeEntriesStddevPopFields';
+  timeSpentMinutes?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddevPop() on columns of table "payroll_date_time_entries" */
+export type PayrollDateTimeEntriesStddevPopOrderBy = {
+  timeSpentMinutes?: InputMaybe<OrderBy>;
+};
+
+/** aggregate stddevSamp on columns */
+export type PayrollDateTimeEntriesStddevSampFields = {
+  __typename?: 'PayrollDateTimeEntriesStddevSampFields';
+  timeSpentMinutes?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddevSamp() on columns of table "payroll_date_time_entries" */
+export type PayrollDateTimeEntriesStddevSampOrderBy = {
+  timeSpentMinutes?: InputMaybe<OrderBy>;
+};
+
+/** Streaming cursor of the table "payroll_date_time_entries" */
+export type PayrollDateTimeEntriesStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: PayrollDateTimeEntriesStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type PayrollDateTimeEntriesStreamCursorValueInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  payrollDateId?: InputMaybe<Scalars['uuid']['input']>;
+  timeSpentMinutes?: InputMaybe<Scalars['Int']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+  workDate?: InputMaybe<Scalars['date']['input']>;
+};
+
+/** aggregate sum on columns */
+export type PayrollDateTimeEntriesSumFields = {
+  __typename?: 'PayrollDateTimeEntriesSumFields';
+  timeSpentMinutes?: Maybe<Scalars['Int']['output']>;
+};
+
+/** order by sum() on columns of table "payroll_date_time_entries" */
+export type PayrollDateTimeEntriesSumOrderBy = {
+  timeSpentMinutes?: InputMaybe<OrderBy>;
+};
+
+/** update columns of table "payroll_date_time_entries" */
+export type PayrollDateTimeEntriesUpdateColumn =
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'payrollDateId'
+  /** column name */
+  | 'timeSpentMinutes'
+  /** column name */
+  | 'updatedAt'
+  /** column name */
+  | 'userId'
+  /** column name */
+  | 'workDate'
+  | '%future added value';
+
+export type PayrollDateTimeEntriesUpdates = {
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<PayrollDateTimeEntriesIncInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<PayrollDateTimeEntriesSetInput>;
+  /** filter the rows which have to be updated */
+  where: PayrollDateTimeEntriesBoolExp;
+};
+
+/** aggregate varPop on columns */
+export type PayrollDateTimeEntriesVarPopFields = {
+  __typename?: 'PayrollDateTimeEntriesVarPopFields';
+  timeSpentMinutes?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by varPop() on columns of table "payroll_date_time_entries" */
+export type PayrollDateTimeEntriesVarPopOrderBy = {
+  timeSpentMinutes?: InputMaybe<OrderBy>;
+};
+
+/** aggregate varSamp on columns */
+export type PayrollDateTimeEntriesVarSampFields = {
+  __typename?: 'PayrollDateTimeEntriesVarSampFields';
+  timeSpentMinutes?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by varSamp() on columns of table "payroll_date_time_entries" */
+export type PayrollDateTimeEntriesVarSampOrderBy = {
+  timeSpentMinutes?: InputMaybe<OrderBy>;
+};
+
+/** aggregate variance on columns */
+export type PayrollDateTimeEntriesVarianceFields = {
+  __typename?: 'PayrollDateTimeEntriesVarianceFields';
+  timeSpentMinutes?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by variance() on columns of table "payroll_date_time_entries" */
+export type PayrollDateTimeEntriesVarianceOrderBy = {
+  timeSpentMinutes?: InputMaybe<OrderBy>;
+};
+
 /** Boolean expression to compare columns of type "payroll_date_type". All fields are combined with logical 'AND'. */
 export type PayrollDateTypeComparisonExp = {
   _eq?: InputMaybe<Scalars['payroll_date_type']['input']>;
@@ -13454,8 +14145,12 @@ export type PayrollDates = {
   billingItems: Array<BillingItems>;
   /** An aggregate relationship */
   billingItemsAggregate: BillingItemsAggregate;
+  /** Timestamp when the payroll date was marked as completed */
   completedAt?: Maybe<Scalars['timestamptz']['output']>;
+  /** User who marked the payroll date as completed */
   completedBy?: Maybe<Scalars['uuid']['output']>;
+  /** Additional notes about the completion of this payroll date */
+  completionNotes?: Maybe<Scalars['String']['output']>;
   /** Timestamp when the date record was created */
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
   /** Unique identifier for the payroll date */
@@ -13470,15 +14165,22 @@ export type PayrollDates = {
   payrollAssignments: Array<PayrollAssignmentAudit>;
   /** An aggregate relationship */
   payrollAssignmentsAggregate: PayrollAssignmentAuditAggregate;
+  /** An array relationship */
+  payrollDateTimeEntries: Array<PayrollDateTimeEntries>;
+  /** An aggregate relationship */
+  payrollDateTimeEntriesAggregate: PayrollDateTimeEntriesAggregate;
   /** Reference to the payroll this date belongs to */
   payrollId: Scalars['uuid']['output'];
   /** Date when payroll processing must be completed */
   processingDate: Scalars['date']['output'];
+  /** Current status of the payroll date (pending, in_progress, completed, cancelled) */
   status?: Maybe<Scalars['String']['output']>;
   /** An array relationship */
   timeEntries: Array<TimeEntries>;
   /** An aggregate relationship */
   timeEntriesAggregate: TimeEntriesAggregate;
+  /** Total time spent by all users on this payroll date (in minutes) */
+  totalTimeSpentMinutes?: Maybe<Scalars['Int']['output']>;
   /** Timestamp when the date record was last updated */
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
   /** An object relationship */
@@ -13527,6 +14229,26 @@ export type PayrollDatesPayrollAssignmentsAggregateArgs = {
 
 
 /** columns and relationships of "payroll_dates" */
+export type PayrollDatesPayrollDateTimeEntriesArgs = {
+  distinctOn?: InputMaybe<Array<PayrollDateTimeEntriesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PayrollDateTimeEntriesOrderBy>>;
+  where?: InputMaybe<PayrollDateTimeEntriesBoolExp>;
+};
+
+
+/** columns and relationships of "payroll_dates" */
+export type PayrollDatesPayrollDateTimeEntriesAggregateArgs = {
+  distinctOn?: InputMaybe<Array<PayrollDateTimeEntriesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PayrollDateTimeEntriesOrderBy>>;
+  where?: InputMaybe<PayrollDateTimeEntriesBoolExp>;
+};
+
+
+/** columns and relationships of "payroll_dates" */
 export type PayrollDatesTimeEntriesArgs = {
   distinctOn?: InputMaybe<Array<TimeEntriesSelectColumn>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -13559,9 +14281,17 @@ export type PayrollDatesAggregateBoolExp = {
 /** aggregate fields of "payroll_dates" */
 export type PayrollDatesAggregateFields = {
   __typename?: 'PayrollDatesAggregateFields';
+  avg?: Maybe<PayrollDatesAvgFields>;
   count: Scalars['Int']['output'];
   max?: Maybe<PayrollDatesMaxFields>;
   min?: Maybe<PayrollDatesMinFields>;
+  stddev?: Maybe<PayrollDatesStddevFields>;
+  stddevPop?: Maybe<PayrollDatesStddevPopFields>;
+  stddevSamp?: Maybe<PayrollDatesStddevSampFields>;
+  sum?: Maybe<PayrollDatesSumFields>;
+  varPop?: Maybe<PayrollDatesVarPopFields>;
+  varSamp?: Maybe<PayrollDatesVarSampFields>;
+  variance?: Maybe<PayrollDatesVarianceFields>;
 };
 
 
@@ -13573,9 +14303,17 @@ export type PayrollDatesAggregateFieldsCountArgs = {
 
 /** order by aggregate values of table "payroll_dates" */
 export type PayrollDatesAggregateOrderBy = {
+  avg?: InputMaybe<PayrollDatesAvgOrderBy>;
   count?: InputMaybe<OrderBy>;
   max?: InputMaybe<PayrollDatesMaxOrderBy>;
   min?: InputMaybe<PayrollDatesMinOrderBy>;
+  stddev?: InputMaybe<PayrollDatesStddevOrderBy>;
+  stddevPop?: InputMaybe<PayrollDatesStddevPopOrderBy>;
+  stddevSamp?: InputMaybe<PayrollDatesStddevSampOrderBy>;
+  sum?: InputMaybe<PayrollDatesSumOrderBy>;
+  varPop?: InputMaybe<PayrollDatesVarPopOrderBy>;
+  varSamp?: InputMaybe<PayrollDatesVarSampOrderBy>;
+  variance?: InputMaybe<PayrollDatesVarianceOrderBy>;
 };
 
 /** input type for inserting array relation for remote table "payroll_dates" */
@@ -13583,6 +14321,19 @@ export type PayrollDatesArrRelInsertInput = {
   data: Array<PayrollDatesInsertInput>;
   /** upsert condition */
   onConflict?: InputMaybe<PayrollDatesOnConflict>;
+};
+
+/** aggregate avg on columns */
+export type PayrollDatesAvgFields = {
+  __typename?: 'PayrollDatesAvgFields';
+  /** Total time spent by all users on this payroll date (in minutes) */
+  totalTimeSpentMinutes?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by avg() on columns of table "payroll_dates" */
+export type PayrollDatesAvgOrderBy = {
+  /** Total time spent by all users on this payroll date (in minutes) */
+  totalTimeSpentMinutes?: InputMaybe<OrderBy>;
 };
 
 /** Boolean expression to filter rows from the table "payroll_dates". All fields are combined with a logical 'AND'. */
@@ -13596,6 +14347,7 @@ export type PayrollDatesBoolExp = {
   billingItemsAggregate?: InputMaybe<BillingItemsAggregateBoolExp>;
   completedAt?: InputMaybe<TimestamptzComparisonExp>;
   completedBy?: InputMaybe<UuidComparisonExp>;
+  completionNotes?: InputMaybe<StringComparisonExp>;
   createdAt?: InputMaybe<TimestamptzComparisonExp>;
   id?: InputMaybe<UuidComparisonExp>;
   notes?: InputMaybe<StringComparisonExp>;
@@ -13603,11 +14355,14 @@ export type PayrollDatesBoolExp = {
   payroll?: InputMaybe<PayrollsBoolExp>;
   payrollAssignments?: InputMaybe<PayrollAssignmentAuditBoolExp>;
   payrollAssignmentsAggregate?: InputMaybe<PayrollAssignmentAuditAggregateBoolExp>;
+  payrollDateTimeEntries?: InputMaybe<PayrollDateTimeEntriesBoolExp>;
+  payrollDateTimeEntriesAggregate?: InputMaybe<PayrollDateTimeEntriesAggregateBoolExp>;
   payrollId?: InputMaybe<UuidComparisonExp>;
   processingDate?: InputMaybe<DateComparisonExp>;
   status?: InputMaybe<StringComparisonExp>;
   timeEntries?: InputMaybe<TimeEntriesBoolExp>;
   timeEntriesAggregate?: InputMaybe<TimeEntriesAggregateBoolExp>;
+  totalTimeSpentMinutes?: InputMaybe<IntComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
   user?: InputMaybe<UsersBoolExp>;
 };
@@ -13620,14 +14375,24 @@ export type PayrollDatesConstraint =
   | 'payroll_dates_pkey'
   | '%future added value';
 
+/** input type for incrementing numeric columns in table "payroll_dates" */
+export type PayrollDatesIncInput = {
+  /** Total time spent by all users on this payroll date (in minutes) */
+  totalTimeSpentMinutes?: InputMaybe<Scalars['Int']['input']>;
+};
+
 /** input type for inserting data into table "payroll_dates" */
 export type PayrollDatesInsertInput = {
   /** Final EFT date after holiday and weekend adjustments */
   adjustedEftDate?: InputMaybe<Scalars['date']['input']>;
   assignmentDetails?: InputMaybe<PayrollAssignmentsObjRelInsertInput>;
   billingItems?: InputMaybe<BillingItemsArrRelInsertInput>;
+  /** Timestamp when the payroll date was marked as completed */
   completedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** User who marked the payroll date as completed */
   completedBy?: InputMaybe<Scalars['uuid']['input']>;
+  /** Additional notes about the completion of this payroll date */
+  completionNotes?: InputMaybe<Scalars['String']['input']>;
   /** Timestamp when the date record was created */
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Unique identifier for the payroll date */
@@ -13638,12 +14403,16 @@ export type PayrollDatesInsertInput = {
   originalEftDate?: InputMaybe<Scalars['date']['input']>;
   payroll?: InputMaybe<PayrollsObjRelInsertInput>;
   payrollAssignments?: InputMaybe<PayrollAssignmentAuditArrRelInsertInput>;
+  payrollDateTimeEntries?: InputMaybe<PayrollDateTimeEntriesArrRelInsertInput>;
   /** Reference to the payroll this date belongs to */
   payrollId?: InputMaybe<Scalars['uuid']['input']>;
   /** Date when payroll processing must be completed */
   processingDate?: InputMaybe<Scalars['date']['input']>;
+  /** Current status of the payroll date (pending, in_progress, completed, cancelled) */
   status?: InputMaybe<Scalars['String']['input']>;
   timeEntries?: InputMaybe<TimeEntriesArrRelInsertInput>;
+  /** Total time spent by all users on this payroll date (in minutes) */
+  totalTimeSpentMinutes?: InputMaybe<Scalars['Int']['input']>;
   /** Timestamp when the date record was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   user?: InputMaybe<UsersObjRelInsertInput>;
@@ -13654,8 +14423,12 @@ export type PayrollDatesMaxFields = {
   __typename?: 'PayrollDatesMaxFields';
   /** Final EFT date after holiday and weekend adjustments */
   adjustedEftDate?: Maybe<Scalars['date']['output']>;
+  /** Timestamp when the payroll date was marked as completed */
   completedAt?: Maybe<Scalars['timestamptz']['output']>;
+  /** User who marked the payroll date as completed */
   completedBy?: Maybe<Scalars['uuid']['output']>;
+  /** Additional notes about the completion of this payroll date */
+  completionNotes?: Maybe<Scalars['String']['output']>;
   /** Timestamp when the date record was created */
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
   /** Unique identifier for the payroll date */
@@ -13668,7 +14441,10 @@ export type PayrollDatesMaxFields = {
   payrollId?: Maybe<Scalars['uuid']['output']>;
   /** Date when payroll processing must be completed */
   processingDate?: Maybe<Scalars['date']['output']>;
+  /** Current status of the payroll date (pending, in_progress, completed, cancelled) */
   status?: Maybe<Scalars['String']['output']>;
+  /** Total time spent by all users on this payroll date (in minutes) */
+  totalTimeSpentMinutes?: Maybe<Scalars['Int']['output']>;
   /** Timestamp when the date record was last updated */
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
 };
@@ -13677,8 +14453,12 @@ export type PayrollDatesMaxFields = {
 export type PayrollDatesMaxOrderBy = {
   /** Final EFT date after holiday and weekend adjustments */
   adjustedEftDate?: InputMaybe<OrderBy>;
+  /** Timestamp when the payroll date was marked as completed */
   completedAt?: InputMaybe<OrderBy>;
+  /** User who marked the payroll date as completed */
   completedBy?: InputMaybe<OrderBy>;
+  /** Additional notes about the completion of this payroll date */
+  completionNotes?: InputMaybe<OrderBy>;
   /** Timestamp when the date record was created */
   createdAt?: InputMaybe<OrderBy>;
   /** Unique identifier for the payroll date */
@@ -13691,7 +14471,10 @@ export type PayrollDatesMaxOrderBy = {
   payrollId?: InputMaybe<OrderBy>;
   /** Date when payroll processing must be completed */
   processingDate?: InputMaybe<OrderBy>;
+  /** Current status of the payroll date (pending, in_progress, completed, cancelled) */
   status?: InputMaybe<OrderBy>;
+  /** Total time spent by all users on this payroll date (in minutes) */
+  totalTimeSpentMinutes?: InputMaybe<OrderBy>;
   /** Timestamp when the date record was last updated */
   updatedAt?: InputMaybe<OrderBy>;
 };
@@ -13701,8 +14484,12 @@ export type PayrollDatesMinFields = {
   __typename?: 'PayrollDatesMinFields';
   /** Final EFT date after holiday and weekend adjustments */
   adjustedEftDate?: Maybe<Scalars['date']['output']>;
+  /** Timestamp when the payroll date was marked as completed */
   completedAt?: Maybe<Scalars['timestamptz']['output']>;
+  /** User who marked the payroll date as completed */
   completedBy?: Maybe<Scalars['uuid']['output']>;
+  /** Additional notes about the completion of this payroll date */
+  completionNotes?: Maybe<Scalars['String']['output']>;
   /** Timestamp when the date record was created */
   createdAt?: Maybe<Scalars['timestamptz']['output']>;
   /** Unique identifier for the payroll date */
@@ -13715,7 +14502,10 @@ export type PayrollDatesMinFields = {
   payrollId?: Maybe<Scalars['uuid']['output']>;
   /** Date when payroll processing must be completed */
   processingDate?: Maybe<Scalars['date']['output']>;
+  /** Current status of the payroll date (pending, in_progress, completed, cancelled) */
   status?: Maybe<Scalars['String']['output']>;
+  /** Total time spent by all users on this payroll date (in minutes) */
+  totalTimeSpentMinutes?: Maybe<Scalars['Int']['output']>;
   /** Timestamp when the date record was last updated */
   updatedAt?: Maybe<Scalars['timestamptz']['output']>;
 };
@@ -13724,8 +14514,12 @@ export type PayrollDatesMinFields = {
 export type PayrollDatesMinOrderBy = {
   /** Final EFT date after holiday and weekend adjustments */
   adjustedEftDate?: InputMaybe<OrderBy>;
+  /** Timestamp when the payroll date was marked as completed */
   completedAt?: InputMaybe<OrderBy>;
+  /** User who marked the payroll date as completed */
   completedBy?: InputMaybe<OrderBy>;
+  /** Additional notes about the completion of this payroll date */
+  completionNotes?: InputMaybe<OrderBy>;
   /** Timestamp when the date record was created */
   createdAt?: InputMaybe<OrderBy>;
   /** Unique identifier for the payroll date */
@@ -13738,7 +14532,10 @@ export type PayrollDatesMinOrderBy = {
   payrollId?: InputMaybe<OrderBy>;
   /** Date when payroll processing must be completed */
   processingDate?: InputMaybe<OrderBy>;
+  /** Current status of the payroll date (pending, in_progress, completed, cancelled) */
   status?: InputMaybe<OrderBy>;
+  /** Total time spent by all users on this payroll date (in minutes) */
+  totalTimeSpentMinutes?: InputMaybe<OrderBy>;
   /** Timestamp when the date record was last updated */
   updatedAt?: InputMaybe<OrderBy>;
 };
@@ -13773,16 +14570,19 @@ export type PayrollDatesOrderBy = {
   billingItemsAggregate?: InputMaybe<BillingItemsAggregateOrderBy>;
   completedAt?: InputMaybe<OrderBy>;
   completedBy?: InputMaybe<OrderBy>;
+  completionNotes?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   notes?: InputMaybe<OrderBy>;
   originalEftDate?: InputMaybe<OrderBy>;
   payroll?: InputMaybe<PayrollsOrderBy>;
   payrollAssignmentsAggregate?: InputMaybe<PayrollAssignmentAuditAggregateOrderBy>;
+  payrollDateTimeEntriesAggregate?: InputMaybe<PayrollDateTimeEntriesAggregateOrderBy>;
   payrollId?: InputMaybe<OrderBy>;
   processingDate?: InputMaybe<OrderBy>;
   status?: InputMaybe<OrderBy>;
   timeEntriesAggregate?: InputMaybe<TimeEntriesAggregateOrderBy>;
+  totalTimeSpentMinutes?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
   user?: InputMaybe<UsersOrderBy>;
 };
@@ -13802,6 +14602,8 @@ export type PayrollDatesSelectColumn =
   /** column name */
   | 'completedBy'
   /** column name */
+  | 'completionNotes'
+  /** column name */
   | 'createdAt'
   /** column name */
   | 'id'
@@ -13816,6 +14618,8 @@ export type PayrollDatesSelectColumn =
   /** column name */
   | 'status'
   /** column name */
+  | 'totalTimeSpentMinutes'
+  /** column name */
   | 'updatedAt'
   | '%future added value';
 
@@ -13823,8 +14627,12 @@ export type PayrollDatesSelectColumn =
 export type PayrollDatesSetInput = {
   /** Final EFT date after holiday and weekend adjustments */
   adjustedEftDate?: InputMaybe<Scalars['date']['input']>;
+  /** Timestamp when the payroll date was marked as completed */
   completedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** User who marked the payroll date as completed */
   completedBy?: InputMaybe<Scalars['uuid']['input']>;
+  /** Additional notes about the completion of this payroll date */
+  completionNotes?: InputMaybe<Scalars['String']['input']>;
   /** Timestamp when the date record was created */
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Unique identifier for the payroll date */
@@ -13837,9 +14645,51 @@ export type PayrollDatesSetInput = {
   payrollId?: InputMaybe<Scalars['uuid']['input']>;
   /** Date when payroll processing must be completed */
   processingDate?: InputMaybe<Scalars['date']['input']>;
+  /** Current status of the payroll date (pending, in_progress, completed, cancelled) */
   status?: InputMaybe<Scalars['String']['input']>;
+  /** Total time spent by all users on this payroll date (in minutes) */
+  totalTimeSpentMinutes?: InputMaybe<Scalars['Int']['input']>;
   /** Timestamp when the date record was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** aggregate stddev on columns */
+export type PayrollDatesStddevFields = {
+  __typename?: 'PayrollDatesStddevFields';
+  /** Total time spent by all users on this payroll date (in minutes) */
+  totalTimeSpentMinutes?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddev() on columns of table "payroll_dates" */
+export type PayrollDatesStddevOrderBy = {
+  /** Total time spent by all users on this payroll date (in minutes) */
+  totalTimeSpentMinutes?: InputMaybe<OrderBy>;
+};
+
+/** aggregate stddevPop on columns */
+export type PayrollDatesStddevPopFields = {
+  __typename?: 'PayrollDatesStddevPopFields';
+  /** Total time spent by all users on this payroll date (in minutes) */
+  totalTimeSpentMinutes?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddevPop() on columns of table "payroll_dates" */
+export type PayrollDatesStddevPopOrderBy = {
+  /** Total time spent by all users on this payroll date (in minutes) */
+  totalTimeSpentMinutes?: InputMaybe<OrderBy>;
+};
+
+/** aggregate stddevSamp on columns */
+export type PayrollDatesStddevSampFields = {
+  __typename?: 'PayrollDatesStddevSampFields';
+  /** Total time spent by all users on this payroll date (in minutes) */
+  totalTimeSpentMinutes?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddevSamp() on columns of table "payroll_dates" */
+export type PayrollDatesStddevSampOrderBy = {
+  /** Total time spent by all users on this payroll date (in minutes) */
+  totalTimeSpentMinutes?: InputMaybe<OrderBy>;
 };
 
 /** Streaming cursor of the table "payroll_dates" */
@@ -13854,8 +14704,12 @@ export type PayrollDatesStreamCursorInput = {
 export type PayrollDatesStreamCursorValueInput = {
   /** Final EFT date after holiday and weekend adjustments */
   adjustedEftDate?: InputMaybe<Scalars['date']['input']>;
+  /** Timestamp when the payroll date was marked as completed */
   completedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** User who marked the payroll date as completed */
   completedBy?: InputMaybe<Scalars['uuid']['input']>;
+  /** Additional notes about the completion of this payroll date */
+  completionNotes?: InputMaybe<Scalars['String']['input']>;
   /** Timestamp when the date record was created */
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** Unique identifier for the payroll date */
@@ -13868,9 +14722,25 @@ export type PayrollDatesStreamCursorValueInput = {
   payrollId?: InputMaybe<Scalars['uuid']['input']>;
   /** Date when payroll processing must be completed */
   processingDate?: InputMaybe<Scalars['date']['input']>;
+  /** Current status of the payroll date (pending, in_progress, completed, cancelled) */
   status?: InputMaybe<Scalars['String']['input']>;
+  /** Total time spent by all users on this payroll date (in minutes) */
+  totalTimeSpentMinutes?: InputMaybe<Scalars['Int']['input']>;
   /** Timestamp when the date record was last updated */
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** aggregate sum on columns */
+export type PayrollDatesSumFields = {
+  __typename?: 'PayrollDatesSumFields';
+  /** Total time spent by all users on this payroll date (in minutes) */
+  totalTimeSpentMinutes?: Maybe<Scalars['Int']['output']>;
+};
+
+/** order by sum() on columns of table "payroll_dates" */
+export type PayrollDatesSumOrderBy = {
+  /** Total time spent by all users on this payroll date (in minutes) */
+  totalTimeSpentMinutes?: InputMaybe<OrderBy>;
 };
 
 /** update columns of table "payroll_dates" */
@@ -13881,6 +14751,8 @@ export type PayrollDatesUpdateColumn =
   | 'completedAt'
   /** column name */
   | 'completedBy'
+  /** column name */
+  | 'completionNotes'
   /** column name */
   | 'createdAt'
   /** column name */
@@ -13896,14 +14768,57 @@ export type PayrollDatesUpdateColumn =
   /** column name */
   | 'status'
   /** column name */
+  | 'totalTimeSpentMinutes'
+  /** column name */
   | 'updatedAt'
   | '%future added value';
 
 export type PayrollDatesUpdates = {
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<PayrollDatesIncInput>;
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<PayrollDatesSetInput>;
   /** filter the rows which have to be updated */
   where: PayrollDatesBoolExp;
+};
+
+/** aggregate varPop on columns */
+export type PayrollDatesVarPopFields = {
+  __typename?: 'PayrollDatesVarPopFields';
+  /** Total time spent by all users on this payroll date (in minutes) */
+  totalTimeSpentMinutes?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by varPop() on columns of table "payroll_dates" */
+export type PayrollDatesVarPopOrderBy = {
+  /** Total time spent by all users on this payroll date (in minutes) */
+  totalTimeSpentMinutes?: InputMaybe<OrderBy>;
+};
+
+/** aggregate varSamp on columns */
+export type PayrollDatesVarSampFields = {
+  __typename?: 'PayrollDatesVarSampFields';
+  /** Total time spent by all users on this payroll date (in minutes) */
+  totalTimeSpentMinutes?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by varSamp() on columns of table "payroll_dates" */
+export type PayrollDatesVarSampOrderBy = {
+  /** Total time spent by all users on this payroll date (in minutes) */
+  totalTimeSpentMinutes?: InputMaybe<OrderBy>;
+};
+
+/** aggregate variance on columns */
+export type PayrollDatesVarianceFields = {
+  __typename?: 'PayrollDatesVarianceFields';
+  /** Total time spent by all users on this payroll date (in minutes) */
+  totalTimeSpentMinutes?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by variance() on columns of table "payroll_dates" */
+export type PayrollDatesVarianceOrderBy = {
+  /** Total time spent by all users on this payroll date (in minutes) */
+  totalTimeSpentMinutes?: InputMaybe<OrderBy>;
 };
 
 /** Profitability analysis for individual payroll jobs */
@@ -27562,6 +28477,10 @@ export type Users = {
   /** An aggregate relationship */
   originalConsultantAssignmentsAggregate: PayrollAssignmentsAggregate;
   /** An array relationship */
+  payrollDateTimeEntries: Array<PayrollDateTimeEntries>;
+  /** An aggregate relationship */
+  payrollDateTimeEntriesAggregate: PayrollDateTimeEntriesAggregate;
+  /** An array relationship */
   payrollDates: Array<PayrollDates>;
   /** An aggregate relationship */
   payrollDatesAggregate: PayrollDatesAggregate;
@@ -28205,6 +29124,26 @@ export type UsersOriginalConsultantAssignmentsAggregateArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<PayrollAssignmentsOrderBy>>;
   where?: InputMaybe<PayrollAssignmentsBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersPayrollDateTimeEntriesArgs = {
+  distinctOn?: InputMaybe<Array<PayrollDateTimeEntriesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PayrollDateTimeEntriesOrderBy>>;
+  where?: InputMaybe<PayrollDateTimeEntriesBoolExp>;
+};
+
+
+/** columns and relationships of "users" */
+export type UsersPayrollDateTimeEntriesAggregateArgs = {
+  distinctOn?: InputMaybe<Array<PayrollDateTimeEntriesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PayrollDateTimeEntriesOrderBy>>;
+  where?: InputMaybe<PayrollDateTimeEntriesBoolExp>;
 };
 
 
@@ -28872,6 +29811,8 @@ export type UsersBoolExp = {
   managerId?: InputMaybe<UuidComparisonExp>;
   originalConsultantAssignments?: InputMaybe<PayrollAssignmentsBoolExp>;
   originalConsultantAssignmentsAggregate?: InputMaybe<PayrollAssignmentsAggregateBoolExp>;
+  payrollDateTimeEntries?: InputMaybe<PayrollDateTimeEntriesBoolExp>;
+  payrollDateTimeEntriesAggregate?: InputMaybe<PayrollDateTimeEntriesAggregateBoolExp>;
   payrollDates?: InputMaybe<PayrollDatesBoolExp>;
   payrollDatesAggregate?: InputMaybe<PayrollDatesAggregateBoolExp>;
   permissionAuditLogs?: InputMaybe<PermissionAuditLogBoolExp>;
@@ -29008,6 +29949,7 @@ export type UsersInsertInput = {
   /** Reference to the user's manager */
   managerId?: InputMaybe<Scalars['uuid']['input']>;
   originalConsultantAssignments?: InputMaybe<PayrollAssignmentsArrRelInsertInput>;
+  payrollDateTimeEntries?: InputMaybe<PayrollDateTimeEntriesArrRelInsertInput>;
   payrollDates?: InputMaybe<PayrollDatesArrRelInsertInput>;
   permissionAuditLogs?: InputMaybe<PermissionAuditLogArrRelInsertInput>;
   permissionOverrides?: InputMaybe<PermissionOverridesArrRelInsertInput>;
@@ -29305,6 +30247,7 @@ export type UsersOrderBy = {
   manager?: InputMaybe<UsersOrderBy>;
   managerId?: InputMaybe<OrderBy>;
   originalConsultantAssignmentsAggregate?: InputMaybe<PayrollAssignmentsAggregateOrderBy>;
+  payrollDateTimeEntriesAggregate?: InputMaybe<PayrollDateTimeEntriesAggregateOrderBy>;
   payrollDatesAggregate?: InputMaybe<PayrollDatesAggregateOrderBy>;
   permissionAuditLogsAggregate?: InputMaybe<PermissionAuditLogAggregateOrderBy>;
   permissionOverridesAggregate?: InputMaybe<PermissionOverridesAggregateOrderBy>;
@@ -30359,9 +31302,6 @@ export type WorkScheduleVarianceOrderBy = {
   workHours?: InputMaybe<OrderBy>;
 };
 
-/** A union of all types that use the @key directive */
-export type _Entity = AdjustmentRules | AppSettings | AuditAuditLog | AuditAuthEvents | AuditDataAccessLog | AuditPermissionChanges | AuditSlowQueries | BillingEventLog | BillingInvoice | BillingInvoiceItem | BillingItems | BillingPeriods | ClientExternalSystems | ClientServiceAgreements | Clients | DataBackups | EmailDrafts | EmailSendLogs | EmailTemplates | ExternalSystems | FeatureFlags | Files | Holidays | LatestPayrollVersionResults | Leave | Notes | PayrollActivationResults | PayrollAssignmentAudit | PayrollAssignments | PayrollCycles | PayrollDateTypes | PayrollDates | PayrollVersionHistoryResults | PayrollVersionResults | Payrolls | PermissionAuditLog | PermissionOverrides | Permissions | PositionAdminDefaults | RateLimits | Resources | RolePermissions | Roles | SecurityAlerts | SecuritySettings | ServicePricingRules | ServiceTemplates | Services | SystemConfiguration | SystemHealth | TimeEntries | UserEmailTemplateFavorites | UserInvitations | UserRoles | UserSessions | Users | WorkSchedule;
-
 export type _Service = {
   __typename?: '_Service';
   /** SDL representation of schema */
@@ -30688,6 +31628,10 @@ export type Mutation_Root = {
   deletePayrollCycles?: Maybe<PayrollCyclesMutationResponse>;
   /** delete single row from the table: "payroll_cycles" */
   deletePayrollCyclesByPk?: Maybe<PayrollCycles>;
+  /** delete data from the table: "payroll_date_time_entries" */
+  deletePayrollDateTimeEntries?: Maybe<PayrollDateTimeEntriesMutationResponse>;
+  /** delete single row from the table: "payroll_date_time_entries" */
+  deletePayrollDateTimeEntriesByPk?: Maybe<PayrollDateTimeEntries>;
   /** delete data from the table: "payroll_date_types" */
   deletePayrollDateTypes?: Maybe<PayrollDateTypesMutationResponse>;
   /** delete single row from the table: "payroll_date_types" */
@@ -30944,6 +31888,10 @@ export type Mutation_Root = {
   insertPayrollCycles?: Maybe<PayrollCyclesMutationResponse>;
   /** insert a single row into the table: "payroll_cycles" */
   insertPayrollCyclesOne?: Maybe<PayrollCycles>;
+  /** insert data into the table: "payroll_date_time_entries" */
+  insertPayrollDateTimeEntries?: Maybe<PayrollDateTimeEntriesMutationResponse>;
+  /** insert a single row into the table: "payroll_date_time_entries" */
+  insertPayrollDateTimeEntriesOne?: Maybe<PayrollDateTimeEntries>;
   /** insert data into the table: "payroll_date_types" */
   insertPayrollDateTypes?: Maybe<PayrollDateTypesMutationResponse>;
   /** insert a single row into the table: "payroll_date_types" */
@@ -31264,6 +32212,12 @@ export type Mutation_Root = {
   updatePayrollCyclesByPk?: Maybe<PayrollCycles>;
   /** update multiples rows of table: "payroll_cycles" */
   updatePayrollCyclesMany?: Maybe<Array<Maybe<PayrollCyclesMutationResponse>>>;
+  /** update data of the table: "payroll_date_time_entries" */
+  updatePayrollDateTimeEntries?: Maybe<PayrollDateTimeEntriesMutationResponse>;
+  /** update single row of the table: "payroll_date_time_entries" */
+  updatePayrollDateTimeEntriesByPk?: Maybe<PayrollDateTimeEntries>;
+  /** update multiples rows of table: "payroll_date_time_entries" */
+  updatePayrollDateTimeEntriesMany?: Maybe<Array<Maybe<PayrollDateTimeEntriesMutationResponse>>>;
   /** update data of the table: "payroll_date_types" */
   updatePayrollDateTypes?: Maybe<PayrollDateTypesMutationResponse>;
   /** update single row of the table: "payroll_date_types" */
@@ -31859,6 +32813,18 @@ export type Mutation_RootDeletePayrollCyclesArgs = {
 
 /** mutation root */
 export type Mutation_RootDeletePayrollCyclesByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+/** mutation root */
+export type Mutation_RootDeletePayrollDateTimeEntriesArgs = {
+  where: PayrollDateTimeEntriesBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootDeletePayrollDateTimeEntriesByPkArgs = {
   id: Scalars['uuid']['input'];
 };
 
@@ -32693,6 +33659,20 @@ export type Mutation_RootInsertPayrollCyclesArgs = {
 export type Mutation_RootInsertPayrollCyclesOneArgs = {
   object: PayrollCyclesInsertInput;
   onConflict?: InputMaybe<PayrollCyclesOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertPayrollDateTimeEntriesArgs = {
+  objects: Array<PayrollDateTimeEntriesInsertInput>;
+  onConflict?: InputMaybe<PayrollDateTimeEntriesOnConflict>;
+};
+
+
+/** mutation root */
+export type Mutation_RootInsertPayrollDateTimeEntriesOneArgs = {
+  object: PayrollDateTimeEntriesInsertInput;
+  onConflict?: InputMaybe<PayrollDateTimeEntriesOnConflict>;
 };
 
 
@@ -33920,6 +34900,28 @@ export type Mutation_RootUpdatePayrollCyclesManyArgs = {
 
 
 /** mutation root */
+export type Mutation_RootUpdatePayrollDateTimeEntriesArgs = {
+  _inc?: InputMaybe<PayrollDateTimeEntriesIncInput>;
+  _set?: InputMaybe<PayrollDateTimeEntriesSetInput>;
+  where: PayrollDateTimeEntriesBoolExp;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdatePayrollDateTimeEntriesByPkArgs = {
+  _inc?: InputMaybe<PayrollDateTimeEntriesIncInput>;
+  _set?: InputMaybe<PayrollDateTimeEntriesSetInput>;
+  pkColumns: PayrollDateTimeEntriesPkColumnsInput;
+};
+
+
+/** mutation root */
+export type Mutation_RootUpdatePayrollDateTimeEntriesManyArgs = {
+  updates: Array<PayrollDateTimeEntriesUpdates>;
+};
+
+
+/** mutation root */
 export type Mutation_RootUpdatePayrollDateTypesArgs = {
   _set?: InputMaybe<PayrollDateTypesSetInput>;
   where: PayrollDateTypesBoolExp;
@@ -33941,6 +34943,7 @@ export type Mutation_RootUpdatePayrollDateTypesManyArgs = {
 
 /** mutation root */
 export type Mutation_RootUpdatePayrollDatesArgs = {
+  _inc?: InputMaybe<PayrollDatesIncInput>;
   _set?: InputMaybe<PayrollDatesSetInput>;
   where: PayrollDatesBoolExp;
 };
@@ -33948,6 +34951,7 @@ export type Mutation_RootUpdatePayrollDatesArgs = {
 
 /** mutation root */
 export type Mutation_RootUpdatePayrollDatesByPkArgs = {
+  _inc?: InputMaybe<PayrollDatesIncInput>;
   _set?: InputMaybe<PayrollDatesSetInput>;
   pkColumns: PayrollDatesPkColumnsInput;
 };
@@ -34800,6 +35804,13 @@ export type PayrollAssignmentsAggregateBoolExpCount = {
   predicate: IntComparisonExp;
 };
 
+export type PayrollDateTimeEntriesAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<PayrollDateTimeEntriesSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<PayrollDateTimeEntriesBoolExp>;
+  predicate: IntComparisonExp;
+};
+
 export type PayrollDatesAggregateBoolExpCount = {
   arguments?: InputMaybe<Array<PayrollDatesSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
@@ -34858,8 +35869,6 @@ export type PermissionsAggregateBoolExpCount = {
 
 export type Query_Root = {
   __typename?: 'query_root';
-  /** query _Entity union */
-  _entities?: Maybe<_Entity>;
   _service: _Service;
   /** An array relationship */
   adjustmentRules: Array<AdjustmentRules>;
@@ -35077,6 +36086,16 @@ export type Query_Root = {
   payrollDashboardStats: Array<PayrollDashboardStats>;
   /** fetch aggregated fields from the table: "payroll_dashboard_stats" */
   payrollDashboardStatsAggregate: PayrollDashboardStatsAggregate;
+  /** fetch data from the table: "payroll_date_completion_analytics" */
+  payrollDateCompletionAnalytics: Array<PayrollDateCompletionAnalytics>;
+  /** fetch aggregated fields from the table: "payroll_date_completion_analytics" */
+  payrollDateCompletionAnalyticsAggregate: PayrollDateCompletionAnalyticsAggregate;
+  /** An array relationship */
+  payrollDateTimeEntries: Array<PayrollDateTimeEntries>;
+  /** An aggregate relationship */
+  payrollDateTimeEntriesAggregate: PayrollDateTimeEntriesAggregate;
+  /** fetch data from the table: "payroll_date_time_entries" using primary key columns */
+  payrollDateTimeEntriesByPk?: Maybe<PayrollDateTimeEntries>;
   /** fetch data from the table: "payroll_date_types" */
   payrollDateTypes: Array<PayrollDateTypes>;
   /** fetch aggregated fields from the table: "payroll_date_types" */
@@ -35307,11 +36326,6 @@ export type Query_Root = {
   workScheduleAggregate: WorkScheduleAggregate;
   /** fetch data from the table: "work_schedule" using primary key columns */
   workScheduleByPk?: Maybe<WorkSchedule>;
-};
-
-
-export type Query_Root_EntitiesArgs = {
-  representations: Array<Scalars['_Any']['input']>;
 };
 
 
@@ -36168,6 +37182,47 @@ export type Query_RootPayrollDashboardStatsAggregateArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<PayrollDashboardStatsOrderBy>>;
   where?: InputMaybe<PayrollDashboardStatsBoolExp>;
+};
+
+
+export type Query_RootPayrollDateCompletionAnalyticsArgs = {
+  distinctOn?: InputMaybe<Array<PayrollDateCompletionAnalyticsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PayrollDateCompletionAnalyticsOrderBy>>;
+  where?: InputMaybe<PayrollDateCompletionAnalyticsBoolExp>;
+};
+
+
+export type Query_RootPayrollDateCompletionAnalyticsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<PayrollDateCompletionAnalyticsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PayrollDateCompletionAnalyticsOrderBy>>;
+  where?: InputMaybe<PayrollDateCompletionAnalyticsBoolExp>;
+};
+
+
+export type Query_RootPayrollDateTimeEntriesArgs = {
+  distinctOn?: InputMaybe<Array<PayrollDateTimeEntriesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PayrollDateTimeEntriesOrderBy>>;
+  where?: InputMaybe<PayrollDateTimeEntriesBoolExp>;
+};
+
+
+export type Query_RootPayrollDateTimeEntriesAggregateArgs = {
+  distinctOn?: InputMaybe<Array<PayrollDateTimeEntriesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PayrollDateTimeEntriesOrderBy>>;
+  where?: InputMaybe<PayrollDateTimeEntriesBoolExp>;
+};
+
+
+export type Query_RootPayrollDateTimeEntriesByPkArgs = {
+  id: Scalars['uuid']['input'];
 };
 
 
@@ -37527,6 +38582,20 @@ export type Subscription_Root = {
   payrollDashboardStatsAggregate: PayrollDashboardStatsAggregate;
   /** fetch data from the table in a streaming manner: "payroll_dashboard_stats" */
   payrollDashboardStatsStream: Array<PayrollDashboardStats>;
+  /** fetch data from the table: "payroll_date_completion_analytics" */
+  payrollDateCompletionAnalytics: Array<PayrollDateCompletionAnalytics>;
+  /** fetch aggregated fields from the table: "payroll_date_completion_analytics" */
+  payrollDateCompletionAnalyticsAggregate: PayrollDateCompletionAnalyticsAggregate;
+  /** fetch data from the table in a streaming manner: "payroll_date_completion_analytics" */
+  payrollDateCompletionAnalyticsStream: Array<PayrollDateCompletionAnalytics>;
+  /** An array relationship */
+  payrollDateTimeEntries: Array<PayrollDateTimeEntries>;
+  /** An aggregate relationship */
+  payrollDateTimeEntriesAggregate: PayrollDateTimeEntriesAggregate;
+  /** fetch data from the table: "payroll_date_time_entries" using primary key columns */
+  payrollDateTimeEntriesByPk?: Maybe<PayrollDateTimeEntries>;
+  /** fetch data from the table in a streaming manner: "payroll_date_time_entries" */
+  payrollDateTimeEntriesStream: Array<PayrollDateTimeEntries>;
   /** fetch data from the table: "payroll_date_types" */
   payrollDateTypes: Array<PayrollDateTypes>;
   /** fetch aggregated fields from the table: "payroll_date_types" */
@@ -38956,6 +40025,61 @@ export type Subscription_RootPayrollDashboardStatsStreamArgs = {
   batchSize: Scalars['Int']['input'];
   cursor: Array<InputMaybe<PayrollDashboardStatsStreamCursorInput>>;
   where?: InputMaybe<PayrollDashboardStatsBoolExp>;
+};
+
+
+export type Subscription_RootPayrollDateCompletionAnalyticsArgs = {
+  distinctOn?: InputMaybe<Array<PayrollDateCompletionAnalyticsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PayrollDateCompletionAnalyticsOrderBy>>;
+  where?: InputMaybe<PayrollDateCompletionAnalyticsBoolExp>;
+};
+
+
+export type Subscription_RootPayrollDateCompletionAnalyticsAggregateArgs = {
+  distinctOn?: InputMaybe<Array<PayrollDateCompletionAnalyticsSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PayrollDateCompletionAnalyticsOrderBy>>;
+  where?: InputMaybe<PayrollDateCompletionAnalyticsBoolExp>;
+};
+
+
+export type Subscription_RootPayrollDateCompletionAnalyticsStreamArgs = {
+  batchSize: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<PayrollDateCompletionAnalyticsStreamCursorInput>>;
+  where?: InputMaybe<PayrollDateCompletionAnalyticsBoolExp>;
+};
+
+
+export type Subscription_RootPayrollDateTimeEntriesArgs = {
+  distinctOn?: InputMaybe<Array<PayrollDateTimeEntriesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PayrollDateTimeEntriesOrderBy>>;
+  where?: InputMaybe<PayrollDateTimeEntriesBoolExp>;
+};
+
+
+export type Subscription_RootPayrollDateTimeEntriesAggregateArgs = {
+  distinctOn?: InputMaybe<Array<PayrollDateTimeEntriesSelectColumn>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Array<PayrollDateTimeEntriesOrderBy>>;
+  where?: InputMaybe<PayrollDateTimeEntriesBoolExp>;
+};
+
+
+export type Subscription_RootPayrollDateTimeEntriesByPkArgs = {
+  id: Scalars['uuid']['input'];
+};
+
+
+export type Subscription_RootPayrollDateTimeEntriesStreamArgs = {
+  batchSize: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<PayrollDateTimeEntriesStreamCursorInput>>;
+  where?: InputMaybe<PayrollDateTimeEntriesBoolExp>;
 };
 
 
