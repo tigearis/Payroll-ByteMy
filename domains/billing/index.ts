@@ -1,38 +1,130 @@
-/**
- * THIS FILE IS AUTO-GENERATED - DO NOT EDIT MANUALLY
- * 
- * SOC2 Compliant GraphQL Operations
- * Security Classifications Applied:
- * - CRITICAL: Auth, user roles, financial data - Requires admin access + MFA
- * - HIGH: PII, client data, employee info - Requires role-based access
- * - MEDIUM: Internal business data - Requires authentication
- * - LOW: Public/aggregate data - Basic access control
- * 
- * Compliance Features:
- * ✓ Role-based access control (RBAC)
- * ✓ Audit logging integration
- * ✓ Data classification enforcement
- * ✓ Permission boundary validation
- * ✓ Automatic domain isolation and exports
- * 
- * Generated: 2025-06-25T10:56:21.985Z
- * Schema Version: Latest from Hasura
- * CodeGen Version: Unified v2.0
- */
+// Billing Domain - Main Export Index
+// Centralized access point for the entire billing domain
 
+// Export all components
+export * from './components';
 
-/* 
- * DOMAIN: BILLING
- * SECURITY LEVEL: HIGH
- * ACCESS CONTROLS: Role-based + Audit Logging
- * AUTO-EXPORTED: This file is automatically exported from domain index
- */
+// Export services
+export * from './services';
 
+// Export GraphQL operations (types and operations)
+export * from './graphql/generated';
 
-// Auto-generated domain exports - isolated to prevent conflicts
+// Export shared types if any
+// export * from './shared/types';
 
-// Export domain-specific GraphQL operations and types
-export * from './graphql/generated/graphql';
+// Domain Configuration
+export const BillingDomainConfig = {
+  name: 'billing',
+  version: '1.0.0',
+  description: '3-Tier Billing System with Service Templates and Analytics',
+  
+  features: {
+    // Core billing features
+    tierSystem: {
+      tier1: 'Payroll Date Level Billing',
+      tier2: 'Payroll Level Billing', 
+      tier3: 'Client Monthly Level Billing'
+    },
+    
+    // Service management
+    serviceManagement: {
+      templates: 'Reusable service templates',
+      bundles: 'Pre-configured service bundles',
+      agreements: 'Client-specific service agreements',
+      overrides: 'Payroll-specific service overrides'
+    },
+    
+    // Analytics and reporting
+    analytics: {
+      costRevenue: 'Cost vs revenue analysis',
+      clientProfitability: 'Client profitability metrics',
+      userProductivity: 'Consultant performance analysis',
+      monthlyDashboard: 'Monthly billing completion tracking'
+    },
+    
+    // Automation
+    automation: {
+      automaticBilling: 'Automated 3-tier billing generation',
+      monthlyAggregation: 'Monthly billing completion tracking',
+      billingTriggers: 'Event-driven billing generation'
+    },
+    
+    // Integration
+    integration: {
+      payrollSystem: 'Deep integration with payroll processing',
+      timeTracking: 'Time entry to billing conversion',
+      invoicing: 'Billing items to invoice generation'
+    }
+  },
+  
+  // API endpoints
+  apiRoutes: {
+    tier1: '/api/billing/tier1/generate',
+    tier2: '/api/billing/tier2/generate',
+    tier3: '/api/billing/tier3/generate',
+    automatic: '/api/billing/process-automatic',
+    analytics: '/api/billing/analytics'
+  },
+  
+  // Database tables managed by this domain
+  tables: {
+    core: [
+      'billing_items',
+      'services',
+      'client_service_agreements',
+      'payroll_service_agreements'
+    ],
+    templates: [
+      'service_templates',
+      'service_template_categories',
+      'client_template_bundles',
+      'bundle_template_assignments'
+    ],
+    onboarding: [
+      'client_onboarding_sessions',
+      'onboarding_service_selections'
+    ],
+    analytics: [
+      'monthly_billing_completion',
+      'payroll_cost_analysis',
+      'user_productivity_analysis',
+      'template_usage_analytics'
+    ],
+    tracking: [
+      'monthly_billing_dashboard',
+      'user_rate_history',
+      'billing_event_log'
+    ]
+  },
+  
+  // GraphQL operations
+  graphqlOperations: {
+    fragments: [
+      'MonthlyBillingCompletionFragment',
+      'PayrollServiceAgreementFragment',
+      'ServiceWithTierFragment',
+      'UserRateHistoryFragment'
+    ],
+    queries: [
+      'GetMonthlyBillingDashboard',
+      'GetPayrollServiceAgreements',
+      'GetServicesByTier',
+      'GetUserRateHistory',
+      'GetPayrollCostAnalysis'
+    ],
+    mutations: [
+      'CreatePayrollServiceAgreement',
+      'UpdateMonthlyBillingCompletion',
+      'CreateUserRateHistory',
+      'UpdateServiceBillingTier'
+    ],
+    subscriptions: [
+      'MonthlyBillingDashboardSubscription',
+      'PayrollServiceAgreementsSubscription'
+    ]
+  }
+} as const;
 
-// Note: Fragment masking and gql utilities are exported from shared/types/generated
-// Import those directly when needed to avoid conflicts
+// Export configuration for other domains to reference
+export default BillingDomainConfig;
