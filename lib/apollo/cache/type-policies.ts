@@ -67,6 +67,12 @@ const queryFieldPolicies = {
     keyArgs: ["where", "order_by"],
     merge: createRealTimeLogMerge("accessedAt"),
   },
+  
+  // Billing items with proper caching
+  billingItems: {
+    keyArgs: ["where", "orderBy"],
+    merge: createPaginationMerge(),
+  },
 };
 
 /**
@@ -224,6 +230,25 @@ const entityTypePolicies = {
   timeEntries: {
     keyFields: ["id"],
   },
+  
+  // Billing items
+  billingItems: {
+    keyFields: ["id"],
+    fields: {
+      client: {
+        merge: (_existing: any, incoming: any) => incoming,
+      },
+      service: {
+        merge: (_existing: any, incoming: any) => incoming,
+      },
+      staffUser: {
+        merge: (_existing: any, incoming: any) => incoming,
+      },
+      payroll: {
+        merge: (_existing: any, incoming: any) => incoming,
+      },
+    },
+  },
 };
 
 /**
@@ -258,6 +283,8 @@ export function generateDataId(object: any): string | undefined {
       return `auditAuditLog:${object.id}`;
     case "holidays":
       return `holidays:${object.date}:${object.countryCode}`;
+    case "billingItems":
+      return `billingItems:${object.id}`;
     default:
       return object.id ? `${object.__typename}:${object.id}` : undefined;
   }

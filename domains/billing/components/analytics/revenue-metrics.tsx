@@ -26,7 +26,8 @@ export function RevenueMetrics() {
         },
       },
     },
-    fetchPolicy: "cache-and-network",
+    fetchPolicy: "cache-first",
+    nextFetchPolicy: "cache-first",
   });
 
   const billingItems = data?.billingItems || [];

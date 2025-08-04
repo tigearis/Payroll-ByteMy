@@ -23,7 +23,8 @@ export default function BillingItemsPage() {
         offset: 0,
         orderBy: [{ createdAt: "DESC" }],
       },
-      fetchPolicy: "cache-and-network",
+      fetchPolicy: "cache-first",
+      nextFetchPolicy: "cache-first",
     }
   );
 
@@ -31,7 +32,8 @@ export default function BillingItemsPage() {
     GetBillingItemsStatsAdvancedDocument,
     {
       variables: { where: {} },
-      fetchPolicy: "cache-and-network",
+      fetchPolicy: "cache-first",
+      nextFetchPolicy: "cache-first",
     }
   );
 
