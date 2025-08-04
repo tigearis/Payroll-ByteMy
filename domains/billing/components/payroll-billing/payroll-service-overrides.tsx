@@ -30,7 +30,7 @@ import {
   Clock,
   Zap
 } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 // GraphQL Queries and Mutations
 const GET_PAYROLL_SERVICE_OVERRIDES = gql`
@@ -298,7 +298,7 @@ interface Service {
   id: string;
   name: string;
   description?: string;
-  category: string;
+  categoryName: string;
   billingUnit: string;
   defaultRate?: number;
   currency: string;
@@ -355,6 +355,7 @@ interface PayrollServiceOverridesProps {
 const PayrollServiceOverrides: React.FC<PayrollServiceOverridesProps> = ({
   payrollId
 }) => {
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -363,7 +364,6 @@ const PayrollServiceOverrides: React.FC<PayrollServiceOverridesProps> = ({
   
   const [formData, setFormData] = useState<OverrideFormData>({
     serviceId: '',
-    customRate: undefined,
     customQuantity: 1,
     customDescription: '',
     isOneTime: false,
@@ -398,13 +398,13 @@ const PayrollServiceOverrides: React.FC<PayrollServiceOverridesProps> = ({
   
   // Get services that can be added as overrides (not already overridden)
   const availableForOverride = availableServices.filter((service: Service) =>
-    !overrides.find(override => override.serviceId === service.id && override.isActive)
+    !overrides.find((override: PayrollServiceOverride) => override.serviceId === service.id && override.isActive)
   );
 
   const handleCreateOverride = async () => {
     try {
       const clientAgreement = overrideType === 'existing' ? 
-        clientAgreements.find(ca => ca.serviceId === formData.serviceId) : null;
+        clientAgreements.find((ca: any) => ca.serviceId === formData.serviceId) : null;
       
       await createOverride({
         variables: {
@@ -509,7 +509,7 @@ const PayrollServiceOverrides: React.FC<PayrollServiceOverridesProps> = ({
     setEditingOverride(override);
     setFormData({
       serviceId: override.serviceId,
-      customRate: override.customRate || undefined,
+      ...(override.customRate && { customRate: override.customRate }),
       customQuantity: override.customQuantity || 1,
       customDescription: override.customDescription || '',
       isOneTime: override.isOneTime,
@@ -524,7 +524,6 @@ const PayrollServiceOverrides: React.FC<PayrollServiceOverridesProps> = ({
   const resetFormData = () => {
     setFormData({
       serviceId: '',
-      customRate: undefined,
       customQuantity: 1,
       customDescription: '',
       isOneTime: false,
@@ -636,7 +635,7 @@ const PayrollServiceOverrides: React.FC<PayrollServiceOverridesProps> = ({
                   {payroll.payrollDates.length} dates
                 </p>
                 <p className="text-sm text-gray-600">
-                  {payroll.payrollDates.filter(pd => pd.status === 'completed').length} completed
+                  {payroll.payrollDates.filter((pd: any) => pd.status === 'completed').length} completed
                 </p>
               </div>
             </div>
@@ -679,8 +678,8 @@ const PayrollServiceOverrides: React.FC<PayrollServiceOverridesProps> = ({
             </div>
             <div className="flex items-center gap-4 text-sm text-gray-600">
               <span>Total: {overrides.length}</span>
-              <span>Active: {overrides.filter(o => o.isActive).length}</span>
-              <span>Billed: {overrides.filter(o => o.billingItemsGenerated).length}</span>
+              <span>Active: {overrides.filter((o: PayrollServiceOverride) => o.isActive).length}</span>
+              <span>Billed: {overrides.filter((o: PayrollServiceOverride) => o.billingItemsGenerated).length}</span>
             </div>
           </div>
         </CardContent>
@@ -951,7 +950,13 @@ const PayrollServiceOverrides: React.FC<PayrollServiceOverridesProps> = ({
                   step="0.01"
                   min="0"
                   value={formData.customRate || ''}
-                  onChange={(e) => setFormData(prev => ({ ...prev, customRate: parseFloat(e.target.value) || undefined }))}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setFormData(prev => ({
+                      ...prev,
+                      ...(val ? { customRate: parseFloat(val) } : {})
+                    }));
+                  }}
                   placeholder="Override rate"
                 />
               </div>

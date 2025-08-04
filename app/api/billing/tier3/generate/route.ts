@@ -311,7 +311,7 @@ async function POST(request: NextRequest) {
       variables: {
         input: {
           eventType: 'tier3_billing_generated',
-          message: `Generated ${itemsCreated} tier 3 billing items for client ${clientId} (${monthYear}, total: $${totalAmount})`,
+          message: `Generated ${itemsCreated} tier 3 billing items for client ${clientId} (${billingMonth}, total: $${totalAmount})`,
           createdBy: generatedBy
         }
       }

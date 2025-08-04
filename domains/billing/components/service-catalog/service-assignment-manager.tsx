@@ -87,6 +87,10 @@ export const ServiceAssignmentManager: React.FC<ServiceAssignmentManagerProps> =
 
   // Real GraphQL queries
   const { data: catalogData, loading: catalogLoading } = useQuery(GetNewServiceCatalogDocument, {
+    variables: {
+      limit: 100,
+      offset: 0
+    },
     fetchPolicy: "cache-and-network"
   });
 

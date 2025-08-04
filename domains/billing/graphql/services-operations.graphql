@@ -76,8 +76,31 @@ fragment ServiceWithRelationshipsFragment on Services {
   }
 }
 
-# Service catalog query
-query GetNewServiceCatalog($limit: Int = 50, $offset: Int = 0, $category: String) {
+# Service catalog query (no category filtering)
+query GetNewServiceCatalog($limit: Int = 50, $offset: Int = 0) {
+  services(
+    limit: $limit
+    offset: $offset
+    where: { 
+      isActive: { _eq: true }
+    }
+    orderBy: [{ name: ASC }]
+  ) {
+    ...ServiceFragment
+  }
+  servicesAggregate(
+    where: { 
+      isActive: { _eq: true }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Service catalog query with required category filter
+query GetServicesByCategory($limit: Int = 50, $offset: Int = 0, $category: String!) {
   services(
     limit: $limit
     offset: $offset

@@ -16,6 +16,7 @@ import {
   User,
   Building,
   Briefcase,
+  Plus,
 } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
@@ -68,9 +69,11 @@ interface DocumentListProps {
   payrollId?: string;
   uploadedBy?: string;
   showFilters?: boolean;
+  showUploadButton?: boolean;
   className?: string;
   onDocumentClick?: (document: Document) => void;
   onDocumentUpdate?: () => void;
+  onUploadClick?: () => void;
 }
 
 interface Filters {
@@ -125,9 +128,11 @@ export function DocumentList({
   payrollId,
   uploadedBy,
   showFilters = true,
+  showUploadButton = true,
   className,
   onDocumentClick,
   onDocumentUpdate,
+  onUploadClick,
 }: DocumentListProps) {
   const { can } = usePermissions();
   const [documents, setDocuments] = useState<Document[]>([]);
@@ -149,6 +154,7 @@ export function DocumentList({
   const canView = can('files', 'read');
   const canEdit = can('files', 'update');
   const canDelete = can('files', 'delete');
+  const canUpload = can('files', 'create');
 
   // Load documents
   const loadDocuments = async (page = 1, isRefresh = false) => {
@@ -323,14 +329,25 @@ export function DocumentList({
               <Badge variant="secondary">{totalCount}</Badge>
             )}
           </CardTitle>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-          >
-            <RefreshCw className={cn("w-4 h-4", isRefreshing && "animate-spin")} />
-          </Button>
+          <div className="flex items-center gap-2">
+            {showUploadButton && canUpload && (
+              <Button
+                onClick={onUploadClick}
+                size="sm"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Upload Documents
+              </Button>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+            >
+              <RefreshCw className={cn("w-4 h-4", isRefreshing && "animate-spin")} />
+            </Button>
+          </div>
         </div>
       </CardHeader>
 

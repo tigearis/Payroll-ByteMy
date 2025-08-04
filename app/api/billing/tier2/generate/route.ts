@@ -158,13 +158,13 @@ async function POST(request: NextRequest) {
     
     // Combine and deduplicate services (payroll overrides take precedence)
     const allServices = [...clientAgreements, ...payrollAgreements];
-    const uniqueServices = allServices.reduce((acc, service) => {
-      const existing = acc.find(s => s.serviceId === service.serviceId);
+    const uniqueServices = allServices.reduce((acc: any[], service: any) => {
+      const existing = acc.find((s: any) => s.serviceId === service.serviceId);
       if (!existing) {
         acc.push({ ...service, sourceType: service.payrollId ? 'payroll' : 'client' });
       } else if (service.payrollId) {
         // Replace with payroll override
-        const index = acc.findIndex(s => s.serviceId === service.serviceId);
+        const index = acc.findIndex((s: any) => s.serviceId === service.serviceId);
         acc[index] = { ...service, sourceType: 'payroll' };
       }
       return acc;
