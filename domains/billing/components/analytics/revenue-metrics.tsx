@@ -2,7 +2,7 @@
 
 import { useQuery } from "@apollo/client";
 import { format, subDays, startOfDay, endOfDay } from "date-fns";
-import React from "react";
+import React, { useMemo } from "react";
 import {
   LineChart,
   Line,
@@ -17,7 +17,7 @@ import { GetBillingItemsAdvancedDocument } from "../../graphql/generated/graphql
 export function RevenueMetrics() {
   const { data, loading } = useQuery(GetBillingItemsAdvancedDocument, {
     variables: {
-      limit: 200,
+      limit: 50, // Reduced from 200 to prevent loops
       offset: 0,
       orderBy: [{ createdAt: "DESC" }],
       where: {
@@ -28,12 +28,14 @@ export function RevenueMetrics() {
     },
     fetchPolicy: "cache-first",
     nextFetchPolicy: "cache-first",
+    notifyOnNetworkStatusChange: false, // Prevent re-renders on network status change
   });
 
-  const billingItems = data?.billingItems || [];
+  // Memoize billing items to prevent unnecessary re-calculations
+  const billingItems = useMemo(() => data?.billingItems || [], [data?.billingItems]);
 
-  // Process data for revenue trend over last 30 days
-  const revenueByDay = billingItems.reduce((acc: any, item: any) => {
+  // Memoize revenue processing to prevent unnecessary re-calculations
+  const revenueByDay = useMemo(() => billingItems.reduce((acc: any, item: any) => {
     const date = format(new Date(item.createdAt), "yyyy-MM-dd");
     const amount = item.amount || 0;
 
@@ -57,10 +59,11 @@ export function RevenueMetrics() {
     }
 
     return acc;
-  }, {});
+  }, {}), [billingItems]);
 
-  // Create array of last 14 days with data
-  const chartData = [];
+  // Memoize chart data creation
+  const chartData = useMemo(() => {
+    const data = [];
   for (let i = 13; i >= 0; i--) {
     const date = format(subDays(new Date(), i), "yyyy-MM-dd");
     const dayData = revenueByDay[date] || {
@@ -71,11 +74,13 @@ export function RevenueMetrics() {
       pending: 0,
     };
     
-    chartData.push({
+    data.push({
       ...dayData,
       displayDate: format(subDays(new Date(), i), "MMM d"),
     });
   }
+  return data;
+  }, [revenueByDay]);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("en-AU", {
@@ -85,13 +90,22 @@ export function RevenueMetrics() {
     }).format(value);
   };
 
-  // Calculate summary metrics
-  const totalRevenue = billingItems.reduce((sum, item) => sum + (item.amount || 0), 0);
-  const approvedRevenue = billingItems
-    .filter(item => item.isApproved)
-    .reduce((sum, item) => sum + (item.amount || 0), 0);
-  const pendingRevenue = totalRevenue - approvedRevenue;
-  const approvalRate = totalRevenue > 0 ? (approvedRevenue / totalRevenue) * 100 : 0;
+  // Memoize summary metrics calculation
+  const { totalRevenue, approvedRevenue, pendingRevenue, approvalRate } = useMemo(() => {
+    const total = billingItems.reduce((sum, item) => sum + (item.amount || 0), 0);
+    const approved = billingItems
+      .filter(item => item.isApproved)
+      .reduce((sum, item) => sum + (item.amount || 0), 0);
+    const pending = total - approved;
+    const rate = total > 0 ? (approved / total) * 100 : 0;
+    
+    return {
+      totalRevenue: total,
+      approvedRevenue: approved,
+      pendingRevenue: pending,
+      approvalRate: rate,
+    };
+  }, [billingItems]);
 
   if (loading) {
     return (

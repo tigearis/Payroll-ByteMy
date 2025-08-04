@@ -43,7 +43,7 @@ const GET_PAYROLL_SERVICE_OVERRIDES = gql`
       where: { payrollId: { _eq: $payrollId } }
       limit: $limit
       offset: $offset
-      orderBy: [{ service: { category: { displayOrder: ASC } } }, { createdAt: DESC }]
+      orderBy: [{ payrollServiceAgreementsByServiceId: { category: ASC } }, { createdAt: DESC }]
     ) {
       id
       payrollId
@@ -137,7 +137,7 @@ const GET_PAYROLL_SERVICE_OVERRIDES = gql`
         
         serviceAgreements: clientServiceAgreements(
           where: { isActive: { _eq: true } }
-          orderBy: [{ service: { category: { displayOrder: ASC } } }, { service: { displayOrder: ASC } }]
+          orderBy: [{ service: { category: ASC } }, { service: { name: ASC } }]
         ) {
           id
           serviceId
@@ -176,7 +176,7 @@ const GET_PAYROLL_SERVICE_OVERRIDES = gql`
         isActive: { _eq: true }
         billingTier: { _in: ["payroll_date", "payroll"] }
       }
-      orderBy: [{ category: { displayOrder: ASC } }, { displayOrder: ASC }]
+      orderBy: [{ category: ASC }, { name: ASC }]
     ) {
       id
       name
