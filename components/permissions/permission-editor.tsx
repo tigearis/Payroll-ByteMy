@@ -4,11 +4,9 @@ import { useQuery, useMutation } from "@apollo/client";
 import { Shield, Search, Save, AlertTriangle, CheckCircle, X } from "lucide-react";
 import React, { useState, useMemo } from "react";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -17,8 +15,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Textarea } from "@/components/ui/textarea";
 import {
   GetAllResourcesWithPermissionsDocument,
   GetUserEffectivePermissionsDocument,
@@ -26,11 +26,11 @@ import {
   DeletePermissionOverrideDocument,
   CreatePermissionAuditLogDocument,
 } from "@/domains/users/graphql/generated/graphql";
+import { useDatabaseUserIdOnly } from "@/hooks/use-database-user-id";
+import { useHierarchicalPermissions } from "@/hooks/use-hierarchical-permissions";
 import { 
   type UserRole 
 } from "@/lib/permissions/hierarchical-permissions";
-import { useHierarchicalPermissions } from "@/hooks/use-hierarchical-permissions";
-import { useDatabaseUserIdOnly } from "@/hooks/use-database-user-id";
 import { ResourcePermissionRow } from "./resource-permission-row";
 
 // Helper functions for API calls

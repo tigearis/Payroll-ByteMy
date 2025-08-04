@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { createClerkClient } from "@clerk/backend";
 import { gql } from "@apollo/client";
+import { createClerkClient } from "@clerk/backend";
+import { NextRequest, NextResponse } from "next/server";
 // We'll use inline GraphQL queries for now since the generated types might not be available yet
 import { executeTypedQuery, executeTypedMutation } from "@/lib/apollo/query-helpers";
 import { withAuth } from "@/lib/auth/api-auth";

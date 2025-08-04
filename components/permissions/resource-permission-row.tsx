@@ -2,8 +2,8 @@
 
 import { ChevronDown, ChevronRight, Shield, Eye, Edit, Trash2, Plus, X } from "lucide-react";
 import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { PermissionDropdown } from "./permission-dropdown";

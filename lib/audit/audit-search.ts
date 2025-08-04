@@ -4,8 +4,8 @@
  * Provides search functionality and compliance reporting for audit logs
  */
 
-import { adminApolloClient } from '@/lib/apollo/unified-client';
 import { gql } from '@apollo/client';
+import { adminApolloClient } from '@/lib/apollo/unified-client';
 
 export interface AuditSearchFilter {
   dateRange?: {

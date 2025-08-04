@@ -189,7 +189,7 @@ export class ServicePricingEngine {
     }
 
     // Apply bundle discount if specified
-    let finalBundleDiscount = bundleDiscount || 0;
+    const finalBundleDiscount = bundleDiscount || 0;
     if (finalBundleDiscount > 0) {
       const bundleDiscountAmount = totalFinal * (finalBundleDiscount / 100);
       totalFinal -= bundleDiscountAmount;

@@ -1,18 +1,6 @@
 "use client";
 
-import React from "react";
 import { useQuery, useMutation } from "@apollo/client";
-import { toast } from "sonner";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import {
   CheckCircle,
   Clock,
@@ -23,21 +11,35 @@ import {
   Pause,
 } from "lucide-react";
 import Link from "next/link";
+import React from "react";
+import { toast } from "sonner";
 import { PermissionGuard } from "@/components/auth/permission-guard";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { useDatabaseUserId } from "@/hooks/use-database-user-id";
 import { 
   GetPayrollDatesWithBillingStatusDocumentDocument,
   GetPayrollCompletionStatsDocumentDocument,
   GenerateBillingFromPayrollDateDocumentDocument
 } from "../../graphql/generated/graphql";
-import { useDatabaseUserId } from "@/hooks/use-database-user-id";
 
 export function PayrollCompletionTracker() {
   const { databaseUserId } = useDatabaseUserId();
   
-  // Real GraphQL queries re-enabled
+  // Real GraphQL queries re-enabled - get all recent payroll dates
   const { data: payrollDatesData, loading: payrollDatesLoading, refetch } = useQuery(GetPayrollDatesWithBillingStatusDocumentDocument, {
     variables: {
-      status: "completed",
+      limit: 50,
+      offset: 0,
+      // Remove status filter to get all payroll dates
       includeCompleted: true
     },
     fetchPolicy: "cache-and-network"

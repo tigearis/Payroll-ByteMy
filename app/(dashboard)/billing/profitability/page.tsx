@@ -1,7 +1,7 @@
 "use client";
 
-import { ProfitabilityDashboard } from "@/domains/billing/components/profitability/profitability-dashboard";
 import { PermissionGuard } from "@/components/auth/permission-guard";
+import { ProfitabilityDashboard } from "@/domains/billing/components/profitability/profitability-dashboard";
 
 export default function ProfitabilityPage() {
   return (

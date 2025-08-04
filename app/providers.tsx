@@ -3,19 +3,19 @@
 
 import { ApolloProvider } from "@apollo/client";
 import { ClerkProvider, useAuth } from "@clerk/nextjs";
+import { Suspense } from "react";
+import { HooksErrorBoundary } from "@/components/auth/hooks-error-boundary";
+import { LogoutErrorBoundary } from "@/components/auth/logout-error-boundary";
 import { StrictDatabaseGuard } from "@/components/auth/strict-database-guard";
 // import { TokenRefreshBoundary } from "@/components/auth/token-refresh-boundary";
 import { ErrorBoundary } from "@/components/error-boundary";
-import { LogoutErrorBoundary } from "@/components/auth/logout-error-boundary";
-import { HooksErrorBoundary } from "@/components/auth/hooks-error-boundary";
 import { LoadingProvider } from "@/components/providers/loading-provider";
 import { ByteMyLoadingIcon } from "@/components/ui/bytemy-loading-icon";
-import { Suspense } from "react";
 import { clientApolloClient } from "@/lib/apollo/unified-client";
 // Auth provider removed - using simplified Clerk-only auth
+import { LogoutStateProvider } from "@/lib/auth/logout-state";
 import { FeatureFlagProvider } from "@/lib/feature-flags";
 import { LayoutPreferencesProvider } from "@/lib/preferences/layout-preferences";
-import { LogoutStateProvider } from "@/lib/auth/logout-state";
 
 // ================================
 // TYPES

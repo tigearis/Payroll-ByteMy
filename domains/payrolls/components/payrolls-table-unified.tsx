@@ -12,14 +12,14 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import {
   EnhancedUnifiedTable,
   UnifiedTableColumn,
   UnifiedTableAction,
 } from "@/components/ui/enhanced-unified-table";
 import { getScheduleSummary } from "@/domains/payrolls/utils/schedule-helpers";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 
 // Note: Using any[] for payrolls to handle GraphQL data flexibility
 

@@ -1,7 +1,7 @@
 "use client";
 
-import { ServiceCatalogManager } from "@/domains/billing/components/service-catalog/service-catalog-manager";
 import { PermissionGuard } from "@/components/auth/permission-guard";
+import { ServiceCatalogManager } from "@/domains/billing/components/service-catalog/service-catalog-manager";
 
 export default function ServiceCatalogPage() {
   return (

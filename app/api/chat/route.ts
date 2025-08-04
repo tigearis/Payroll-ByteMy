@@ -1,7 +1,7 @@
 import { streamText } from "ai"
-import { executeHasuraQuery, introspectSchema } from "@/lib/hasura"
 import { createOllama } from "ollama-ai-provider"
 import { z } from "zod"
+import { executeHasuraQuery, introspectSchema } from "@/lib/hasura"
 
 export const maxDuration = 30
 

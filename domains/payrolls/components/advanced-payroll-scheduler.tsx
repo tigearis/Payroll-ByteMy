@@ -56,6 +56,7 @@ import {
   GetPayrollsByMonthDocument,
   GetPayrollsByMonthQuery,
   UpdatePayrollDocument,
+  UpdatePayrollSimpleDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
 import {
   GetHolidaysByDateRangeDocument,
@@ -279,7 +280,7 @@ export default function AdvancedPayrollScheduler() {
   );
 
   const [updatePayrollConsultants, { loading: updating, error: updateError }] =
-    useMutation(UpdatePayrollDocument);
+    useMutation(UpdatePayrollSimpleDocument);
 
   // Get leave data for the selected date range
   const { data: leaveData } = useQuery<GetLeaveQuery>(

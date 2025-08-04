@@ -32,6 +32,7 @@ import {
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
+import { DocumentUploadModal, DocumentList } from "@/components/documents";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -90,11 +91,10 @@ import {
 } from "@/domains/clients/graphql/generated/graphql";
 import { QuickEmailDialog } from "@/domains/email/components/quick-email-dialog";
 import { NotesListWithAdd } from "@/domains/notes/components/notes-list";
-import { DocumentUploadModal, DocumentList } from "@/components/documents";
 import { type PayrollListItemFragment } from "@/domains/payrolls/graphql/generated/graphql";
+import { getScheduleSummary } from "@/domains/payrolls/utils/schedule-helpers";
 import { useSmartPolling } from "@/hooks/use-polling";
 import { safeFormatDate } from "@/lib/utils/date-utils";
-import { getScheduleSummary } from "@/domains/payrolls/utils/schedule-helpers";
 
 
 // Payroll status configuration (same as payrolls page)

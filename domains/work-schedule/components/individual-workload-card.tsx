@@ -2,14 +2,14 @@
 
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { getRoleDisplayName } from "@/lib/utils/role-utils";
 import { useWorkloadState } from "../hooks";
+import { TeamMember, WorkScheduleDay, PayrollAssignment, AssignmentStatus, AssignmentPriority } from "../types/workload";
 import { 
   SingleMemberVisualization,
   type SingleMemberVisualizationProps 
 } from "./payroll-workload-dashboard";
-import { TeamMember, WorkScheduleDay, PayrollAssignment, AssignmentStatus, AssignmentPriority } from "../types/workload";
 import { SimpleTimeNavigation } from "./simple-time-navigation";
-import { getRoleDisplayName } from "@/lib/utils/role-utils";
 
 // Import the single member visualization from the dashboard
 

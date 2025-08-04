@@ -1,19 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
 import { useQuery } from "@apollo/client";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PermissionGuard } from "@/components/auth/permission-guard";
-import { type PermissionAction } from "@/components/auth/resource-context";
 import {
   DollarSign,
   Clock,
@@ -30,11 +17,24 @@ import {
   Settings,
 } from "lucide-react";
 import Link from "next/link";
+import React, { useState } from "react";
+import { PermissionGuard } from "@/components/auth/permission-guard";
+import { type PermissionAction } from "@/components/auth/resource-context";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GetBillingItemsAdvancedDocument, GetBillingItemsStatsAdvancedDocument } from "../../graphql/generated/graphql";
+import { RevenueMetrics } from "../analytics/revenue-metrics";
+import { ServicePerformanceChart } from "../analytics/service-performance-chart";
 import { BillingItemsTable } from "../items/billing-items-table";
 import { PayrollCompletionTracker } from "../payroll-integration/payroll-completion-tracker";
-import { ServicePerformanceChart } from "../analytics/service-performance-chart";
-import { RevenueMetrics } from "../analytics/revenue-metrics";
 
 export function ModernBillingDashboard() {
   const [selectedTimeRange, setSelectedTimeRange] = useState("30d");

@@ -33,8 +33,8 @@ import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { PermissionGuard } from "@/components/auth/permission-guard";
-import { SkillsEditModal } from "@/components/skills-edit-modal";
 import { PermissionEditor } from "@/components/permissions/permission-editor";
+import { SkillsEditModal } from "@/components/skills-edit-modal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -66,13 +66,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { useRole } from "@/hooks/use-permissions";
-// Note: Complex permission GraphQL operations removed - using simplified role system
 import {
   GetStaffDetailCompleteDocument,
   UpdateUserDocument,
   GetAllUsersListDocument,
 } from "@/domains/users/graphql/generated/graphql";
+import { useRole } from "@/hooks/use-permissions";
+// Note: Complex permission GraphQL operations removed - using simplified role system
 // Note: Complex permissions system simplified - using role-based access control
 
 // Role options

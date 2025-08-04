@@ -10,8 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { PayrollWithCycle } from "@/types";
 import { getScheduleSummary } from "@/domains/payrolls/utils/schedule-helpers";
+import { PayrollWithCycle } from "@/types";
 
 interface ClientPayrollsTableProps {
   payrolls: PayrollWithCycle[];

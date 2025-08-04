@@ -22,8 +22,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useHierarchicalPermissions } from "@/hooks/use-hierarchical-permissions";
-import { getSecurityConfig } from "@/lib/security/config";
 import { auditLogger } from "@/lib/audit/audit-logger";
+import { getSecurityConfig } from "@/lib/security/config";
 
 interface MFAStatus {
   enabled: boolean;

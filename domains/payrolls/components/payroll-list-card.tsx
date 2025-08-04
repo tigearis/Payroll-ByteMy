@@ -31,9 +31,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { GetPayrollsDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import { getScheduleSummary } from "@/domains/payrolls/utils/schedule-helpers";
 import { useSmartPolling } from "@/hooks/use-polling";
 import { useCachedQuery } from "@/hooks/use-strategic-query";
-import { getScheduleSummary } from "@/domains/payrolls/utils/schedule-helpers";
 
 interface PayrollListCardProps {
   searchQuery: string;

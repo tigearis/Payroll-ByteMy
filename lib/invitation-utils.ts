@@ -5,8 +5,8 @@
  * for both custom sign-up and accept-invitation pages
  */
 
-import { extractClerkTicketData, type ClerkTicketUserData } from './clerk-ticket-utils';
 import { auditLogger } from './audit/audit-logger';
+import { extractClerkTicketData, type ClerkTicketUserData } from './clerk-ticket-utils';
 
 export interface InvitationTicketData {
   ticket: string;

@@ -19,9 +19,9 @@ import {
   ACTIONS,
   type ResourceName 
 } from "@/components/auth/permission-guard";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 
 // Example page resource
 const PAGE_RESOURCE = RESOURCES.BILLING;

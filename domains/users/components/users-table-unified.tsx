@@ -2,14 +2,14 @@
 
 import { Shield, UserCheck, Eye, Edit, UserX, Mail } from "lucide-react";
 import { memo } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import {
   EnhancedUnifiedTable,
   UnifiedTableColumn,
   UnifiedTableAction,
 } from "@/components/ui/enhanced-unified-table";
 import { getRoleDisplayName } from "@/lib/utils/role-utils";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 // User data type (based on existing user structure)
 interface User {

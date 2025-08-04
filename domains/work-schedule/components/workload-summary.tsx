@@ -5,8 +5,8 @@ import React, { useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import AssignmentCard from "./assignment-card";
 import { AssignmentStatus, AssignmentPriority } from "../types/workload";
+import AssignmentCard from "./assignment-card";
 
 interface WorkloadDay {
   date: string;

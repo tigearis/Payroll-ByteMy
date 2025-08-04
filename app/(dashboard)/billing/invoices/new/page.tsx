@@ -1,19 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
 import { useQuery } from "@apollo/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "@/components/ui/select";
-import { PermissionGuard } from "@/components/auth/permission-guard";
 import {
   FileText,
   DollarSign,
@@ -23,6 +10,19 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import Link from "next/link";
+import React, { useState } from "react";
+import { PermissionGuard } from "@/components/auth/permission-guard";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
 import { GetBillingItemsAdvancedDocument } from "@/domains/billing/graphql/generated/graphql";
 import { GetClientsForDropdownDocument } from "@/domains/clients/graphql/generated/graphql";
 

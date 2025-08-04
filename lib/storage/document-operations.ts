@@ -1,6 +1,5 @@
-import { minioClient } from './minio-client';
-import { executeTypedQuery } from '@/lib/apollo/query-helpers';
 import { randomUUID } from 'crypto';
+import { executeTypedQuery } from '@/lib/apollo/query-helpers';
 import { auditLogger } from '@/lib/audit/audit-logger';
 import { 
   InsertFileDocument, 
@@ -9,6 +8,7 @@ import {
   UpdateFileMetadataDocument, 
   DeleteFileDocument 
 } from '@/shared/types/generated/graphql';
+import { minioClient } from './minio-client';
 
 /**
  * High-level document operations service

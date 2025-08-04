@@ -11,12 +11,12 @@ import {
   XCircle,
 } from "lucide-react";
 import { PermissionGuard } from "@/components/auth/permission-guard";
+import { Badge } from "@/components/ui/badge";
 import {
   EnhancedUnifiedTable,
   UnifiedTableColumn,
   UnifiedTableAction,
 } from "@/components/ui/enhanced-unified-table";
-import { Badge } from "@/components/ui/badge";
 
 // Client data type (based on existing client structure)
 interface Client {

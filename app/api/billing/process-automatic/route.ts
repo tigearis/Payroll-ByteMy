@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from '@/lib/auth/api-auth';
-import { serverApolloClient } from '@/lib/apollo/unified-client';
 import { gql } from '@apollo/client';
+import { NextRequest, NextResponse } from 'next/server';
+import { serverApolloClient } from '@/lib/apollo/unified-client';
+import { withAuth } from '@/lib/auth/api-auth';
 
 interface AutomaticBillingResult {
   success: boolean;
@@ -26,9 +26,9 @@ async function POST(request: NextRequest) {
   try {
     const client = serverApolloClient;
     
-    let tier1Results: any[] = [];
-    let tier2Results: any[] = [];
-    let tier3Results: any[] = [];
+    const tier1Results: any[] = [];
+    const tier2Results: any[] = [];
+    const tier3Results: any[] = [];
     let totalItemsCreated = 0;
     let totalAmountGenerated = 0;
 

@@ -4,6 +4,7 @@ import { Info } from "lucide-react";
 import React, { useMemo } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
+import { getRoleDisplayName } from "@/lib/utils/role-utils";
 import { useWorkloadState } from "../hooks";
 import { useTeamWorkloadGraphQL } from "../hooks/use-team-workload-graphql";
 import { PayrollWorkloadVisualizationProps, TeamMember } from "../types/workload";
@@ -12,7 +13,6 @@ import { EnhancedTimeNavigation } from "./time-navigation";
 import WorkloadCalendar from "./workload-calendar";
 import WorkloadChart from "./workload-chart";
 import WorkloadSummary from "./workload-summary";
-import { getRoleDisplayName } from "@/lib/utils/role-utils";
 
 // Utility function to determine utilization level
 function getUtilizationLevel(utilization: number) {

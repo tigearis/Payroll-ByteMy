@@ -155,7 +155,7 @@ export function useTeamWorkloadGraphQL({
         const currentWeekStart = startOfWeek(today, { weekStartsOn: 1 }); // Monday start
         
         // Find the date for this day of the week in current week
-        let dayDate = new Date(currentWeekStart);
+        const dayDate = new Date(currentWeekStart);
         const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         const targetDayIndex = dayNames.indexOf(dayName);
         

@@ -1,5 +1,5 @@
-import { Client as MinioClient } from 'minio';
 import { fileTypeFromBuffer } from 'file-type';
+import { Client as MinioClient } from 'minio';
 
 /**
  * MinIO Document Storage Client

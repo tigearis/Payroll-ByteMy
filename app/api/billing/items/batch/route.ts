@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from '@/lib/auth/api-auth';
-import { executeTypedQuery } from '@/lib/apollo/query-helpers';
 import { 
   UpdateBillingItemAdvancedDocument,
   DeleteBillingItemAdvancedDocument,
@@ -9,6 +7,8 @@ import {
   type DeleteBillingItemAdvancedMutation,
   type GetBillingItemsAdvancedQuery
 } from '@/domains/billing/graphql/generated/graphql';
+import { executeTypedQuery } from '@/lib/apollo/query-helpers';
+import { withAuth } from '@/lib/auth/api-auth';
 
 interface BatchOperationRequest {
   operation: 'approve' | 'reject' | 'delete' | 'update_status';

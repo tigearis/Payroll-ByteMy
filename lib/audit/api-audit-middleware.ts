@@ -4,9 +4,9 @@
  * Automatically logs all API requests and responses for audit trail
  */
 
+import { auth } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { auditLogger } from './audit-logger';
-import { auth } from '@clerk/nextjs/server';
 
 export interface ApiAuditEvent {
   method: string;

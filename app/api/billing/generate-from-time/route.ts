@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from '@/lib/auth/api-auth';
-import { serverApolloClient } from '@/lib/apollo/unified-client';
 import { 
   GetTimeEntriesByPayrollDocumentDocument, 
   GetNewclientServiceAgreementsDocument, 
   CreateBillingItemAdvancedDocument,
   GetNewServiceCatalogDocument 
 } from '@/domains/billing/graphql/generated/graphql';
+import { serverApolloClient } from '@/lib/apollo/unified-client';
+import { withAuth } from '@/lib/auth/api-auth';
 
 interface GenerateBillingRequest {
   payrollId: string;

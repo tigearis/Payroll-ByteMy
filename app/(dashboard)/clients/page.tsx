@@ -24,8 +24,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
-import { GraphQLErrorBoundary } from "@/components/graphql-error-boundary";
 import { CanCreate } from "@/components/auth/permission-guard";
+import { GraphQLErrorBoundary } from "@/components/graphql-error-boundary";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

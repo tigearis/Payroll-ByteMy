@@ -15,9 +15,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ByteMySpinner } from "@/components/ui/bytemy-loading-icon";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FeatureFlagGuard } from "@/lib/feature-flags";
-import { HolidaySyncPanel } from "@/domains/external-systems/components/holiday-sync-panel";
 import { FeatureFlagManagement } from "@/domains/external-systems/components/feature-flag-management";
+import { HolidaySyncPanel } from "@/domains/external-systems/components/holiday-sync-panel";
+import { FeatureFlagGuard } from "@/lib/feature-flags";
 
 const developerTools = [
   {

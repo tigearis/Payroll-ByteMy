@@ -16,14 +16,6 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useState, useMemo } from "react";
-import {
-  GetSecurityDashboardOverviewDocument,
-  GetSecurityDashboardActivityDocument,
-  GetSecurityUserStatsDocument,
-  GetSecurityAuditLogsDocument,
-  GetPermissionsDashboardDataDocument,
-  GetSoc2ComplianceDataDocument,
-} from "@/domains/audit/graphql/generated/graphql";
 import { PermissionGuard } from "@/components/auth/permission-guard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -35,6 +27,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  GetSecurityDashboardOverviewDocument,
+  GetSecurityDashboardActivityDocument,
+  GetSecurityUserStatsDocument,
+  GetSecurityAuditLogsDocument,
+  GetPermissionsDashboardDataDocument,
+  GetSoc2ComplianceDataDocument,
+} from "@/domains/audit/graphql/generated/graphql";
 import { safeFormatDate } from "@/lib/utils/date-utils";
 
 

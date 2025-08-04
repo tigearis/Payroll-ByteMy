@@ -1,7 +1,7 @@
-import { minioClient } from './minio-client';
+import { gql } from '@apollo/client';
 import { executeTypedQuery } from '@/lib/apollo/query-helpers';
 import { auditLogger } from '@/lib/audit/audit-logger';
-import { gql } from '@apollo/client';
+import { minioClient } from './minio-client';
 
 /**
  * File Cleanup Service

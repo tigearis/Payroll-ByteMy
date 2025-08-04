@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuthParams } from '@/lib/auth/api-auth';
-import { executeTypedQuery } from '@/lib/apollo/query-helpers';
 import { UpdateBillingItemAdvancedDocument, type UpdateBillingItemAdvancedMutation } from '@/domains/billing/graphql/generated/graphql';
+import { executeTypedQuery } from '@/lib/apollo/query-helpers';
+import { withAuthParams } from '@/lib/auth/api-auth';
 
 /**
  * POST /api/billing/items/[id]/approve
@@ -33,7 +33,7 @@ export const POST = withAuthParams(async (req: NextRequest, { params }, session:
           status: 'confirmed',
           isApproved: true,
           approvalDate: new Date().toISOString(),
-          approvedBy: session.userId,
+          approvedBy: session.databaseId || session.userId,
           notes: notes || null
         }
       }
