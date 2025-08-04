@@ -9,9 +9,11 @@ import {
   ArrowRight,
   Play,
   Pause,
+  Calculator,
+  TrendingUp,
 } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import { toast } from "sonner";
 import { PermissionGuard } from "@/components/auth/permission-guard";
 import { Badge } from "@/components/ui/badge";
@@ -23,8 +25,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import { useDatabaseUserId } from "@/hooks/use-database-user-id";
+import { PayrollCompletionMetricsForm } from "./payroll-completion-metrics-form";
 import { 
   GetPayrollDatesWithBillingStatusDocumentDocument,
   GetPayrollCompletionStatsDocumentDocument,
@@ -33,6 +37,8 @@ import {
 
 export function PayrollCompletionTracker() {
   const { databaseUserId } = useDatabaseUserId();
+  const [selectedPayrollDate, setSelectedPayrollDate] = useState<any>(null);
+  const [isMetricsDialogOpen, setIsMetricsDialogOpen] = useState(false);
   
   // Real GraphQL queries re-enabled - get all recent payroll dates
   const { data: payrollDatesData, loading: payrollDatesLoading, refetch } = useQuery(GetPayrollDatesWithBillingStatusDocumentDocument, {
@@ -90,6 +96,19 @@ export function PayrollCompletionTracker() {
     }
   };
 
+  const handleOpenMetricsForm = (payrollDate: any) => {
+    setSelectedPayrollDate(payrollDate);
+    setIsMetricsDialogOpen(true);
+  };
+
+  const handleMetricsComplete = (success: boolean) => {
+    if (success) {
+      refetch(); // Refresh the payroll dates data
+    }
+    setIsMetricsDialogOpen(false);
+    setSelectedPayrollDate(null);
+  };
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "completed":
@@ -127,6 +146,11 @@ export function PayrollCompletionTracker() {
         Pending Completion
       </Badge>
     );
+  };
+
+  const hasTier1Metrics = (payrollDate: any) => {
+    // Check if payroll has completion metrics (Tier 1 system)
+    return payrollDate.payrollCompletionMetrics?.length > 0;
   };
 
   if (payrollDatesLoading) {
@@ -249,7 +273,46 @@ export function PayrollCompletionTracker() {
                   </div>
                   <div className="flex items-center space-x-3">
                     {getStatusBadge(payrollDate)}
-                    {payrollDate.status === "completed" && !billingGenerated && (
+                    
+                    {/* Tier 1 Metrics Button - New completion flow */}
+                    {payrollDate.status !== "completed" && (
+                      <PermissionGuard action="update">
+                        <Button 
+                          size="sm" 
+                          variant="default"
+                          onClick={() => handleOpenMetricsForm(payrollDate)}
+                          className="bg-green-600 hover:bg-green-700"
+                        >
+                          <Calculator className="w-3 h-3 mr-1" />
+                          Complete with Metrics
+                        </Button>
+                      </PermissionGuard>
+                    )}
+                    
+                    {/* Show Tier 1 badge if metrics exist */}
+                    {hasTier1Metrics(payrollDate) && (
+                      <Badge variant="outline" className="bg-purple-50 text-purple-700">
+                        <TrendingUp className="w-3 h-3 mr-1" />
+                        Tier 1
+                      </Badge>
+                    )}
+                    
+                    {/* Update existing metrics button */}
+                    {payrollDate.status === "completed" && hasTier1Metrics(payrollDate) && (
+                      <PermissionGuard action="update">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleOpenMetricsForm(payrollDate)}
+                        >
+                          <Calculator className="w-3 h-3 mr-1" />
+                          Update Metrics
+                        </Button>
+                      </PermissionGuard>
+                    )}
+                    
+                    {/* Legacy billing generation for non-Tier 1 payrolls */}
+                    {payrollDate.status === "completed" && !billingGenerated && !hasTier1Metrics(payrollDate) && (
                       <PermissionGuard action="create">
                         <Button 
                           size="sm" 
@@ -290,30 +353,30 @@ export function PayrollCompletionTracker() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="flex items-center space-x-4 p-3 bg-blue-50 rounded-lg">
+            <div className="flex items-center space-x-4 p-3 bg-green-50 rounded-lg">
               <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                  <span className="text-sm font-medium text-blue-600">1</span>
+                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                  <Calculator className="h-4 w-4 text-green-600" />
                 </div>
               </div>
               <div>
-                <h4 className="font-medium">Payroll Date Completion</h4>
+                <h4 className="font-medium">Tier 1 Completion Metrics</h4>
                 <p className="text-sm text-gray-600">
-                  Consultant marks payroll date as completed in the system
+                  Capture detailed deliverables and complexity for outcome-based billing
                 </p>
               </div>
             </div>
             
-            <div className="flex items-center space-x-4 p-3 bg-green-50 rounded-lg">
+            <div className="flex items-center space-x-4 p-3 bg-blue-50 rounded-lg">
               <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                  <span className="text-sm font-medium text-green-600">2</span>
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  <TrendingUp className="h-4 w-4 text-blue-600" />
                 </div>
               </div>
               <div>
-                <h4 className="font-medium">Automatic Billing Generation</h4>
+                <h4 className="font-medium">Immediate Revenue Recognition</h4>
                 <p className="text-sm text-gray-600">
-                  System generates billing items based on service agreements
+                  Billing generated instantly based on actual deliverables and service rates
                 </p>
               </div>
             </div>
@@ -321,19 +384,37 @@ export function PayrollCompletionTracker() {
             <div className="flex items-center space-x-4 p-3 bg-purple-50 rounded-lg">
               <div className="flex-shrink-0">
                 <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                  <span className="text-sm font-medium text-purple-600">3</span>
+                  <CheckCircle className="h-4 w-4 text-purple-600" />
                 </div>
               </div>
               <div>
-                <h4 className="font-medium">Manager Approval</h4>
+                <h4 className="font-medium">Smart Approval Workflows</h4>
                 <p className="text-sm text-gray-600">
-                  Generated items await manager approval before invoicing
+                  Auto-approval for standard services, escalation for complex deliverables
                 </p>
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
+
+      {/* Tier 1 Completion Metrics Dialog */}
+      <Dialog open={isMetricsDialogOpen} onOpenChange={setIsMetricsDialogOpen}>
+        <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Payroll Completion Metrics</DialogTitle>
+          </DialogHeader>
+          {selectedPayrollDate && (
+            <PayrollCompletionMetricsForm
+              payrollDateId={selectedPayrollDate.id}
+              payrollName={selectedPayrollDate.payroll?.name || "Unknown Payroll"}
+              clientName={selectedPayrollDate.payroll?.client?.name || "Unknown Client"}
+              eftDate={selectedPayrollDate.adjustedEftDate || selectedPayrollDate.originalEftDate}
+              onComplete={handleMetricsComplete}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
