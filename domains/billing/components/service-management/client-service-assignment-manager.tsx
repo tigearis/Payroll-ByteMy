@@ -30,7 +30,6 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { gql } from "@apollo/client";
 
 // GraphQL Queries
 const GET_CLIENT_SERVICE_ASSIGNMENTS = gql`
@@ -342,13 +341,14 @@ export function ClientServiceAssignmentManager() {
     setFormData({
       client_id: assignment.client_id,
       service_id: assignment.service_id,
-      custom_rate: assignment.custom_rate || undefined,
-      custom_seniority_multipliers: assignment.custom_seniority_multipliers ? 
-        JSON.parse(assignment.custom_seniority_multipliers) : undefined,
       rate_effective_from: assignment.rate_effective_from,
-      rate_effective_to: assignment.rate_effective_to || undefined,
       is_active: assignment.is_active,
-      notes: assignment.notes || undefined
+      ...(assignment.custom_rate && { custom_rate: assignment.custom_rate }),
+      ...(assignment.custom_seniority_multipliers && { 
+        custom_seniority_multipliers: JSON.parse(assignment.custom_seniority_multipliers) 
+      }),
+      ...(assignment.rate_effective_to && { rate_effective_to: assignment.rate_effective_to }),
+      ...(assignment.notes && { notes: assignment.notes })
     });
     setIsEditDialogOpen(true);
   };
@@ -483,7 +483,10 @@ export function ClientServiceAssignmentManager() {
                   id="rate_effective_to"
                   type="date"
                   value={formData.rate_effective_to || ""}
-                  onChange={(e) => setFormData(prev => ({ ...prev, rate_effective_to: e.target.value || undefined }))}
+                  onChange={(e) => setFormData(prev => ({ 
+                    ...prev, 
+                    ...(e.target.value ? { rate_effective_to: e.target.value } : {})
+                  }))}
                 />
               </div>
             </div>
@@ -524,7 +527,7 @@ export function ClientServiceAssignmentManager() {
               value={formData.custom_rate || ""}
               onChange={(e) => setFormData(prev => ({ 
                 ...prev, 
-                custom_rate: e.target.value ? parseFloat(e.target.value) : undefined 
+                ...(e.target.value ? { custom_rate: parseFloat(e.target.value) } : {})
               }))}
               placeholder={
                 formData.service_id 

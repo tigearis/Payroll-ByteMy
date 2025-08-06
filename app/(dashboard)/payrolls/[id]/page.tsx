@@ -1586,118 +1586,184 @@ export default function PayrollPage() {
             </div>
           </TabsContent>
 
-          {/* Billing Tab */}
+          {/* Billing Tab - Client-side only to prevent hydration issues */}
           <TabsContent value="billing" className="space-y-6">
-            {/* Quick Actions Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span className="flex items-center gap-2">
-                    <Calculator className="w-5 h-5" />
-                    Billing Actions
-                  </span>
-                  <BillingGenerationModal
-                    payrollId={id}
-                    payrollName={payroll?.name || 'Payroll'}
-                    onGenerated={(count) => {
-                      toast.success(`Generated ${count} billing items`);
-                      refetch();
+            {hasMounted ? (
+              <>
+                {/* Quick Actions Card */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      <span className="flex items-center gap-2">
+                        <Calculator className="w-5 h-5" />
+                        Billing Actions
+                      </span>
+                      <BillingGenerationModal
+                        payrollId={id}
+                        payrollName={payroll?.name || 'Payroll'}
+                        onGenerated={(count) => {
+                          toast.success(`Generated ${count} billing items`);
+                          refetch();
+                        }}
+                      />
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
+                        <Clock className="w-8 h-8 text-blue-600" />
+                        <div>
+                          <div className="font-medium text-blue-900">Time Entry Automation</div>
+                          <div className="text-sm text-blue-700">Convert tracked hours to billing items</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 p-3 rounded-lg bg-green-50">
+                        <FileText className="w-8 h-8 text-green-600" />
+                        <div>
+                          <div className="font-medium text-green-900">Smart Consolidation</div>
+                          <div className="text-sm text-green-700">Group entries by service type</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 p-3 rounded-lg bg-purple-50">
+                        <CheckCircle className="w-8 h-8 text-purple-600" />
+                        <div>
+                          <div className="font-medium text-purple-900">Client Rate Integration</div>
+                          <div className="text-sm text-purple-700">Uses agreed service rates</div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <PayrollBillingInterface 
+                  payrollId={id}
+                  onBillingCompleted={() => {
+                    // Refetch payroll data to update billing information
+                    refetch();
+                  }}
+                />
+
+                {/* Service Overrides Section - Client-side only */}
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="flex items-center gap-2">
+                          <FileText className="w-5 h-5" />
+                          Payroll Service Overrides
+                        </CardTitle>
+                        <CardDescription className="mt-2">
+                          Manage service-specific billing rates and configurations that override client defaults for this payroll.
+                          These overrides will take precedence over the client's default service agreements.
+                        </CardDescription>
+                      </div>
+                      <div className="text-right text-sm text-gray-500">
+                        <div>Client: {(client as any)?.name}</div>
+                        <Link 
+                          href={`/clients/${(client as any)?.id}#service-agreements`}
+                          className="text-blue-600 hover:text-blue-800 underline"
+                        >
+                          View Client Service Agreements →
+                        </Link>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    {(client as any)?.id ? (
+                      <PayrollServiceOverrides payrollId={id} />
+                    ) : (
+                      <div className="text-center py-4 text-gray-500">
+                        Loading service overrides...
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+                
+                {/* Profitability Dashboard - Client-side only with null check */}
+                {(payroll as any).client?.id ? (
+                  <ProfitabilityDashboard 
+                    clientId={(payroll as any).client.id}
+                    dateRange={{
+                      start: '2024-01-01',
+                      end: '2024-12-31'
                     }}
                   />
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50">
-                    <Clock className="w-8 h-8 text-blue-600" />
-                    <div>
-                      <div className="font-medium text-blue-900">Time Entry Automation</div>
-                      <div className="text-sm text-blue-700">Convert tracked hours to billing items</div>
+                ) : (
+                  <Card>
+                    <CardContent className="pt-6">
+                      <div className="text-center py-4 text-gray-500">
+                        Loading profitability dashboard...
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </>
+            ) : (
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex flex-col items-center justify-center py-12 space-y-4">
+                    <RefreshCw className="w-8 h-8 animate-spin text-blue-600" />
+                    <div className="text-center">
+                      <p className="text-lg font-medium text-gray-900">Loading billing interface...</p>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Preparing billing components for client-side rendering
+                      </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-green-50">
-                    <FileText className="w-8 h-8 text-green-600" />
-                    <div>
-                      <div className="font-medium text-green-900">Smart Consolidation</div>
-                      <div className="text-sm text-green-700">Group entries by service type</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-purple-50">
-                    <CheckCircle className="w-8 h-8 text-purple-600" />
-                    <div>
-                      <div className="font-medium text-purple-900">Client Rate Integration</div>
-                      <div className="text-sm text-purple-700">Uses agreed service rates</div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <PayrollBillingInterface 
-              payrollId={id}
-              onBillingCompleted={() => {
-                // Refetch payroll data to update billing information
-                refetch();
-              }}
-            />
-
-            {/* Service Overrides Section */}
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <FileText className="w-5 h-5" />
-                      Payroll Service Overrides
-                    </CardTitle>
-                    <CardDescription className="mt-2">
-                      Manage service-specific billing rates and configurations that override client defaults for this payroll.
-                      These overrides will take precedence over the client's default service agreements.
-                    </CardDescription>
-                  </div>
-                  <div className="text-right text-sm text-gray-500">
-                    <div>Client: {(client as any)?.name}</div>
-                    <Link 
-                      href={`/clients/${(client as any)?.id}#service-agreements`}
-                      className="text-blue-600 hover:text-blue-800 underline"
-                    >
-                      View Client Service Agreements →
-                    </Link>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <PayrollServiceOverrides payrollId={id} />
-              </CardContent>
-            </Card>
-            
-            {/* Profitability Dashboard */}
-            <ProfitabilityDashboard 
-              clientId={(payroll as any).client?.id}
-              dateRange={{
-                start: '2024-01-01',
-                end: '2024-12-31'
-              }}
-            />
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
-          {/* Payroll Dates Tab */}
+          {/* Payroll Dates Tab - Client-side only to prevent hydration issues */}
           <TabsContent value="dates" className="space-y-6">
-            <PayrollDatesView payrollId={id} showAllVersions={false} />
+            {hasMounted ? (
+              <PayrollDatesView payrollId={id} showAllVersions={false} />
+            ) : (
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex flex-col items-center justify-center py-12 space-y-4">
+                    <RefreshCw className="w-8 h-8 animate-spin text-blue-600" />
+                    <div className="text-center">
+                      <p className="text-lg font-medium text-gray-900">Loading payroll dates...</p>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Preparing dates view for client-side rendering
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
-          {/* Documents Tab */}
+          {/* Documents Tab - Client-side only to prevent hydration issues */}
           <TabsContent value="documents" className="space-y-6">
-            <DocumentList
-              payrollId={id}
-              showFilters={true}
-              showUploadButton={true}
-              onUploadClick={() => setShowUploadModal(true)}
-              onDocumentUpdate={() => {
-                // Refresh when documents are updated or deleted
-                window.location.reload();
-              }}
-            />
+            {hasMounted ? (
+              <DocumentList
+                payrollId={id}
+                showFilters={true}
+                showUploadButton={true}
+                onUploadClick={() => setShowUploadModal(true)}
+                onDocumentUpdate={() => {
+                  // Refresh when documents are updated or deleted
+                  window.location.reload();
+                }}
+              />
+            ) : (
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex flex-col items-center justify-center py-12 space-y-4">
+                    <RefreshCw className="w-8 h-8 animate-spin text-blue-600" />
+                    <div className="text-center">
+                      <p className="text-lg font-medium text-gray-900">Loading documents...</p>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Preparing document list for client-side rendering
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
         </Tabs>
 

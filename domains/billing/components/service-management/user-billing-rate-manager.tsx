@@ -398,7 +398,10 @@ export function UserBillingRateManager() {
             id="effective_to"
             type="date"
             value={formData.effective_to || ""}
-            onChange={(e) => setFormData(prev => ({ ...prev, effective_to: e.target.value || undefined }))}
+            onChange={(e) => setFormData(prev => ({ 
+              ...prev, 
+              ...(e.target.value ? { effective_to: e.target.value } : {})
+            }))}
           />
         </div>
       </div>
