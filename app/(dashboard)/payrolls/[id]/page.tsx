@@ -1,7 +1,7 @@
 // app/(dashboard)/payrolls/[id]/page.tsx
 "use client";
 
-import { useMutation, useQuery, useLazyQuery, useApolloClient } from "@apollo/client";
+import { useMutation, useQuery, useLazyQuery } from "@apollo/client";
 
 // Import role enums
 
@@ -116,28 +116,22 @@ const PayrollServiceOverrides = dynamic(
 );
 import {
   GetPayrollByIdDocument,
-  GetPayrollForEditDocument,
   GetPayrollDatesDocument,
   GetPayrollsDocument,
   UpdatePayrollDocument,
+  GetLatestPayrollVersionDocument,
+  GeneratePayrollDatesDocument,
+  GetPayrollDetailCompleteDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
 // Billing documents imported on-demand
-
-// Import additional documents separately to avoid potential module resolution issues
-import { GetPayrollCyclesDocument } from "@/domains/payrolls/graphql/generated/graphql";
-import { GetPayrollDateTypesDocument } from "@/domains/payrolls/graphql/generated/graphql";
-import { GetLatestPayrollVersionDocument } from "@/domains/payrolls/graphql/generated/graphql";
-import { GeneratePayrollDatesDocument } from "@/domains/payrolls/graphql/generated/graphql";
 // Schedule helper utilities imported on-demand
 import { getScheduleSummary } from "@/domains/payrolls/utils/schedule-helpers";
-import { GetAllUsersListDocument } from "@/domains/users/graphql/generated/graphql";
 import {
   usePayrollVersioning,
   usePayrollStatusUpdate,
   getVersionReason,
 } from "@/hooks/use-payroll-versioning";
 import { useFreshQuery } from "@/hooks/use-strategic-query";
-import { QueryOptimizer } from "@/lib/apollo/query-optimization";
 import { PermissionGuard, CanUpdate, CanDelete } from "@/components/auth/permission-guard";
 import { PayrollCycleType, PayrollDateType } from "@/types/enums";
 import { QuickEmailDialog } from "@/domains/email/components/quick-email-dialog";
@@ -398,7 +392,6 @@ export default function PayrollPage() {
   const searchParams = useSearchParams();
   const returnTo = searchParams.get('returnTo');
   const editMode = searchParams.get('edit') === 'true';
-  const apolloClient = useApolloClient(); // For QueryOptimizer
 
   console.log("📋 Payroll ID:", id);
   
@@ -574,104 +567,32 @@ export default function PayrollPage() {
     latestVersionData,
   ]);
 
-  // 🚀 OPTIMIZED: Replace individual queries with parallel batch query
-  const [batchData, setBatchData] = useState<{
-    payroll: any;
-    users: any;
-    cycles: any;
-    dateTypes: any;
-  } | null>(null);
   const [error, setError] = useState<any>(null);
 
-  // Enhanced function to refetch all data with better error handling and fallbacks
-  const refetch = async () => {
-    if (!id || isVersionCheckingOrRedirecting) return;
-
-    setLoading('batchData', true);
-    setError(null);
-
-    try {
-      console.log("🚀 Starting optimized parallel queries with enhanced error handling...");
+  // Simplified data fetching with single optimized query
+  const { 
+    data: completeData, 
+    loading: dataLoading, 
+    error: dataError, 
+    refetch 
+  } = useQuery(GetPayrollDetailCompleteDocument, {
+    variables: { id },
+    skip: !id || isVersionCheckingOrRedirecting,
+    fetchPolicy: "cache-and-network",
+    errorPolicy: "all",
+    onCompleted: () => {
+      console.log("✅ Payroll detail data loaded successfully");
+      setLoading('batchData', false);
+    },
+    onError: (error) => {
+      console.error("❌ Failed to load payroll data:", error);
+      setError(error);
+      setLoading('batchData', false);
       
-      // Execute all queries in parallel using QueryOptimizer
-      const { results, errors } = await QueryOptimizer.executeParallelQueries(
-        apolloClient,
-        {
-          queries: [
-            {
-              query: GetPayrollForEditDocument,
-              variables: { id },
-              priority: 'high',
-              notifyOnNetworkStatusChange: true,
-            },
-            {
-              query: GetAllUsersListDocument,
-              variables: {},
-              priority: 'medium',
-            },
-            {
-              query: GetPayrollCyclesDocument,
-              variables: {},
-              priority: 'low',
-            },
-            {
-              query: GetPayrollDateTypesDocument,
-              variables: {},
-              priority: 'low',
-            },
-          ],
-          maxConcurrent: 4,
-          timeoutMs: 15000 // Increased timeout to 15 seconds
-        }
-      );
-
-      if (errors.length > 0) {
-        console.warn(`⚠️ ${errors.length} query errors occurred:`, errors);
-        
-        // Handle partial failures with fallback data
-        if (results[0]) { // If we at least have payroll data
-          setBatchData({
-            payroll: results[0],
-            users: results[1] || { users: [] }, // Fallback to empty users
-            cycles: results[2] || { payrollCycles: [] }, // Fallback to empty cycles
-            dateTypes: results[3] || { payrollDateTypes: [] }, // Fallback to empty date types
-          });
-          
-          // Show warning toast for partial data
-          toast.warning("Some data failed to load. Core functionality remains available.", {
-            description: "Users, cycles, or date types may be limited.",
-            duration: 5000
-          });
-        } else {
-          throw new Error("Critical payroll data failed to load");
-        }
-      } else {
-        // Map results to our data structure
-        setBatchData({
-          payroll: results[0],
-          users: results[1],
-          cycles: results[2],
-          dateTypes: results[3],
-        });
-
-        console.log("✅ All queries completed successfully in parallel!");
-      }
-
-    } catch (err: any) {
-      console.error("🔥 BATCH QUERY ERROR:", err);
-      setError(err);
-      
-      // Enhanced error context
-      const errorMessage = err.message || 'Unknown error occurred';
-      const isTimeoutError = errorMessage.includes('timeout') || errorMessage.includes('AbortError');
+      const errorMessage = error.message || 'Unknown error occurred';
       const isNetworkError = errorMessage.includes('network') || errorMessage.includes('fetch');
       
-      if (isTimeoutError) {
-        toast.error("Request timed out. Please check your connection and try again.", {
-          description: "The payroll data is taking too long to load.",
-          duration: 8000
-        });
-      } else if (isNetworkError) {
+      if (isNetworkError) {
         toast.error("Network error occurred. Please check your connection.", {
           description: "Unable to fetch payroll data due to connectivity issues.",
           duration: 8000
@@ -682,21 +603,21 @@ export default function PayrollPage() {
           duration: 8000
         });
       }
-    } finally {
-      setLoading('batchData', false);
     }
-  };
+  });
 
-  // Execute optimized queries on mount and when dependencies change
+  // Update loading state for data fetch
   useEffect(() => {
-    refetch();
-  }, [id, isVersionCheckingOrRedirecting]);
+    if (dataLoading) {
+      setLoading('batchData', true);
+    }
+  }, [dataLoading, setLoading]);
 
   // Extract individual data for compatibility with existing code
-  const data = batchData?.payroll;
-  const usersData = batchData?.users;
-  const cyclesData = batchData?.cycles;
-  const dateTypesData = batchData?.dateTypes;
+  const data = completeData ? { payrollsByPk: completeData.payrollsByPk } : null;
+  const usersData = completeData ? { users: completeData.users } : null;
+  const cyclesData = completeData ? { payrollCycles: completeData.payrollCycles } : null;
+  const dateTypesData = completeData ? { payrollDateTypes: completeData.payrollDateTypes } : null;
 
   // Lazy query for regenerating payroll dates
   const [generatePayrollDates] = useLazyQuery(GeneratePayrollDatesDocument, {
@@ -781,136 +702,53 @@ export default function PayrollPage() {
     return isCurrentWeekA ? "A" : "B";
   };
 
-  // Helper functions to convert between display names and UUIDs (moved up to avoid initialization issues)
-  const getCycleIdFromName = (cycleName: string) => {
-    const cycles = cyclesData?.payrollCycles || [];
-    const cycle = cycles.find((c: any) => c.name === cycleName);
-    console.log("getCycleIdFromName:", {
-      cycleName,
-      cycles,
-      result: cycle?.id,
-    });
-
-    // If no database lookup available, we need to handle the hardcoded values differently
-    // The issue is we're using hardcoded enum values but need UUIDs from the database
-    if (!cycle?.id && cycleName) {
-      console.warn(
-        "No UUID found for cycle name:",
-        cycleName,
-        "Available cycles:",
-        cycles
-      );
-      // For now, we'll just return the cycleName as it might be a UUID already
-      return cycleName;
+  // Helper function to map database date type names to form enum values
+  const mapDateTypeDbNameToFormValue = (dbName: string) => {
+    switch (dbName) {
+      case "som": return "SOM";
+      case "eom": return "EOM"; 
+      case "fixed_date": return "fixed";
+      default: return dbName;
     }
-
-    return cycle?.id || null;
   };
 
-  const getDateTypeIdFromName = (dateTypeName: string) => {
-    const dateTypes = dateTypesData?.payrollDateTypes || [];
-    
-    // Map form enum values to database names
-    let dbName = dateTypeName;
-    if (dateTypeName === "SOM") dbName = "som";
-    if (dateTypeName === "EOM") dbName = "eom"; 
-    if (dateTypeName === "fixed") dbName = "fixed_date";
-    
-    const dateType = dateTypes.find((dt: any) => dt.name === dbName);
-
-    if (!dateType?.id && dateTypeName) {
-      console.warn(
-        "No UUID found for date type name:",
-        dateTypeName,
-        "Available date types:",
-        dateTypes
-      );
-      // For now, we'll just return the dateTypeName as it might be a UUID already
-      return dateTypeName;
+  // Helper function to map form enum values to database names
+  const mapFormValueToDateTypeDbName = (formValue: string) => {
+    switch (formValue) {
+      case "SOM": return "som";
+      case "EOM": return "eom"; 
+      case "fixed": return "fixed_date";
+      default: return formValue;
     }
-
-    return dateType?.id || null;
   };
 
-  // Helper function to convert from UUID to enum name for the form
-  const getCycleNameFromId = (cycleId: string) => {
-    if (!cycleId) return "";
-    
-    const cycles = cyclesData?.payrollCycles || [];
-    if (cycles.length === 0) {
-      console.warn("❌ No cycles data available for conversion:", cycleId);
-      return ""; // Return empty string so form can handle properly
-    }
-    
-    const cycle = cycles.find((c: any) => c.id === cycleId);
-    if (!cycle) {
-      console.error("❌ Could not find cycle with ID:", cycleId, "Available cycles:", cycles.map((c: any) => ({ id: c.id, name: c.name })));
-      return ""; // Return empty string instead of cycleId to prevent form errors
-    }
-    
-    console.log("✅ Cycle conversion successful:", { cycleId, result: cycle.name });
-    return cycle.name;
-  };
-
-  const getDateTypeNameFromId = (dateTypeId: string) => {
-    if (!dateTypeId) return "";
-    
-    const dateTypes = dateTypesData?.payrollDateTypes || [];
-    if (dateTypes.length === 0) {
-      console.warn("❌ No date types data available for conversion:", dateTypeId);
-      return ""; // Return empty string so form can handle properly
-    }
-    
-    const dateType = dateTypes.find((dt: any) => dt.id === dateTypeId);
-    if (!dateType) {
-      console.error("❌ Could not find date type with ID:", dateTypeId, "Available date types:", dateTypes.map((dt: any) => ({ id: dt.id, name: dt.name })));
-      return ""; // Return empty string instead of dateTypeId to prevent form errors
-    }
-    
-    const dbName = dateType.name;
-    
-    // Map database names to form enum values
-    let result = dbName;
-    if (dbName === "som") result = "SOM";
-    else if (dbName === "eom") result = "EOM"; 
-    else if (dbName === "fixed_date") result = "fixed";
-    
-    console.log("✅ Date type conversion successful:", { dateTypeId, dbName, result });
-    return result;
-  };
-
-  // Simplified form population - only populate when all required data is available
+  // Populate form immediately when payroll data is available (improves UX)
   useEffect(() => {
-    if (data?.payrollsByPk && isEditing && cyclesData && dateTypesData) {
+    if (data?.payrollsByPk) {
       const payroll = data.payrollsByPk;
       console.log("🔧 Initializing form with complete data:", {
         payrollId: payroll.id,
         hasAllData: true
       });
       
-      // Reliable cycle name conversion with error handling
-      const cycleNameFromDb = getCycleNameFromId((payroll as any).cycleId || "");
-      if (!cycleNameFromDb && (payroll as any).cycleId) {
-        console.warn("⚠️ Could not convert cycle ID to name:", (payroll as any).cycleId);
-      }
+      // Get cycle and date type names directly from the related objects
+      const cycleName = (payroll as any).payrollCycle?.name || "";
+      const dateTypeName = (payroll as any).payrollDateType?.name || "";
+      
+      // Map date type database name to form enum value
+      const dateTypeFormValue = mapDateTypeDbNameToFormValue(dateTypeName);
       
       // For fortnightly payrolls, set the current week type if not stored in DB
       let fortnightlyWeek = (payroll as any).fortnightlyWeek || "";
-      if (cycleNameFromDb === "fortnightly" && !fortnightlyWeek) {
+      if (cycleName === "fortnightly" && !fortnightlyWeek) {
         fortnightlyWeek = getCurrentFortnightlyWeek();
-      }
-      
-      // Reliable date type name conversion with error handling
-      const dateTypeNameFromDb = getDateTypeNameFromId((payroll as any).dateTypeId || "");
-      if (!dateTypeNameFromDb && (payroll as any).dateTypeId) {
-        console.warn("⚠️ Could not convert date type ID to name:", (payroll as any).dateTypeId);
       }
       
       const formData = {
         name: (payroll as any).name || "",
         clientId: (payroll as any).clientId || "",
-        cycleId: cycleNameFromDb || "",
-        dateTypeId: dateTypeNameFromDb || "",
+        cycleId: cycleName || "",
+        dateTypeId: dateTypeFormValue || "",
         dateValue: (payroll as any).dateValue?.toString() || "",
         fortnightlyWeek: fortnightlyWeek,
         primaryConsultantUserId: (payroll as any).primaryConsultantUserId || "",
@@ -925,15 +763,8 @@ export default function PayrollPage() {
       
       console.log("✅ Form data populated successfully:", formData);
       setPayrollFormData(formData);
-    } else if (isEditing && data?.payrollsByPk && (!cyclesData || !dateTypesData)) {
-      console.log("⏳ Waiting for reference data to complete form initialization:", {
-        hasPayrollData: !!data?.payrollsByPk,
-        hasCyclesData: !!cyclesData,
-        hasDateTypesData: !!dateTypesData,
-        isEditing
-      });
     }
-  }, [data, isEditing, cyclesData, dateTypesData]);
+  }, [data]);
 
   // Simplified PayrollForm input change handler - no dual state management
   const handlePayrollFormChange = (field: keyof PayrollFormData, value: string) => {
@@ -1043,8 +874,13 @@ export default function PayrollPage() {
       const originalDateValue = (payroll as any).dateValue;
 
       // Convert form values (enum names) to UUIDs for database
-      const cycleId = getCycleIdFromName(payrollFormData.cycleId);
-      const dateTypeId = getDateTypeIdFromName(payrollFormData.dateTypeId);
+      const selectedCycle = cyclesData?.payrollCycles?.find((c: any) => c.name === payrollFormData.cycleId);
+      const selectedDateType = dateTypesData?.payrollDateTypes?.find((dt: any) => 
+        dt.name === mapFormValueToDateTypeDbName(payrollFormData.dateTypeId)
+      );
+      
+      const cycleId = selectedCycle?.id;
+      const dateTypeId = selectedDateType?.id;
 
       // Validate conversions
       if (payrollFormData.cycleId && !cycleId) {
