@@ -35,7 +35,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { gql } from "@apollo/client";
 
 // GraphQL Queries
 const GET_PAYROLL_INVOICES = gql`
