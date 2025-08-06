@@ -838,8 +838,7 @@ export default function PayrollPage() {
     
     const cycles = cyclesData?.payrollCycles || [];
     if (cycles.length === 0) {
-      console.warn("❌ No cycles data available for conversion:", cycleId);
-      return ""; // Return empty string so form can handle properly
+      return ""; // Return empty string so form can handle properly - data still loading
     }
     
     const cycle = cycles.find((c: any) => c.id === cycleId);
@@ -848,7 +847,6 @@ export default function PayrollPage() {
       return ""; // Return empty string instead of cycleId to prevent form errors
     }
     
-    console.log("✅ Cycle conversion successful:", { cycleId, result: cycle.name });
     return cycle.name;
   };
 
@@ -857,8 +855,7 @@ export default function PayrollPage() {
     
     const dateTypes = dateTypesData?.payrollDateTypes || [];
     if (dateTypes.length === 0) {
-      console.warn("❌ No date types data available for conversion:", dateTypeId);
-      return ""; // Return empty string so form can handle properly
+      return ""; // Return empty string so form can handle properly - data still loading
     }
     
     const dateType = dateTypes.find((dt: any) => dt.id === dateTypeId);
@@ -875,7 +872,6 @@ export default function PayrollPage() {
     else if (dbName === "eom") result = "EOM"; 
     else if (dbName === "fixed_date") result = "fixed";
     
-    console.log("✅ Date type conversion successful:", { dateTypeId, dbName, result });
     return result;
   };
 

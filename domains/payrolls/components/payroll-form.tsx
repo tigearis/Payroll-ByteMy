@@ -112,10 +112,12 @@ function PayrollFormComponent({
   };
 
   // Validation
-  const getCycleNameById = (id: string) =>
-    cyclesData?.payrollCycles
+  const getCycleNameById = (id: string) => {
+    if (!id || !cyclesData?.payrollCycles) return "";
+    return cyclesData.payrollCycles
       .find((c: any) => c.id === id)
-      ?.name?.toLowerCase();
+      ?.name?.toLowerCase() || "";
+  };
 
   const isFormValid = () => {
     if (
@@ -147,9 +149,11 @@ function PayrollFormComponent({
 
     if (["bi_monthly", "monthly", "quarterly"].includes(cycleName)) {
       if (!formData.dateTypeId) return false;
-      const dateTypeName = dateTypesData?.payrollDateTypes
-        .find((dt: any) => dt.id === formData.dateTypeId)
-        ?.name?.toLowerCase();
+      const dateTypeName = dateTypesData?.payrollDateTypes?.length 
+        ? dateTypesData.payrollDateTypes
+            .find((dt: any) => dt.id === formData.dateTypeId)
+            ?.name?.toLowerCase()
+        : "";
       if (dateTypeName === "fixed_date" || formData.dateTypeId === "fixed")
         return !!formData.dateValue;
       return true;
