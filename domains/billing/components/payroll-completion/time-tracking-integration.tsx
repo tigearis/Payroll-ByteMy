@@ -490,14 +490,22 @@ export function TimeTrackingIntegration({
 
   const handleEditTimeEntry = (entry: TimeEntry) => {
     setSelectedEntry(entry);
-    setFormData({
+    const newFormData: TimeEntryFormData = {
       staff_user_id: entry.staff_user_id,
-      assigned_service_id: entry.assigned_service_id || undefined,
       work_date: entry.work_date,
       hours_spent: entry.hours_spent,
-      description: entry.description || undefined,
       is_billable_to_service: entry.is_billable_to_service
-    });
+    };
+    
+    if (entry.assigned_service_id) {
+      newFormData.assigned_service_id = entry.assigned_service_id;
+    }
+    
+    if (entry.description) {
+      newFormData.description = entry.description;
+    }
+    
+    setFormData(newFormData);
     setIsEditDialogOpen(true);
   };
 
@@ -651,7 +659,15 @@ export function TimeTrackingIntegration({
           <Label htmlFor="assigned_service_id">Assigned Service (Optional)</Label>
           <Select 
             value={formData.assigned_service_id || ""} 
-            onValueChange={(value) => setFormData(prev => ({ ...prev, assigned_service_id: value || undefined }))}
+            onValueChange={(value) => {
+              const newFormData = { ...formData };
+              if (value) {
+                newFormData.assigned_service_id = value;
+              } else {
+                delete newFormData.assigned_service_id;
+              }
+              setFormData(newFormData);
+            }}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select service (for billable time)" />

@@ -155,7 +155,7 @@ export function RecurringServicesManager({ clientId, clientName }: RecurringServ
 
   // Get available services (not already subscribed)
   const subscribedCodes = new Set(clientServices.map(s => s.serviceCode));
-  const availableServices = STANDARD_RECURRING_SERVICES.filter(config => 
+  const availableStandardServices = STANDARD_RECURRING_SERVICES.filter(config => 
     !subscribedCodes.has(config.serviceCode)
   );
 
@@ -266,7 +266,7 @@ export function RecurringServicesManager({ clientId, clientName }: RecurringServ
                           <SelectValue placeholder="Select a service" />
                         </SelectTrigger>
                         <SelectContent>
-                          {availableServices.map(service => (
+                          {availableStandardServices.map(service => (
                             <SelectItem key={service.serviceCode} value={service.serviceCode}>
                               <div className="flex items-center justify-between w-full">
                                 <span>{service.serviceName}</span>
@@ -280,7 +280,7 @@ export function RecurringServicesManager({ clientId, clientName }: RecurringServ
                       </Select>
                       {selectedService && (
                         <div className="mt-2 p-3 bg-slate-50 rounded text-sm">
-                          {availableServices.find(s => s.serviceCode === selectedService)?.description}
+                          {availableStandardServices.find(s => s.serviceCode === selectedService)?.description}
                         </div>
                       )}
                     </div>
@@ -293,7 +293,7 @@ export function RecurringServicesManager({ clientId, clientName }: RecurringServ
                         step="0.01"
                         value={customRate}
                         onChange={(e) => setCustomRate(e.target.value)}
-                        placeholder={selectedService ? `Default: $${availableServices.find(s => s.serviceCode === selectedService)?.baseRate}` : "Leave empty to use base rate"}
+                        placeholder={selectedService ? `Default: $${availableStandardServices.find(s => s.serviceCode === selectedService)?.baseRate}` : "Leave empty to use base rate"}
                       />
                     </div>
                     

@@ -220,15 +220,20 @@ async function POST(request: NextRequest) {
             }
 
             // Track results
-            result.items!.push({
+            const item = {
               clientId: clientData.id,
               clientName: clientData.name,
               serviceCode: service.serviceCode,
               serviceName: service.serviceName,
               amount: billingAmount,
-              prorated: billingAmount < service.baseRate,
-              reason: billingAmount < service.baseRate ? 'Pro-rated for partial month' : undefined
-            });
+              prorated: billingAmount < service.baseRate
+            };
+            
+            if (billingAmount < service.baseRate) {
+              (item as any).reason = 'Pro-rated for partial month';
+            }
+            
+            result.items!.push(item);
 
             result.itemsCreated++;
             result.totalAmount += billingAmount;

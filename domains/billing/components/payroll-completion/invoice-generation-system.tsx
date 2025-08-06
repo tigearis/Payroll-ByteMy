@@ -648,10 +648,15 @@ export function InvoiceGenerationSystem({
             min="0"
             max="100"
             value={formData.tax_rate || ""}
-            onChange={(e) => setFormData(prev => ({ 
-              ...prev, 
-              tax_rate: e.target.value ? parseFloat(e.target.value) : undefined 
-            }))}
+            onChange={(e) => {
+              const newFormData = { ...formData };
+              if (e.target.value) {
+                newFormData.tax_rate = parseFloat(e.target.value);
+              } else {
+                delete newFormData.tax_rate;
+              }
+              setFormData(newFormData);
+            }}
             placeholder="10.00"
           />
         </div>

@@ -412,12 +412,17 @@ export function PayrollServiceOverrideManager({
 
   const handleEditOverride = (override: PayrollServiceOverride) => {
     setSelectedOverride(override);
-    setFormData({
+    const newFormData: OverrideFormData = {
       service_id: override.service_id,
       override_rate: override.override_rate,
-      override_reason: override.override_reason || "",
-      quantity_override: override.quantity_override || undefined
-    });
+      override_reason: override.override_reason || ""
+    };
+    
+    if (override.quantity_override) {
+      newFormData.quantity_override = override.quantity_override;
+    }
+    
+    setFormData(newFormData);
     setIsEditDialogOpen(true);
   };
 
@@ -553,10 +558,15 @@ export function PayrollServiceOverrideManager({
             type="number"
             min="0"
             value={formData.quantity_override || ""}
-            onChange={(e) => setFormData(prev => ({ 
-              ...prev, 
-              quantity_override: e.target.value ? parseInt(e.target.value) : undefined 
-            }))}
+            onChange={(e) => {
+              const newFormData = { ...formData };
+              if (e.target.value) {
+                newFormData.quantity_override = parseInt(e.target.value);
+              } else {
+                delete newFormData.quantity_override;
+              }
+              setFormData(newFormData);
+            }}
             placeholder={`Leave empty to use existing quantity (${formData.service_id ? getExistingQuantity(formData.service_id) : 0})`}
           />
           <p className="text-sm text-muted-foreground mt-1">
