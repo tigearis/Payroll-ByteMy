@@ -903,32 +903,45 @@ export default function PayrollPage() {
     return result;
   };
 
-  // Sync payroll data to PayrollForm format when editing starts or data changes
+  // Progressive form population - populate with available data immediately, update as more data loads
   useEffect(() => {
-    if (data?.payrollsByPk && isEditing && cyclesData && dateTypesData) {
+    if (data?.payrollsByPk && isEditing) {
       const payroll = data.payrollsByPk;
-      console.log("🔧 Initializing form with payroll data:", payroll);
+      console.log("🔧 Progressive form initialization with payroll data:", {
+        payrollId: payroll.id,
+        hasPayrollData: true,
+        hasCyclesData: !!cyclesData,
+        hasDateTypesData: !!dateTypesData
+      });
       
-      // Safely get cycle name with fallback
-      const cycleNameFromDb = getCycleNameFromId((payroll as any).cycleId || "") || (payroll as any).cycleId || "";
+      // Safely get cycle name with fallback - use raw ID if conversion data not available yet
+      const cycleNameFromDb = cyclesData ? 
+        (getCycleNameFromId((payroll as any).cycleId || "") || (payroll as any).cycleId || "") :
+        ((payroll as any).cycleId || ""); // Use raw ID as fallback
+      
       console.log("🔄 Cycle conversion:", { 
         originalCycleId: (payroll as any).cycleId, 
         convertedName: cycleNameFromDb,
-        availableCycles: cyclesData?.payrollCycles?.length || 0
+        availableCycles: cyclesData?.payrollCycles?.length || 0,
+        usingFallback: !cyclesData
       });
       
       // For fortnightly payrolls, set the current week type if not stored in DB
       let fortnightlyWeek = (payroll as any).fortnightlyWeek || "";
-      if (cycleNameFromDb === "fortnightly" && !fortnightlyWeek) {
+      if ((cycleNameFromDb === "fortnightly" || (payroll as any).cycleId?.includes("fortnightly")) && !fortnightlyWeek) {
         fortnightlyWeek = getCurrentFortnightlyWeek();
       }
       
-      // Safely get date type name with fallback
-      const dateTypeNameFromDb = getDateTypeNameFromId((payroll as any).dateTypeId || "") || (payroll as any).dateTypeId || "";
+      // Safely get date type name with fallback - use raw ID if conversion data not available yet
+      const dateTypeNameFromDb = dateTypesData ? 
+        (getDateTypeNameFromId((payroll as any).dateTypeId || "") || (payroll as any).dateTypeId || "") :
+        ((payroll as any).dateTypeId || ""); // Use raw ID as fallback
+      
       console.log("🔄 Date type conversion:", { 
         originalDateTypeId: (payroll as any).dateTypeId, 
         convertedName: dateTypeNameFromDb,
-        availableDateTypes: dateTypesData?.payrollDateTypes?.length || 0
+        availableDateTypes: dateTypesData?.payrollDateTypes?.length || 0,
+        usingFallback: !dateTypesData
       });
       
       const formData = {
@@ -948,17 +961,15 @@ export default function PayrollPage() {
         status: (payroll as any).status || "Implementation",
       };
       
-      console.log("✅ Setting payroll form data:", formData);
+      console.log(`✅ Setting payroll form data (${cyclesData && dateTypesData ? 'complete' : 'progressive'}):`, formData);
       setPayrollFormData(formData);
     } else if (isEditing) {
-      console.log("⏳ Waiting for data to load before initializing form:", {
-        hasPayrollData: !!data?.payrollById,
-        hasCyclesData: !!cyclesData,
-        hasDateTypesData: !!dateTypesData,
+      console.log("⏳ Waiting for payroll data to initialize form:", {
+        hasPayrollData: !!data?.payrollsByPk,
         isEditing
       });
     }
-  }, [data, isEditing, cyclesData, dateTypesData]);
+  }, [data, isEditing, cyclesData, dateTypesData]); // Keep all dependencies to update when reference data loads
 
   // PayrollForm input change handler
   const handlePayrollFormChange = (field: keyof PayrollFormData, value: string) => {
@@ -1688,6 +1699,16 @@ export default function PayrollPage() {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-6">
+                        {/* Loading indicator for reference data */}
+                        {(!cyclesData || !dateTypesData) && (
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground bg-blue-50 border border-blue-200 rounded-md p-3">
+                            <RefreshCw className="w-4 h-4 animate-spin" />
+                            <span>Loading dropdown options...</span>
+                            <span className="text-xs">
+                              (Form populated with current data, dropdowns updating)
+                            </span>
+                          </div>
+                        )}
                         <PayrollForm
                           formData={payrollFormData}
                           onInputChange={handlePayrollFormChange}
