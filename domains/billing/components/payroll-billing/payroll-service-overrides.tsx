@@ -102,7 +102,7 @@ const GET_PAYROLL_SERVICE_AGREEMENTS = gql`
         contactEmail
         active
         
-        serviceAgreements: clientServiceAgreements(
+        serviceAgreements(
           where: { isActive: { _eq: true } }
           orderBy: [{ createdAt: DESC }]
         ) {
