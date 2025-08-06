@@ -31,6 +31,7 @@ import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { toast } from "sonner";
+import { format } from 'date-fns';
 // Lazy load export and modal components
 const ExportCsv = dynamic(() => import("@/components/export-csv").then(mod => ({ default: mod.ExportCsv })), {
   loading: () => <Button disabled>Loading...</Button>,
@@ -291,12 +292,11 @@ const formatDate = (date: string | Date) => {
     return "Not set";
   }
   const d = typeof date === "string" ? new Date(date) : date;
-  return d.toLocaleDateString("en-AU", {
-    weekday: "short",
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  try {
+    return format(d, 'EEE dd MM yyyy');
+  } catch (error) {
+    return "Invalid date";
+  }
 };
 
 // Format date with time
@@ -305,14 +305,11 @@ const formatDateTime = (date: string | Date) => {
     return "Not set";
   }
   const d = typeof date === "string" ? new Date(date) : date;
-  return d.toLocaleDateString("en-AU", {
-    weekday: "short",
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  try {
+    return format(d, 'EEE dd MM yyyy HH:mm');
+  } catch (error) {
+    return "Invalid date";
+  }
 };
 
 // Helper function to get user-friendly role display name

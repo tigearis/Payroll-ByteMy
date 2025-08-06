@@ -98,7 +98,7 @@ export function PayrollSchedule() {
   const [currentView, setCurrentView] = useState<CalendarView>("month");
   const [weekOrientation, setWeekOrientation] =
     useState<WeekOrientation>("days-as-rows");
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState<Date | null>(null);
   const [clientFilter, setClientFilter] = useState("all");
   const [payrollFilter, setPayrollFilter] = useState<EventFilter>("all");
   const [staffFilter, setStaffFilter] = useState("all");
@@ -121,12 +121,14 @@ export function PayrollSchedule() {
 
   // Calculate date range for data fetching
   const startDate = useMemo(() => {
+    if (!currentDate) return "";
     return currentView === "month"
       ? format(startOfMonth(currentDate), "yyyy-MM-dd")
       : format(startOfWeek(currentDate), "yyyy-MM-dd");
   }, [currentDate, currentView]);
 
   const endDate = useMemo(() => {
+    if (!currentDate) return "";
     return currentView === "month"
       ? format(endOfMonth(currentDate), "yyyy-MM-dd")
       : format(endOfWeek(currentDate), "yyyy-MM-dd");
@@ -173,6 +175,13 @@ export function PayrollSchedule() {
   const error = payrollsError;
   const payrolls = payrollsData?.payrolls || [];
   const holidays: Holiday[] = [];
+
+  // Initialize currentDate on client side to avoid hydration mismatch
+  useEffect(() => {
+    if (!currentDate) {
+      setCurrentDate(new Date());
+    }
+  }, [currentDate]);
 
   // Update query when date range changes
   useEffect(() => {
@@ -294,15 +303,17 @@ export function PayrollSchedule() {
   };
 
   const navigatePrevious = () => {
-    setCurrentDate(prev =>
-      currentView === "month" ? subMonths(prev, 1) : subWeeks(prev, 1)
-    );
+    setCurrentDate(prev => {
+      if (!prev) return new Date();
+      return currentView === "month" ? subMonths(prev, 1) : subWeeks(prev, 1);
+    });
   };
 
   const navigateNext = () => {
-    setCurrentDate(prev =>
-      currentView === "month" ? addMonths(prev, 1) : addWeeks(prev, 1)
-    );
+    setCurrentDate(prev => {
+      if (!prev) return new Date();
+      return currentView === "month" ? addMonths(prev, 1) : addWeeks(prev, 1);
+    });
   };
 
   const getEventsForDate = (date: Date) => {
@@ -372,6 +383,7 @@ export function PayrollSchedule() {
   };
 
   const renderMonthView = () => {
+    if (!currentDate) return null;
     // Get all days in the current month
     const startOfMonthDate = startOfMonth(currentDate);
     const endOfMonthDate = endOfMonth(currentDate);
@@ -442,6 +454,7 @@ export function PayrollSchedule() {
   };
 
   const renderWeekView = () => {
+    if (!currentDate) return null;
     // Get all days in the current week
     const startOfWeekDate = startOfWeek(currentDate);
     const days = Array.from({ length: 7 }, (_, i) => {
@@ -521,6 +534,18 @@ export function PayrollSchedule() {
         <div className="text-center">
           <div className="text-red-500 mb-4">⚠️ Error loading schedule</div>
           <p className="text-sm text-muted-foreground">{error.message}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Hydration guard - render loading state until currentDate is initialized
+  if (!currentDate) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading schedule...</p>
         </div>
       </div>
     );

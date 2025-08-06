@@ -52,6 +52,7 @@ import {
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useDynamicLoading } from "@/lib/hooks/use-dynamic-loading";
 import { getRoleAndPositionDisplay, getRoleColor } from "@/lib/utils/role-utils";
+import { format } from 'date-fns';
 
 // Create loading component for leave
 function LeaveLoading() {
@@ -714,10 +715,10 @@ function LeaveCard({
     const end = new Date(endDate);
     
     if (start.toDateString() === end.toDateString()) {
-      return start.toLocaleDateString();
+      return format(start, 'dd MM yyyy');
     }
     
-    return `${start.toLocaleDateString()} - ${end.toLocaleDateString()}`;
+    return `${format(start, 'dd MM yyyy')} - ${format(end, 'dd MM yyyy')}`;
   };
 
   const canManageLeave = isManager && leave.status === "Pending" && 
@@ -865,7 +866,7 @@ function LeaveTable({
                     </td>
                     <td className="p-4 text-gray-600">
                       <div className="text-sm">
-                        {new Date(leave.startDate).toLocaleDateString()} - {new Date(leave.endDate).toLocaleDateString()}
+                        {format(new Date(leave.startDate), 'dd MM yyyy')} - {format(new Date(leave.endDate), 'dd MM yyyy')}
                       </div>
                     </td>
                     <td className="p-4">
@@ -960,7 +961,7 @@ function LeaveListItem({
               {leave.status}
             </Badge>
             <div className="text-sm text-gray-500">
-              {new Date(leave.startDate).toLocaleDateString()} - {new Date(leave.endDate).toLocaleDateString()}
+              {format(new Date(leave.startDate), 'dd MM yyyy')} - {format(new Date(leave.endDate), 'dd MM yyyy')}
             </div>
           </div>
           <DropdownMenu>
@@ -1098,21 +1099,11 @@ function LeaveDetailsModal({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium text-gray-500">Start Date</label>
-                <p className="text-lg">{new Date(leave.startDate).toLocaleDateString('en-AU', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}</p>
+                <p className="text-lg">{format(new Date(leave.startDate), 'EEEE, dd MMMM yyyy')}</p>
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-500">End Date</label>
-                <p className="text-lg">{new Date(leave.endDate).toLocaleDateString('en-AU', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}</p>
+                <p className="text-lg">{format(new Date(leave.endDate), 'EEEE, dd MMMM yyyy')}</p>
               </div>
             </div>
           </div>
