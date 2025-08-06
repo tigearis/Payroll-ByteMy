@@ -4,13 +4,19 @@
 
 This document outlines the database constraints, business logic restrictions, validation rules, and enhanced date generation functionality for payroll cycles and date types in the payroll system.
 
-**Latest Enhancements**:
+**Latest Enhancements (August 2025)**:
 
 - ✅ **Enhanced Adjustment Notes**: Detailed explanations for every date adjustment
 - ✅ **Holiday Integration**: Specific holiday names in adjustment reasons
 - ✅ **Weekend Detection**: Clear Saturday/Sunday adjustment explanations
 - ✅ **Bulk Regeneration**: Smart function to regenerate all payroll dates
 - ✅ **Comprehensive Reporting**: Detailed statistics on adjustments
+- 🔥 **CRITICAL FIXES APPLIED**:
+  - ✅ **Fortnightly Logic Rewritten**: Fixed broken 21-day intervals, now generates proper 14-day fortnightly cycles
+  - ✅ **Regional Holiday Filtering**: Only NSW and National holidays affect business day calculations
+  - ✅ **Bi-Monthly Logic**: Proper 24 dates/year with February 14th exception
+  - ✅ **DOW Mapping Fixed**: Correct day-of-week calculations for weekly/fortnightly payrolls
+  - ✅ **Complete Holiday Database**: 2024-2027 Australian holidays with regional coverage
 
 ## Table Structure
 
@@ -60,11 +66,20 @@ Generated dates with comprehensive adjustment tracking:
 | `created_at`        | `timestamp` | Record creation time                          |
 | `updated_at`        | `timestamp` | Last modification time                        |
 
-## Enhanced Date Generation System
+## Fixed Date Generation System (August 2025)
+
+### 🚨 **Critical Issues Resolved**
+
+#### **Major Bug Fixes Applied:**
+1. **Fortnightly Logic Completely Rewritten** - Previous version generated 21-day intervals instead of 14-day
+2. **Regional Holiday Filtering** - Now only considers NSW and National holidays, not all Australian holidays
+3. **Bi-Monthly February Exception** - Uses 14th instead of 15th in February for both SOM and EOM
+4. **DOW Mapping Corrections** - Fixed PostgreSQL vs business day-of-week misalignments
+5. **Business Day Adjustment Rules** - Proper SOM→next, others→previous logic implemented
 
 ### Core Functions
 
-#### 1. `generate_payroll_dates()` - Enhanced
+#### 1. `generate_payroll_dates()` - **COMPLETELY REWRITTEN**
 
 ```sql
 SELECT * FROM generate_payroll_dates(
