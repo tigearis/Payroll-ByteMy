@@ -33,7 +33,10 @@ export function useRealTimeSubscription({
   // Memoize refetchQueries array to prevent infinite loops
   // Use JSON.stringify to compare array contents, not reference
   const stableRefetchQueries = useMemo(() => refetchQueries, [
-    JSON.stringify(refetchQueries?.map(query => query?.definitions?.[0]?.name?.value) || [])
+    JSON.stringify(refetchQueries?.map(query => {
+      const definition = query?.definitions?.[0];
+      return definition && 'name' in definition ? definition.name?.value : 'unnamed';
+    }) || [])
   ]);
 
   // Subscription options
@@ -68,9 +71,12 @@ export function useRealTimeSubscription({
         } catch (refetchError) {
           console.warn("Failed to refetch queries:", refetchError);
           // Log more details about the error
-          if (refetchError.message?.includes('unknown query')) {
+          if (refetchError instanceof Error && refetchError.message?.includes('unknown query')) {
             console.warn("Query validation failed. Available queries:", 
-              stableRefetchQueries.map(q => q?.definitions?.[0]?.name?.value || 'unnamed'));
+              stableRefetchQueries.map(q => {
+                const definition = q?.definitions?.[0];
+                return definition && 'name' in definition ? definition.name?.value : 'unnamed';
+              }));
           }
         }
       }
