@@ -432,7 +432,7 @@ export default function PayrollPage() {
   );
   const [versioningNote, setVersioningNote] = useState("");
 
-  // PayrollForm data state
+  // PayrollForm data state - Initialize with defaults, populate in useEffect
   const [payrollFormData, setPayrollFormData] = useState<PayrollFormData>({
     name: "",
     clientId: "",
@@ -879,61 +879,65 @@ export default function PayrollPage() {
     return result;
   };
 
-  // Simplified form population - only populate when all required data is available
+  // Populate form data when payroll data and reference data become available
   useEffect(() => {
-    if (data?.payrollsByPk && isEditing && cyclesData && dateTypesData) {
-      const payroll = data.payrollsByPk;
-      console.log("🔧 Initializing form with complete data:", {
-        payrollId: payroll.id,
+    const currentPayroll = data?.payrollsByPk || versionCheckData?.payrollsByPk;
+    
+    // Populate form when we have all required data (payroll, cycles, dateTypes)
+    // This can happen when first loading or when entering edit mode
+    if (currentPayroll && cyclesData && dateTypesData) {
+      console.log("🔧 Populating form with complete data:", {
+        payrollId: currentPayroll.id,
+        isEditing,
         hasAllData: true
       });
       
       // Reliable cycle name conversion with error handling
-      const cycleNameFromDb = getCycleNameFromId((payroll as any).cycleId || "");
-      if (!cycleNameFromDb && (payroll as any).cycleId) {
-        console.warn("⚠️ Could not convert cycle ID to name:", (payroll as any).cycleId);
+      const cycleNameFromDb = getCycleNameFromId((currentPayroll as any).cycleId || "");
+      if (!cycleNameFromDb && (currentPayroll as any).cycleId) {
+        console.warn("⚠️ Could not convert cycle ID to name:", (currentPayroll as any).cycleId);
       }
       
       // For fortnightly payrolls, set the current week type if not stored in DB
-      let fortnightlyWeek = (payroll as any).fortnightlyWeek || "";
+      let fortnightlyWeek = (currentPayroll as any).fortnightlyWeek || "";
       if (cycleNameFromDb === "fortnightly" && !fortnightlyWeek) {
         fortnightlyWeek = getCurrentFortnightlyWeek();
       }
       
       // Reliable date type name conversion with error handling
-      const dateTypeNameFromDb = getDateTypeNameFromId((payroll as any).dateTypeId || "");
-      if (!dateTypeNameFromDb && (payroll as any).dateTypeId) {
-        console.warn("⚠️ Could not convert date type ID to name:", (payroll as any).dateTypeId);
+      const dateTypeNameFromDb = getDateTypeNameFromId((currentPayroll as any).dateTypeId || "");
+      if (!dateTypeNameFromDb && (currentPayroll as any).dateTypeId) {
+        console.warn("⚠️ Could not convert date type ID to name:", (currentPayroll as any).dateTypeId);
       }
       
       const formData = {
-        name: (payroll as any).name || "",
-        clientId: (payroll as any).clientId || "",
+        name: (currentPayroll as any).name || "",
+        clientId: (currentPayroll as any).clientId || "",
         cycleId: cycleNameFromDb || "",
         dateTypeId: dateTypeNameFromDb || "",
-        dateValue: (payroll as any).dateValue?.toString() || "",
+        dateValue: (currentPayroll as any).dateValue?.toString() || "",
         fortnightlyWeek: fortnightlyWeek,
-        primaryConsultantUserId: (payroll as any).primaryConsultantUserId || "",
-        backupConsultantUserId: (payroll as any).backupConsultantUserId || "",
-        managerUserId: (payroll as any).managerUserId || "",
-        processingDaysBeforeEft: (payroll as any).processingDaysBeforeEft?.toString() || "3",
-        processingTime: (payroll as any).processingTime?.toString() || "4",
-        employeeCount: (payroll as any).employeeCount?.toString() || "",
-        goLiveDate: (payroll as any).goLiveDate || "",
-        status: (payroll as any).status || "Implementation",
+        primaryConsultantUserId: (currentPayroll as any).primaryConsultantUserId || "",
+        backupConsultantUserId: (currentPayroll as any).backupConsultantUserId || "",
+        managerUserId: (currentPayroll as any).managerUserId || "",
+        processingDaysBeforeEft: (currentPayroll as any).processingDaysBeforeEft?.toString() || "3",
+        processingTime: (currentPayroll as any).processingTime?.toString() || "4",
+        employeeCount: (currentPayroll as any).employeeCount?.toString() || "",
+        goLiveDate: (currentPayroll as any).goLiveDate || "",
+        status: (currentPayroll as any).status || "Implementation",
       };
       
       console.log("✅ Form data populated successfully:", formData);
       setPayrollFormData(formData);
-    } else if (isEditing && data?.payrollsByPk && (!cyclesData || !dateTypesData)) {
-      console.log("⏳ Waiting for reference data to complete form initialization:", {
-        hasPayrollData: !!data?.payrollsByPk,
+    } else if (currentPayroll && (!cyclesData || !dateTypesData)) {
+      console.log("⏳ Waiting for reference data to complete form population:", {
+        hasPayrollData: !!currentPayroll,
         hasCyclesData: !!cyclesData,
         hasDateTypesData: !!dateTypesData,
         isEditing
       });
     }
-  }, [data, isEditing, cyclesData, dateTypesData]);
+  }, [data, versionCheckData, cyclesData, dateTypesData, getCurrentFortnightlyWeek, getCycleNameFromId, getDateTypeNameFromId]);
 
   // Simplified PayrollForm input change handler - no dual state management
   const handlePayrollFormChange = (field: keyof PayrollFormData, value: string) => {
