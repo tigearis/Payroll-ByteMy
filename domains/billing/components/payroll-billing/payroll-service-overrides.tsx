@@ -85,15 +85,6 @@ const GET_PAYROLL_SERVICE_AGREEMENTS = gql`
         isActive
       }
       
-      createdByUser: userByCreatedBy {
-        id
-        computedName
-      }
-      
-      generatedByUser: userByGeneratedBy {
-        id
-        computedName
-      }
       
       recentBillingItems: billingItems(
         limit: 5
@@ -238,8 +229,6 @@ interface PayrollServiceOverride {
   payrollServiceAgreementsByServiceId: Service;
   clientServiceAgreement?: ClientServiceAgreement;
   payroll: Payroll;
-  createdByUser?: User;
-  generatedByUser?: User;
   recentBillingItems: BillingItem[];
 }
 
@@ -792,7 +781,6 @@ const PayrollServiceOverrides: React.FC<PayrollServiceOverridesProps> = ({
               <div className="mt-4 pt-4 border-t text-xs text-gray-500 flex items-center justify-between">
                 <div>
                   Created: {new Date(override.createdAt).toLocaleDateString()}
-                  {override.createdByUser && ` by ${override.createdByUser.computedName}`}
                 </div>
                 {override.updatedAt !== override.createdAt && (
                   <div>

@@ -69,6 +69,7 @@ export function RecurringServicesManager({ clientId, clientName }: RecurringServ
   const [selectedService, setSelectedService] = useState<string>("");
   const [customRate, setCustomRate] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [clientServices, setClientServices] = useState<any[]>([]);
 
   // Fetch recurring services from database
   const { data: servicesData, loading: servicesLoading } = useQuery(GET_RECURRING_SERVICES);
@@ -82,7 +83,7 @@ export function RecurringServicesManager({ clientId, clientName }: RecurringServ
   const clientServices = assignmentsData?.client_service_assignments || [];
 
   // Calculate monthly recurring total
-  const monthlyTotal = clientServices.reduce((total, assignment) => {
+  const monthlyTotal = clientServices.reduce((total: number, assignment: any) => {
     const rate = assignment.custom_rate || assignment.service.base_rate;
     return total + (rate || 0);
   }, 0);
@@ -97,7 +98,7 @@ export function RecurringServicesManager({ clientId, clientName }: RecurringServ
   const handleAddService = async () => {
     if (!selectedService) return;
 
-    const serviceConfig = STANDARD_RECURRING_SERVICES.find(s => s.serviceCode === selectedService);
+    const serviceConfig = availableServices.find((s: any) => s.service_code === selectedService);
     if (!serviceConfig) return;
 
     const newService = {
@@ -111,7 +112,7 @@ export function RecurringServicesManager({ clientId, clientName }: RecurringServ
       recurringService: serviceConfig
     };
 
-    setClientServices(prev => [...prev, newService]);
+    setClientServices((prev: any) => [...prev, newService]);
     toast.success(`Added ${serviceConfig.serviceName} successfully`);
     setIsDialogOpen(false);
     setSelectedService("");
@@ -119,8 +120,8 @@ export function RecurringServicesManager({ clientId, clientName }: RecurringServ
   };
 
   const handleToggleService = async (serviceId: string, isActive: boolean) => {
-    setClientServices(prev =>
-      prev.map(service =>
+    setClientServices((prev: any) =>
+      prev.map((service: any) =>
         service.id === serviceId ? { ...service, isActive } : service
       )
     );
@@ -154,9 +155,9 @@ export function RecurringServicesManager({ clientId, clientName }: RecurringServ
   };
 
   // Get available services (not already subscribed)
-  const subscribedCodes = new Set(clientServices.map(s => s.serviceCode));
-  const availableStandardServices = STANDARD_RECURRING_SERVICES.filter(config => 
-    !subscribedCodes.has(config.serviceCode)
+  const subscribedCodes = new Set(clientServices.map((s: any) => s.serviceCode));
+  const availableStandardServices = availableServices.filter((config: any) => 
+    !subscribedCodes.has(config.service_code)
   );
 
   const getCategoryColor = (category: string) => {
@@ -428,18 +429,18 @@ export function RecurringServicesManager({ clientId, clientName }: RecurringServ
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {STANDARD_RECURRING_SERVICES.map((config) => {
-              const isSubscribed = subscribedCodes.has(config.serviceCode);
+            {availableStandardServices.map((config: any) => {
+              const isSubscribed = subscribedCodes.has(config.service_code);
               
               return (
                 <Card 
-                  key={config.serviceCode} 
+                  key={config.service_code} 
                   className={`transition-all ${isSubscribed ? "opacity-60 bg-slate-50" : "hover:shadow-md"}`}
                 >
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1">
-                        <h4 className="font-medium">{config.serviceName}</h4>
+                        <h4 className="font-medium">{config.name}</h4>
                         <Badge 
                           variant="outline" 
                           className={`${getCategoryColor(config.category)} mb-2`}
