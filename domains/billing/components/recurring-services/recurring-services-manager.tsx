@@ -21,96 +21,71 @@ interface RecurringServicesManagerProps {
   clientName: string;
 }
 
-// Standard recurring services from Tier 1 document
-const STANDARD_RECURRING_SERVICES = [
-  {
-    serviceCode: 'MONTHLY_SERVICE',
-    serviceName: 'Monthly Servicing Fee',
-    description: 'Base client relationship fee covering account management, basic support, and system access',
-    baseRate: 150.00,
-    billingCycle: 'monthly',
-    generationDay: 1,
-    category: 'essential',
-    autoApproval: true
-  },
-  {
-    serviceCode: 'SYSTEM_MAINTENANCE',
-    serviceName: 'System Maintenance Fee',
-    description: 'Technology platform maintenance, updates, and infrastructure costs',
-    baseRate: 75.00,
-    billingCycle: 'monthly',
-    generationDay: 1,
-    category: 'essential',
-    autoApproval: true
-  },
-  {
-    serviceCode: 'COMPLIANCE_MONITORING',
-    serviceName: 'Compliance Monitoring Fee',
-    description: 'Ongoing compliance monitoring, regulatory updates, and audit support',
-    baseRate: 50.00,
-    billingCycle: 'monthly',
-    generationDay: 1,
-    category: 'standard',
-    autoApproval: true
-  },
-  {
-    serviceCode: 'PREMIUM_SUPPORT',
-    serviceName: 'Premium Support Package',
-    description: 'Priority support, dedicated account manager, extended hours support',
-    baseRate: 200.00,
-    billingCycle: 'monthly',
-    generationDay: 1,
-    category: 'premium',
-    autoApproval: false
-  },
-  {
-    serviceCode: 'DATA_BACKUP_SECURITY',
-    serviceName: 'Data Backup & Security Package',
-    description: 'Enhanced data backup, security monitoring, and disaster recovery services',
-    baseRate: 100.00,
-    billingCycle: 'monthly',
-    generationDay: 1,
-    category: 'premium',
-    autoApproval: true
+// GraphQL query to fetch recurring services from the database
+const GET_RECURRING_SERVICES = gql`
+  query GetRecurringServices {
+    services(where: { 
+      charge_basis: { _in: ["per_client_monthly", "per_payroll_monthly"] }
+      is_active: { _eq: true }
+    }) {
+      id
+      name
+      service_code
+      description
+      base_rate
+      category
+      charge_basis
+      approval_level
+    }
   }
-];
+`;
+
+const GET_CLIENT_SERVICE_ASSIGNMENTS = gql`
+  query GetClientServiceAssignments($clientId: uuid!) {
+    client_service_assignments(where: {
+      client_id: { _eq: $clientId }
+      is_active: { _eq: true }
+    }) {
+      id
+      service_id
+      custom_rate
+      rate_effective_from
+      rate_effective_to
+      service {
+        id
+        name
+        service_code
+        description
+        base_rate
+        category
+        charge_basis
+        approval_level
+      }
+    }
+  }
+`;
 
 export function RecurringServicesManager({ clientId, clientName }: RecurringServicesManagerProps) {
   const [selectedService, setSelectedService] = useState<string>("");
   const [customRate, setCustomRate] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  // Mock data for now - will be replaced with real GraphQL queries
-  const [clientServices, setClientServices] = useState([
-    {
-      id: '1',
-      serviceCode: 'MONTHLY_SERVICE',
-      customRate: null,
-      effectiveFrom: '2024-01-01',
-      effectiveTo: null,
-      isActive: true,
-      autoGenerate: true,
-      recurringService: STANDARD_RECURRING_SERVICES[0]
-    },
-    {
-      id: '2',
-      serviceCode: 'SYSTEM_MAINTENANCE',
-      customRate: null,
-      effectiveFrom: '2024-01-01',
-      effectiveTo: null,
-      isActive: true,
-      autoGenerate: true,
-      recurringService: STANDARD_RECURRING_SERVICES[1]
-    }
-  ]);
+  // Fetch recurring services from database
+  const { data: servicesData, loading: servicesLoading } = useQuery(GET_RECURRING_SERVICES);
+  
+  // Fetch client service assignments from database
+  const { data: assignmentsData, loading: assignmentsLoading } = useQuery(GET_CLIENT_SERVICE_ASSIGNMENTS, {
+    variables: { clientId }
+  });
+
+  const availableServices = servicesData?.services || [];
+  const clientServices = assignmentsData?.client_service_assignments || [];
 
   // Calculate monthly recurring total
-  const monthlyTotal = clientServices
-    .filter(service => service.isActive)
-    .reduce((total, service) => {
-      const rate = service.customRate || service.recurringService.baseRate;
-      return total + rate;
-    }, 0);
+  const monthlyTotal = clientServices.reduce((total, assignment) => {
+    const rate = assignment.custom_rate || assignment.service.base_rate;
+    return total + (rate || 0);
+  }, 0);
 
   // Get next billing date
   const getNextBillingDate = () => {
