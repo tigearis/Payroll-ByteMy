@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation, gql } from "@apollo/client";
 import { 
   Save, 
   Plus, 
