@@ -723,6 +723,13 @@ export default function PayrollPage() {
     }
   };
 
+  // Add hydration safety state - MUST be before any usage
+  const [hasMounted, setHasMounted] = useState(false);
+  
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
   // Populate form immediately when payroll data is available (improves UX) - hydration safe
   useEffect(() => {
     if (hasMounted && data?.payrollsByPk) {
@@ -776,6 +783,7 @@ export default function PayrollPage() {
     console.log(`📝 Form field updated: ${field} = ${value}`);
   };
 
+
   // Get users filtered by role and staff status
   const users = usersData?.users || [];
   const staffUsers = users.filter((user: any) => user.isStaff === true);
@@ -792,13 +800,6 @@ export default function PayrollPage() {
     toast.error("Error: Payroll ID is required.");
     return <div>Error: Payroll ID is required.</div>;
   }
-
-  // Add hydration safety state
-  const [hasMounted, setHasMounted] = useState(false);
-  
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
 
   // Show loading state during hydration to prevent mismatch
   if (!hasMounted) {

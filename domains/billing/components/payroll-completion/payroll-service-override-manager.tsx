@@ -29,7 +29,6 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import { gql } from "@apollo/client";
 
 // GraphQL Queries
 const GET_PAYROLL_SERVICE_OVERRIDES = gql`
