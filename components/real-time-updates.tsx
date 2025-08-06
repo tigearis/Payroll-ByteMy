@@ -1,6 +1,6 @@
 // components/real-time-updates.tsx
 import { DocumentNode } from "@apollo/client";
-import { ReactNode } from "react";
+import { ReactNode, useMemo } from "react";
 import { 
   PayrollSubscriptionDocument,
   GetPayrollsDocument
@@ -28,14 +28,14 @@ export function RealTimeUpdates({
   onUpdate,
   children,
 }: RealTimeUpdatesProps) {
-  // Use our custom subscription hook
-  const subscriptionOptions = {
+  // Memoize subscription options to prevent infinite re-renders
+  const subscriptionOptions = useMemo(() => ({
     document: subscription,
     variables: variables || {},
     refetchQueries,
     shouldToast: showToasts,
     ...(onUpdate && { onData: onUpdate }),
-  };
+  }), [subscription, variables, refetchQueries, showToasts, onUpdate]);
 
   const { isConnected, error } = useRealTimeSubscription(subscriptionOptions);
 
@@ -73,14 +73,13 @@ export function PayrollUpdatesListener({
   showToasts?: boolean;
   onUpdate?: (data: unknown) => void;
 }) {
-  // Import extracted GraphQL operations
-
-  const realTimeProps = {
+  // Memoize real-time props to prevent re-creating object on every render
+  const realTimeProps = useMemo(() => ({
     subscription: PayrollSubscriptionDocument,
     refetchQueries,
     showToasts,
     ...(onUpdate && { onUpdate }),
-  };
+  }), [refetchQueries, showToasts, onUpdate]);
 
   return <RealTimeUpdates {...realTimeProps} />;
 }
