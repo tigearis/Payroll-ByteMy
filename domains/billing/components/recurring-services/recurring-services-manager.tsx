@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation, gql } from "@apollo/client";
 import { Plus, Settings, Calendar, DollarSign, AlertCircle, Clock, TrendingUp, Users } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "sonner";
