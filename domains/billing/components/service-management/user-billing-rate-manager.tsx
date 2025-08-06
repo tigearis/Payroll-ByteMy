@@ -15,6 +15,7 @@ import {
   History
 } from "lucide-react";
 import React, { useState, useMemo } from "react";
+import { format } from 'date-fns';
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -706,12 +707,12 @@ export function UserBillingRateManager() {
                         </TableCell>
                         
                         <TableCell>
-                          {new Date(rate.effective_from).toLocaleDateString()}
+                          {format(new Date(rate.effective_from), 'dd MM yyyy')}
                         </TableCell>
                         
                         <TableCell>
                           {rate.effective_to 
-                            ? new Date(rate.effective_to).toLocaleDateString()
+                            ? format(new Date(rate.effective_to), 'dd MM yyyy')
                             : rate.is_active 
                               ? "Current" 
                               : "Indefinite"

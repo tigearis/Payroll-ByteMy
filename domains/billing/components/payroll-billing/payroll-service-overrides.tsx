@@ -19,6 +19,7 @@ import {
   Zap
 } from 'lucide-react';
 import React, { useState } from 'react';
+import { format } from 'date-fns';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -85,17 +86,6 @@ const GET_PAYROLL_SERVICE_AGREEMENTS = gql`
         isActive
       }
       
-      
-      recentBillingItems: billingItems(
-        limit: 5
-        orderBy: { createdAt: DESC }
-      ) {
-        id
-        description
-        totalAmount
-        status
-        createdAt
-      }
     }
     
     payrollsByPk(id: $payrollId) {
@@ -609,7 +599,7 @@ const PayrollServiceOverrides: React.FC<PayrollServiceOverridesProps> = ({
                       variant={date.status === 'completed' ? 'default' : 'outline'}
                       className="text-xs"
                     >
-                      {new Date(date.adjustedEftDate || date.originalEftDate).toLocaleDateString()}
+                      {format(new Date(date.adjustedEftDate || date.originalEftDate), 'dd MM yyyy')}
                     </Badge>
                   ))}
                   {payroll.payrollDates.length > 5 && (
@@ -745,7 +735,7 @@ const PayrollServiceOverrides: React.FC<PayrollServiceOverridesProps> = ({
                   </div>
                   {override.generatedAt && (
                     <p className="text-xs text-gray-500">
-                      {new Date(override.generatedAt).toLocaleDateString()}
+                      {format(new Date(override.generatedAt), 'dd MM yyyy')}
                     </p>
                   )}
                 </div>
@@ -780,11 +770,11 @@ const PayrollServiceOverrides: React.FC<PayrollServiceOverridesProps> = ({
               
               <div className="mt-4 pt-4 border-t text-xs text-gray-500 flex items-center justify-between">
                 <div>
-                  Created: {new Date(override.createdAt).toLocaleDateString()}
+                  Created: {format(new Date(override.createdAt), 'dd MM yyyy')}
                 </div>
                 {override.updatedAt !== override.createdAt && (
                   <div>
-                    Updated: {new Date(override.updatedAt).toLocaleDateString()}
+                    Updated: {format(new Date(override.updatedAt), 'dd MM yyyy')}
                   </div>
                 )}
               </div>

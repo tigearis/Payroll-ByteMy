@@ -2,7 +2,8 @@
 
 import { useQuery, useMutation, gql } from "@apollo/client";
 import { Plus, Settings, Calendar, DollarSign, AlertCircle, Clock, TrendingUp, Users } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { format } from 'date-fns';
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -253,8 +254,13 @@ export function RecurringServicesManager({ clientId, clientName }: RecurringServ
     return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800';
   };
 
-  const nextBillingDate = getNextBillingDate();
+  const [nextBillingDate, setNextBillingDate] = useState<Date | null>(null);
   const activeServices = clientServices.filter((s: ClientServiceAssignment) => s.isActive);
+
+  // Initialize next billing date on client side to avoid hydration mismatch
+  useEffect(() => {
+    setNextBillingDate(getNextBillingDate());
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -295,7 +301,7 @@ export function RecurringServicesManager({ clientId, clientName }: RecurringServ
           </CardHeader>
           <CardContent>
             <div className="text-lg font-bold">
-              {nextBillingDate.toLocaleDateString()}
+              {nextBillingDate ? format(nextBillingDate, 'dd MM yyyy') : 'Loading...'}
             </div>
             <p className="text-xs text-muted-foreground">
               1st of each month
