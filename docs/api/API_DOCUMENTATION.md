@@ -874,7 +874,7 @@ GET /api/payrolls/schedule?startDate=2024-01-15&endDate=2024-01-31
 
 ### Get Payroll Dates
 
-Get payroll dates for a specific payroll.
+Get payroll dates for a specific payroll with enhanced business day adjustment tracking.
 
 ```http
 GET /api/payroll-dates/[payrollId]?limit=50&offset=0&future=true
@@ -899,6 +899,7 @@ GET /api/payroll-dates/[payrollId]?limit=50&offset=0&future=true
       "originalEftDate": "2024-01-19",
       "adjustedEftDate": "2024-01-19",
       "processingDate": "2024-01-17",
+      "notes": null,
       "assignment": {
         "id": "uuid-assignment",
         "consultantId": "uuid-consultant",
@@ -907,7 +908,23 @@ GET /api/payroll-dates/[payrollId]?limit=50&offset=0&future=true
         "originalConsultantId": null,
         "assignedDate": "2024-01-01T00:00:00Z"
       },
-      "notes": "Standard processing",
+      "createdAt": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": "uuid-date-2",
+      "payrollId": "uuid-payroll", 
+      "originalEftDate": "2024-04-25",
+      "adjustedEftDate": "2024-04-24",
+      "processingDate": "2024-04-22",
+      "notes": "Adjusted from ANZAC Day (Thursday 25 Apr 2024) to previous business day (Wednesday 24 Apr 2024)",
+      "assignment": {
+        "id": "uuid-assignment-2",
+        "consultantId": "uuid-consultant",
+        "consultantName": "John Smith",
+        "isBackup": false,
+        "originalConsultantId": null,
+        "assignedDate": "2024-01-01T00:00:00Z"
+      },
       "createdAt": "2024-01-01T00:00:00Z"
     }
   ],
@@ -916,11 +933,26 @@ GET /api/payroll-dates/[payrollId]?limit=50&offset=0&future=true
     "offset": 0,
     "total": 52,
     "hasMore": true
+  },
+  "adjustmentSummary": {
+    "totalDates": 52,
+    "adjustedDates": 18,
+    "adjustmentPercentage": 34.6,
+    "adjustmentReasons": {
+      "weekends": 15,
+      "holidays": 3
+    }
   }
 }
 ```
 
 **Access:** Based on payroll assignment
+
+**Notes:**
+- `originalEftDate`: Always shows the intended date (25th, SOM, EOM, etc.)
+- `adjustedEftDate`: Shows the actual business day when payment will process  
+- `notes`: Detailed explanation when adjustment is needed (holidays, weekends)
+- Enhanced with comprehensive business day adjustment tracking
 
 ---
 
@@ -1029,7 +1061,7 @@ POST /api/commit-payroll-assignments
 
 ### Generate Batch Payroll Dates
 
-Generate payroll dates for multiple payrolls.
+Generate payroll dates for multiple payrolls with enhanced date logic and business day adjustments.
 
 ```http
 POST /api/cron/generate-batch
@@ -1042,7 +1074,8 @@ POST /api/cron/generate-batch
   "payrollIds": ["uuid-payroll-1", "uuid-payroll-2"],
   "fromDate": "2024-01-15",
   "toDate": "2024-12-31",
-  "regenerate": false
+  "regenerate": false,
+  "maxDatesPerPayroll": 52
 }
 ```
 
@@ -1054,24 +1087,53 @@ POST /api/cron/generate-batch
   "results": [
     {
       "payrollId": "uuid-payroll-1",
-      "payrollName": "Client A Weekly",
-      "generated": 45,
-      "skipped": 2,
-      "errors": 0
+      "payrollName": "Client A Weekly Payroll",
+      "cycle": "weekly",
+      "dateType": "dow",
+      "generated": 47,
+      "adjusted": 16,
+      "skipped": 0,
+      "errors": 0,
+      "adjustmentPercentage": 34.0
+    },
+    {
+      "payrollId": "uuid-payroll-2", 
+      "payrollName": "Client B Bi-Monthly SOM",
+      "cycle": "bi_monthly",
+      "dateType": "som",
+      "generated": 24,
+      "adjusted": 8,
+      "skipped": 0,
+      "errors": 0,
+      "adjustmentPercentage": 33.3
     }
   ],
   "summary": {
     "totalPayrolls": 2,
-    "totalGenerated": 90,
-    "totalSkipped": 4,
+    "totalGenerated": 71,
+    "totalAdjusted": 24,
+    "totalSkipped": 0,
     "totalErrors": 0,
-    "duration": "2.3s"
+    "overallAdjustmentRate": 33.8,
+    "duration": "1.8s",
+    "functionsApplied": [
+      "fix_generate_payroll_dates_function",
+      "fix_is_business_day_regional_holidays", 
+      "fix_fortnightly_logic"
+    ]
   },
   "auditId": "audit_xyz789"
 }
 ```
 
 **Access:** Admin only
+
+**Notes:**
+- Uses completely rewritten `generate_payroll_dates()` function with critical bug fixes
+- Fortnightly payrolls now generate proper 14-day intervals (not 21-day)
+- Bi-monthly payrolls generate exactly 24 dates/year with February exceptions
+- Only NSW and National holidays cause business day adjustments
+- Enhanced with detailed adjustment tracking and reasoning
 
 ---
 
@@ -1117,19 +1179,25 @@ POST /api/cron/cleanup-old-dates
 
 ### Sync Holiday Data
 
-Synchronize holiday data from external sources.
+Synchronize Australian holiday data from external API sources with regional filtering.
 
 ```http
-POST /api/cron/sync-holidays
+POST /api/holidays/sync
+```
+
+**Headers:**
+```http
+Authorization: Bearer <cron_secret_token>
+Content-Type: application/json
 ```
 
 **Request Body:**
 
 ```json
 {
-  "year": 2024,
-  "regions": ["AU", "AU-NSW", "AU-VIC"],
-  "force": false
+  "years": [2024, 2025, 2026],
+  "force": false,
+  "regions": ["National", "NSW", "VIC", "QLD", "WA", "SA", "TAS", "ACT", "NT"]
 }
 ```
 
@@ -1139,17 +1207,32 @@ POST /api/cron/sync-holidays
 {
   "success": true,
   "synced": {
-    "holidays": 45,
-    "new": 12,
-    "updated": 3,
-    "regions": ["AU", "AU-NSW", "AU-VIC"]
+    "totalHolidays": 156,
+    "newHolidays": 42,
+    "updatedHolidays": 8,
+    "yearsCovered": [2024, 2025, 2026, 2027],
+    "regionsProcessed": ["National", "NSW", "VIC", "QLD", "WA", "SA", "TAS", "ACT", "NT"]
   },
-  "nextSync": "2024-02-01T00:00:00Z",
+  "summary": {
+    "2024": { "holidays": 39, "new": 12, "updated": 2 },
+    "2025": { "holidays": 39, "new": 15, "updated": 3 },
+    "2026": { "holidays": 39, "new": 15, "updated": 3 },
+    "2027": { "holidays": 39, "new": 0, "updated": 0 }
+  },
+  "nextScheduledSync": "2024-08-07T04:00:00Z",
   "auditId": "audit_xyz789"
 }
 ```
 
-**Access:** System/Admin
+**Access:** CRON/System only (requires CRON_SECRET token)
+
+**Rate Limit:** 1 request/hour
+
+**Notes:**
+- Uses date.nager.at API as external data source
+- Automatically filters holidays by region for payroll business day calculations
+- Only NSW and National holidays affect payroll date adjustments
+- Scheduled to run daily at 4 AM UTC via CRON
 
 ## Audit & Compliance Endpoints
 

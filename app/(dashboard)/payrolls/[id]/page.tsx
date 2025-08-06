@@ -421,7 +421,6 @@ export default function PayrollPage() {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [newStatus, setNewStatus] = useState("");
   const [statusNote, setStatusNote] = useState("");
-  const [editedPayroll, setEditedPayroll] = useState<any>({});
   const [scheduleChangeData, setScheduleChangeData] = useState<any>(null);
   const [showSkillsModal, setShowSkillsModal] = useState(false);
   const [regenerationStartDate, setRegenerationStartDate] = useState(
@@ -757,30 +756,12 @@ export default function PayrollPage() {
 
   // Loading toast now handled by useLoadingCoordinator hook
 
-  // Initialize edit state when payroll data loads (minimal state needed for save logic)
+  // Auto-enter edit mode if edit parameter is present
   useEffect(() => {
-    if (data?.payrollsByPk && !editedPayroll.id) {
-      const payroll = data.payrollsByPk;
-      setEditedPayroll({
-        id: payroll.id,
-        cycleId: (payroll as any).cycleId || "",
-        dateTypeId: (payroll as any).dateTypeId || "",
-        dateValue: (payroll as any).dateValue?.toString() || "",
-        name: (payroll as any).name || "",
-        primaryConsultantUserId: (payroll as any).primaryConsultantUserId || "",
-        backupConsultantUserId: (payroll as any).backupConsultantUserId || "",
-        managerUserId: (payroll as any).managerUserId || "",
-        processingDaysBeforeEft:
-          payroll.processingDaysBeforeEft?.toString() || "",
-        processingTime: payroll.processingTime?.toString() || "",
-      });
-      
-      // Auto-enter edit mode if edit parameter is present
-      if (editMode && !isEditing) {
-        setIsEditing(true);
-      }
+    if (editMode && !isEditing && data?.payrollsByPk) {
+      setIsEditing(true);
     }
-  }, [data, editedPayroll.id, editMode, isEditing]);
+  }, [editMode, isEditing, data]);
 
   // Helper function to calculate current fortnightly week type
   const getCurrentFortnightlyWeek = () => {
@@ -857,21 +838,18 @@ export default function PayrollPage() {
     
     const cycles = cyclesData?.payrollCycles || [];
     if (cycles.length === 0) {
-      console.warn("No cycles data available for conversion, returning cycleId as-is:", cycleId);
-      return cycleId; // Return the ID as fallback when data isn't loaded
+      console.warn("❌ No cycles data available for conversion:", cycleId);
+      return ""; // Return empty string so form can handle properly
     }
     
     const cycle = cycles.find((c: any) => c.id === cycleId);
-    const result = cycle?.name || cycleId;
+    if (!cycle) {
+      console.error("❌ Could not find cycle with ID:", cycleId, "Available cycles:", cycles.map((c: any) => ({ id: c.id, name: c.name })));
+      return ""; // Return empty string instead of cycleId to prevent form errors
+    }
     
-    console.log("getCycleNameFromId:", {
-      cycleId,
-      foundCycle: !!cycle,
-      result,
-      availableCycles: cycles.length
-    });
-    
-    return result;
+    console.log("✅ Cycle conversion successful:", { cycleId, result: cycle.name });
+    return cycle.name;
   };
 
   const getDateTypeNameFromId = (dateTypeId: string) => {
@@ -879,12 +857,17 @@ export default function PayrollPage() {
     
     const dateTypes = dateTypesData?.payrollDateTypes || [];
     if (dateTypes.length === 0) {
-      console.warn("No date types data available for conversion, returning dateTypeId as-is:", dateTypeId);
-      return dateTypeId; // Return the ID as fallback when data isn't loaded
+      console.warn("❌ No date types data available for conversion:", dateTypeId);
+      return ""; // Return empty string so form can handle properly
     }
     
     const dateType = dateTypes.find((dt: any) => dt.id === dateTypeId);
-    const dbName = dateType?.name || dateTypeId;
+    if (!dateType) {
+      console.error("❌ Could not find date type with ID:", dateTypeId, "Available date types:", dateTypes.map((dt: any) => ({ id: dt.id, name: dt.name })));
+      return ""; // Return empty string instead of dateTypeId to prevent form errors
+    }
+    
+    const dbName = dateType.name;
     
     // Map database names to form enum values
     let result = dbName;
@@ -892,63 +875,42 @@ export default function PayrollPage() {
     else if (dbName === "eom") result = "EOM"; 
     else if (dbName === "fixed_date") result = "fixed";
     
-    console.log("getDateTypeNameFromId:", {
-      dateTypeId,
-      foundDateType: !!dateType,
-      dbName,
-      result,
-      availableDateTypes: dateTypes.length
-    });
-    
+    console.log("✅ Date type conversion successful:", { dateTypeId, dbName, result });
     return result;
   };
 
-  // Progressive form population - populate with available data immediately, update as more data loads
+  // Simplified form population - only populate when all required data is available
   useEffect(() => {
-    if (data?.payrollsByPk && isEditing) {
+    if (data?.payrollsByPk && isEditing && cyclesData && dateTypesData) {
       const payroll = data.payrollsByPk;
-      console.log("🔧 Progressive form initialization with payroll data:", {
+      console.log("🔧 Initializing form with complete data:", {
         payrollId: payroll.id,
-        hasPayrollData: true,
-        hasCyclesData: !!cyclesData,
-        hasDateTypesData: !!dateTypesData
+        hasAllData: true
       });
       
-      // Safely get cycle name with fallback - use raw ID if conversion data not available yet
-      const cycleNameFromDb = cyclesData ? 
-        (getCycleNameFromId((payroll as any).cycleId || "") || (payroll as any).cycleId || "") :
-        ((payroll as any).cycleId || ""); // Use raw ID as fallback
-      
-      console.log("🔄 Cycle conversion:", { 
-        originalCycleId: (payroll as any).cycleId, 
-        convertedName: cycleNameFromDb,
-        availableCycles: cyclesData?.payrollCycles?.length || 0,
-        usingFallback: !cyclesData
-      });
+      // Reliable cycle name conversion with error handling
+      const cycleNameFromDb = getCycleNameFromId((payroll as any).cycleId || "");
+      if (!cycleNameFromDb && (payroll as any).cycleId) {
+        console.warn("⚠️ Could not convert cycle ID to name:", (payroll as any).cycleId);
+      }
       
       // For fortnightly payrolls, set the current week type if not stored in DB
       let fortnightlyWeek = (payroll as any).fortnightlyWeek || "";
-      if ((cycleNameFromDb === "fortnightly" || (payroll as any).cycleId?.includes("fortnightly")) && !fortnightlyWeek) {
+      if (cycleNameFromDb === "fortnightly" && !fortnightlyWeek) {
         fortnightlyWeek = getCurrentFortnightlyWeek();
       }
       
-      // Safely get date type name with fallback - use raw ID if conversion data not available yet
-      const dateTypeNameFromDb = dateTypesData ? 
-        (getDateTypeNameFromId((payroll as any).dateTypeId || "") || (payroll as any).dateTypeId || "") :
-        ((payroll as any).dateTypeId || ""); // Use raw ID as fallback
-      
-      console.log("🔄 Date type conversion:", { 
-        originalDateTypeId: (payroll as any).dateTypeId, 
-        convertedName: dateTypeNameFromDb,
-        availableDateTypes: dateTypesData?.payrollDateTypes?.length || 0,
-        usingFallback: !dateTypesData
-      });
+      // Reliable date type name conversion with error handling
+      const dateTypeNameFromDb = getDateTypeNameFromId((payroll as any).dateTypeId || "");
+      if (!dateTypeNameFromDb && (payroll as any).dateTypeId) {
+        console.warn("⚠️ Could not convert date type ID to name:", (payroll as any).dateTypeId);
+      }
       
       const formData = {
         name: (payroll as any).name || "",
         clientId: (payroll as any).clientId || "",
-        cycleId: cycleNameFromDb,
-        dateTypeId: dateTypeNameFromDb,
+        cycleId: cycleNameFromDb || "",
+        dateTypeId: dateTypeNameFromDb || "",
         dateValue: (payroll as any).dateValue?.toString() || "",
         fortnightlyWeek: fortnightlyWeek,
         primaryConsultantUserId: (payroll as any).primaryConsultantUserId || "",
@@ -961,40 +923,25 @@ export default function PayrollPage() {
         status: (payroll as any).status || "Implementation",
       };
       
-      console.log(`✅ Setting payroll form data (${cyclesData && dateTypesData ? 'complete' : 'progressive'}):`, formData);
+      console.log("✅ Form data populated successfully:", formData);
       setPayrollFormData(formData);
-    } else if (isEditing) {
-      console.log("⏳ Waiting for payroll data to initialize form:", {
+    } else if (isEditing && data?.payrollsByPk && (!cyclesData || !dateTypesData)) {
+      console.log("⏳ Waiting for reference data to complete form initialization:", {
         hasPayrollData: !!data?.payrollsByPk,
+        hasCyclesData: !!cyclesData,
+        hasDateTypesData: !!dateTypesData,
         isEditing
       });
     }
-  }, [data, isEditing, cyclesData, dateTypesData]); // Keep all dependencies to update when reference data loads
+  }, [data, isEditing, cyclesData, dateTypesData]);
 
-  // PayrollForm input change handler
+  // Simplified PayrollForm input change handler - no dual state management
   const handlePayrollFormChange = (field: keyof PayrollFormData, value: string) => {
     setPayrollFormData(prev => ({
       ...prev,
       [field]: value,
     }));
-    
-    // Also sync to editedPayroll state for compatibility with existing save logic
-    const mappedField = field === 'primaryConsultantUserId' ? 'primaryConsultantUserId' :
-                      field === 'backupConsultantUserId' ? 'backupConsultantUserId' :
-                      field === 'managerUserId' ? 'managerUserId' : field;
-    
-    // Convert enum values back to UUIDs for save logic
-    let mappedValue = value;
-    if (field === 'cycleId') {
-      mappedValue = getCycleIdFromName(value) || value;
-    } else if (field === 'dateTypeId') {
-      mappedValue = getDateTypeIdFromName(value) || value;
-    }
-    
-    setEditedPayroll((prev: any) => ({
-      ...prev,
-      [mappedField]: mappedValue,
-    }));
+    console.log(`📝 Form field updated: ${field} = ${value}`);
   };
 
   // Get users filtered by role and staff status
@@ -1002,7 +949,7 @@ export default function PayrollPage() {
   const staffUsers = users.filter((user: any) => user.isStaff === true);
   const availablePrimaryConsultants = staffUsers;
   const availableBackupConsultants = staffUsers.filter(
-    (user: any) => user.id !== editedPayroll.primaryConsultantUserId
+    (user: any) => user.id !== payrollFormData.primaryConsultantUserId
   );
   const availableManagers = staffUsers.filter((user: any) =>
     ["manager", "developer", "orgAdmin"].includes(user.role)
@@ -1088,40 +1035,29 @@ export default function PayrollPage() {
 
   const handleSave = async () => {
     try {
-      console.log("🔍 DEBUG: Save started");
-      console.log("📋 editedPayroll:", editedPayroll);
+      console.log("🔍 DEBUG: Save started with form data:", payrollFormData);
 
-      // Get the original cycle and date type IDs
+      // Get the original values for comparison
       const originalCycleId = (payroll as any).cycleId;
       const originalDateTypeId = (payroll as any).dateTypeId;
       const originalDateValue = (payroll as any).dateValue;
 
-      // Only convert to UUIDs if the values have actually changed
-      let cycleId = originalCycleId;
-      let dateTypeId = originalDateTypeId;
+      // Convert form values (enum names) to UUIDs for database
+      const cycleId = getCycleIdFromName(payrollFormData.cycleId);
+      const dateTypeId = getDateTypeIdFromName(payrollFormData.dateTypeId);
 
-      // Check if cycle changed by comparing IDs
-      if (editedPayroll.cycleId !== originalCycleId) {
-        const newCycleId = getCycleIdFromName(editedPayroll.cycleId);
-        if (!newCycleId) {
-          toast.error("Invalid payroll cycle selected");
-          return;
-        }
-        cycleId = newCycleId;
+      // Validate conversions
+      if (payrollFormData.cycleId && !cycleId) {
+        toast.error("Invalid payroll cycle selected");
+        return;
       }
-
-      // Check if date type changed by comparing IDs
-      if (editedPayroll.dateTypeId !== originalDateTypeId) {
-        const newDateTypeId = getDateTypeIdFromName(editedPayroll.dateTypeId);
-        if (!newDateTypeId) {
-          toast.error("Invalid date type selected");
-          return;
-        }
-        dateTypeId = newDateTypeId;
+      if (payrollFormData.dateTypeId && !dateTypeId) {
+        toast.error("Invalid date type selected");
+        return;
       }
 
       // Validate required fields
-      if (!editedPayroll.name?.trim()) {
+      if (!payrollFormData.name?.trim()) {
         toast.error("Payroll name is required");
         return;
       }
@@ -1129,36 +1065,35 @@ export default function PayrollPage() {
       // Check if any schedule-related fields changed
       const cycleChanged = cycleId !== originalCycleId;
       const dateTypeChanged = dateTypeId !== originalDateTypeId;
-      const dateValueChanged = editedPayroll.dateValue
-        ? parseInt(editedPayroll.dateValue) !== originalDateValue
+      const dateValueChanged = payrollFormData.dateValue
+        ? parseInt(payrollFormData.dateValue) !== originalDateValue
         : originalDateValue !== null && originalDateValue !== undefined;
 
-      const scheduleChanged =
-        cycleChanged || dateTypeChanged || dateValueChanged;
+      const scheduleChanged = cycleChanged || dateTypeChanged || dateValueChanged;
 
       // Prepare mutation variables with correct parameter names from the mutation
       const mutationVariables = {
         id: payroll.id,
-        name: editedPayroll.name.trim(),
+        name: payrollFormData.name.trim(),
         clientId: (payroll as any).clientId, // CRITICAL: Preserve client relationship
-        cycleId,
-        dateTypeId,
-        dateValue: editedPayroll.dateValue
-          ? parseInt(editedPayroll.dateValue)
+        cycleId: cycleId || originalCycleId,
+        dateTypeId: dateTypeId || originalDateTypeId,
+        dateValue: payrollFormData.dateValue ? parseInt(payrollFormData.dateValue) : null,
+        primaryConsultantUserId: payrollFormData.primaryConsultantUserId || null,
+        backupConsultantUserId: payrollFormData.backupConsultantUserId || null,
+        managerUserId: payrollFormData.managerUserId || null,
+        processingDaysBeforeEft: payrollFormData.processingDaysBeforeEft
+          ? parseInt(payrollFormData.processingDaysBeforeEft)
           : null,
-        primaryConsultantUserId: editedPayroll.primaryConsultantUserId || null,
-        backupConsultantUserId: editedPayroll.backupConsultantUserId || null,
-        managerUserId: editedPayroll.managerUserId || null,
-        processingDaysBeforeEft: editedPayroll.processingDaysBeforeEft
-          ? parseInt(editedPayroll.processingDaysBeforeEft)
+        processingTime: payrollFormData.processingTime
+          ? parseInt(payrollFormData.processingTime)
           : null,
-        processingTime: editedPayroll.processingTime
-          ? parseInt(editedPayroll.processingTime)
-          : null,
-        status: (payroll as any).status || "Implementation", // Include current status to prevent null error
+        employeeCount: payrollFormData.employeeCount ? parseInt(payrollFormData.employeeCount) : null,
+        goLiveDate: payrollFormData.goLiveDate || null,
+        status: payrollFormData.status || (payroll as any).status || "Implementation",
       };
 
-      console.log("Mutation variables:", mutationVariables);
+      console.log("✅ Mutation variables prepared:", mutationVariables);
 
       if (scheduleChanged) {
         // Store the mutation variables and show the schedule change modal
@@ -1176,7 +1111,8 @@ export default function PayrollPage() {
         });
       }
     } catch (error) {
-      console.error("Error updating payroll:", error);
+      console.error("❌ Error updating payroll:", error);
+      toast.error(`Failed to save payroll: ${error}`);
     }
   };
 
@@ -1699,25 +1635,31 @@ export default function PayrollPage() {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-6">
-                        {/* Loading indicator for reference data */}
-                        {(!cyclesData || !dateTypesData) && (
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground bg-blue-50 border border-blue-200 rounded-md p-3">
-                            <RefreshCw className="w-4 h-4 animate-spin" />
-                            <span>Loading dropdown options...</span>
-                            <span className="text-xs">
-                              (Form populated with current data, dropdowns updating)
-                            </span>
+                        {/* Loading state - show when reference data isn't loaded yet */}
+                        {(!cyclesData || !dateTypesData) ? (
+                          <div className="flex flex-col items-center justify-center py-12 space-y-4">
+                            <RefreshCw className="w-8 h-8 animate-spin text-blue-600" />
+                            <div className="text-center">
+                              <p className="text-lg font-medium text-gray-900">Loading form data...</p>
+                              <p className="text-sm text-gray-500 mt-1">
+                                Fetching payroll cycles and date types for dropdown options
+                              </p>
+                            </div>
+                            <div className="text-xs text-gray-400 bg-gray-50 px-3 py-2 rounded">
+                              Waiting for: {!cyclesData && "Cycles"}{!cyclesData && !dateTypesData && ", "}{!dateTypesData && "Date Types"}
+                            </div>
                           </div>
+                        ) : (
+                          <PayrollForm
+                            formData={payrollFormData}
+                            onInputChange={handlePayrollFormChange}
+                            isLoading={versioningLoading}
+                            showClientField={false}
+                            clientName={(client as any)?.name}
+                            title="Edit Payroll Configuration"
+                            description="Update payroll schedule, assignments, and processing details. Schedule changes will create a new version."
+                          />
                         )}
-                        <PayrollForm
-                          formData={payrollFormData}
-                          onInputChange={handlePayrollFormChange}
-                          isLoading={versioningLoading}
-                          showClientField={false}
-                          clientName={(client as any)?.name}
-                          title="Edit Payroll Configuration"
-                          description="Update payroll schedule, assignments, and processing details. Schedule changes will create a new version."
-                        />
                       </div>
                     </CardContent>
                   </Card>

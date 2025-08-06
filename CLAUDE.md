@@ -203,3 +203,81 @@ pnpm run lint        # Clean linting required
 - **Safety Features**: Hasura event triggers + scheduled cleanup ensure MinIO cleanup
 - **Admin Tools**: Manual cleanup via `/api/admin/file-cleanup`
 - **Monitoring**: Daily scheduled cleanup at 4 AM UTC
+
+## 📅 Payroll Date Generation System
+
+**CRITICAL FIXES APPLIED** (August 2025): The payroll date generation system underwent a complete overhaul to fix multiple critical bugs.
+
+### Key Database Functions
+
+#### `generate_payroll_dates()` - Core Date Generation
+**Location**: `/database/migrations/fix_generate_payroll_dates_function.sql`
+
+**Major Fixes Applied**:
+- ✅ **Fortnightly Logic Rewritten**: Fixed broken 21-day intervals, now generates proper 14-day fortnightly cycles
+- ✅ **Regional Holiday Filtering**: Only NSW and National holidays affect business day calculations
+- ✅ **Bi-Monthly Logic**: Proper 24 dates/year with February 14th exception (instead of 15th)
+- ✅ **DOW Mapping Fixed**: Correct day-of-week calculations for weekly/fortnightly payrolls
+- ✅ **Complete Holiday Database**: 2024-2027 Australian holidays with regional coverage
+
+#### Critical Business Logic Rules
+
+**Fortnightly Patterns**:
+- **Week A vs Week B**: Week A starts on first occurrence of target day in year, Week B follows 7 days later
+- **14-Day Intervals**: Both Week A and B maintain consistent 14-day intervals throughout the year
+- **Year Boundaries**: Pattern continues seamlessly across December→January boundaries
+
+**Bi-Monthly Logic**:
+- **SOM**: Generates 1st and 15th of month (14th in February)
+- **EOM**: Generates 15th (14th in February) and last day of month
+- **Total**: Exactly 24 dates per year for bi-monthly payrolls
+
+**Business Day Adjustments**:
+- **SOM Types**: Move to **next** business day if weekend/holiday
+- **All Others**: Move to **previous** business day if weekend/holiday
+- **Regional Filtering**: Only NSW and National holidays considered (not ACT, WA, etc.)
+
+### Holiday Management System
+
+**Holiday Sync Service**: `/domains/external-systems/services/holiday-sync-service.ts`
+- **API Source**: date.nager.at for Australian public holidays
+- **Coverage**: 2024-2027 with proper regional tagging
+- **CRON Integration**: `/api/holidays/sync` endpoint with secret protection
+- **Manual Sync**: Direct service calls for development/testing
+
+**Critical Holiday Logic**:
+```sql
+-- Only NSW and National holidays affect business day calculations
+region @> ARRAY['National'] OR 'NSW' = ANY(region)
+```
+
+### Migration Files Applied
+
+1. **`fix_generate_payroll_dates_function.sql`** - Complete function rewrite
+2. **`fix_is_business_day_regional_holidays.sql`** - Regional holiday filtering
+3. **`fix_fortnightly_logic.sql`** - Fortnightly 14-day interval correction
+
+### Validation & Testing
+
+**Testing Commands**:
+```bash
+# Test payroll date generation for specific payroll
+PGSSLMODE=disable psql -h 192.168.1.229 -p 5432 -U admin -d payroll_local -c "
+SELECT TO_CHAR(original_eft_date, 'YYYY-MM-DD Day') as intended_date,
+       TO_CHAR(adjusted_eft_date, 'YYYY-MM-DD Day') as actual_date,
+       notes as adjustment_reason
+FROM generate_payroll_dates('payroll-uuid', '2024-01-01', '2024-12-31', 52)
+WHERE notes IS NOT NULL
+ORDER BY original_eft_date;"
+```
+
+**Critical Validation Points**:
+- ✅ Bi-monthly payrolls: 24 dates per year (was generating incorrect counts)
+- ✅ Fortnightly payrolls: 26-27 dates per year with proper 14-day intervals
+- ✅ Holiday adjustments: Only NSW/National holidays cause adjustments
+- ✅ February exceptions: Uses 14th instead of 15th for bi-monthly cycles
+
+### Documentation References
+- **Primary**: `/docs/business-logic/payroll-restrictions-and-validation.md`
+- **Business Logic**: Comprehensive documentation of all cycle types and date generation rules
+- **Migration History**: All fixes documented with before/after examples
