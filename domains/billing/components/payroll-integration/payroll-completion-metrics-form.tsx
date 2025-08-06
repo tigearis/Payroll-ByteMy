@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery, gql } from "@apollo/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save, Calculator, AlertTriangle, TrendingUp, Clock, Users } from "lucide-react";
 import React, { useEffect, useState } from "react";
@@ -24,25 +24,25 @@ const completionMetricsSchema = z.object({
   employeesProcessed: z.number().min(0, "Must be 0 or greater"),
   
   // Complexity indicators
-  newStarters: z.number().min(0).default(0),
-  terminations: z.number().min(0).default(0),
-  leaveCalculations: z.number().min(0).default(0),
-  bonusPayments: z.number().min(0).default(0),
-  taxAdjustments: z.number().min(0).default(0),
+  newStarters: z.number().min(0).optional(),
+  terminations: z.number().min(0).optional(),
+  leaveCalculations: z.number().min(0).optional(),
+  bonusPayments: z.number().min(0).optional(),
+  taxAdjustments: z.number().min(0).optional(),
   
   // Additional services
-  superContributions: z.number().min(0).default(0),
-  workersCompClaims: z.number().min(0).default(0),
-  garnishmentOrders: z.number().min(0).default(0),
+  superContributions: z.number().min(0).optional(),
+  workersCompClaims: z.number().min(0).optional(),
+  garnishmentOrders: z.number().min(0).optional(),
   
   // Statutory (optional - only for specific periods)
   paygSummaries: z.number().min(0).optional(),
   fbtCalculations: z.number().min(0).optional(),
   
   // Quality metrics
-  exceptionsHandled: z.number().min(0).default(0),
-  correctionsRequired: z.number().min(0).default(0),
-  clientCommunications: z.number().min(0).default(0),
+  exceptionsHandled: z.number().min(0).optional(),
+  correctionsRequired: z.number().min(0).optional(),
+  clientCommunications: z.number().min(0).optional(),
   
   // Notes
   generationNotes: z.string().optional(),
@@ -83,8 +83,8 @@ export function PayrollCompletionMetricsForm({
   const { databaseUserId } = useDatabaseUserId();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Fetch existing metrics using temporary GraphQL query
-  const GET_EXISTING_METRICS = `
+  // Fetch existing metrics using GraphQL query
+  const GET_EXISTING_METRICS = gql`
     query GetPayrollCompletionMetrics($payrollDateId: uuid!) {
       payrollCompletionMetrics(where: { payrollDateId: { _eq: $payrollDateId } }) {
         id
@@ -121,18 +121,20 @@ export function PayrollCompletionMetricsForm({
     defaultValues: {
       payslipsProcessed: 0,
       employeesProcessed: 0,
-      newStarters: 0,
-      terminations: 0,
-      leaveCalculations: 0,
-      bonusPayments: 0,
-      taxAdjustments: 0,
-      superContributions: 0,
-      workersCompClaims: 0,
-      garnishmentOrders: 0,
-      exceptionsHandled: 0,
-      correctionsRequired: 0,
-      clientCommunications: 0,
-      generationNotes: "",
+      newStarters: undefined,
+      terminations: undefined,
+      leaveCalculations: undefined,
+      bonusPayments: undefined,
+      taxAdjustments: undefined,
+      superContributions: undefined,
+      workersCompClaims: undefined,
+      garnishmentOrders: undefined,
+      exceptionsHandled: undefined,
+      correctionsRequired: undefined,
+      clientCommunications: undefined,
+      paygSummaries: undefined,
+      fbtCalculations: undefined,
+      generationNotes: undefined,
     }
   });
 
@@ -143,20 +145,20 @@ export function PayrollCompletionMetricsForm({
       form.reset({
         payslipsProcessed: metrics.payslipsProcessed || 0,
         employeesProcessed: metrics.employeesProcessed || 0,
-        newStarters: metrics.newStarters || 0,
-        terminations: metrics.terminations || 0,
-        leaveCalculations: metrics.leaveCalculations || 0,
-        bonusPayments: metrics.bonusPayments || 0,
-        taxAdjustments: metrics.taxAdjustments || 0,
-        superContributions: metrics.superContributions || 0,
-        workersCompClaims: metrics.workersCompClaims || 0,
-        garnishmentOrders: metrics.garnishmentOrders || 0,
+        newStarters: metrics.newStarters || undefined,
+        terminations: metrics.terminations || undefined,
+        leaveCalculations: metrics.leaveCalculations || undefined,
+        bonusPayments: metrics.bonusPayments || undefined,
+        taxAdjustments: metrics.taxAdjustments || undefined,
+        superContributions: metrics.superContributions || undefined,
+        workersCompClaims: metrics.workersCompClaims || undefined,
+        garnishmentOrders: metrics.garnishmentOrders || undefined,
         paygSummaries: metrics.paygSummaries || undefined,
         fbtCalculations: metrics.fbtCalculations || undefined,
-        exceptionsHandled: metrics.exceptionsHandled || 0,
-        correctionsRequired: metrics.correctionsRequired || 0,
-        clientCommunications: metrics.clientCommunications || 0,
-        generationNotes: metrics.generationNotes || "",
+        exceptionsHandled: metrics.exceptionsHandled || undefined,
+        correctionsRequired: metrics.correctionsRequired || undefined,
+        clientCommunications: metrics.clientCommunications || undefined,
+        generationNotes: metrics.generationNotes || undefined,
       });
     }
   }, [existingMetrics, form]);
@@ -219,14 +221,14 @@ export function PayrollCompletionMetricsForm({
     
     // Core services
     total += values.payslipsProcessed * SERVICE_RATES.payslipsProcessed;
-    total += values.newStarters * SERVICE_RATES.newStarters;
-    total += values.terminations * SERVICE_RATES.terminations;
-    total += values.leaveCalculations * SERVICE_RATES.leaveCalculations;
-    total += values.bonusPayments * SERVICE_RATES.bonusPayments;
-    total += values.taxAdjustments * SERVICE_RATES.taxAdjustments;
-    total += values.superContributions * SERVICE_RATES.superContributions;
-    total += values.workersCompClaims * SERVICE_RATES.workersCompClaims;
-    total += values.garnishmentOrders * SERVICE_RATES.garnishmentOrders;
+    total += (values.newStarters || 0) * SERVICE_RATES.newStarters;
+    total += (values.terminations || 0) * SERVICE_RATES.terminations;
+    total += (values.leaveCalculations || 0) * SERVICE_RATES.leaveCalculations;
+    total += (values.bonusPayments || 0) * SERVICE_RATES.bonusPayments;
+    total += (values.taxAdjustments || 0) * SERVICE_RATES.taxAdjustments;
+    total += (values.superContributions || 0) * SERVICE_RATES.superContributions;
+    total += (values.workersCompClaims || 0) * SERVICE_RATES.workersCompClaims;
+    total += (values.garnishmentOrders || 0) * SERVICE_RATES.garnishmentOrders;
     
     // Statutory services
     if (values.paygSummaries) {
@@ -248,12 +250,12 @@ export function PayrollCompletionMetricsForm({
     score += Math.min(values.payslipsProcessed * 0.1, 10);
     
     // High complexity indicators
-    score += values.newStarters * 2;
-    score += values.terminations * 3;
-    score += values.bonusPayments * 1;
-    score += values.taxAdjustments * 2;
-    score += values.exceptionsHandled * 1.5;
-    score += values.correctionsRequired * 2;
+    score += (values.newStarters || 0) * 2;
+    score += (values.terminations || 0) * 3;
+    score += (values.bonusPayments || 0) * 1;
+    score += (values.taxAdjustments || 0) * 2;
+    score += (values.exceptionsHandled || 0) * 1.5;
+    score += (values.correctionsRequired || 0) * 2;
     
     return Math.min(score, 100);
   };
@@ -425,7 +427,7 @@ export function PayrollCompletionMetricsForm({
                           type="number" 
                           min="0" 
                           {...field}
-                          onChange={e => field.onChange(parseInt(e.target.value) || 0)}
+                          onChange={e => field.onChange(parseInt(e.target.value) || undefined)}
                         />
                       </FormControl>
                       <FormDescription>
@@ -447,7 +449,7 @@ export function PayrollCompletionMetricsForm({
                           type="number" 
                           min="0" 
                           {...field}
-                          onChange={e => field.onChange(parseInt(e.target.value) || 0)}
+                          onChange={e => field.onChange(parseInt(e.target.value) || undefined)}
                         />
                       </FormControl>
                       <FormDescription>
@@ -469,7 +471,7 @@ export function PayrollCompletionMetricsForm({
                           type="number" 
                           min="0" 
                           {...field}
-                          onChange={e => field.onChange(parseInt(e.target.value) || 0)}
+                          onChange={e => field.onChange(parseInt(e.target.value) || undefined)}
                         />
                       </FormControl>
                       <FormDescription>
@@ -497,7 +499,7 @@ export function PayrollCompletionMetricsForm({
                           type="number" 
                           min="0" 
                           {...field}
-                          onChange={e => field.onChange(parseInt(e.target.value) || 0)}
+                          onChange={e => field.onChange(parseInt(e.target.value) || undefined)}
                         />
                       </FormControl>
                       <FormDescription>
@@ -519,7 +521,7 @@ export function PayrollCompletionMetricsForm({
                           type="number" 
                           min="0" 
                           {...field}
-                          onChange={e => field.onChange(parseInt(e.target.value) || 0)}
+                          onChange={e => field.onChange(parseInt(e.target.value) || undefined)}
                         />
                       </FormControl>
                       <FormDescription>
@@ -541,7 +543,7 @@ export function PayrollCompletionMetricsForm({
                           type="number" 
                           min="0" 
                           {...field}
-                          onChange={e => field.onChange(parseInt(e.target.value) || 0)}
+                          onChange={e => field.onChange(parseInt(e.target.value) || undefined)}
                         />
                       </FormControl>
                       <FormDescription>
@@ -624,7 +626,7 @@ export function PayrollCompletionMetricsForm({
                           type="number" 
                           min="0" 
                           {...field}
-                          onChange={e => field.onChange(parseInt(e.target.value) || 0)}
+                          onChange={e => field.onChange(parseInt(e.target.value) || undefined)}
                         />
                       </FormControl>
                       <FormDescription>
@@ -646,7 +648,7 @@ export function PayrollCompletionMetricsForm({
                           type="number" 
                           min="0" 
                           {...field}
-                          onChange={e => field.onChange(parseInt(e.target.value) || 0)}
+                          onChange={e => field.onChange(parseInt(e.target.value) || undefined)}
                         />
                       </FormControl>
                       <FormDescription>
@@ -668,7 +670,7 @@ export function PayrollCompletionMetricsForm({
                           type="number" 
                           min="0" 
                           {...field}
-                          onChange={e => field.onChange(parseInt(e.target.value) || 0)}
+                          onChange={e => field.onChange(parseInt(e.target.value) || undefined)}
                         />
                       </FormControl>
                       <FormDescription>
@@ -693,6 +695,7 @@ export function PayrollCompletionMetricsForm({
                       placeholder="Any additional notes about this payroll completion, special circumstances, or billing considerations..."
                       className="min-h-[100px]"
                       {...field}
+                      value={field.value || ""}
                     />
                   </FormControl>
                   <FormDescription>
