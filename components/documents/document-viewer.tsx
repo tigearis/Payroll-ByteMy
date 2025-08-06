@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/dialog";
 import { usePermissions } from "@/hooks/use-permissions";
 import { cn } from "@/lib/utils";
+import { format } from 'date-fns';
 
 interface Document {
   id: string;
@@ -87,13 +88,11 @@ function formatFileSize(bytes: number): string {
 }
 
 function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString("en-AU", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  try {
+    return format(new Date(dateString), 'dd MM yyyy HH:mm');
+  } catch (error) {
+    return 'Invalid date';
+  }
 }
 
 function canPreview(mimetype: string): boolean {

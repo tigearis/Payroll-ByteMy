@@ -65,12 +65,19 @@ export const InvoiceGenerator: React.FC<InvoiceGeneratorProps> = ({
   const [invoiceItems, setInvoiceItems] = useState<InvoiceItem[]>([]);
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [invoiceNumber, setInvoiceNumber] = useState('');
-  const [invoiceDate, setInvoiceDate] = useState(new Date().toISOString().split('T')[0]);
+  const [invoiceDate, setInvoiceDate] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [notes, setNotes] = useState('');
   const [currency, setCurrency] = useState('AUD');
   const [showPreview, setShowPreview] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+
+  // Initialize invoice date on client side to avoid hydration mismatch
+  useEffect(() => {
+    if (!invoiceDate) {
+      setInvoiceDate(new Date().toISOString().split('T')[0]);
+    }
+  }, [invoiceDate]);
 
   // Auto-generate invoice number
   useEffect(() => {

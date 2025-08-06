@@ -143,7 +143,7 @@ interface PendingChange {
 }
 
 export default function AdvancedPayrollScheduler() {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState<Date | null>(null);
   const [viewPeriod, setViewPeriod] = useState<ViewPeriod>("month");
   const [tableOrientation, setTableOrientation] = useState<TableOrientation>(
     "consultants-as-columns"
@@ -153,9 +153,10 @@ export default function AdvancedPayrollScheduler() {
   // Add hydration-safe state
   const [isClient, setIsClient] = useState(false);
 
-  // Add custom CSS variables for dark mode support
+  // Add custom CSS variables for dark mode support and initialize client-side state
   React.useEffect(() => {
     setIsClient(true);
+    setCurrentDate(new Date());
     const root = document.documentElement;
     root.style.setProperty("--orange", "25 95% 53%"); // Orange color
     root.style.setProperty("--orange-muted", "25 95% 53% / 0.4"); // Orange muted
@@ -181,6 +182,11 @@ export default function AdvancedPayrollScheduler() {
 
   // Calculate date range
   const dateRange = useMemo(() => {
+    if (!currentDate) {
+      const fallbackDate = new Date();
+      return { start: fallbackDate, end: fallbackDate };
+    }
+
     let start: Date, end: Date;
 
     switch (viewPeriod) {
@@ -674,6 +680,7 @@ export default function AdvancedPayrollScheduler() {
 
   // Navigation functions
   const navigatePrevious = () => {
+    if (!currentDate) return;
     // Don't clean up ghosts when navigating - let them be recreated from data
     switch (viewPeriod) {
       case "week":
@@ -689,6 +696,7 @@ export default function AdvancedPayrollScheduler() {
   };
 
   const navigateNext = () => {
+    if (!currentDate) return;
     // Don't clean up ghosts when navigating - let them be recreated from data
     switch (viewPeriod) {
       case "week":
@@ -1289,7 +1297,7 @@ export default function AdvancedPayrollScheduler() {
           "MMM d, yyyy"
         )}`;
       case "month":
-        return format(currentDate, "MMMM yyyy");
+        return currentDate ? format(currentDate, "MMMM yyyy") : "";
     }
   };
 
@@ -1499,6 +1507,18 @@ export default function AdvancedPayrollScheduler() {
             </div>
           </CardContent>
         </Card>
+      </div>
+    );
+  }
+
+  // Hydration guard - render loading state until client is ready
+  if (!isClient || !currentDate) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading scheduler...</p>
+        </div>
       </div>
     );
   }
