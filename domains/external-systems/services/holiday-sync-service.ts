@@ -37,8 +37,107 @@ const JURISDICTION_MAPPING: Record<string, string> = {
   act: 'ACT',
 };
 
+// Data.gov.au resource IDs for different years
+const DATA_GOV_AU_RESOURCE_IDS: Record<number, string> = {
+  2024: '9e920340-0744-4031-a497-98ab796633e8',
+  2025: '4d4d744b-50ed-45b9-ae77-760bc478ad75',
+  // 2026: 'TBD - not available yet from data.gov.au'
+};
+
+// Combined dataset that may contain multiple years
+const DATA_GOV_AU_COMBINED_RESOURCE_ID = '33673aca-0857-42e5-b8f0-9981b4755686';
+
+// Expected Australian public holidays that should exist each year (for fallback generation)
+const STANDARD_AUSTRALIAN_HOLIDAYS = [
+  { name: "New Year's Day", date: "01-01", regions: ["National"] },
+  { name: "Australia Day", date: "01-26", regions: ["National"] },
+  { name: "Good Friday", date: "easter-2", regions: ["National"] }, // 2 days before Easter
+  { name: "Easter Saturday", date: "easter-1", regions: ["National"] }, // 1 day before Easter
+  { name: "Easter Monday", date: "easter+1", regions: ["National"] }, // 1 day after Easter
+  { name: "Anzac Day", date: "04-25", regions: ["National"] },
+  { name: "Christmas Day", date: "12-25", regions: ["National"] },
+  { name: "Boxing Day", date: "12-26", regions: ["National"] },
+];
+
 // NSW and National holidays are relevant for EFT adjustments
 const EFT_RELEVANT_REGIONS = ['NSW', 'National', 'Australia'];
+
+/**
+ * Calculate Easter Sunday for a given year using the algorithm
+ * @param year The year to calculate Easter for
+ * @returns Date object for Easter Sunday
+ */
+function calculateEaster(year: number): Date {
+  // Using the anonymous Gregorian algorithm
+  const a = year % 19;
+  const b = Math.floor(year / 100);
+  const c = year % 100;
+  const d = Math.floor(b / 4);
+  const e = b % 4;
+  const f = Math.floor((b + 8) / 25);
+  const g = Math.floor((b - f + 1) / 3);
+  const h = (19 * a + b - d - g + 15) % 30;
+  const i = Math.floor(c / 4);
+  const k = c % 4;
+  const l = (32 + 2 * e + 2 * i - h - k) % 7;
+  const m = Math.floor((a + 11 * h + 22 * l) / 451);
+  const month = Math.floor((h + l - 7 * m + 114) / 31);
+  const day = ((h + l - 7 * m + 114) % 31) + 1;
+  
+  return new Date(year, month - 1, day); // month is 0-indexed in Date constructor
+}
+
+/**
+ * Generate fallback holidays for a year when data.gov.au data is not available
+ * @param year The year to generate holidays for
+ * @returns Array of DataGovAuHoliday objects
+ */
+function generateFallbackHolidays(year: number): DataGovAuHoliday[] {
+  const holidays: DataGovAuHoliday[] = [];
+  const easter = calculateEaster(year);
+  
+  console.log(`🔄 Generating fallback holidays for ${year} (Easter: ${easter.toISOString().slice(0, 10)})`);
+  
+  let holidayId = 1;
+  
+  STANDARD_AUSTRALIAN_HOLIDAYS.forEach(template => {
+    let holidayDate: Date;
+    
+    if (template.date.startsWith('easter')) {
+      // Calculate Easter-based holidays
+      const offset = parseInt(template.date.split('easter')[1] || '0');
+      holidayDate = new Date(easter);
+      holidayDate.setDate(easter.getDate() + offset);
+    } else {
+      // Fixed date holidays
+      const [month, day] = template.date.split('-').map(Number);
+      holidayDate = new Date(year, month - 1, day);
+      
+      // Handle observed dates for weekends (simple logic)
+      if (holidayDate.getDay() === 0) { // Sunday
+        holidayDate.setDate(holidayDate.getDate() + 1); // Move to Monday
+      } else if (holidayDate.getDay() === 6) { // Saturday
+        holidayDate.setDate(holidayDate.getDate() + 2); // Move to Monday
+      }
+    }
+    
+    // Add holiday for each region/jurisdiction
+    const jurisdictions = ['nsw', 'vic', 'qld', 'sa', 'wa', 'tas', 'nt', 'act'];
+    jurisdictions.forEach(jurisdiction => {
+      holidays.push({
+        _id: holidayId++,
+        Date: holidayDate.toISOString().slice(0, 10).replace(/-/g, ''),
+        "Holiday Name": template.name,
+        Information: `Fallback holiday generated for ${year}`,
+        "More Information": `This holiday was generated as fallback data because data.gov.au does not have ${year} data available yet.`,
+        Jurisdiction: jurisdiction,
+      });
+    });
+  });
+  
+  console.log(`📝 Generated ${holidays.length} fallback holiday records for ${year}`);
+  return holidays;
+}
 
 // GraphQL query to check existing holidays
 const CHECK_EXISTING_HOLIDAYS_QUERY = gql`
@@ -189,7 +288,55 @@ export async function fetchPublicHolidays(
 }
 
 /**
- * Fetch comprehensive Australian holidays from data.gov.au
+ * Attempt to fetch holidays from a specific resource ID
+ * @param resourceId The data.gov.au resource ID to fetch from
+ * @param year The year we're trying to fetch (for filtering and logging)
+ * @param jurisdictions Optional array of jurisdictions to filter
+ * @returns Promise<DataGovAuHoliday[]>
+ */
+async function fetchFromResourceId(
+  resourceId: string,
+  year: number,
+  jurisdictions?: string[]
+): Promise<DataGovAuHoliday[]> {
+  let url = `https://data.gov.au/api/3/action/datastore_search?resource_id=${resourceId}&limit=1000`;
+  
+  // Add jurisdiction filtering if specified
+  if (jurisdictions && jurisdictions.length > 0) {
+    const filters = JSON.stringify({ Jurisdiction: jurisdictions });
+    url += `&filters=${encodeURIComponent(filters)}`;
+  }
+
+  console.log(`🌐 Trying resource ID ${resourceId} for ${year}: ${url}`);
+  
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch from resource ${resourceId}: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  
+  if (!data.success || !data.result || !data.result.records) {
+    throw new Error(`Invalid response format from resource ${resourceId}`);
+  }
+
+  const holidays = data.result.records as DataGovAuHoliday[];
+  
+  // Filter by year if we're using a combined dataset
+  const filteredHolidays = holidays.filter(holiday => {
+    if (!holiday.Date || holiday.Date.length !== 8) return false;
+    const holidayYear = parseInt(holiday.Date.substring(0, 4));
+    return holidayYear === year;
+  });
+  
+  console.log(`📥 Fetched ${holidays.length} holidays, ${filteredHolidays.length} for year ${year}`);
+  
+  return filteredHolidays;
+}
+
+/**
+ * Fetch comprehensive Australian holidays from data.gov.au with fallback strategies
  * @param year Year to fetch holidays for
  * @param jurisdictions Optional array of jurisdictions to filter (e.g., ['nsw', 'act'])
  * @returns Promise<DataGovAuHoliday[]>
@@ -198,38 +345,129 @@ export async function fetchDataGovAuHolidays(
   year: number,
   jurisdictions?: string[]
 ): Promise<DataGovAuHoliday[]> {
-  try {
-    const resourceId = '4d4d744b-50ed-45b9-ae77-760bc478ad75'; // 2025 dataset ID
-    let url = `https://data.gov.au/api/3/action/datastore_search?resource_id=${resourceId}&limit=1000`;
-    
-    // Add jurisdiction filtering if specified
-    if (jurisdictions && jurisdictions.length > 0) {
-      const filters = JSON.stringify({ Jurisdiction: jurisdictions });
-      url += `&filters=${encodeURIComponent(filters)}`;
+  console.log(`🚀 Fetching Australian holidays for ${year} with fallback strategies`);
+  
+  // Strategy 1: Try year-specific resource ID
+  const yearSpecificResourceId = DATA_GOV_AU_RESOURCE_IDS[year];
+  if (yearSpecificResourceId) {
+    try {
+      console.log(`📋 Strategy 1: Using year-specific resource ID for ${year}`);
+      const holidays = await fetchFromResourceId(yearSpecificResourceId, year, jurisdictions);
+      if (holidays.length > 0) {
+        console.log(`✅ Successfully fetched ${holidays.length} holidays using year-specific resource ID`);
+        return holidays;
+      }
+    } catch (error) {
+      console.warn(`⚠️ Year-specific resource ID failed for ${year}:`, error instanceof Error ? error.message : String(error));
     }
-
-    console.log(`🌐 Fetching Australian holidays from data.gov.au: ${url}`);
-    
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch data.gov.au holidays: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    
-    if (!data.success || !data.result || !data.result.records) {
-      throw new Error('Invalid response format from data.gov.au API');
-    }
-
-    const holidays = data.result.records as DataGovAuHoliday[];
-    console.log(`📥 Fetched ${holidays.length} holidays from data.gov.au`);
-    
-    return holidays;
-  } catch (error) {
-    console.error("Error fetching data.gov.au holidays:", error);
-    throw error;
+  } else {
+    console.log(`📋 No year-specific resource ID available for ${year}`);
   }
+  
+  // Strategy 2: Try combined resource ID
+  try {
+    console.log(`📋 Strategy 2: Trying combined resource ID for ${year}`);
+    const holidays = await fetchFromResourceId(DATA_GOV_AU_COMBINED_RESOURCE_ID, year, jurisdictions);
+    if (holidays.length > 0) {
+      console.log(`✅ Successfully fetched ${holidays.length} holidays from combined dataset`);
+      return holidays;
+    }
+  } catch (error) {
+    console.warn(`⚠️ Combined resource ID failed for ${year}:`, error instanceof Error ? error.message : String(error));
+  }
+  
+  // Strategy 3: Try date.nager.at API as fallback
+  try {
+    console.log(`📋 Strategy 3: Trying date.nager.at API for ${year}`);
+    const nagerHolidays = await fetchPublicHolidays(year, 'AU');
+    if (nagerHolidays.length > 0) {
+      // Convert nager.at format to data.gov.au format with proper regional mapping
+      const expandedHolidays: DataGovAuHoliday[] = [];
+      const allJurisdictions = ['nsw', 'vic', 'qld', 'sa', 'wa', 'tas', 'nt', 'act'];
+      
+      nagerHolidays.forEach((holiday, index) => {
+        // Determine which jurisdictions this holiday applies to based on nager.at data
+        let applicableJurisdictions: string[];
+        
+        if (holiday.global) {
+          // National holidays apply to all states
+          applicableJurisdictions = allJurisdictions;
+        } else if (holiday.counties && holiday.counties.length > 0) {
+          // Map nager.at county codes to Australian jurisdictions
+          applicableJurisdictions = holiday.counties.map(county => {
+            const countyCode = county.replace('AU-', '').toLowerCase();
+            return countyCode || 'nsw'; // Default to NSW if mapping fails
+          }).filter(jurisdiction => allJurisdictions.includes(jurisdiction));
+        } else {
+          // Regional holiday - determine jurisdiction from holiday name
+          const holidayName = (holiday.localName || holiday.name).toLowerCase();
+          
+          if (holidayName.includes('canberra')) {
+            applicableJurisdictions = ['act'];
+          } else if (holidayName.includes('western australia')) {
+            applicableJurisdictions = ['wa'];
+          } else if (holidayName.includes('victoria') || holidayName.includes('melbourne') || holidayName.includes('afl')) {
+            applicableJurisdictions = ['vic'];
+          } else if (holidayName.includes('queensland')) {
+            applicableJurisdictions = ['qld'];
+          } else if (holidayName.includes('south australia')) {
+            applicableJurisdictions = ['sa'];
+          } else if (holidayName.includes('tasmania')) {
+            applicableJurisdictions = ['tas'];
+          } else if (holidayName.includes('northern territory') || holidayName.includes('picnic day')) {
+            applicableJurisdictions = ['nt'];
+          } else if (holidayName.includes('new south wales')) {
+            applicableJurisdictions = ['nsw'];
+          } else if (holidayName.includes('labour day') || holidayName.includes('labor day')) {
+            // Labour Day varies by state - for now, default to multiple states
+            applicableJurisdictions = ['nsw', 'vic', 'qld', 'sa', 'wa', 'tas', 'nt', 'act'];
+          } else {
+            // Unknown regional holiday - default to all states for safety
+            applicableJurisdictions = allJurisdictions;
+          }
+        }
+        
+        // Create records for each applicable jurisdiction
+        applicableJurisdictions.forEach(jurisdiction => {
+          expandedHolidays.push({
+            _id: expandedHolidays.length + 1,
+            Date: holiday.date.replace(/-/g, ''), // Convert YYYY-MM-DD to YYYYMMDD
+            "Holiday Name": holiday.localName || holiday.name,
+            Information: `Fetched from date.nager.at API for ${year}`,
+            "More Information": `This holiday was fetched from date.nager.at because data.gov.au does not have ${year} data available yet. Original scope: ${holiday.global ? 'National' : 'Regional'}`,
+            Jurisdiction: jurisdiction,
+          });
+        });
+      });
+      
+      console.log(`✅ Successfully fetched ${nagerHolidays.length} holidays from date.nager.at, expanded to ${expandedHolidays.length} records`);
+      
+      // Apply jurisdiction filtering if specified
+      if (jurisdictions && jurisdictions.length > 0) {
+        const filtered = expandedHolidays.filter(holiday => jurisdictions.includes(holiday.Jurisdiction));
+        console.log(`🔍 Filtered nager.at holidays: ${expandedHolidays.length} → ${filtered.length}`);
+        return filtered;
+      }
+      
+      return expandedHolidays;
+    }
+  } catch (error) {
+    console.warn(`⚠️ date.nager.at API failed for ${year}:`, error instanceof Error ? error.message : String(error));
+  }
+  
+  // Strategy 4: Generate fallback holidays (last resort)
+  console.log(`📋 Strategy 4: Generating calculated fallback holidays for ${year}`);
+  const fallbackHolidays = generateFallbackHolidays(year);
+  
+  // Apply jurisdiction filtering to fallback data if specified
+  if (jurisdictions && jurisdictions.length > 0) {
+    const filtered = fallbackHolidays.filter(holiday => jurisdictions.includes(holiday.Jurisdiction));
+    console.log(`🔍 Filtered fallback holidays: ${fallbackHolidays.length} → ${filtered.length}`);
+    return filtered;
+  }
+  
+  console.log(`🔄 Using ${fallbackHolidays.length} generated fallback holidays for ${year}`);
+  return fallbackHolidays;
 }
 
 /**
@@ -587,8 +825,25 @@ export async function syncComprehensiveAustralianHolidays(
       }
     }
 
-    // Fetch all Australian holidays from data.gov.au
+    // Fetch all Australian holidays from data.gov.au (with fallback)
     const dataGovHolidays = await fetchDataGovAuHolidays(year);
+    
+    // Determine data source type for logging
+    const isGeneratedData = dataGovHolidays.some(h => h.Information?.includes('Fallback holiday generated'));
+    const isNagerData = dataGovHolidays.some(h => h.Information?.includes('Fetched from date.nager.at'));
+    let dataSource = 'data.gov.au API';
+    if (isNagerData) {
+      dataSource = 'date.nager.at API';
+    } else if (isGeneratedData) {
+      dataSource = 'Generated Fallback';
+    }
+    
+    console.log(`📊 Data source for ${year}: ${dataSource}`);
+    if (isNagerData) {
+      console.log(`🔄 Using date.nager.at API data because ${year} data is not available from data.gov.au`);
+    } else if (isGeneratedData) {
+      console.log(`⚠️ Using generated fallback data because ${year} data is not available from any external API`);
+    }
     
     // Transform data for database insertion
     const holidaysToInsert = transformDataGovAuHolidays(dataGovHolidays);
@@ -656,7 +911,10 @@ export async function syncComprehensiveAustralianHolidays(
         regionalHolidays: regionalHolidays.length,
         eftRelevantHolidays: eftRelevantCount,
         coverageBreakdown: byRegionType,
-        message: `Synced ${data.insertHolidays.affectedRows} consolidated Australian holidays for ${year} (${dataGovHolidays.length} → ${holidaysToInsert.length} records)`,
+        message: `Synced ${data.insertHolidays.affectedRows} consolidated Australian holidays for ${year} (${dataGovHolidays.length} → ${holidaysToInsert.length} records, source: ${dataSource})`,
+        dataSource,
+        isGeneratedData,
+        isNagerData,
       };
     } catch (error) {
       // Fallback to basic mutation if main mutation fails
@@ -685,7 +943,10 @@ export async function syncComprehensiveAustralianHolidays(
         regionalHolidays: regionalHolidays.length,
         eftRelevantHolidays: eftRelevantCount,
         coverageBreakdown: byRegionType,
-        message: `Synced ${data.insertHolidays.affectedRows} consolidated Australian holidays for ${year} (fallback, ${dataGovHolidays.length} → ${holidaysToInsert.length} records)`,
+        message: `Synced ${data.insertHolidays.affectedRows} consolidated Australian holidays for ${year} (fallback, ${dataGovHolidays.length} → ${holidaysToInsert.length} records, source: ${dataSource})`,
+        dataSource,
+        isGeneratedData,
+        isNagerData,
       };
     }
   } catch (error) {
@@ -696,19 +957,17 @@ export async function syncComprehensiveAustralianHolidays(
 
 export async function syncAustralianHolidays(forceSync: boolean = false) {
   const currentYear = new Date().getFullYear();
+  const yearsToSync = [currentYear, currentYear + 1, currentYear + 2]; // Sync current year + 2 future years
 
   try {
     console.log(
-      `🚀 Starting Australian holiday sync for ${currentYear}-${
-        currentYear + 1
-      }...`
+      `🚀 Starting Australian holiday sync for ${yearsToSync.join(', ')}...`
     );
 
-    // Use comprehensive sync for better coverage
-    const results = await Promise.all([
-      syncComprehensiveAustralianHolidays(currentYear, forceSync),
-      syncComprehensiveAustralianHolidays(currentYear + 1, forceSync),
-    ]);
+    // Use comprehensive sync for better coverage including future years
+    const results = await Promise.all(
+      yearsToSync.map(year => syncComprehensiveAustralianHolidays(year, forceSync))
+    );
 
     const totalAffected = results.reduce(
       (sum: number, result: any) => sum + (result.affectedRows || 0),
@@ -719,12 +978,16 @@ export async function syncAustralianHolidays(forceSync: boolean = false) {
       (sum: number, result: any) => sum + (result.eftRelevantHolidays || 0),
       0
     );
+    const generatedCount = results.filter((result: any) => result.isGeneratedData).length;
+    const nagerCount = results.filter((result: any) => result.isNagerData).length;
 
     console.log(`🎉 Australian holiday sync completed!`);
-    console.log(`   Years processed: ${currentYear}, ${currentYear + 1}`);
+    console.log(`   Years processed: ${yearsToSync.join(', ')}`);
     console.log(`   Total holidays affected: ${totalAffected}`);
     console.log(`   EFT Relevant holidays: ${totalEftRelevant}`);
     console.log(`   Years skipped (already had data): ${skippedCount}`);
+    console.log(`   Years using date.nager.at data: ${nagerCount}`);
+    console.log(`   Years using generated data: ${generatedCount}`);
 
     return {
       success: true,
@@ -732,7 +995,10 @@ export async function syncAustralianHolidays(forceSync: boolean = false) {
       totalAffected,
       totalEftRelevant,
       skippedCount,
-      message: `Australian holiday sync completed: ${totalAffected} holidays processed (${totalEftRelevant} EFT relevant), ${skippedCount} years skipped`,
+      generatedCount,
+      nagerCount,
+      yearsToSync,
+      message: `Australian holiday sync completed: ${totalAffected} holidays processed (${totalEftRelevant} EFT relevant), ${skippedCount} years skipped, ${nagerCount} years using date.nager.at, ${generatedCount} years using generated data`,
     };
   } catch (error) {
     console.error("❌ Failed to sync Australian holidays:", error);
