@@ -80,42 +80,51 @@ export const ProfitabilityDashboard: React.FC<ProfitabilityDashboardProps> = ({
   dateRange
 }) => {
   const [viewMode, setViewMode] = useState<'payrolls' | 'staff' | 'clients'>('payrolls');
+  const [dateFrom, setDateFrom] = useState<Date | null>(null);
+  const [dateTo, setDateTo] = useState<Date | null>(null);
 
-  // Calculate date range for queries
-  const dateFrom = dateRange?.start ? new Date(dateRange.start) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-  const dateTo = dateRange?.end ? new Date(dateRange.end) : new Date();
+  // Initialize dates on client side to avoid hydration mismatch
+  useEffect(() => {
+    const defaultFrom = dateRange?.start ? new Date(dateRange.start) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const defaultTo = dateRange?.end ? new Date(dateRange.end) : new Date();
+    
+    setDateFrom(defaultFrom);
+    setDateTo(defaultTo);
+  }, [dateRange]);
 
   // Real GraphQL queries
   const { data: payrollData, loading: payrollLoading, error: payrollError } = useQuery(GetPayrollProfitabilityAnalyticsDocument, {
     variables: {
       ...(clientId && { clientId }),
-      dateFrom: dateFrom.toISOString(),
-      dateTo: dateTo.toISOString(),
+      ...(dateFrom && { dateFrom: dateFrom.toISOString() }),
+      ...(dateTo && { dateTo: dateTo.toISOString() }),
       limit: 50
     },
-    fetchPolicy: "cache-and-network"
+    fetchPolicy: "cache-and-network",
+    skip: !dateFrom || !dateTo
   });
 
   const { data: staffData, loading: staffLoading, error: staffError } = useQuery(GetStaffBillingPerformanceAnalyticsDocument, {
     variables: {
       ...(staffId && { staffUserId: staffId }),
-      timestampFrom: dateFrom.toISOString(),
-      timestampTo: dateTo.toISOString(),
-      dateFrom: dateFrom.toISOString().split('T')[0], // Date only
-      dateTo: dateTo.toISOString().split('T')[0], // Date only
+      ...(dateFrom && { timestampFrom: dateFrom.toISOString() }),
+      ...(dateTo && { timestampTo: dateTo.toISOString() }),
+      ...(dateFrom && { dateFrom: dateFrom.toISOString().split('T')[0] }), // Date only
+      ...(dateTo && { dateTo: dateTo.toISOString().split('T')[0] }), // Date only
       limit: 50
     },
-    skip: !staffId,
+    skip: !staffId || !dateFrom || !dateTo,
     fetchPolicy: "cache-and-network"
   });
 
   const { data: statsData, error: statsError } = useQuery(GetProfitabilityStatsAdvancedDocument, {
     variables: {
-      timestampFrom: dateFrom.toISOString(),
-      timestampTo: dateTo.toISOString(),
-      dateFrom: dateFrom.toISOString().split('T')[0],
-      dateTo: dateTo.toISOString().split('T')[0]
+      ...(dateFrom && { timestampFrom: dateFrom.toISOString() }),
+      ...(dateTo && { timestampTo: dateTo.toISOString() }),
+      ...(dateFrom && { dateFrom: dateFrom.toISOString().split('T')[0] }),
+      ...(dateTo && { dateTo: dateTo.toISOString().split('T')[0] })
     },
+    skip: !dateFrom || !dateTo,
     fetchPolicy: "cache-and-network"
   });
 
