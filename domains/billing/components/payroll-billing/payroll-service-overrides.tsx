@@ -33,8 +33,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 
 // GraphQL Queries and Mutations
-const GET_PAYROLL_SERVICE_OVERRIDES = gql`
-  query GetPayrollServiceOverrides(
+const GET_PAYROLL_SERVICE_AGREEMENTS = gql`
+  query GetPayrollServiceAgreements(
     $payrollId: uuid!
     $limit: Int = 50
     $offset: Int = 0
@@ -83,15 +83,6 @@ const GET_PAYROLL_SERVICE_OVERRIDES = gql`
         customRate
         billingFrequency
         isActive
-      }
-      
-      payroll {
-        id
-        name
-        client {
-          id
-          name
-        }
       }
       
       createdByUser: userByCreatedBy {
@@ -352,7 +343,7 @@ const PayrollServiceOverrides: React.FC<PayrollServiceOverridesProps> = ({
     serviceConfiguration: ''
   });
 
-  const { data, loading, error, refetch } = useQuery(GET_PAYROLL_SERVICE_OVERRIDES, {
+  const { data, loading, error, refetch } = useQuery(GET_PAYROLL_SERVICE_AGREEMENTS, {
     variables: { payrollId },
     fetchPolicy: 'cache-and-network'
   });

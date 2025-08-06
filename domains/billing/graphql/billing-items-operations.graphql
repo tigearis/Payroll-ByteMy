@@ -1008,8 +1008,6 @@ query GetProfitabilityStatsAdvanced(
   totalRevenue: billingItemsAggregate(
     where: {
       _and: [
-        { clientId: { _eq: $clientId } }
-        { staffUserId: { _eq: $staffUserId } }
         { createdAt: { _gte: $timestampFrom } }
         { createdAt: { _lte: $timestampTo } }
         { status: { _eq: "approved" } }
@@ -1028,8 +1026,6 @@ query GetProfitabilityStatsAdvanced(
   totalHours: timeEntriesAggregate(
     where: {
       _and: [
-        { clientId: { _eq: $clientId } }
-        { staffUserId: { _eq: $staffUserId } }
         { workDate: { _gte: $dateFrom } }
         { workDate: { _lte: $dateTo } }
       ]
@@ -1047,8 +1043,6 @@ query GetProfitabilityStatsAdvanced(
   pendingRevenue: billingItemsAggregate(
     where: {
       _and: [
-        { clientId: { _eq: $clientId } }
-        { staffUserId: { _eq: $staffUserId } }
         { createdAt: { _gte: $timestampFrom } }
         { createdAt: { _lte: $timestampTo } }
         { status: { _eq: "pending" } }

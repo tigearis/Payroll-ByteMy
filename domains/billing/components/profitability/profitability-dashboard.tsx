@@ -109,10 +109,8 @@ export const ProfitabilityDashboard: React.FC<ProfitabilityDashboardProps> = ({
     fetchPolicy: "cache-and-network"
   });
 
-  const { data: statsData } = useQuery(GetProfitabilityStatsAdvancedDocument, {
+  const { data: statsData, error: statsError } = useQuery(GetProfitabilityStatsAdvancedDocument, {
     variables: {
-      ...(clientId && { clientId }),
-      ...(staffId && { staffUserId: staffId }),
       timestampFrom: dateFrom.toISOString(),
       timestampTo: dateTo.toISOString(),
       dateFrom: dateFrom.toISOString().split('T')[0],
@@ -183,7 +181,7 @@ export const ProfitabilityDashboard: React.FC<ProfitabilityDashboardProps> = ({
   }
 
   // Handle GraphQL errors gracefully
-  if (payrollError || staffError) {
+  if (payrollError || staffError || statsError) {
     return (
       <div className="text-center py-8">
         <div className="text-amber-600 mb-4">
