@@ -21,45 +21,106 @@ interface RecurringServicesManagerProps {
   clientName: string;
 }
 
+// TypeScript interfaces for GraphQL data
+interface Service {
+  id: string;
+  name: string;
+  serviceCode: string;
+  description?: string;
+  baseRate?: number;
+  category: string;
+  chargeBasis: string;
+  approvalLevel?: string;
+}
+
+interface ClientServiceAssignment {
+  id: string;
+  serviceId: string;
+  clientId: string;
+  customRate?: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  service: Service;
+}
+
 // GraphQL query to fetch recurring services from the database
 const GET_RECURRING_SERVICES = gql`
   query GetRecurringServices {
     services(where: { 
-      charge_basis: { _in: ["per_client_monthly", "per_payroll_monthly"] }
-      is_active: { _eq: true }
+      chargeBasis: { _in: ["per_client_monthly", "per_payroll_monthly"] }
+      isActive: { _eq: true }
     }) {
       id
       name
-      service_code
+      serviceCode
       description
-      base_rate
+      baseRate
       category
-      charge_basis
-      approval_level
+      chargeBasis
+      approvalLevel
     }
   }
 `;
 
 const GET_CLIENT_SERVICE_ASSIGNMENTS = gql`
   query GetClientServiceAssignments($clientId: uuid!) {
-    client_service_assignments(where: {
-      client_id: { _eq: $clientId }
-      is_active: { _eq: true }
+    clientServiceAssignments(where: {
+      clientId: { _eq: $clientId }
+      isActive: { _eq: true }
     }) {
       id
-      service_id
-      custom_rate
-      rate_effective_from
-      rate_effective_to
+      serviceId
+      customRate
+      isActive
+      createdAt
+      updatedAt
       service {
         id
         name
-        service_code
+        serviceCode
         description
-        base_rate
+        baseRate
         category
-        charge_basis
-        approval_level
+        chargeBasis
+        approvalLevel
+      }
+    }
+  }
+`;
+
+// GraphQL mutations for client service assignments
+const CREATE_CLIENT_SERVICE_ASSIGNMENT = gql`
+  mutation CreateClientServiceAssignment($input: ClientServiceAssignmentsInsertInput!) {
+    insertClientServiceAssignmentsOne(object: $input) {
+      id
+      serviceId
+      customRate
+      isActive
+      service {
+        id
+        name
+        serviceCode
+        baseRate
+        category
+      }
+    }
+  }
+`;
+
+const UPDATE_CLIENT_SERVICE_ASSIGNMENT = gql`
+  mutation UpdateClientServiceAssignment($id: uuid!, $updates: ClientServiceAssignmentsSetInput!) {
+    updateClientServiceAssignmentsByPk(pkColumns: { id: $id }, _set: $updates) {
+      id
+      serviceId
+      customRate
+      isActive
+      service {
+        id
+        name
+        serviceCode
+        baseRate
+        category
       }
     }
   }
@@ -69,22 +130,25 @@ export function RecurringServicesManager({ clientId, clientName }: RecurringServ
   const [selectedService, setSelectedService] = useState<string>("");
   const [customRate, setCustomRate] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [clientServices, setClientServices] = useState<any[]>([]);
 
   // Fetch recurring services from database
   const { data: servicesData, loading: servicesLoading } = useQuery(GET_RECURRING_SERVICES);
   
   // Fetch client service assignments from database
-  const { data: assignmentsData, loading: assignmentsLoading } = useQuery(GET_CLIENT_SERVICE_ASSIGNMENTS, {
+  const { data: assignmentsData, loading: assignmentsLoading, refetch: refetchAssignments } = useQuery(GET_CLIENT_SERVICE_ASSIGNMENTS, {
     variables: { clientId }
   });
 
-  const availableServices = servicesData?.services || [];
-  const clientServices = assignmentsData?.client_service_assignments || [];
+  // GraphQL mutations
+  const [createClientServiceAssignment] = useMutation(CREATE_CLIENT_SERVICE_ASSIGNMENT);
+  const [updateClientServiceAssignment] = useMutation(UPDATE_CLIENT_SERVICE_ASSIGNMENT);
+
+  const availableServices: Service[] = servicesData?.services || [];
+  const clientServices: ClientServiceAssignment[] = assignmentsData?.clientServiceAssignments || [];
 
   // Calculate monthly recurring total
-  const monthlyTotal = clientServices.reduce((total: number, assignment: any) => {
-    const rate = assignment.custom_rate || assignment.service.base_rate;
+  const monthlyTotal = clientServices.reduce((total: number, assignment: ClientServiceAssignment) => {
+    const rate = assignment.customRate || assignment.service.baseRate;
     return total + (rate || 0);
   }, 0);
 
@@ -98,34 +162,53 @@ export function RecurringServicesManager({ clientId, clientName }: RecurringServ
   const handleAddService = async () => {
     if (!selectedService) return;
 
-    const serviceConfig = availableServices.find((s: any) => s.service_code === selectedService);
+    const serviceConfig = availableServices.find((s: Service) => s.serviceCode === selectedService);
     if (!serviceConfig) return;
 
-    const newService = {
-      id: Date.now().toString(),
-      serviceCode: selectedService,
-      customRate: customRate ? parseFloat(customRate) : null,
-      effectiveFrom: new Date().toISOString().split('T')[0],
-      effectiveTo: null,
-      isActive: true,
-      autoGenerate: true,
-      recurringService: serviceConfig
-    };
+    try {
+      await createClientServiceAssignment({
+        variables: {
+          input: {
+            clientId: clientId,
+            serviceId: serviceConfig.id,
+            customRate: customRate ? parseFloat(customRate) : null,
+            isActive: true
+          }
+        }
+      });
 
-    setClientServices((prev: any) => [...prev, newService]);
-    toast.success(`Added ${serviceConfig.serviceName} successfully`);
-    setIsDialogOpen(false);
-    setSelectedService("");
-    setCustomRate("");
+      // Refresh the assignments data
+      await refetchAssignments();
+      
+      toast.success(`Added ${serviceConfig.name} successfully`);
+      setIsDialogOpen(false);
+      setSelectedService("");
+      setCustomRate("");
+    } catch (error) {
+      console.error('Error creating client service assignment:', error);
+      toast.error('Failed to add service. Please try again.');
+    }
   };
 
   const handleToggleService = async (serviceId: string, isActive: boolean) => {
-    setClientServices((prev: any) =>
-      prev.map((service: any) =>
-        service.id === serviceId ? { ...service, isActive } : service
-      )
-    );
-    toast.success(isActive ? "Service activated" : "Service deactivated");
+    try {
+      await updateClientServiceAssignment({
+        variables: {
+          id: serviceId,
+          updates: {
+            isActive: isActive
+          }
+        }
+      });
+
+      // Refresh the assignments data
+      await refetchAssignments();
+      
+      toast.success(isActive ? "Service activated" : "Service deactivated");
+    } catch (error) {
+      console.error('Error updating client service assignment:', error);
+      toast.error('Failed to update service. Please try again.');
+    }
   };
 
   const handleGenerateMonthlyBilling = async () => {
@@ -149,15 +232,16 @@ export function RecurringServicesManager({ clientId, clientName }: RecurringServ
       }
 
       toast.success(`Generated billing for ${result.itemsCreated} services totaling $${result.totalAmount?.toFixed(2) || 0}`);
-    } catch (error: any) {
-      toast.error(`Failed to generate billing: ${error.message}`);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      toast.error(`Failed to generate billing: ${errorMessage}`);
     }
   };
 
   // Get available services (not already subscribed)
-  const subscribedCodes = new Set(clientServices.map((s: any) => s.serviceCode));
-  const availableStandardServices = availableServices.filter((config: any) => 
-    !subscribedCodes.has(config.service_code)
+  const subscribedServiceIds = new Set(clientServices.map((s: ClientServiceAssignment) => s.serviceId));
+  const availableStandardServices = availableServices.filter((config: Service) => 
+    !subscribedServiceIds.has(config.id)
   );
 
   const getCategoryColor = (category: string) => {
@@ -170,7 +254,7 @@ export function RecurringServicesManager({ clientId, clientName }: RecurringServ
   };
 
   const nextBillingDate = getNextBillingDate();
-  const activeServices = clientServices.filter(s => s.isActive);
+  const activeServices = clientServices.filter((s: ClientServiceAssignment) => s.isActive);
 
   return (
     <div className="space-y-6">
@@ -267,10 +351,10 @@ export function RecurringServicesManager({ clientId, clientName }: RecurringServ
                           <SelectValue placeholder="Select a service" />
                         </SelectTrigger>
                         <SelectContent>
-                          {availableStandardServices.map(service => (
+                          {availableStandardServices.map((service: Service) => (
                             <SelectItem key={service.serviceCode} value={service.serviceCode}>
                               <div className="flex items-center justify-between w-full">
-                                <span>{service.serviceName}</span>
+                                <span>{service.name}</span>
                                 <span className="text-sm text-muted-foreground ml-2">
                                   ${service.baseRate}/month
                                 </span>
@@ -281,7 +365,7 @@ export function RecurringServicesManager({ clientId, clientName }: RecurringServ
                       </Select>
                       {selectedService && (
                         <div className="mt-2 p-3 bg-slate-50 rounded text-sm">
-                          {availableStandardServices.find(s => s.serviceCode === selectedService)?.description}
+                          {availableStandardServices.find((s: Service) => s.serviceCode === selectedService)?.description}
                         </div>
                       )}
                     </div>
@@ -294,7 +378,7 @@ export function RecurringServicesManager({ clientId, clientName }: RecurringServ
                         step="0.01"
                         value={customRate}
                         onChange={(e) => setCustomRate(e.target.value)}
-                        placeholder={selectedService ? `Default: $${availableStandardServices.find(s => s.serviceCode === selectedService)?.baseRate}` : "Leave empty to use base rate"}
+                        placeholder={selectedService ? `Default: $${availableStandardServices.find((s: Service) => s.serviceCode === selectedService)?.baseRate}` : "Leave empty to use base rate"}
                       />
                     </div>
                     
@@ -339,45 +423,45 @@ export function RecurringServicesManager({ clientId, clientName }: RecurringServ
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {clientServices.map((service) => {
-                    const config = service.recurringService;
-                    const effectiveRate = service.customRate || config.baseRate;
+                  {clientServices.map((assignment: ClientServiceAssignment) => {
+                    const service = assignment.service;
+                    const effectiveRate = assignment.customRate || service.baseRate;
                     const nextBilling = getNextBillingDate();
 
                     return (
-                      <TableRow key={service.id}>
+                      <TableRow key={assignment.id}>
                         <TableCell>
                           <div className="space-y-1">
-                            <div className="font-medium">{config.serviceName}</div>
+                            <div className="font-medium">{service.name}</div>
                             <div className="text-sm text-muted-foreground">
-                              {config.description}
+                              {service.description}
                             </div>
                             <Badge 
                               variant="outline" 
-                              className={getCategoryColor(config.category)}
+                              className={getCategoryColor(service.category)}
                             >
-                              {config.category}
+                              {service.category}
                             </Badge>
                           </div>
                         </TableCell>
                         
                         <TableCell>
                           <div className="flex items-center gap-2">
-                            <span className="font-medium">${effectiveRate.toFixed(2)}</span>
-                            {service.customRate && (
+                            <span className="font-medium">${(effectiveRate || 0).toFixed(2)}</span>
+                            {assignment.customRate && (
                               <Badge variant="secondary" className="text-xs">
                                 Custom
                               </Badge>
                             )}
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            per {config.billingCycle}
+                            per {service.chargeBasis}
                           </div>
                         </TableCell>
                         
                         <TableCell>
                           <Badge variant="outline">
-                            {config.billingCycle}
+                            {service.chargeBasis}
                           </Badge>
                         </TableCell>
                         
@@ -386,20 +470,20 @@ export function RecurringServicesManager({ clientId, clientName }: RecurringServ
                             {nextBilling.toLocaleDateString()}
                           </div>
                           <div className="text-xs text-muted-foreground">
-                            Day {config.generationDay} of month
+                            Monthly billing
                           </div>
                         </TableCell>
                         
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <Switch
-                              checked={service.isActive}
+                              checked={assignment.isActive}
                               onCheckedChange={(checked) => 
-                                handleToggleService(service.id, checked)
+                                handleToggleService(assignment.id, checked)
                               }
                             />
                             <span className="text-sm">
-                              {service.isActive ? "Active" : "Inactive"}
+                              {assignment.isActive ? "Active" : "Inactive"}
                             </span>
                           </div>
                         </TableCell>
@@ -429,12 +513,12 @@ export function RecurringServicesManager({ clientId, clientName }: RecurringServ
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {availableStandardServices.map((config: any) => {
-              const isSubscribed = subscribedCodes.has(config.service_code);
+            {availableStandardServices.map((config: Service) => {
+              const isSubscribed = subscribedServiceIds.has(config.id);
               
               return (
                 <Card 
-                  key={config.service_code} 
+                  key={config.serviceCode} 
                   className={`transition-all ${isSubscribed ? "opacity-60 bg-slate-50" : "hover:shadow-md"}`}
                 >
                   <CardContent className="p-4">
@@ -460,14 +544,14 @@ export function RecurringServicesManager({ clientId, clientName }: RecurringServ
                     </p>
                     
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>Billed {config.billingCycle}</span>
+                      <span>Billed {config.chargeBasis}</span>
                       {isSubscribed ? (
                         <Badge variant="secondary" className="text-xs">
                           Active
                         </Badge>
                       ) : (
-                        <span className={config.autoApproval ? "text-green-600" : "text-orange-600"}>
-                          {config.autoApproval ? "Auto-approved" : "Requires approval"}
+                        <span className={config.approvalLevel === 'auto' ? "text-green-600" : "text-orange-600"}>
+                          {config.approvalLevel === 'auto' ? "Auto-approved" : "Requires approval"}
                         </span>
                       )}
                     </div>
