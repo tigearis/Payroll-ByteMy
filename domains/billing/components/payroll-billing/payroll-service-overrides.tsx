@@ -43,7 +43,7 @@ const GET_PAYROLL_SERVICE_OVERRIDES = gql`
       where: { payrollId: { _eq: $payrollId } }
       limit: $limit
       offset: $offset
-      orderBy: [{ payrollServiceAgreementsByServiceId: { category: ASC } }, { createdAt: DESC }]
+      orderBy: [{ createdAt: DESC }]
     ) {
       id
       payrollId
@@ -65,7 +65,7 @@ const GET_PAYROLL_SERVICE_OVERRIDES = gql`
       updatedAt
       createdBy
       
-      service {
+      payrollServiceAgreementsByServiceId {
         id
         name
         description
@@ -76,11 +76,6 @@ const GET_PAYROLL_SERVICE_OVERRIDES = gql`
         serviceType
         billingTier
         tierPriority
-        category {
-          id
-          name
-          description
-        }
       }
       
       clientServiceAgreement {
@@ -137,7 +132,7 @@ const GET_PAYROLL_SERVICE_OVERRIDES = gql`
         
         serviceAgreements: clientServiceAgreements(
           where: { isActive: { _eq: true } }
-          orderBy: [{ service: { category: ASC } }, { service: { name: ASC } }]
+          orderBy: [{ createdAt: DESC }]
         ) {
           id
           serviceId
@@ -153,10 +148,6 @@ const GET_PAYROLL_SERVICE_OVERRIDES = gql`
             currency
             serviceType
             billingTier
-            category {
-              id
-              name
-            }
           }
         }
       }
@@ -174,9 +165,8 @@ const GET_PAYROLL_SERVICE_OVERRIDES = gql`
     services(
       where: { 
         isActive: { _eq: true }
-        billingTier: { _in: ["payroll_date", "payroll"] }
       }
-      orderBy: [{ category: ASC }, { name: ASC }]
+      orderBy: [{ name: ASC }]
     ) {
       id
       name
@@ -188,11 +178,6 @@ const GET_PAYROLL_SERVICE_OVERRIDES = gql`
       serviceType
       billingTier
       tierPriority
-      category {
-        id
-        name
-        description
-      }
     }
   }
 `;
@@ -259,7 +244,7 @@ interface PayrollServiceOverride {
   createdAt: string;
   updatedAt: string;
   createdBy: string;
-  service: Service;
+  payrollServiceAgreementsByServiceId: Service;
   clientServiceAgreement?: ClientServiceAgreement;
   payroll: Payroll;
   createdByUser?: User;
@@ -298,21 +283,15 @@ interface Service {
   id: string;
   name: string;
   description?: string;
-  categoryName: string;
+  category: string;
   billingUnit: string;
   defaultRate?: number;
   currency: string;
   serviceType: string;
   billingTier: string;
   tierPriority?: number;
-  category: ServiceCategory;
 }
 
-interface ServiceCategory {
-  id: string;
-  name: string;
-  description?: string;
-}
 
 interface PayrollDate {
   id: string;
@@ -388,8 +367,8 @@ const PayrollServiceOverrides: React.FC<PayrollServiceOverridesProps> = ({
 
   // Filter overrides by search term
   const filteredOverrides = overrides.filter((override: PayrollServiceOverride) =>
-    override.service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    override.service.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    override.payrollServiceAgreementsByServiceId.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    override.payrollServiceAgreementsByServiceId.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     override.customDescription?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -693,20 +672,20 @@ const PayrollServiceOverrides: React.FC<PayrollServiceOverridesProps> = ({
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-lg font-medium">{override.service.name}</h3>
+                    <h3 className="text-lg font-medium">{override.payrollServiceAgreementsByServiceId.name}</h3>
                     <Badge className={getStatusColor(override)}>
                       {getStatusText(override)}
                     </Badge>
-                    <Badge className={getBillingTierColor(override.service.billingTier)}>
-                      {override.service.billingTier.replace('_', ' ')}
+                    <Badge className={getBillingTierColor(override.payrollServiceAgreementsByServiceId.billingTier)}>
+                      {override.payrollServiceAgreementsByServiceId.billingTier.replace('_', ' ')}
                     </Badge>
                     {override.isOneTime && (
                       <Badge variant="outline">One-time</Badge>
                     )}
                   </div>
-                  <p className="text-sm text-gray-600">{override.service.category.name}</p>
+                  <p className="text-sm text-gray-600">{override.payrollServiceAgreementsByServiceId.category}</p>
                   <p className="text-sm text-gray-500 mt-1">
-                    {override.customDescription || override.service.description || 'No description available'}
+                    {override.customDescription || override.payrollServiceAgreementsByServiceId.description || 'No description available'}
                   </p>
                 </div>
                 
@@ -733,13 +712,13 @@ const PayrollServiceOverrides: React.FC<PayrollServiceOverridesProps> = ({
                   <Label className="text-sm text-gray-500">Override Rate</Label>
                   <div className="flex items-center gap-2">
                     <span className="font-medium">
-                      ${override.customRate || override.service.defaultRate || 0}
+                      ${override.customRate || override.payrollServiceAgreementsByServiceId.defaultRate || 0}
                     </span>
-                    <span className="text-gray-500">per {override.service.billingUnit}</span>
+                    <span className="text-gray-500">per {override.payrollServiceAgreementsByServiceId.billingUnit}</span>
                   </div>
                   {override.clientServiceAgreement && (
                     <p className="text-xs text-blue-600">
-                      (Client default: ${override.clientServiceAgreement.customRate || override.service.defaultRate || 0})
+                      (Client default: ${override.clientServiceAgreement.customRate || override.payrollServiceAgreementsByServiceId.defaultRate || 0})
                     </p>
                   )}
                 </div>
@@ -917,7 +896,7 @@ const PayrollServiceOverrides: React.FC<PayrollServiceOverridesProps> = ({
                             <div>
                               <div className="font-medium">{agreement.service.name}</div>
                               <div className="text-sm text-gray-500">
-                                {agreement.service.category.name} • ${agreement.customRate || agreement.service.defaultRate || 0}
+                                {agreement.service.category} • ${agreement.customRate || agreement.service.defaultRate || 0}
                               </div>
                             </div>
                           </SelectItem>
@@ -927,7 +906,7 @@ const PayrollServiceOverrides: React.FC<PayrollServiceOverridesProps> = ({
                             <div>
                               <div className="font-medium">{service.name}</div>
                               <div className="text-sm text-gray-500">
-                                {service.category.name} • ${service.defaultRate || 0}
+                                {service.category} • ${service.defaultRate || 0}
                               </div>
                             </div>
                           </SelectItem>
@@ -937,7 +916,7 @@ const PayrollServiceOverrides: React.FC<PayrollServiceOverridesProps> = ({
                 </Select>
               )}
               {editingOverride && (
-                <Input value={editingOverride.service.name} disabled />
+                <Input value={editingOverride.payrollServiceAgreementsByServiceId.name} disabled />
               )}
             </div>
 

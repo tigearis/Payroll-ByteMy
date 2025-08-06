@@ -81,8 +81,8 @@ fragment ClientRecurringServicesFragment on ClientRecurringServices {
   createdBy
 }
 
-# Payroll Service Agreement Fragment
-fragment PayrollServiceAgreementFragment on PayrollServiceAgreements {
+# Tier 1 Payroll Service Override Fragment
+fragment Tier1PayrollServiceOverrideFragment on PayrollServiceAgreements {
   id
   payrollId
   clientId
@@ -93,6 +93,22 @@ fragment PayrollServiceAgreementFragment on PayrollServiceAgreements {
   additionalServices
   createdAt
   createdBy
+  
+  # Relations
+  client {
+    id
+    name
+  }
+  payroll {
+    id
+    name
+  }
+  approvedByUser {
+    id
+    firstName
+    lastName
+    computedName
+  }
 }
 
 # Enhanced Service Fragment with Tier 1 Information
@@ -344,33 +360,19 @@ query GetClientsReadyForRecurringBilling(
   }
 }
 
-# Get Payroll Service Agreements
-query GetPayrollServiceAgreements(
+# Get Tier 1 Payroll Service Overrides
+query GetTier1PayrollServiceOverrides(
   $payrollId: uuid!
 ) {
   payrollServiceAgreements(
     where: { payrollId: { _eq: $payrollId } }
   ) {
-    ...PayrollServiceAgreementFragment
-    approvedByUser {
-      id
-      firstName
-      lastName
-      computedName
-    }
-    client {
-      id
-      name
-    }
-    payroll {
-      id
-      name
-    }
+    ...Tier1PayrollServiceOverrideFragment
   }
 }
 
-# Get Services by Billing Tier
-query GetServicesByTier(
+# Get Services by Tier 1 Billing Tier
+query GetTier1ServicesByTier(
   $billingTier: String!
   $isActive: Boolean = true
 ) {
@@ -584,17 +586,17 @@ mutation UpdateClientRecurringService(
   }
 }
 
-# Create Payroll Service Agreement (Override)
-mutation CreatePayrollServiceAgreement(
+# Create Tier 1 Payroll Service Override
+mutation CreateTier1PayrollServiceOverride(
   $input: PayrollServiceAgreementsInsertInput!
 ) {
   insertPayrollServiceAgreementsOne(object: $input) {
-    ...PayrollServiceAgreementFragment
+    ...Tier1PayrollServiceOverrideFragment
   }
 }
 
-# Update Payroll Service Agreement
-mutation UpdatePayrollServiceAgreement(
+# Update Tier 1 Payroll Service Override
+mutation UpdateTier1PayrollServiceOverride(
   $id: uuid!
   $updates: PayrollServiceAgreementsSetInput!
 ) {
@@ -602,7 +604,7 @@ mutation UpdatePayrollServiceAgreement(
     pkColumns: { id: $id }
     _set: $updates
   ) {
-    ...PayrollServiceAgreementFragment
+    ...Tier1PayrollServiceOverrideFragment
   }
 }
 
