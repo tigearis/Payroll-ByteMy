@@ -31,7 +31,10 @@ export function useRealTimeSubscription({
   const [retryCount, setRetryCount] = useState(0);
 
   // Memoize refetchQueries array to prevent infinite loops
-  const stableRefetchQueries = useMemo(() => refetchQueries, [refetchQueries]);
+  // Use JSON.stringify to compare array contents, not reference
+  const stableRefetchQueries = useMemo(() => refetchQueries, [
+    JSON.stringify(refetchQueries?.map(query => query?.definitions?.[0]?.name?.value) || [])
+  ]);
 
   // Subscription options
   const options: SubscriptionHookOptions = {
@@ -52,11 +55,23 @@ export function useRealTimeSubscription({
       // Refresh relevant queries
       if (stableRefetchQueries && stableRefetchQueries.length > 0) {
         try {
-          await client.refetchQueries({
-            include: stableRefetchQueries,
-          });
+          // Filter out any invalid queries
+          const validQueries = stableRefetchQueries.filter(query => 
+            query && query.definitions && query.definitions.length > 0
+          );
+          
+          if (validQueries.length > 0) {
+            await client.refetchQueries({
+              include: validQueries,
+            });
+          }
         } catch (refetchError) {
           console.warn("Failed to refetch queries:", refetchError);
+          // Log more details about the error
+          if (refetchError.message?.includes('unknown query')) {
+            console.warn("Query validation failed. Available queries:", 
+              stableRefetchQueries.map(q => q?.definitions?.[0]?.name?.value || 'unnamed'));
+          }
         }
       }
     },
@@ -82,11 +97,18 @@ export function useRealTimeSubscription({
         () => {
           // Force refetch on reconnection attempt
           if (stableRefetchQueries && stableRefetchQueries.length > 0) {
-            client.refetchQueries({
-              include: stableRefetchQueries,
-            }).catch(refetchError => {
-              console.warn("Failed to refetch queries on reconnection:", refetchError);
-            });
+            // Filter out any invalid queries
+            const validQueries = stableRefetchQueries.filter(query => 
+              query && query.definitions && query.definitions.length > 0
+            );
+            
+            if (validQueries.length > 0) {
+              client.refetchQueries({
+                include: validQueries,
+              }).catch(refetchError => {
+                console.warn("Failed to refetch queries on reconnection:", refetchError);
+              });
+            }
           }
         },
         Math.min(retryCount * 1000, 5000)
