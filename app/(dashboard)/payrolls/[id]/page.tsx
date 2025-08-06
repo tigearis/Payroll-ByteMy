@@ -569,7 +569,7 @@ export default function PayrollPage() {
 
   const [error, setError] = useState<any>(null);
 
-  // Simplified data fetching with single optimized query
+  // Simplified data fetching with single optimized query - fix hydration mismatch
   const { 
     data: completeData, 
     loading: dataLoading, 
@@ -578,8 +578,9 @@ export default function PayrollPage() {
   } = useQuery(GetPayrollDetailCompleteDocument, {
     variables: { id },
     skip: !id || isVersionCheckingOrRedirecting,
-    fetchPolicy: "cache-and-network",
+    fetchPolicy: "network-only", // Fix hydration: consistent behavior
     errorPolicy: "all",
+    ssr: false, // Fix hydration: disable SSR for this query
     onCompleted: () => {
       console.log("✅ Payroll detail data loaded successfully");
       setLoading('batchData', false);
@@ -722,9 +723,9 @@ export default function PayrollPage() {
     }
   };
 
-  // Populate form immediately when payroll data is available (improves UX)
+  // Populate form immediately when payroll data is available (improves UX) - hydration safe
   useEffect(() => {
-    if (data?.payrollsByPk) {
+    if (hasMounted && data?.payrollsByPk) {
       const payroll = data.payrollsByPk;
       console.log("🔧 Initializing form with complete data:", {
         payrollId: payroll.id,
@@ -764,7 +765,7 @@ export default function PayrollPage() {
       console.log("✅ Form data populated successfully:", formData);
       setPayrollFormData(formData);
     }
-  }, [data]);
+  }, [data, hasMounted]);
 
   // Simplified PayrollForm input change handler - no dual state management
   const handlePayrollFormChange = (field: keyof PayrollFormData, value: string) => {
@@ -790,6 +791,22 @@ export default function PayrollPage() {
   if (!id) {
     toast.error("Error: Payroll ID is required.");
     return <div>Error: Payroll ID is required.</div>;
+  }
+
+  // Add hydration safety state
+  const [hasMounted, setHasMounted] = useState(false);
+  
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  // Show loading state during hydration to prevent mismatch
+  if (!hasMounted) {
+    return (
+      <VersionCheckErrorBoundary>
+        <PayrollDetailsLoading />
+      </VersionCheckErrorBoundary>
+    );
   }
 
   // Show loading state while checking versions or redirecting
@@ -1165,7 +1182,7 @@ export default function PayrollPage() {
                   <Users className="w-4 h-4" />
                   {totalEmployees} employees
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1" suppressHydrationWarning>
                   <Clock className="w-4 h-4" />
                   Last updated {formatDate((payroll as any).updatedAt)}
                 </div>
