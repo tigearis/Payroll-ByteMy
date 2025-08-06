@@ -155,12 +155,30 @@ viewer → consultant → manager → org_admin → developer
 - `↔ invoices` - Generated invoices
 
 #### `users` table enhancements:
-- `↔ userBillingRates` - Personal billing rates
-- `↔ createdBillingRecords` - Created billing records
+- `↔ userBillingRates` - Personal billing rates  
+- `↔ userBillingRatesForUser` - Billing rates for this user
+- `↔ createdInvoices` - Invoices created by this user
+- `↔ clientServiceAssignmentsCreated` - Service assignments created
+- `↔ clientServiceAssignmentsUpdated` - Service assignments updated
+- `↔ timeEntriesOverriddenBy` - Time entries with overrides
+- `↔ invoiceLineItemsAdjusted` - Invoice line items adjusted
+- `↔ payrollServiceQuantitiesEntered` - Service quantities entered
+- `↔ payrollServiceOverridesCreated` - Service overrides created
+- `↔ payrollServiceOverridesApproved` - Service overrides approved
+- `↔ invoiceAdjustments` - Invoice adjustments made
 
 #### `time_entries` table enhancements:
 - `→ assignedService` - Service for billable time
+- `→ overriddenByUser` - User who overrode this entry
 - New billing fields: `user_hourly_rate`, `calculated_fee`, `is_billable_to_service`
+
+#### Additional table enhancements:
+- `client_service_assignments` - `→ updatedByUser` relationship
+- `invoice_line_items` - `→ adjustedByUser` relationship
+- `billing_items` - `↔ invoiceLineItems` array relationship
+- `payroll_dates` - `↔ payrollServiceQuantities` array relationship
+- `payrolls` - `↔ payrollServiceOverrides` array relationship
+- `invoice_adjustments` - `→ invoice` and `→ adjustedByUser` relationships
 
 ## Technical Implementation Details
 
