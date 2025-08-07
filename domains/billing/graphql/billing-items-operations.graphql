@@ -454,6 +454,236 @@ query GetPayrollDatesWithStatus($payrollId: uuid!) {
   }
 }
 
+# Consolidated Billing Dashboard Query - Replaces multiple separate queries
+query GetBillingDashboardComplete(
+  $limit: Int = 50
+  $offset: Int = 0
+  $orderBy: [BillingItemsOrderBy!] = [{ createdAt: DESC }]
+  $timeRangeFilter: BillingItemsBoolExp = {}
+  $statsFilter: BillingItemsBoolExp = {}
+) {
+  # Core billing items with all relationships
+  billingItems(
+    limit: $limit
+    offset: $offset
+    where: $timeRangeFilter
+    orderBy: $orderBy
+  ) {
+    ...BillingItemWithRelations
+    # Additional fields for dashboard
+    invoiceId
+    timeEntries {
+      id
+      hoursSpent
+      workDate
+      description
+    }
+  }
+  
+  # Comprehensive billing statistics
+  billingStats: billingItemsAggregate(where: $statsFilter) {
+    ...BillingItemStats
+  }
+  
+  pendingStats: billingItemsAggregate(
+    where: { 
+      _and: [
+        $statsFilter,
+        { status: { _eq: "pending" } }
+      ]
+    }
+  ) {
+    ...BillingItemStats
+  }
+  
+  approvedStats: billingItemsAggregate(
+    where: { 
+      _and: [
+        $statsFilter,
+        { status: { _eq: "approved" } }
+      ]
+    }
+  ) {
+    ...BillingItemStats
+  }
+  
+  draftStats: billingItemsAggregate(
+    where: { 
+      _and: [
+        $statsFilter,
+        { status: { _eq: "draft" } }
+      ]
+    }
+  ) {
+    ...BillingItemStats
+  }
+  
+  # Recent activity for overview
+  recentBillingItems: billingItems(
+    limit: 10
+    orderBy: [{ createdAt: DESC }]
+    where: {
+      createdAt: {
+        _gte: "date_trunc('day', now() - interval '7 days')"
+      }
+    }
+  ) {
+    ...BillingItemCore
+    client {
+      id
+      name
+    }
+    staffUser {
+      id
+      firstName
+      lastName
+    }
+  }
+  
+  # Active clients for context
+  activeClients: clients(
+    where: { active: { _eq: true } }
+    orderBy: { name: ASC }
+  ) {
+    id
+    name
+    contactEmail
+    active
+    # Client billing summary
+    billingItems(
+      where: {
+        createdAt: {
+          _gte: "date_trunc('month', now())"
+        }
+      }
+    ) {
+      id
+      amount
+      status
+    }
+  }
+  
+  # Active services for recurring services
+  recurringServices: services(
+    where: { 
+      chargeBasis: { _in: ["per_client_monthly", "per_payroll_monthly"] }
+      isActive: { _eq: true }
+    }
+    orderBy: { category: ASC }
+  ) {
+    id
+    name
+    serviceCode
+    description
+    baseRate
+    category
+    chargeBasis
+    approvalLevel
+    billingUnit
+    defaultRate
+    currency
+    serviceType
+  }
+  
+  # Payroll completion tracking for integration
+  payrollCompletionStats: payrollDatesAggregate(
+    where: { 
+      adjustedEftDate: { _gte: "date_trunc('day', now() - interval '30 days')" }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  completedPayrollDates: payrollDatesAggregate(
+    where: { 
+      status: { _eq: "completed" }
+      adjustedEftDate: { _gte: "date_trunc('day', now() - interval '30 days')" }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  
+  # Recent payroll dates ready for billing
+  payrollDatesReadyForBilling: payrollDates(
+    where: {
+      _and: [
+        { status: { _eq: "completed" } }
+        { adjustedEftDate: { _gte: "date_trunc('day', now() - interval '7 days')" } }
+        { _not: { billingItems: {} } }
+      ]
+    }
+    limit: 10
+    orderBy: { completedAt: DESC }
+  ) {
+    id
+    payrollId
+    adjustedEftDate
+    completedAt
+    completedBy
+    payroll {
+      id
+      name
+      client {
+        id
+        name
+      }
+      primaryConsultant {
+        id
+        firstName
+        lastName
+      }
+    }
+  }
+  
+  # Time entries for analytics
+  recentTimeEntries: timeEntries(
+    where: {
+      workDate: {
+        _gte: "date_trunc('day', now() - interval '7 days')"
+      }
+    }
+    limit: 20
+    orderBy: { workDate: DESC }
+  ) {
+    id
+    hoursSpent
+    workDate
+    description
+    client {
+      id
+      name
+    }
+    staffUser {
+      id
+      firstName
+      lastName
+    }
+    payroll {
+      id
+      name
+    }
+  }
+  
+  # User performance data
+  staffUsers: users(
+    where: { 
+      isActive: { _eq: true }
+      role: { _in: ["consultant", "manager", "org_admin"] }
+    }
+    orderBy: [{ firstName: ASC }, { lastName: ASC }]
+  ) {
+    id
+    firstName
+    lastName
+    email
+    role
+  }
+}
+
 # Additional Queries for Client and User Selection
 query GetClientsForBillingItemsAdvanced {
   clients(
