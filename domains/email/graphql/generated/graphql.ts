@@ -18,7 +18,7 @@
  * ✓ Client Preset v4.8+ for optimal type safety
  * ✓ Zero type conflicts with modern codegen
  * 
- * Generated: 2025-08-06T11:27:25.205Z
+ * Generated: 2025-08-07T00:35:26.163Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Client Preset v4.0
  */
