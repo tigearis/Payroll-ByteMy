@@ -8,7 +8,7 @@
 set -e  # Exit on any error
 
 # Configuration - Use DATABASE_URL from environment or default
-DB_CONNECTION_STRING="${DATABASE_URL:-postgresql://admin:PostH4rr!51604@192.168.1.229:5432/payroll_local?sslmode=disable}"
+DB_CONNECTION_STRING="${DATABASE_URL:-postgresql://admin:[REDACTED_DB_PASSWORD]@192.168.1.229:5432/payroll_local?sslmode=disable}"
 MIGRATION_DIR="database/migrations"
 LOG_FILE="migration_$(date +%Y%m%d_%H%M%S).log"
 BACKUP_DIR="migration_backups_$(date +%Y%m%d_%H%M%S)"

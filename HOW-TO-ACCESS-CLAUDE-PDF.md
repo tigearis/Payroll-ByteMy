@@ -42,7 +42,7 @@ The file is accessible directly through MinIO with proper authentication:
 ```bash
 # Generate a presigned URL (valid for 1 hour)
 curl -X GET "http://192.168.1.229:9768/documents/Claude.pdf" \
-  --user "admin:MiniH4rr!51604"
+  --user "admin:[REDACTED_MINIO_SECRET]"
 ```
 
 ### Option 3: Create Database Record Manually (Advanced)

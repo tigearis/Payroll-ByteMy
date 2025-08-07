@@ -64,6 +64,7 @@ import {
   GetAllStaffWorkloadDocument,
   GetAllStaffWorkloadQuery,
 } from "@/domains/work-schedule/graphql/generated/graphql";
+import { logger } from '@/lib/logging/enterprise-logger';
 
 type ViewPeriod = "week" | "fortnight" | "month";
 type TableOrientation = "consultants-as-columns" | "consultants-as-rows";
@@ -232,14 +233,31 @@ export default function AdvancedPayrollScheduler() {
       errorPolicy: "all",
       skip: !isClient, // Skip query until client-side hydration is complete
       onCompleted: data => {
-        console.log("✅ Query completed successfully:", {
-          dateRange: `${format(dateRange.start, "yyyy-MM-dd")} to ${format(dateRange.end, "yyyy-MM-dd")}`,
-          payrollsCount: data.payrolls?.length || 0,
-          payrollDatesCount: data.payrolls?.[0]?.payrollDates?.length || 0,
+        logger.info('✅ Advanced scheduler query completed successfully', {
+          namespace: 'payrolls_domain',
+          component: 'advanced_payroll_scheduler',
+          action: 'get_payrolls_by_month',
+          metadata: {
+            dateRange: `${format(dateRange.start, "yyyy-MM-dd")} to ${format(dateRange.end, "yyyy-MM-dd")}`,
+            payrollsCount: data.payrolls?.length || 0,
+            payrollDatesCount: data.payrolls?.[0]?.payrollDates?.length || 0,
+            querySuccess: true,
+            protection: 'advanced_scheduler_protected',
+          },
         });
       },
       onError: err => {
-        console.error("❌ Query failed:", err);
+        logger.error('❌ Advanced scheduler query failed', {
+          namespace: 'payrolls_domain',
+          component: 'advanced_payroll_scheduler',
+          action: 'get_payrolls_by_month',
+          error: err.message,
+          metadata: {
+            dateRange: `${format(dateRange.start, "yyyy-MM-dd")} to ${format(dateRange.end, "yyyy-MM-dd")}`,
+            errorType: 'graphql_query_error',
+            protection: 'advanced_scheduler_protected',
+          },
+        });
       },
     }
   );
@@ -256,13 +274,32 @@ export default function AdvancedPayrollScheduler() {
       errorPolicy: "all",
       skip: !isClient,
       onCompleted: data => {
-        console.log("✅ Holidays query completed:", {
-          holidaysCount: data.holidays?.length || 0,
-          dateRange: `${format(dateRange.start, "yyyy-MM-dd")} to ${format(dateRange.end, "yyyy-MM-dd")}`,
+        logger.info('✅ Advanced scheduler holidays query completed', {
+          namespace: 'payrolls_domain',
+          component: 'advanced_payroll_scheduler',
+          action: 'get_holidays_by_date_range',
+          metadata: {
+            holidaysCount: data.holidays?.length || 0,
+            dateRange: `${format(dateRange.start, "yyyy-MM-dd")} to ${format(dateRange.end, "yyyy-MM-dd")}`,
+            countryCode: 'AU',
+            querySuccess: true,
+            protection: 'advanced_scheduler_protected',
+          },
         });
       },
       onError: err => {
-        console.error("❌ Holidays query failed:", err);
+        logger.error('❌ Advanced scheduler holidays query failed', {
+          namespace: 'payrolls_domain',
+          component: 'advanced_payroll_scheduler',
+          action: 'get_holidays_by_date_range',
+          error: err.message,
+          metadata: {
+            dateRange: `${format(dateRange.start, "yyyy-MM-dd")} to ${format(dateRange.end, "yyyy-MM-dd")}`,
+            countryCode: 'AU',
+            errorType: 'graphql_query_error',
+            protection: 'advanced_scheduler_protected',
+          },
+        });
       },
     }
   );
@@ -274,13 +311,29 @@ export default function AdvancedPayrollScheduler() {
       errorPolicy: "all",
       skip: !isClient,
       onCompleted: data => {
-        console.log("✅ Staff workload query completed:", {
-          staffCount: data.users?.length || 0,
-          consultantCount: data.users?.filter(u => u.role === 'consultant').length || 0,
+        logger.info('✅ Advanced scheduler staff workload query completed', {
+          namespace: 'payrolls_domain',
+          component: 'advanced_payroll_scheduler',
+          action: 'get_all_staff_workload',
+          metadata: {
+            staffCount: data.users?.length || 0,
+            consultantCount: data.users?.filter(u => u.role === 'consultant').length || 0,
+            querySuccess: true,
+            protection: 'advanced_scheduler_protected',
+          },
         });
       },
       onError: err => {
-        console.error("❌ Staff workload query failed:", err);
+        logger.error('❌ Advanced scheduler staff workload query failed', {
+          namespace: 'payrolls_domain',
+          component: 'advanced_payroll_scheduler',
+          action: 'get_all_staff_workload',
+          error: err.message,
+          metadata: {
+            errorType: 'graphql_query_error',
+            protection: 'advanced_scheduler_protected',
+          },
+        });
       },
     }
   );
@@ -304,13 +357,30 @@ export default function AdvancedPayrollScheduler() {
       errorPolicy: "all",
       skip: !isClient,
       onCompleted: data => {
-        console.log("✅ Leave query completed:", {
-          leaveCount: data.leave?.length || 0,
-          dateRange: `${format(dateRange.start, "yyyy-MM-dd")} to ${format(dateRange.end, "yyyy-MM-dd")}`,
+        logger.info('✅ Advanced scheduler leave query completed', {
+          namespace: 'payrolls_domain',
+          component: 'advanced_payroll_scheduler',
+          action: 'get_leave',
+          metadata: {
+            leaveCount: data.leave?.length || 0,
+            dateRange: `${format(dateRange.start, "yyyy-MM-dd")} to ${format(dateRange.end, "yyyy-MM-dd")}`,
+            querySuccess: true,
+            protection: 'advanced_scheduler_protected',
+          },
         });
       },
       onError: err => {
-        console.error("❌ Leave query failed:", err);
+        logger.error('❌ Advanced scheduler leave query failed', {
+          namespace: 'payrolls_domain',
+          component: 'advanced_payroll_scheduler',
+          action: 'get_leave',
+          error: err.message,
+          metadata: {
+            dateRange: `${format(dateRange.start, "yyyy-MM-dd")} to ${format(dateRange.end, "yyyy-MM-dd")}`,
+            errorType: 'graphql_query_error',
+            protection: 'advanced_scheduler_protected',
+          },
+        });
       },
     }
   );
@@ -336,22 +406,44 @@ export default function AdvancedPayrollScheduler() {
 
     const assignmentList: PayrollAssignment[] = [];
 
-    console.log("🔄 Transforming data:", {
-      payrolls: data.payrolls.length,
-      samplePayroll: data.payrolls[0],
-      samplePayrollDates: data.payrolls[0]?.payrollDates?.length || 0,
+    logger.info('🔄 Advanced scheduler transforming data', {
+      namespace: 'payrolls_domain',
+      component: 'advanced_payroll_scheduler',
+      action: 'transform_data_to_assignments',
+      metadata: {
+        payrollsCount: data.payrolls.length,
+        samplePayrollDatesCount: data.payrolls[0]?.payrollDates?.length || 0,
+        protection: 'advanced_scheduler_protected',
+      },
     });
 
     // Iterate through each payroll and its dates
     data.payrolls.forEach((payroll: any) => {
       if (!payroll.payrollDates || payroll.payrollDates.length === 0) {
-        console.log(`⚠️ No payroll dates for payroll: ${payroll.name}`);
+        logger.warn('⚠️ Advanced scheduler no payroll dates found', {
+          namespace: 'payrolls_domain',
+          component: 'advanced_payroll_scheduler',
+          action: 'process_payroll_dates',
+          metadata: {
+            payrollName: payroll.name,
+            payrollId: payroll.id,
+            protection: 'advanced_scheduler_protected',
+          },
+        });
         return;
       }
 
-      console.log(
-        `📅 Processing payroll "${payroll.name}" with ${payroll.payrollDates.length} dates`
-      );
+      logger.info('📅 Advanced scheduler processing payroll with dates', {
+        namespace: 'payrolls_domain',
+        component: 'advanced_payroll_scheduler',
+        action: 'process_payroll_dates',
+        metadata: {
+          payrollName: payroll.name,
+          payrollId: payroll.id,
+          payrollDatesCount: payroll.payrollDates.length,
+          protection: 'advanced_scheduler_protected',
+        },
+      });
 
       payroll.payrollDates.forEach((dateInfo: any) => {
         const assignmentDate = new Date(dateInfo.adjustedEftDate);

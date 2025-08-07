@@ -34,7 +34,7 @@ This comprehensive analysis of the **Payroll-ByteMy** application reveals a **so
 **Timeline**: Fix within 48 hours  
 
 **Issue**: Production secrets hardcoded in multiple files:
-- **Hasura Admin Secret**: `3w+sHTuq8wQwddK4xyWO5LDeRH+anvJoFVyOMvtq8Lo=` exposed in:
+- **Hasura Admin Secret**: `[REDACTED_HASURA_SECRET]` exposed in:
   - `/hasura/config.yaml`
   - `/config/codegen-schema.ts`
   - `/manual-holiday-sync.js`
@@ -269,7 +269,7 @@ const NavigationButton = ({
 
 **1. Hardcoded Production Secrets (CRITICAL)**
 **Files Affected**:
-- `/hasura/config.yaml` (Line 7): `admin_secret: 3w+sHTuq8wQwddK4xyWO5LDeRH+anvJoFVyOMvtq8Lo=`
+- `/hasura/config.yaml` (Line 7): `admin_secret: [REDACTED_HASURA_SECRET]`
 - `/config/codegen-schema.ts` (Line 5): Hardcoded admin secret
 - `/manual-holiday-sync.js` (Line 10): Production secret exposure
 - `/sync-holidays-manual.js` (Line 10): Database connection string

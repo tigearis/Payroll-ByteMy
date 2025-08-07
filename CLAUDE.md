@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Memory
 
-- **Database URL Handling**: Never use `$DATABASE_URL` always use the literal connection string `'postgresql://admin:PostH4rr!51604@192.168.1.229:5432/payroll_local?sslmode=disable'` always in single quotes
+- **Database URL Handling**: Never use `$DATABASE_URL` always use the literal connection string `'postgresql://admin:[REDACTED_DB_PASSWORD]@192.168.1.229:5432/payroll_local?sslmode=disable'` always in single quotes
 - **Package Management**: Only run pnpm commands, never npm
 
 ## 🔐 Hasura GraphQL Permissions System

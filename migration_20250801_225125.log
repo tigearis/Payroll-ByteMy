@@ -2,4 +2,4 @@
 psql: error: connection to server at "192.168.1.229", port 5432 failed: Operation timed out
 	Is the server running on that host and accepting TCP/IP connections?
 [0;31m[2025-08-01 22:52:40] ❌ Cannot connect to database[0m
-[0;31m[2025-08-01 22:52:40] ❌ Please check connection string: postgresql://admin:PostH4rr!51604@192.168.1.229:5432/payroll_local?sslmode=disable[0m
+[0;31m[2025-08-01 22:52:40] ❌ Please check connection string: postgresql://admin:[REDACTED_DB_PASSWORD]@192.168.1.229:5432/payroll_local?sslmode=disable[0m

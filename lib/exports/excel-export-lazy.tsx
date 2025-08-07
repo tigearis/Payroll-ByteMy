@@ -4,6 +4,7 @@
 import { Download, Loader2 } from "lucide-react";
 import { Suspense, lazy } from "react";
 import { Button } from "@/components/ui/button";
+import { logger } from '@/lib/logging/enterprise-logger';
 
 // ============================================================================
 // CODE SPLITTING: LAZY LOAD HEAVY EXCEL DEPENDENCIES
@@ -19,7 +20,11 @@ const LazyExcelExporter = lazy(async () => {
   try {
     XLSX = await import("xlsx");
   } catch (error) {
-    console.warn("xlsx package not installed, Excel export not available");
+    logger.warn('Excel export not available - xlsx package not installed', {
+      namespace: 'export_system',
+      operation: 'excel_export_initialization',
+      component: 'LazyExcelExporter'
+    });
     // Return a fallback component
     return {
       default: () => (
@@ -47,7 +52,16 @@ const LazyExcelExporter = lazy(async () => {
         // Generate Excel file and download
         XLSX.writeFile(workbook, filename);
       } catch (error) {
-        console.error("Excel generation failed:", error);
+        logger.error('Excel generation failed', {
+          namespace: 'export_system',
+          operation: 'excel_generation',
+          component: 'ExcelExporter',
+          metadata: { 
+            error: error instanceof Error ? error.message : String(error),
+            filename: filename,
+            dataLength: data.length
+          }
+        });
         throw new Error("Failed to generate Excel file");
       }
     };

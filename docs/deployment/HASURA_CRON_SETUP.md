@@ -23,7 +23,7 @@ Automated holiday synchronization has been configured using Hasura cron triggers
 The cron jobs use a secret key for authentication via the `x-hasura-cron-secret` header.
 
 ### Current Configuration
-- **Secret Value**: `Rt+uMU/vozFMXuSwbysfhGonq7SRTgluhOwEMdRexnk=`
+- **Secret Value**: `[REDACTED_CRON_SECRET]`
 - **Header**: `x-hasura-cron-secret`
 
 ### Security Improvement Required
@@ -34,7 +34,7 @@ The current configuration uses a hardcoded secret value in the metadata. For bet
 
 1. **Add to Hasura Environment**:
    ```bash
-   CRON_SECRET=Rt+uMU/vozFMXuSwbysfhGonq7SRTgluhOwEMdRexnk=
+   CRON_SECRET=[REDACTED_CRON_SECRET]
    ```
 
 2. **Update Cron Trigger Metadata**:
@@ -107,7 +107,7 @@ Test the cron endpoint manually:
 ```bash
 curl -X POST \
   -H "Content-Type: application/json" \
-  -H "x-hasura-cron-secret: Rt+uMU/vozFMXuSwbysfhGonq7SRTgluhOwEMdRexnk=" \
+  -H "x-hasura-cron-secret: [REDACTED_CRON_SECRET]" \
   -d '{"force": false}' \
   https://payroll.bytemy.com.au/api/cron/holidays/sync
 ```

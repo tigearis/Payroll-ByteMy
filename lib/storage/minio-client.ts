@@ -28,7 +28,7 @@ class MinioDocumentClient {
       port: parseInt(process.env.MINIO_PORT || '9768'),
       useSSL: process.env.MINIO_USE_SSL === 'true',
       accessKey: process.env.MINIO_ACCESS_KEY || 'admin',
-      secretKey: process.env.MINIO_SECRET_KEY || 'MiniH4rr!51604',
+      secretKey: process.env.MINIO_SECRET_KEY || '[REDACTED_MINIO_SECRET]',
     };
 
     this.documentsBucket = process.env.MINIO_DOCUMENTS_BUCKET || 'documents';

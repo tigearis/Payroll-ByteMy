@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
   try {
     // Verify the webhook secret
     const hasuraSecret = req.headers.get('x-hasura-webhook-secret');
-    const expectedSecret = process.env.HASURA_WEBHOOK_SECRET || 'Rt+uMU/vozFMXuSwbysfhGonq7SRTgluhOwEMdRexnk=';
+    const expectedSecret = process.env.HASURA_WEBHOOK_SECRET || '[REDACTED_CRON_SECRET]';
     
     if (hasuraSecret !== expectedSecret) {
       console.error('❌ Invalid webhook secret');

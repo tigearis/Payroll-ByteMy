@@ -107,5 +107,5 @@ node scripts/test-cleanup.js --delete
 
 - The SQL approach is the most direct and reliable
 - Always run the preview queries first to see what will be deleted
-- The database connection string is: `postgresql://admin:PostH4rr!51604@192.168.1.229:5432/payroll_local`
+- The database connection string is: `postgresql://admin:[REDACTED_DB_PASSWORD]@192.168.1.229:5432/payroll_local`
 - These operations cannot be undone, so please double-check before executing the DELETE commands

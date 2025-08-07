@@ -31,7 +31,7 @@ The following secrets must be generated securely and added to Vercel. Use `opens
 - **`SESSION_SECRET`**: Used for session management.
 
 **Example `CRON_SECRET` (You MUST use your own generated secret):**
-`CRON_SECRET=Rt+uMU/vozFMXuSwbysfhGonq7SRTgluhOwEMdRexnk=`
+`CRON_SECRET=[REDACTED_CRON_SECRET]`
 
 ## 2. Hasura JWT Configuration
 

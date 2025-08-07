@@ -38,6 +38,7 @@ import {
 import Link from "next/link";
 import React, { useState, useMemo } from "react";
 import { toast } from "sonner";
+import { logger } from '@/lib/logging/enterprise-logger';
 import { PermissionGuard } from "@/components/auth/permission-guard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -156,7 +157,17 @@ export function BillingItemsManager({
       });
       onStatusChange?.(itemId, "approved");
     } catch (error) {
-      console.error("Error approving billing item:", error);
+      logger.error('Billing item approval failed in manager', {
+        namespace: 'billing_domain',
+        component: 'billing_items_manager',
+        action: 'approve_billing_item',
+        error: error instanceof Error ? error.message : 'Unknown error',
+        metadata: {
+          itemId,
+          userId: user?.id,
+          errorType: 'graphql_mutation_error',
+        },
+      });
     }
   };
 
@@ -198,7 +209,18 @@ export function BillingItemsManager({
           onBulkAction?.(selectedIds, action);
       }
     } catch (error) {
-      console.error("Error performing bulk action:", error);
+      logger.error('Billing items bulk action failed', {
+        namespace: 'billing_domain',
+        component: 'billing_items_manager',
+        action: 'bulk_action',
+        error: error instanceof Error ? error.message : 'Unknown error',
+        metadata: {
+          action,
+          selectedItemsCount: table.getFilteredSelectedRowModel().rows.length,
+          userId: user?.id,
+          errorType: 'graphql_mutation_error',
+        },
+      });
     }
   };
 

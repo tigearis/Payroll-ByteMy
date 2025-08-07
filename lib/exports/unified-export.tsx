@@ -4,6 +4,7 @@
 import { Download, FileText, FileSpreadsheet, FileImage } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { logger } from '@/lib/logging/enterprise-logger';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -74,7 +75,16 @@ export function UnifiedExport({
         document.body.removeChild(link);
       }
     } catch (error) {
-      console.error("CSV export failed:", error);
+      logger.error('CSV export failed', {
+        namespace: 'export_system',
+        operation: 'csv_export',
+        component: 'UnifiedExport',
+        metadata: {
+          error: error instanceof Error ? error.message : String(error),
+          filename: filename,
+          dataLength: data.length
+        }
+      });
     } finally {
       setIsExporting(false);
     }

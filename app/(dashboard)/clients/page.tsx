@@ -50,7 +50,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ClientsTableUnified } from "@/domains/clients/components/clients-table-unified";
+import { ClientsTable } from "@/domains/clients/components/clients-table-unified";
 import {
   GetClientsListOptimizedDocument,
   GetClientsDashboardStatsDocument,
@@ -834,7 +834,7 @@ function ClientsPage() {
       ) : (
         <div>
           {viewMode === "table" && (
-            <ClientsTableUnified
+            <ClientsTable
               clients={data?.clients || []}
               loading={loading}
               onRefresh={refetch}

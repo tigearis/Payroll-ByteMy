@@ -137,12 +137,12 @@ WHERE notes LIKE '%Reconciliation Day%';
 ### Holiday Sync Process
 ```bash
 # Manual sync for complete 2024-2027 coverage
-HASURA_GRAPHQL_ADMIN_SECRET="3w+sHTuq8wQwddK4xyWO5LDeRH+anvJoFVyOMvtq8Lo=" 
+HASURA_GRAPHQL_ADMIN_SECRET="[REDACTED_HASURA_SECRET]" 
 node manual-holiday-sync.js
 
 # API endpoint sync (with CRON secret)
 curl -X POST "https://domain/api/holidays/sync" \
-  -H "Authorization: Bearer Rt+uMU/vozFMXuSwbysfhGonq7SRTgluhOwEMdRexnk="
+  -H "Authorization: Bearer [REDACTED_CRON_SECRET]"
 ```
 
 ### Holiday Coverage Validation
@@ -205,12 +205,12 @@ const testMutation = `
 ```bash
 # Run comprehensive payroll date tests
 NEXT_PUBLIC_HASURA_GRAPHQL_URL="https://hasura.bytemy.com.au/v1/graphql" \
-HASURA_GRAPHQL_ADMIN_SECRET="3w+sHTuq8wQwddK4xyWO5LDeRH+anvJoFVyOMvtq8Lo=" \
+HASURA_GRAPHQL_ADMIN_SECRET="[REDACTED_HASURA_SECRET]" \
 ./test-payroll-generation.sh
 
 # Validate GraphQL mutations
 NEXT_PUBLIC_HASURA_GRAPHQL_URL="https://hasura.bytemy.com.au/v1/graphql" \
-HASURA_GRAPHQL_ADMIN_SECRET="3w+sHTuq8wQwddK4xyWO5LDeRH+anvJoFVyOMvtq8Lo=" \
+HASURA_GRAPHQL_ADMIN_SECRET="[REDACTED_HASURA_SECRET]" \
 node test-payroll-mutations.js
 ```
 

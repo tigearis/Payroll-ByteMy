@@ -27,7 +27,7 @@ async function accessClaudePdf() {
       port: parseInt(process.env.MINIO_PORT || '9768'),
       useSSL: process.env.MINIO_USE_SSL === 'true',
       accessKey: process.env.MINIO_ACCESS_KEY || 'admin',
-      secretKey: process.env.MINIO_SECRET_KEY || 'MiniH4rr!51604',
+      secretKey: process.env.MINIO_SECRET_KEY || '[REDACTED_MINIO_SECRET]',
     });
 
     const fileName = 'Claude.pdf';

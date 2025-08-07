@@ -28,7 +28,7 @@ cd /Users/nathanharris/Payroll/Payroll-ByteMy
 ### Manual Execution
 ```bash
 # Connect directly to database
-psql 'postgresql://admin:PostH4rr!51604@192.168.1.229:5432/payroll_local?sslmode=disable' -f database/seed_billing_data.sql
+psql 'postgresql://admin:[REDACTED_DB_PASSWORD]@192.168.1.229:5432/payroll_local?sslmode=disable' -f database/seed_billing_data.sql
 ```
 
 ## 📊 What Gets Created

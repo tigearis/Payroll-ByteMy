@@ -18,7 +18,15 @@ echo "🌱 CORRECTED BILLING SEED DATA SCRIPT"
 echo "========================================"
 
 # Configuration
-DB_URL='postgresql://admin:PostH4rr!51604@192.168.1.229:5432/payroll_local?sslmode=disable'
+# Configuration - Use environment variables for sensitive data
+if [ -z "$PGPASSWORD" ]; then
+    echo -e "${RED}❌ ERROR: PGPASSWORD environment variable is required${NC}"
+    echo "💡 Set your database password: export PGPASSWORD='your_password'"
+    echo "   Or source your environment file: source .env.local"
+    exit 1
+fi
+
+DB_URL="postgresql://admin:${PGPASSWORD}@192.168.1.229:5432/payroll_local?sslmode=disable"
 SCRIPT_PATH="/Users/nathanharris/Payroll/Payroll-ByteMy/database/seed_billing_final_fixed.sql"
 
 echo -e "${YELLOW}ℹ️  Script fixes:${NC}"

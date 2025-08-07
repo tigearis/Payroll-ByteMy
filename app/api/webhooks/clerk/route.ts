@@ -11,6 +11,8 @@ import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { 
   authenticateServiceRequest
 } from "@/lib/auth/service-auth";
+import { createWebhookLogger, auditLog, securityLog } from "@/lib/logging/migration-utils";
+import { DataClassification } from "@/lib/logging/enterprise-logger";
 
 // Initialize Clerk client for backend operations
 const clerkClient = createClerkClient({
@@ -27,7 +29,15 @@ type WebhookEvent = {
 };
 
 export async function POST(req: NextRequest) {
-  console.log("🚀 WEBHOOK STARTED - Processing Clerk webhook request");
+  // Create contextual logger for webhook operations
+  const logger = createWebhookLogger('clerk_user_lifecycle', {
+    classification: DataClassification.CONFIDENTIAL,
+  });
+  
+  logger.info("Processing Clerk webhook request", {
+    endpoint: '/api/webhooks/clerk',
+    timestamp: new Date().toISOString(),
+  });
   
   // Define the service operation for logging
   const operation = {
@@ -39,15 +49,21 @@ export async function POST(req: NextRequest) {
   };
 
   try {
-    console.log("🔧 SERVICE AUTH CHECK - Starting service authentication");
+    logger.debug("Starting service authentication check");
+    
     // Service authentication check (for audit logging)
     const authResult = { isValid: authenticateServiceRequest() };
 
     if (!authResult.isValid) {
-      console.warn(`🔒 Service auth warning: Service authentication failed`);
+      securityLog("Service authentication failed for webhook", 'medium', {
+        endpoint: '/api/webhooks/clerk',
+        reason: 'service_auth_failure',
+      });
       // Continue processing as webhook signature validation is the primary security
     }
-    console.log("✅ SERVICE AUTH - Service auth check completed");
+    logger.debug("Service authentication check completed", {
+      auth_valid: authResult.isValid,
+    });
   } catch (authError) {
     console.warn('🔒 Service auth check failed:', authError);
     // Continue processing as webhook signature is primary security

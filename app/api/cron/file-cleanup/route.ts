@@ -24,7 +24,20 @@ export async function POST(req: NextRequest) {
   try {
     // Verify cron secret
     const cronSecret = req.headers.get('x-hasura-cron-secret');
-    const expectedSecret = process.env.HASURA_CRON_SECRET || 'Rt+uMU/vozFMXuSwbysfhGonq7SRTgluhOwEMdRexnk=';
+    const expectedSecret = process.env.HASURA_CRON_SECRET;
+    
+    if (!expectedSecret) {
+      console.error('❌ HASURA_CRON_SECRET environment variable not configured');
+      return NextResponse.json<CronResponse>(
+        {
+          success: false,
+          message: 'CRON secret not configured',
+          error: 'Missing HASURA_CRON_SECRET environment variable',
+          timestamp: new Date().toISOString(),
+        },
+        { status: 500 }
+      );
+    }
     
     if (cronSecret !== expectedSecret) {
       console.error('❌ Invalid cron secret for file cleanup');

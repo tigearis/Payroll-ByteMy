@@ -1,5 +1,6 @@
 import { serverApolloClient } from '@/lib/apollo/unified-client';
 import { gql } from '@apollo/client';
+import { logger } from '@/lib/logging/enterprise-logger';
 
 /**
  * Tier 1 Immediate Billing Engine
@@ -193,23 +194,72 @@ export class Tier1BillingEngine {
   ): Promise<BillingGenerationResult> {
     
     try {
-      console.log('Starting Tier 1 billing generation for payroll date:', payrollDateId);
+      logger.info('Starting Tier 1 billing generation', {
+        namespace: 'billing_domain',
+        component: 'tier1_billing_engine',
+        action: 'generate_billing_from_metrics',
+        metadata: {
+          payrollDateId,
+          completedBy,
+          billingTier: 'tier1',
+          payslipsProcessed: metrics.payslipsProcessed,
+          employeesProcessed: metrics.employeesProcessed,
+        },
+      });
       
       // 1. Get payroll information
       const payrollInfo = await this.getPayrollInfo(payrollDateId);
       if (!payrollInfo) {
+        logger.error('Payroll date not found during billing generation', {
+          namespace: 'billing_domain',
+          component: 'tier1_billing_engine',
+          action: 'get_payroll_info',
+          error: 'Payroll date not found',
+          metadata: {
+            payrollDateId,
+            completedBy,
+          },
+        });
         throw new Error('Payroll date not found');
       }
 
-      console.log('Found payroll info:', payrollInfo);
+      logger.info('Payroll information retrieved successfully', {
+        namespace: 'billing_domain',
+        component: 'tier1_billing_engine',
+        action: 'get_payroll_info',
+        metadata: {
+          payrollDateId,
+          payrollId: payrollInfo.payrollId,
+          clientId: payrollInfo.clientId,
+          payrollName: payrollInfo.payrollName,
+        },
+      });
 
       // 2. Get client service agreements (base rates)
       const clientAgreements = await this.getClientServiceAgreements(payrollInfo.clientId);
-      console.log('Client agreements found:', clientAgreements?.length || 0);
+      logger.info('Client service agreements retrieved', {
+        namespace: 'billing_domain',
+        component: 'tier1_billing_engine',
+        action: 'get_client_service_agreements',
+        metadata: {
+          clientId: payrollInfo.clientId,
+          agreementsCount: clientAgreements?.length || 0,
+          hasAgreements: (clientAgreements?.length || 0) > 0,
+        },
+      });
 
       // 3. Get payroll-specific overrides (if any)
       const payrollOverrides = await this.getPayrollServiceAgreements(payrollInfo.payrollId);
-      console.log('Payroll overrides found:', payrollOverrides ? 'Yes' : 'No');
+      logger.info('Payroll service overrides retrieved', {
+        namespace: 'billing_domain',
+        component: 'tier1_billing_engine',
+        action: 'get_payroll_service_agreements',
+        metadata: {
+          payrollId: payrollInfo.payrollId,
+          hasOverrides: !!payrollOverrides,
+          overridesActive: !!payrollOverrides,
+        },
+      });
 
       // 4. Generate billing items for each deliverable type
       const billingItems: GeneratedBillingItem[] = [];
@@ -254,11 +304,35 @@ export class Tier1BillingEngine {
             
             if (billingItem) {
               billingItems.push(billingItem);
-              console.log(`Generated billing for ${mapping.serviceCode}: ${mapping.quantity} units @ $${billingItem.unitPrice}`);
+              logger.info('Service billing item generated successfully', {
+                namespace: 'billing_domain',
+                component: 'tier1_billing_engine',
+                action: 'generate_service_billing',
+                metadata: {
+                  serviceCode: mapping.serviceCode,
+                  quantity: mapping.quantity,
+                  unitPrice: billingItem.unitPrice,
+                  totalAmount: billingItem.unitPrice * mapping.quantity,
+                  payrollDateId,
+                  clientId: payrollInfo.clientId,
+                },
+              });
             }
           } catch (error: any) {
             errors.push(`Failed to generate billing for ${mapping.serviceCode}: ${error.message}`);
-            console.error(`Service billing error for ${mapping.serviceCode}:`, error);
+            logger.error('Service billing generation failed', {
+              namespace: 'billing_domain',
+              component: 'tier1_billing_engine',
+              action: 'generate_service_billing',
+              error: error.message,
+              metadata: {
+                serviceCode: mapping.serviceCode,
+                quantity: mapping.quantity,
+                payrollDateId,
+                clientId: payrollInfo.clientId,
+                errorType: 'service_billing_error',
+              },
+            });
           }
         }
       }
@@ -279,18 +353,36 @@ export class Tier1BillingEngine {
 
       // 6. Insert billing items into database
       const insertedItems = await this.insertBillingItems(billingItems, payrollDateId);
-      console.log(`Inserted ${insertedItems.length} billing items into database`);
+      logger.info('Billing items inserted into database successfully', {
+        namespace: 'billing_domain',
+        component: 'tier1_billing_engine',
+        action: 'insert_billing_items',
+        metadata: {
+          insertedCount: insertedItems.length,
+          generatedCount: billingItems.length,
+          payrollDateId,
+          completedBy,
+        },
+      });
 
       // 7. Update completion metrics to mark billing as generated
       await this.markBillingGenerated(payrollDateId, billingItems.length);
 
       const totalAmount = billingItems.reduce((sum, item) => sum + item.totalAmount, 0);
 
-      console.log('Tier 1 billing generation completed successfully:', {
-        itemsCreated: billingItems.length,
-        totalAmount,
-        errors: errors.length,
-        warnings: warnings.length
+      logger.info('Tier 1 billing generation completed successfully', {
+        namespace: 'billing_domain',
+        component: 'tier1_billing_engine',
+        action: 'generate_billing_from_metrics',
+        metadata: {
+          itemsCreated: billingItems.length,
+          totalAmount,
+          errors: errors.length,
+          warnings: warnings.length,
+          payrollDateId,
+          completedBy,
+          success: true,
+        },
       });
 
       return {
@@ -303,7 +395,18 @@ export class Tier1BillingEngine {
       };
 
     } catch (error: any) {
-      console.error('Tier 1 billing generation failed:', error);
+      logger.error('Tier 1 billing generation failed completely', {
+        namespace: 'billing_domain',
+        component: 'tier1_billing_engine',
+        action: 'generate_billing_from_metrics',
+        error: error.message,
+        metadata: {
+          payrollDateId,
+          completedBy,
+          errorType: 'billing_generation_failure',
+          criticalError: true,
+        },
+      });
       return {
         success: false,
         itemsCreated: 0,
@@ -551,7 +654,16 @@ export class Tier1BillingEngine {
         status: payrollDate.status
       };
     } catch (error) {
-      console.error('Error fetching payroll info:', error);
+      logger.error('Failed to fetch payroll information', {
+        namespace: 'billing_domain',
+        component: 'tier1_billing_engine',
+        action: 'get_payroll_info',
+        error: error instanceof Error ? error.message : 'Unknown error',
+        metadata: {
+          payrollDateId,
+          errorType: 'graphql_query_error',
+        },
+      });
       return null;
     }
   }
@@ -589,7 +701,16 @@ export class Tier1BillingEngine {
 
       return data?.clientServiceAgreements || [];
     } catch (error) {
-      console.error('Error fetching client agreements:', error);
+      logger.error('Failed to fetch client service agreements', {
+        namespace: 'billing_domain',
+        component: 'tier1_billing_engine',
+        action: 'get_client_service_agreements',
+        error: error instanceof Error ? error.message : 'Unknown error',
+        metadata: {
+          clientId,
+          errorType: 'graphql_query_error',
+        },
+      });
       return [];
     }
   }
@@ -616,7 +737,16 @@ export class Tier1BillingEngine {
 
       return data?.payrollServiceAgreements?.[0] || null;
     } catch (error) {
-      console.error('Error fetching payroll agreements:', error);
+      logger.error('Failed to fetch payroll service agreements', {
+        namespace: 'billing_domain',
+        component: 'tier1_billing_engine',
+        action: 'get_payroll_service_agreements',
+        error: error instanceof Error ? error.message : 'Unknown error',
+        metadata: {
+          payrollId,
+          errorType: 'graphql_query_error',
+        },
+      });
       return null;
     }
   }
@@ -666,7 +796,16 @@ export class Tier1BillingEngine {
 
         items.push(item);
       } catch (error) {
-        console.error(`Error generating additional service ${serviceCode}:`, error);
+        logger.error('Failed to generate additional service billing', {
+          namespace: 'billing_domain',
+          component: 'tier1_billing_engine',
+          action: 'generate_additional_service_billing',
+          error: error instanceof Error ? error.message : 'Unknown error',
+          metadata: {
+            serviceCode,
+            errorType: 'additional_service_generation_error',
+          },
+        });
       }
     }
 
@@ -723,10 +862,29 @@ export class Tier1BillingEngine {
         variables: { items: insertData }
       });
 
-      console.log(`Successfully inserted ${data?.insertBillingItems?.returning?.length || 0} billing items`);
+      logger.info('Billing items successfully inserted to database', {
+        namespace: 'billing_domain',
+        component: 'tier1_billing_engine',
+        action: 'insert_billing_items',
+        metadata: {
+          insertedCount: data?.insertBillingItems?.returning?.length || 0,
+          requestedCount: billingItems.length,
+          payrollDateId,
+        },
+      });
       return billingItems; // Return original items with generated data
     } catch (error) {
-      console.error('Error inserting billing items:', error);
+      logger.error('Failed to insert billing items to database', {
+        namespace: 'billing_domain',
+        component: 'tier1_billing_engine',
+        action: 'insert_billing_items',
+        error: error instanceof Error ? error.message : 'Unknown error',
+        metadata: {
+          billingItemsCount: billingItems.length,
+          payrollDateId,
+          errorType: 'graphql_mutation_error',
+        },
+      });
       throw error;
     }
   }
@@ -751,9 +909,28 @@ export class Tier1BillingEngine {
         mutation: UPDATE_METRICS,
         variables: { payrollDateId }
       });
-      console.log(`Marked payroll date ${payrollDateId} as billing generated`);
+      logger.info('Payroll date marked as billing generated', {
+        namespace: 'billing_domain',
+        component: 'tier1_billing_engine',
+        action: 'mark_billing_generated',
+        metadata: {
+          payrollDateId,
+          itemCount,
+        },
+      });
     } catch (error) {
-      console.error('Error marking billing as generated:', error);
+      logger.warn('Failed to mark payroll date as billing generated', {
+        namespace: 'billing_domain',
+        component: 'tier1_billing_engine',
+        action: 'mark_billing_generated',
+        error: error instanceof Error ? error.message : 'Unknown error',
+        metadata: {
+          payrollDateId,
+          itemCount,
+          errorType: 'graphql_mutation_error',
+          criticalError: false,
+        },
+      });
       // Don't throw - this is not critical for the billing process
     }
   }

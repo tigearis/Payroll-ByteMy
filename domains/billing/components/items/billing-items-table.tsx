@@ -31,6 +31,7 @@ import {
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { PermissionGuard } from "@/components/auth/permission-guard";
+import { logger } from '@/lib/logging/enterprise-logger';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -118,21 +119,64 @@ export function BillingItemsTable({ data, loading, refetch }: BillingItemsTableP
 
   const handleApprove = async (itemId: string) => {
     if (!user?.id) {
-      console.error("User not authenticated");
+      logger.error('Billing item approval failed - user not authenticated', {
+        namespace: 'billing_domain',
+        component: 'billing_items_table',
+        action: 'approve_billing_item',
+        metadata: {
+          itemId,
+          authenticationStatus: 'unauthenticated',
+          securityEvent: true,
+        },
+      });
       toast.error("User not authenticated");
       return;
     }
 
     try {
+      logger.info('Initiating billing item approval', {
+        namespace: 'billing_domain',
+        component: 'billing_items_table',
+        action: 'approve_billing_item',
+        metadata: {
+          itemId,
+          userId: user.id,
+          approvalFlow: 'started',
+        },
+      });
+
       await approveBillingItem({
         variables: {
           id: itemId,
           approvedBy: user.id,
         },
       });
+      
+      logger.info('Billing item approved successfully', {
+        namespace: 'billing_domain',
+        component: 'billing_items_table',
+        action: 'approve_billing_item',
+        metadata: {
+          itemId,
+          userId: user.id,
+          approvalFlow: 'completed',
+        },
+      });
+
       refetch(); // Refresh the data after approval
     } catch (error) {
-      console.error("Error approving billing item:", error);
+      logger.error('Billing item approval failed - GraphQL mutation error', {
+        namespace: 'billing_domain',
+        component: 'billing_items_table',
+        action: 'approve_billing_item',
+        error: error instanceof Error ? error.message : 'Unknown error',
+        metadata: {
+          itemId,
+          userId: user.id,
+          approvalFlow: 'failed',
+          errorType: 'graphql_mutation_error',
+        },
+      });
       toast.error("Failed to approve billing item");
     }
   };

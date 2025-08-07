@@ -7,12 +7,21 @@
 
 set -e
 
-# Configuration
-DB_HOST="192.168.1.229"
-DB_PORT="5432"
-DB_NAME="payroll_local"
-DB_USER="admin"
-DB_PASS="PostH4rr!51604"
+# Configuration - Use environment variables for sensitive data
+DB_HOST="${PGHOST:-192.168.1.229}"
+DB_PORT="${PGPORT:-5432}"
+DB_NAME="${PGDATABASE:-payroll_local}"
+DB_USER="${PGUSER:-admin}"
+DB_PASS="${PGPASSWORD}"
+
+# Validate required environment variables
+if [ -z "$DB_PASS" ]; then
+    echo "❌ ERROR: PGPASSWORD environment variable is required"
+    echo "💡 Set your database password: export PGPASSWORD='your_password'"
+    echo "   Or source your environment file: source .env.local"
+    exit 1
+fi
+
 DB_URL="postgresql://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable"
 
 # Colors
