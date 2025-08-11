@@ -3,8 +3,8 @@
  * Replaces hardcoded service configurations with database queries
  */
 
-import { serverApolloClient } from '@/lib/apollo/unified-client';
 import { gql } from '@apollo/client';
+import { serverApolloClient } from '@/lib/apollo/unified-client';
 
 const GET_SERVICE_CONFIGURATIONS = gql`
   query GetServiceConfigurations {

@@ -16,7 +16,7 @@ export interface AuthSession {
   isStaff?: boolean | undefined; // Staff status from JWT claims
   organizationId?: string | undefined; // Organization ID from JWT claims
   permissions?: string[] | undefined; // User permissions from JWT claims
-  role?: string | undefined; // User role from JWT claims  
+  role?: string | undefined; // User role from JWT claims
   defaultRole?: string | undefined; // Default role from JWT claims (fallback)
   allowedRoles?: string[] | undefined; // Allowed roles from JWT claims
   permissionHash?: string | undefined; // Permission hash from JWT claims
@@ -58,17 +58,21 @@ export function withAuth(
       let allowedRoles: string[] | undefined;
       let permissionHash: string | undefined;
       let permissionVersion: string | undefined;
-      
+
       try {
         // Use Clerk's pre-parsed sessionClaims instead of manual JWT decoding
-        const hasuraClaims = sessionClaims?.['https://hasura.io/jwt/claims'] as any;
-        
+        const hasuraClaims = sessionClaims?.[
+          "https://hasura.io/jwt/claims"
+        ] as any;
+
         if (hasuraClaims) {
           // Extract all claims as per JWT template
           databaseId = hasuraClaims?.["x-hasura-user-id"];
           clerkId = hasuraClaims?.["x-hasura-clerk-id"];
           managerId = hasuraClaims?.["x-hasura-manager-id"];
-          isStaff = hasuraClaims?.["x-hasura-is-staff"] === "true" || hasuraClaims?.["x-hasura-is-staff"] === true;
+          isStaff =
+            hasuraClaims?.["x-hasura-is-staff"] === "true" ||
+            hasuraClaims?.["x-hasura-is-staff"] === true;
           organizationId = hasuraClaims?.["x-hasura-org-id"];
           permissions = hasuraClaims?.["x-hasura-permissions"];
           role = hasuraClaims?.["x-hasura-role"];
@@ -77,30 +81,9 @@ export function withAuth(
           permissionHash = hasuraClaims?.["x-hasura-permission-hash"];
           permissionVersion = hasuraClaims?.["x-hasura-permission-version"];
 
-          // Debug logging
-          console.log("Hasura claims from sessionClaims:", hasuraClaims);
-          console.log("Extracted session data:", {
-            databaseId,
-            clerkId,
-            managerId,
-            isStaff,
-            organizationId,
-            role,
-            defaultRole,
-            allowedRoles,
-            permissionsCount: permissions?.length || 0,
-            permissionHash,
-            permissionVersion
-          });
-        } else {
-          console.warn("No Hasura claims found in sessionClaims");
+          // Optional debug logging removed to prevent sensitive data exposure
         }
-      } catch (claimsError) {
-        console.warn(
-          "Could not extract Hasura claims from sessionClaims:",
-          claimsError
-        );
-      }
+      } catch (claimsError) {}
 
       const session: AuthSession = {
         userId,
@@ -120,7 +103,6 @@ export function withAuth(
 
       return await handler(request, session);
     } catch (error) {
-      console.error("Auth error:", error);
       return NextResponse.json(
         { error: "Authentication failed" },
         { status: 401 }
@@ -162,17 +144,21 @@ export function withAuthParams(
       let allowedRoles: string[] | undefined;
       let permissionHash: string | undefined;
       let permissionVersion: string | undefined;
-      
+
       try {
         // Use Clerk's pre-parsed sessionClaims instead of manual JWT decoding
-        const hasuraClaims = sessionClaims?.['https://hasura.io/jwt/claims'] as any;
-        
+        const hasuraClaims = sessionClaims?.[
+          "https://hasura.io/jwt/claims"
+        ] as any;
+
         if (hasuraClaims) {
           // Extract all claims as per JWT template
           databaseId = hasuraClaims?.["x-hasura-user-id"];
           clerkId = hasuraClaims?.["x-hasura-clerk-id"];
           managerId = hasuraClaims?.["x-hasura-manager-id"];
-          isStaff = hasuraClaims?.["x-hasura-is-staff"] === "true" || hasuraClaims?.["x-hasura-is-staff"] === true;
+          isStaff =
+            hasuraClaims?.["x-hasura-is-staff"] === "true" ||
+            hasuraClaims?.["x-hasura-is-staff"] === true;
           organizationId = hasuraClaims?.["x-hasura-org-id"];
           permissions = hasuraClaims?.["x-hasura-permissions"];
           role = hasuraClaims?.["x-hasura-role"];
@@ -184,7 +170,10 @@ export function withAuthParams(
           console.warn("No Hasura claims found in sessionClaims");
         }
       } catch (claimsError) {
-        console.warn("Could not extract Hasura claims from sessionClaims:", claimsError);
+        console.warn(
+          "Could not extract Hasura claims from sessionClaims:",
+          claimsError
+        );
       }
 
       const session: AuthSession = {
@@ -217,14 +206,16 @@ export function withAuthParams(
 /**
  * Simple authentication check function
  */
-export async function authenticateApiRequest(request: NextRequest): Promise<AuthResult> {
+export async function authenticateApiRequest(
+  request: NextRequest
+): Promise<AuthResult> {
   try {
     const { userId, sessionClaims } = await auth();
 
     if (!userId) {
       return {
         success: false,
-        error: "Unauthorized"
+        error: "Unauthorized",
       };
     }
 
@@ -240,17 +231,21 @@ export async function authenticateApiRequest(request: NextRequest): Promise<Auth
     let allowedRoles: string[] | undefined;
     let permissionHash: string | undefined;
     let permissionVersion: string | undefined;
-    
+
     try {
       // Use Clerk's pre-parsed sessionClaims instead of manual JWT decoding
-      const hasuraClaims = sessionClaims?.['https://hasura.io/jwt/claims'] as any;
-      
+      const hasuraClaims = sessionClaims?.[
+        "https://hasura.io/jwt/claims"
+      ] as any;
+
       if (hasuraClaims) {
         // Extract all claims as per JWT template
         databaseId = hasuraClaims?.["x-hasura-user-id"];
         clerkId = hasuraClaims?.["x-hasura-clerk-id"];
         managerId = hasuraClaims?.["x-hasura-manager-id"];
-        isStaff = hasuraClaims?.["x-hasura-is-staff"] === "true" || hasuraClaims?.["x-hasura-is-staff"] === true;
+        isStaff =
+          hasuraClaims?.["x-hasura-is-staff"] === "true" ||
+          hasuraClaims?.["x-hasura-is-staff"] === true;
         organizationId = hasuraClaims?.["x-hasura-org-id"];
         permissions = hasuraClaims?.["x-hasura-permissions"];
         role = hasuraClaims?.["x-hasura-role"];
@@ -262,7 +257,10 @@ export async function authenticateApiRequest(request: NextRequest): Promise<Auth
         console.warn("No Hasura claims found in sessionClaims");
       }
     } catch (claimsError) {
-      console.warn("Could not extract Hasura claims from sessionClaims:", claimsError);
+      console.warn(
+        "Could not extract Hasura claims from sessionClaims:",
+        claimsError
+      );
     }
 
     const session: AuthSession = {
@@ -283,13 +281,13 @@ export async function authenticateApiRequest(request: NextRequest): Promise<Auth
 
     return {
       success: true,
-      session
+      session,
     };
   } catch (error) {
     console.error("Auth error:", error);
     return {
       success: false,
-      error: "Authentication failed"
+      error: "Authentication failed",
     };
   }
 }

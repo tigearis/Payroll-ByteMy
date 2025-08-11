@@ -1,11 +1,17 @@
 "use client";
 
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, BarChart3, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Calendar as CalendarIcon,
+  BarChart3,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+import { safeFormatDate } from "@/lib/utils/date-utils";
 import { TimeNavigationProps, ViewPeriod, ViewType } from "../types/workload";
 
 const TimeNavigation: React.FC<TimeNavigationProps> = ({
@@ -19,13 +25,13 @@ const TimeNavigation: React.FC<TimeNavigationProps> = ({
   const getPeriodLabel = (period: ViewPeriod, date: Date) => {
     switch (period) {
       case "day":
-        return format(date, "EEE, MMM d, yyyy");
+        return safeFormatDate(date, "dd MMM yyyy");
       case "week":
-        return `Week of ${format(date, "MMM d, yyyy")}`;
+        return `Week of ${safeFormatDate(date, "dd MMM yyyy")}`;
       case "month":
         return format(date, "MMM yyyy");
       default:
-        return format(date, "MMM d, yyyy");
+        return safeFormatDate(date, "dd MMM yyyy");
     }
   };
 
@@ -51,9 +57,9 @@ const TimeNavigation: React.FC<TimeNavigationProps> = ({
     <div className={cn("space-y-4", className)}>
       {/* Period Selection */}
       <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
-        <Tabs 
-          value={viewPeriod} 
-          onValueChange={(value) => onPeriodChange(value as ViewPeriod)}
+        <Tabs
+          value={viewPeriod}
+          onValueChange={value => onPeriodChange(value as ViewPeriod)}
         >
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="day" className="text-sm">
@@ -84,8 +90,12 @@ const TimeNavigation: React.FC<TimeNavigationProps> = ({
 
         <div className="flex-1 text-center min-w-0 px-2">
           <div className="text-base sm:text-lg font-semibold">
-            <span className="hidden sm:inline">{getPeriodLabel(viewPeriod, currentDate)}</span>
-            <span className="sm:hidden">{getPeriodLabelMobile(viewPeriod, currentDate)}</span>
+            <span className="hidden sm:inline">
+              {getPeriodLabel(viewPeriod, currentDate)}
+            </span>
+            <span className="sm:hidden">
+              {getPeriodLabelMobile(viewPeriod, currentDate)}
+            </span>
           </div>
         </div>
 
@@ -111,7 +121,7 @@ const TimeNavigation: React.FC<TimeNavigationProps> = ({
         >
           Today
         </Button>
-        
+
         {/* Add more quick navigation options as needed */}
         {viewPeriod === "month" && (
           <>
@@ -147,8 +157,10 @@ const TimeNavigation: React.FC<TimeNavigationProps> = ({
       <div className="text-center">
         <p className="text-sm text-muted-foreground">
           {viewPeriod === "day" && "Daily view showing today's workload"}
-          {viewPeriod === "week" && "Weekly view showing this week's daily breakdown"}
-          {viewPeriod === "month" && "Monthly view showing weekly breakdown of current month"}
+          {viewPeriod === "week" &&
+            "Weekly view showing this week's daily breakdown"}
+          {viewPeriod === "month" &&
+            "Monthly view showing weekly breakdown of current month"}
         </p>
       </div>
     </div>
@@ -173,9 +185,9 @@ export const EnhancedTimeNavigation: React.FC<EnhancedTimeNavigationProps> = ({
       {/* View Type Toggle */}
       {showViewToggle && onViewChange && (
         <div className="flex items-center justify-center">
-          <Tabs 
-            value={selectedView} 
-            onValueChange={(value) => onViewChange(value as ViewType)}
+          <Tabs
+            value={selectedView}
+            onValueChange={value => onViewChange(value as ViewType)}
           >
             <TabsList>
               <TabsTrigger value="chart" className="flex items-center gap-2">

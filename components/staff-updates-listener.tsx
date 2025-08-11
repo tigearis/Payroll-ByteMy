@@ -1,10 +1,10 @@
 import { DocumentNode } from "@apollo/client";
 import { PermissionGuard } from "@/components/auth/permission-guard";
 import { RealTimeUpdates } from "@/components/real-time-updates";
-import { 
+import {
   ActiveUsersDocument,
   GetStaffListDocument,
-  GetAllUsersListDocument
+  GetAllUsersListDocument,
 } from "@/domains/users/graphql/generated/graphql";
 
 /**
@@ -20,7 +20,7 @@ export function StaffUpdatesListener({
   onUpdate?: (data: any) => void;
 }) {
   return (
-    <PermissionGuard resource="staff" action="read">
+    <PermissionGuard action="read">
       <RealTimeUpdates
         subscription={ActiveUsersDocument}
         refetchQueries={refetchQueries}

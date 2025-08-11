@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 import { scheduledCleanup } from '@/lib/storage/file-cleanup-service';
 
 /**

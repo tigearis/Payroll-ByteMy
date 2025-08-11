@@ -1,8 +1,8 @@
 "use client";
 
-import React, { Component, ReactNode } from "react";
 import { AlertTriangle, RefreshCw, Home, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import React, { Component, ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 

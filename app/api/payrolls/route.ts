@@ -17,6 +17,7 @@ import {
 } from "@/domains/payrolls/graphql/generated/graphql";
 import { executeTypedQuery } from "@/lib/apollo/query-helpers";
 import { createSuccessResponse } from "@/lib/error-handling/standardized-errors";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 import { sensitiveRoute, mutationRoute } from "@/lib/security/secure-api-wrapper";
 import { CreatePayrollSchema, PaginationSchema } from "@/lib/validation/schemas";
 
@@ -38,11 +39,17 @@ export const GET = sensitiveRoute('payrolls', 'read')(
         offset: Math.max(offset, 0)   // Ensure non-negative offset
       });
 
-      console.log("✅ PAYROLL ROUTE - Success:", {
-        userId: secureContext.auth?.userId,
-        userRole: secureContext.auth?.role,
-        payrollCount: data.payrolls?.length,
-        requestId: secureContext.metadata?.requestId
+      logger.info('Payrolls fetched successfully', {
+        namespace: 'payrolls_api',
+        operation: 'list_payrolls',
+        classification: DataClassification.CONFIDENTIAL,
+        ...(secureContext.auth?.userId && { userId: secureContext.auth.userId }),
+        ...(secureContext.metadata?.requestId && { requestId: secureContext.metadata.requestId }),
+        metadata: {
+          userRole: secureContext.auth?.role,
+          payrollCount: data.payrolls?.length,
+          timestamp: new Date().toISOString()
+        }
       });
 
       return createSuccessResponse(
@@ -58,10 +65,17 @@ export const GET = sensitiveRoute('payrolls', 'read')(
       );
 
     } catch (error) {
-      console.error("❌ Payroll Fetch Error:", {
+      logger.error('Payroll fetch operation failed', {
+        namespace: 'payrolls_api',
+        operation: 'list_payrolls',
+        classification: DataClassification.CONFIDENTIAL,
+        ...(secureContext.auth?.userId && { userId: secureContext.auth.userId }),
+        ...(secureContext.metadata?.requestId && { requestId: secureContext.metadata.requestId }),
         error: error instanceof Error ? error.message : 'Unknown error',
-        userId: secureContext.auth?.userId,
-        requestId: secureContext.metadata?.requestId
+        metadata: {
+          errorName: error instanceof Error ? error.name : 'UnknownError',
+          timestamp: new Date().toISOString()
+        }
       });
       
       // Error handling is managed by the secure wrapper
@@ -118,12 +132,18 @@ export const POST = mutationRoute('payrolls', 'create')(
 
       // TODO: Implement actual payroll creation with GraphQL mutation
       // For now, return success response
-      console.log("✅ PAYROLL CREATE - Success:", {
-        userId: secureContext.auth?.userId,
-        userRole: secureContext.auth?.role,
-        payrollName: validatedData.name,
-        clientId: validatedData.clientId,
-        requestId: secureContext.metadata?.requestId
+      logger.info('Payroll created successfully', {
+        namespace: 'payrolls_api',
+        operation: 'create_payroll',
+        classification: DataClassification.CONFIDENTIAL,
+        ...(secureContext.auth?.userId && { userId: secureContext.auth.userId }),
+        ...(secureContext.metadata?.requestId && { requestId: secureContext.metadata.requestId }),
+        metadata: {
+          userRole: secureContext.auth?.role,
+          payrollName: validatedData.name,
+          clientId: validatedData.clientId,
+          timestamp: new Date().toISOString()
+        }
       });
 
       return createSuccessResponse(
@@ -140,10 +160,17 @@ export const POST = mutationRoute('payrolls', 'create')(
       );
 
     } catch (error) {
-      console.error("❌ Payroll Create Error:", {
+      logger.error('Payroll creation failed', {
+        namespace: 'payrolls_api',
+        operation: 'create_payroll',
+        classification: DataClassification.CONFIDENTIAL,
+        ...(secureContext.auth?.userId && { userId: secureContext.auth.userId }),
+        ...(secureContext.metadata?.requestId && { requestId: secureContext.metadata.requestId }),
         error: error instanceof Error ? error.message : 'Unknown error',
-        userId: secureContext.auth?.userId,
-        requestId: secureContext.metadata?.requestId
+        metadata: {
+          errorName: error instanceof Error ? error.name : 'UnknownError',
+          timestamp: new Date().toISOString()
+        }
       });
       
       // Error handling is managed by the secure wrapper

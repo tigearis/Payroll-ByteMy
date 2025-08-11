@@ -1193,7 +1193,7 @@ query GetPayrollDetailRedesigned($id: uuid!) {
     # Payroll dates with status information - using alias to avoid conflict
     detailPayrollDates: payrollDates(
       orderBy: { originalEftDate: ASC }
-      limit: 24  # Show 2 years worth for overview
+      # No limit - show ALL payroll dates
     ) {
       id
       originalEftDate

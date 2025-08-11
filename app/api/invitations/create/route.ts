@@ -13,6 +13,7 @@ import {
 import { type UserRole } from "@/domains/users/services/user-sync";
 import { executeTypedMutation, executeTypedQuery } from "@/lib/apollo/query-helpers";
 import { withAuth } from "@/lib/auth/api-auth";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 import { 
   getHierarchicalPermissionsFromDatabase,
   type UserRole as HierarchicalUserRole 

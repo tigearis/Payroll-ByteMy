@@ -15,6 +15,7 @@ import { GetPayrollDateTypesDocument } from "@/domains/payrolls/graphql/generate
 import { GetUsersDocument } from "@/domains/users/graphql/generated/graphql";
 import { serverApolloClient } from "@/lib/apollo/unified-client";
 import { auditLogger } from "@/lib/audit/audit-logger";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 // CSV validation schema
 const PayrollCsvSchema = z.object({

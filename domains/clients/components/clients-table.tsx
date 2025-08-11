@@ -8,8 +8,8 @@
  * Current implementation: clients-table-unified.tsx
  */
 
-import { ClientsTable } from './clients-table-unified';
 import { logger } from '@/lib/logging/enterprise-logger';
+import { ClientsTable } from './clients-table-unified';
 
 // Re-export the unified implementation
 export { ClientsTable };

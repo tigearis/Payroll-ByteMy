@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { format } from "date-fns";
 import { 
   Clock,
@@ -14,6 +13,7 @@ import {
   ArrowRight,
   Activity
 } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

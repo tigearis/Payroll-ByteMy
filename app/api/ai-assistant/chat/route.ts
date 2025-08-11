@@ -12,6 +12,7 @@ import { AIInputValidator } from "@/lib/ai/input-validator";
 import { langChainService, type BaseMessage } from "@/lib/ai/langchain-service";
 import { AIRateLimiter } from "@/lib/ai/rate-limiter";
 import { auditLogger } from "@/lib/audit/audit-logger";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 // Initialize rate limiter
 const rateLimiter = new AIRateLimiter();

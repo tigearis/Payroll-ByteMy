@@ -37,17 +37,11 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Manager, UserPermissions } from "@/domains/users/types";
 import { useUserManagement } from "@/hooks/use-user-management";
+import { UserSchemas } from "@/lib/validation/shared-schemas";
 import { Users as UsersType } from "@/shared/types/generated/graphql";
 
-const editUserSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Please enter a valid email address"),
-  role: z.enum(["developer", "org_admin", "manager", "consultant", "viewer"], {
-    required_error: "Please select a role",
-  }),
-  managerId: z.string().optional(),
-  isStaff: z.boolean(),
-});
+// Use shared schema for consistency
+const editUserSchema = UserSchemas.updateUser;
 
 type EditUserFormData = z.infer<typeof editUserSchema>;
 
@@ -69,7 +63,7 @@ export function EditUserModal({
   currentUserRole,
 }: EditUserModalProps) {
   return (
-    <PermissionGuard resource="staff" action="update">
+    <PermissionGuard action="update">
       <EditUserModalInner
         isOpen={isOpen}
         onClose={onClose}
@@ -96,11 +90,12 @@ function EditUserModalInner({
   const form = useForm<EditUserFormData>({
     resolver: zodResolver(editUserSchema),
     defaultValues: {
-      name: "",
+      firstName: "",
+      lastName: "",
       email: "",
       role: "viewer",
       managerId: "",
-      isStaff: true,
+      isActive: true,
     },
   });
 
@@ -108,11 +103,18 @@ function EditUserModalInner({
   useEffect(() => {
     if (user) {
       form.reset({
-        name: user.computedName || `${user.firstName} ${user.lastName}`,
-        email: user.email,
-        role: user.role as "manager" | "developer" | "org_admin" | "consultant" | "viewer",
-        managerId: user.managerId || "",
-        isStaff: user.isStaff ?? false,
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: user.email || "",
+        role:
+          (user.role as
+            | "manager"
+            | "developer"
+            | "org_admin"
+            | "consultant"
+            | "viewer") || "viewer",
+        managerId: (user as any).managerId || "",
+        isActive: (user as any).isActive ?? true,
       });
     }
   }, [user, form]);
@@ -137,16 +139,20 @@ function EditUserModalInner({
     setIsSubmitting(true);
     try {
       const userData = {
-        name: data.name,
+        firstName: data.firstName,
+        lastName: data.lastName,
         email: data.email,
         role: data.role,
-        managerId: data.managerId && data.managerId !== "none" ? data.managerId : "",
-        isStaff: data.isStaff,
-      };
+        managerId:
+          data.managerId && data.managerId !== "none" ? data.managerId : "",
+        isActive: data.isActive,
+      } as any;
 
       const success = await updateUser(user.id, userData);
       if (success) {
-        toast.success(`User ${data.name} updated successfully`);
+        toast.success(
+          `User ${data.firstName} ${data.lastName} updated successfully`
+        );
         onClose();
       }
     } catch (error) {
@@ -211,23 +217,42 @@ function EditUserModalInner({
             className="space-y-4"
           >
             <div className="grid gap-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Full Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter full name"
-                        {...field}
-                        disabled={isSubmitting}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>First Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter first name"
+                          {...field}
+                          disabled={isSubmitting}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Last Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter last name"
+                          {...field}
+                          disabled={isSubmitting}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <FormField
                 control={form.control}
@@ -309,7 +334,9 @@ function EditUserModalInner({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="none">No manager assigned</SelectItem>
+                          <SelectItem value="none">
+                            No manager assigned
+                          </SelectItem>
                           {managers.map(manager => (
                             <SelectItem key={manager.id} value={manager.id}>
                               <div className="flex flex-col">
@@ -335,7 +362,7 @@ function EditUserModalInner({
 
               <FormField
                 control={form.control}
-                name="isStaff"
+                name="isActive"
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
@@ -367,9 +394,7 @@ function EditUserModalInner({
                 Cancel
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting && (
-                  <ByteMySpinner size="sm" className="mr-2" />
-                )}
+                {isSubmitting && <ByteMySpinner size="sm" className="mr-2" />}
                 Update User
               </Button>
             </DialogFooter>

@@ -12,13 +12,13 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import {
+  ModernDataTable,
+  type ColumnDef,
+  type RowAction,
+} from "@/components/data/modern-data-table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import {
-  EnhancedUnifiedTable,
-  UnifiedTableColumn,
-  UnifiedTableAction,
-} from "@/components/ui/enhanced-unified-table";
 import { getScheduleSummary } from "@/domains/payrolls/utils/schedule-helpers";
 
 // Note: Using any[] for payrolls to handle GraphQL data flexibility
@@ -121,10 +121,10 @@ const renderUserAvatar = (user: {
 export function PayrollsTableUnified({
   payrolls,
   loading = false,
-  onRefresh,
-  selectedPayrolls = [],
+  onRefresh: _onRefresh,
+  selectedPayrolls: _selectedPayrolls = [],
   onSelectPayroll: _onSelectPayroll,
-  onSelectAll,
+  onSelectAll: _onSelectAll,
   visibleColumns: _visibleColumns,
   sortField: _sortField,
   sortDirection: _sortDirection,
@@ -133,11 +133,12 @@ export function PayrollsTableUnified({
   const router = useRouter();
 
   // Column definitions - matching user requirements: Payroll name, status, client name, schedule (formatted), employees, primary consultant
-  const columns: UnifiedTableColumn<any>[] = [
+  const columns: ColumnDef<any>[] = [
     {
-      accessorKey: "name",
-      header: "Payroll Name",
-      type: "text",
+      id: "name",
+      key: "name",
+      label: "Payroll Name",
+      essential: true,
       sortable: true,
       render: (value, row) => (
         <Link
@@ -149,23 +150,26 @@ export function PayrollsTableUnified({
       ),
     },
     {
-      accessorKey: "status",
-      header: "Status",
-      type: "badge",
+      id: "status",
+      key: "status",
+      label: "Status",
+      essential: true,
       sortable: true,
       render: value => renderPayrollStatus(value),
     },
     {
-      accessorKey: "client",
-      header: "Client Name",
-      type: "text",
+      id: "client",
+      key: "client" as any,
+      label: "Client Name",
+      essential: true,
       sortable: true,
       render: client => client?.name || "—",
     },
     {
-      accessorKey: "payrollSchedule",
-      header: "Schedule",
-      type: "text",
+      id: "payrollSchedule",
+      key: "payrollSchedule" as any,
+      label: "Schedule",
+      essential: false,
       sortable: false,
       render: (_value, row) => {
         // Generate schedule summary from payroll data
@@ -179,11 +183,11 @@ export function PayrollsTableUnified({
       },
     },
     {
-      accessorKey: "employeeCount",
-      header: "Employees",
-      type: "number",
+      id: "employeeCount",
+      key: "employeeCount" as any,
+      label: "Employees",
+      essential: false,
       sortable: true,
-      align: "center",
       render: count =>
         count ? (
           <div className="flex items-center gap-1 text-sm text-muted-foreground">
@@ -195,23 +199,23 @@ export function PayrollsTableUnified({
         ),
     },
     {
-      accessorKey: "primaryConsultant",
-      header: "Primary Consultant",
-      type: "text",
+      id: "primaryConsultant",
+      key: "primaryConsultant" as any,
+      label: "Primary Consultant",
+      essential: false,
       sortable: true,
       render: primaryConsultant =>
         primaryConsultant ? renderUserAvatar(primaryConsultant) : "—",
     },
     // Manager column - shows the client's assigned manager or consultant's manager
     {
-      accessorKey: "manager",
-      header: "Manager",
-      type: "text",
+      id: "manager",
+      key: "assignedManager" as any,
+      label: "Manager",
+      essential: false,
       sortable: true,
       render: (_value, row) => {
-        // Use the assignedManager field directly from the GraphQL query
         const manager = row.assignedManager;
-
         return manager ? (
           renderUserAvatar(manager)
         ) : (
@@ -222,13 +226,13 @@ export function PayrollsTableUnified({
       },
     },
     {
-      accessorKey: "processingDaysBeforeEft",
-      header: "Processing Days",
-      type: "number",
+      id: "processingDaysBeforeEft",
+      key: "processingDaysBeforeEft" as any,
+      label: "Processing Days",
+      essential: false,
       sortable: true,
-      align: "center",
-      render: days =>
-        days ? (
+      render: (days: number) =>
+        typeof days === "number" ? (
           <div className="flex items-center gap-1 text-sm text-muted-foreground">
             <span className="font-medium text-foreground">{days}</span>
             {days === 1 ? "day" : "days"}
@@ -240,8 +244,9 @@ export function PayrollsTableUnified({
   ];
 
   // Action definitions
-  const actions: UnifiedTableAction<any>[] = [
+  const actions: RowAction<any>[] = [
     {
+      id: "view",
       label: "View Details",
       icon: Eye,
       onClick: (payroll: any) => {
@@ -249,6 +254,7 @@ export function PayrollsTableUnified({
       },
     },
     {
+      id: "edit",
       label: "Edit Payroll",
       icon: Edit,
       onClick: (payroll: any) => {
@@ -257,6 +263,7 @@ export function PayrollsTableUnified({
       },
     },
     {
+      id: "dates",
       label: "View Dates",
       icon: CalendarDays,
       onClick: (payroll: any) => {
@@ -264,6 +271,7 @@ export function PayrollsTableUnified({
       },
     },
     {
+      id: "assign",
       label: "Assign Consultant",
       icon: UserCheck,
       onClick: (payroll: any) => {
@@ -272,6 +280,7 @@ export function PayrollsTableUnified({
       },
     },
     {
+      id: "duplicate",
       label: "Duplicate Payroll",
       icon: Copy,
       onClick: (payroll: any) => {
@@ -282,28 +291,16 @@ export function PayrollsTableUnified({
   ];
 
   return (
-    <EnhancedUnifiedTable
+    <ModernDataTable<any>
       data={payrolls}
       columns={columns}
       loading={loading}
-      emptyMessage="No payrolls found. Create your first payroll to get started."
-      selectable={true}
-      selectedRows={payrolls.filter(p => selectedPayrolls.includes(p.id))}
-      onSelectionChange={rows => {
-        // Convert selected rows back to IDs for backwards compatibility
-        const ids = rows.map(row => row.id);
-        onSelectAll?.(ids.length === payrolls.length);
-      }}
-      actions={actions}
-      title="Payrolls"
-      searchable={true}
+      searchable
       searchPlaceholder="Search payrolls..."
-      {...(onRefresh && { onRefresh })}
-      refreshing={loading}
-      exportable={true}
-      onExport={format => {
-        console.log("Export payrolls as:", format);
-      }}
+      rowActions={actions}
+      emptyState={
+        <div className="text-sm text-muted-foreground">No payrolls found</div>
+      }
     />
   );
 }

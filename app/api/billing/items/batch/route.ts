@@ -9,6 +9,7 @@ import {
 } from '@/domains/billing/graphql/generated/graphql';
 import { executeTypedQuery } from '@/lib/apollo/query-helpers';
 import { withAuth } from '@/lib/auth/api-auth';
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 interface BatchOperationRequest {
   operation: 'approve' | 'reject' | 'delete' | 'update_status';
@@ -196,7 +197,16 @@ export const POST = withAuth(async (req: NextRequest, session) => {
     });
 
   } catch (error) {
-    console.error('Error in batch billing operation:', error);
+    logger.error('Error in batch billing operation', {
+      namespace: 'billing_api',
+      operation: 'batch_billing_operation',
+      classification: DataClassification.CONFIDENTIAL,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      metadata: {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+        timestamp: new Date().toISOString()
+      }
+    });
     return NextResponse.json(
       { 
         success: false, 

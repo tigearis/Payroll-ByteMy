@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { 
   DollarSign, 
   Clock, 
@@ -15,6 +14,7 @@ import {
   FileText,
   ArrowUpRight
 } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 import { PermissionGuard } from "@/components/auth/permission-guard";
 import { Badge } from "@/components/ui/badge";

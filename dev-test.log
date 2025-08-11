@@ -1,0 +1,37 @@
+
+> payroll-bytemy@0.1.0 dev /Users/nathanharris/Payroll/Payroll-ByteMy
+> next dev
+
+   ▲ Next.js 15.4.5
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.17:3000
+   - Environments: .env.development.local, .env.local
+   - Experiments (use with caution):
+     · serverActions
+     · webVitalsAttribution
+     · optimizePackageImports
+
+ ✓ Starting...
+   Using tsconfig file: ./tsconfig.json
+ ✓ Ready in 1328ms
+ ✓ Compiled /middleware in 394ms (264 modules)
+ ○ Compiling / ...
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (160kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+ ✓ Compiled / in 5.3s (2012 modules)
+ GET / 200 in 5614ms
+ ✓ Compiled /_not-found in 447ms (1999 modules)
+ GET / 404 in 623ms
+ GET /_next/static/css/app/layout.css?v=1754906272302 404 in 41ms
+ GET /_next/static/chunks/main-app.js?v=1754906272302 404 in 94ms
+ GET /_next/static/chunks/apollo-vendor.js 404 in 94ms
+ GET /_next/static/chunks/app/error.js 404 in 52ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 53ms
+ GET /_next/static/chunks/app/global-error.js 404 in 16ms
+ GET / 200 in 88ms
+ GET /_next/static/css/app/layout.css?v=1754906278904 404 in 61ms
+ GET /_next/static/chunks/main-app.js?v=1754906278904 404 in 69ms
+ GET /_next/static/chunks/apollo-vendor.js 404 in 68ms
+ GET /_next/static/chunks/app/error.js 404 in 23ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 23ms
+ GET /_next/static/chunks/app/global-error.js 404 in 13ms
+[?25h

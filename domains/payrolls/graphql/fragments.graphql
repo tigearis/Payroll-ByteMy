@@ -112,7 +112,7 @@ fragment PayrollTableRow on Payrolls {
   goLiveDate
   processingTime
   versionNumber
-  
+
   # Payroll cycle for schedule column
   cycleId
   payrollCycle {
@@ -120,11 +120,16 @@ fragment PayrollTableRow on Payrolls {
     name
     description
   }
-  
-  # Next EFT date - get the next upcoming payroll date
+
+  # Next EFT date - use adjusted if present, otherwise original; match detail page behavior
   nextPayrollDate: payrollDates(
-    where: { adjustedEftDate: { _gte: "today()" } }
-    orderBy: { adjustedEftDate: ASC }
+    where: {
+      _or: [
+        { adjustedEftDate: { _gte: "now()" } }
+        { originalEftDate: { _gte: "now()" } }
+      ]
+    }
+    orderBy: [{ adjustedEftDate: ASC }, { originalEftDate: ASC }]
     limit: 1
   ) {
     originalEftDate
@@ -163,7 +168,7 @@ fragment PayrollDate on PayrollDates {
   }
 }
 
-# Payroll detailed  
+# Payroll detailed
 fragment PayrollDetailed on Payrolls {
   ...PayrollFullDetail
   requiredSkills {

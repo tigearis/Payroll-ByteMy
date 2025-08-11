@@ -1,5 +1,8 @@
 import { cn } from "@/lib/utils";
 
+// Note: Direct imports from lucide-react are used in components
+// This file contains custom icons and the icon registry
+
 export const Icons = {
   spinner: (props: React.SVGProps<SVGSVGElement>) => (
     <svg

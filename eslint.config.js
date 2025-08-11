@@ -15,7 +15,7 @@ const eslintConfig = [
   ...compat.config({
     extends: ["next/core-web-vitals", "next/typescript"],
   }),
-  
+
   // GraphQL Schema and Operations Validation (temporarily disabled - install @graphql-eslint/eslint-plugin to enable)
   // TODO: Enable after resolving package dependencies
   {
@@ -139,7 +139,8 @@ const eslintConfig = [
       ],
 
       // General JavaScript rules
-      "no-console": "off", // Allow console logs during development
+      // Enforce minimal console usage in application code (allow warn/error)
+      "no-console": ["warn", { allow: ["warn", "error"] }],
       "no-unused-vars": "off", // Handled by TypeScript rule above
       "prefer-const": "error",
       "no-var": "error",
@@ -161,6 +162,15 @@ const eslintConfig = [
             order: "asc",
             caseInsensitive: true,
           },
+        },
+      ],
+      // Disallow inline GraphQL in TS/TSX to enforce codegen usage
+      "no-restricted-syntax": [
+        "warn",
+        {
+          selector: "TaggedTemplateExpression[tag.name='gql']",
+          message:
+            "Inline GraphQL (gql``) is discouraged. Move documents to .graphql files and use codegen.",
         },
       ],
     },

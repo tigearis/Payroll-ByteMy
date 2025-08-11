@@ -64,7 +64,7 @@ function getUserRole(
 
 export function UrgentAlerts() {
   return (
-    <PermissionGuard resource="payrolls" action="read">
+    <PermissionGuard action="read">
       <UrgentAlertsInner />
     </PermissionGuard>
   );
@@ -144,9 +144,13 @@ function UrgentAlertsInner() {
     <div className="space-y-4">
       {payrolls.map(payroll => {
         // Get the next upcoming payroll date - handle both data structures
-        const nextDate = payroll.payrollDates?.[0] || payroll.nextEftDate?.[0] || payroll.nextPayDate?.[0];
+        const nextDate =
+          payroll.payrollDates?.[0] ||
+          payroll.nextEftDate?.[0] ||
+          payroll.nextPayDate?.[0];
         const userRole = getUserRole(payroll, currentUserId);
-        const effectiveDate = nextDate?.adjustedEftDate || nextDate?.originalEftDate;
+        const effectiveDate =
+          nextDate?.adjustedEftDate || nextDate?.originalEftDate;
         const daysUntil = effectiveDate
           ? Math.ceil(
               (new Date(effectiveDate).getTime() - Date.now()) /
@@ -185,14 +189,15 @@ function UrgentAlertsInner() {
                       <span>
                         Due:{" "}
                         {effectiveDate
-                          ? format(
-                              new Date(effectiveDate),
-                              "MMM dd, yyyy"
-                            )
+                          ? format(new Date(effectiveDate), "MMM dd, yyyy")
                           : "Not scheduled"}
-                        {nextDate?.adjustedEftDate && nextDate.adjustedEftDate !== nextDate.originalEftDate && (
-                          <span className="text-xs text-orange-600 ml-1">(Adjusted)</span>
-                        )}
+                        {nextDate?.adjustedEftDate &&
+                          nextDate.adjustedEftDate !==
+                            nextDate.originalEftDate && (
+                            <span className="text-xs text-orange-600 ml-1">
+                              (Adjusted)
+                            </span>
+                          )}
                       </span>
                       {daysUntil !== null && (
                         <span

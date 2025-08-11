@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { executeQuery } from "@/lib/apollo/query-helpers";
 import { withAuth } from "@/lib/auth/api-auth";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 // Schema for report request
 const reportRequestSchema = z.object({
@@ -326,7 +327,8 @@ function buildDynamicQuery(
       .join(", ")})`;
   }
 
-  query += ` {\n`;
+  query += ` {
+`;
 
   // Build the main query for the primary domain
   query += `  ${primaryDomain}`;
@@ -348,16 +350,19 @@ function buildDynamicQuery(
     query += `(limit: ${limit})`;
   }
 
-  query += ` {\n`;
+  query += ` {
+`;
 
   // Always include id field for Apollo cache normalization
   if (!primaryFields.includes('id')) {
-    query += `    id\n`;
+    query += `    id
+`;
   }
 
   // Add primary domain fields
   primaryFields.forEach(field => {
-    query += `    ${field}\n`;
+    query += `    ${field}
+`;
   });
 
   // Add related domains if relationships are enabled
@@ -373,16 +378,20 @@ function buildDynamicQuery(
         schema
       );
       if (relationshipPath && domainFields.length > 0) {
-        query += `    ${relationshipPath} {\n`;
+        query += `    ${relationshipPath} {
+`;
         domainFields.forEach(field => {
-          query += `      ${field}\n`;
+          query += `      ${field}
+`;
         });
-        query += `    }\n`;
+        query += `    }
+`;
       }
     }
   }
 
-  query += `  }\n`;
+  query += `  }
+`;
   query += `}`;
 
   return query;

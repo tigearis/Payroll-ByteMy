@@ -1,21 +1,21 @@
 /**
  * 🏢 ENTERPRISE LOGGING FRAMEWORK
- * 
+ *
  * Structured logging system designed to replace 1,836 console statements
  * with SOC2-compliant, production-ready logging infrastructure.
- * 
+ *
  * Features:
  * - Multiple log levels with contextual data
  * - SOC2/audit compliance with data classification
  * - Performance monitoring integration
  * - Development-friendly debug patterns
  * - Secure sensitive data handling
- * 
+ *
  * @version 1.0.0
  * @compliance SOC2, Australian Privacy Act
  */
 
-import { format } from 'date-fns';
+import { format } from "date-fns";
 
 // Log levels matching enterprise standards
 export enum LogLevel {
@@ -27,10 +27,10 @@ export enum LogLevel {
 
 // Data classification for SOC2 compliance
 export enum DataClassification {
-  PUBLIC = 'public',
-  INTERNAL = 'internal', 
-  CONFIDENTIAL = 'confidential',
-  RESTRICTED = 'restricted',
+  PUBLIC = "public",
+  INTERNAL = "internal",
+  CONFIDENTIAL = "confidential",
+  RESTRICTED = "restricted",
 }
 
 // Core logging context interface
@@ -38,6 +38,7 @@ export interface LogContext {
   userId?: string;
   organizationId?: string;
   operation?: string;
+  action?: string;
   component?: string;
   namespace?: string;
   duration?: number;
@@ -56,6 +57,25 @@ export interface LogContext {
   classification?: DataClassification;
   sensitive?: boolean;
   auditRequired?: boolean;
+  // Common AI/analytics fields used by AI/ML modules
+  domain?: string;
+  reportType?: string;
+  insightCount?: number;
+  queryLength?: number;
+  confidence?: number;
+  relatedQuestionsCount?: number;
+  messageLength?: number;
+  updatedFields?: string[];
+  roles?: string[];
+  status?: string | number;
+  options?: unknown;
+  configuration?: unknown;
+  targetAudience?: string[];
+  reportId?: string;
+  responseStyle?: string;
+  query?: string;
+  queryIntent?: string;
+  averageConfidence?: number;
 }
 
 // Log entry structure
@@ -72,7 +92,7 @@ export interface LogEntry {
 // Logger configuration
 export interface LoggerConfig {
   level: LogLevel;
-  environment: 'development' | 'staging' | 'production';
+  environment: "development" | "staging" | "production";
   service: string;
   version: string;
   enableConsole: boolean;
@@ -98,20 +118,20 @@ const SENSITIVE_PATTERNS = [
 
 // Default configuration
 const DEFAULT_CONFIG: LoggerConfig = {
-  level: process.env.NODE_ENV === 'production' ? LogLevel.INFO : LogLevel.DEBUG,
-  environment: (process.env.NODE_ENV as any) || 'development',
-  service: 'payroll-matrix',
-  version: process.env.npm_package_version || '1.0.0',
+  level: process.env.NODE_ENV === "production" ? LogLevel.INFO : LogLevel.DEBUG,
+  environment: (process.env.NODE_ENV as any) || "development",
+  service: "payroll-matrix",
+  version: process.env.npm_package_version || "1.0.0",
   enableConsole: true,
-  enableFile: process.env.NODE_ENV === 'production',
-  enableRemote: process.env.NODE_ENV === 'production',
+  enableFile: process.env.NODE_ENV === "production",
+  enableRemote: process.env.NODE_ENV === "production",
   sensitiveDataRedaction: true,
-  auditLogging: process.env.NODE_ENV === 'production',
+  auditLogging: process.env.NODE_ENV === "production",
 };
 
 /**
  * Enterprise Logger Class
- * 
+ *
  * Provides structured logging with enterprise features:
  * - SOC2 compliance
  * - Sensitive data protection
@@ -176,6 +196,20 @@ export class EnterpriseLogger {
       return;
     }
 
+    // Silence logs in test environment entirely
+    if ((this.config.environment as any) === "test") {
+      return;
+    }
+
+    // Allow silencing demo/test namespaces via env flag
+    const silenceDemo = process.env.NEXT_PUBLIC_SILENCE_DEMO_LOGS === "1";
+    if (silenceDemo) {
+      const ns = context.namespace || "";
+      if (ns.includes("demo") || ns.includes("test")) {
+        return;
+      }
+    }
+
     // Create log entry
     const entry: LogEntry = {
       level,
@@ -226,10 +260,13 @@ export class EnterpriseLogger {
     }
 
     // Mark sensitive operations
-    if (sanitized.sensitive || sanitized.classification === DataClassification.RESTRICTED) {
+    if (
+      sanitized.sensitive ||
+      sanitized.classification === DataClassification.RESTRICTED
+    ) {
       sanitized.metadata = {
         ...sanitized.metadata,
-        _redacted: 'Sensitive data redacted for security',
+        _redacted: "Sensitive data redacted for security",
       };
     }
 
@@ -240,7 +277,7 @@ export class EnterpriseLogger {
    * Redact sensitive data from objects
    */
   private redactSensitiveData(obj: any): any {
-    if (typeof obj !== 'object' || obj === null) {
+    if (typeof obj !== "object" || obj === null) {
       return obj;
     }
 
@@ -251,8 +288,8 @@ export class EnterpriseLogger {
     const redacted: any = {};
     for (const [key, value] of Object.entries(obj)) {
       if (SENSITIVE_PATTERNS.some(pattern => pattern.test(key))) {
-        redacted[key] = '[REDACTED]';
-      } else if (typeof value === 'object' && value !== null) {
+        redacted[key] = "[REDACTED]";
+      } else if (typeof value === "object" && value !== null) {
         redacted[key] = this.redactSensitiveData(value);
       } else {
         redacted[key] = value;
@@ -265,7 +302,7 @@ export class EnterpriseLogger {
    * Output to console with emoji-based visual indicators (development)
    */
   private outputToConsole(entry: LogEntry): void {
-    if (this.config.environment === 'production') {
+    if (this.config.environment === "production") {
       // Production: Clean JSON logging
       console.log(JSON.stringify(entry));
       return;
@@ -273,11 +310,17 @@ export class EnterpriseLogger {
 
     // Development: Human-readable with emojis (maintaining existing patterns)
     const emoji = this.getLevelEmoji(entry.level);
-    const timestamp = format(new Date(entry.timestamp), 'HH:mm:ss.SSS');
-    const namespace = entry.context.namespace ? ` [${entry.context.namespace}]` : '';
-    const operation = entry.context.operation ? ` (${entry.context.operation})` : '';
+    const timestamp = format(new Date(entry.timestamp), "HH:mm:ss.SSS");
+    const namespace = entry.context.namespace
+      ? ` [${entry.context.namespace}]`
+      : "";
+    const operation = entry.context.operation
+      ? ` (${entry.context.operation})`
+      : "";
 
-    console.log(`${emoji} ${timestamp}${namespace} ${entry.message}${operation}`);
+    console.log(
+      `${emoji} ${timestamp}${namespace} ${entry.message}${operation}`
+    );
 
     // Log context if present and not production
     if (Object.keys(entry.context).length > 0) {
@@ -287,7 +330,7 @@ export class EnterpriseLogger {
       delete contextForDisplay.sensitive;
 
       if (Object.keys(contextForDisplay).length > 0) {
-        console.log('   Context:', contextForDisplay);
+        console.log("   Context:", contextForDisplay);
       }
     }
   }
@@ -297,11 +340,16 @@ export class EnterpriseLogger {
    */
   private getLevelEmoji(level: LogLevel): string {
     switch (level) {
-      case LogLevel.ERROR: return '❌';
-      case LogLevel.WARN: return '⚠️';
-      case LogLevel.INFO: return '✅';
-      case LogLevel.DEBUG: return '🔍';
-      default: return '📝';
+      case LogLevel.ERROR:
+        return "❌";
+      case LogLevel.WARN:
+        return "⚠️";
+      case LogLevel.INFO:
+        return "✅";
+      case LogLevel.DEBUG:
+        return "🔍";
+      default:
+        return "📝";
     }
   }
 
@@ -311,11 +359,11 @@ export class EnterpriseLogger {
   private outputToFile(entry: LogEntry): void {
     // In production, this would write to rotating log files
     // For now, we'll prepare the structure
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       // Server-side logging implementation
-      const logLine = JSON.stringify(entry) + '\n';
+      const logLine = JSON.stringify(entry) + "\n";
       // TODO: Implement file writing with rotation
-      console.log('FILE LOG:', logLine);
+      console.log("FILE LOG:", logLine);
     }
   }
 
@@ -324,7 +372,7 @@ export class EnterpriseLogger {
    */
   private outputToRemote(entry: LogEntry): void {
     // Integration with services like Datadog, CloudWatch, etc.
-    if (this.config.environment === 'production') {
+    if (this.config.environment === "production") {
       // TODO: Implement remote logging
       // This would send to services like:
       // - Datadog
@@ -342,12 +390,12 @@ export class EnterpriseLogger {
     const auditEntry = {
       ...entry,
       auditId: this.generateAuditId(),
-      complianceLevel: 'SOC2',
-      retentionPeriod: '7_years',
+      complianceLevel: "SOC2",
+      retentionPeriod: "7_years",
     };
 
     // TODO: Implement audit log storage
-    console.log('AUDIT LOG:', JSON.stringify(auditEntry));
+    console.log("AUDIT LOG:", JSON.stringify(auditEntry));
   }
 
   /**
@@ -405,10 +453,10 @@ export class EnterpriseLogger {
 
     try {
       const result = fn();
-      
+
       if (result instanceof Promise) {
         return result
-          .then((res) => {
+          .then(res => {
             const duration = Date.now() - start;
             this.info(`Operation completed: ${operation}`, {
               ...operationContext,
@@ -417,7 +465,7 @@ export class EnterpriseLogger {
             });
             return res;
           })
-          .catch((error) => {
+          .catch(error => {
             const duration = Date.now() - start;
             this.error(`Operation failed: ${operation}`, {
               ...operationContext,
@@ -442,7 +490,7 @@ export class EnterpriseLogger {
         ...operationContext,
         duration,
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : "Unknown error",
       });
       throw error;
     }
@@ -479,7 +527,10 @@ export class ContextualLogger {
     fn: () => T | Promise<T>,
     context: LogContext = {}
   ): T | Promise<T> {
-    return this.logger.timeOperation(operation, fn, { ...this.defaultContext, ...context });
+    return this.logger.timeOperation(operation, fn, {
+      ...this.defaultContext,
+      ...context,
+    });
   }
 }
 
@@ -494,30 +545,65 @@ export const createLogger = (context: LogContext): ContextualLogger => {
 // Helper for migration from console patterns
 export const LoggingPatterns = {
   // Advanced Scheduler patterns
-  SCHEDULER_DEBUG: (message: string, data: any) => 
-    logger.debug(message, { namespace: 'payroll_scheduler', metadata: data }),
-  
+  SCHEDULER_DEBUG: (message: string, data: any) =>
+    logger.debug(message, { namespace: "payroll_scheduler", metadata: data }),
+
   SCHEDULER_SUCCESS: (message: string, data: any) =>
-    logger.info(message, { namespace: 'payroll_scheduler', metadata: data }),
-  
-  // Authentication patterns  
+    logger.info(message, { namespace: "payroll_scheduler", metadata: data }),
+
+  // Authentication patterns
   AUTH_SUCCESS: (message: string, context: LogContext) =>
-    logger.info(message, { ...context, namespace: 'authentication', classification: DataClassification.CONFIDENTIAL }),
-  
+    logger.info(message, {
+      ...context,
+      namespace: "authentication",
+      classification: DataClassification.CONFIDENTIAL,
+    }),
+
   AUTH_ERROR: (message: string, context: LogContext) =>
-    logger.error(message, { ...context, namespace: 'authentication', classification: DataClassification.CONFIDENTIAL, auditRequired: true }),
-  
+    logger.error(message, {
+      ...context,
+      namespace: "authentication",
+      classification: DataClassification.CONFIDENTIAL,
+      auditRequired: true,
+    }),
+
   // GraphQL patterns
-  GRAPHQL_QUERY: (operationName: string, duration: number, context: LogContext) =>
-    logger.info(`GraphQL operation completed: ${operationName}`, { ...context, operation: operationName, duration, namespace: 'graphql' }),
-  
+  GRAPHQL_QUERY: (
+    operationName: string,
+    duration: number,
+    context: LogContext
+  ) =>
+    logger.info(`GraphQL operation completed: ${operationName}`, {
+      ...context,
+      operation: operationName,
+      duration,
+      namespace: "graphql",
+    }),
+
   GRAPHQL_ERROR: (operationName: string, error: any, context: LogContext) =>
-    logger.error(`GraphQL operation failed: ${operationName}`, { ...context, operation: operationName, namespace: 'graphql', metadata: { error: error.message }, auditRequired: true }),
-  
+    logger.error(`GraphQL operation failed: ${operationName}`, {
+      ...context,
+      operation: operationName,
+      namespace: "graphql",
+      metadata: { error: error.message },
+      auditRequired: true,
+    }),
+
   // Business logic patterns
   BUSINESS_OPERATION: (operation: string, result: any, context: LogContext) =>
-    logger.info(`Business operation completed: ${operation}`, { ...context, operation, metadata: result, classification: DataClassification.INTERNAL }),
-  
+    logger.info(`Business operation completed: ${operation}`, {
+      ...context,
+      operation,
+      metadata: result,
+      classification: DataClassification.INTERNAL,
+    }),
+
   BUSINESS_ERROR: (operation: string, error: any, context: LogContext) =>
-    logger.error(`Business operation failed: ${operation}`, { ...context, operation, metadata: { error: error.message }, classification: DataClassification.INTERNAL, auditRequired: true }),
+    logger.error(`Business operation failed: ${operation}`, {
+      ...context,
+      operation,
+      metadata: { error: error.message },
+      classification: DataClassification.INTERNAL,
+      auditRequired: true,
+    }),
 };

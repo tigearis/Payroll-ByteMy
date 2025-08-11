@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { executeTypedQuery } from '@/lib/apollo/query-helpers';
 import { withAuth } from '@/lib/auth/api-auth';
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 interface DocumentSearchResponse {
   success: boolean;

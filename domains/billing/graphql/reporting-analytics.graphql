@@ -30,10 +30,7 @@ query GetRevenueAnalytics {
   }
 
   # Revenue trends
-  monthlyRevenue: billingInvoice(
-    orderBy: { createdAt: ASC }
-    limit: 100
-  ) {
+  monthlyRevenue: billingInvoice(orderBy: { createdAt: ASC }, limit: 100) {
     totalAmount
     createdAt
   }
@@ -41,10 +38,7 @@ query GetRevenueAnalytics {
 
 # Client Profitability Analysis
 query GetClientProfitabilityAnalysis {
-  clients(
-    limit: 50
-    orderBy: { name: ASC }
-  ) {
+  clients(limit: 50, orderBy: { name: ASC }) {
     id
     name
     contactPerson
@@ -53,7 +47,7 @@ query GetClientProfitabilityAnalysis {
   }
 }
 
-# Client Performance Metrics  
+# Client Performance Metrics
 query GetClientPerformanceMetrics($clientId: uuid!) {
   client: clientsByPk(id: $clientId) {
     id
@@ -97,10 +91,7 @@ query GetBusinessIntelligenceData {
   }
 
   # Service performance
-  serviceMetrics: billingItems(
-    limit: 100
-    orderBy: { createdAt: DESC }
-  ) {
+  serviceMetrics: billingItems(limit: 100, orderBy: { createdAt: DESC }) {
     serviceName
     totalAmount
     hourlyRate
@@ -109,10 +100,7 @@ query GetBusinessIntelligenceData {
   }
 
   # Invoice status distribution
-  invoicesByStatus: billingInvoice(
-    limit: 100
-    orderBy: { createdAt: DESC }
-  ) {
+  invoicesByStatus: billingInvoice(limit: 100, orderBy: { createdAt: DESC }) {
     status
     totalAmount
     createdAt
@@ -142,20 +130,14 @@ query GetAutomationMetrics {
   }
 
   # Approved vs manual items
-  approvedItems: billingItemsAggregate(
-    where: {
-      isApproved: { _eq: true }
-    }
-  ) {
+  approvedItems: billingItemsAggregate(where: { isApproved: { _eq: true } }) {
     aggregate {
       count
     }
   }
 
   pendingApproval: billingItemsAggregate(
-    where: {
-      isApproved: { _eq: false }
-    }
+    where: { isApproved: { _eq: false } }
   ) {
     aggregate {
       count
@@ -164,12 +146,9 @@ query GetAutomationMetrics {
 }
 
 # Efficiency Analytics
-query GetEfficiencyAnalytics {
+query GetEfficiencyAnalyticsReporting {
   # Processing time metrics
-  billingItems(
-    orderBy: { createdAt: DESC }
-    limit: 100
-  ) {
+  billingItems(orderBy: { createdAt: DESC }, limit: 100) {
     id
     createdAt
     updatedAt
@@ -179,10 +158,7 @@ query GetEfficiencyAnalytics {
   }
 
   # Invoice generation efficiency
-  invoices: billingInvoice(
-    orderBy: { createdAt: DESC }
-    limit: 100
-  ) {
+  invoices: billingInvoice(orderBy: { createdAt: DESC }, limit: 100) {
     id
     createdAt
     issuedDate
@@ -195,9 +171,7 @@ query GetEfficiencyAnalytics {
 query GetFinancialKpiSummary {
   # Revenue metrics
   totalRevenue: billingInvoiceAggregate(
-    where: {
-      status: { _neq: "cancelled" }
-    }
+    where: { status: { _neq: "cancelled" } }
   ) {
     aggregate {
       sum {
@@ -208,11 +182,7 @@ query GetFinancialKpiSummary {
   }
 
   # Paid invoices
-  paidRevenue: billingInvoiceAggregate(
-    where: {
-      status: { _eq: "paid" }
-    }
-  ) {
+  paidRevenue: billingInvoiceAggregate(where: { status: { _eq: "paid" } }) {
     aggregate {
       sum {
         totalAmount
@@ -223,9 +193,7 @@ query GetFinancialKpiSummary {
 
   # Outstanding invoices
   outstandingRevenue: billingInvoiceAggregate(
-    where: {
-      status: { _in: ["sent", "viewed"] }
-    }
+    where: { status: { _in: ["sent", "viewed"] } }
   ) {
     aggregate {
       sum {
@@ -269,7 +237,7 @@ query GetBillingAnalytics(
       }
     }
   }
-  
+
   revenueByStatus: billingItems(
     where: {
       createdAt: { _gte: $dateFrom, _lte: $dateTo }
@@ -280,7 +248,7 @@ query GetBillingAnalytics(
     status
     totalAmount
   }
-  
+
   revenueByMonth: billingItems(
     where: {
       createdAt: { _gte: $dateFrom, _lte: $dateTo }
@@ -292,17 +260,12 @@ query GetBillingAnalytics(
     totalAmount
     createdAt
   }
-  
-  topClients: clients(
-    limit: 10
-    orderBy: { name: ASC }
-  ) {
+
+  topClients: clients(limit: 10, orderBy: { name: ASC }) {
     id
     name
     billingItemsAggregate(
-      where: {
-        createdAt: { _gte: $dateFrom, _lte: $dateTo }
-      }
+      where: { createdAt: { _gte: $dateFrom, _lte: $dateTo } }
     ) {
       aggregate {
         sum {
@@ -312,7 +275,7 @@ query GetBillingAnalytics(
       }
     }
   }
-  
+
   topServices: billingItems(
     where: {
       createdAt: { _gte: $dateFrom, _lte: $dateTo }
@@ -335,17 +298,13 @@ query GetClientBillingStats(
   $dateTo: timestamp!
   $clientId: uuid
 ) {
-  clientBillingStats: clients(
-    where: { id: { _eq: $clientId } }
-  ) {
+  clientBillingStats: clients(where: { id: { _eq: $clientId } }) {
     id
     name
     contactPerson
     contactEmail
     billingItemsAggregate(
-      where: {
-        createdAt: { _gte: $dateFrom, _lte: $dateTo }
-      }
+      where: { createdAt: { _gte: $dateFrom, _lte: $dateTo } }
     ) {
       aggregate {
         count
@@ -373,18 +332,14 @@ query GetStaffAnalyticsPerformance(
   $dateTo: timestamp!
   $staffUserId: uuid
 ) {
-  staffBillingPerformance: users(
-    where: { id: { _eq: $staffUserId } }
-  ) {
+  staffBillingPerformance: users(where: { id: { _eq: $staffUserId } }) {
     id
     firstName
     lastName
     email
     role
     staffBillingItemsAggregate(
-      where: {
-        createdAt: { _gte: $dateFrom, _lte: $dateTo }
-      }
+      where: { createdAt: { _gte: $dateFrom, _lte: $dateTo } }
     ) {
       aggregate {
         count

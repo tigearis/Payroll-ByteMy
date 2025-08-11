@@ -13,7 +13,7 @@ query GetClientsListOptimized(
 ) {
   clients(limit: $limit, offset: $offset, where: $where, orderBy: $orderBy) {
     ...ClientListItem
-    
+
     # ✅ Payroll data fetched in same query (eliminates N+1)
     payrolls(
       where: { supersededDate: { _isNull: true } }
@@ -40,14 +40,14 @@ query GetClientsListOptimized(
         adjustedEftDate
       }
     }
-    
+
     # ✅ Payroll counts aggregated efficiently
     payrollsAggregate(where: { supersededDate: { _isNull: true } }) {
       aggregate {
         count
       }
     }
-    
+
     activePayrollsCount: payrollsAggregate(
       where: { supersededDate: { _isNull: true }, status: { _eq: "Active" } }
     ) {
@@ -55,7 +55,7 @@ query GetClientsListOptimized(
         count
       }
     }
-    
+
     totalEmployees: payrollsAggregate(
       where: { supersededDate: { _isNull: true } }
     ) {
@@ -66,7 +66,7 @@ query GetClientsListOptimized(
       }
     }
   }
-  
+
   clientsAggregate(where: $where) {
     aggregate {
       count
@@ -94,38 +94,40 @@ query GetClientsListWithStats(
   clients(limit: $limit, offset: $offset, where: $where, orderBy: $orderBy) {
     ...ClientListItem
   }
-  
+
   # Pagination metadata
   clientsAggregate(where: $where) {
     aggregate {
       count
     }
   }
-  
+
   # Dashboard statistics (combines GetClientsDashboardStats)
-  activeClientsCount: clientsAggregate(where: {active: {_eq: true}}) {
+  activeClientsCount: clientsAggregate(where: { active: { _eq: true } }) {
     aggregate {
       count
     }
   }
-  
+
   # Total employees across all clients
-  totalEmployeesAcrossClients: payrollsAggregate(where: {supersededDate: {_isNull: true}}) {
+  totalEmployeesAcrossClients: payrollsAggregate(
+    where: { supersededDate: { _isNull: true } }
+  ) {
     aggregate {
       sum {
         employeeCount
       }
     }
   }
-  
+
   # Clients needing attention (no active payrolls)
   clientsNeedingAttention: clients(
     where: {
-      active: {_eq: true}
+      active: { _eq: true }
       _not: {
         payrolls: {
-          supersededDate: {_isNull: true}
-          status: {_eq: "Active"}
+          supersededDate: { _isNull: true }
+          status: { _eq: "Active" }
         }
       }
     }
@@ -133,11 +135,11 @@ query GetClientsListWithStats(
   ) {
     ...ClientMinimal
   }
-  
+
   # Recent client activity
   recentlyUpdatedClients: clients(
-    where: {active: {_eq: true}}
-    orderBy: {updatedAt: DESC}
+    where: { active: { _eq: true } }
+    orderBy: { updatedAt: DESC }
     limit: 3
   ) {
     ...ClientMinimal
@@ -159,7 +161,7 @@ query GetClientById($id: uuid!) {
       orderBy: { createdAt: DESC }
       limit: 10
     ) {
-      ...PayrollListItem
+      ...PayrollTableRow
     }
 
     # Related notes would be queried separately through the notes table
@@ -219,7 +221,7 @@ query GetAllClientsForDeveloper {
   }
 }
 
-# Legacy compatibility - maps to GetClientsList  
+# Legacy compatibility - maps to GetClientsList
 query GetClients($limit: Int = 20, $offset: Int = 0) {
   clients(limit: $limit, offset: $offset, orderBy: { name: ASC }) {
     ...ClientListItem

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '@/lib/auth/api-auth';
+import { logger, DataClassification } from '@/lib/logging/enterprise-logger';
 
 interface GenerateInvoiceRequest {
   clientId: string;
@@ -35,7 +36,16 @@ async function POST(request: NextRequest) {
       { status: 501 }
     );
   } catch (error) {
-    console.error('Error generating invoice:', error);
+    logger.error('Invoice generation failed', {
+      namespace: 'billing_api',
+      operation: 'generate_invoice',
+      classification: DataClassification.CONFIDENTIAL,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      metadata: {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+        timestamp: new Date().toISOString()
+      }
+    });
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }

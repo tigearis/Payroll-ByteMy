@@ -2,6 +2,7 @@ import { gql } from '@apollo/client';
 import { NextRequest, NextResponse } from 'next/server';
 import { serverApolloClient } from '@/lib/apollo/unified-client';
 import { withAuth } from '@/lib/auth/api-auth';
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 interface GenerateTier2BillingRequest {
   payrollId: string;
@@ -245,7 +246,19 @@ async function POST(request: NextRequest) {
         itemsCreated++;
         totalAmount += itemAmount;
       } catch (error) {
-        console.error('Failed to create billing item:', error);
+        logger.error('Failed to create billing item', {
+          namespace: 'billing_tier2_api',
+          operation: 'create_billing_item',
+          classification: DataClassification.CONFIDENTIAL,
+          error: error instanceof Error ? error.message : 'Unknown error',
+          metadata: {
+            payrollId,
+            serviceId: agreement.serviceId,
+            serviceName: agreement.service.name,
+            errorName: error instanceof Error ? error.name : 'UnknownError',
+            timestamp: new Date().toISOString()
+          }
+        });
       }
     }
 
@@ -281,7 +294,16 @@ async function POST(request: NextRequest) {
     return NextResponse.json(result);
 
   } catch (error) {
-    console.error('Error generating tier 2 billing:', error);
+    logger.error('Error generating tier 2 billing', {
+      namespace: 'billing_tier2_api',
+      operation: 'generate_tier2_billing',
+      classification: DataClassification.CONFIDENTIAL,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      metadata: {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+        timestamp: new Date().toISOString()
+      }
+    });
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }

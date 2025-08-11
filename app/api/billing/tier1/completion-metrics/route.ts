@@ -1,8 +1,9 @@
+import { gql } from '@apollo/client';
 import { NextRequest, NextResponse } from 'next/server';
+import { Tier1BillingEngine, type PayrollCompletionMetrics } from '@/domains/billing/services/tier1-billing-engine';
 import { serverApolloClient } from '@/lib/apollo/unified-client';
 import { withAuth } from '@/lib/auth/api-auth';
-import { gql } from '@apollo/client';
-import { Tier1BillingEngine, type PayrollCompletionMetrics } from '@/domains/billing/services/tier1-billing-engine';
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 /**
  * Tier 1 Immediate Billing System - Completion Metrics API

@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { format } from "date-fns";
 import {
   Calendar,
   Clock,
@@ -14,24 +12,24 @@ import {
   Play,
   RefreshCw,
   FileText,
-  Zap
+  Zap,
 } from "lucide-react";
-import React from "react";
+import Link from "next/link";
+import { PermissionGuard } from "@/components/auth/permission-guard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { PermissionGuard } from "@/components/auth/permission-guard";
+import { safeFormatDate } from "@/lib/utils/date-utils";
 import type { PayrollIntegrationHubProps } from "../types/billing.types";
 
-export function PayrollIntegrationHub({ 
-  payrollDatesReadyForBilling, 
-  completionRate, 
+export function PayrollIntegrationHub({
+  payrollDatesReadyForBilling,
+  completionRate,
   loading,
-  onGenerateBilling 
+  onGenerateBilling,
 }: PayrollIntegrationHubProps) {
-  
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-AU", {
       style: "currency",
@@ -41,8 +39,10 @@ export function PayrollIntegrationHub({
 
   const getStatusBadge = (date: Date) => {
     const today = new Date();
-    const daysDiff = Math.ceil((today.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-    
+    const daysDiff = Math.ceil(
+      (today.getTime() - date.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
     if (daysDiff <= 1) {
       return (
         <Badge className="bg-green-100 text-green-800 gap-1">
@@ -52,7 +52,10 @@ export function PayrollIntegrationHub({
       );
     } else if (daysDiff <= 3) {
       return (
-        <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 gap-1">
+        <Badge
+          variant="secondary"
+          className="bg-yellow-100 text-yellow-800 gap-1"
+        >
           <Clock className="w-3 h-3" />
           Recent
         </Badge>
@@ -74,7 +77,9 @@ export function PayrollIntegrationHub({
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-              <p className="text-gray-500">Loading payroll integration data...</p>
+              <p className="text-gray-500">
+                Loading payroll integration data...
+              </p>
             </div>
           </div>
         </CardContent>
@@ -94,7 +99,8 @@ export function PayrollIntegrationHub({
                 Payroll Integration Hub
               </CardTitle>
               <p className="text-sm text-gray-600 mt-1">
-                Seamless payroll completion tracking and automated billing generation
+                Seamless payroll completion tracking and automated billing
+                generation
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -133,7 +139,9 @@ export function PayrollIntegrationHub({
                   <DollarSign className="h-4 w-4 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-medium text-green-900">Ready for Billing</h3>
+                  <h3 className="font-medium text-green-900">
+                    Ready for Billing
+                  </h3>
                   <p className="text-sm text-green-600">Completed payrolls</p>
                 </div>
               </div>
@@ -156,12 +164,8 @@ export function PayrollIntegrationHub({
                   <p className="text-sm text-purple-600">Billing workflow</p>
                 </div>
               </div>
-              <div className="text-lg font-bold text-purple-900">
-                Active
-              </div>
-              <p className="text-sm text-purple-600">
-                Auto-generation enabled
-              </p>
+              <div className="text-lg font-bold text-purple-900">Active</div>
+              <p className="text-sm text-purple-600">Auto-generation enabled</p>
             </div>
           </div>
         </CardContent>
@@ -194,10 +198,12 @@ export function PayrollIntegrationHub({
               <div className="text-center py-8 text-gray-500">
                 <CheckCircle className="h-8 w-8 mx-auto mb-2 opacity-50" />
                 <p>No payrolls ready for billing</p>
-                <p className="text-sm">Completed payrolls will appear here for billing generation</p>
+                <p className="text-sm">
+                  Completed payrolls will appear here for billing generation
+                </p>
               </div>
             ) : (
-              payrollDatesReadyForBilling.map((payrollDate) => (
+              payrollDatesReadyForBilling.map(payrollDate => (
                 <div
                   key={payrollDate.id}
                   className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
@@ -207,44 +213,53 @@ export function PayrollIntegrationHub({
                       <h4 className="font-medium truncate">
                         {payrollDate.payroll?.name || "Unknown Payroll"}
                       </h4>
-                      {payrollDate.completedAt && getStatusBadge(new Date(payrollDate.completedAt))}
+                      {payrollDate.completedAt &&
+                        getStatusBadge(new Date(payrollDate.completedAt))}
                     </div>
-                    
+
                     <div className="flex items-center gap-2 text-sm text-gray-600">
                       <div className="flex items-center gap-1">
                         <Users className="h-3 w-3" />
                         <span className="truncate">
-                          {payrollDate.payroll?.client?.name || "Unknown Client"}
+                          {payrollDate.payroll?.client?.name ||
+                            "Unknown Client"}
                         </span>
                       </div>
                       <Separator orientation="vertical" className="h-3" />
                       <div className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
                         <span>
-                          EFT: {payrollDate.adjustedEftDate 
-                            ? format(new Date(payrollDate.adjustedEftDate), "MMM d, yyyy")
-                            : "Unknown"
-                          }
+                          EFT:{" "}
+                          {payrollDate.adjustedEftDate
+                            ? safeFormatDate(
+                                payrollDate.adjustedEftDate,
+                                "dd MMM yyyy"
+                              )
+                            : "Unknown"}
                         </span>
                       </div>
                       {payrollDate.payroll?.primaryConsultant && (
                         <>
                           <Separator orientation="vertical" className="h-3" />
                           <span className="truncate">
-                            {payrollDate.payroll.primaryConsultant.firstName} {payrollDate.payroll.primaryConsultant.lastName}
+                            {payrollDate.payroll.primaryConsultant.firstName}{" "}
+                            {payrollDate.payroll.primaryConsultant.lastName}
                           </span>
                         </>
                       )}
                     </div>
-                    
+
                     <div className="text-xs text-gray-500 mt-1">
-                      Completed: {payrollDate.completedAt 
-                        ? format(new Date(payrollDate.completedAt), "MMM d, yyyy 'at' HH:mm")
-                        : "Unknown"
-                      }
+                      Completed:{" "}
+                      {payrollDate.completedAt
+                        ? safeFormatDate(
+                            payrollDate.completedAt,
+                            "dd MMM yyyy 'at' HH:mm"
+                          )
+                        : "Unknown"}
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-2 ml-4">
                     <PermissionGuard action="create">
                       <Button
@@ -284,7 +299,9 @@ export function PayrollIntegrationHub({
                     <Calendar className="h-5 w-5" />
                   </div>
                   <div className="text-left w-full">
-                    <div className="font-medium text-sm">Completion Tracking</div>
+                    <div className="font-medium text-sm">
+                      Completion Tracking
+                    </div>
                     <div className="text-xs text-gray-500">
                       Monitor payroll completion status
                     </div>
@@ -322,7 +339,9 @@ export function PayrollIntegrationHub({
                     <TrendingUp className="h-5 w-5" />
                   </div>
                   <div className="text-left w-full">
-                    <div className="font-medium text-sm">Integration Analytics</div>
+                    <div className="font-medium text-sm">
+                      Integration Analytics
+                    </div>
                     <div className="text-xs text-gray-500">
                       View payroll billing performance
                     </div>
@@ -357,7 +376,7 @@ export function PayrollIntegrationHub({
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-4 p-4 bg-green-50 rounded-lg">
               <div className="flex-shrink-0">
                 <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
@@ -367,11 +386,12 @@ export function PayrollIntegrationHub({
               <div>
                 <h4 className="font-medium">Automatic Detection</h4>
                 <p className="text-sm text-gray-600">
-                  System identifies completed payrolls ready for billing generation
+                  System identifies completed payrolls ready for billing
+                  generation
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-4 p-4 bg-purple-50 rounded-lg">
               <div className="flex-shrink-0">
                 <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
@@ -381,7 +401,8 @@ export function PayrollIntegrationHub({
               <div>
                 <h4 className="font-medium">Billing Generation</h4>
                 <p className="text-sm text-gray-600">
-                  Creates billing items with appropriate rates and time allocations
+                  Creates billing items with appropriate rates and time
+                  allocations
                 </p>
               </div>
             </div>

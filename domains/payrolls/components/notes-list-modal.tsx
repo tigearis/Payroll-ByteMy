@@ -1,8 +1,7 @@
 "use client";
 
 import { useMutation } from "@apollo/client";
-import { format } from "date-fns";
-import { Edit2, Plus, Save, X, StickyNote, FileText } from "lucide-react";
+import { Edit2, Plus, Save, StickyNote, FileText } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { PermissionGuard } from "@/components/auth/permission-guard";
@@ -21,6 +20,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { UpdatePayrollDateNotesDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import { safeFormatDate } from "@/lib/utils/date-utils";
 
 interface PayrollDateNote {
   id: string;
@@ -41,7 +41,7 @@ interface NotesListModalProps {
 // We'll store multiple notes as JSON string for now
 function parseNotes(notesString: string | null): PayrollDateNote[] {
   if (!notesString) return [];
-  
+
   try {
     // Check if it's JSON format (for multiple notes)
     const parsed = JSON.parse(notesString);
@@ -49,34 +49,38 @@ function parseNotes(notesString: string | null): PayrollDateNote[] {
       return parsed;
     }
     // If it's not an array, treat it as a single note
-    return [{
-      id: '1',
-      text: notesString,
-      createdAt: new Date().toISOString()
-    }];
+    return [
+      {
+        id: "1",
+        text: notesString,
+        createdAt: new Date().toISOString(),
+      },
+    ];
   } catch {
     // If not JSON, treat as single note
-    return [{
-      id: '1',
-      text: notesString,
-      createdAt: new Date().toISOString()
-    }];
+    return [
+      {
+        id: "1",
+        text: notesString,
+        createdAt: new Date().toISOString(),
+      },
+    ];
   }
 }
 
 // Helper function to stringify notes for storage
 function stringifyNotes(notes: PayrollDateNote[]): string {
-  if (notes.length === 0) return '';
+  if (notes.length === 0) return "";
   if (notes.length === 1) return notes[0].text;
   return JSON.stringify(notes);
 }
 
-export function NotesListModal({ 
-  payrollDateId, 
-  existingNotes, 
+export function NotesListModal({
+  payrollDateId,
+  existingNotes,
   payrollDate,
-  refetchNotes, 
-  trigger 
+  refetchNotes,
+  trigger,
 }: NotesListModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [notes, setNotes] = useState<PayrollDateNote[]>([]);
@@ -119,12 +123,12 @@ export function NotesListModal({
     updatedNotes[noteIndex] = {
       ...updatedNotes[noteIndex],
       text: editingText,
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     };
 
     setNotes(updatedNotes);
     setEditingNoteId(null);
-    
+
     // Save to database
     await saveNotesToDatabase(updatedNotes);
   };
@@ -135,7 +139,7 @@ export function NotesListModal({
     const newNote: PayrollDateNote = {
       id: Date.now().toString(),
       text: newNoteText.trim(),
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
 
     const updatedNotes = [...notes, newNote];
@@ -150,7 +154,7 @@ export function NotesListModal({
   const handleDeleteNote = async (noteId: string) => {
     const updatedNotes = notes.filter(n => n.id !== noteId);
     setNotes(updatedNotes);
-    
+
     // Save to database
     await saveNotesToDatabase(updatedNotes);
   };
@@ -189,19 +193,23 @@ export function NotesListModal({
     setEditingText("");
   };
 
-  const hasNotes = notes.length > 0;
+  // const hasNotes = notes.length > 0; // not currently used in UI rendering
   // Check if there are existing notes for the trigger display
-  const hasExistingNotes = !!existingNotes && existingNotes.trim() !== '';
+  const hasExistingNotes = !!existingNotes && existingNotes.trim() !== "";
 
   return (
     <PermissionGuard action="update">
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
           {trigger || (
-            <Button 
+            <Button
               variant="ghost"
               size="sm"
-              className={hasExistingNotes ? "text-blue-600 hover:text-blue-700" : "text-gray-500 hover:text-blue-600"}
+              className={
+                hasExistingNotes
+                  ? "text-blue-600 hover:text-blue-700"
+                  : "text-gray-500 hover:text-blue-600"
+              }
             >
               {hasExistingNotes ? (
                 <StickyNote className="h-4 w-4" />
@@ -223,7 +231,7 @@ export function NotesListModal({
             <DialogDescription>
               {payrollDate ? (
                 <span className="text-sm">
-                  EFT Date: {format(new Date(payrollDate), "MMM d, yyyy")}
+                  EFT Date: {safeFormatDate(payrollDate, "dd MMM yyyy")}
                 </span>
               ) : (
                 "Manage notes for this payroll date"
@@ -242,7 +250,7 @@ export function NotesListModal({
                         <div className="space-y-2">
                           <Textarea
                             value={editingText}
-                            onChange={(e) => setEditingText(e.target.value)}
+                            onChange={e => setEditingText(e.target.value)}
                             className="min-h-[80px]"
                             placeholder="Enter note..."
                             autoFocus
@@ -269,12 +277,13 @@ export function NotesListModal({
                       ) : (
                         <div className="group relative p-3 rounded-lg border bg-gray-50 hover:bg-gray-100 transition-colors">
                           <div className="pr-8">
-                            <p className="text-sm whitespace-pre-wrap">{note.text}</p>
+                            <p className="text-sm whitespace-pre-wrap">
+                              {note.text}
+                            </p>
                             <p className="text-xs text-gray-500 mt-1">
-                              {note.updatedAt 
-                                ? `Updated ${format(new Date(note.updatedAt), "MMM d, yyyy h:mm a")}`
-                                : `Added ${format(new Date(note.createdAt), "MMM d, yyyy h:mm a")}`
-                              }
+                              {note.updatedAt
+                                ? `Updated ${safeFormatDate(note.updatedAt, "dd MMM yyyy h:mm a")}`
+                                : `Added ${safeFormatDate(note.createdAt, "dd MMM yyyy h:mm a")}`}
                             </p>
                           </div>
                           <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -289,7 +298,9 @@ export function NotesListModal({
                           </div>
                         </div>
                       )}
-                      {index < notes.length - 1 && <Separator className="my-3" />}
+                      {index < notes.length - 1 && (
+                        <Separator className="my-3" />
+                      )}
                     </div>
                   ))}
                 </div>
@@ -298,7 +309,9 @@ export function NotesListModal({
               <div className="text-center py-8 text-gray-500">
                 <StickyNote className="h-12 w-12 mx-auto mb-3 text-gray-300" />
                 <p>No notes yet</p>
-                <p className="text-sm mt-1">Click below to add the first note</p>
+                <p className="text-sm mt-1">
+                  Click below to add the first note
+                </p>
               </div>
             )}
 
@@ -308,7 +321,7 @@ export function NotesListModal({
                 <Label>New Note</Label>
                 <Textarea
                   value={newNoteText}
-                  onChange={(e) => setNewNoteText(e.target.value)}
+                  onChange={e => setNewNoteText(e.target.value)}
                   className="min-h-[80px]"
                   placeholder="Enter your note..."
                   autoFocus
@@ -352,11 +365,7 @@ export function NotesListModal({
           </div>
 
           <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-            >
+            <Button type="button" variant="outline" onClick={handleClose}>
               Close
             </Button>
           </DialogFooter>

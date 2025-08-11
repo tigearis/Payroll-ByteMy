@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auditLogger } from '@/lib/audit/audit-logger';
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 import { minioClient } from '@/lib/storage/minio-client';
 
 /**

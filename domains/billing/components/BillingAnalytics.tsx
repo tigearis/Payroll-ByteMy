@@ -1,6 +1,7 @@
 "use client";
 
 import { format, subDays } from "date-fns";
+import { TrendingUp, DollarSign, Clock, Users, BarChart3, PieChartIcon } from "lucide-react";
 import React, { useMemo } from "react";
 import {
   LineChart,
@@ -16,9 +17,8 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import { TrendingUp, DollarSign, Clock, Users, BarChart3, PieChartIcon } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { 
   BillingAnalyticsProps, 

@@ -2,40 +2,47 @@
 
 /**
  * Unified Hierarchical Permission Guard
- * 
+ *
  * Provides granular permission checking using hierarchical system with
  * role inheritance + exclusions for optimal JWT size and performance.
- * 
+ *
  * This is the single source of truth for all permission checking components.
  */
 
 import { ReactNode, useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useHierarchicalPermissions, useRoleAccess } from "@/hooks/use-hierarchical-permissions";
+import {
+  useHierarchicalPermissions,
+  useRoleAccess,
+} from "@/hooks/use-hierarchical-permissions";
 import type { UserRole } from "@/lib/permissions/hierarchical-permissions";
-import { useResourceContext, type ResourceName, type PermissionAction } from "./resource-context";
+import {
+  useResourceContext,
+  type ResourceName,
+  type PermissionAction,
+} from "./resource-context";
 
 interface PermissionGuardProps {
   children: ReactNode;
   fallback?: ReactNode;
-  
+
   // Single permission checking (backwards compatible)
   permission?: string;
-  
+
   // Resource-based permission checking (new pattern)
   resource?: ResourceName;
   action?: PermissionAction;
-  
+
   // Multiple permissions checking
   permissions?: string[];
   requireAll?: boolean;
-  
+
   // Role-based checking
   minRole?: UserRole;
   role?: UserRole;
   roles?: UserRole[];
   allowedRoles?: UserRole[];
-  
+
   // UI options
   showLoading?: boolean;
   loadingComponent?: ReactNode;
@@ -54,21 +61,17 @@ export function PermissionGuard({
   roles,
   allowedRoles,
   showLoading = true,
-  loadingComponent
+  loadingComponent,
 }: PermissionGuardProps) {
-  const { 
-    hasPermission, 
-    hasAnyPermission, 
+  const {
+    hasPermission,
+    hasAnyPermission,
     hasAllPermissions,
     userRole,
-    isLoading 
+    isLoading,
   } = useHierarchicalPermissions();
-  
-  const {
-    hasRole,
-    hasAnyRole,
-    canAccessRole
-  } = useRoleAccess();
+
+  const { hasRole, hasAnyRole, canAccessRole } = useRoleAccess();
 
   // Get resource context for action-based permissions
   const contextResource = useResourceContext();
@@ -79,17 +82,17 @@ export function PermissionGuard({
     if (permission) {
       return permission;
     }
-    
+
     // Priority 2: Resource override + action
     if (resource && action) {
       return `${resource}.${action}`;
     }
-    
+
     // Priority 3: Context resource + action
     if (contextResource && action) {
       return `${contextResource}.${action}`;
     }
-    
+
     // If no permission can be determined, return null
     return null;
   }, [permission, resource, action, contextResource]);
@@ -113,10 +116,10 @@ export function PermissionGuard({
 
   // Check multiple permissions
   if (requiredPermissions && requiredPermissions.length > 0) {
-    const permissionCheck = requireAll 
+    const permissionCheck = requireAll
       ? hasAllPermissions(requiredPermissions)
       : hasAnyPermission(requiredPermissions);
-    
+
     hasAccess = hasAccess && permissionCheck;
   }
 
@@ -127,13 +130,13 @@ export function PermissionGuard({
       consultant: 2,
       manager: 3,
       org_admin: 4,
-      developer: 5
+      developer: 5,
     };
-    
-    const userLevel = roleHierarchy[userRole || 'viewer'] || 0;
+
+    const userLevel = roleHierarchy[userRole || "viewer"] || 0;
     const minLevel = roleHierarchy[minRole] || 0;
-    
-    hasAccess = hasAccess && (userLevel >= minLevel);
+
+    hasAccess = hasAccess && userLevel >= minLevel;
   }
 
   // Check single role
@@ -148,21 +151,22 @@ export function PermissionGuard({
 
   // Check allowed roles (can access role)
   if (allowedRoles && allowedRoles.length > 0) {
-    hasAccess = hasAccess && allowedRoles.some(targetRole => canAccessRole(targetRole));
+    hasAccess =
+      hasAccess && allowedRoles.some(targetRole => canAccessRole(targetRole));
   }
 
   return hasAccess ? <>{children}</> : <>{fallback}</>;
 }
 
 // Convenience components for specific permissions
-export function CanRead({ 
-  resource, 
-  children, 
-  fallback 
-}: { 
-  resource: ResourceName; 
-  children: ReactNode; 
-  fallback?: ReactNode 
+export function CanRead({
+  resource,
+  children,
+  fallback,
+}: {
+  resource: ResourceName;
+  children: ReactNode;
+  fallback?: ReactNode;
 }) {
   return (
     <PermissionGuard resource={resource} action="read" fallback={fallback}>
@@ -171,14 +175,14 @@ export function CanRead({
   );
 }
 
-export function CanCreate({ 
-  resource, 
-  children, 
-  fallback 
-}: { 
-  resource: ResourceName; 
-  children: ReactNode; 
-  fallback?: ReactNode 
+export function CanCreate({
+  resource,
+  children,
+  fallback,
+}: {
+  resource: ResourceName;
+  children: ReactNode;
+  fallback?: ReactNode;
 }) {
   return (
     <PermissionGuard resource={resource} action="create" fallback={fallback}>
@@ -187,14 +191,14 @@ export function CanCreate({
   );
 }
 
-export function CanUpdate({ 
-  resource, 
-  children, 
-  fallback 
-}: { 
-  resource: ResourceName; 
-  children: ReactNode; 
-  fallback?: ReactNode 
+export function CanUpdate({
+  resource,
+  children,
+  fallback,
+}: {
+  resource: ResourceName;
+  children: ReactNode;
+  fallback?: ReactNode;
 }) {
   return (
     <PermissionGuard resource={resource} action="update" fallback={fallback}>
@@ -203,14 +207,14 @@ export function CanUpdate({
   );
 }
 
-export function CanDelete({ 
-  resource, 
-  children, 
-  fallback 
-}: { 
-  resource: ResourceName; 
-  children: ReactNode; 
-  fallback?: ReactNode 
+export function CanDelete({
+  resource,
+  children,
+  fallback,
+}: {
+  resource: ResourceName;
+  children: ReactNode;
+  fallback?: ReactNode;
 }) {
   return (
     <PermissionGuard resource={resource} action="delete" fallback={fallback}>
@@ -219,14 +223,14 @@ export function CanDelete({
   );
 }
 
-export function CanApprove({ 
-  resource, 
-  children, 
-  fallback 
-}: { 
-  resource: ResourceName; 
-  children: ReactNode; 
-  fallback?: ReactNode 
+export function CanApprove({
+  resource,
+  children,
+  fallback,
+}: {
+  resource: ResourceName;
+  children: ReactNode;
+  fallback?: ReactNode;
 }) {
   return (
     <PermissionGuard resource={resource} action="approve" fallback={fallback}>
@@ -235,14 +239,14 @@ export function CanApprove({
   );
 }
 
-export function CanExport({ 
-  resource, 
-  children, 
-  fallback 
-}: { 
-  resource: ResourceName; 
-  children: ReactNode; 
-  fallback?: ReactNode 
+export function CanExport({
+  resource,
+  children,
+  fallback,
+}: {
+  resource: ResourceName;
+  children: ReactNode;
+  fallback?: ReactNode;
 }) {
   return (
     <PermissionGuard resource={resource} action="export" fallback={fallback}>
@@ -252,106 +256,194 @@ export function CanExport({
 }
 
 // Role-based component aliases - using hierarchical roles
-export function AdminOnly({ children, fallback }: { children: ReactNode; fallback?: ReactNode }) {
-  return <PermissionGuard minRole="org_admin" fallback={fallback}>{children}</PermissionGuard>;
-}
-
-export function ManagerOnly({ children, fallback }: { children: ReactNode; fallback?: ReactNode }) {
-  return <PermissionGuard minRole="manager" fallback={fallback}>{children}</PermissionGuard>;
-}
-
-export function DeveloperOnly({ children, fallback }: { children: ReactNode; fallback?: ReactNode }) {
-  return <PermissionGuard minRole="developer" fallback={fallback}>{children}</PermissionGuard>;
-}
-
-export function ConsultantOnly({ children, fallback }: { children: ReactNode; fallback?: ReactNode }) {
-  return <PermissionGuard minRole="consultant" fallback={fallback}>{children}</PermissionGuard>;
-}
-
-// Additional role-based guards from hierarchical system
-export function AdminGuard({ children, fallback }: { children: ReactNode; fallback?: ReactNode }) {
-  return <PermissionGuard roles={["developer", "org_admin"]} fallback={fallback}>{children}</PermissionGuard>;
-}
-
-export function StaffGuard({ children, fallback }: { children: ReactNode; fallback?: ReactNode }) {
-  return <PermissionGuard roles={["developer", "org_admin", "manager", "consultant"]} fallback={fallback}>{children}</PermissionGuard>;
-}
-
-export function ManagerPlusGuard({ children, fallback }: { children: ReactNode; fallback?: ReactNode }) {
-  return <PermissionGuard roles={["developer", "org_admin", "manager"]} fallback={fallback}>{children}</PermissionGuard>;
-}
-
-// Role Guard - Shows content if user has the specified role(s)
-export function RoleGuard({ 
-  children, 
-  fallback = null, 
-  role,
-  roles,
-  showLoading = false 
-}: { 
-  children: ReactNode; 
-  fallback?: ReactNode; 
-  role?: UserRole;
-  roles?: UserRole[];
-  showLoading?: boolean;
-}) {
-  const props: any = { children };
-  
-  if (role !== undefined) props.role = role;
-  if (roles !== undefined) props.roles = roles;
-  if (fallback !== undefined) props.fallback = fallback;
-  if (showLoading !== undefined) props.showLoading = showLoading;
-  
-  return <PermissionGuard {...props} />;
-}
-
-// Additional hierarchical-specific components for hasAny functionality
-export function AnyPermissionGuard({ 
-  permissions, 
-  children, 
-  fallback 
-}: { 
-  permissions: string[]; 
-  children: ReactNode; 
-  fallback?: ReactNode 
+export function AdminOnly({
+  children,
+  fallback,
+}: {
+  children: ReactNode;
+  fallback?: ReactNode;
 }) {
   return (
-    <PermissionGuard permissions={permissions} requireAll={false} fallback={fallback}>
+    <PermissionGuard minRole="org_admin" fallback={fallback}>
       {children}
     </PermissionGuard>
   );
 }
 
-export function AllPermissionGuard({ 
-  permissions, 
-  children, 
-  fallback 
-}: { 
-  permissions: string[]; 
-  children: ReactNode; 
-  fallback?: ReactNode 
+export function ManagerOnly({
+  children,
+  fallback,
+}: {
+  children: ReactNode;
+  fallback?: ReactNode;
 }) {
   return (
-    <PermissionGuard permissions={permissions} requireAll={true} fallback={fallback}>
+    <PermissionGuard minRole="manager" fallback={fallback}>
+      {children}
+    </PermissionGuard>
+  );
+}
+
+export function DeveloperOnly({
+  children,
+  fallback,
+}: {
+  children: ReactNode;
+  fallback?: ReactNode;
+}) {
+  return (
+    <PermissionGuard minRole="developer" fallback={fallback}>
+      {children}
+    </PermissionGuard>
+  );
+}
+
+export function ConsultantOnly({
+  children,
+  fallback,
+}: {
+  children: ReactNode;
+  fallback?: ReactNode;
+}) {
+  return (
+    <PermissionGuard minRole="consultant" fallback={fallback}>
+      {children}
+    </PermissionGuard>
+  );
+}
+
+// Additional role-based guards from hierarchical system
+export function AdminGuard({
+  children,
+  fallback,
+}: {
+  children: ReactNode;
+  fallback?: ReactNode;
+}) {
+  return (
+    <PermissionGuard roles={["developer", "org_admin"]} fallback={fallback}>
+      {children}
+    </PermissionGuard>
+  );
+}
+
+export function StaffGuard({
+  children,
+  fallback,
+}: {
+  children: ReactNode;
+  fallback?: ReactNode;
+}) {
+  return (
+    <PermissionGuard
+      roles={["developer", "org_admin", "manager", "consultant"]}
+      fallback={fallback}
+    >
+      {children}
+    </PermissionGuard>
+  );
+}
+
+export function ManagerPlusGuard({
+  children,
+  fallback,
+}: {
+  children: ReactNode;
+  fallback?: ReactNode;
+}) {
+  return (
+    <PermissionGuard
+      roles={["developer", "org_admin", "manager"]}
+      fallback={fallback}
+    >
+      {children}
+    </PermissionGuard>
+  );
+}
+
+// Role Guard - Shows content if user has the specified role(s)
+export function RoleGuard({
+  children,
+  fallback = null,
+  role,
+  roles,
+  showLoading = false,
+}: {
+  children: ReactNode;
+  fallback?: ReactNode;
+  role?: UserRole;
+  roles?: UserRole[];
+  showLoading?: boolean;
+}) {
+  const props: any = { children };
+
+  if (role !== undefined) props.role = role;
+  if (roles !== undefined) props.roles = roles;
+  if (fallback !== undefined) props.fallback = fallback;
+  if (showLoading !== undefined) props.showLoading = showLoading;
+
+  return <PermissionGuard {...props} />;
+}
+
+// Additional hierarchical-specific components for hasAny functionality
+export function AnyPermissionGuard({
+  permissions,
+  children,
+  fallback,
+}: {
+  permissions: string[];
+  children: ReactNode;
+  fallback?: ReactNode;
+}) {
+  return (
+    <PermissionGuard
+      permissions={permissions}
+      requireAll={false}
+      fallback={fallback}
+    >
+      {children}
+    </PermissionGuard>
+  );
+}
+
+export function AllPermissionGuard({
+  permissions,
+  children,
+  fallback,
+}: {
+  permissions: string[];
+  children: ReactNode;
+  fallback?: ReactNode;
+}) {
+  return (
+    <PermissionGuard
+      permissions={permissions}
+      requireAll={true}
+      fallback={fallback}
+    >
       {children}
     </PermissionGuard>
   );
 }
 
 // Single permission guard for backward compatibility
-export function SimplePermissionGuard({ 
-  permission, 
-  children, 
+export function SimplePermissionGuard({
+  permission,
+  children,
   fallback,
-  showLoading = false 
-}: { 
-  permission: string; 
-  children: ReactNode; 
+  showLoading = false,
+}: {
+  permission: string;
+  children: ReactNode;
   fallback?: ReactNode;
   showLoading?: boolean;
 }) {
   return (
-    <PermissionGuard permission={permission} fallback={fallback} showLoading={showLoading}>
+    <PermissionGuard
+      permission={permission}
+      fallback={fallback}
+      showLoading={showLoading}
+    >
       {children}
     </PermissionGuard>
   );
@@ -363,7 +455,12 @@ export const PermissionGuardHierarchical = PermissionGuard;
 export const HasAnyPermissionGuard = AnyPermissionGuard;
 
 // Export resource context components and types
-export { ResourceProvider, useResourceContext, RESOURCES, ACTIONS } from "./resource-context";
+export {
+  ResourceProvider,
+  useResourceContext,
+  RESOURCES,
+  ACTIONS,
+} from "./resource-context";
 export type { ResourceName, PermissionAction } from "./resource-context";
 
 export default PermissionGuard;

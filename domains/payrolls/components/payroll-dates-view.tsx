@@ -14,7 +14,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { format, parseISO, isEqual, startOfDay } from "date-fns";
+import { parseISO, isEqual, startOfDay } from "date-fns";
 import {
   ArrowUpDown,
   ChevronDown,
@@ -31,7 +31,14 @@ import { toast } from "sonner";
 import { PermissionGuard } from "@/components/auth/permission-guard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -54,12 +61,11 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   GetPayrollFamilyDatesDocument,
   GetPayrollDatesDocument,
-  CompletePayrollDateDocument,
   CompletePayrollDateWithTimeDocument,
   AddPayrollDateTimeEntryDocument,
-  UpdatePayrollDateStatusDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
 import { useDatabaseUserId } from "@/hooks/use-database-user-id";
+import { safeFormatDate } from "@/lib/utils/date-utils";
 import { NotesListModal } from "./notes-list-modal";
 // Fragment masking disabled - no longer needed
 
@@ -89,42 +95,7 @@ interface PayrollDatesViewProps {
   showAllVersions: boolean;
 }
 
-// Helper function to determine if a date is in the future or past
-const categorizeDatesByTime = (dates: PayrollDate[]) => {
-  const today = startOfDay(new Date());
-
-  const futureDates = dates.filter(date => {
-    if (!date.adjusted_eft_date) {
-      return false;
-    }
-
-    try {
-      const adjustedDate = startOfDay(parseISO(date.adjusted_eft_date));
-      // Include today and future dates
-      return adjustedDate >= today;
-    } catch (error) {
-      console.error("Error parsing date:", date.adjusted_eft_date, error);
-      return false;
-    }
-  });
-
-  const pastDates = dates.filter(date => {
-    if (!date.adjusted_eft_date) {
-      return false;
-    }
-
-    try {
-      const adjustedDate = startOfDay(parseISO(date.adjusted_eft_date));
-      // Only past dates (before today)
-      return adjustedDate < today;
-    } catch (error) {
-      console.error("Error parsing date:", date.adjusted_eft_date, error);
-      return false;
-    }
-  });
-
-  return { futureDates, pastDates };
-};
+// (removed unused helper)
 
 // PayrollDatesTable component for reusability
 function PayrollDatesTable({
@@ -169,7 +140,7 @@ function PayrollDatesTable({
         if (!row.original.original_eft_date) {
           return null;
         }
-        return format(parseISO(row.original.original_eft_date), "MMM d, yyyy");
+        return safeFormatDate(row.original.original_eft_date, "dd MMM yyyy");
       },
     },
     {
@@ -217,7 +188,9 @@ function PayrollDatesTable({
 
         return (
           <div className="flex items-center gap-2">
-            <span>{format(adjustedDate, "MMM d, yyyy")}</span>
+            <span>
+              {safeFormatDate(row.original.adjusted_eft_date, "dd MMM yyyy")}
+            </span>
             {isAdjusted && (
               <span className="text-amber-600 text-sm">(Adjusted)</span>
             )}
@@ -249,7 +222,7 @@ function PayrollDatesTable({
         if (!row.original.processing_date) {
           return null;
         }
-        return format(parseISO(row.original.processing_date), "MMM d, yyyy");
+        return safeFormatDate(row.original.processing_date, "dd MMM yyyy");
       },
     },
     {
@@ -284,12 +257,16 @@ function PayrollDatesTable({
       cell: ({ row }) => {
         const status = row.original.status || "pending";
         const isCompleted = status === "completed";
-        
+
         return (
           <div className="flex items-center gap-2">
-            <Badge 
+            <Badge
               variant={isCompleted ? "default" : "secondary"}
-              className={isCompleted ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}
+              className={
+                isCompleted
+                  ? "bg-green-100 text-green-800"
+                  : "bg-yellow-100 text-yellow-800"
+              }
             >
               {isCompleted ? (
                 <>
@@ -327,7 +304,9 @@ function PayrollDatesTable({
           <NotesListModal
             payrollDateId={row.original.id}
             existingNotes={row.original.notes ?? null}
-            {...(row.original.adjusted_eft_date && { payrollDate: row.original.adjusted_eft_date })}
+            {...(row.original.adjusted_eft_date && {
+              payrollDate: row.original.adjusted_eft_date,
+            })}
             refetchNotes={() => refetch()}
           />
         </div>
@@ -474,37 +453,42 @@ export function PayrollDatesView({
 }: PayrollDatesViewProps) {
   const { user } = useUser();
   const { databaseUserId, isReady } = useDatabaseUserId();
-  
+
   // Completion modal state - moved to parent component scope
   const [showCompletionModal, setShowCompletionModal] = React.useState(false);
-  const [selectedPayrollDateId, setSelectedPayrollDateId] = React.useState<string | null>(null);
+  const [selectedPayrollDateId, setSelectedPayrollDateId] = React.useState<
+    string | null
+  >(null);
   const [timeSpentHours, setTimeSpentHours] = React.useState<number>(0);
   const [timeSpentMinutes, setTimeSpentMinutes] = React.useState<number>(0);
   const [completionNotes, setCompletionNotes] = React.useState<string>("");
-  
+
   // Show all family versions or just current one
   const showFamilyDates = showAllVersions;
 
   // Mutations for completing payroll dates - moved to parent component scope
-  const [completePayrollDateWithTime] = useMutation(CompletePayrollDateWithTimeDocument, {
-    onCompleted: () => {
-      toast.success("Payroll date completed with time tracking");
-      // Refetch the appropriate query
-      if (showFamilyDates) {
-        refetchSplit();
-      } else {
-        refetchSingle();
-      }
-      setShowCompletionModal(false);
-      resetCompletionForm();
-    },
-    onError: (error) => {
-      toast.error(`Failed to complete payroll date: ${error.message}`);
-    },
-  });
+  const [completePayrollDateWithTime] = useMutation(
+    CompletePayrollDateWithTimeDocument,
+    {
+      onCompleted: () => {
+        toast.success("Payroll date completed with time tracking");
+        // Refetch the appropriate query
+        if (showFamilyDates) {
+          refetchSplit();
+        } else {
+          refetchSingle();
+        }
+        setShowCompletionModal(false);
+        resetCompletionForm();
+      },
+      onError: error => {
+        toast.error(`Failed to complete payroll date: ${error.message}`);
+      },
+    }
+  );
 
   const [addTimeEntry] = useMutation(AddPayrollDateTimeEntryDocument, {
-    onError: (error) => {
+    onError: error => {
       console.error("Failed to add time entry:", error);
     },
   });
@@ -528,8 +512,8 @@ export function PayrollDatesView({
     }
 
     try {
-      const totalMinutes = (timeSpentHours * 60) + timeSpentMinutes;
-      
+      const totalMinutes = timeSpentHours * 60 + timeSpentMinutes;
+
       // Complete the payroll date with completion notes
       await completePayrollDateWithTime({
         variables: {
@@ -547,8 +531,8 @@ export function PayrollDatesView({
             payrollDateId: selectedPayrollDateId,
             userId: databaseUserId,
             timeSpentMinutes: totalMinutes,
-            description: `Payroll completion work${completionNotes ? `: ${completionNotes}` : ''}`,
-            workDate: new Date().toISOString().split('T')[0], // Today's date
+            description: `Payroll completion work${completionNotes ? `: ${completionNotes}` : ""}`,
+            workDate: new Date().toISOString().split("T")[0], // Today's date
           },
         });
       }
@@ -558,14 +542,14 @@ export function PayrollDatesView({
   };
 
   // Get the family root ID for efficient querying
-  const { data: familyRootData } = useQuery(GetPayrollFamilyDatesDocument, {
+  const { data: _familyRootData } = useQuery(GetPayrollFamilyDatesDocument, {
     variables: { payrollId },
     skip: !showFamilyDates,
   });
 
   // For family dates, we use the original payrollId since the query already handles family logic
   const familyRootId = payrollId;
-  const today = format(new Date(), "yyyy-MM-dd");
+  // const today = format(new Date(), "yyyy-MM-dd");
 
   // Use the efficient split query when showing family dates
   const {
@@ -594,9 +578,9 @@ export function PayrollDatesView({
   // Use the family query as fallback if split query is not working
   const {
     data: familyData,
-    loading: familyLoading,
-    error: familyError,
-    refetch: refetchFamily,
+    loading: _familyLoading,
+    error: _familyError,
+    refetch: _refetchFamily,
   } = useQuery(GetPayrollFamilyDatesDocument, {
     variables: { payrollId },
     skip: !showFamilyDates,
@@ -622,19 +606,21 @@ export function PayrollDatesView({
       processing_date: date.processingDate,
       notes: date.notes,
       payroll_id: date.payrollId,
-      payroll: date.payroll ? {
-        id: date.payroll.id,
-        name: date.payroll.name,
-        version_number: date.payroll.versionNumber,
-        status: date.payroll.status,
-        superseded_date: date.payroll.supersededDate,
-      } : {
-        id: '',
-        name: 'Unknown',
-        version_number: 0,
-        status: 'Unknown',
-        superseded_date: '',
-      },
+      payroll: date.payroll
+        ? {
+            id: date.payroll.id,
+            name: date.payroll.name,
+            version_number: date.payroll.versionNumber,
+            status: date.payroll.status,
+            superseded_date: date.payroll.supersededDate,
+          }
+        : {
+            id: "",
+            name: "Unknown",
+            version_number: 0,
+            status: "Unknown",
+            superseded_date: "",
+          },
     }));
     const currentDate = startOfDay(new Date());
     pastDates = allDates.filter(date => {
@@ -657,7 +643,7 @@ export function PayrollDatesView({
             version_number: payroll.versionNumber,
             status: payroll.status,
             superseded_date: payroll.supersededDate,
-          }
+          },
         }))
       ) || [];
     // Convert to the expected format
@@ -689,19 +675,21 @@ export function PayrollDatesView({
       processing_date: date.processingDate,
       notes: date.notes,
       payroll_id: date.payrollId,
-      payroll: date.payroll ? {
-        id: date.payroll.id,
-        name: date.payroll.name,
-        version_number: date.payroll.versionNumber,
-        status: date.payroll.status,
-        superseded_date: date.payroll.supersededDate,
-      } : {
-        id: '',
-        name: 'Unknown',
-        version_number: 0,
-        status: 'Unknown',
-        superseded_date: '',
-      },
+      payroll: date.payroll
+        ? {
+            id: date.payroll.id,
+            name: date.payroll.name,
+            version_number: date.payroll.versionNumber,
+            status: date.payroll.status,
+            superseded_date: date.payroll.supersededDate,
+          }
+        : {
+            id: "",
+            name: "Unknown",
+            version_number: 0,
+            status: "Unknown",
+            superseded_date: "",
+          },
     }));
     const currentDate = startOfDay(new Date());
     pastDates = allDates.filter(date => {
@@ -783,151 +771,163 @@ export function PayrollDatesView({
   return (
     <PermissionGuard action="read">
       <div className="w-full">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold">Payroll Dates</h2>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              refetch();
-              toast.success("Refreshing payroll dates...");
-            }}
-            className="flex items-center gap-2"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Refresh Data
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              toast.info("Refreshing entire page...");
-              window.location.reload();
-            }}
-            className="flex items-center gap-2"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Full Refresh
-          </Button>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold">Payroll Dates</h2>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                refetch();
+                toast.success("Refreshing payroll dates...");
+              }}
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Refresh Data
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                toast.info("Refreshing entire page...");
+                window.location.reload();
+              }}
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Full Refresh
+            </Button>
+          </div>
         </div>
-      </div>
 
-      <Tabs defaultValue="future" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-6">
-          <TabsTrigger value="future" className="flex items-center gap-2">
-            <Calendar className="w-4 h-4" />
-            Future Dates
-            <Badge variant="secondary" className="ml-1">
-              {futureCount}
-            </Badge>
-          </TabsTrigger>
-          <TabsTrigger value="past" className="flex items-center gap-2">
-            <History className="w-4 h-4" />
-            Past Dates
-            <Badge variant="secondary" className="ml-1">
-              {pastCount}
-            </Badge>
-          </TabsTrigger>
-        </TabsList>
+        <Tabs defaultValue="future" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsTrigger value="future" className="flex items-center gap-2">
+              <Calendar className="w-4 h-4" />
+              Future Dates
+              <Badge variant="secondary" className="ml-1">
+                {futureCount}
+              </Badge>
+            </TabsTrigger>
+            <TabsTrigger value="past" className="flex items-center gap-2">
+              <History className="w-4 h-4" />
+              Past Dates
+              <Badge variant="secondary" className="ml-1">
+                {pastCount}
+              </Badge>
+            </TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="future" className="space-y-4">
-          <PayrollDatesTable
-            dates={displayFutureDates}
-            title="Upcoming Payroll Dates (All Versions)"
-            emptyMessage="No upcoming payroll dates found in any version."
-            refetch={refetch}
-            openCompletionModal={openCompletionModal}
-          />
-        </TabsContent>
+          <TabsContent value="future" className="space-y-4">
+            <PayrollDatesTable
+              dates={displayFutureDates}
+              title="Upcoming Payroll Dates (All Versions)"
+              emptyMessage="No upcoming payroll dates found in any version."
+              refetch={refetch}
+              openCompletionModal={openCompletionModal}
+            />
+          </TabsContent>
 
-        <TabsContent value="past" className="space-y-4">
-          <PayrollDatesTable
-            dates={displayPastDates}
-            title="Past Payroll Dates (All Versions)"
-            emptyMessage="No past payroll dates found in any version."
-            refetch={refetch}
-            openCompletionModal={openCompletionModal}
-          />
-        </TabsContent>
-      </Tabs>
+          <TabsContent value="past" className="space-y-4">
+            <PayrollDatesTable
+              dates={displayPastDates}
+              title="Past Payroll Dates (All Versions)"
+              emptyMessage="No past payroll dates found in any version."
+              refetch={refetch}
+              openCompletionModal={openCompletionModal}
+            />
+          </TabsContent>
+        </Tabs>
 
-      {/* Payroll Date Completion Modal */}
-      <Dialog open={showCompletionModal} onOpenChange={setShowCompletionModal}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Complete Payroll Date</DialogTitle>
-            <DialogDescription>
-              Mark this payroll date as completed and optionally track time spent.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="hours">Hours Spent</Label>
-                <Input
-                  id="hours"
-                  type="number"
-                  min="0"
-                  max="24"
-                  value={timeSpentHours}
-                  onChange={(e) => setTimeSpentHours(parseInt(e.target.value) || 0)}
-                  placeholder="0"
-                />
+        {/* Payroll Date Completion Modal */}
+        <Dialog
+          open={showCompletionModal}
+          onOpenChange={setShowCompletionModal}
+        >
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Complete Payroll Date</DialogTitle>
+              <DialogDescription>
+                Mark this payroll date as completed and optionally track time
+                spent.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="hours">Hours Spent</Label>
+                  <Input
+                    id="hours"
+                    type="number"
+                    min="0"
+                    max="24"
+                    value={timeSpentHours}
+                    onChange={e =>
+                      setTimeSpentHours(parseInt(e.target.value) || 0)
+                    }
+                    placeholder="0"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="minutes">Minutes Spent</Label>
+                  <Input
+                    id="minutes"
+                    type="number"
+                    min="0"
+                    max="59"
+                    value={timeSpentMinutes}
+                    onChange={e =>
+                      setTimeSpentMinutes(parseInt(e.target.value) || 0)
+                    }
+                    placeholder="0"
+                  />
+                </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="minutes">Minutes Spent</Label>
-                <Input
-                  id="minutes"
-                  type="number"
-                  min="0"
-                  max="59"
-                  value={timeSpentMinutes}
-                  onChange={(e) => setTimeSpentMinutes(parseInt(e.target.value) || 0)}
-                  placeholder="0"
+                <Label htmlFor="notes">Completion Notes (Optional)</Label>
+                <Textarea
+                  id="notes"
+                  placeholder="Add any notes about the work completed..."
+                  value={completionNotes}
+                  onChange={e => setCompletionNotes(e.target.value)}
+                  rows={3}
                 />
               </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="notes">Completion Notes (Optional)</Label>
-              <Textarea
-                id="notes"
-                placeholder="Add any notes about the work completed..."
-                value={completionNotes}
-                onChange={(e) => setCompletionNotes(e.target.value)}
-                rows={3}
-              />
-            </div>
-            {(timeSpentHours > 0 || timeSpentMinutes > 0) && (
-              <div className="rounded-md bg-blue-50 p-3">
-                <div className="flex">
-                  <Clock className="h-5 w-5 text-blue-400" />
-                  <div className="ml-3">
-                    <h3 className="text-sm font-medium text-blue-800">
-                      Time Tracking Enabled
-                    </h3>
-                    <div className="mt-2 text-sm text-blue-700">
-                      <p>
-                        Total time: {timeSpentHours}h {timeSpentMinutes}m will be recorded for cost analysis.
-                      </p>
+              {(timeSpentHours > 0 || timeSpentMinutes > 0) && (
+                <div className="rounded-md bg-blue-50 p-3">
+                  <div className="flex">
+                    <Clock className="h-5 w-5 text-blue-400" />
+                    <div className="ml-3">
+                      <h3 className="text-sm font-medium text-blue-800">
+                        Time Tracking Enabled
+                      </h3>
+                      <div className="mt-2 text-sm text-blue-700">
+                        <p>
+                          Total time: {timeSpentHours}h {timeSpentMinutes}m will
+                          be recorded for cost analysis.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCompletionModal(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleCompleteWithTimeTracking}>
-              <CheckCircle className="mr-2 h-4 w-4" />
-              Complete Payroll Date
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
+              )}
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setShowCompletionModal(false)}
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleCompleteWithTimeTracking}>
+                <CheckCircle className="mr-2 h-4 w-4" />
+                Complete Payroll Date
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
     </PermissionGuard>
   );
 }

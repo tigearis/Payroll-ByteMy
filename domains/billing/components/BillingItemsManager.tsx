@@ -14,7 +14,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { format } from "date-fns";
 import {
   ArrowUpDown,
   ChevronDown,
@@ -28,17 +27,15 @@ import {
   User,
   Building2,
   Filter,
-  Download,
   RefreshCw,
   Plus,
   Search,
   Calendar,
-  CheckSquare
+  CheckSquare,
 } from "lucide-react";
 import Link from "next/link";
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { toast } from "sonner";
-import { logger } from '@/lib/logging/enterprise-logger';
 import { PermissionGuard } from "@/components/auth/permission-guard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -55,7 +52,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -64,20 +67,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  UpdateBillingItemAdvancedDocument, 
+import { logger } from "@/lib/logging/enterprise-logger";
+import { safeFormatDate } from "@/lib/utils/date-utils";
+import {
   ApproveBillingItemAdvancedDocument,
-  BulkUpdateBillingItemsStatusAdvancedDocument 
+  BulkUpdateBillingItemsStatusAdvancedDocument,
 } from "../graphql/generated/graphql";
-import type { BillingItemsManagerProps, BillingItem, BillingStatus } from "../types/billing.types";
+import type {
+  BillingItemsManagerProps,
+  BillingItem,
+  BillingStatus,
+} from "../types/billing.types";
 
-export function BillingItemsManager({ 
-  billingItems, 
-  loading, 
+export function BillingItemsManager({
+  billingItems,
+  loading,
   onRefetch,
   onStatusChange,
-  onBulkAction 
+  onBulkAction,
 }: BillingItemsManagerProps) {
   const { user } = useUser();
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -85,7 +92,9 @@ export function BillingItemsManager({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [globalFilter, setGlobalFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState<BillingStatus | "all">("all");
+  const [statusFilter, setStatusFilter] = useState<BillingStatus | "all">(
+    "all"
+  );
 
   // Mutations
   const [approveBillingItem] = useMutation(ApproveBillingItemAdvancedDocument, {
@@ -93,21 +102,26 @@ export function BillingItemsManager({
       toast.success("Billing item approved");
       onRefetch?.();
     },
-    onError: (error) => {
+    onError: error => {
       toast.error(`Failed to approve item: ${error.message}`);
     },
   });
 
-  const [bulkUpdateStatus] = useMutation(BulkUpdateBillingItemsStatusAdvancedDocument, {
-    onCompleted: (data) => {
-      toast.success(`Updated ${data.updateBillingItemsMany?.[0]?.affectedRows || 0} items`);
-      onRefetch?.();
-      setRowSelection({});
-    },
-    onError: (error) => {
-      toast.error(`Failed to bulk update: ${error.message}`);
-    },
-  });
+  const [bulkUpdateStatus] = useMutation(
+    BulkUpdateBillingItemsStatusAdvancedDocument,
+    {
+      onCompleted: data => {
+        toast.success(
+          `Updated ${data.updateBillingItemsMany?.[0]?.affectedRows || 0} items`
+        );
+        onRefetch?.();
+        setRowSelection({});
+      },
+      onError: error => {
+        toast.error(`Failed to bulk update: ${error.message}`);
+      },
+    }
+  );
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-AU", {
@@ -119,26 +133,27 @@ export function BillingItemsManager({
   // Filter data based on status and global filter
   const filteredData = useMemo(() => {
     let filtered = billingItems;
-    
+
     if (statusFilter !== "all") {
       filtered = filtered.filter(item => {
         if (statusFilter === "approved") return item.isApproved;
         return item.status?.toLowerCase() === statusFilter;
       });
     }
-    
+
     if (globalFilter) {
       const searchTerm = globalFilter.toLowerCase();
-      filtered = filtered.filter(item =>
-        item.description?.toLowerCase().includes(searchTerm) ||
-        item.client?.name?.toLowerCase().includes(searchTerm) ||
-        item.staffUser?.firstName?.toLowerCase().includes(searchTerm) ||
-        item.staffUser?.lastName?.toLowerCase().includes(searchTerm) ||
-        item.service?.name?.toLowerCase().includes(searchTerm) ||
-        item.serviceName?.toLowerCase().includes(searchTerm)
+      filtered = filtered.filter(
+        item =>
+          item.description?.toLowerCase().includes(searchTerm) ||
+          item.client?.name?.toLowerCase().includes(searchTerm) ||
+          item.staffUser?.firstName?.toLowerCase().includes(searchTerm) ||
+          item.staffUser?.lastName?.toLowerCase().includes(searchTerm) ||
+          item.service?.name?.toLowerCase().includes(searchTerm) ||
+          item.serviceName?.toLowerCase().includes(searchTerm)
       );
     }
-    
+
     return filtered;
   }, [billingItems, statusFilter, globalFilter]);
 
@@ -157,15 +172,15 @@ export function BillingItemsManager({
       });
       onStatusChange?.(itemId, "approved");
     } catch (error) {
-      logger.error('Billing item approval failed in manager', {
-        namespace: 'billing_domain',
-        component: 'billing_items_manager',
-        action: 'approve_billing_item',
-        error: error instanceof Error ? error.message : 'Unknown error',
+      logger.error("Billing item approval failed in manager", {
+        namespace: "billing_domain",
+        component: "billing_items_manager",
+        action: "approve_billing_item",
+        error: error instanceof Error ? error.message : "Unknown error",
         metadata: {
           itemId,
           userId: user?.id,
-          errorType: 'graphql_mutation_error',
+          errorType: "graphql_mutation_error",
         },
       });
     }
@@ -174,7 +189,7 @@ export function BillingItemsManager({
   const handleBulkAction = async (action: string) => {
     const selectedRows = table.getFilteredSelectedRowModel().rows;
     const selectedIds = selectedRows.map(row => row.original.id);
-    
+
     if (selectedIds.length === 0) {
       toast.error("No items selected");
       return;
@@ -209,22 +224,25 @@ export function BillingItemsManager({
           onBulkAction?.(selectedIds, action);
       }
     } catch (error) {
-      logger.error('Billing items bulk action failed', {
-        namespace: 'billing_domain',
-        component: 'billing_items_manager',
-        action: 'bulk_action',
-        error: error instanceof Error ? error.message : 'Unknown error',
+      logger.error("Billing items bulk action failed", {
+        namespace: "billing_domain",
+        component: "billing_items_manager",
+        action: "bulk_action",
+        error: error instanceof Error ? error.message : "Unknown error",
         metadata: {
           action,
           selectedItemsCount: table.getFilteredSelectedRowModel().rows.length,
           userId: user?.id,
-          errorType: 'graphql_mutation_error',
+          errorType: "graphql_mutation_error",
         },
       });
     }
   };
 
-  const getStatusBadge = (status: string | null | undefined, isApproved?: boolean | null) => {
+  const getStatusBadge = (
+    status: string | null | undefined,
+    isApproved?: boolean | null
+  ) => {
     if (isApproved) {
       return (
         <Badge className="bg-green-100 text-green-800 gap-1">
@@ -233,18 +251,24 @@ export function BillingItemsManager({
         </Badge>
       );
     }
-    
+
     switch (status?.toLowerCase()) {
       case "pending":
         return (
-          <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 gap-1">
+          <Badge
+            variant="secondary"
+            className="bg-yellow-100 text-yellow-800 gap-1"
+          >
             <Clock className="w-3 h-3" />
             Pending
           </Badge>
         );
       case "rejected":
         return (
-          <Badge variant="destructive" className="bg-red-100 text-red-800 gap-1">
+          <Badge
+            variant="destructive"
+            className="bg-red-100 text-red-800 gap-1"
+          >
             <X className="w-3 h-3" />
             Rejected
           </Badge>
@@ -257,11 +281,7 @@ export function BillingItemsManager({
           </Badge>
         );
       default:
-        return (
-          <Badge variant="outline">
-            {status || "Unknown"}
-          </Badge>
-        );
+        return <Badge variant="outline">{status || "Unknown"}</Badge>;
     }
   };
 
@@ -271,14 +291,14 @@ export function BillingItemsManager({
       header: ({ table }) => (
         <Checkbox
           checked={table.getIsAllPageRowsSelected()}
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
         />
       ),
       cell: ({ row }) => (
         <Checkbox
           checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          onCheckedChange={value => row.toggleSelected(!!value)}
           aria-label="Select row"
         />
       ),
@@ -304,7 +324,10 @@ export function BillingItemsManager({
         const serviceName = service?.name || row.original.serviceName;
         return (
           <div className="flex flex-col min-w-0">
-            <div className="font-medium truncate" title={serviceName || undefined}>
+            <div
+              className="font-medium truncate"
+              title={serviceName || undefined}
+            >
               {serviceName || "Unnamed Service"}
             </div>
             {service?.category && (
@@ -321,7 +344,10 @@ export function BillingItemsManager({
       accessorKey: "description",
       header: "Description",
       cell: ({ row }) => (
-        <div className="max-w-48 truncate" title={row.getValue("description") || undefined}>
+        <div
+          className="max-w-48 truncate"
+          title={row.getValue("description") || undefined}
+        >
           {row.getValue("description") || "—"}
         </div>
       ),
@@ -471,7 +497,7 @@ export function BillingItemsManager({
         const date = row.getValue("createdAt") as string | null;
         return (
           <div className="text-sm">
-            {date ? format(new Date(date), "MMM d, yyyy") : "—"}
+            {date ? safeFormatDate(date, "dd MMM yyyy") : "—"}
           </div>
         );
       },
@@ -588,24 +614,31 @@ export function BillingItemsManager({
             </PermissionGuard>
           </div>
         </div>
-        
+
         {/* Enhanced Filters */}
         <div className="flex items-center gap-4 pt-4">
           <div className="flex-1 max-w-sm">
-            <Label htmlFor="global-search" className="sr-only">Search</Label>
+            <Label htmlFor="global-search" className="sr-only">
+              Search
+            </Label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 id="global-search"
                 placeholder="Search items, clients, staff..."
                 value={globalFilter}
-                onChange={(e) => setGlobalFilter(e.target.value)}
+                onChange={e => setGlobalFilter(e.target.value)}
                 className="pl-10"
               />
             </div>
           </div>
-          
-          <Select value={statusFilter} onValueChange={(value: BillingStatus | "all") => setStatusFilter(value)}>
+
+          <Select
+            value={statusFilter}
+            onValueChange={(value: BillingStatus | "all") =>
+              setStatusFilter(value)
+            }
+          >
             <SelectTrigger className="w-40">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
@@ -629,14 +662,14 @@ export function BillingItemsManager({
             <DropdownMenuContent align="end">
               {table
                 .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
+                .filter(column => column.getCanHide())
+                .map(column => {
                   return (
                     <DropdownMenuCheckboxItem
                       key={column.id}
                       className="capitalize"
                       checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
+                      onCheckedChange={value =>
                         column.toggleVisibility(!!value)
                       }
                     >
@@ -648,7 +681,7 @@ export function BillingItemsManager({
           </DropdownMenu>
         </div>
       </CardHeader>
-      
+
       <CardContent>
         {/* Bulk Actions */}
         {Object.keys(rowSelection).length > 0 && (
@@ -687,9 +720,9 @@ export function BillingItemsManager({
         <div className="rounded-md border">
           <Table>
             <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
+              {table.getHeaderGroups().map(headerGroup => (
                 <TableRow key={headerGroup.id} className="bg-gray-50">
-                  {headerGroup.headers.map((header) => {
+                  {headerGroup.headers.map(header => {
                     return (
                       <TableHead key={header.id} className="font-medium">
                         {header.isPlaceholder
@@ -706,13 +739,13 @@ export function BillingItemsManager({
             </TableHeader>
             <TableBody>
               {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
+                table.getRowModel().rows.map(row => (
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
                     className="hover:bg-gray-50"
                   >
-                    {row.getVisibleCells().map((cell) => (
+                    {row.getVisibleCells().map(cell => (
                       <TableCell key={cell.id} className="py-3">
                         {flexRender(
                           cell.column.columnDef.cell,
@@ -732,10 +765,9 @@ export function BillingItemsManager({
                       <DollarSign className="h-8 w-8 mb-2 opacity-50" />
                       <p>No billing items found</p>
                       <p className="text-sm">
-                        {globalFilter || statusFilter !== "all" 
-                          ? "Try adjusting your filters" 
-                          : "Create your first billing item to get started"
-                        }
+                        {globalFilter || statusFilter !== "all"
+                          ? "Try adjusting your filters"
+                          : "Create your first billing item to get started"}
                       </p>
                     </div>
                   </TableCell>
@@ -744,7 +776,7 @@ export function BillingItemsManager({
             </TableBody>
           </Table>
         </div>
-        
+
         {/* Enhanced Pagination */}
         <div className="flex items-center justify-between py-4">
           <div className="flex items-center gap-4 text-sm text-gray-600">
@@ -753,13 +785,20 @@ export function BillingItemsManager({
               {table.getFilteredRowModel().rows.length} row(s) selected
             </span>
             <span>
-              Showing {Math.min(
-                table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1,
+              Showing{" "}
+              {Math.min(
+                table.getState().pagination.pageIndex *
+                  table.getState().pagination.pageSize +
+                  1,
                 table.getFilteredRowModel().rows.length
-              )} to {Math.min(
-                (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
+              )}{" "}
+              to{" "}
+              {Math.min(
+                (table.getState().pagination.pageIndex + 1) *
+                  table.getState().pagination.pageSize,
                 table.getFilteredRowModel().rows.length
-              )} of {table.getFilteredRowModel().rows.length} entries
+              )}{" "}
+              of {table.getFilteredRowModel().rows.length} entries
             </span>
           </div>
           <div className="flex items-center gap-2">

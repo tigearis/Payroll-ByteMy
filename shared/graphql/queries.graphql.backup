@@ -1,0 +1,321 @@
+# Shared GraphQL Queries
+# Updated to match actual Hasura schema
+
+# ============================================
+# Dashboard Queries
+# ============================================
+
+# Main dashboard metrics
+query GetDashboardMetrics($userId: uuid!) {
+  # Client statistics
+  clientsAggregate(where: { active: { _eq: true } }) {
+    aggregate {
+      count
+    }
+  }
+
+  # Active payrolls
+  activePayrollsAggregate: payrollsAggregate(
+    where: {
+      supersededDate: { _isNull: true }
+      status: { _nin: ["Completed", "Failed"] }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+
+  # Total employees across all active payrolls
+  totalEmployeesAggregate: payrollsAggregate(
+    where: { supersededDate: { _isNull: true } }
+  ) {
+    aggregate {
+      sum {
+        employeeCount
+      }
+    }
+  }
+
+  # Upcoming payrolls
+  upcomingPayrolls: payrolls(
+    where: {
+      supersededDate: { _isNull: true }
+      status: { _nin: ["Completed", "Failed", "Cancelled"] }
+    }
+    orderBy: { updatedAt: DESC }
+    limit: 5
+  ) {
+    ...PayrollMinimal
+    client {
+      ...ClientMinimal
+    }
+  }
+}
+
+# GetDashboardStatsOptimized
+# Optimized combined query for dashboard statistics that consolidates multiple separate queries into a single request
+# Performance: Reduces network requests from 3 separate queries to 1 combined query (67% reduction)
+# Replaces: GetClientStatsDocument, GetPayrollDashboardStatsDocument, GetUpcomingPayrollsDocument
+# Domain: shared | Security: MEDIUM | Complexity: MEDIUM
+# Param limit: Maximum number of upcoming payrolls to return (default: 10)
+# Returns: Combined dashboard statistics with clients, payrolls, and upcoming payroll data with next EFT dates
+# Usage: Main dashboard page (/dashboard) to load all statistics in a single request
+# Since: Priority 2 optimization (2025-06-27) | Classification: SOC2_COMPLIANT
+query GetDashboardStatsOptimized($limit: Int = 10) {
+  # Client statistics (replaces GetClientStatsDocument)
+  clientsAggregate {
+    aggregate {
+      count
+    }
+  }
+
+  # Payroll statistics (replaces GetPayrollDashboardStatsDocument)
+  totalPayrolls: payrollsAggregate(
+    where: { supersededDate: { _isNull: true } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+
+  activePayrolls: payrollsAggregate(
+    where: { supersededDate: { _isNull: true }, status: { _eq: "Active" } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+
+  # Upcoming payrolls with next pay dates (replaces GetUpcomingPayrollsDocument)
+  upcomingPayrolls: payrolls(
+    where: { 
+      supersededDate: { _isNull: true } 
+      status: { _eq: "Active" }
+      payrollDates: { adjustedEftDate: { _gte: "now()" } }
+    }
+    orderBy: { updatedAt: DESC }
+    limit: $limit
+  ) {
+    id
+    name
+    status
+    client {
+      id
+      name
+    }
+    # Get the next upcoming EFT date - prioritize adjusted dates
+    nextEftDate: payrollDates(
+      where: { adjustedEftDate: { _gte: "now()" } }
+      orderBy: { adjustedEftDate: ASC }
+      limit: 1
+    ) {
+      originalEftDate
+      adjustedEftDate
+      processingDate
+    }
+  }
+}
+
+# Dashboard stats for clients page
+query GetClientsDashboardStats {
+  # Total active clients
+  activeClientsCount: clientsAggregate(where: { active: { _eq: true } }) {
+    aggregate {
+      count
+    }
+  }
+
+  # Total payrolls count
+  totalPayrollsCount: payrollsAggregate(where: { supersededDate: { _isNull: true } }) {
+    aggregate {
+      count
+    }
+  }
+
+  # Total employees across all clients
+  totalEmployeesSum: payrollsAggregate(where: { supersededDate: { _isNull: true } }) {
+    aggregate {
+      sum {
+        employeeCount
+      }
+    }
+  }
+
+  # Clients without recent payrolls
+  clientsNeedingAttention: clients(
+    where: {
+      active: { _eq: true }
+      _not: { payrolls: { supersededDate: { _isNull: true } } }
+    }
+  ) {
+    ...ClientMinimal
+  }
+}
+
+# ============================================
+# User Queries
+# ============================================
+
+# Get current user with permissions
+query GetCurrentUser($userId: uuid!) {
+  user: usersByPk(id: $userId) {
+    ...UserProfile
+  }
+}
+
+# Get users for dropdowns
+query GetUsersForDropdown($role: user_role) {
+  users(
+    where: { isActive: { _eq: true }, role: { _eq: $role } }
+    orderBy: { computedName: ASC }
+  ) {
+    ...UserMinimal
+  }
+}
+
+# ============================================
+# System Health Queries
+# ============================================
+
+# System health check
+query GetSystemHealth {
+  # Database connection
+  databaseHealth: users(limit: 1) {
+    id
+  }
+
+  # Recent activity
+  recentActivity: auditAuditLogAggregate(
+    where: { eventTime: { _gte: "now() - interval '1 hour'" } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# ============================================
+# Search Queries
+# ============================================
+
+# Global search across entities
+query GlobalSearch($searchTerm: String!) {
+  # Search clients
+  clients(
+    where: {
+      _or: [
+        { name: { _ilike: $searchTerm } }
+        { contactEmail: { _ilike: $searchTerm } }
+      ]
+    }
+    limit: 5
+  ) {
+    ...ClientMinimal
+  }
+
+  # Search users
+  users(
+    where: {
+      _or: [
+        { computedName: { _ilike: $searchTerm } }
+        { firstName: { _ilike: $searchTerm } }
+        { lastName: { _ilike: $searchTerm } }
+        { email: { _ilike: $searchTerm } }
+      ]
+    }
+    limit: 5
+  ) {
+    ...UserMinimal
+  }
+
+  # Search payrolls by client name
+  payrolls(
+    where: {
+      client: { name: { _ilike: $searchTerm } }
+      supersededDate: { _isNull: true }
+    }
+    limit: 5
+  ) {
+    ...PayrollMinimal
+    client {
+      ...ClientMinimal
+    }
+  }
+}
+
+# ============================================
+# File Operations Queries
+# ============================================
+
+# Get file by ID
+query GetFileById($id: uuid!) {
+  filesByPk(id: $id) {
+    id
+    filename
+    bucket
+    objectKey
+    size
+    mimetype
+    url
+    clientId
+    payrollId
+    uploadedBy
+    category
+    isPublic
+    metadata
+    fileType
+    createdAt
+    client {
+      name
+    }
+    payroll {
+      name
+    }
+    uploadedBy
+  }
+}
+
+# List files with filtering
+query ListFiles(
+  $where: FilesBoolExp
+  $limit: Int
+  $offset: Int
+  $orderBy: [FilesOrderBy!]
+) {
+  files(
+    where: $where
+    limit: $limit
+    offset: $offset
+    orderBy: $orderBy
+  ) {
+    id
+    filename
+    bucket
+    objectKey
+    size
+    mimetype
+    url
+    clientId
+    payrollId
+    uploadedBy
+    category
+    isPublic
+    metadata
+    fileType
+    createdAt
+    client {
+      name
+    }
+    payroll {
+      name
+    }
+    uploadedBy
+  }
+  
+  filesAggregate(where: $where) {
+    aggregate {
+      count
+    }
+  }
+}

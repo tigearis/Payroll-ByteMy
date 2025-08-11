@@ -1,20 +1,42 @@
 "use client";
 
 import { useQuery, useMutation, gql } from "@apollo/client";
-import { Plus, Settings, Calendar, DollarSign, RefreshCw, TrendingUp, Users, AlertCircle } from "lucide-react";
-import React, { useState, useEffect } from "react";
-import { format } from 'date-fns';
+import {
+  Plus,
+  Settings,
+  Calendar,
+  DollarSign,
+  RefreshCw,
+  TrendingUp,
+  Users,
+} from "lucide-react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Progress } from "@/components/ui/progress";
-import type { RecurringServicesPanelProps, Service, Client } from "../types/billing.types";
+import { safeFormatDate } from "@/lib/utils/date-utils";
+import type {
+  RecurringServicesPanelProps,
+  Service,
+} from "../types/billing.types";
 
 interface ClientServiceAssignment {
   id: string;
@@ -30,10 +52,9 @@ interface ClientServiceAssignment {
 // GraphQL operations for client service assignments
 const GET_CLIENT_SERVICE_ASSIGNMENTS = gql`
   query GetClientServiceAssignments($clientId: uuid!) {
-    clientServiceAssignments(where: {
-      clientId: { _eq: $clientId }
-      isActive: { _eq: true }
-    }) {
+    clientServiceAssignments(
+      where: { clientId: { _eq: $clientId }, isActive: { _eq: true } }
+    ) {
       id
       serviceId
       customRate
@@ -55,7 +76,9 @@ const GET_CLIENT_SERVICE_ASSIGNMENTS = gql`
 `;
 
 const CREATE_CLIENT_SERVICE_ASSIGNMENT = gql`
-  mutation CreateClientServiceAssignment($input: ClientServiceAssignmentsInsertInput!) {
+  mutation CreateClientServiceAssignment(
+    $input: ClientServiceAssignmentsInsertInput!
+  ) {
     insertClientServiceAssignmentsOne(object: $input) {
       id
       serviceId
@@ -73,7 +96,10 @@ const CREATE_CLIENT_SERVICE_ASSIGNMENT = gql`
 `;
 
 const UPDATE_CLIENT_SERVICE_ASSIGNMENT = gql`
-  mutation UpdateClientServiceAssignment($id: uuid!, $updates: ClientServiceAssignmentsSetInput!) {
+  mutation UpdateClientServiceAssignment(
+    $id: uuid!
+    $updates: ClientServiceAssignmentsSetInput!
+  ) {
     updateClientServiceAssignmentsByPk(pkColumns: { id: $id }, _set: $updates) {
       id
       serviceId
@@ -83,12 +109,12 @@ const UPDATE_CLIENT_SERVICE_ASSIGNMENT = gql`
   }
 `;
 
-export function RecurringServicesPanel({ 
-  services, 
-  clients, 
+export function RecurringServicesPanel({
+  services,
+  clients,
   loading,
   onServiceAdd,
-  onServiceToggle 
+  onServiceToggle,
 }: RecurringServicesPanelProps) {
   const [selectedClientId, setSelectedClientId] = useState<string>("");
   const [selectedService, setSelectedService] = useState<string>("");
@@ -97,32 +123,45 @@ export function RecurringServicesPanel({
   const [nextBillingDate, setNextBillingDate] = useState<Date | null>(null);
 
   // Get client service assignments for selected client
-  const { data: assignmentsData, loading: assignmentsLoading, refetch: refetchAssignments } = useQuery(
-    GET_CLIENT_SERVICE_ASSIGNMENTS,
-    {
-      variables: { clientId: selectedClientId },
-      skip: !selectedClientId
-    }
-  );
+  const {
+    data: assignmentsData,
+    loading: assignmentsLoading,
+    refetch: refetchAssignments,
+  } = useQuery(GET_CLIENT_SERVICE_ASSIGNMENTS, {
+    variables: { clientId: selectedClientId },
+    skip: !selectedClientId,
+  });
 
   // GraphQL mutations
-  const [createClientServiceAssignment] = useMutation(CREATE_CLIENT_SERVICE_ASSIGNMENT);
-  const [updateClientServiceAssignment] = useMutation(UPDATE_CLIENT_SERVICE_ASSIGNMENT);
+  const [createClientServiceAssignment] = useMutation(
+    CREATE_CLIENT_SERVICE_ASSIGNMENT
+  );
+  const [updateClientServiceAssignment] = useMutation(
+    UPDATE_CLIENT_SERVICE_ASSIGNMENT
+  );
 
-  const clientServices: ClientServiceAssignment[] = assignmentsData?.clientServiceAssignments || [];
-  
+  const clientServices: ClientServiceAssignment[] =
+    assignmentsData?.clientServiceAssignments || [];
+
   // Filter available services (those not already assigned to selected client)
-  const subscribedServiceIds = new Set(clientServices.map((s: ClientServiceAssignment) => s.serviceId));
-  const availableServices = services.filter(service => !subscribedServiceIds.has(service.id));
-  
+  const subscribedServiceIds = new Set(
+    clientServices.map((s: ClientServiceAssignment) => s.serviceId)
+  );
+  const availableServices = services.filter(
+    service => !subscribedServiceIds.has(service.id)
+  );
+
   // Get selected client data
   const selectedClient = clients.find(c => c.id === selectedClientId);
 
   // Calculate monthly total for selected client
-  const monthlyTotal = clientServices.reduce((total: number, assignment: ClientServiceAssignment) => {
-    const rate = assignment.customRate || assignment.service.baseRate;
-    return total + (rate || 0);
-  }, 0);
+  const monthlyTotal = clientServices.reduce(
+    (total: number, assignment: ClientServiceAssignment) => {
+      const rate = assignment.customRate || assignment.service.baseRate;
+      return total + (rate || 0);
+    },
+    0
+  );
 
   // Get next billing date
   const getNextBillingDate = () => {
@@ -149,42 +188,49 @@ export function RecurringServicesPanel({
             clientId: selectedClientId,
             serviceId: serviceConfig.id,
             customRate: customRate ? parseFloat(customRate) : null,
-            isActive: true
-          }
-        }
+            isActive: true,
+          },
+        },
       });
 
       await refetchAssignments();
-      onServiceAdd?.(selectedClientId, selectedService, customRate ? parseFloat(customRate) : undefined);
-      
+      onServiceAdd?.(
+        selectedClientId,
+        selectedService,
+        customRate ? parseFloat(customRate) : undefined
+      );
+
       toast.success(`Added ${serviceConfig.name} successfully`);
       setIsDialogOpen(false);
       setSelectedService("");
       setCustomRate("");
     } catch (error) {
-      console.error('Error creating client service assignment:', error);
-      toast.error('Failed to add service. Please try again.');
+      console.error("Error creating client service assignment:", error);
+      toast.error("Failed to add service. Please try again.");
     }
   };
 
-  const handleToggleService = async (assignmentId: string, isActive: boolean) => {
+  const handleToggleService = async (
+    assignmentId: string,
+    isActive: boolean
+  ) => {
     try {
       await updateClientServiceAssignment({
         variables: {
           id: assignmentId,
           updates: {
-            isActive: isActive
-          }
-        }
+            isActive: isActive,
+          },
+        },
       });
 
       await refetchAssignments();
       onServiceToggle?.(assignmentId, isActive);
-      
+
       toast.success(isActive ? "Service activated" : "Service deactivated");
     } catch (error) {
-      console.error('Error updating client service assignment:', error);
-      toast.error('Failed to update service. Please try again.');
+      console.error("Error updating client service assignment:", error);
+      toast.error("Failed to update service. Please try again.");
     }
   };
 
@@ -195,38 +241,45 @@ export function RecurringServicesPanel({
     }
 
     try {
-      const response = await fetch('/api/billing/recurring/generate', {
-        method: 'POST',
+      const response = await fetch("/api/billing/recurring/generate", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           clientIds: [selectedClientId],
-          billingMonth: new Date().toISOString().split('T')[0].substring(0, 7) + '-01',
-          dryRun: false
+          billingMonth:
+            new Date().toISOString().split("T")[0].substring(0, 7) + "-01",
+          dryRun: false,
         }),
       });
 
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || 'Failed to generate billing');
+        throw new Error(result.error || "Failed to generate billing");
       }
 
-      toast.success(`Generated billing for ${result.itemsCreated} services totaling $${result.totalAmount?.toFixed(2) || 0}`);
+      toast.success(
+        `Generated billing for ${result.itemsCreated} services totaling $${result.totalAmount?.toFixed(2) || 0}`
+      );
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
       toast.error(`Failed to generate billing: ${errorMessage}`);
     }
   };
 
   const getCategoryColor = (category?: string | null) => {
     const colors = {
-      'essential': 'bg-blue-100 text-blue-800',
-      'standard': 'bg-green-100 text-green-800',
-      'premium': 'bg-purple-100 text-purple-800'
-    };
-    return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+      essential: "bg-primary/10 text-primary",
+      standard: "bg-success-500/10 text-success-600",
+      premium: "bg-accent text-accent-foreground",
+    } as const;
+    return (
+      colors[(category || "").toLowerCase() as keyof typeof colors] ||
+      "bg-muted text-muted-foreground"
+    );
   };
 
   const formatCurrency = (amount: number) => {
@@ -243,7 +296,9 @@ export function RecurringServicesPanel({
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-              <p className="text-gray-500">Loading recurring services...</p>
+              <p className="text-muted-foreground">
+                Loading recurring services...
+              </p>
             </div>
           </div>
         </CardContent>
@@ -260,7 +315,7 @@ export function RecurringServicesPanel({
             <Users className="h-5 w-5" />
             Recurring Services Management
           </CardTitle>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted-foreground">
             Manage monthly recurring services and automated billing
           </p>
         </CardHeader>
@@ -268,12 +323,15 @@ export function RecurringServicesPanel({
           <div className="flex items-center gap-4">
             <div className="flex-1">
               <Label htmlFor="client-select">Select Client</Label>
-              <Select value={selectedClientId} onValueChange={setSelectedClientId}>
+              <Select
+                value={selectedClientId}
+                onValueChange={setSelectedClientId}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Choose a client to manage services" />
                 </SelectTrigger>
                 <SelectContent>
-                  {clients.map((client) => (
+                  {clients.map(client => (
                     <SelectItem key={client.id} value={client.id}>
                       {client.name}
                     </SelectItem>
@@ -299,11 +357,13 @@ export function RecurringServicesPanel({
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Monthly Total</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Monthly Total
+                </CardTitle>
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-green-600">
+                <div className="text-2xl font-bold text-success-600">
                   {formatCurrency(monthlyTotal)}
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -314,14 +374,16 @@ export function RecurringServicesPanel({
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Active Services</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Active Services
+                </CardTitle>
                 <Settings className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
                   {clientServices.filter(s => s.isActive).length}
                 </div>
-                <p className="text-xs text-muted-foreference">
+                <p className="text-xs text-muted-foreground">
                   of {clientServices.length} total services
                 </p>
               </CardContent>
@@ -329,12 +391,16 @@ export function RecurringServicesPanel({
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Next Billing</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Next Billing
+                </CardTitle>
                 <Calendar className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-lg font-bold">
-                  {nextBillingDate ? format(nextBillingDate, 'dd MMM yyyy') : 'Loading...'}
+                  {nextBillingDate
+                    ? safeFormatDate(nextBillingDate, "dd MMM yyyy")
+                    : "Loading..."}
                 </div>
                 <p className="text-xs text-muted-foreground">
                   1st of each month
@@ -344,11 +410,13 @@ export function RecurringServicesPanel({
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Automation</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Automation
+                </CardTitle>
                 <TrendingUp className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-blue-600">100%</div>
+                <div className="text-2xl font-bold text-primary">100%</div>
                 <p className="text-xs text-muted-foreground">
                   Auto-generated billing
                 </p>
@@ -362,14 +430,18 @@ export function RecurringServicesPanel({
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle>Services for {selectedClient?.name}</CardTitle>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-sm text-muted-foreground mt-1">
                     Manage recurring service subscriptions
                   </p>
                 </div>
-                
+
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                   <DialogTrigger asChild>
-                    <Button variant="outline" size="sm" disabled={availableServices.length === 0}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={availableServices.length === 0}
+                    >
                       <Plus className="h-4 w-4 mr-2" />
                       Add Service
                     </Button>
@@ -381,17 +453,23 @@ export function RecurringServicesPanel({
                     <div className="space-y-4">
                       <div>
                         <Label htmlFor="service-select">Service</Label>
-                        <Select value={selectedService} onValueChange={setSelectedService}>
+                        <Select
+                          value={selectedService}
+                          onValueChange={setSelectedService}
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Select a service" />
                           </SelectTrigger>
                           <SelectContent>
-                            {availableServices.map((service) => (
+                            {availableServices.map(service => (
                               <SelectItem key={service.id} value={service.id}>
                                 <div className="flex items-center justify-between w-full">
                                   <span>{service.name}</span>
                                   <span className="text-sm text-muted-foreground ml-2">
-                                    {service.baseRate ? formatCurrency(service.baseRate) : 'Custom'}/month
+                                    {service.baseRate
+                                      ? formatCurrency(service.baseRate)
+                                      : "Custom"}
+                                    /month
                                   </span>
                                 </div>
                               </SelectItem>
@@ -399,32 +477,45 @@ export function RecurringServicesPanel({
                           </SelectContent>
                         </Select>
                         {selectedService && (
-                          <div className="mt-2 p-3 bg-slate-50 rounded text-sm">
-                            {availableServices.find(s => s.id === selectedService)?.description}
+                          <div className="mt-2 p-3 bg-muted rounded text-sm">
+                            {
+                              availableServices.find(
+                                s => s.id === selectedService
+                              )?.description
+                            }
                           </div>
                         )}
                       </div>
-                      
+
                       <div>
-                        <Label htmlFor="custom-rate">Custom Rate (optional)</Label>
+                        <Label htmlFor="custom-rate">
+                          Custom Rate (optional)
+                        </Label>
                         <Input
                           id="custom-rate"
                           type="number"
                           step="0.01"
                           value={customRate}
-                          onChange={(e) => setCustomRate(e.target.value)}
-                          placeholder={selectedService ? 
-                            `Default: ${formatCurrency(availableServices.find(s => s.id === selectedService)?.baseRate || 0)}` : 
-                            "Leave empty to use base rate"
+                          onChange={e => setCustomRate(e.target.value)}
+                          placeholder={
+                            selectedService
+                              ? `Default: ${formatCurrency(availableServices.find(s => s.id === selectedService)?.baseRate || 0)}`
+                              : "Leave empty to use base rate"
                           }
                         />
                       </div>
-                      
+
                       <div className="flex justify-end gap-2 pt-4">
-                        <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                        <Button
+                          variant="outline"
+                          onClick={() => setIsDialogOpen(false)}
+                        >
                           Cancel
                         </Button>
-                        <Button onClick={handleAddService} disabled={!selectedService}>
+                        <Button
+                          onClick={handleAddService}
+                          disabled={!selectedService}
+                        >
                           Add Service
                         </Button>
                       </div>
@@ -442,54 +533,64 @@ export function RecurringServicesPanel({
                 <div className="text-center py-8 text-muted-foreground">
                   <Calendar className="h-8 w-8 mx-auto mb-2 opacity-50" />
                   <p>No recurring services configured</p>
-                  <p className="text-sm">Add services to automatically generate monthly billing</p>
+                  <p className="text-sm">
+                    Add services to automatically generate monthly billing
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {clientServices.map((assignment) => {
+                  {clientServices.map(assignment => {
                     const service = assignment.service;
-                    const effectiveRate = assignment.customRate || service.baseRate || 0;
+                    const effectiveRate =
+                      assignment.customRate || service.baseRate || 0;
 
                     return (
-                      <div key={assignment.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
+                      <div
+                        key={assignment.id}
+                        className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted"
+                      >
                         <div className="flex-1">
                           <div className="flex items-center gap-3">
                             <div>
                               <div className="font-medium">{service.name}</div>
-                              <div className="text-sm text-gray-600">{service.description}</div>
+                              <div className="text-sm text-muted-foreground">
+                                {service.description}
+                              </div>
                               <div className="flex items-center gap-2 mt-1">
-                                <Badge 
-                                  variant="outline" 
+                                <Badge
+                                  variant="outline"
                                   className={getCategoryColor(service.category)}
                                 >
-                                  {service.category || 'Standard'}
+                                  {service.category || "Standard"}
                                 </Badge>
                                 <Badge variant="outline">
-                                  {service.chargeBasis || 'monthly'}
+                                  {service.chargeBasis || "monthly"}
                                 </Badge>
                               </div>
                             </div>
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center gap-4">
                           <div className="text-right">
-                            <div className="font-medium">{formatCurrency(effectiveRate)}</div>
+                            <div className="font-medium">
+                              {formatCurrency(effectiveRate)}
+                            </div>
                             {assignment.customRate && (
                               <Badge variant="secondary" className="text-xs">
                                 Custom Rate
                               </Badge>
                             )}
                           </div>
-                          
+
                           <div className="flex items-center gap-2">
                             <Switch
                               checked={assignment.isActive}
-                              onCheckedChange={(checked) => 
+                              onCheckedChange={checked =>
                                 handleToggleService(assignment.id, checked)
                               }
                             />
-                            <span className="text-sm text-gray-600">
+                            <span className="text-sm text-muted-foreground">
                               {assignment.isActive ? "Active" : "Inactive"}
                             </span>
                           </div>
@@ -506,12 +607,13 @@ export function RecurringServicesPanel({
         <Card>
           <CardContent className="p-6">
             <div className="text-center py-12">
-              <RefreshCw className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <RefreshCw className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">
                 Recurring Services Management
               </h3>
-              <p className="text-gray-500 mb-6">
-                Select a client above to manage their recurring service subscriptions
+              <p className="text-muted-foreground mb-6">
+                Select a client above to manage their recurring service
+                subscriptions
               </p>
             </div>
           </CardContent>

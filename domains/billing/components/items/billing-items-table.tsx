@@ -14,7 +14,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { format } from "date-fns";
 import {
   ArrowUpDown,
   ChevronDown,
@@ -28,10 +27,9 @@ import {
   User,
   Building2,
 } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { PermissionGuard } from "@/components/auth/permission-guard";
-import { logger } from '@/lib/logging/enterprise-logger';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -54,7 +52,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { UpdateBillingItemAdvancedDocument, ApproveBillingItemAdvancedDocument } from "../../graphql/generated/graphql";
+import { logger } from "@/lib/logging/enterprise-logger";
+import { safeFormatDate } from "@/lib/utils/date-utils";
+import { ApproveBillingItemAdvancedDocument } from "../../graphql/generated/graphql";
 
 interface BillingItem {
   id: string;
@@ -92,7 +92,11 @@ interface BillingItemsTableProps {
   refetch: () => void;
 }
 
-export function BillingItemsTable({ data, loading, refetch }: BillingItemsTableProps) {
+export function BillingItemsTable({
+  data,
+  loading,
+  refetch,
+}: BillingItemsTableProps) {
   const { user } = useUser();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -105,7 +109,7 @@ export function BillingItemsTable({ data, loading, refetch }: BillingItemsTableP
       toast.success("Billing item approved");
       refetch();
     },
-    onError: (error) => {
+    onError: error => {
       toast.error(`Failed to approve item: ${error.message}`);
     },
   });
@@ -119,13 +123,13 @@ export function BillingItemsTable({ data, loading, refetch }: BillingItemsTableP
 
   const handleApprove = async (itemId: string) => {
     if (!user?.id) {
-      logger.error('Billing item approval failed - user not authenticated', {
-        namespace: 'billing_domain',
-        component: 'billing_items_table',
-        action: 'approve_billing_item',
+      logger.error("Billing item approval failed - user not authenticated", {
+        namespace: "billing_domain",
+        component: "billing_items_table",
+        action: "approve_billing_item",
         metadata: {
           itemId,
-          authenticationStatus: 'unauthenticated',
+          authenticationStatus: "unauthenticated",
           securityEvent: true,
         },
       });
@@ -134,14 +138,14 @@ export function BillingItemsTable({ data, loading, refetch }: BillingItemsTableP
     }
 
     try {
-      logger.info('Initiating billing item approval', {
-        namespace: 'billing_domain',
-        component: 'billing_items_table',
-        action: 'approve_billing_item',
+      logger.info("Initiating billing item approval", {
+        namespace: "billing_domain",
+        component: "billing_items_table",
+        action: "approve_billing_item",
         metadata: {
           itemId,
           userId: user.id,
-          approvalFlow: 'started',
+          approvalFlow: "started",
         },
       });
 
@@ -151,30 +155,30 @@ export function BillingItemsTable({ data, loading, refetch }: BillingItemsTableP
           approvedBy: user.id,
         },
       });
-      
-      logger.info('Billing item approved successfully', {
-        namespace: 'billing_domain',
-        component: 'billing_items_table',
-        action: 'approve_billing_item',
+
+      logger.info("Billing item approved successfully", {
+        namespace: "billing_domain",
+        component: "billing_items_table",
+        action: "approve_billing_item",
         metadata: {
           itemId,
           userId: user.id,
-          approvalFlow: 'completed',
+          approvalFlow: "completed",
         },
       });
 
       refetch(); // Refresh the data after approval
     } catch (error) {
-      logger.error('Billing item approval failed - GraphQL mutation error', {
-        namespace: 'billing_domain',
-        component: 'billing_items_table',
-        action: 'approve_billing_item',
-        error: error instanceof Error ? error.message : 'Unknown error',
+      logger.error("Billing item approval failed - GraphQL mutation error", {
+        namespace: "billing_domain",
+        component: "billing_items_table",
+        action: "approve_billing_item",
+        error: error instanceof Error ? error.message : "Unknown error",
         metadata: {
           itemId,
           userId: user.id,
-          approvalFlow: 'failed',
-          errorType: 'graphql_mutation_error',
+          approvalFlow: "failed",
+          errorType: "graphql_mutation_error",
         },
       });
       toast.error("Failed to approve billing item");
@@ -187,14 +191,14 @@ export function BillingItemsTable({ data, loading, refetch }: BillingItemsTableP
       header: ({ table }) => (
         <Checkbox
           checked={table.getIsAllPageRowsSelected()}
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
         />
       ),
       cell: ({ row }) => (
         <Checkbox
           checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          onCheckedChange={value => row.toggleSelected(!!value)}
           aria-label="Select row"
         />
       ),
@@ -356,7 +360,7 @@ export function BillingItemsTable({ data, loading, refetch }: BillingItemsTableP
       cell: ({ row }) => {
         const status = row.getValue("status") as string;
         const isApproved = row.original.isApproved;
-        
+
         const getStatusBadge = () => {
           if (isApproved) {
             return (
@@ -366,28 +370,30 @@ export function BillingItemsTable({ data, loading, refetch }: BillingItemsTableP
               </Badge>
             );
           }
-          
+
           switch (status?.toLowerCase()) {
             case "pending":
               return (
-                <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                <Badge
+                  variant="secondary"
+                  className="bg-yellow-100 text-yellow-800"
+                >
                   <Clock className="w-3 h-3 mr-1" />
                   Pending
                 </Badge>
               );
             case "rejected":
               return (
-                <Badge variant="destructive" className="bg-red-100 text-red-800">
+                <Badge
+                  variant="destructive"
+                  className="bg-red-100 text-red-800"
+                >
                   <X className="w-3 h-3 mr-1" />
                   Rejected
                 </Badge>
               );
             default:
-              return (
-                <Badge variant="outline">
-                  {status || "Draft"}
-                </Badge>
-              );
+              return <Badge variant="outline">{status || "Draft"}</Badge>;
           }
         };
 
@@ -412,7 +418,7 @@ export function BillingItemsTable({ data, loading, refetch }: BillingItemsTableP
         const date = row.getValue("createdAt") as string | null;
         return (
           <div className="text-sm">
-            {date ? format(new Date(date), "MMM d, yyyy") : "—"}
+            {date ? safeFormatDate(date, "dd MMM yyyy") : "—"}
           </div>
         );
       },
@@ -505,9 +511,14 @@ export function BillingItemsTable({ data, loading, refetch }: BillingItemsTableP
         <div className="flex items-center py-4">
           <Input
             placeholder="Filter services..."
-            value={(table.getColumn("service.name")?.getFilterValue() as string) ?? ""}
-            onChange={(event) =>
-              table.getColumn("service.name")?.setFilterValue(event.target.value)
+            value={
+              (table.getColumn("service.name")?.getFilterValue() as string) ??
+              ""
+            }
+            onChange={event =>
+              table
+                .getColumn("service.name")
+                ?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
           />
@@ -520,14 +531,14 @@ export function BillingItemsTable({ data, loading, refetch }: BillingItemsTableP
             <DropdownMenuContent align="end">
               {table
                 .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
+                .filter(column => column.getCanHide())
+                .map(column => {
                   return (
                     <DropdownMenuCheckboxItem
                       key={column.id}
                       className="capitalize"
                       checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
+                      onCheckedChange={value =>
                         column.toggleVisibility(!!value)
                       }
                     >
@@ -543,9 +554,9 @@ export function BillingItemsTable({ data, loading, refetch }: BillingItemsTableP
         <div className="rounded-md border">
           <Table>
             <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
+              {table.getHeaderGroups().map(headerGroup => (
                 <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
+                  {headerGroup.headers.map(header => {
                     return (
                       <TableHead key={header.id}>
                         {header.isPlaceholder
@@ -562,12 +573,12 @@ export function BillingItemsTable({ data, loading, refetch }: BillingItemsTableP
             </TableHeader>
             <TableBody>
               {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
+                table.getRowModel().rows.map(row => (
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
                   >
-                    {row.getVisibleCells().map((cell) => (
+                    {row.getVisibleCells().map(cell => (
                       <TableCell key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,

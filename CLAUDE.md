@@ -12,6 +12,139 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - **Database URL Handling**: Never use `$DATABASE_URL` always use the literal connection string `'postgresql://admin:[REDACTED_DB_PASSWORD]@192.168.1.229:5432/payroll_local?sslmode=disable'` always in single quotes
 - **Package Management**: Only run pnpm commands, never npm
+- **Tailwind v4 Migration**: Use `@theme` directive with `--color-` prefixed variables, but avoid `theme()` functions in base styles - use direct HSL values instead
+
+## 🎨 Semantic Text Color Standards
+
+**CRITICAL**: All components MUST use semantic text colors for proper light/dark mode support.
+
+### Text Color Hierarchy
+
+**Primary Text (High Contrast)**
+```tsx
+// ✅ Correct - Main content, headings, primary labels
+className="text-foreground"
+```
+
+**Secondary Text (Medium Contrast)**  
+```tsx
+// ✅ Correct - Descriptions, secondary information
+className="text-foreground opacity-75"
+```
+
+**Tertiary Text (Low Contrast)**
+```tsx
+// ✅ Correct - Helper text, placeholders, timestamps
+className="text-foreground opacity-60"
+```
+
+**Muted Text (Minimal Contrast)**
+```tsx
+// ✅ Correct - Only for truly secondary UI elements like section dividers
+className="text-muted-foreground"
+```
+
+### **NEVER Use Hardcoded Colors**
+
+❌ **Wrong - Hardcoded dark mode colors:**
+```tsx
+className="text-gray-900 dark:text-gray-100"
+className="text-slate-600 dark:text-slate-300" 
+className="text-neutral-700 dark:text-neutral-200"
+```
+
+✅ **Correct - Semantic colors:**
+```tsx
+className="text-foreground"
+className="text-foreground opacity-75"
+```
+
+### Special Cases
+
+**Status Colors (Intentional Semantic Colors)**
+```tsx
+// ✅ Acceptable - When color conveys meaning
+className="text-red-500 dark:text-red-400"    // Errors/warnings
+className="text-green-600 dark:text-green-400" // Success states
+className="text-orange-500 dark:text-orange-300" // Warnings
+```
+
+**Interactive Elements**
+```tsx
+// ✅ Correct - Links and interactive text
+className="text-blue-600 hover:underline"
+className="hover:text-foreground" // For muted text that becomes primary on hover
+```
+
+### UI Component Standards
+
+**Background Colors**
+```tsx
+// ✅ Correct - Semantic background colors
+className="bg-background"        // Main page background
+className="bg-muted"            // Subtle background areas
+className="bg-card"             // Card/panel backgrounds
+className="bg-popover"          // Dropdown/modal backgrounds
+```
+
+**Border Colors**
+```tsx
+// ✅ Correct - Semantic borders
+className="border-border"       // Standard borders
+className="border-muted"        // Subtle borders
+className="divide-border"       // Divider lines
+```
+
+**Navigation Icons**
+- **MUST be unique** - Each navigation item requires a distinct icon
+- **Use semantic icons** - Icons should clearly represent their functionality
+- **Maintain consistency** - Similar functions should use related icon families
+
+### Component Architecture
+
+**Collapsible Sections**
+```tsx
+// ✅ Correct - State-managed collapsible sections
+const [expanded, setExpanded] = useState<Record<string, boolean>>();
+const toggleSection = (id: string) => setExpanded(prev => ({...prev, [id]: !prev[id]}));
+
+// With proper visual indicators
+{expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+```
+
+**Responsive Layout**
+```tsx
+// ✅ Correct - Adaptive layouts for collapsed/expanded states
+{sidebarCollapsed ? (
+  <div className="flex flex-col items-center space-y-1">
+    {/* Vertical stack for narrow spaces */}
+  </div>
+) : (
+  <div className="flex items-center justify-between">
+    {/* Horizontal layout for wider spaces */}
+  </div>
+)}
+```
+
+### Enforcement & Validation
+
+**Pre-Implementation Checklist**
+- [ ] All text uses semantic colors (`text-foreground`, `text-foreground opacity-*`, or `text-muted-foreground`)
+- [ ] No hardcoded `dark:text-*` classes except for semantic status colors
+- [ ] All icons in navigation are unique and semantically appropriate
+- [ ] Collapsible sections have proper state management and visual indicators
+- [ ] Responsive layouts adapt properly to collapsed/expanded states
+
+**Code Review Requirements**
+- Any hardcoded color combinations will be rejected
+- All new navigation items must have unique icons
+- Component architecture must follow established patterns
+- Text hierarchy must be semantically correct
+
+**Migration Notes**
+- Legacy components using hardcoded colors have been updated to semantic standards
+- All sidebar section headers are now collapsible with proper state management
+- Navigation structure follows logical grouping (Client Management, Scheduling, People, etc.)
 
 ## 🔐 Hasura GraphQL Permissions System
 

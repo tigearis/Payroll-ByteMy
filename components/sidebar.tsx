@@ -176,19 +176,19 @@ export function Sidebar() {
     return (
       <div
         className={cn(
-          "flex flex-col border-r bg-gray-100/40 dark:bg-gray-800/40",
+          "flex flex-col border-r bg-muted/40",
           "w-64" // Default width while loading
         )}
       >
         <div className="flex h-16 items-center border-b px-4">
-          <div className="h-4 w-4 animate-pulse bg-gray-300 rounded"></div>
+          <div className="h-4 w-4 animate-pulse bg-muted rounded"></div>
         </div>
         <div className="flex-1 p-2">
           {/* Loading skeleton */}
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
-              className="h-10 mb-2 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"
+              className="h-10 mb-2 bg-muted rounded animate-pulse"
             />
           ))}
         </div>
@@ -202,29 +202,32 @@ export function Sidebar() {
     if (route.hidden) {
       return false;
     }
-    
+
     // Feature flag checks
-    if (route.href === '/ai-assistant' && !flags.aiAssistant) {
+    if (route.href === "/ai-assistant" && !flags.aiAssistant) {
       return false;
     }
-    if (route.href === '/ai-assistant/data-assistant' && !flags.aiDataAssistant) {
+    if (
+      route.href === "/ai-assistant/data-assistant" &&
+      !flags.aiDataAssistant
+    ) {
       return false;
     }
-    if (route.href === '/tax-calculator' && !flags.taxCalculator) {
+    if (route.href === "/tax-calculator" && !flags.taxCalculator) {
       return false;
     }
-    if (route.href === '/developer' && !flags.devTools) {
+    if (route.href === "/developer" && !flags.devTools) {
       return false;
     }
-    if (route.href === '/security' && !flags.securityReporting) {
+    if (route.href === "/security" && !flags.securityReporting) {
       return false;
     }
-    
+
     // Hide reports for non-developers
-    if (route.href === '/reports' && !isDeveloper) {
+    if (route.href === "/reports" && !isDeveloper) {
       return false;
     }
-    
+
     // Check if user has permission to access this route
     return can(route.resource, route.action);
   });
@@ -232,7 +235,7 @@ export function Sidebar() {
   return (
     <div
       className={cn(
-        "flex flex-col border-r bg-gray-100/40 dark:bg-gray-800/40",
+        "flex flex-col border-r bg-muted/40",
         sidebarCollapsed ? "w-16" : "w-64"
       )}
     >
@@ -280,11 +283,9 @@ export function Sidebar() {
         {/* Optional: Show role indicator */}
         {!sidebarCollapsed && (
           <div className="mt-auto p-4 border-t">
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-foreground opacity-60">
               Role:{" "}
-              <span className="font-medium">
-                {getRoleDisplayName(role)}
-              </span>
+              <span className="font-medium">{getRoleDisplayName(role)}</span>
             </p>
           </div>
         )}

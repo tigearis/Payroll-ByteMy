@@ -4,6 +4,7 @@
 
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 export async function POST(request: NextRequest) {
   let userId: string | null = null;

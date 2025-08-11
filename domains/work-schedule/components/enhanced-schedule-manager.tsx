@@ -1,18 +1,15 @@
 "use client";
 
-import { format, startOfWeek, addDays, parseISO } from "date-fns";
-import { 
+import { format, startOfWeek, addDays } from "date-fns";
+import {
   Calendar,
-  Clock,
   Users,
   TrendingUp,
   AlertTriangle,
-  CheckCircle2,
   Edit,
   Save,
   X,
-  Eye,
-  EyeOff
+  EyeOff,
 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -21,13 +18,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { type UserPosition, getPositionAdminPercentage } from "../services/enhanced-capacity-calculator";
+import {
+  type UserPosition,
+  getPositionAdminPercentage,
+} from "../services/enhanced-capacity-calculator";
 
 // =============================================================================
-// TYPES & INTERFACES  
+// TYPES & INTERFACES
 // =============================================================================
 
 interface WorkScheduleWithCapacity {
@@ -53,8 +52,13 @@ interface UserWithPosition {
 interface ScheduleManagerProps {
   user: UserWithPosition;
   schedules: WorkScheduleWithCapacity[];
-  onUpdateSchedule?: (scheduleId: string, updates: Partial<WorkScheduleWithCapacity>) => void;
-  onCreateSchedule?: (schedule: Omit<WorkScheduleWithCapacity, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  onUpdateSchedule?: (
+    scheduleId: string,
+    updates: Partial<WorkScheduleWithCapacity>
+  ) => void;
+  onCreateSchedule?: (
+    schedule: Omit<WorkScheduleWithCapacity, "id" | "createdAt" | "updatedAt">
+  ) => void;
   canEdit?: boolean;
 }
 
@@ -82,24 +86,39 @@ interface CapacityBreakdownProps {
 // =============================================================================
 
 const getDayOfWeekName = (index: number): string => {
-  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
   return days[index];
 };
 
-const getCapacityStatus = (utilization: number): 'low' | 'optimal' | 'high' | 'overloaded' => {
-  if (utilization <= 60) return 'low';
-  if (utilization <= 85) return 'optimal';
-  if (utilization <= 100) return 'high';
-  return 'overloaded';
+const getCapacityStatus = (
+  utilization: number
+): "low" | "optimal" | "high" | "overloaded" => {
+  if (utilization <= 60) return "low";
+  if (utilization <= 85) return "optimal";
+  if (utilization <= 100) return "high";
+  return "overloaded";
 };
 
 const getCapacityColor = (status: string): string => {
   switch (status) {
-    case 'low': return 'text-blue-600 bg-blue-50';
-    case 'optimal': return 'text-green-600 bg-green-50';
-    case 'high': return 'text-yellow-600 bg-yellow-50';
-    case 'overloaded': return 'text-red-600 bg-red-50';
-    default: return 'text-gray-600 bg-gray-50';
+    case "low":
+      return "text-blue-600 bg-blue-50";
+    case "optimal":
+      return "text-green-600 bg-green-50";
+    case "high":
+      return "text-yellow-600 bg-yellow-50";
+    case "overloaded":
+      return "text-red-600 bg-red-50";
+    default:
+      return "text-gray-600 bg-gray-50";
   }
 };
 
@@ -107,15 +126,17 @@ const getCapacityColor = (status: string): string => {
 // CAPACITY BREAKDOWN COMPONENT
 // =============================================================================
 
-export function CapacityBreakdown({ 
-  workHours, 
-  adminTimeHours, 
-  payrollCapacityHours, 
+export function CapacityBreakdown({
+  workHours,
+  adminTimeHours,
+  payrollCapacityHours,
   position,
-  usesDefaultAdminTime 
+  usesDefaultAdminTime,
 }: CapacityBreakdownProps) {
-  const adminPercentage = workHours > 0 ? (adminTimeHours / workHours) * 100 : 0;
-  const payrollPercentage = workHours > 0 ? (payrollCapacityHours / workHours) * 100 : 0;
+  const adminPercentage =
+    workHours > 0 ? (adminTimeHours / workHours) * 100 : 0;
+  const payrollPercentage =
+    workHours > 0 ? (payrollCapacityHours / workHours) * 100 : 0;
   const expectedAdminPercentage = getPositionAdminPercentage(position);
   const adminVariance = Math.abs(adminPercentage - expectedAdminPercentage);
 
@@ -133,12 +154,16 @@ export function CapacityBreakdown({
           <div className="flex items-center space-x-2">
             <span>Admin Time</span>
             {!usesDefaultAdminTime && (
-              <Badge variant="secondary" className="text-xs">Custom</Badge>
+              <Badge variant="secondary" className="text-xs">
+                Custom
+              </Badge>
             )}
           </div>
-          <span className="font-medium">{adminTimeHours.toFixed(1)}h ({adminPercentage.toFixed(1)}%)</span>
+          <span className="font-medium">
+            {adminTimeHours.toFixed(1)}h ({adminPercentage.toFixed(1)}%)
+          </span>
         </div>
-        
+
         <div className="flex items-center justify-between text-sm">
           <span>Payroll Capacity</span>
           <span className="font-medium text-green-600">
@@ -150,12 +175,12 @@ export function CapacityBreakdown({
       {/* Visual Progress Bar */}
       <div className="space-y-1">
         <div className="flex h-2 bg-gray-200 rounded overflow-hidden">
-          <div 
-            className="bg-orange-400" 
+          <div
+            className="bg-orange-400"
             style={{ width: `${adminPercentage}%` }}
           />
-          <div 
-            className="bg-green-400" 
+          <div
+            className="bg-green-400"
             style={{ width: `${payrollPercentage}%` }}
           />
         </div>
@@ -170,7 +195,8 @@ export function CapacityBreakdown({
         <Alert className="py-2">
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription className="text-xs">
-            Admin time varies by {adminVariance.toFixed(1)}% from position default ({expectedAdminPercentage}%)
+            Admin time varies by {adminVariance.toFixed(1)}% from position
+            default ({expectedAdminPercentage}%)
           </AlertDescription>
         </Alert>
       )}
@@ -182,26 +208,28 @@ export function CapacityBreakdown({
 // DAY SCHEDULE CARD COMPONENT
 // =============================================================================
 
-export function DayScheduleCard({ 
-  schedule, 
-  user, 
-  dayName, 
+export function DayScheduleCard({
+  schedule,
+  user,
+  dayName,
   date,
-  isEditing, 
-  onEdit, 
-  onSave, 
-  onCancel 
+  isEditing,
+  onEdit,
+  onSave,
+  onCancel,
 }: DayScheduleCardProps) {
   const [workHours, setWorkHours] = useState(schedule?.workHours || 0);
-  const [adminTimeHours, setAdminTimeHours] = useState(schedule?.adminTimeHours || 0);
+  const [adminTimeHours, setAdminTimeHours] = useState(
+    schedule?.adminTimeHours || 0
+  );
   const [usesDefaultAdminTime, setUsesDefaultAdminTime] = useState(
     schedule?.usesDefaultAdminTime ?? true
   );
 
-  const expectedAdminHours = usesDefaultAdminTime 
+  const expectedAdminHours = usesDefaultAdminTime
     ? (workHours * getPositionAdminPercentage(user.position)) / 100
     : adminTimeHours;
-  
+
   const payrollCapacityHours = Math.max(0, workHours - expectedAdminHours);
 
   const handleSave = () => {
@@ -218,7 +246,9 @@ export function DayScheduleCard({
   const isWorkingDay = (schedule?.workHours || workHours) > 0;
 
   return (
-    <Card className={`transition-all duration-200 ${isEditing ? 'ring-2 ring-blue-500' : ''}`}>
+    <Card
+      className={`transition-all duration-200 ${isEditing ? "ring-2 ring-blue-500" : ""}`}
+    >
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div>
@@ -242,9 +272,9 @@ export function DayScheduleCard({
                 </Button>
               </div>
             ) : (
-              <Button 
-                size="sm" 
-                variant="ghost" 
+              <Button
+                size="sm"
+                variant="ghost"
                 onClick={() => onEdit(schedule || null)}
               >
                 <Edit className="w-3 h-3" />
@@ -269,7 +299,7 @@ export function DayScheduleCard({
                 max="24"
                 step="0.5"
                 value={workHours}
-                onChange={(e) => setWorkHours(parseFloat(e.target.value) || 0)}
+                onChange={e => setWorkHours(parseFloat(e.target.value) || 0)}
                 className="w-full"
               />
             </div>
@@ -280,7 +310,10 @@ export function DayScheduleCard({
                 <div className="flex items-center justify-between">
                   <Label className="text-sm">Admin Time</Label>
                   <div className="flex items-center space-x-2">
-                    <Label htmlFor={`use-default-${dayName}`} className="text-xs">
+                    <Label
+                      htmlFor={`use-default-${dayName}`}
+                      className="text-xs"
+                    >
                       Use default
                     </Label>
                     <Switch
@@ -299,11 +332,19 @@ export function DayScheduleCard({
                       max={workHours}
                       step="0.1"
                       value={adminTimeHours}
-                      onChange={(e) => setAdminTimeHours(parseFloat(e.target.value) || 0)}
+                      onChange={e =>
+                        setAdminTimeHours(parseFloat(e.target.value) || 0)
+                      }
                       className="w-full"
                     />
                     <p className="text-xs text-muted-foreground">
-                      Position default: {((workHours * getPositionAdminPercentage(user.position)) / 100).toFixed(1)}h
+                      Position default:{" "}
+                      {(
+                        (workHours *
+                          getPositionAdminPercentage(user.position)) /
+                        100
+                      ).toFixed(1)}
+                      h
                     </p>
                   </div>
                 )}
@@ -356,14 +397,18 @@ export function WeeklySummary({ schedules, user }: WeeklySummaryProps) {
       (acc, schedule) => ({
         workHours: acc.workHours + schedule.workHours,
         adminTimeHours: acc.adminTimeHours + schedule.adminTimeHours,
-        payrollCapacityHours: acc.payrollCapacityHours + schedule.payrollCapacityHours,
+        payrollCapacityHours:
+          acc.payrollCapacityHours + schedule.payrollCapacityHours,
       }),
       { workHours: 0, adminTimeHours: 0, payrollCapacityHours: 0 }
     );
 
     const workingDays = schedules.filter(s => s.workHours > 0).length;
     const avgHoursPerDay = workingDays > 0 ? totals.workHours / workingDays : 0;
-    const adminPercentage = totals.workHours > 0 ? (totals.adminTimeHours / totals.workHours) * 100 : 0;
+    const adminPercentage =
+      totals.workHours > 0
+        ? (totals.adminTimeHours / totals.workHours) * 100
+        : 0;
     const expectedAdminPercentage = getPositionAdminPercentage(user.position);
 
     return {
@@ -425,13 +470,17 @@ export function WeeklySummary({ schedules, user }: WeeklySummaryProps) {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">Average Daily Hours</span>
-            <span className="font-bold">{weeklyTotals.avgHoursPerDay.toFixed(1)}h</span>
+            <span className="font-bold">
+              {weeklyTotals.avgHoursPerDay.toFixed(1)}h
+            </span>
           </div>
 
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">Admin Time Efficiency</span>
             <div className="flex items-center space-x-2">
-              <span className="font-bold">{weeklyTotals.adminPercentage.toFixed(1)}%</span>
+              <span className="font-bold">
+                {weeklyTotals.adminPercentage.toFixed(1)}%
+              </span>
               {weeklyTotals.adminVariance > 5 && (
                 <AlertTriangle className="w-4 h-4 text-yellow-500" />
               )}
@@ -441,7 +490,8 @@ export function WeeklySummary({ schedules, user }: WeeklySummaryProps) {
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">Capacity Status</span>
             <Badge className={getCapacityColor(utilizationStatus)}>
-              {utilizationStatus.charAt(0).toUpperCase() + utilizationStatus.slice(1)}
+              {utilizationStatus.charAt(0).toUpperCase() +
+                utilizationStatus.slice(1)}
             </Badge>
           </div>
         </div>
@@ -450,8 +500,9 @@ export function WeeklySummary({ schedules, user }: WeeklySummaryProps) {
           <Alert className="mt-4">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription className="text-sm">
-              Admin time allocation varies significantly from position default. 
-              Expected: {weeklyTotals.expectedAdminPercentage}%, Actual: {weeklyTotals.adminPercentage.toFixed(1)}%
+              Admin time allocation varies significantly from position default.
+              Expected: {weeklyTotals.expectedAdminPercentage}%, Actual:{" "}
+              {weeklyTotals.adminPercentage.toFixed(1)}%
             </AlertDescription>
           </Alert>
         )}
@@ -464,38 +515,48 @@ export function WeeklySummary({ schedules, user }: WeeklySummaryProps) {
 // MAIN ENHANCED SCHEDULE MANAGER COMPONENT
 // =============================================================================
 
-export function EnhancedScheduleManager({ 
-  user, 
-  schedules, 
-  onUpdateSchedule, 
+export function EnhancedScheduleManager({
+  user,
+  schedules,
+  onUpdateSchedule,
   onCreateSchedule,
-  canEdit = false 
+  canEdit = false,
 }: ScheduleManagerProps) {
   const [editingDay, setEditingDay] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<'week' | 'list'>('week');
+  const [viewMode, setViewMode] = useState<"week" | "list">("week");
 
   // Generate week structure
   const weekDays = Array.from({ length: 7 }, (_, i) => {
     const date = addDays(startOfWeek(new Date()), i);
     const dayName = getDayOfWeekName(i);
-    const dateStr = format(date, 'MMM d');
-    const schedule = schedules.find(s => s.workDay.toLowerCase() === dayName.toLowerCase());
-    
+    const dateStr = format(date, "MMM d");
+    const schedule = schedules.find(
+      s => s.workDay.toLowerCase() === dayName.toLowerCase()
+    );
+
     return {
       dayName,
       dateStr,
       schedule,
-      date
+      date,
     };
   });
 
-  const handleEdit = (dayName: string, schedule: WorkScheduleWithCapacity | null) => {
+  const handleEdit = (
+    dayName: string,
+    schedule: WorkScheduleWithCapacity | null
+  ) => {
     setEditingDay(dayName);
   };
 
-  const handleSave = async (dayName: string, updates: Partial<WorkScheduleWithCapacity>) => {
-    const existingSchedule = schedules.find(s => s.workDay.toLowerCase() === dayName.toLowerCase());
-    
+  const handleSave = async (
+    dayName: string,
+    updates: Partial<WorkScheduleWithCapacity>
+  ) => {
+    const existingSchedule = schedules.find(
+      s => s.workDay.toLowerCase() === dayName.toLowerCase()
+    );
+
     if (existingSchedule && onUpdateSchedule) {
       await onUpdateSchedule(existingSchedule.id, updates);
     } else if (onCreateSchedule) {
@@ -508,7 +569,7 @@ export function EnhancedScheduleManager({
         usesDefaultAdminTime: updates.usesDefaultAdminTime ?? true,
       });
     }
-    
+
     setEditingDay(null);
   };
 
@@ -528,17 +589,17 @@ export function EnhancedScheduleManager({
         </div>
         <div className="flex items-center space-x-2">
           <Button
-            variant={viewMode === 'week' ? 'default' : 'outline'}
+            variant={viewMode === "week" ? "default" : "outline"}
             size="sm"
-            onClick={() => setViewMode('week')}
+            onClick={() => setViewMode("week")}
           >
             <Calendar className="w-4 h-4 mr-1" />
             Week View
           </Button>
           <Button
-            variant={viewMode === 'list' ? 'default' : 'outline'}
+            variant={viewMode === "list" ? "default" : "outline"}
             size="sm"
-            onClick={() => setViewMode('list')}
+            onClick={() => setViewMode("list")}
           >
             <Users className="w-4 h-4 mr-1" />
             List View
@@ -550,7 +611,7 @@ export function EnhancedScheduleManager({
       <WeeklySummary schedules={schedules} user={user} />
 
       {/* Schedule Grid/List */}
-      {viewMode === 'week' ? (
+      {viewMode === "week" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {weekDays.map(({ dayName, dateStr, schedule }) => (
             <DayScheduleCard
@@ -560,8 +621,8 @@ export function EnhancedScheduleManager({
               dayName={dayName}
               date={dateStr}
               isEditing={editingDay === dayName && canEdit}
-              onEdit={(sched) => canEdit && handleEdit(dayName, sched)}
-              onSave={(updates) => handleSave(dayName, updates)}
+              onEdit={sched => canEdit && handleEdit(dayName, sched)}
+              onSave={updates => handleSave(dayName, updates)}
               onCancel={handleCancel}
             />
           ))}
@@ -574,7 +635,10 @@ export function EnhancedScheduleManager({
           <CardContent>
             <div className="space-y-4">
               {weekDays.map(({ dayName, dateStr, schedule }) => (
-                <div key={dayName} className="flex items-center justify-between p-4 border rounded-lg">
+                <div
+                  key={dayName}
+                  className="flex items-center justify-between p-4 border rounded-lg"
+                >
                   <div className="flex items-center space-x-4">
                     <div className="w-20">
                       <p className="font-medium">{dayName}</p>
@@ -583,16 +647,24 @@ export function EnhancedScheduleManager({
                     {schedule ? (
                       <div className="flex items-center space-x-6">
                         <div className="text-center">
-                          <p className="text-lg font-bold">{schedule.workHours}h</p>
+                          <p className="text-lg font-bold">
+                            {schedule.workHours.toFixed(2)}h
+                          </p>
                           <p className="text-xs text-muted-foreground">Work</p>
                         </div>
                         <div className="text-center">
-                          <p className="text-lg font-bold text-orange-600">{schedule.adminTimeHours.toFixed(1)}h</p>
+                          <p className="text-lg font-bold text-orange-600">
+                            {schedule.adminTimeHours.toFixed(2)}h
+                          </p>
                           <p className="text-xs text-muted-foreground">Admin</p>
                         </div>
                         <div className="text-center">
-                          <p className="text-lg font-bold text-green-600">{schedule.payrollCapacityHours.toFixed(1)}h</p>
-                          <p className="text-xs text-muted-foreground">Capacity</p>
+                          <p className="text-lg font-bold text-green-600">
+                            {schedule.payrollCapacityHours.toFixed(2)}h
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Capacity
+                          </p>
                         </div>
                       </div>
                     ) : (

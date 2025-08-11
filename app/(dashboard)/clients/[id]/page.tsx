@@ -3,17 +3,12 @@
 
 import { useQuery, useMutation } from "@apollo/client";
 import {
-  ArrowLeft,
   Edit,
-  Trash2,
   Plus,
-  MoreHorizontal,
   RefreshCw,
-  Building2,
   Users,
   Calendar,
   DollarSign,
-  MessageSquare,
   Phone,
   Mail,
   CheckCircle,
@@ -26,13 +21,23 @@ import {
   FileText,
   Calculator,
   UserCheck,
-  Download,
-  Copy,
+  User,
+  ArrowUp,
+  ArrowDown,
+  Minus,
+  Target,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useState } from "react";
-import { DocumentUploadModal, DocumentList } from "@/components/documents";
+import { useEffect, useState } from "react";
+import { PermissionGuard } from "@/components/auth/permission-guard";
+import {
+  ModernDataTable,
+  type ColumnDef,
+  type RowAction,
+} from "@/components/data";
+import { DocumentList, DocumentUploadModal } from "@/components/documents";
+import { PageHeader } from "@/components/patterns/page-header";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,7 +50,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ByteMyLoadingIcon } from "@/components/ui/bytemy-loading-icon";
 import {
   Card,
   CardContent,
@@ -53,7 +57,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -62,24 +65,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ClientServiceAgreements } from "@/domains/billing/components/service-catalog/client-service-agreements";
 import {
@@ -92,80 +81,168 @@ import {
 import { QuickEmailDialog } from "@/domains/email/components/quick-email-dialog";
 import { NotesListWithAdd } from "@/domains/notes/components/notes-list";
 import { type PayrollListItemFragment } from "@/domains/payrolls/graphql/generated/graphql";
-import { getScheduleSummary } from "@/domains/payrolls/utils/schedule-helpers";
+import { getEnhancedScheduleSummary } from "@/domains/payrolls/utils/schedule-helpers";
 import { useSmartPolling } from "@/hooks/use-polling";
 import { safeFormatDate } from "@/lib/utils/date-utils";
+import { cn } from "@/lib/utils";
 
+// EnhancedMetricCard component - EXACT copy from PayrollOverview
+function EnhancedMetricCard({
+  title,
+  value,
+  subtitle,
+  icon: IconComponent,
+  trend,
+  trendValue,
+  status = 'neutral',
+  onClick,
+  children,
+}: {
+  title: string;
+  value: string;
+  subtitle: string;
+  icon: React.ElementType;
+  trend?: 'up' | 'down' | 'stable';
+  trendValue?: string;
+  status?: 'good' | 'warning' | 'critical' | 'neutral';
+  onClick?: () => void;
+  children?: React.ReactNode;
+}) {
+  const statusStyles = {
+    good: 'bg-green-50 border-green-200 hover:bg-green-100',
+    warning: 'bg-amber-50 border-amber-200 hover:bg-amber-100',
+    critical: 'bg-red-50 border-red-200 hover:bg-red-100',
+    neutral: 'bg-white border-gray-200 hover:bg-gray-50',
+  };
+
+  const trendStyles = {
+    up: 'text-green-600 bg-green-100',
+    down: 'text-red-600 bg-red-100',
+    stable: 'text-gray-600 bg-gray-100',
+  };
+
+  return (
+    <Card 
+      className={cn(
+        "group cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02]",
+        statusStyles[status],
+        onClick && "hover:border-blue-300"
+      )}
+      onClick={onClick}
+    >
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium text-gray-700 group-hover:text-gray-900 transition-colors">
+          {title}
+        </CardTitle>
+        <div className="relative">
+          <IconComponent className="h-4 w-4 text-muted-foreground group-hover:text-blue-600 transition-colors" />
+          {status === 'critical' && (
+            <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+          )}
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          <div className="flex items-baseline justify-between">
+            <div className="text-2xl font-bold text-gray-900 group-hover:text-blue-900 transition-colors">
+              {value}
+            </div>
+            {trend && trendValue && (
+              <div 
+                className={cn(
+                  'px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1',
+                  trendStyles[trend]
+                )}
+                title="Trend from previous period"
+              >
+                {trend === 'up' && <ArrowUp className="w-3 h-3" />}
+                {trend === 'down' && <ArrowDown className="w-3 h-3" />}
+                {trend === 'stable' && <Minus className="w-3 h-3" />}
+                <span>{trendValue}</span>
+              </div>
+            )}
+          </div>
+          
+          <p className="text-xs text-muted-foreground group-hover:text-gray-600 transition-colors">
+            {subtitle}
+          </p>
+
+          {children}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 // Payroll status configuration (same as payrolls page)
 const getStatusConfig = (status: string) => {
   const configs = {
     Implementation: {
-      color: "bg-blue-100 text-blue-800 border-blue-200",
+      color: "bg-muted text-foreground border-border",
       icon: Clock,
       progress: 15,
     },
     Active: {
-      color: "bg-green-100 text-green-800 border-green-200",
+      color: "bg-success-500/10 text-success-600 border-success-500/20",
       icon: CheckCircle,
       progress: 100,
     },
     Inactive: {
-      color: "bg-gray-100 text-gray-800 border-gray-200",
+      color: "bg-muted text-muted-foreground border-border",
       icon: AlertTriangle,
       progress: 0,
     },
     draft: {
-      color: "bg-yellow-100 text-yellow-800 border-yellow-200",
+      color: "bg-warning-500/10 text-warning-600 border-warning-500/20",
       icon: FileText,
       progress: 10,
     },
     "data-entry": {
-      color: "bg-blue-100 text-blue-800 border-blue-200",
+      color: "bg-primary/10 text-primary border-primary/20",
       icon: Calculator,
       progress: 30,
     },
     review: {
-      color: "bg-purple-100 text-purple-800 border-purple-200",
+      color: "bg-accent text-accent-foreground border-border",
       icon: Eye,
       progress: 50,
     },
     processing: {
-      color: "bg-indigo-100 text-indigo-800 border-indigo-200",
+      color: "bg-primary/10 text-primary border-primary/20",
       icon: RefreshCw,
       progress: 70,
     },
     "manager-review": {
-      color: "bg-orange-100 text-orange-800 border-orange-200",
+      color: "bg-warning-500/10 text-warning-600 border-warning-500/20",
       icon: UserCheck,
       progress: 85,
     },
     approved: {
-      color: "bg-green-100 text-green-800 border-green-200",
+      color: "bg-success-500/10 text-success-600 border-success-500/20",
       icon: CheckCircle,
       progress: 95,
     },
     submitted: {
-      color: "bg-teal-100 text-teal-800 border-teal-200",
+      color: "bg-primary/10 text-primary border-primary/20",
       icon: Upload,
       progress: 100,
     },
     paid: {
-      color: "bg-emerald-100 text-emerald-800 border-emerald-200",
+      color: "bg-success-500/10 text-success-600 border-success-500/20",
       icon: CheckCircle,
       progress: 100,
     },
     "on-hold": {
-      color: "bg-amber-100 text-amber-800 border-amber-200",
+      color: "bg-warning-500/10 text-warning-600 border-warning-500/20",
       icon: AlertTriangle,
       progress: 60,
     },
     cancelled: {
-      color: "bg-red-100 text-red-800 border-red-200",
+      color: "bg-destructive/10 text-destructive border-destructive/20",
       icon: AlertTriangle,
       progress: 0,
     },
-  };
+  } as const;
 
   return configs[status as keyof typeof configs] || configs["Implementation"];
 };
@@ -175,7 +252,14 @@ export default function ClientDetailPage() {
   const id = params?.id as string;
 
   // State management
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState(() => {
+    // Initialize from URL hash if available, default to "payrolls"
+    if (typeof window !== "undefined") {
+      const hash = window.location.hash.slice(1);
+      return hash === "billing" || hash === "documents" ? hash : "payrolls";
+    }
+    return "payrolls";
+  });
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -230,32 +314,213 @@ export default function ClientDetailPage() {
     }
   );
 
-  if (loading) {
+  // Export listener for client's payrolls - moved to top level to ensure consistent hook order
+  useEffect(() => {
+    // Only set up listener if we're on payrolls tab and have data
+    if (activeTab !== "payrolls" || !data?.client?.payrollHistory) {
+      return;
+    }
+
+    const client = data.client;
+    const exportListenerId = "client:export-payrolls";
+    const handler = () => {
+      const transformPayrollData = (payrolls: any[]) => {
+        return payrolls.map(payroll => {
+          const payrollDatesTotal = 0;
+          const totalEmployees =
+            payrollDatesTotal > 0
+              ? payrollDatesTotal
+              : payroll.employeeCount || 0;
+
+          return {
+            ...payroll,
+            employeeCount: totalEmployees,
+            payrollSchedule: getEnhancedScheduleSummary(payroll),
+            priority:
+              totalEmployees > 50
+                ? "high"
+                : totalEmployees > 20
+                  ? "medium"
+                  : "low",
+            lastUpdated: new Date(
+              payroll.updatedAt || payroll.createdAt || new Date()
+            ),
+            backupConsultantName:
+              payroll.backupConsultant?.computedName ||
+              (payroll.backupConsultant
+                ? `${payroll.backupConsultant.firstName} ${payroll.backupConsultant.lastName}`
+                : "Unassigned"),
+          };
+        });
+      };
+
+      const rows = transformPayrollData(client.payrollHistory || []);
+
+      const getNextEftDisplay = (r: any) => {
+        const next = r.nextPayrollDate?.[0];
+        if (!next) return "—";
+        const raw = next.adjustedEftDate || next.originalEftDate;
+        return raw ? safeFormatDate(raw, "dd MMM yyyy") : "—";
+      };
+
+      const headers = [
+        "Payroll",
+        "Status",
+        "Consultant",
+        "Schedule",
+        "Next EFT",
+        "Employees",
+      ];
+      const escape = (val: unknown) => {
+        const s = String(val ?? "");
+        const escaped = s.replace(/"/g, '""');
+        return `"${escaped}"`;
+      };
+      const rowsCsv = rows.map(r => [
+        escape((r as any).name),
+        escape((r as any).status ?? ""),
+        escape(
+          (r as any).primaryConsultant?.computedName ||
+            ((r as any).primaryConsultant
+              ? `${(r as any).primaryConsultant.firstName ?? ""} ${(r as any).primaryConsultant.lastName ?? ""}`.trim()
+              : "")
+        ),
+        escape((r as any).payrollSchedule ?? ""),
+        escape(getNextEftDisplay(r as any)),
+        escape((r as any).employeeCount ?? 0),
+      ]);
+      const csv = [
+        headers.map(escape).join(","),
+        ...rowsCsv.map(r => r.join(",")),
+      ].join("\n");
+      const blob = new Blob([csv], {
+        type: "text/csv;charset=utf-8;",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `client-${client?.name || id}-payrolls-${new Date()
+        .toISOString()
+        .slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    };
+
+    window.addEventListener(exportListenerId, handler as EventListener);
+
+    return () =>
+      window.removeEventListener(exportListenerId, handler as EventListener);
+  }, [activeTab, data?.client?.payrollHistory, data?.client?.name, id]);
+
+  // Loading component
+  function ClientDetailLoading() {
     return (
-      <ByteMyLoadingIcon title="Loading client details..." size="default" />
+      <div className="min-h-screen bg-gray-50">
+        {/* Header skeleton */}
+        <div className="bg-white border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="py-4">
+              <Skeleton className="h-4 w-32" />
+            </div>
+
+            <div className="pb-6">
+              <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start gap-4">
+                    <Skeleton className="w-16 h-16 rounded-xl" />
+                    <div className="flex-1 min-w-0">
+                      <Skeleton className="h-8 w-64 mb-4" />
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-48" />
+                        <Skeleton className="h-4 w-40" />
+                        <Skeleton className="h-4 w-36" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-10 w-20" />
+                  <Skeleton className="h-10 w-10" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Content skeleton */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="space-y-8">
+            {/* Overview cards skeleton */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <Card key={i}>
+                  <CardContent className="p-6">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <Skeleton className="h-4 w-24" />
+                        <Skeleton className="h-4 w-4" />
+                      </div>
+                      <Skeleton className="h-8 w-16" />
+                      <Skeleton className="h-3 w-32" />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Other sections skeleton */}
+            {Array.from({ length: 2 }).map((_, i) => (
+              <Card key={i}>
+                <CardContent className="p-6">
+                  <div className="space-y-4">
+                    <Skeleton className="h-6 w-48" />
+                    <Skeleton className="h-4 w-64" />
+                    <div className="space-y-2">
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-4 w-3/4" />
+                      <Skeleton className="h-4 w-1/2" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
     );
   }
 
-  if (error) {
+  if (loading && !data) {
+    return <ClientDetailLoading />;
+  }
+
+  if (error && !data) {
     return (
-      <div className="text-center py-12">
-        <AlertTriangle className="w-12 h-12 mx-auto mb-4 text-red-500" />
-        <h3 className="text-lg font-medium text-gray-900 mb-2">
-          Error Loading Client
-        </h3>
-        <p className="text-gray-500 mb-4">{error.message}</p>
-        <Button onClick={() => refetch()} variant="outline">
-          <RefreshCw className="w-4 h-4 mr-2" />
-          Try Again
-        </Button>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center space-y-6 max-w-md mx-auto px-4">
+          <AlertTriangle className="w-12 h-12 mx-auto text-destructive" />
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              Failed to Load Client
+            </h1>
+            <p className="text-gray-600 mb-4">{error.message}</p>
+            <Button onClick={() => refetch()}>
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Try Again
+            </Button>
+          </div>
+        </div>
       </div>
     );
   }
 
   const client = data?.client;
-  
+
   // Type for client data - extract from query result
-  type ClientData = NonNullable<GetClientByIdQuery['client']>;
+  type ClientData = NonNullable<GetClientByIdQuery["client"]>;
 
   // Debug: Log client data to see what we're getting
   console.log("Client details data:", {
@@ -269,21 +534,26 @@ export default function ClientDetailPage() {
 
   if (!client) {
     return (
-      <div className="text-center py-12">
-        <Building2 className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-        <h3 className="text-lg font-medium text-gray-900 mb-2">
-          Client Not Found
-        </h3>
-        <p className="text-gray-500 mb-4">
-          The client you&apos;re looking for doesn&apos;t exist or has been
-          removed.
-        </p>
-        <Link href="/clients">
-          <Button variant="outline">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Clients
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center space-y-6 max-w-md mx-auto px-4">
+          <div className="w-24 h-24 mx-auto bg-gray-100 rounded-full flex items-center justify-center">
+            <AlertTriangle className="w-12 h-12 text-gray-400" />
+          </div>
+
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              Client Not Found
+            </h1>
+            <p className="text-gray-600">
+              The client you're looking for doesn't exist or you don't have
+              permission to view it.
+            </p>
+          </div>
+
+          <Button asChild>
+            <Link href="/clients">← Back to Clients</Link>
           </Button>
-        </Link>
+        </div>
       </div>
     );
   }
@@ -299,26 +569,26 @@ export default function ClientDetailPage() {
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
       case "active":
-        return "bg-green-100 text-green-800 border-green-200";
+        return "bg-success-500/10 text-success-600 border-success-500/20";
       case "inactive":
-        return "bg-red-100 text-red-800 border-red-200";
+        return "bg-destructive/10 text-destructive border-destructive/20";
       case "pending":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+        return "bg-warning-500/10 text-warning-600 border-warning-500/20";
       default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
+        return "bg-muted text-muted-foreground border-border";
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case "high":
-        return "text-red-600";
+        return "text-destructive";
       case "medium":
-        return "text-orange-600";
+        return "text-warning-600";
       case "low":
-        return "text-green-600";
+        return "text-success-600";
       default:
-        return "text-gray-600";
+        return "text-muted-foreground";
     }
   };
 
@@ -329,25 +599,24 @@ export default function ClientDetailPage() {
       const payrollDatesTotal = 0;
 
       const totalEmployees =
-        payrollDatesTotal > 0
-          ? payrollDatesTotal
-          : payroll.employeeCount || 0;
+        payrollDatesTotal > 0 ? payrollDatesTotal : payroll.employeeCount || 0;
 
       return {
         ...payroll,
         employeeCount: totalEmployees,
-        payrollSchedule: getScheduleSummary(payroll),
+        payrollSchedule: getEnhancedScheduleSummary(payroll),
         priority:
           totalEmployees > 50 ? "high" : totalEmployees > 20 ? "medium" : "low",
-        progress: getStatusConfig(payroll.status || "Implementation")
-          .progress,
+        progress: getStatusConfig(payroll.status || "Implementation").progress,
         lastUpdated: new Date(
           payroll.updatedAt || payroll.createdAt || new Date()
         ),
         // Store backup consultant name for easy access in UI
         backupConsultantName:
-          payroll.backupConsultant?.computedName || 
-          (payroll.backupConsultant ? `${payroll.backupConsultant.firstName} ${payroll.backupConsultant.lastName}` : "Unassigned"),
+          payroll.backupConsultant?.computedName ||
+          (payroll.backupConsultant
+            ? `${payroll.backupConsultant.firstName} ${payroll.backupConsultant.lastName}`
+            : "Unassigned"),
       };
     });
   };
@@ -457,8 +726,7 @@ export default function ClientDetailPage() {
 
   // Calculate client statistics
   const activePayrolls =
-    client?.payrollHistory?.filter((p) => !p.supersededDate)
-      ?.length || 0;
+    client?.payrollHistory?.filter(p => !p.supersededDate)?.length || 0;
   const totalPayrolls = client?.payrollHistory?.length || 0;
   const totalEmployees =
     client?.payrollHistory?.reduce((sum: number, p) => {
@@ -470,744 +738,662 @@ export default function ClientDetailPage() {
   const estimatedMonthlyValue = 0;
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <Link href="/clients">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Clients
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              {client?.name}
-            </h1>
-            <p className="text-gray-500">Client Details & Management</p>
-          </div>
-        </div>
+    <PermissionGuard action="read">
+      <div className="container mx-auto py-6 space-y-6">
+        <PageHeader
+          title={client?.name || "Client Details"}
+          breadcrumbs={[
+            { label: "Dashboard", href: "/dashboard" },
+            { label: "Clients", href: "/clients" },
+            { label: client?.name || "Client" },
+          ]}
+          status={{
+            type: client?.active ? "success" : "warning",
+            message: client?.active ? "Active" : "Inactive",
+          }}
+          actions={[
+            {
+              label: "Edit Client",
+              icon: Edit,
+              onClick: handleEditClient,
+              primary: true,
+            },
+            {
+              label: "New Payroll",
+              icon: Plus,
+              onClick: () =>
+                (window.location.href = `/payrolls/new?client=${id}`),
+            },
+          ]}
+          overflowActions={[
+            {
+              label: "Email Client",
+              icon: Mail,
+              onClick: () => setShowEmailDialog(true),
+            },
+            {
+              label: "Upload Document",
+              icon: Upload,
+              onClick: () => setShowUploadModal(true),
+            },
+            {
+              label: "Export Payrolls",
+              onClick: () =>
+                window.dispatchEvent(new CustomEvent("client:export-payrolls")),
+            },
+          ]}
+        />
 
-        <div className="flex items-center space-x-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline">
-                <MoreHorizontal className="w-4 h-4 mr-2" />
-                Actions
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={handleEditClient}>
-                <Edit className="w-4 h-4 mr-2" />
-                Edit Client
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => setShowEmailDialog(true)}>
-                <Mail className="w-4 h-4 mr-2" />
-                Send Email
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="text-red-600"
-                onClick={() => setShowDeleteDialog(true)}
-              >
-                <Trash2 className="w-4 h-4 mr-2" />
-                Delete Client
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => refetch()}>
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Refresh
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
-
-      {/* Status and Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Status</p>
-                <Badge
-                  className={getStatusColor(
-                    client?.active ? "active" : "inactive"
+        {/* Additional Header Info */}
+        <div className="bg-white border-b border-gray-200 -mt-6 pt-4 pb-4">
+          <div className="container mx-auto">
+            <div className="flex flex-col space-y-4">
+              {/* Contact Details Row */}
+              <div className="flex flex-wrap items-center justify-between">
+                <div className="flex flex-wrap items-center gap-6 text-sm">
+                  {client.contactPerson && (
+                    <div className="flex items-center gap-2">
+                      <Users className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-muted-foreground">Contact:</span>
+                      <span className="text-foreground font-medium">
+                        {client.contactPerson}
+                      </span>
+                    </div>
                   )}
-                >
-                  {client?.active ? "Active" : "Inactive"}
-                </Badge>
-              </div>
-              <CheckCircle
-                className={`w-8 h-8 ${
-                  client?.active ? "text-green-600" : "text-gray-400"
-                }`}
-              />
-            </div>
-          </CardContent>
-        </Card>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Active Payrolls
-                </p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {activePayrolls}
-                </p>
-              </div>
-              <Calendar className="w-8 h-8 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Total Employees
-                </p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {totalEmployees}
-                </p>
-              </div>
-              <Users className="w-8 h-8 text-purple-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Monthly Value
-                </p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {formatCurrency(estimatedMonthlyValue)}
-                </p>
-              </div>
-              <DollarSign className="w-8 h-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Main Content Tabs */}
-      <Tabs
-        value={activeTab}
-        onValueChange={setActiveTab}
-        className="space-y-4"
-      >
-        <TabsList className="grid w-full grid-cols-5 bg-indigo-100 shadow-md rounded-lg">
-          <TabsTrigger
-            value="overview"
-            className="data-[state=active]:bg-white data-[state=active]:text-gray-900 hover:bg-indigo-300 transition-all text-gray-900"
-          >
-            Overview
-          </TabsTrigger>
-          <TabsTrigger
-            value="payrolls"
-            className="data-[state=active]:bg-white data-[state=active]:text-gray-900 hover:bg-indigo-300 transition-all text-gray-900"
-          >
-            Payrolls ({totalPayrolls})
-          </TabsTrigger>
-          <TabsTrigger
-            value="billing"
-            className="data-[state=active]:bg-white data-[state=active]:text-gray-900 hover:bg-indigo-300 transition-all text-gray-900"
-          >
-            Billing & Services
-          </TabsTrigger>
-          <TabsTrigger
-            value="notes"
-            className="data-[state=active]:bg-white data-[state=active]:text-gray-900 hover:bg-indigo-300 transition-all text-gray-900"
-          >
-            Notes
-          </TabsTrigger>
-          <TabsTrigger
-            value="documents"
-            className="data-[state=active]:bg-white data-[state=active]:text-gray-900 hover:bg-indigo-300 transition-all text-gray-900"
-          >
-            Documents
-          </TabsTrigger>
-        </TabsList>
-
-        {/* Overview Tab */}
-        <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Contact Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Building2 className="w-5 h-5 mr-2" />
-                  Contact Information
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 gap-3">
-                  <div className="flex items-center space-x-3">
-                    <div className="flex-shrink-0">
-                      <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <Building2 className="w-4 h-4 text-blue-600" />
-                      </div>
+                  {client.contactEmail && (
+                    <div className="flex items-center gap-2">
+                      <Mail className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-muted-foreground">Email:</span>
+                      <span className="text-foreground font-medium">
+                        {client.contactEmail}
+                      </span>
                     </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-500">
-                        Contact Person
-                      </p>
-                      <p className="text-sm text-gray-900">
-                        {client.contactPerson || "Not specified"}
-                      </p>
-                    </div>
-                  </div>
+                  )}
 
-                  <div className="flex items-center space-x-3">
-                    <div className="flex-shrink-0">
-                      <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                        <Mail className="w-4 h-4 text-green-600" />
-                      </div>
+                  {client.contactPhone && (
+                    <div className="flex items-center gap-2">
+                      <Phone className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-muted-foreground">Phone:</span>
+                      <span className="text-foreground font-medium">
+                        {client.contactPhone}
+                      </span>
                     </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-500">Email</p>
-                      <p className="text-sm text-gray-900">
-                        {client.contactEmail || "Not specified"}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-3">
-                    <div className="flex-shrink-0">
-                      <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <Phone className="w-4 h-4 text-purple-600" />
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-500">Phone</p>
-                      <p className="text-sm text-gray-900">
-                        {client.contactPhone || "Not specified"}
-                      </p>
-                    </div>
-                  </div>
+                  )}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
 
-            {/* Client Details */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Client Details</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-3 text-sm">
-                  <div>
-                    <p className="font-medium text-gray-500">Created</p>
-                    <p className="text-gray-900">
+              {/* Dates Row */}
+              <div className="flex flex-wrap items-center gap-6 text-sm">
+                {client.createdAt && (
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-muted-foreground">Created:</span>
+                    <span className="text-foreground font-medium">
                       {safeFormatDate(client.createdAt)}
-                    </p>
+                    </span>
                   </div>
-                  <div>
-                    <p className="font-medium text-gray-500">Last Updated</p>
-                    <p className="text-gray-900">
+                )}
+
+                {client.updatedAt && (
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-muted-foreground">Updated:</span>
+                    <span className="text-foreground font-medium">
                       {safeFormatDate(client.updatedAt)}
-                    </p>
+                    </span>
                   </div>
-                  <div>
-                    <p className="font-medium text-gray-500">Total Payrolls</p>
-                    <p className="text-gray-900">{totalPayrolls}</p>
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-500">Active Payrolls</p>
-                    <p className="text-gray-900">{activePayrolls}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        {/* Payrolls Tab */}
-        <TabsContent value="payrolls">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Client Payrolls</CardTitle>
-                  <CardDescription>
-                    Manage payrolls associated with {client?.name}
-                  </CardDescription>
-                </div>
-                <Link href={`/payrolls/new?client=${id}`}>
-                  <Button>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Payroll
-                  </Button>
-                </Link>
+                )}
               </div>
-            </CardHeader>
-            <CardContent>
-              {(() => {
-                const transformedPayrolls = transformPayrollData(
-                  client?.payrollHistory || []
-                );
+            </div>
+          </div>
+        </div>
 
-                return (
-                  <>
-                    {/* Bulk Actions */}
-                    {selectedPayrolls.length > 0 && (
-                      <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium">
-                              {selectedPayrolls.length} payroll
-                              {selectedPayrolls.length > 1 ? "s" : ""} selected
-                            </span>
-                          </div>
-                          <div className="flex gap-2">
-                            <Button variant="outline" size="sm">
-                              <Download className="w-4 h-4 mr-2" />
-                              Export Selected
-                            </Button>
-                            <Button variant="outline" size="sm">
-                              <Upload className="w-4 h-4 mr-2" />
-                              Bulk Update
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => setSelectedPayrolls([])}
-                            >
-                              Clear Selection
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
+        {/* Enhanced Metric Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Active Payrolls Card */}
+          <EnhancedMetricCard
+            title="Active Payrolls"
+            value={activePayrolls.toString()}
+            subtitle={`${totalPayrolls} total payrolls`}
+            icon={Calendar}
+            status={activePayrolls > 0 ? 'good' : 'critical'}
+            trend={activePayrolls > totalPayrolls * 0.7 ? 'up' : 'stable'}
+            trendValue={activePayrolls > totalPayrolls * 0.7 ? 'Growing' : 'Stable'}
+            onClick={() => console.log('Navigate to payrolls')}
+          >
+            <div className="flex items-center gap-1 text-xs text-gray-600 mt-2">
+              <Target className="h-3 w-3" />
+              <span>
+                {activePayrolls === 0 ? 'No active payrolls' :
+                 activePayrolls === 1 ? 'Single payroll client' :
+                 activePayrolls > 3 ? 'Multi-payroll client' : 'Standard client'}
+              </span>
+            </div>
+          </EnhancedMetricCard>
 
-                    {/* Payrolls Table */}
-                    <div className="overflow-x-auto">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead className="w-12">
-                              <Checkbox
-                                checked={
-                                  selectedPayrolls.length ===
-                                    transformedPayrolls.length &&
-                                  transformedPayrolls.length > 0
-                                }
-                                onCheckedChange={(
-                                  checked: boolean | "indeterminate"
-                                ) =>
-                                  handleSelectAll(
-                                    checked as boolean,
-                                    transformedPayrolls
-                                  )
-                                }
-                              />
-                            </TableHead>
-                            <TableHead>Payroll</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Payroll Schedule</TableHead>
-                            <TableHead>Employees</TableHead>
-                            <TableHead>Consultant</TableHead>
-                            <TableHead>Backup Consultant</TableHead>
-                            <TableHead>Manager</TableHead>
-                            <TableHead className="w-12"></TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {transformedPayrolls.map((payroll) => {
-                            const statusConfig = getStatusConfig(
-                              payroll.status || "Implementation"
-                            );
-                            const StatusIcon = statusConfig.icon;
+          {/* Total Employees Card */}
+          <EnhancedMetricCard
+            title="Total Employees"
+            value={totalEmployees.toString()}
+            subtitle="Across all payrolls"
+            icon={Users}
+            status={totalEmployees > 0 ? 'good' : 'warning'}
+            trend={totalEmployees > 50 ? 'up' : totalEmployees > 10 ? 'stable' : 'down'}
+            trendValue={totalEmployees > 50 ? 'Large client' : totalEmployees > 10 ? 'Medium client' : 'Small client'}
+            onClick={() => console.log('Navigate to employees')}
+          >
+            <div className="flex items-center gap-1 text-xs text-gray-600 mt-2">
+              <Users className="h-3 w-3" />
+              <span>
+                {totalEmployees === 0 ? 'No employees yet' :
+                 totalEmployees > 100 ? 'Enterprise client' :
+                 totalEmployees > 20 ? 'Growing business' : 'Small business'}
+              </span>
+            </div>
+          </EnhancedMetricCard>
 
-                            return (
-                              <TableRow
-                                key={payroll.id}
-                                className="hover:bg-gray-50"
-                              >
-                                <TableCell>
-                                  <Checkbox
-                                    checked={selectedPayrolls.includes(
-                                      payroll.id
-                                    )}
-                                    onCheckedChange={(
-                                      checked: boolean | "indeterminate"
-                                    ) =>
-                                      handleSelectPayroll(
-                                        payroll.id,
-                                        checked as boolean
-                                      )
-                                    }
-                                  />
-                                </TableCell>
-                                {/* Payroll Name */}
-                                <TableCell>
-                                  <div>
-                                    <Link
-                                      href={`/payrolls/${payroll.id}`}
-                                      className="font-medium text-blue-600 hover:underline"
-                                    >
-                                      {payroll.name}
-                                    </Link>
-                                  </div>
-                                </TableCell>
+          {/* Monthly Value Card */}
+          <EnhancedMetricCard
+            title="Monthly Value"
+            value={formatCurrency(estimatedMonthlyValue)}
+            subtitle="Estimated revenue"
+            icon={DollarSign}
+            status={estimatedMonthlyValue > 1000 ? 'good' : estimatedMonthlyValue > 500 ? 'neutral' : 'warning'}
+            trend={estimatedMonthlyValue > 2000 ? 'up' : 'stable'}
+            trendValue={estimatedMonthlyValue > 2000 ? 'High value' : 'Standard'}
+            onClick={() => console.log('Navigate to billing')}
+          >
+            <div className="flex items-center gap-1 text-xs text-gray-600 mt-2">
+              <DollarSign className="h-3 w-3" />
+              <span>
+                {estimatedMonthlyValue === 0 ? 'Setup pending' :
+                 estimatedMonthlyValue > 5000 ? 'Premium client' :
+                 estimatedMonthlyValue > 1000 ? 'Standard client' : 'Basic client'}
+              </span>
+            </div>
+          </EnhancedMetricCard>
+        </div>
 
-                                {/* Status */}
-                                <TableCell>
-                                  <Badge className={statusConfig.color}>
-                                    <StatusIcon className="w-3 h-3 mr-1" />
-                                    {payroll.status || "Implementation"}
-                                  </Badge>
-                                </TableCell>
+        {/* Main Content Tabs */}
+        <Tabs
+          value={activeTab}
+          onValueChange={value => {
+            setActiveTab(value);
+            // Update URL hash
+            if (typeof window !== "undefined") {
+              window.location.hash = value;
+            }
+          }}
+          className="space-y-4"
+        >
+          <TabsList className="grid w-full grid-cols-3 bg-muted shadow-md rounded-lg">
+            <TabsTrigger
+              value="payrolls"
+              className="data-[state=active]:bg-card data-[state=active]:text-foreground hover:bg-accent transition-all text-foreground"
+            >
+              Payrolls ({totalPayrolls})
+            </TabsTrigger>
+            <TabsTrigger
+              value="billing"
+              className="data-[state=active]:bg-card data-[state=active]:text-foreground hover:bg-accent transition-all text-foreground"
+            >
+              Billing & Services
+            </TabsTrigger>
+            <TabsTrigger
+              value="documents"
+              className="data-[state=active]:bg-card data-[state=active]:text-foreground hover:bg-accent transition-all text-foreground"
+            >
+              Notes & Documents
+            </TabsTrigger>
+          </TabsList>
 
-                                {/* Payroll Schedule */}
-                                <TableCell>
-                                  <div className="flex items-center gap-2">
-                                    <Clock className="w-4 h-4 text-gray-500" />
-                                    <span className="font-medium">
-                                      {payroll.payrollSchedule}
-                                    </span>
-                                  </div>
-                                </TableCell>
+          {/* Overview Tab */}
+          <TabsContent value="documents" className="space-y-6">
+            <NotesListWithAdd
+              entityType="client"
+              entityId={id}
+              title="Client Notes"
+              description={`Notes and comments about ${client?.name}`}
+            />
+            <DocumentList
+              clientId={id}
+              showFilters={true}
+              showUploadButton={true}
+              onUploadClick={() => setShowUploadModal(true)}
+              onDocumentUpdate={() => {
+                // Refresh when documents are updated or deleted
+                window.location.reload();
+              }}
+            />
+          </TabsContent>
 
-                                {/* Employees */}
-                                <TableCell>
-                                  <div className="flex items-center gap-2">
-                                    <Users className="w-4 h-4 text-gray-400" />
-                                    <span
-                                      className={getPriorityColor(
-                                        payroll.priority
-                                      )}
-                                    >
-                                      {payroll.employeeCount}
-                                    </span>
-                                  </div>
-                                </TableCell>
-
-                                {/* Consultant */}
-                                <TableCell>
-                                  <div className="flex items-center gap-2">
-                                    <UserCheck className="w-4 h-4 text-gray-400" />
-                                    <span>
-                                      {payroll.primaryConsultant?.computedName ||
-                                        (payroll.primaryConsultant ? `${payroll.primaryConsultant.firstName} ${payroll.primaryConsultant.lastName}` : "Unassigned")}
-                                    </span>
-                                  </div>
-                                </TableCell>
-
-                                {/* Backup Consultant */}
-                                <TableCell>
-                                  <div className="flex items-center gap-2">
-                                    <UserCheck className="w-4 h-4 text-gray-500" />
-                                    <span>
-                                      {payroll.backupConsultant?.computedName ||
-                                        (payroll.backupConsultant ? `${payroll.backupConsultant.firstName} ${payroll.backupConsultant.lastName}` : "Unassigned")}
-                                    </span>
-                                  </div>
-                                </TableCell>
-
-                                {/* Manager */}
-                                <TableCell>
-                                  <div className="flex items-center gap-2">
-                                    <UserCheck className="w-4 h-4 text-blue-500" />
-                                    <span>
-                                      {payroll.assignedManager?.computedName ||
-                                        (payroll.assignedManager ? `${payroll.assignedManager.firstName} ${payroll.assignedManager.lastName}` : "Unassigned")}
-                                    </span>
-                                  </div>
-                                </TableCell>
-                                <TableCell>
-                                  <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                      <Button variant="ghost" size="sm">
-                                        <MoreHorizontal className="w-4 h-4" />
-                                      </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                      <DropdownMenuItem asChild>
-                                        <Link href={`/payrolls/${payroll.id}`}>
-                                          <Eye className="w-4 h-4 mr-2" />
-                                          View Details
-                                        </Link>
-                                      </DropdownMenuItem>
-                                      <DropdownMenuItem asChild>
-                                        <Link href={`/payrolls/${payroll.id}/edit?returnTo=/clients/${id}%23payrolls`}>
-                                          <Edit className="w-4 h-4 mr-2" />
-                                          Edit Payroll
-                                        </Link>
-                                      </DropdownMenuItem>
-                                      <DropdownMenuItem>
-                                        <Copy className="w-4 h-4 mr-2" />
-                                        Duplicate
-                                      </DropdownMenuItem>
-                                      <DropdownMenuSeparator />
-                                      <DropdownMenuItem>
-                                        <Download className="w-4 h-4 mr-2" />
-                                        Export
-                                      </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                  </DropdownMenu>
-                                </TableCell>
-                              </TableRow>
-                            );
-                          })}
-                        </TableBody>
-                      </Table>
-
-                      {transformedPayrolls.length === 0 && (
-                        <div className="text-center py-12">
-                          <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                          <h3 className="text-lg font-medium text-gray-900 mb-2">
-                            No payrolls found
-                          </h3>
-                          <p className="text-gray-500 mb-4">
-                            This client doesn&apos;t have any payrolls yet.
-                            Create the first one to get started.
-                          </p>
-                          <Link href={`/payrolls/new?client=${id}`}>
-                            <Button>
-                              <Plus className="w-4 h-4 mr-2" />
-                              Create First Payroll
-                            </Button>
-                          </Link>
-                        </div>
-                      )}
-                    </div>
-                  </>
-                );
-              })()}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Billing Tab */}
-        <TabsContent value="billing">
-          <div className="space-y-6">
-            {/* Client Billing Overview */}
+          {/* Payrolls Tab */}
+          <TabsContent value="payrolls">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <DollarSign className="w-5 h-5 mr-2" />
-                  Billing & Services Overview
-                </CardTitle>
-                <CardDescription>
-                  Manage billing configuration and service agreements for {client?.name}
-                </CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Client Payrolls</CardTitle>
+                    <CardDescription>
+                      Manage payrolls associated with {client?.name}
+                    </CardDescription>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
-                <ClientServiceAgreements 
-                  clientId={id} 
-                  clientName={client?.name || ""} 
-                />
+                {(() => {
+                  const rows = transformPayrollData(
+                    client?.payrollHistory || []
+                  );
+
+                  type Row = (typeof rows)[number];
+                  const getNextEftDisplay = (r: any) => {
+                    const next = r.nextPayrollDate?.[0];
+                    if (!next) return "—";
+                    const raw = next.adjustedEftDate || next.originalEftDate;
+                    return raw ? safeFormatDate(raw, "dd MMM yyyy") : "—";
+                  };
+
+                  const columns: ColumnDef<Row>[] = [
+                    {
+                      id: "name",
+                      key: "name",
+                      label: "Payroll",
+                      essential: true,
+                      sortable: true,
+                    },
+                    {
+                      id: "status",
+                      key: "status",
+                      label: "Status",
+                      essential: true,
+                    },
+                    {
+                      id: "primaryConsultant",
+                      key: "primaryConsultant",
+                      label: "Consultant",
+                      essential: true,
+                      render: (_v, r) =>
+                        r.primaryConsultant?.computedName ||
+                        (r.primaryConsultant
+                          ? `${r.primaryConsultant.firstName ?? ""} ${
+                              r.primaryConsultant.lastName ?? ""
+                            }`.trim()
+                          : "Unassigned"),
+                    },
+                    {
+                      id: "payrollSchedule",
+                      key: "payrollSchedule",
+                      label: "Schedule",
+                      essential: true,
+                    },
+                    {
+                      id: "nextEftDate",
+                      key: "name",
+                      label: "Next EFT",
+                      essential: true,
+                      render: (_v, r) => getNextEftDisplay(r),
+                    },
+                    {
+                      id: "employeeCount",
+                      key: "employeeCount",
+                      label: "Employees",
+                      essential: true,
+                    },
+                  ];
+
+                  const onRowClick = (row: Row) => {
+                    window.location.href = `/payrolls/${row.id}`;
+                  };
+
+                  const rowActions: RowAction<Row>[] = [
+                    {
+                      id: "view",
+                      label: "View",
+                      onClick: r =>
+                        (window.location.href = `/payrolls/${r.id}`),
+                    },
+                    {
+                      id: "edit",
+                      label: "Edit",
+                      onClick: r =>
+                        (window.location.href = `/payrolls/${r.id}/edit?returnTo=/clients/${id}%23payrolls`),
+                    },
+                  ];
+
+                  if (!rows || rows.length === 0) {
+                    return (
+                      <div className="py-12 text-center space-y-3">
+                        <Calendar className="w-10 h-10 mx-auto text-muted-foreground/70" />
+                        <div className="text-foreground font-medium">
+                          No payrolls yet
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          Create your first payroll for this client to get
+                          started
+                        </div>
+                        <div className="pt-2">
+                          <PermissionGuard action="create">
+                            <Button
+                              onClick={() =>
+                                (window.location.href = `/payrolls/new?client=${id}`)
+                              }
+                            >
+                              <Plus className="w-4 h-4 mr-2" /> New Payroll
+                            </Button>
+                          </PermissionGuard>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  const renderCardItem = (row: Row) => {
+                    const statusConfig = getStatusConfig(
+                      row.status || "Implementation"
+                    );
+                    const employeeCount = row.employeeCount || 0;
+
+                    return (
+                      <Card className="cursor-pointer hover:shadow-md transition-shadow">
+                        <CardContent className="p-4 space-y-3">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                              <Link
+                                href={`/payrolls/${row.id}`}
+                                className="font-semibold text-primary hover:text-primary/90 block truncate"
+                              >
+                                {row.name}
+                              </Link>
+                            </div>
+                            <div className="shrink-0">
+                              <Badge className={statusConfig.color}>
+                                {row.status || "Implementation"}
+                              </Badge>
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <span className="text-xs text-muted-foreground">
+                                Schedule
+                              </span>
+                              <div className="text-sm font-medium truncate">
+                                {row.payrollSchedule}
+                              </div>
+                            </div>
+                            <div>
+                              <span className="text-xs text-muted-foreground">
+                                Next EFT
+                              </span>
+                              <div className="text-sm font-medium flex items-center gap-1">
+                                <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+                                {getNextEftDisplay(row)}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <span className="text-xs text-muted-foreground">
+                                Consultant
+                              </span>
+                              <div className="text-sm font-medium flex items-center gap-1 truncate">
+                                <User className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                                <span className="truncate">
+                                  {row.primaryConsultant?.computedName ||
+                                    (row.primaryConsultant
+                                      ? `${row.primaryConsultant.firstName ?? ""} ${
+                                          row.primaryConsultant.lastName ?? ""
+                                        }`.trim()
+                                      : "Unassigned")}
+                                </span>
+                              </div>
+                            </div>
+                            <div>
+                              <span className="text-xs text-muted-foreground">
+                                Employees
+                              </span>
+                              <div className="text-sm font-medium flex items-center gap-1">
+                                <Users className="h-3.5 w-3.5 text-muted-foreground" />
+                                <span className="font-mono font-semibold">
+                                  {employeeCount}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {row.backupConsultant && (
+                            <div className="pt-2 border-t">
+                              <span className="text-xs text-muted-foreground">
+                                Backup Consultant
+                              </span>
+                              <div className="text-sm font-medium flex items-center gap-1 mt-0.5 truncate">
+                                <UserCheck className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                                <span className="truncate">
+                                  {row.backupConsultant?.computedName ||
+                                    (row.backupConsultant
+                                      ? `${row.backupConsultant.firstName ?? ""} ${
+                                          row.backupConsultant.lastName ?? ""
+                                        }`.trim()
+                                      : "Unassigned")}
+                                </span>
+                              </div>
+                            </div>
+                          )}
+
+                          <div className="flex flex-wrap gap-2 pt-2 border-t">
+                            <Button variant="outline" size="sm" asChild>
+                              <Link href={`/payrolls/${row.id}`}>
+                                <Eye className="h-3.5 w-3.5 mr-1" /> View
+                                Details
+                              </Link>
+                            </Button>
+                            <Button variant="outline" size="sm" asChild>
+                              <Link
+                                href={`/payrolls/${row.id}/edit?returnTo=/clients/${id}%23payrolls`}
+                              >
+                                <Edit className="h-3.5 w-3.5 mr-1" /> Edit
+                                Payroll
+                              </Link>
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  };
+
+                  return (
+                    <ModernDataTable
+                      data={rows as any}
+                      columns={columns as any}
+                      rowActions={rowActions as any}
+                      onRowClick={onRowClick as any}
+                      searchable
+                      viewToggle
+                      searchPlaceholder="Search payrolls..."
+                      renderCardItem={renderCardItem}
+                    />
+                  );
+                })()}
               </CardContent>
             </Card>
-          </div>
-        </TabsContent>
+          </TabsContent>
 
-        {/* Notes Tab */}
-        <TabsContent value="notes">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <MessageSquare className="w-5 h-5 mr-2" />
-                Client Notes
-              </CardTitle>
-              <CardDescription>
-                Notes and comments about {client?.name}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <NotesListWithAdd
-                entityType="client"
-                entityId={id}
-                title=""
-                description=""
-              />
-            </CardContent>
-          </Card>
-        </TabsContent>
+          {/* Billing Tab */}
+          <TabsContent value="billing">
+            {/* Client Billing Overview */}
 
-        {/* Documents Tab */}
-        <TabsContent value="documents" className="space-y-6">
-          <DocumentList
-            clientId={id}
-            showFilters={true}
-            showUploadButton={true}
-            onUploadClick={() => setShowUploadModal(true)}
-            onDocumentUpdate={() => {
-              // Refresh when documents are updated or deleted
-              window.location.reload();
-            }}
-          />
-        </TabsContent>
-      </Tabs>
+            <ClientServiceAgreements
+              clientId={id}
+              clientName={client?.name || ""}
+            />
+          </TabsContent>
+        </Tabs>
 
-      {/* Edit Client Dialog */}
-      <Dialog open={showEditDialog} onOpenChange={handleCloseEditDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Edit Client</DialogTitle>
-            <DialogDescription>
-              Make changes to the client information. Click save when
-              you&apos;re done.
-            </DialogDescription>
-          </DialogHeader>
+        {/* Edit Client Dialog */}
+        <Dialog open={showEditDialog} onOpenChange={handleCloseEditDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Edit Client</DialogTitle>
+              <DialogDescription>
+                Make changes to the client information. Click save when
+                you&apos;re done.
+              </DialogDescription>
+            </DialogHeader>
 
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="client-name">Client Name *</Label>
-              <Input
-                id="client-name"
-                placeholder="Enter client name..."
-                value={editFormData.name}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  handleInputChange("name", e.target.value)
-                }
-                className="mt-1"
-                disabled={isUpdating}
-              />
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="client-name">Client Name *</Label>
+                <Input
+                  id="client-name"
+                  placeholder="Enter client name..."
+                  value={editFormData.name}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    handleInputChange("name", e.target.value)
+                  }
+                  className="mt-1"
+                  disabled={isUpdating}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="contact-person">Contact Person</Label>
+                <Input
+                  id="contact-person"
+                  placeholder="Enter contact person name..."
+                  value={editFormData.contactPerson}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    handleInputChange("contactPerson", e.target.value)
+                  }
+                  className="mt-1"
+                  disabled={isUpdating}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="contact-email">Contact Email</Label>
+                <Input
+                  id="contact-email"
+                  type="email"
+                  placeholder="Enter contact email..."
+                  value={editFormData.contactEmail}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    handleInputChange("contactEmail", e.target.value)
+                  }
+                  className="mt-1"
+                  disabled={isUpdating}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="contact-phone">Contact Phone</Label>
+                <Input
+                  id="contact-phone"
+                  placeholder="Enter contact phone..."
+                  value={editFormData.contactPhone}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    handleInputChange("contactPhone", e.target.value)
+                  }
+                  className="mt-1"
+                  disabled={isUpdating}
+                />
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="active"
+                  checked={editFormData.active}
+                  onCheckedChange={(checked: boolean) =>
+                    handleInputChange("active", checked)
+                  }
+                  disabled={isUpdating}
+                />
+                <Label
+                  htmlFor="active"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Active client
+                </Label>
+              </div>
             </div>
 
-            <div>
-              <Label htmlFor="contact-person">Contact Person</Label>
-              <Input
-                id="contact-person"
-                placeholder="Enter contact person name..."
-                value={editFormData.contactPerson}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  handleInputChange("contactPerson", e.target.value)
-                }
-                className="mt-1"
+            <DialogFooter className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={handleCloseEditDialog}
                 disabled={isUpdating}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="contact-email">Contact Email</Label>
-              <Input
-                id="contact-email"
-                type="email"
-                placeholder="Enter contact email..."
-                value={editFormData.contactEmail}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  handleInputChange("contactEmail", e.target.value)
-                }
-                className="mt-1"
-                disabled={isUpdating}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="contact-phone">Contact Phone</Label>
-              <Input
-                id="contact-phone"
-                placeholder="Enter contact phone..."
-                value={editFormData.contactPhone}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  handleInputChange("contactPhone", e.target.value)
-                }
-                className="mt-1"
-                disabled={isUpdating}
-              />
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="active"
-                checked={editFormData.active}
-                onCheckedChange={(checked: boolean) =>
-                  handleInputChange("active", checked)
-                }
-                disabled={isUpdating}
-              />
-              <Label
-                htmlFor="active"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
-                Active client
-              </Label>
-            </div>
-          </div>
+                <X className="w-4 h-4 mr-2" />
+                Cancel
+              </Button>
+              <Button
+                onClick={handleUpdateClient}
+                disabled={isUpdating || !editFormData.name.trim()}
+              >
+                {isUpdating ? (
+                  <div className="w-4 h-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                ) : (
+                  <Save className="w-4 h-4 mr-2" />
+                )}
+                {isUpdating ? "Saving..." : "Save Changes"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
-          <DialogFooter className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={handleCloseEditDialog}
-              disabled={isUpdating}
-            >
-              <X className="w-4 h-4 mr-2" />
-              Cancel
-            </Button>
-            <Button
-              onClick={handleUpdateClient}
-              disabled={isUpdating || !editFormData.name.trim()}
-            >
-              {isUpdating ? (
-                <div className="w-4 h-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
-              ) : (
-                <Save className="w-4 h-4 mr-2" />
-              )}
-              {isUpdating ? "Saving..." : "Save Changes"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        {/* Quick Email Dialog */}
+        {client && (
+          <QuickEmailDialog
+            open={showEmailDialog}
+            onOpenChange={setShowEmailDialog}
+            businessContext={{
+              category: "client",
+              clientId: id,
+              recipientEmails: [client.contactEmail].filter(
+                (email): email is string => Boolean(email)
+              ),
+            }}
+            suggestedSubject={`Regarding: ${client.name}`}
+            title="Send Client Email"
+            description="Send an email to this client regarding their account or payroll services"
+          />
+        )}
 
-      {/* Quick Email Dialog */}
-      {client && (
-        <QuickEmailDialog
-          open={showEmailDialog}
-          onOpenChange={setShowEmailDialog}
-          businessContext={{
-            category: 'client',
-            clientId: id,
-            recipientEmails: [client.contactEmail].filter((email): email is string => Boolean(email))
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Client</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete &quot;{client?.name}
+                &quot;? This action cannot be undone and will also remove all
+                associated payrolls and data.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteClient}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                Delete Client
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Document Upload Modal */}
+        <DocumentUploadModal
+          isOpen={showUploadModal}
+          onClose={() => setShowUploadModal(false)}
+          clientId={id}
+          onUploadComplete={documents => {
+            // Refresh document list when upload completes
+            window.location.reload();
           }}
-          suggestedSubject={`Regarding: ${client.name}`}
-          title="Send Client Email"
-          description="Send an email to this client regarding their account or payroll services"
         />
-      )}
-
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Client</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete &quot;{client?.name}
-              &quot;? This action cannot be undone and will also remove all
-              associated payrolls and data.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteClient}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              Delete Client
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* Document Upload Modal */}
-      <DocumentUploadModal
-        isOpen={showUploadModal}
-        onClose={() => setShowUploadModal(false)}
-        clientId={id}
-        onUploadComplete={(documents) => {
-          // Refresh document list when upload completes
-          window.location.reload();
-        }}
-      />
-    </div>
+      </div>
+    </PermissionGuard>
   );
 }

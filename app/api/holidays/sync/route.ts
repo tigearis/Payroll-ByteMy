@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { syncAustralianHolidays } from "@/domains/external-systems/services/holiday-sync-service";
 import { withAuth } from "@/lib/auth/api-auth";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 export const POST = withAuth(
   async (req: NextRequest, session) => {

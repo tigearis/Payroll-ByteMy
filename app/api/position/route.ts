@@ -2,6 +2,7 @@ import { gql } from "@apollo/client";
 import { NextRequest, NextResponse } from "next/server";
 import { executeTypedQuery, executeTypedMutation } from "@/lib/apollo/query-helpers";
 import { withAuth } from "@/lib/auth/api-auth";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 // Position Management API Route
 // Handles user position updates and admin time management
@@ -85,7 +86,16 @@ export const GET = withAuth(async (req, session) => {
     }
 
   } catch (error) {
-    console.error('Error fetching position data:', error);
+    logger.error('Error fetching position data', {
+      namespace: 'position_api',
+      operation: 'get_position_data',
+      classification: DataClassification.INTERNAL,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      metadata: {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+        timestamp: new Date().toISOString()
+      }
+    });
     return NextResponse.json(
       { error: 'Failed to fetch position data' },
       { status: 500 }
@@ -168,7 +178,16 @@ export const PUT = withAuth(async (req, session) => {
     });
 
   } catch (error) {
-    console.error('Error updating user position:', error);
+    logger.error('Error updating user position', {
+      namespace: 'position_api',
+      operation: 'update_user_position',
+      classification: DataClassification.CONFIDENTIAL,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      metadata: {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+        timestamp: new Date().toISOString()
+      }
+    });
     return NextResponse.json(
       { error: 'Failed to update user position' },
       { status: 500 }
@@ -218,7 +237,16 @@ export const POST = withAuth(async (req, session) => {
     });
 
   } catch (error) {
-    console.error('Error in bulk position update:', error);
+    logger.error('Error in bulk position update', {
+      namespace: 'position_api',
+      operation: 'bulk_position_update',
+      classification: DataClassification.CONFIDENTIAL,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      metadata: {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+        timestamp: new Date().toISOString()
+      }
+    });
     return NextResponse.json(
       { error: 'Failed to perform bulk position update' },
       { status: 500 }

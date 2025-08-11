@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withAuthParams } from '@/lib/auth/api-auth';
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 import { getDocument } from '@/lib/storage/document-operations';
 
 interface DocumentViewResponse {

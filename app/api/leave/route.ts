@@ -15,6 +15,7 @@ import {
 } from "@/domains/leave/graphql/generated/graphql";
 import { executeTypedQuery, executeTypedMutation } from "@/lib/apollo/query-helpers";
 import { withAuth } from "@/lib/auth/api-auth";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 // GET /api/leave - List leave requests with filtering and pagination
 export const GET = withAuth(async (req) => {

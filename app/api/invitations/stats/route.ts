@@ -7,6 +7,7 @@ import {
 } from "@/domains/auth/graphql/generated/graphql";
 import { executeTypedQuery } from "@/lib/apollo/query-helpers";
 import { withAuth } from "@/lib/auth/api-auth";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 interface InvitationStatsResponse {
   success: boolean;

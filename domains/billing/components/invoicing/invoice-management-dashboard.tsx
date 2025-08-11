@@ -1,43 +1,65 @@
-'use client';
+"use client";
 
-import { useQuery, useMutation } from '@apollo/client';
-import { 
-  FileText, 
-  DollarSign, 
-  Calendar, 
-  Send, 
-  Download, 
-  Eye, 
+import { useQuery, useMutation } from "@apollo/client";
+import {
+  FileText,
+  DollarSign,
+  Send,
+  Download,
+  Eye,
   Plus,
   Search,
-  Filter,
-  MoreHorizontal,
   CheckCircle,
   AlertTriangle,
   Clock,
   XCircle,
   TrendingUp,
   Users,
-  CreditCard
-} from 'lucide-react';
-import React, { useState } from 'react';
-import { toast } from 'sonner';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+} from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { safeFormatDate } from "@/lib/utils/date-utils";
 import {
   GetInvoicesDocument,
   GetInvoiceStatsDocument,
   UpdateInvoiceStatusDocument,
   SendInvoiceDocument,
-  type BillingInvoiceFragmentFragment
-} from '../../graphql/generated/graphql';
-import { InvoiceGenerator } from './invoice-generator';
+} from "../../graphql/generated/graphql";
+import { InvoiceGenerator } from "./invoice-generator";
 
 interface InvoiceManagementDashboardProps {
   clientId?: string;
@@ -45,12 +67,12 @@ interface InvoiceManagementDashboardProps {
 }
 
 const statusColors = {
-  draft: 'bg-gray-100 text-gray-800',
-  sent: 'bg-blue-100 text-blue-800',
-  viewed: 'bg-purple-100 text-purple-800',
-  paid: 'bg-green-100 text-green-800',
-  overdue: 'bg-red-100 text-red-800',
-  cancelled: 'bg-gray-100 text-gray-800'
+  draft: "bg-muted text-foreground",
+  sent: "bg-primary/10 text-primary",
+  viewed: "bg-accent text-accent-foreground",
+  paid: "bg-success-500/10 text-success-600",
+  overdue: "bg-destructive/10 text-destructive",
+  cancelled: "bg-muted text-muted-foreground",
 };
 
 const statusIcons = {
@@ -59,35 +81,36 @@ const statusIcons = {
   viewed: Eye,
   paid: CheckCircle,
   overdue: AlertTriangle,
-  cancelled: XCircle
+  cancelled: XCircle,
 };
 
-export const InvoiceManagementDashboard: React.FC<InvoiceManagementDashboardProps> = ({
-  clientId,
-  showCreateButton = true
-}) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [dateRange, setDateRange] = useState<string>('30');
+export const InvoiceManagementDashboard: React.FC<
+  InvoiceManagementDashboardProps
+> = ({ clientId, showCreateButton = true }) => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [dateRange, setDateRange] = useState<string>("30");
   const [showInvoiceGenerator, setShowInvoiceGenerator] = useState(false);
-  const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(null);
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(
+    null
+  );
 
   // Calculate date filter
   const getDateFilter = () => {
     const endDate = new Date();
     const startDate = new Date();
-    
+
     switch (dateRange) {
-      case '7':
+      case "7":
         startDate.setDate(endDate.getDate() - 7);
         break;
-      case '30':
+      case "30":
         startDate.setDate(endDate.getDate() - 30);
         break;
-      case '90':
+      case "90":
         startDate.setDate(endDate.getDate() - 90);
         break;
-      case '365':
+      case "365":
         startDate.setFullYear(endDate.getFullYear() - 1);
         break;
       default:
@@ -95,57 +118,58 @@ export const InvoiceManagementDashboard: React.FC<InvoiceManagementDashboardProp
     }
 
     return {
-      startDate: startDate.toISOString().split('T')[0],
-      endDate: endDate.toISOString().split('T')[0]
+      startDate: startDate.toISOString().split("T")[0],
+      endDate: endDate.toISOString().split("T")[0],
     };
   };
 
   const { startDate, endDate } = getDateFilter();
 
   // Query for invoices
-  const { data: invoicesData, loading: invoicesLoading, refetch: refetchInvoices } = useQuery(
-    GetInvoicesDocument,
-    {
-      variables: {
-        where: {
-          ...(clientId && { clientId: { _eq: clientId } }),
-          ...(statusFilter !== 'all' && { status: { _eq: statusFilter } }),
-          createdAt: { _gte: startDate, _lte: endDate }
-        },
-        orderBy: { createdAt: 'DESC' }
-      }
-    }
-  );
+  const {
+    data: invoicesData,
+    loading: invoicesLoading,
+    refetch: refetchInvoices,
+  } = useQuery(GetInvoicesDocument, {
+    variables: {
+      where: {
+        ...(clientId && { clientId: { _eq: clientId } }),
+        ...(statusFilter !== "all" && { status: { _eq: statusFilter } }),
+        createdAt: { _gte: startDate, _lte: endDate },
+      },
+      orderBy: { createdAt: "DESC" },
+    },
+  });
 
   // Query for invoice statistics
   const { data: statsData } = useQuery(GetInvoiceStatsDocument, {
     variables: {
       ...(clientId && { clientId }),
       startDate,
-      endDate
-    }
+      endDate,
+    },
   });
 
   // Update invoice status mutation
   const [updateInvoiceStatus] = useMutation(UpdateInvoiceStatusDocument, {
     onCompleted: () => {
-      toast.success('Invoice status updated');
+      toast.success("Invoice status updated");
       refetchInvoices();
     },
-    onError: (error) => {
+    onError: error => {
       toast.error(`Failed to update status: ${error.message}`);
-    }
+    },
   });
 
   // Send invoice mutation
   const [sendInvoice] = useMutation(SendInvoiceDocument, {
     onCompleted: () => {
-      toast.success('Invoice sent successfully');
+      toast.success("Invoice sent successfully");
       refetchInvoices();
     },
-    onError: (error) => {
+    onError: error => {
       toast.error(`Failed to send invoice: ${error.message}`);
-    }
+    },
   });
 
   const handleStatusUpdate = async (invoiceId: string, newStatus: string) => {
@@ -153,60 +177,119 @@ export const InvoiceManagementDashboard: React.FC<InvoiceManagementDashboardProp
       await updateInvoiceStatus({
         variables: {
           id: invoiceId,
-          status: newStatus
-        }
+          status: newStatus,
+        },
       });
     } catch (error) {
-      console.error('Error updating invoice status:', error);
+      console.error("Error updating invoice status:", error);
     }
   };
 
   const handleSendInvoice = async (invoiceId: string) => {
     try {
       await sendInvoice({
-        variables: { invoiceId }
+        variables: { invoiceId },
       });
     } catch (error) {
-      console.error('Error sending invoice:', error);
+      console.error("Error sending invoice:", error);
     }
   };
 
-  const filteredInvoices = invoicesData?.billingInvoice?.filter((invoice: any) => {
-    const matchesSearch = searchTerm === '' || 
-      invoice.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      invoice.client?.name?.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    return matchesSearch;
-  }) || [];
+  const filteredInvoices =
+    invoicesData?.billingInvoice?.filter((invoice: any) => {
+      const matchesSearch =
+        searchTerm === "" ||
+        invoice.invoiceNumber
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        invoice.client?.name?.toLowerCase().includes(searchTerm.toLowerCase());
 
-  const formatCurrency = (amount: number, currency: string = 'AUD') => {
-    return new Intl.NumberFormat('en-AU', {
-      style: 'currency',
-      currency: currency
+      return matchesSearch;
+    }) || [];
+
+  const formatCurrency = (amount: number, currency: string = "AUD") => {
+    return new Intl.NumberFormat("en-AU", {
+      style: "currency",
+      currency: currency,
     }).format(amount);
   };
 
   const getOverdueInvoices = () => {
     const today = new Date();
-    return filteredInvoices.filter((invoice: any) => 
-      invoice.status !== 'paid' && 
-      invoice.status !== 'cancelled' && 
-      new Date(invoice.dueDate) < today
+    return filteredInvoices.filter(
+      (invoice: any) =>
+        invoice.status !== "paid" &&
+        invoice.status !== "cancelled" &&
+        new Date(invoice.dueDate) < today
     );
   };
 
   const calculateStats = () => {
-    const total = filteredInvoices.reduce((sum: number, invoice: any) => sum + (invoice.totalAmount || 0), 0);
+    const total = filteredInvoices.reduce(
+      (sum: number, invoice: any) => sum + (invoice.totalAmount || 0),
+      0
+    );
     const paid = filteredInvoices
-      .filter((invoice: any) => invoice.status === 'paid')
-      .reduce((sum: number, invoice: any) => sum + (invoice.totalAmount || 0), 0);
+      .filter((invoice: any) => invoice.status === "paid")
+      .reduce(
+        (sum: number, invoice: any) => sum + (invoice.totalAmount || 0),
+        0
+      );
     const pending = total - paid;
     const overdueCount = getOverdueInvoices().length;
 
-    return { total, paid, pending, overdueCount, count: filteredInvoices.length };
+    return {
+      total,
+      paid,
+      pending,
+      overdueCount,
+      count: filteredInvoices.length,
+    };
   };
 
   const stats = calculateStats();
+
+  // Export listener for invoices
+  useEffect(() => {
+    const handleExport = () => {
+      const headers = [
+        "Invoice #",
+        "Client",
+        "Status",
+        "Issued",
+        "Due",
+        "Total",
+      ];
+      const escape = (val: unknown) => {
+        const s = String(val ?? "");
+        const escaped = s.replace(/"/g, '""');
+        return `"${escaped}"`;
+      };
+      const rows = filteredInvoices.map((inv: any) => [
+        escape(inv.invoiceNumber),
+        escape(inv.client?.name),
+        escape(inv.status),
+        escape(safeFormatDate(inv.createdAt, "dd MMM yyyy")),
+        escape(safeFormatDate(inv.dueDate, "dd MMM yyyy")),
+        escape(inv.totalAmount ?? 0),
+      ]);
+      const csv = [
+        headers.map(escape).join(","),
+        ...rows.map(r => r.join(",")),
+      ].join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `invoices-export-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    };
+    window.addEventListener("invoices:export", handleExport);
+    return () => window.removeEventListener("invoices:export", handleExport);
+  }, [filteredInvoices]);
 
   return (
     <div className="space-y-6">
@@ -216,8 +299,12 @@ export const InvoiceManagementDashboard: React.FC<InvoiceManagementDashboardProp
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-                <p className="text-2xl font-bold">{formatCurrency(stats.total)}</p>
+                <p className="text-sm font-medium text-gray-600">
+                  Total Revenue
+                </p>
+                <p className="text-2xl font-bold">
+                  {formatCurrency(stats.total)}
+                </p>
               </div>
               <div className="p-2 bg-green-100 text-green-600 rounded-lg">
                 <DollarSign className="w-6 h-6" />
@@ -231,7 +318,9 @@ export const InvoiceManagementDashboard: React.FC<InvoiceManagementDashboardProp
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Paid</p>
-                <p className="text-2xl font-bold">{formatCurrency(stats.paid)}</p>
+                <p className="text-2xl font-bold">
+                  {formatCurrency(stats.paid)}
+                </p>
               </div>
               <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
                 <CheckCircle className="w-6 h-6" />
@@ -245,7 +334,9 @@ export const InvoiceManagementDashboard: React.FC<InvoiceManagementDashboardProp
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Outstanding</p>
-                <p className="text-2xl font-bold">{formatCurrency(stats.pending)}</p>
+                <p className="text-2xl font-bold">
+                  {formatCurrency(stats.pending)}
+                </p>
               </div>
               <div className="p-2 bg-yellow-100 text-yellow-600 rounded-lg">
                 <Clock className="w-6 h-6" />
@@ -278,7 +369,10 @@ export const InvoiceManagementDashboard: React.FC<InvoiceManagementDashboardProp
           </TabsList>
 
           {showCreateButton && (
-            <Dialog open={showInvoiceGenerator} onOpenChange={setShowInvoiceGenerator}>
+            <Dialog
+              open={showInvoiceGenerator}
+              onOpenChange={setShowInvoiceGenerator}
+            >
               <DialogTrigger asChild>
                 <Button>
                   <Plus className="w-4 h-4 mr-2" />
@@ -294,10 +388,10 @@ export const InvoiceManagementDashboard: React.FC<InvoiceManagementDashboardProp
                 </DialogHeader>
                 <InvoiceGenerator
                   {...(clientId && { clientId })}
-                  onInvoiceGenerated={(invoiceId) => {
+                  onInvoiceGenerated={invoiceId => {
                     setShowInvoiceGenerator(false);
                     refetchInvoices();
-                    toast.success('Invoice generated successfully');
+                    toast.success("Invoice generated successfully");
                   }}
                   onClose={() => setShowInvoiceGenerator(false)}
                 />
@@ -316,7 +410,7 @@ export const InvoiceManagementDashboard: React.FC<InvoiceManagementDashboardProp
                   <Input
                     placeholder="Search invoices..."
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={e => setSearchTerm(e.target.value)}
                     className="pl-10"
                   />
                 </div>
@@ -355,9 +449,7 @@ export const InvoiceManagementDashboard: React.FC<InvoiceManagementDashboardProp
           <Card>
             <CardHeader>
               <CardTitle>Invoices ({stats.count})</CardTitle>
-              <CardDescription>
-                Manage and track all invoices
-              </CardDescription>
+              <CardDescription>Manage and track all invoices</CardDescription>
             </CardHeader>
             <CardContent>
               {invoicesLoading ? (
@@ -370,8 +462,8 @@ export const InvoiceManagementDashboard: React.FC<InvoiceManagementDashboardProp
                   <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
                   <p>No invoices found</p>
                   {showCreateButton && (
-                    <Button 
-                      onClick={() => setShowInvoiceGenerator(true)} 
+                    <Button
+                      onClick={() => setShowInvoiceGenerator(true)}
                       className="mt-4"
                     >
                       <Plus className="w-4 h-4 mr-2" />
@@ -394,9 +486,13 @@ export const InvoiceManagementDashboard: React.FC<InvoiceManagementDashboardProp
                   </TableHeader>
                   <TableBody>
                     {filteredInvoices.map((invoice: any) => {
-                      const StatusIcon = statusIcons[invoice.status as keyof typeof statusIcons] || Clock;
-                      const isOverdue = invoice.status !== 'paid' && 
-                        invoice.status !== 'cancelled' && 
+                      const StatusIcon =
+                        statusIcons[
+                          invoice.status as keyof typeof statusIcons
+                        ] || Clock;
+                      const isOverdue =
+                        invoice.status !== "paid" &&
+                        invoice.status !== "cancelled" &&
                         new Date(invoice.dueDate) < new Date();
 
                       return (
@@ -405,28 +501,36 @@ export const InvoiceManagementDashboard: React.FC<InvoiceManagementDashboardProp
                             {invoice.invoiceNumber}
                           </TableCell>
                           <TableCell>
-                            {invoice.client?.name || 'Unknown Client'}
+                            {invoice.client?.name || "Unknown Client"}
                           </TableCell>
                           <TableCell>
-                            {formatCurrency(invoice.totalAmount, invoice.currency)}
+                            {formatCurrency(
+                              invoice.totalAmount,
+                              invoice.currency
+                            )}
                           </TableCell>
                           <TableCell>
-                            <Badge 
+                            <Badge
                               className={`${statusColors[invoice.status as keyof typeof statusColors]} flex items-center gap-1 w-fit`}
                             >
                               <StatusIcon className="w-3 h-3" />
-                              {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
-                              {isOverdue && invoice.status !== 'overdue' && (
+                              {invoice.status.charAt(0).toUpperCase() +
+                                invoice.status.slice(1)}
+                              {isOverdue && invoice.status !== "overdue" && (
                                 <AlertTriangle className="w-3 h-3 text-red-500" />
                               )}
                             </Badge>
                           </TableCell>
                           <TableCell>
-                            {new Date(invoice.invoiceDate).toLocaleDateString()}
+                            {safeFormatDate(invoice.invoiceDate, "dd MMM yyyy")}
                           </TableCell>
                           <TableCell>
-                            <span className={isOverdue ? 'text-red-600 font-medium' : ''}>
-                              {new Date(invoice.dueDate).toLocaleDateString()}
+                            <span
+                              className={
+                                isOverdue ? "text-red-600 font-medium" : ""
+                              }
+                            >
+                              {safeFormatDate(invoice.dueDate, "dd MMM yyyy")}
                             </span>
                           </TableCell>
                           <TableCell>
@@ -437,9 +541,9 @@ export const InvoiceManagementDashboard: React.FC<InvoiceManagementDashboardProp
                               <Button variant="ghost" size="sm">
                                 <Download className="w-4 h-4" />
                               </Button>
-                              {invoice.status === 'draft' && (
-                                <Button 
-                                  variant="ghost" 
+                              {invoice.status === "draft" && (
+                                <Button
+                                  variant="ghost"
                                   size="sm"
                                   onClick={() => handleSendInvoice(invoice.id)}
                                 >
@@ -463,7 +567,9 @@ export const InvoiceManagementDashboard: React.FC<InvoiceManagementDashboardProp
             <Card>
               <CardHeader>
                 <CardTitle>Payment Trends</CardTitle>
-                <CardDescription>Invoice payment performance over time</CardDescription>
+                <CardDescription>
+                  Invoice payment performance over time
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="h-64 flex items-center justify-center text-gray-500">

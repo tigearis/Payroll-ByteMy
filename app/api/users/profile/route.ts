@@ -6,8 +6,12 @@ import {
   UpdateUserProfileDocument,
   type UpdateUserProfileMutation,
 } from "@/domains/users/graphql/generated/graphql";
-import { executeTypedMutation, executeTypedQuery } from "@/lib/apollo/query-helpers";
+import {
+  executeTypedMutation,
+  executeTypedQuery,
+} from "@/lib/apollo/query-helpers";
 import { withAuth } from "@/lib/auth/api-auth";
+// import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 interface UpdateProfileRequest {
   name?: string;
@@ -51,14 +55,18 @@ export const GET = withAuth(async (req: NextRequest, session) => {
         role: user.role,
         isActive: user.isActive,
         createdAt: (user as any).createdAt || null,
-        managerUser: (user as any).managerUser ? {
-          id: (user as any).managerUser.id,
-          name: (user as any).managerUser.computedName || `${(user as any).managerUser.firstName || ''} ${(user as any).managerUser.lastName || ''}`.trim() || 'Unknown User',
-          email: (user as any).managerUser.email,
-        } : null,
+        managerUser: (user as any).managerUser
+          ? {
+              id: (user as any).managerUser.id,
+              name:
+                (user as any).managerUser.computedName ||
+                `${(user as any).managerUser.firstName || ""} ${(user as any).managerUser.lastName || ""}`.trim() ||
+                "Unknown User",
+              email: (user as any).managerUser.email,
+            }
+          : null,
       },
     });
-
   } catch (error: any) {
     console.error("Get user profile error:", error);
 
@@ -75,7 +83,7 @@ export const GET = withAuth(async (req: NextRequest, session) => {
 export const PUT = withAuth(async (req: NextRequest, session) => {
   try {
     const body: UpdateProfileRequest = await req.json();
-    
+
     // Get current user first
     const userData = await executeTypedQuery<GetUserByClerkIdQuery>(
       GetUserByClerkIdDocument,
@@ -91,18 +99,23 @@ export const PUT = withAuth(async (req: NextRequest, session) => {
     }
 
     // Update user profile
-    const updatedUserData = await executeTypedMutation<UpdateUserProfileMutation>(
-      UpdateUserProfileDocument,
-      {
-        id: user.id,
-        input: {
-          name: body.name || user.computedName || `${user.firstName} ${user.lastName}`.trim(),
-          phone: body.phone !== undefined ? body.phone : (user as any).phone,
-          address: body.address !== undefined ? body.address : (user as any).address,
-          bio: body.bio !== undefined ? body.bio : (user as any).bio,
-        },
-      }
-    );
+    const updatedUserData =
+      await executeTypedMutation<UpdateUserProfileMutation>(
+        UpdateUserProfileDocument,
+        {
+          id: user.id,
+          input: {
+            name:
+              body.name ||
+              user.computedName ||
+              `${user.firstName} ${user.lastName}`.trim(),
+            phone: body.phone !== undefined ? body.phone : (user as any).phone,
+            address:
+              body.address !== undefined ? body.address : (user as any).address,
+            bio: body.bio !== undefined ? body.bio : (user as any).bio,
+          },
+        }
+      );
 
     const updatedUser = updatedUserData.updateUsersByPk;
 
@@ -119,7 +132,9 @@ export const PUT = withAuth(async (req: NextRequest, session) => {
       success: true,
       user: {
         id: updatedUser.id,
-        name: updatedUser.computedName || `${updatedUser.firstName} ${updatedUser.lastName}`.trim(),
+        name:
+          updatedUser.computedName ||
+          `${updatedUser.firstName} ${updatedUser.lastName}`.trim(),
         email: updatedUser.email,
         phone: updatedUser.phone,
         address: updatedUser.address,
@@ -130,7 +145,6 @@ export const PUT = withAuth(async (req: NextRequest, session) => {
       },
       message: "Profile updated successfully",
     });
-
   } catch (error: any) {
     console.error("Update user profile error:", error);
 

@@ -11,8 +11,8 @@ import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { 
   authenticateServiceRequest
 } from "@/lib/auth/service-auth";
-import { createWebhookLogger, auditLog, securityLog } from "@/lib/logging/migration-utils";
 import { DataClassification } from "@/lib/logging/enterprise-logger";
+import { createWebhookLogger, auditLog, securityLog } from "@/lib/logging/migration-utils";
 
 // Initialize Clerk client for backend operations
 const clerkClient = createClerkClient({

@@ -655,6 +655,38 @@ mutation ApprovePayrollBatch(
   }
 }
 
+# Schedule management
+mutation UpdatePayrollSchedule(
+  $id: uuid!
+  $cycleId: uuid
+  $dateTypeId: uuid
+  $processingDaysBeforeEft: Int
+  $processingTime: Int
+  $dateValue: Int
+) {
+  updatePayrollsByPk(
+    pkColumns: { id: $id }
+    _set: {
+      cycleId: $cycleId
+      dateTypeId: $dateTypeId
+      processingDaysBeforeEft: $processingDaysBeforeEft
+      processingTime: $processingTime
+      dateValue: $dateValue
+      updatedAt: "now()"
+    }
+  ) {
+    ...PayrollDetailed
+    payrollCycle {
+      id
+      name
+    }
+    payrollDateType {
+      id
+      name
+    }
+  }
+}
+
 # Report generation - returns payroll data for report building
 query GeneratePayrollsByIds(
   $payrollIds: [uuid!]!

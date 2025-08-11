@@ -1,37 +1,52 @@
-'use client';
+"use client";
 
 // Template Library Component
 // Security Classification: HIGH - Template browsing and management
 // SOC2 Compliance: Template access audit and permission checks
 
-import { useQuery, useMutation } from '@apollo/client';
-import { useUser } from '@clerk/nextjs';
-import { 
+import { useQuery, useMutation } from "@apollo/client";
+import { useUser } from "@clerk/nextjs";
+import DOMPurify from "isomorphic-dompurify";
+import {
   Search,
   Filter,
   Plus,
   Eye,
   Edit,
-  Copy,
   Trash2,
   Star,
   FileText,
   Calendar,
   User,
-  Settings,
-  CheckCircle,
-  AlertCircle,
-  Loader2
-} from 'lucide-react';
-import React, { useState, useCallback } from 'react';
-import { toast } from 'sonner';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+  Loader2,
+} from "lucide-react";
+import { useState, useCallback } from "react";
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   GetEmailTemplatesDocument,
   SearchEmailTemplatesDocument,
@@ -42,17 +57,17 @@ import {
   type SearchEmailTemplatesQuery,
   type DeleteEmailTemplateMutation,
   type AddTemplateFavoriteMutation,
-  type RemoveTemplateFavoriteMutation
-} from '../graphql/generated/graphql';
-import type { EmailCategory } from '../types';
-import { EMAIL_CATEGORIES } from '../types/template-types';
+  type RemoveTemplateFavoriteMutation,
+} from "../graphql/generated/graphql";
+import type { EmailCategory } from "../types";
+import { EMAIL_CATEGORIES } from "../types/template-types";
 
 interface TemplateLibraryProps {
   onSelectTemplate?: (templateId: string) => void;
   onCreateNew?: () => void;
   onEditTemplate?: (templateId: string) => void;
   showActions?: boolean;
-  mode?: 'browse' | 'select' | 'manage';
+  mode?: "browse" | "select" | "manage";
   className?: string;
 }
 
@@ -80,76 +95,78 @@ export function TemplateLibrary({
   onCreateNew,
   onEditTemplate,
   showActions = true,
-  mode = 'browse',
-  className
+  mode = "browse",
+  className,
 }: TemplateLibraryProps) {
   // State
   const { user } = useUser();
-  const [selectedCategory, setSelectedCategory] = useState<EmailCategory | 'all'>('all');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<
+    EmailCategory | "all"
+  >("all");
+  const [searchTerm, setSearchTerm] = useState("");
   const [showSystemOnly, setShowSystemOnly] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<TemplateItem | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateItem | null>(
+    null
+  );
   const [showPreview, setShowPreview] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [templateToDelete, setTemplateToDelete] = useState<string | null>(null);
 
   // GraphQL queries and mutations
-  const { data: templatesData, loading: templatesLoading, refetch } = useQuery<GetEmailTemplatesQuery>(
-    GetEmailTemplatesDocument,
-    {
-      variables: {
-        category: selectedCategory === 'all' ? undefined : selectedCategory,
-        isActive: true
-      }
-    }
-  );
+  const {
+    data: templatesData,
+    loading: templatesLoading,
+    refetch,
+  } = useQuery<GetEmailTemplatesQuery>(GetEmailTemplatesDocument, {
+    variables: {
+      category: selectedCategory === "all" ? undefined : selectedCategory,
+      isActive: true,
+    },
+  });
 
-  const { data: searchData, loading: searchLoading } = useQuery<SearchEmailTemplatesQuery>(
-    SearchEmailTemplatesDocument,
-    {
+  const { data: searchData, loading: searchLoading } =
+    useQuery<SearchEmailTemplatesQuery>(SearchEmailTemplatesDocument, {
       variables: {
         searchTerm: `%${searchTerm}%`,
-        category: selectedCategory === 'all' ? undefined : selectedCategory
+        category: selectedCategory === "all" ? undefined : selectedCategory,
       },
-      skip: !searchTerm
-    }
-  );
+      skip: !searchTerm,
+    });
 
-  const [deleteTemplate, { loading: deleting }] = useMutation<DeleteEmailTemplateMutation>(
-    DeleteEmailTemplateDocument,
-    {
+  const [deleteTemplate, { loading: deleting }] =
+    useMutation<DeleteEmailTemplateMutation>(DeleteEmailTemplateDocument, {
       onCompleted: () => {
-        toast.success('Template deleted successfully');
+        toast.success("Template deleted successfully");
         refetch();
         setShowDeleteConfirm(false);
         setTemplateToDelete(null);
       },
-      onError: (error) => {
+      onError: error => {
         toast.error(`Failed to delete template: ${error.message}`);
-      }
-    }
-  );
+      },
+    });
 
   const [addFavorite] = useMutation<AddTemplateFavoriteMutation>(
     AddTemplateFavoriteDocument,
     {
-      onCompleted: () => toast.success('Added to favorites'),
-      onError: () => toast.error('Failed to add to favorites')
+      onCompleted: () => toast.success("Added to favorites"),
+      onError: () => toast.error("Failed to add to favorites"),
     }
   );
 
   const [removeFavorite] = useMutation<RemoveTemplateFavoriteMutation>(
     RemoveTemplateFavoriteDocument,
     {
-      onCompleted: () => toast.success('Removed from favorites'),
-      onError: () => toast.error('Failed to remove from favorites')
+      onCompleted: () => toast.success("Removed from favorites"),
+      onError: () => toast.error("Failed to remove from favorites"),
     }
   );
 
   // Get templates to display
-  const templates = searchTerm && searchData
-    ? searchData.emailTemplates
-    : templatesData?.emailTemplates || [];
+  const templates =
+    searchTerm && searchData
+      ? searchData.emailTemplates
+      : templatesData?.emailTemplates || [];
 
   const filteredTemplates = templates.filter(template => {
     if (showSystemOnly && !template.isSystemTemplate) return false;
@@ -157,32 +174,38 @@ export function TemplateLibrary({
   });
 
   // Handle template selection
-  const handleSelectTemplate = useCallback((template: TemplateItem) => {
-    if (mode === 'select') {
-      onSelectTemplate?.(template.id);
-    } else {
-      setSelectedTemplate(template);
-    }
-  }, [mode, onSelectTemplate]);
+  const handleSelectTemplate = useCallback(
+    (template: TemplateItem) => {
+      if (mode === "select") {
+        onSelectTemplate?.(template.id);
+      } else {
+        setSelectedTemplate(template);
+      }
+    },
+    [mode, onSelectTemplate]
+  );
 
   // Handle preview
   const handlePreview = useCallback(async (template: TemplateItem) => {
     try {
       const response = await fetch(`/api/email/templates/${template.id}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'preview' })
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "preview" }),
       });
 
       if (response.ok) {
         const data = await response.json();
         if (data.success && data.preview) {
-          setSelectedTemplate((prev: any) => ({ ...template, preview: data.preview }));
+          setSelectedTemplate((prev: any) => ({
+            ...template,
+            preview: data.preview,
+          }));
           setShowPreview(true);
         }
       }
     } catch (error) {
-      toast.error('Failed to generate preview');
+      toast.error("Failed to generate preview");
     }
   }, []);
 
@@ -199,18 +222,21 @@ export function TemplateLibrary({
   }, [templateToDelete, deleteTemplate]);
 
   // Handle favorite toggle
-  const handleFavoriteToggle = useCallback((templateId: string, isFavorite: boolean) => {
-    if (!user?.id) {
-      console.error("User not authenticated");
-      return;
-    }
-    
-    if (isFavorite) {
-      removeFavorite({ variables: { userId: user.id, templateId } });
-    } else {
-      addFavorite({ variables: { userId: user.id, templateId } });
-    }
-  }, [addFavorite, removeFavorite, user?.id]);
+  const handleFavoriteToggle = useCallback(
+    (templateId: string, isFavorite: boolean) => {
+      if (!user?.id) {
+        console.error("User not authenticated");
+        return;
+      }
+
+      if (isFavorite) {
+        removeFavorite({ variables: { userId: user.id, templateId } });
+      } else {
+        addFavorite({ variables: { userId: user.id, templateId } });
+      }
+    },
+    [addFavorite, removeFavorite, user?.id]
+  );
 
   // Get category info
   const getCategoryInfo = useCallback((categoryId: string) => {
@@ -228,7 +254,7 @@ export function TemplateLibrary({
               Browse and manage email templates for all business communications
             </p>
           </div>
-          
+
           {showActions && onCreateNew && (
             <Button onClick={onCreateNew}>
               <Plus className="h-4 w-4 mr-2" />
@@ -245,19 +271,24 @@ export function TemplateLibrary({
               <Input
                 placeholder="Search templates..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={e => setSearchTerm(e.target.value)}
                 className="pl-10"
               />
             </div>
           </div>
 
-          <Select value={selectedCategory} onValueChange={(value: EmailCategory | 'all') => setSelectedCategory(value)}>
+          <Select
+            value={selectedCategory}
+            onValueChange={(value: EmailCategory | "all") =>
+              setSelectedCategory(value)
+            }
+          >
             <SelectTrigger className="w-full sm:w-48">
               <SelectValue placeholder="All categories" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Categories</SelectItem>
-              {Object.values(EMAIL_CATEGORIES).map((category) => (
+              {Object.values(EMAIL_CATEGORIES).map(category => (
                 <SelectItem key={category.id} value={category.id}>
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" style={{ color: category.color }}>
@@ -291,7 +322,9 @@ export function TemplateLibrary({
           <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
           <h3 className="text-lg font-medium mb-2">No templates found</h3>
           <p className="text-muted-foreground mb-4">
-            {searchTerm ? 'No templates match your search criteria.' : 'No templates available in this category.'}
+            {searchTerm
+              ? "No templates match your search criteria."
+              : "No templates available in this category."}
           </p>
           {showActions && onCreateNew && (
             <Button onClick={onCreateNew}>
@@ -302,40 +335,44 @@ export function TemplateLibrary({
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredTemplates.map((template) => {
+          {filteredTemplates.map(template => {
             const categoryInfo = getCategoryInfo(template.category);
-            
+
             return (
-              <Card 
-                key={template.id} 
+              <Card
+                key={template.id}
                 className="cursor-pointer hover:shadow-md transition-shadow"
-                onClick={() => handleSelectTemplate({
-                  id: template.id,
-                  name: template.name,
-                  category: template.category,
-                  description: template.description || '',
-                  isSystemTemplate: template.isSystemTemplate ?? false,
-                  isActive: template.isActive ?? false,
-                  createdAt: template.createdAt || new Date().toISOString()
-                })}
+                onClick={() =>
+                  handleSelectTemplate({
+                    id: template.id,
+                    name: template.name,
+                    category: template.category,
+                    description: template.description || "",
+                    isSystemTemplate: template.isSystemTemplate ?? false,
+                    isActive: template.isActive ?? false,
+                    createdAt: template.createdAt || new Date().toISOString(),
+                  })
+                }
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
-                      <CardTitle className="text-base truncate">{template.name}</CardTitle>
+                      <CardTitle className="text-base truncate">
+                        {template.name}
+                      </CardTitle>
                       {template.description && (
                         <CardDescription className="text-sm mt-1 line-clamp-2">
                           {template.description}
                         </CardDescription>
                       )}
                     </div>
-                    
+
                     {showActions && (
                       <div className="flex items-center gap-1 ml-2">
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={(e) => {
+                          onClick={e => {
                             e.stopPropagation();
                             handleFavoriteToggle(template.id, false); // TODO: Get actual favorite status
                           }}
@@ -348,21 +385,20 @@ export function TemplateLibrary({
 
                   <div className="flex items-center gap-2 mt-2">
                     {categoryInfo && (
-                      <Badge variant="outline" style={{ color: categoryInfo.color }}>
+                      <Badge
+                        variant="outline"
+                        style={{ color: categoryInfo.color }}
+                      >
                         {categoryInfo.name}
                       </Badge>
                     )}
-                    
+
                     {template.isSystemTemplate && (
-                      <Badge variant="secondary">
-                        System
-                      </Badge>
+                      <Badge variant="secondary">System</Badge>
                     )}
-                    
+
                     {!template.isActive && (
-                      <Badge variant="destructive">
-                        Inactive
-                      </Badge>
+                      <Badge variant="destructive">Inactive</Badge>
                     )}
                   </div>
                 </CardHeader>
@@ -373,13 +409,17 @@ export function TemplateLibrary({
                       {(template as any).createdByUser && (
                         <div className="flex items-center gap-1">
                           <User className="h-3 w-3" />
-                          {(template as any).createdByUser.computedName || `${(template as any).createdByUser.firstName || ''} ${(template as any).createdByUser.lastName || ''}`.trim() || 'Unknown User'}
+                          {(template as any).createdByUser.computedName ||
+                            `${(template as any).createdByUser.firstName || ""} ${(template as any).createdByUser.lastName || ""}`.trim() ||
+                            "Unknown User"}
                         </div>
                       )}
-                      
+
                       <div className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
-                        {template.createdAt ? new Date(template.createdAt).toLocaleDateString() : 'Unknown'}
+                        {template.createdAt
+                          ? new Date(template.createdAt).toLocaleDateString()
+                          : "Unknown"}
                       </div>
                     </div>
 
@@ -388,27 +428,29 @@ export function TemplateLibrary({
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={(e) => {
+                          onClick={e => {
                             e.stopPropagation();
                             handlePreview({
                               id: template.id,
                               name: template.name,
                               category: template.category,
-                              description: template.description || '',
-                              isSystemTemplate: template.isSystemTemplate ?? false,
+                              description: template.description || "",
+                              isSystemTemplate:
+                                template.isSystemTemplate ?? false,
                               isActive: template.isActive ?? false,
-                              createdAt: template.createdAt || new Date().toISOString()
+                              createdAt:
+                                template.createdAt || new Date().toISOString(),
                             });
                           }}
                         >
                           <Eye className="h-3 w-3" />
                         </Button>
-                        
+
                         {onEditTemplate && (
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={(e) => {
+                            onClick={e => {
                               e.stopPropagation();
                               onEditTemplate(template.id);
                             }}
@@ -416,12 +458,12 @@ export function TemplateLibrary({
                             <Edit className="h-3 w-3" />
                           </Button>
                         )}
-                        
+
                         {!template.isSystemTemplate && (
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={(e) => {
+                            onClick={e => {
                               e.stopPropagation();
                               handleDelete(template.id);
                             }}
@@ -443,12 +485,14 @@ export function TemplateLibrary({
       <Dialog open={showPreview} onOpenChange={setShowPreview}>
         <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Template Preview: {selectedTemplate?.name}</DialogTitle>
+            <DialogTitle>
+              Template Preview: {selectedTemplate?.name}
+            </DialogTitle>
             <DialogDescription>
               Preview how this template will appear when processed
             </DialogDescription>
           </DialogHeader>
-          
+
           {selectedTemplate?.preview && (
             <div className="space-y-4">
               <div>
@@ -457,26 +501,32 @@ export function TemplateLibrary({
                   {selectedTemplate.preview.subject}
                 </p>
               </div>
-              
+
               <div>
                 <label className="text-sm font-medium">Content:</label>
-                <div 
+                <div
                   className="border rounded p-4 bg-white min-h-[300px]"
-                  dangerouslySetInnerHTML={{ __html: selectedTemplate.preview.htmlContent }}
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(
+                      selectedTemplate.preview.htmlContent
+                    ),
+                  }}
                 />
               </div>
             </div>
           )}
-          
+
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowPreview(false)}>
               Close
             </Button>
             {onSelectTemplate && selectedTemplate && (
-              <Button onClick={() => {
-                onSelectTemplate(selectedTemplate.id);
-                setShowPreview(false);
-              }}>
+              <Button
+                onClick={() => {
+                  onSelectTemplate(selectedTemplate.id);
+                  setShowPreview(false);
+                }}
+              >
                 Use This Template
               </Button>
             )}
@@ -490,20 +540,21 @@ export function TemplateLibrary({
           <DialogHeader>
             <DialogTitle>Delete Template</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete this template? This action cannot be undone.
+              Are you sure you want to delete this template? This action cannot
+              be undone.
             </DialogDescription>
           </DialogHeader>
-          
+
           <DialogFooter>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setShowDeleteConfirm(false)}
               disabled={deleting}
             >
               Cancel
             </Button>
-            <Button 
-              variant="destructive" 
+            <Button
+              variant="destructive"
               onClick={confirmDelete}
               disabled={deleting}
             >

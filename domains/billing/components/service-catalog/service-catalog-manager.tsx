@@ -1,25 +1,34 @@
-'use client';
+"use client";
 
-import { useQuery, useMutation } from '@apollo/client';
-import { Plus, Edit2, Trash2, Save, X } from 'lucide-react';
-import React, { useState, useEffect } from 'react';
-import { toast } from 'sonner';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
-import { 
-  GetNewServiceCatalogDocument,
+import { useQuery, useMutation } from "@apollo/client";
+import { Plus, Edit2, Trash2, Save, X } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import {
   GetServiceCatalogForQuotesDocument,
-  CreateNewServiceDocument, 
-  UpdateNewServiceDocument, 
   DeactivateServiceDocument,
-  type ServiceCatalogFragmentFragment 
-} from '../../../billing/graphql/generated/graphql';
+  type ServiceCatalogFragmentFragment,
+} from "../../../billing/graphql/generated/graphql";
 
 interface ServiceEditorProps {
   service?: ServiceCatalogFragmentFragment | undefined;
@@ -28,33 +37,37 @@ interface ServiceEditorProps {
 }
 
 const BILLING_UNITS = [
-  'Per Payroll',
-  'Per Payslip', 
-  'Per Employee',
-  'Per Hour',
-  'Per State',
-  'Once Off',
-  'Per Month',
-  'Per Lodgement'
+  "Per Payroll",
+  "Per Payslip",
+  "Per Employee",
+  "Per Hour",
+  "Per State",
+  "Once Off",
+  "Per Month",
+  "Per Lodgement",
 ];
 
 const CATEGORIES = [
-  'Setup & Configuration',
-  'Processing',
-  'Employee Management', 
-  'Compliance & Reporting',
-  'Consulting'
+  "Setup & Configuration",
+  "Processing",
+  "Employee Management",
+  "Compliance & Reporting",
+  "Consulting",
 ];
 
-const ServiceEditor: React.FC<ServiceEditorProps> = ({ service, onSave, onCancel }) => {
+const ServiceEditor: React.FC<ServiceEditorProps> = ({
+  service,
+  onSave,
+  onCancel,
+}) => {
   const [formData, setFormData] = useState({
-    name: service?.name || '',
-    description: service?.description || '',
-    standardRate: service?.defaultRate?.toString() || '',
-    billingUnit: service?.billingUnit || 'Per Payroll',
-    category: service?.category || 'Processing',
+    name: service?.name || "",
+    description: service?.description || "",
+    standardRate: service?.defaultRate?.toString() || "",
+    billingUnit: service?.billingUnit || "Per Payroll",
+    category: service?.category || "Processing",
     isActive: service?.isActive ?? true,
-    currency: service?.currency || 'AUD'
+    currency: service?.currency || "AUD",
   });
 
   // Mock mutation functions for ServiceEditor
@@ -64,9 +77,9 @@ const ServiceEditor: React.FC<ServiceEditorProps> = ({ service, onSave, onCancel
       data: {
         createService: {
           id: `service-${Date.now()}`,
-          ...options.variables.input
-        }
-      }
+          ...options.variables.input,
+        },
+      },
     };
   };
 
@@ -76,15 +89,15 @@ const ServiceEditor: React.FC<ServiceEditorProps> = ({ service, onSave, onCancel
       data: {
         updateService: {
           id: options.variables.id,
-          ...options.variables.updates
-        }
-      }
+          ...options.variables.updates,
+        },
+      },
     };
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       const input = {
         name: formData.name,
@@ -93,35 +106,35 @@ const ServiceEditor: React.FC<ServiceEditorProps> = ({ service, onSave, onCancel
         billingUnit: formData.billingUnit,
         category: formData.category,
         isActive: formData.isActive,
-        currency: formData.currency
+        currency: formData.currency,
       };
 
       if (service) {
         await updateService({
           variables: {
             id: service.id,
-            updates: input
-          }
+            updates: input,
+          },
         });
-        toast.success('Service updated successfully');
+        toast.success("Service updated successfully");
       } else {
         await createService({
-          variables: { input }
+          variables: { input },
         });
-        toast.success('Service created successfully');
+        toast.success("Service created successfully");
       }
-      
+
       onSave();
     } catch (error) {
-      toast.error('Failed to save service');
-      console.error('Service save error:', error);
+      toast.error("Failed to save service");
+      console.error("Service save error:", error);
     }
   };
 
   return (
     <Card className="w-full max-w-2xl">
       <CardHeader>
-        <CardTitle>{service ? 'Edit Service' : 'Create New Service'}</CardTitle>
+        <CardTitle>{service ? "Edit Service" : "Create New Service"}</CardTitle>
         <CardDescription>
           Configure service details for the billing catalog
         </CardDescription>
@@ -134,7 +147,9 @@ const ServiceEditor: React.FC<ServiceEditorProps> = ({ service, onSave, onCancel
               <Input
                 id="name"
                 value={formData.name}
-                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                onChange={e =>
+                  setFormData(prev => ({ ...prev, name: e.target.value }))
+                }
                 required
               />
             </div>
@@ -142,7 +157,9 @@ const ServiceEditor: React.FC<ServiceEditorProps> = ({ service, onSave, onCancel
               <Label htmlFor="category">Category</Label>
               <Select
                 value={formData.category}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
+                onValueChange={value =>
+                  setFormData(prev => ({ ...prev, category: value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -163,7 +180,9 @@ const ServiceEditor: React.FC<ServiceEditorProps> = ({ service, onSave, onCancel
             <Textarea
               id="description"
               value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+              onChange={e =>
+                setFormData(prev => ({ ...prev, description: e.target.value }))
+              }
               rows={3}
             />
           </div>
@@ -176,7 +195,12 @@ const ServiceEditor: React.FC<ServiceEditorProps> = ({ service, onSave, onCancel
                 type="number"
                 step="0.01"
                 value={formData.standardRate}
-                onChange={(e) => setFormData(prev => ({ ...prev, standardRate: e.target.value }))}
+                onChange={e =>
+                  setFormData(prev => ({
+                    ...prev,
+                    standardRate: e.target.value,
+                  }))
+                }
                 required
               />
             </div>
@@ -184,7 +208,9 @@ const ServiceEditor: React.FC<ServiceEditorProps> = ({ service, onSave, onCancel
               <Label htmlFor="billing_unit">Billing Unit</Label>
               <Select
                 value={formData.billingUnit}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, billingUnit: value }))}
+                onValueChange={value =>
+                  setFormData(prev => ({ ...prev, billingUnit: value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -202,7 +228,9 @@ const ServiceEditor: React.FC<ServiceEditorProps> = ({ service, onSave, onCancel
               <Label htmlFor="currency">Currency</Label>
               <Select
                 value={formData.currency}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, currency: value }))}
+                onValueChange={value =>
+                  setFormData(prev => ({ ...prev, currency: value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -219,7 +247,9 @@ const ServiceEditor: React.FC<ServiceEditorProps> = ({ service, onSave, onCancel
             <Switch
               id="isActive"
               checked={formData.isActive}
-              onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isActive: checked }))}
+              onCheckedChange={checked =>
+                setFormData(prev => ({ ...prev, isActive: checked }))
+              }
             />
             <Label htmlFor="isActive">Service is active</Label>
           </div>
@@ -227,7 +257,7 @@ const ServiceEditor: React.FC<ServiceEditorProps> = ({ service, onSave, onCancel
           <div className="flex gap-2 pt-4">
             <Button type="submit">
               <Save className="h-4 w-4 mr-2" />
-              {service ? 'Update' : 'Create'} Service
+              {service ? "Update" : "Create"} Service
             </Button>
             <Button type="button" variant="outline" onClick={onCancel}>
               <X className="h-4 w-4 mr-2" />
@@ -244,27 +274,31 @@ interface ServiceCatalogManagerProps {
   showCreateForm?: boolean;
 }
 
-export const ServiceCatalogManager: React.FC<ServiceCatalogManagerProps> = ({ 
-  showCreateForm = false 
+export const ServiceCatalogManager: React.FC<ServiceCatalogManagerProps> = ({
+  showCreateForm = false,
 }) => {
-  const [editingService, setEditingService] = useState<ServiceCatalogFragmentFragment | null>(null);
+  const [editingService, setEditingService] =
+    useState<ServiceCatalogFragmentFragment | null>(null);
   const [showEditor, setShowEditor] = useState(showCreateForm);
-  const [filterCategory, setFilterCategory] = useState<string>('');
+  const [filterCategory, setFilterCategory] = useState<string>("");
 
   // Real GraphQL queries - use the quotes document that doesn't have hardcoded category filter
-  const { data, loading, error, refetch } = useQuery(GetServiceCatalogForQuotesDocument, {
-    fetchPolicy: "cache-and-network"
-  });
+  const { data, loading, error, refetch } = useQuery(
+    GetServiceCatalogForQuotesDocument,
+    {
+      fetchPolicy: "cache-and-network",
+    }
+  );
 
   // Real mutation for deactivating services (since we don't have delete, we deactivate)
   const [deactivateService] = useMutation(DeactivateServiceDocument, {
     onCompleted: () => {
-      toast.success('Service deactivated successfully');
+      toast.success("Service deactivated successfully");
       // Refetch will be handled automatically by Apollo cache
     },
-    onError: (error) => {
+    onError: error => {
       toast.error(`Failed to deactivate service: ${error.message}`);
-    }
+    },
   });
 
   const handleEdit = (service: ServiceCatalogFragmentFragment) => {
@@ -279,10 +313,10 @@ export const ServiceCatalogManager: React.FC<ServiceCatalogManagerProps> = ({
 
     try {
       await deactivateService({
-        variables: { id: service.id }
+        variables: { id: service.id },
       });
     } catch (error) {
-      console.error('Service deactivate error:', error);
+      console.error("Service deactivate error:", error);
     }
   };
 
@@ -299,13 +333,15 @@ export const ServiceCatalogManager: React.FC<ServiceCatalogManagerProps> = ({
 
   const getCategoryColor = (category: string) => {
     const colors = {
-      'Setup & Configuration': 'bg-blue-100 text-blue-800',
-      'Processing': 'bg-green-100 text-green-800',
-      'Employee Management': 'bg-purple-100 text-purple-800',
-      'Compliance & Reporting': 'bg-orange-100 text-orange-800',
-      'Consulting': 'bg-gray-100 text-gray-800'
-    };
-    return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+      "Setup & Configuration": "bg-primary/10 text-primary",
+      Processing: "bg-success-500/10 text-success-600",
+      "Employee Management": "bg-accent text-accent-foreground",
+      "Compliance & Reporting": "bg-warning-500/10 text-warning-600",
+      Consulting: "bg-muted text-muted-foreground",
+    } as const;
+    return (
+      colors[category as keyof typeof colors] || "bg-muted text-foreground"
+    );
   };
 
   if (showEditor) {
@@ -322,10 +358,14 @@ export const ServiceCatalogManager: React.FC<ServiceCatalogManagerProps> = ({
 
   return (
     <div className="space-y-6">
+      {/* Export listener for services */}
+      <ExportServicesListener services={data?.services || []} />
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold">Service Catalog</h2>
-          <p className="text-gray-600">Manage billing services and rates</p>
+          <p className="text-muted-foreground">
+            Manage billing services and rates
+          </p>
         </div>
         <Button onClick={() => setShowEditor(true)}>
           <Plus className="h-4 w-4 mr-2" />
@@ -335,10 +375,7 @@ export const ServiceCatalogManager: React.FC<ServiceCatalogManagerProps> = ({
 
       <div className="flex gap-4 items-center">
         <Label htmlFor="category-filter">Filter by Category:</Label>
-        <Select
-          value={filterCategory}
-          onValueChange={setFilterCategory}
-        >
+        <Select value={filterCategory} onValueChange={setFilterCategory}>
           <SelectTrigger className="w-48">
             <SelectValue placeholder="All Categories" />
           </SelectTrigger>
@@ -354,70 +391,134 @@ export const ServiceCatalogManager: React.FC<ServiceCatalogManagerProps> = ({
       </div>
 
       {loading ? (
-        <div className="text-center py-8">Loading services...</div>
+        <div className="text-center py-8 text-muted-foreground">
+          Loading services...
+        </div>
       ) : error ? (
-        <div className="text-center py-8 text-red-600">
+        <div className="text-center py-8 text-destructive">
           <p>Error loading services: {error.message}</p>
-          <button 
-            onClick={() => refetch()} 
-            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          <button
+            onClick={() => refetch()}
+            className="mt-2 px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90"
           >
             Retry
           </button>
         </div>
       ) : (
         <div className="grid gap-4">
-          {data?.services?.filter((service: typeof data.services[0]) => 
-            !filterCategory || filterCategory === "all" || service.category === filterCategory
-          ).map((service: typeof data.services[0]) => (
-            <Card key={service.id}>
-              <CardContent className="p-6">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-lg font-semibold">{service.name}</h3>
-                      <Badge className={getCategoryColor(service.category || '')}>
-                        {service.category}
-                      </Badge>
-                      <Badge variant="outline">
-                        {service.billingUnit}
-                      </Badge>
-                      {!service.isActive && (
-                        <Badge variant="destructive">Inactive</Badge>
-                      )}
+          {data?.services
+            ?.filter(
+              (service: (typeof data.services)[0]) =>
+                !filterCategory ||
+                filterCategory === "all" ||
+                service.category === filterCategory
+            )
+            .map((service: (typeof data.services)[0]) => (
+              <Card key={service.id}>
+                <CardContent className="p-6">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="text-lg font-semibold">
+                          {service.name}
+                        </h3>
+                        <Badge
+                          className={getCategoryColor(service.category || "")}
+                        >
+                          {service.category}
+                        </Badge>
+                        <Badge variant="outline">{service.billingUnit}</Badge>
+                        {!service.isActive && (
+                          <Badge variant="destructive">Inactive</Badge>
+                        )}
+                      </div>
+                      <p className="text-muted-foreground mb-3">
+                        {service.description}
+                      </p>
+                      <div className="flex items-center gap-4 text-sm">
+                        <span className="font-medium text-foreground">
+                          ${service.defaultRate} {service.currency}
+                        </span>
+                        <span className="text-muted-foreground">
+                          {service.billingUnit}
+                        </span>
+                      </div>
                     </div>
-                    <p className="text-gray-600 mb-3">{service.description}</p>
-                    <div className="flex items-center gap-4">
-                      <span className="text-lg font-bold">
-                        ${service.defaultRate} {service.currency}
-                      </span>
-                      <span className="text-sm text-gray-500">
-                        {service.billingUnit}
-                      </span>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          handleEdit(service as ServiceCatalogFragmentFragment)
+                        }
+                      >
+                        <Edit2 className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          handleDelete(
+                            service as ServiceCatalogFragmentFragment
+                          )
+                        }
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleEdit(service as ServiceCatalogFragmentFragment)}
-                    >
-                      <Edit2 className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDelete(service as ServiceCatalogFragmentFragment)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            ))}
         </div>
       )}
     </div>
   );
+};
+
+// Listener component to handle services:export and download CSV
+const ExportServicesListener: React.FC<{ services: any[] }> = ({
+  services,
+}) => {
+  useEffect(() => {
+    const handleExport = () => {
+      const headers = [
+        "Service",
+        "Category",
+        "Billing Unit",
+        "Rate",
+        "Currency",
+        "Active",
+      ];
+      const escape = (val: unknown) => {
+        const s = String(val ?? "");
+        const escaped = s.replace(/"/g, '""');
+        return `"${escaped}"`;
+      };
+      const rows = (services || []).map((s: any) => [
+        escape(s.name),
+        escape(s.category),
+        escape(s.billingUnit),
+        escape(s.defaultRate),
+        escape(s.currency || "AUD"),
+        escape(s.isActive ? "Yes" : "No"),
+      ]);
+      const csv = [
+        headers.map(escape).join(","),
+        ...rows.map(r => r.join(",")),
+      ].join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `services-export-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    };
+    window.addEventListener("services:export", handleExport);
+    return () => window.removeEventListener("services:export", handleExport);
+  }, [services]);
+  return null;
 };

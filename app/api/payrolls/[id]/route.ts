@@ -1,43 +1,34 @@
 // app/api/payrolls/[id]/route.ts
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { GetPayrollByIdDocument, type GetPayrollByIdQuery } from "@/domains/payrolls/graphql/generated/graphql";
+import { 
+  withErrorHandling, 
+  successResponse, 
+  errorResponse, 
+  validateParams, 
+  paramValidators 
+} from "@/lib/api/route-helpers";
 import { executeTypedQuery } from "@/lib/apollo/query-helpers";
-import { withAuthParams } from "@/lib/auth/api-auth";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
-type PayrollResponse = 
-  | { error: string }
-  | NonNullable<GetPayrollByIdQuery['payrollsByPk']>;
+export const GET = withErrorHandling(async (
+  _req: NextRequest, 
+  { params }: { params: Promise<{ id: string }> }
+) => {
+  // Validate parameters
+  const { id } = await validateParams(params, { 
+    id: paramValidators.uuid 
+  });
 
-export const GET = withAuthParams(
-  async (
-    _req: NextRequest,
-    { params }: { params: Promise<{ id: string }> },
-    session
-  ) => {
-    try {
-      const { id } = await params;
+  // Execute authenticated GraphQL query with full type safety
+  const data = await executeTypedQuery<GetPayrollByIdQuery>(
+    GetPayrollByIdDocument,
+    { id }
+  );
 
-      if (!id) {
-        return NextResponse.json({ error: "Missing ID" }, { status: 400 });
-      }
-
-      // Execute authenticated GraphQL query with full type safety
-      const data = await executeTypedQuery<GetPayrollByIdQuery>(
-        GetPayrollByIdDocument,
-        { id }
-      );
-
-      if (!data.payrollsByPk) {
-        return NextResponse.json({ error: "Not Found" }, { status: 404 });
-      }
-
-      return NextResponse.json(data.payrollsByPk);
-    } catch (error) {
-      console.error("Payroll fetch error:", error);
-      return NextResponse.json(
-        { error: "Something went wrong" },
-        { status: 500 }
-      );
-    }
+  if (!data.payrollsByPk) {
+    return errorResponse("Payroll not found", 404);
   }
-);
+
+  return successResponse(data.payrollsByPk);
+});

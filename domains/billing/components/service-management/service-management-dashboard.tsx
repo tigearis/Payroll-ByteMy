@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import { useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
 import { 
   Settings, 
   Package, 
@@ -11,16 +12,15 @@ import {
   Clock,
   TrendingUp
 } from "lucide-react";
+import React, { useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { useQuery } from "@apollo/client";
-import { gql } from "@apollo/client";
 
 // Import service management components
+import { ClientServiceAssignmentManager } from './client-service-assignment-manager';
 import { MasterServiceCatalogue } from './master-service-catalogue';
 import { UserBillingRateManager } from './user-billing-rate-manager';
-import { ClientServiceAssignmentManager } from './client-service-assignment-manager';
 
 // Dashboard overview queries
 const GET_SERVICE_MANAGEMENT_OVERVIEW = gql`

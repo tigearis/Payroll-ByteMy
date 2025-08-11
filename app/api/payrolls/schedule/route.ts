@@ -6,6 +6,7 @@ import {
 } from "@/domains/payrolls/graphql/generated/graphql";
 import { executeTypedQuery } from "@/lib/apollo/query-helpers";
 import { withAuth } from "@/lib/auth/api-auth";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 export const GET = withAuth(
   async (req: NextRequest) => {
@@ -67,10 +68,17 @@ export const GET = withAuth(
           })),
         });
       } catch (graphqlError) {
-        console.error(
-          "GraphQL error during schedule generation:",
-          graphqlError
-        );
+        logger.error('GraphQL error during schedule generation', {
+          namespace: 'payroll_schedule_api',
+          operation: 'generate_schedule',
+          classification: DataClassification.CONFIDENTIAL,
+          error: graphqlError instanceof Error ? graphqlError.message : 'Unknown GraphQL error',
+          metadata: {
+            errorName: graphqlError instanceof Error ? graphqlError.name : 'UnknownError',
+            payrollId,
+            timestamp: new Date().toISOString()
+          }
+        });
         return NextResponse.json(
           {
             error: "Failed to generate payroll schedule",
@@ -83,7 +91,16 @@ export const GET = withAuth(
         );
       }
     } catch (error) {
-      console.error("Schedule generation error:", error);
+      logger.error('Schedule generation error', {
+        namespace: 'payroll_schedule_api',
+        operation: 'generate_schedule',
+        classification: DataClassification.CONFIDENTIAL,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        metadata: {
+          errorName: error instanceof Error ? error.name : 'UnknownError',
+          timestamp: new Date().toISOString()
+        }
+      });
       return NextResponse.json(
         { error: "Failed to generate payroll schedule" },
         { status: 500 }

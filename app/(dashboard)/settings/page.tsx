@@ -5,6 +5,7 @@ import { Save } from "lucide-react";
 import { useState } from "react";
 import type React from "react";
 import { PermissionGuard } from "@/components/auth/permission-guard";
+import { PageHeader } from "@/components/patterns/page-header";
 import { Button } from "@/components/ui/button";
 import { ByteMySpinner } from "@/components/ui/bytemy-loading-icon";
 import {
@@ -39,7 +40,13 @@ const features = [
 ];
 
 export default function SettingsPage() {
-  const { layoutType, setLayoutType, sidebarCollapsed, setSidebarCollapsed, toggleSidebar } = useLayoutPreferences();
+  const {
+    layoutType,
+    setLayoutType,
+    sidebarCollapsed,
+    setSidebarCollapsed,
+    toggleSidebar,
+  } = useLayoutPreferences();
   const [isLoading, setIsLoading] = useState(false);
   const [roleAccess, setRoleAccess] = useState({
     admin: { create: true, modify: true, delete: true, view: true },
@@ -78,15 +85,16 @@ export default function SettingsPage() {
     }, 1500);
   };
 
-
   return (
     <div className="container mx-auto py-6 space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Settings</h2>
-        <p className="text-muted-foreground">
-          Manage your account settings and preferences.
-        </p>
-      </div>
+      <PageHeader
+        title="Settings"
+        description="Manage your account settings and preferences."
+        breadcrumbs={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Settings" },
+        ]}
+      />
 
       <form onSubmit={handleSubmit}>
         <Tabs defaultValue="general" className="space-y-4">
@@ -247,7 +255,9 @@ export default function SettingsPage() {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
-                        <Label htmlFor="layout-sidebar">Sidebar Navigation</Label>
+                        <Label htmlFor="layout-sidebar">
+                          Sidebar Navigation
+                        </Label>
                         <p className="text-sm text-muted-foreground">
                           Use a fixed sidebar on the left for navigation
                         </p>
@@ -255,7 +265,7 @@ export default function SettingsPage() {
                       <Switch
                         id="layout-sidebar"
                         checked={layoutType === "sidebar"}
-                        onCheckedChange={(checked) =>
+                        onCheckedChange={checked =>
                           setLayoutType(checked ? "sidebar" : "header")
                         }
                       />
@@ -270,7 +280,7 @@ export default function SettingsPage() {
                       <Switch
                         id="layout-header"
                         checked={layoutType === "header"}
-                        onCheckedChange={(checked) =>
+                        onCheckedChange={checked =>
                           setLayoutType(checked ? "header" : "sidebar")
                         }
                       />
@@ -279,7 +289,9 @@ export default function SettingsPage() {
                       <>
                         <div className="flex items-center justify-between">
                           <div className="space-y-0.5">
-                            <Label htmlFor="sidebar-collapsed">Collapse Sidebar</Label>
+                            <Label htmlFor="sidebar-collapsed">
+                              Collapse Sidebar
+                            </Label>
                             <p className="text-sm text-muted-foreground">
                               Start with the sidebar collapsed to save space
                             </p>
@@ -352,18 +364,22 @@ export default function SettingsPage() {
                     {layoutType === "sidebar" && (
                       <div className="flex justify-between">
                         <span className="font-medium">Sidebar:</span>
-                        <span>{sidebarCollapsed ? "Collapsed" : "Expanded"}</span>
+                        <span>
+                          {sidebarCollapsed ? "Collapsed" : "Expanded"}
+                        </span>
                       </div>
                     )}
                     <div className="text-sm text-muted-foreground">
-                      Your layout preferences are saved automatically when changed.
+                      Your layout preferences are saved automatically when
+                      changed.
                     </div>
                   </div>
                 </div>
               </CardContent>
               <CardFooter>
                 <div className="text-sm text-muted-foreground">
-                  Layout changes take effect immediately. Your preferences are saved to your browser.
+                  Layout changes take effect immediately. Your preferences are
+                  saved to your browser.
                 </div>
               </CardFooter>
             </Card>
@@ -479,7 +495,7 @@ export default function SettingsPage() {
           </TabsContent>
 
           <TabsContent value="users">
-            <PermissionGuard 
+            <PermissionGuard
               fallback={
                 <Card>
                   <CardHeader>
@@ -513,7 +529,7 @@ export default function SettingsPage() {
           </TabsContent>
 
           <TabsContent value="security">
-            <PermissionGuard 
+            <PermissionGuard
               fallback={
                 <Card>
                   <CardHeader>
@@ -525,7 +541,8 @@ export default function SettingsPage() {
                   <CardContent>
                     <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-4">
                       <p className="text-sm text-destructive">
-                        You need security management permissions to modify security settings.
+                        You need security management permissions to modify
+                        security settings.
                       </p>
                     </div>
                   </CardContent>
@@ -540,126 +557,137 @@ export default function SettingsPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Password Policy</h3>
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-0.5">
-                        <Label htmlFor="password-expiry">Password Expiry</Label>
-                        <p className="text-sm text-muted-foreground">
-                          Require password change every 90 days
-                        </p>
+                    <h3 className="text-lg font-medium">Password Policy</h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                          <Label htmlFor="password-expiry">
+                            Password Expiry
+                          </Label>
+                          <p className="text-sm text-muted-foreground">
+                            Require password change every 90 days
+                          </p>
+                        </div>
+                        <Switch id="password-expiry" defaultChecked />
                       </div>
-                      <Switch id="password-expiry" defaultChecked />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-0.5">
-                        <Label htmlFor="password-complexity">
-                          Password Complexity
-                        </Label>
-                        <p className="text-sm text-muted-foreground">
-                          Require complex passwords (uppercase, lowercase,
-                          numbers, symbols)
-                        </p>
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                          <Label htmlFor="password-complexity">
+                            Password Complexity
+                          </Label>
+                          <p className="text-sm text-muted-foreground">
+                            Require complex passwords (uppercase, lowercase,
+                            numbers, symbols)
+                          </p>
+                        </div>
+                        <Switch id="password-complexity" defaultChecked />
                       </div>
-                      <Switch id="password-complexity" defaultChecked />
                     </div>
                   </div>
-                </div>
 
-                <Separator />
+                  <Separator />
 
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium">
-                    Two-Factor Authentication
-                  </h3>
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-0.5">
-                        <Label htmlFor="2fa-required">Require 2FA</Label>
-                        <p className="text-sm text-muted-foreground">
-                          Require two-factor authentication for all users
-                        </p>
+                    <h3 className="text-lg font-medium">
+                      Two-Factor Authentication
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                          <Label htmlFor="2fa-required">Require 2FA</Label>
+                          <p className="text-sm text-muted-foreground">
+                            Require two-factor authentication for all users
+                          </p>
+                        </div>
+                        <Switch id="2fa-required" defaultChecked />
                       </div>
-                      <Switch id="2fa-required" defaultChecked />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-0.5">
-                        <Label htmlFor="2fa-method">2FA Method</Label>
-                        <p className="text-sm text-muted-foreground">
-                          Select the preferred 2FA method
-                        </p>
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                          <Label htmlFor="2fa-method">2FA Method</Label>
+                          <p className="text-sm text-muted-foreground">
+                            Select the preferred 2FA method
+                          </p>
+                        </div>
+                        <Select defaultValue="app">
+                          <SelectTrigger
+                            id="2fa-method"
+                            className="w-full sm:w-44"
+                          >
+                            <SelectValue placeholder="Select method" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="app">
+                              Authenticator App
+                            </SelectItem>
+                            <SelectItem value="sms">SMS</SelectItem>
+                            <SelectItem value="email">Email</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
-                      <Select defaultValue="app">
-                        <SelectTrigger id="2fa-method" className="w-full sm:w-44">
-                          <SelectValue placeholder="Select method" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="app">Authenticator App</SelectItem>
-                          <SelectItem value="sms">SMS</SelectItem>
-                          <SelectItem value="email">Email</SelectItem>
-                        </SelectContent>
-                      </Select>
                     </div>
                   </div>
-                </div>
 
-                <Separator />
+                  <Separator />
 
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Session Settings</h3>
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-0.5">
-                        <Label htmlFor="session-timeout">Session Timeout</Label>
-                        <p className="text-sm text-muted-foreground">
-                          Automatically log out inactive users
-                        </p>
+                    <h3 className="text-lg font-medium">Session Settings</h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                          <Label htmlFor="session-timeout">
+                            Session Timeout
+                          </Label>
+                          <p className="text-sm text-muted-foreground">
+                            Automatically log out inactive users
+                          </p>
+                        </div>
+                        <Select defaultValue="30">
+                          <SelectTrigger
+                            id="session-timeout"
+                            className="w-full sm:w-44"
+                          >
+                            <SelectValue placeholder="Select timeout" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="15">15 minutes</SelectItem>
+                            <SelectItem value="30">30 minutes</SelectItem>
+                            <SelectItem value="60">1 hour</SelectItem>
+                            <SelectItem value="120">2 hours</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
-                      <Select defaultValue="30">
-                        <SelectTrigger
-                          id="session-timeout"
-                          className="w-full sm:w-44"
-                        >
-                          <SelectValue placeholder="Select timeout" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="15">15 minutes</SelectItem>
-                          <SelectItem value="30">30 minutes</SelectItem>
-                          <SelectItem value="60">1 hour</SelectItem>
-                          <SelectItem value="120">2 hours</SelectItem>
-                        </SelectContent>
-                      </Select>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Button type="submit" disabled={isLoading}>
-                  {isLoading ? (
-                    <>
-                      <ByteMySpinner size="sm" className="mr-2" />
-                      Saving...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="mr-2 h-4 w-4" />
-                      Save Changes
-                    </>
-                  )}
-                </Button>
-              </CardFooter>
-            </Card>
+                </CardContent>
+                <CardFooter>
+                  <Button type="submit" disabled={isLoading}>
+                    {isLoading ? (
+                      <>
+                        <ByteMySpinner size="sm" className="mr-2" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="mr-2 h-4 w-4" />
+                        Save Changes
+                      </>
+                    )}
+                  </Button>
+                </CardFooter>
+              </Card>
             </PermissionGuard>
           </TabsContent>
         </Tabs>
       </form>
-      <PermissionGuard 
+      <PermissionGuard
         fallback={
           <Card>
             <CardHeader>
               <CardTitle>Role Access Settings</CardTitle>
-              <CardDescription>Toggle access rights for each role</CardDescription>
+              <CardDescription>
+                Toggle access rights for each role
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-4">
@@ -674,42 +702,44 @@ export default function SettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle>Role Access Settings</CardTitle>
-            <CardDescription>Toggle access rights for each role</CardDescription>
+            <CardDescription>
+              Toggle access rights for each role
+            </CardDescription>
           </CardHeader>
           <CardContent>
-          <div className="space-y-6">
-            {roles.map(role => (
-              <div key={role} className="space-y-2">
-                <h3 className="text-lg font-medium capitalize">{role}</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  {features.map(feature => (
-                    <div
-                      key={feature.id}
-                      className="flex items-center space-x-2"
-                    >
-                      <Switch
-                        id={`${role}-${feature.id}`}
-                        checked={
-                          roleAccess[role as keyof typeof roleAccess][
-                            feature.id as keyof (typeof roleAccess)[keyof typeof roleAccess]
-                          ]
-                        }
-                        onCheckedChange={() => handleToggle(role, feature.id)}
-                      />
-                      <Label htmlFor={`${role}-${feature.id}`}>
-                        {feature.name}
-                      </Label>
-                    </div>
-                  ))}
+            <div className="space-y-6">
+              {roles.map(role => (
+                <div key={role} className="space-y-2">
+                  <h3 className="text-lg font-medium capitalize">{role}</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    {features.map(feature => (
+                      <div
+                        key={feature.id}
+                        className="flex items-center space-x-2"
+                      >
+                        <Switch
+                          id={`${role}-${feature.id}`}
+                          checked={
+                            roleAccess[role as keyof typeof roleAccess][
+                              feature.id as keyof (typeof roleAccess)[keyof typeof roleAccess]
+                            ]
+                          }
+                          onCheckedChange={() => handleToggle(role, feature.id)}
+                        />
+                        <Label htmlFor={`${role}-${feature.id}`}>
+                          {feature.name}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-          <Button onClick={handleSave} className="mt-6">
-            Save Changes
-          </Button>
-        </CardContent>
-      </Card>
+              ))}
+            </div>
+            <Button onClick={handleSave} className="mt-6">
+              Save Changes
+            </Button>
+          </CardContent>
+        </Card>
       </PermissionGuard>
     </div>
   );

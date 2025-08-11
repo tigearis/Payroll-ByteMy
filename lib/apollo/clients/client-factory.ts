@@ -1,6 +1,6 @@
 /**
  * Apollo Client Factory
- * 
+ *
  * Creates Apollo Client instances with unified configuration
  */
 
@@ -42,21 +42,21 @@ export function createUnifiedApolloClient(
   // ================================
   // CRITICAL: APOLLO LINK CHAIN ORDER
   // ================================
-  // 
+  //
   // The order of links in the chain is CRITICAL for proper operation.
   // Each link processes requests in sequence and responses in reverse:
   //
   // REQUEST FLOW (Component → Hasura):
   // Component → errorLink → complexityLink → retryLink → dataLoaderLink → authLink → httpLink → Hasura
   //
-  // RESPONSE FLOW (Hasura → Component):  
+  // RESPONSE FLOW (Hasura → Component):
   // Hasura → httpLink → authLink → dataLoaderLink → retryLink → complexityLink → errorLink → Component
   //
   // WHY THIS ORDER MATTERS:
   //
   // 1. ERROR LINK (first) - Must catch ALL errors from subsequent links
   //    - Catches network errors from httpLink
-  //    - Catches auth errors from authLink  
+  //    - Catches auth errors from authLink
   //    - Provides centralized error logging and user messaging
   //    - Can trigger token refresh and retry operations
   //
@@ -91,7 +91,7 @@ export function createUnifiedApolloClient(
   //
   // ⚠️  CHANGING THIS ORDER CAN BREAK:
   //    - Authentication (tokens missing or stale)
-  //    - Error handling (errors not caught properly)  
+  //    - Error handling (errors not caught properly)
   //    - Retry logic (infinite loops or missing auth)
   //    - Audit logging (errors not logged)
 
@@ -108,14 +108,26 @@ export function createUnifiedApolloClient(
         );
       },
       wsLink, // Real-time subscriptions go to WebSocket
-      // All other operations go through the standard link chain  
-      // Temporarily disable dataLoaderLink to debug error
-      from([errorLink, complexityLink, retryLink, authLink, httpLink])
+      // All other operations go through the standard link chain
+      from([
+        errorLink,
+        complexityLink,
+        retryLink,
+        dataLoaderLink,
+        authLink,
+        httpLink,
+      ])
     );
   } else {
     // Standard HTTP-only link chain (server/admin contexts)
-    // Temporarily disable dataLoaderLink to debug error
-    link = from([errorLink, complexityLink, retryLink, authLink, httpLink]);
+    link = from([
+      errorLink,
+      complexityLink,
+      retryLink,
+      dataLoaderLink,
+      authLink,
+      httpLink,
+    ]);
   }
 
   return new ApolloClient({

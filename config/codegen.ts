@@ -245,13 +245,31 @@ const generateDomainConfig = (domainName: string) => {
   const domain = domains[domainName as keyof typeof domains];
   if (!domain) return null;
 
+  // Include all domain GraphQL documents; optimized analytics are now aligned
+  // Special-case: exclude unstable billing analytics documents until schema alignment is complete
+  const domainDocuments =
+    domainName === "billing"
+      ? [
+          `./domains/${domainName}/graphql/*.graphql`,
+          `!./domains/${domainName}/graphql/optimized-analytics.graphql`,
+          `!./domains/${domainName}/graphql/billing-dashboard-optimized.graphql`,
+          // Temporarily exclude analytics docs that rely on not-yet-aligned Hasura views/types
+          `!./domains/${domainName}/graphql/daily-revenue-trends.graphql`,
+          `!./domains/${domainName}/graphql/daily-analytics-summary.graphql`,
+          `!./domains/${domainName}/graphql/client-analytics.graphql`,
+          `!./domains/${domainName}/graphql/staff-analytics.graphql`,
+          `!./domains/${domainName}/graphql/service-analytics.graphql`,
+          `./shared/graphql/**/*.graphql`,
+        ]
+      : [
+          `./domains/${domainName}/graphql/*.graphql`,
+          `./shared/graphql/**/*.graphql`,
+        ];
+
   return {
     [`./domains/${domainName}/graphql/generated/`]: {
       preset: "client", // Modern client preset for React/Apollo
-      documents: [
-        `./domains/${domainName}/graphql/*.graphql`, // Domain-specific operations
-        `./shared/graphql/**/*.graphql`, // Shared fragments and operations
-      ],
+      documents: domainDocuments,
       presetConfig: {
         gqlTagName: "gql", // Use gql`` template literal
         fragmentMasking: false, // Disabled for simpler DX (can access fragment data directly)

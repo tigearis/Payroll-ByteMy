@@ -7,6 +7,7 @@ import {
 } from "@/domains/users/graphql/generated/graphql";
 import { updateUserRole, type UserRole } from "@/domains/users/services/user-sync";
 import { executeTypedMutation, executeTypedQuery } from "@/lib/apollo/query-helpers";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 import { requireStaffAccess, requireManagerAccess } from "@/lib/permissions/api-permission-guard";
 
 interface UpdateRoleRequest {

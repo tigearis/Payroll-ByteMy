@@ -4,24 +4,24 @@ import { useQuery } from "@apollo/client";
 import {
   FileText,
   DollarSign,
-  Calendar,
   Building2,
   CheckCircle,
   ArrowLeft,
 } from "lucide-react";
 import Link from "next/link";
-import React, { useState } from "react";
+import { useState } from "react";
 import { PermissionGuard } from "@/components/auth/permission-guard";
+import { PageHeader } from "@/components/patterns/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { GetBillingItemsAdvancedDocument } from "@/domains/billing/graphql/generated/graphql";
 import { GetClientsForDropdownDocument } from "@/domains/clients/graphql/generated/graphql";
@@ -63,12 +63,12 @@ export default function NewInvoicePage() {
     ? billingItems.filter(item => item.clientId === selectedClient)
     : billingItems;
 
-  const selectedItemsData = billingItems.filter(item => 
+  const selectedItemsData = billingItems.filter(item =>
     selectedItems.includes(item.id)
   );
 
   const totalAmount = selectedItemsData.reduce(
-    (sum, item) => sum + (item.amount || 0), 
+    (sum, item) => sum + (item.amount || 0),
     0
   );
 
@@ -80,7 +80,7 @@ export default function NewInvoicePage() {
   };
 
   const handleItemToggle = (itemId: string) => {
-    setSelectedItems(prev => 
+    setSelectedItems(prev =>
       prev.includes(itemId)
         ? prev.filter(id => id !== itemId)
         : [...prev, itemId]
@@ -96,33 +96,27 @@ export default function NewInvoicePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50/30">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="py-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <Button variant="outline" size="sm" asChild>
-                  <Link href="/billing">
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Back to Billing
-                  </Link>
-                </Button>
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900">Generate Invoice</h1>
-                  <p className="mt-1 text-sm text-gray-500">
-                    Create invoices from approved billing items
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="container mx-auto py-6 space-y-6">
+      <PageHeader
+        title="Generate Invoice"
+        description="Create invoices from approved billing items"
+        breadcrumbs={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Billing", href: "/billing" },
+          { label: "Invoices", href: "/billing/invoices" },
+          { label: "New" },
+        ]}
+        actions={[
+          {
+            label: "Back to Billing",
+            icon: ArrowLeft,
+            href: "/billing",
+          },
+        ]}
+      />
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="px-0">
         <PermissionGuard action="admin">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Selection Panel */}
@@ -136,7 +130,10 @@ export default function NewInvoicePage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Select value={selectedClient} onValueChange={setSelectedClient}>
+                  <Select
+                    value={selectedClient}
+                    onValueChange={setSelectedClient}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Choose a client" />
                     </SelectTrigger>
@@ -167,10 +164,9 @@ export default function NewInvoicePage() {
                         onClick={handleSelectAll}
                         disabled={filteredItems.length === 0}
                       >
-                        {selectedItems.length === filteredItems.length 
-                          ? "Deselect All" 
-                          : "Select All"
-                        }
+                        {selectedItems.length === filteredItems.length
+                          ? "Deselect All"
+                          : "Select All"}
                       </Button>
                       <Badge variant="secondary">
                         {filteredItems.length} items available
@@ -183,7 +179,9 @@ export default function NewInvoicePage() {
                     <div className="flex items-center justify-center py-12">
                       <div className="text-center">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                        <p className="text-gray-500">Loading billing items...</p>
+                        <p className="text-gray-500">
+                          Loading billing items...
+                        </p>
                       </div>
                     </div>
                   ) : filteredItems.length === 0 ? (
@@ -193,10 +191,9 @@ export default function NewInvoicePage() {
                         No Available Items
                       </h3>
                       <p className="text-gray-500">
-                        {selectedClient 
+                        {selectedClient
                           ? "No approved, uninvoiced items for this client"
-                          : "No approved billing items ready for invoicing"
-                        }
+                          : "No approved billing items ready for invoicing"}
                       </p>
                     </div>
                   ) : (
@@ -230,7 +227,8 @@ export default function NewInvoicePage() {
                               {formatCurrency(item.amount || 0)}
                             </div>
                             <div className="text-sm text-gray-500">
-                              {item.quantity} {item.service?.billingUnit || "units"}
+                              {item.quantity}{" "}
+                              {item.service?.billingUnit || "units"}
                             </div>
                           </div>
                         </div>
@@ -257,11 +255,15 @@ export default function NewInvoicePage() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Subtotal:</span>
-                    <span className="font-medium">{formatCurrency(totalAmount)}</span>
+                    <span className="font-medium">
+                      {formatCurrency(totalAmount)}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">GST (10%):</span>
-                    <span className="font-medium">{formatCurrency(totalAmount * 0.1)}</span>
+                    <span className="font-medium">
+                      {formatCurrency(totalAmount * 0.1)}
+                    </span>
                   </div>
                   <hr />
                   <div className="flex justify-between text-lg font-bold">
@@ -280,7 +282,10 @@ export default function NewInvoicePage() {
                   <CardContent>
                     <div className="space-y-2 max-h-64 overflow-y-auto">
                       {selectedItemsData.map((item: any) => (
-                        <div key={item.id} className="flex justify-between text-sm">
+                        <div
+                          key={item.id}
+                          className="flex justify-between text-sm"
+                        >
                           <span className="truncate mr-2">
                             {item.service?.name || item.description}
                           </span>
@@ -296,8 +301,8 @@ export default function NewInvoicePage() {
 
               {/* Action Buttons */}
               <div className="space-y-3">
-                <Button 
-                  className="w-full" 
+                <Button
+                  className="w-full"
                   disabled={selectedItems.length === 0}
                   size="lg"
                 >
@@ -305,9 +310,7 @@ export default function NewInvoicePage() {
                   Generate Invoice
                 </Button>
                 <Button variant="outline" className="w-full" asChild>
-                  <Link href="/billing">
-                    Cancel
-                  </Link>
+                  <Link href="/billing">Cancel</Link>
                 </Button>
               </div>
             </div>

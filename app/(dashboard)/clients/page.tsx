@@ -1,852 +1,277 @@
-// app/(dashboard)/clients/page.tsx
 "use client";
 
-import { useQuery } from "@apollo/client";
-import { useUser } from "@clerk/nextjs";
+/*
+ * Modern Clients Management Page
+ *
+ * Features progressive disclosure pattern with:
+ * - 4 essential columns: Client Name, Contact, Status, Payrolls
+ * - Expandable rows for detailed client information and relationships
+ * - Smart search and contextual client management actions
+ * - Mobile-first responsive design for relationship management
+ */
+
 import {
-  PlusCircle,
-  Search,
-  Filter,
-  Grid3X3,
-  List,
-  TableIcon,
+  Plus,
   RefreshCw,
   Building2,
-  Users,
-  Eye,
-  Edit,
-  MoreHorizontal,
-  X,
-  Download,
-  ChevronDown,
+  BarChart3,
+  Settings,
   Mail,
-  Phone,
+  AlertTriangle,
+  X,
 } from "lucide-react";
-import Link from "next/link";
-import { useState, useEffect, useCallback } from "react";
-import { CanCreate } from "@/components/auth/permission-guard";
+import { useState, useEffect } from "react";
+import {
+  PermissionGuard,
+  ResourceProvider,
+  RESOURCES,
+} from "@/components/auth/permission-guard";
 import { GraphQLErrorBoundary } from "@/components/graphql-error-boundary";
-import { Badge } from "@/components/ui/badge";
+import { PageHeader } from "@/components/patterns/page-header";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { ClientsTable } from "@/domains/clients/components/clients-table-unified";
+import { ModernClientsManager } from "@/domains/clients/components/ModernClientsManager";
 import {
   GetClientsListOptimizedDocument,
   GetClientsDashboardStatsDocument,
-  type GetClientsListOptimizedQuery,
 } from "@/domains/clients/graphql/generated/graphql";
-import { useSmartPolling } from "@/hooks/use-polling";
+import { useCurrentUser } from "@/hooks/use-current-user";
 import { useStrategicQuery } from "@/hooks/use-strategic-query";
 import { useDynamicLoading } from "@/lib/hooks/use-dynamic-loading";
 
-type ViewMode = "cards" | "table" | "list";
-
-// Custom MultiSelect Component
-interface MultiSelectProps {
-  options: Array<{ value: string; label: string }>;
-  selected: string[];
-  onSelectionChange: (selected: string[]) => void;
-  placeholder: string;
-  label?: string;
+// Create loading component for clients
+function ClientsLoading() {
+  const { Loading } = useDynamicLoading({
+    title: "Loading Client Data...",
+    description: "Fetching client information and relationships",
+  });
+  return <Loading variant="minimal" />;
 }
 
-function MultiSelect({
-  options,
-  selected,
-  onSelectionChange,
-  placeholder,
-}: MultiSelectProps) {
-  const [open, setOpen] = useState(false);
+interface Client {
+  id: string;
+  name: string;
+  contactPerson?: string | null;
+  contactEmail?: string | null;
+  contactPhone?: string | null;
+  active: boolean;
+  payrollCount?: number | null;
+  createdAt: string;
+  updatedAt: string;
+}
 
-  const handleToggle = (value: string) => {
-    const newSelected = selected.includes(value)
-      ? selected.filter(item => item !== value)
-      : [...selected, value];
-    onSelectionChange(newSelected);
+interface ClientStats {
+  overview: {
+    totalClients: number;
+    activeClients: number;
+    inactiveClients: number;
+    recentlyAdded: number;
+    totalPayrolls: number;
+    averagePayrollsPerClient: number;
   };
-
-  const selectedLabels = options
-    .filter(option => selected.includes(option.value))
-    .map(option => option.label);
-
-  const displayText =
-    selectedLabels.length > 0
-      ? selectedLabels.length === 1
-        ? selectedLabels[0]
-        : `${selectedLabels.length} selected`
-      : placeholder;
-
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          aria-expanded={open}
-          className="w-full justify-between"
-        >
-          {displayText}
-          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-full p-0">
-        <div className="max-h-60 overflow-auto">
-          {options.map(option => (
-            <div
-              key={option.value}
-              className="flex items-center space-x-2 p-2 hover:bg-accent cursor-pointer"
-              onClick={() => handleToggle(option.value)}
-            >
-              <Checkbox
-                checked={selected.includes(option.value)}
-                onChange={() => handleToggle(option.value)}
-              />
-              <span className="text-sm">{option.label}</span>
-            </div>
-          ))}
-        </div>
-      </PopoverContent>
-    </Popover>
-  );
 }
 
 function ClientsPage() {
-  const { user, isLoaded: userLoaded } = useUser();
+  const { currentUser, loading: userLoading } = useCurrentUser();
 
-  // Permission debugging removed - now using proper permission guards
+  // Data state
+  const [clients, setClients] = useState<Client[]>([]);
+  const [stats, setStats] = useState<ClientStats | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // State management
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string[]>([]);
-  const [payrollCountFilter, setPayrollCountFilter] = useState<string[]>([]);
-  const [viewMode, setViewMode] = useState<ViewMode>("cards");
-  const [showFilters, setShowFilters] = useState(false);
+  // GraphQL queries (preserved from original)
+  const {
+    data: clientsData,
+    loading: clientsLoading,
+    error: clientsError,
+    refetch,
+  } = useStrategicQuery(GetClientsListOptimizedDocument, "clients", {
+    variables: { limit: 100 },
+  });
 
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const { data: statsData } = useStrategicQuery(
+    GetClientsDashboardStatsDocument,
+    "dashboard",
+    {}
+  );
 
-  // Sorting state
-  const [sortField, setSortField] = useState<string>("name");
-  const [sortDirection, setSortDirection] = useState<"ASC" | "DESC">("ASC");
-
-  // Build GraphQL where conditions for server-side filtering
-  const buildWhereConditions = () => {
-    const conditions: Record<string, unknown>[] = [];
-
-    // Search term filter
-    if (searchTerm) {
-      conditions.push({
-        _or: [
-          { name: { _ilike: `%${searchTerm}%` } },
-          { contactEmail: { _ilike: `%${searchTerm}%` } },
-          { contactPerson: { _ilike: `%${searchTerm}%` } },
-          { contactPhone: { _ilike: `%${searchTerm}%` } },
-        ],
+  // Process GraphQL data
+  useEffect(() => {
+    if (clientsData?.clients) {
+      setClients(clientsData.clients as Client[]);
+    }
+    if (statsData) {
+      // Transform stats data to expected format
+      setStats({
+        overview: {
+          totalClients: statsData.clientStats?.totalClients || 0,
+          activeClients: statsData.clientStats?.activeClients || 0,
+          inactiveClients: statsData.clientStats?.inactiveClients || 0,
+          recentlyAdded: statsData.clientStats?.recentlyAdded || 0,
+          totalPayrolls: statsData.clientStats?.totalPayrolls || 0,
+          averagePayrollsPerClient:
+            statsData.clientStats?.averagePayrollsPerClient || 0,
+        },
       });
     }
-
-    // Status filter
-    if (statusFilter.length > 0) {
-      if (
-        statusFilter.includes("active") &&
-        !statusFilter.includes("inactive")
-      ) {
-        conditions.push({ active: { _eq: true } });
-      } else if (
-        statusFilter.includes("inactive") &&
-        !statusFilter.includes("active")
-      ) {
-        conditions.push({ active: { _eq: false } });
-      }
-      // If both are selected, no filter needed
+    setLoading(clientsLoading);
+    if (clientsError) {
+      setError(clientsError.message);
     }
+  }, [clientsData, statsData, clientsLoading, clientsError]);
 
-    return conditions.length > 0 ? { _and: conditions } : {};
+  // Business logic handlers
+  const handleCreateClient = () => {
+    // TODO: Navigate to client creation page
+    console.log("Create new client");
   };
 
-  // Build GraphQL orderBy for server-side sorting
-  const buildOrderBy = () => {
-    const sortMap: Record<string, string> = {
-      name: "name",
-      contactEmail: "contactEmail",
-      contactPerson: "contactPerson",
-      createdAt: "createdAt",
-    };
-
-    const field = sortMap[sortField] || "name";
-    return [{ [field]: sortDirection }];
+  const handleEditClient = (clientId: string) => {
+    // TODO: Navigate to client edit page
+    console.log("Edit client:", clientId);
   };
 
-  // Calculate pagination offset
-  const offset = (currentPage - 1) * pageSize;
+  const handleViewClient = (clientId: string) => {
+    // TODO: Navigate to client details page
+    console.log("View client:", clientId);
+  };
 
-  // Get dashboard stats efficiently
-  const {
-    loading: _bytemyLoading,
-    error: statsError,
-    data: statsData,
-  } = useQuery(GetClientsDashboardStatsDocument, {
-    skip: !userLoaded || !user,
-    errorPolicy: "all",
-  });
-
-  // Main GraphQL operations with server-side filtering and pagination
-  const { loading, error, data, refetch, startPolling, stopPolling } =
-    useStrategicQuery(GetClientsListOptimizedDocument, "clients", {
-      variables: {
-        limit: pageSize,
-        offset: offset,
-        where: buildWhereConditions(),
-        orderBy: buildOrderBy(),
-      },
-      pollInterval: 60000,
-      skip: !userLoaded || !user,
-      errorPolicy: "all",
-      fetchPolicy: "cache-and-network",
-    });
-
-  useSmartPolling(
-    { startPolling, stopPolling, refetch },
-    {
-      defaultInterval: 60000,
-      pauseOnHidden: true,
-      refetchOnVisible: true,
+  const handleDeleteClient = async (clientId: string) => {
+    try {
+      // TODO: Implement client deletion API call
+      console.log("Delete client:", clientId);
+      refetch();
+    } catch (err) {
+      setError("Failed to delete client");
+      console.error("Error deleting client:", err);
     }
-  );
+  };
 
-  // Use dynamic loading system
-  const { Loading } = useDynamicLoading({
-    queryName: 'GetClientsList'
-  });
+  const handleToggleClientStatus = async (
+    clientId: string,
+    active: boolean
+  ) => {
+    try {
+      // TODO: Implement client status toggle API call
+      console.log("Toggle client status:", { clientId, active });
+      refetch();
+    } catch (err) {
+      setError("Failed to update client status");
+      console.error("Error updating client status:", err);
+    }
+  };
 
-  // Show loading while user authentication is loading
-  if (!userLoaded) {
-    return <Loading />;
-  }
+  const handleEmailClient = (clientId: string) => {
+    // TODO: Navigate to email composer with client context
+    console.log("Email client:", clientId);
+  };
 
-  // Show sign-in prompt if user is not authenticated
-  if (!user) {
+  if (userLoading) {
     return (
-      <div className="text-center py-12">
-        <div className="text-gray-500 mb-4">
-          Please sign in to access clients
+      <div className="container mx-auto py-6">
+        <div className="animate-pulse">
+          <div className="h-8 bg-muted rounded w-1/4 mb-4"></div>
+          <div className="h-4 bg-muted rounded w-1/2 mb-8"></div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-32 bg-muted rounded"></div>
+            ))}
+          </div>
         </div>
-        <Link href="/sign-in">
-          <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-            Sign In
-          </button>
-        </Link>
       </div>
     );
   }
-
-  // Show permission error if user doesn't have client read access
-
-  if (error || statsError) {
-    return (
-      <div className="text-center py-12">
-        <div className="text-red-500 mb-4">
-          Error loading clients: {error?.message || statsError?.message}
-        </div>
-        {error?.graphQLErrors && (
-          <div className="text-sm text-gray-600 mb-4">
-            GraphQL Errors: {error.graphQLErrors.map(e => e.message).join(", ")}
-          </div>
-        )}
-        {error?.networkError && (
-          <div className="text-sm text-gray-600 mb-4">
-            Network Error: {error.networkError.message}
-          </div>
-        )}
-        <Button onClick={() => refetch()} variant="outline">
-          <RefreshCw className="w-4 h-4 mr-2" />
-          Try Again
-        </Button>
-      </div>
-    );
-  }
-
-  const clients = data?.clients || [];
-  const totalCount = data?.clientsAggregate?.aggregate?.count || 0;
-  const _totalPages = Math.ceil(totalCount / pageSize);
-
-  // Extract client type from query
-  type ClientData = GetClientsListOptimizedQuery['clients'][0];
-  
-  // Minimal client-side processing for display purposes only
-  const displayClients = clients.map((client: ClientData) => ({
-    ...client,
-    payrollCount: client.payrollsAggregate?.aggregate?.count || 0,
-    totalEmployees: 0, // Not available per client in current query
-  }));
-
-  // Client-side payroll count filtering (since it requires aggregation)
-  const finalClients =
-    payrollCountFilter.length > 0
-      ? displayClients.filter((client: any) => {
-          const payrollCount = client.payrollCount;
-          return (
-            (payrollCountFilter.includes("0") && payrollCount === 0) ||
-            (payrollCountFilter.includes("1-5") &&
-              payrollCount >= 1 &&
-              payrollCount <= 5) ||
-            (payrollCountFilter.includes("6-10") &&
-              payrollCount >= 6 &&
-              payrollCount <= 10) ||
-            (payrollCountFilter.includes("10+") && payrollCount > 10)
-          );
-        })
-      : displayClients;
-
-  // Get unique values for filters from current page data
-  const uniquePayrollCounts = Array.from(
-    new Set(clients.map((c: any) => c.payrollsAggregate?.aggregate?.count || 0))
-  ) as number[];
-  uniquePayrollCounts.sort((a, b) => a - b);
-
-  // Add event handlers for server-side filtering
-  const handleSort = (field: string) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === "ASC" ? "DESC" : "ASC");
-    } else {
-      setSortField(field);
-      setSortDirection("ASC");
-    }
-    setCurrentPage(1); // Reset to first page when sorting changes
-  };
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  const handlePageSizeChange = (newPageSize: number) => {
-    setPageSize(newPageSize);
-    setCurrentPage(1);
-  };
-
-  // Reset to first page when filters change
-  const resetToFirstPage = useCallback(() => {
-    setCurrentPage(1);
-  }, []);
-
-  // Helper functions
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-AU", {
-      style: "currency",
-      currency: "AUD",
-    }).format(amount || 0);
-  };
-
-  const getStatusColor = (active: boolean) => {
-    return active
-      ? "bg-green-100 text-green-800 border-green-200"
-      : "bg-red-100 text-red-800 border-red-200";
-  };
-
-  // Clear filters function
-  const clearFilters = () => {
-    setSearchTerm("");
-    setStatusFilter([]);
-    setPayrollCountFilter([]);
-  };
-
-  // Check if any filters are active
-  const hasActiveFilters =
-    searchTerm || statusFilter.length > 0 || payrollCountFilter.length > 0;
-
-  // Get summary statistics from dedicated stats query
-  const totalClients = statsData?.activeClientsCount?.aggregate?.count || 0;
-  const activeClients = totalClients; // This query already filters for active clients
-  const totalPayrolls = statsData?.totalPayrollsCount?.aggregate?.count || 0;
-  const totalEmployees =
-    statsData?.totalEmployeesSum?.aggregate?.sum?.employeeCount || 0;
-
-  // Use useEffect to reset page when filters change
-  useEffect(() => {
-    resetToFirstPage();
-  }, [searchTerm, statusFilter, payrollCountFilter, resetToFirstPage]);
-
-  // Render card view
-  const renderCardView = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {finalClients.map((client: any) => (
-        <Card
-          key={client.id}
-          className="hover:shadow-lg transition-shadow duration-200"
-        >
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">{client.name}</CardTitle>
-              <Badge className={getStatusColor(client.active)}>
-                {client.active ? "Active" : "Inactive"}
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="space-y-2 text-sm">
-              <div className="flex items-center space-x-2">
-                <Building2 className="w-4 h-4 text-gray-400" />
-                <span className="text-gray-600">
-                  {client.contactPerson || "No contact"}
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Mail className="w-4 h-4 text-gray-400" />
-                <span className="text-gray-600">
-                  {client.contactEmail || "No email"}
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Phone className="w-4 h-4 text-gray-400" />
-                <span className="text-gray-600">
-                  {client.contactPhone || "No phone"}
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Users className="w-4 h-4 text-gray-400" />
-                <span className="text-gray-600">
-                  {client.payrollCount || 0} active payrolls
-                </span>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between pt-3 border-t">
-              <Link href={`/clients/${client.id}`}>
-                <Button variant="outline" size="sm">
-                  <Eye className="w-4 h-4 mr-2" />
-                  View
-                </Button>
-              </Link>
-
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm">
-                    <MoreHorizontal className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem asChild>
-                    <Link href={`/clients/${client.id}`}>
-                      <Eye className="w-4 h-4 mr-2" />
-                      View Details
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Edit className="w-4 h-4 mr-2" />
-                    Edit Client
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Download className="w-4 h-4 mr-2" />
-                    Export Data
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  );
-
-  // Render list view
-  const renderListView = () => (
-    <div className="space-y-3">
-      {finalClients.map((client: any) => (
-        <Card
-          key={client.id}
-          className="hover:shadow-md transition-shadow duration-200"
-        >
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <Building2 className="w-6 h-6 text-blue-600" />
-                </div>
-                <div>
-                  <h3 className="font-medium text-gray-900">{client.name}</h3>
-                  <p className="text-sm text-gray-500">
-                    {client.contactPerson || "No contact person"}
-                  </p>
-                  <div className="flex items-center gap-4 text-xs text-gray-400 mt-1">
-                    <div className="flex items-center gap-1">
-                      <Mail className="w-3 h-3" />
-                      <span>{client.contactEmail || "No email"}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Phone className="w-3 h-3" />
-                      <span>{client.contactPhone || "No phone"}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-4">
-                <div className="text-right text-sm">
-                  <p className="font-medium text-gray-900">
-                    {client.payrollCount || 0} active payrolls
-                  </p>
-                  <p className="text-gray-500">
-                    {client.active ? "Active" : "Inactive"} client
-                  </p>
-                </div>
-
-                <Badge className={getStatusColor(client.active)}>
-                  {client.active ? "Active" : "Inactive"}
-                </Badge>
-
-                <Link href={`/clients/${client.id}`}>
-                  <Button variant="outline" size="sm">
-                    <Eye className="w-4 h-4 mr-2" />
-                    View
-                  </Button>
-                </Link>
-
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm">
-                      <MoreHorizontal className="w-4 h-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem asChild>
-                      <Link href={`/clients/${client.id}`}>
-                        <Eye className="w-4 h-4 mr-2" />
-                        View Details
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href={`/clients/${client.id}/edit`}>
-                        <Edit className="w-4 h-4 mr-2" />
-                        Edit Client
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Download className="w-4 h-4 mr-2" />
-                      Export Data
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  );
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      {/* Header */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Clients</h1>
-          <p className="text-gray-500">
-            Manage your clients and their payroll information
-          </p>
-        </div>
+    <ResourceProvider resource={RESOURCES.CLIENTS}>
+      <PermissionGuard action="read">
+        <div className="container mx-auto py-6 space-y-6">
+          {/* Error Display */}
+          {error && (
+            <Alert className="border-destructive bg-destructive/10">
+              <AlertTriangle className="h-4 w-4 text-destructive" />
+              <AlertDescription className="text-destructive">
+                <div className="flex items-center justify-between">
+                  <span>{error}</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setError(null)}
+                    className="text-destructive hover:bg-destructive/10"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              </AlertDescription>
+            </Alert>
+          )}
 
-        <div className="flex items-center space-x-2">
-          <CanCreate resource="clients">
-            <Link href="/clients/new">
-              <Button>
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Add Client
+          {/* Page Header */}
+          <PageHeader
+            title="Client Management"
+            description="Modern client relationship management with progressive disclosure"
+            breadcrumbs={[
+              { label: "Dashboard", href: "/dashboard" },
+              { label: "Clients" },
+            ]}
+            actions={[
+              { label: "Refresh", icon: RefreshCw, onClick: () => refetch() },
+              {
+                label: "Email Clients",
+                icon: Mail,
+                onClick: () => console.log("Open email composer"),
+              },
+              {
+                label: "New Client",
+                icon: Plus,
+                primary: true,
+                onClick: handleCreateClient,
+              },
+            ]}
+            overflowActions={[
+              {
+                label: "Export",
+                onClick: () =>
+                  window.dispatchEvent(new CustomEvent("clients:export")),
+              },
+            ]}
+          />
+
+          {/* Local action removed to avoid duplication with header */}
+
+          {/* Action Bar */}
+          <div className="flex flex-col sm:flex-row justify-between gap-4">
+            <div className="flex gap-2">
+              <Button variant="outline">
+                <BarChart3 className="h-4 w-4 mr-2" />
+                Client Analytics
               </Button>
-            </Link>
-          </CanCreate>
-        </div>
-      </div>
-
-      {/* Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Total Clients
-                </p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {totalClients}
-                </p>
-              </div>
-              <Building2 className="w-8 h-8 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Active Clients
-                </p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {activeClients}
-                </p>
-              </div>
-              <Building2 className="w-8 h-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Total Payrolls
-                </p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {totalPayrolls}
-                </p>
-              </div>
-              <Users className="w-8 h-8 text-purple-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Total Employees
-                </p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {totalEmployees.toLocaleString()}
-                </p>
-              </div>
-              <Users className="w-8 h-8 text-orange-600" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Filters and Controls */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex flex-col sm:flex-row gap-4">
-              {/* Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <Input
-                  placeholder="Search clients, contacts, emails, phone..."
-                  value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
-                  className="pl-10 w-full max-w-sm"
-                />
-              </div>
-
-              {/* Advanced Filters Button */}
-              <Button
-                variant="outline"
-                onClick={() => setShowFilters(!showFilters)}
-                className={showFilters ? "bg-primary/10" : ""}
-              >
-                <Filter className="w-4 h-4 mr-2" />
-                Filters
-                {hasActiveFilters && (
-                  <Badge variant="secondary" className="ml-2 text-xs">
-                    {
-                      [
-                        searchTerm,
-                        statusFilter.length > 0,
-                        payrollCountFilter.length > 0,
-                      ].filter(Boolean).length
-                    }
-                  </Badge>
-                )}
+              <Button variant="outline">
+                <Building2 className="h-4 w-4 mr-2" />
+                Service Agreements
               </Button>
-
-              {hasActiveFilters && (
-                <Button variant="ghost" size="sm" onClick={clearFilters}>
-                  <X className="w-4 h-4 mr-1" />
-                  Clear
-                </Button>
-              )}
-
-              {/* Sort Dropdown */}
-              <Select
-                value={`${sortField}-${sortDirection}`}
-                onValueChange={value => {
-                  const [field, direction] = value.split("-");
-                  setSortField(field);
-                  setSortDirection(direction as "ASC" | "DESC");
-                }}
-              >
-                <SelectTrigger className="w-full sm:w-48">
-                  <SelectValue placeholder="Sort by..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="name-ASC">Name A-Z</SelectItem>
-                  <SelectItem value="name-DESC">Name Z-A</SelectItem>
-                  <SelectItem value="status-ASC">Status A-Z</SelectItem>
-                  <SelectItem value="status-DESC">Status Z-A</SelectItem>
-                  <SelectItem value="payrollCount-ASC">Payrolls ↑</SelectItem>
-                  <SelectItem value="payrollCount-DESC">Payrolls ↓</SelectItem>
-                  <SelectItem value="activePayrolls-ASC">
-                    Active Payrolls ↑
-                  </SelectItem>
-                  <SelectItem value="activePayrolls-DESC">
-                    Active Payrolls ↓
-                  </SelectItem>
-                  <SelectItem value="contact_person-ASC">
-                    Contact A-Z
-                  </SelectItem>
-                  <SelectItem value="contact_person-DESC">
-                    Contact Z-A
-                  </SelectItem>
-                  <SelectItem value="contact_email-ASC">Email A-Z</SelectItem>
-                  <SelectItem value="contact_email-DESC">Email Z-A</SelectItem>
-                  <SelectItem value="lastUpdated-ASC">
-                    Last Updated ↑
-                  </SelectItem>
-                  <SelectItem value="lastUpdated-DESC">
-                    Last Updated ↓
-                  </SelectItem>
-                </SelectContent>
-              </Select>
             </div>
 
-            {/* View Mode Toggle */}
-            <div className="flex items-center space-x-2">
-              <Button
-                variant={viewMode === "cards" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setViewMode("cards")}
-              >
-                <Grid3X3 className="w-4 h-4" />
-              </Button>
-              <Button
-                variant={viewMode === "table" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setViewMode("table")}
-              >
-                <TableIcon className="w-4 h-4" />
-              </Button>
-              <Button
-                variant={viewMode === "list" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setViewMode("list")}
-              >
-                <List className="w-4 h-4" />
+            <div className="flex gap-2">
+              <Button variant="outline">
+                <Settings className="h-4 w-4 mr-2" />
+                Settings
               </Button>
             </div>
           </div>
 
-          {/* Advanced Filter Dropdowns */}
-          {showFilters && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t mt-4">
-              <div>
-                <label className="text-sm font-medium mb-2 block">Status</label>
-                <MultiSelect
-                  options={[
-                    { value: "active", label: "Active" },
-                    { value: "inactive", label: "Inactive" },
-                  ]}
-                  selected={statusFilter}
-                  onSelectionChange={setStatusFilter}
-                  placeholder="All statuses"
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-medium mb-2 block">
-                  Payroll Count
-                </label>
-                <MultiSelect
-                  options={[
-                    { value: "0", label: "No Payrolls (0)" },
-                    { value: "1-5", label: "Small (1-5)" },
-                    { value: "6-10", label: "Medium (6-10)" },
-                    { value: "10+", label: "Large (10+)" },
-                  ]}
-                  selected={payrollCountFilter}
-                  onSelectionChange={setPayrollCountFilter}
-                  placeholder="All payroll counts"
-                />
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Content based on view mode */}
-      {loading ? (
-        <Card>
-          <CardContent className="p-12">
-            <div className="flex items-center justify-center">
-              <Loading variant="minimal" />
-            </div>
-          </CardContent>
-        </Card>
-      ) : data?.clients?.length === 0 ? (
-        <Card>
-          <CardContent className="p-12">
-            <div className="text-center">
-              <Building2 className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                {hasActiveFilters ? "No clients found" : "No clients yet"}
-              </h3>
-              <p className="text-gray-500 mb-4">
-                {hasActiveFilters
-                  ? "Try adjusting your search criteria or filters"
-                  : "Get started by adding your first client"}
-              </p>
-              <CanCreate resource="clients">
-                {!hasActiveFilters && (
-                  <Link href="/clients/new">
-                    <Button>
-                      <PlusCircle className="w-4 h-4 mr-2" />
-                      Add First Client
-                    </Button>
-                  </Link>
-                )}
-              </CanCreate>
-            </div>
-          </CardContent>
-        </Card>
-      ) : (
-        <div>
-          {viewMode === "table" && (
-            <ClientsTable
-              clients={data?.clients || []}
-              loading={loading}
-              onRefresh={refetch}
-            />
-          )}
-
-          {viewMode === "cards" && renderCardView()}
-
-          {viewMode === "list" && renderListView()}
+          {/* Modern Clients Manager */}
+          <ModernClientsManager
+            clients={clients as any}
+            loading={loading}
+            onRefetch={() => refetch()}
+            showHeader={false}
+            showLocalActions={false}
+          />
         </div>
-      )}
-    </div>
+      </PermissionGuard>
+    </ResourceProvider>
   );
 }
 

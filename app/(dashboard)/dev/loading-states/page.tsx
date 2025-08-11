@@ -3,6 +3,7 @@
 import { Copy } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/patterns/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ByteMyLoadingIcon } from "@/components/ui/bytemy-loading-icon";
@@ -395,16 +396,15 @@ export default function LoadingStatesPage() {
 
   return (
     <div className="container mx-auto py-6 space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">
-          Loading States Gallery
-        </h1>
-        <p className="text-gray-500 mt-2">
-          A comprehensive showcase of all loading components available in the
-          application
-        </p>
-      </div>
+      <PageHeader
+        title="Loading States Gallery"
+        description="A comprehensive showcase of all loading components available in the application"
+        breadcrumbs={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Developer", href: "/developer" },
+          { label: "Loading States" },
+        ]}
+      />
 
       {/* Category Tabs */}
       <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>

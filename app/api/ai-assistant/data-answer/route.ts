@@ -8,6 +8,7 @@
 
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 import { contextExtractor } from "../../../../lib/ai/context-extractor";
 import { hasuraQueryGenerator } from "../../../../lib/ai/hasura-query-generator";
 import { langChainService } from "../../../../lib/ai/langchain-service";

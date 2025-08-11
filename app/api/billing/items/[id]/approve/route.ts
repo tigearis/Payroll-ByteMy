@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { UpdateBillingItemAdvancedDocument, type UpdateBillingItemAdvancedMutation } from '@/domains/billing/graphql/generated/graphql';
 import { executeTypedQuery } from '@/lib/apollo/query-helpers';
 import { withAuthParams } from '@/lib/auth/api-auth';
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 /**
  * POST /api/billing/items/[id]/approve
@@ -50,7 +51,16 @@ export const POST = withAuthParams(async (req: NextRequest, { params }, session:
     });
 
   } catch (error) {
-    console.error('Error approving billing item:', error);
+    logger.error('Error approving billing item', {
+      namespace: 'billing_api',
+      operation: 'approve_billing_item',
+      classification: DataClassification.CONFIDENTIAL,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      metadata: {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+        timestamp: new Date().toISOString()
+      }
+    });
     return NextResponse.json(
       { 
         success: false, 

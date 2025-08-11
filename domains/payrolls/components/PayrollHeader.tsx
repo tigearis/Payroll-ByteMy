@@ -18,6 +18,12 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { memo } from "react";
+import { toast } from "sonner";
+import {
+  PermissionGuard,
+  CanUpdate,
+  CanDelete,
+} from "@/components/auth/permission-guard";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,8 +35,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import { PermissionGuard, CanUpdate, CanDelete } from "@/components/auth/permission-guard";
-import { toast } from "sonner";
 import type { PayrollData } from "@/domains/payrolls/hooks/usePayrollData";
 
 export interface PayrollHeaderProps {
@@ -46,35 +50,59 @@ export interface PayrollHeaderProps {
 // Helper function to get status configuration
 function getStatusConfig(status: string) {
   const configs = {
-    Implementation: { variant: "secondary" as const, icon: Clock, color: "text-blue-600" },
-    Active: { variant: "default" as const, icon: CheckCircle, color: "text-green-600" },
-    Inactive: { variant: "secondary" as const, icon: AlertTriangle, color: "text-gray-600" },
-    Draft: { variant: "outline" as const, icon: FileText, color: "text-gray-600" },
-    "On Hold": { variant: "destructive" as const, icon: AlertTriangle, color: "text-red-600" },
+    Implementation: {
+      variant: "secondary" as const,
+      icon: Clock,
+      color: "text-blue-600",
+    },
+    Active: {
+      variant: "default" as const,
+      icon: CheckCircle,
+      color: "text-green-600",
+    },
+    Inactive: {
+      variant: "secondary" as const,
+      icon: AlertTriangle,
+      color: "text-gray-600",
+    },
+    Draft: {
+      variant: "outline" as const,
+      icon: FileText,
+      color: "text-gray-600",
+    },
+    "On Hold": {
+      variant: "destructive" as const,
+      icon: AlertTriangle,
+      color: "text-red-600",
+    },
   };
-  
+
   return configs[status as keyof typeof configs] || configs.Implementation;
 }
 
 // Helper function to generate user initials
 function getUserInitials(user: any): string {
   if (!user) return "?";
-  
-  const name = user.computedName || `${user.firstName || ""} ${user.lastName || ""}`.trim();
+
+  const name =
+    user.computedName ||
+    `${user.firstName || ""} ${user.lastName || ""}`.trim();
   if (!name || name === "Unknown User") return "U";
-  
+
   const nameParts = name.split(" ");
   if (nameParts.length === 1) {
     return nameParts[0].charAt(0).toUpperCase();
   }
-  
-  return (nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)).toUpperCase();
+
+  return (
+    nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)
+  ).toUpperCase();
 }
 
 // Helper function to format date
 function formatDate(date: string | Date | null | undefined): string {
   if (!date) return "Not set";
-  
+
   const d = typeof date === "string" ? new Date(date) : date;
   return d.toLocaleDateString("en-AU", {
     day: "numeric",
@@ -103,10 +131,14 @@ function PayrollHeaderComponent({
   const StatusIcon = statusConfig.icon;
 
   const nextPayDate = payroll.detailPayrollDates?.[0];
-  const upcomingDate = nextPayDate?.adjustedEftDate || nextPayDate?.originalEftDate;
+  const upcomingDate =
+    nextPayDate?.adjustedEftDate || nextPayDate?.originalEftDate;
 
   // Handle action callbacks with error handling
-  const handleAction = (action: (() => void) | undefined, actionName: string) => {
+  const handleAction = (
+    action: (() => void) | undefined,
+    actionName: string
+  ) => {
     try {
       if (action) {
         action();
@@ -187,7 +219,9 @@ function PayrollHeaderComponent({
                       <Calendar className="w-4 h-4 text-gray-400" />
                       <span className="text-gray-600">Next Pay:</span>
                       <span className="font-medium">
-                        {upcomingDate ? formatDate(upcomingDate) : "Not scheduled"}
+                        {upcomingDate
+                          ? formatDate(upcomingDate)
+                          : "Not scheduled"}
                       </span>
                     </div>
                   </div>
@@ -201,18 +235,18 @@ function PayrollHeaderComponent({
                     <span className="text-sm text-gray-600">Primary:</span>
                     <div className="flex items-center gap-2">
                       <Avatar className="w-6 h-6">
-                        <AvatarImage 
-                          src={payroll.primaryConsultant.image || undefined} 
-                          alt={payroll.primaryConsultant.computedName || "User"} 
+                        <AvatarImage
+                          src={payroll.primaryConsultant.image || undefined}
+                          alt={payroll.primaryConsultant.computedName || "User"}
                         />
                         <AvatarFallback className="text-xs">
                           {getUserInitials(payroll.primaryConsultant)}
                         </AvatarFallback>
                       </Avatar>
                       <span className="text-sm font-medium">
-                        {payroll.primaryConsultant.computedName || 
-                         `${payroll.primaryConsultant.firstName || ""} ${payroll.primaryConsultant.lastName || ""}`.trim() ||
-                         "Unknown User"}
+                        {payroll.primaryConsultant.computedName ||
+                          `${payroll.primaryConsultant.firstName || ""} ${payroll.primaryConsultant.lastName || ""}`.trim() ||
+                          "Unknown User"}
                       </span>
                     </div>
                   </div>
@@ -225,18 +259,20 @@ function PayrollHeaderComponent({
                       <span className="text-sm text-gray-600">Backup:</span>
                       <div className="flex items-center gap-2">
                         <Avatar className="w-6 h-6">
-                          <AvatarImage 
-                            src={payroll.backupConsultant.image || undefined} 
-                            alt={payroll.backupConsultant.computedName || "User"} 
+                          <AvatarImage
+                            src={payroll.backupConsultant.image || undefined}
+                            alt={
+                              payroll.backupConsultant.computedName || "User"
+                            }
                           />
                           <AvatarFallback className="text-xs">
                             {getUserInitials(payroll.backupConsultant)}
                           </AvatarFallback>
                         </Avatar>
                         <span className="text-sm font-medium">
-                          {payroll.backupConsultant.computedName || 
-                           `${payroll.backupConsultant.firstName || ""} ${payroll.backupConsultant.lastName || ""}`.trim() ||
-                           "Unknown User"}
+                          {payroll.backupConsultant.computedName ||
+                            `${payroll.backupConsultant.firstName || ""} ${payroll.backupConsultant.lastName || ""}`.trim() ||
+                            "Unknown User"}
                         </span>
                       </div>
                     </div>
@@ -250,18 +286,18 @@ function PayrollHeaderComponent({
                       <span className="text-sm text-gray-600">Manager:</span>
                       <div className="flex items-center gap-2">
                         <Avatar className="w-6 h-6">
-                          <AvatarImage 
-                            src={payroll.assignedManager.image || undefined} 
-                            alt={payroll.assignedManager.computedName || "User"} 
+                          <AvatarImage
+                            src={payroll.assignedManager.image || undefined}
+                            alt={payroll.assignedManager.computedName || "User"}
                           />
                           <AvatarFallback className="text-xs">
                             {getUserInitials(payroll.assignedManager)}
                           </AvatarFallback>
                         </Avatar>
                         <span className="text-sm font-medium">
-                          {payroll.assignedManager.computedName || 
-                           `${payroll.assignedManager.firstName || ""} ${payroll.assignedManager.lastName || ""}`.trim() ||
-                           "Unknown User"}
+                          {payroll.assignedManager.computedName ||
+                            `${payroll.assignedManager.firstName || ""} ${payroll.assignedManager.lastName || ""}`.trim() ||
+                            "Unknown User"}
                         </span>
                       </div>
                     </div>
@@ -272,9 +308,9 @@ function PayrollHeaderComponent({
 
             {/* Right side - Actions */}
             <div className="flex items-center gap-3">
-              <PermissionGuard resource="payrolls" action="update">
+              <PermissionGuard action="update">
                 <CanUpdate resource="payrolls">
-                  <Button 
+                  <Button
                     onClick={() => handleAction(onEdit, "Edit")}
                     disabled={loading}
                   >
@@ -292,22 +328,28 @@ function PayrollHeaderComponent({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem onClick={() => handleAction(onDuplicate, "Duplicate")}>
+                  <DropdownMenuItem
+                    onClick={() => handleAction(onDuplicate, "Duplicate")}
+                  >
                     <Copy className="w-4 h-4 mr-2" />
                     Duplicate Payroll
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleAction(onExport, "Export")}>
+                  <DropdownMenuItem
+                    onClick={() => handleAction(onExport, "Export")}
+                  >
                     <Download className="w-4 h-4 mr-2" />
                     Export Data
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => handleAction(onArchive, "Archive")}>
+                  <DropdownMenuItem
+                    onClick={() => handleAction(onArchive, "Archive")}
+                  >
                     <Archive className="w-4 h-4 mr-2" />
                     Archive Payroll
                   </DropdownMenuItem>
                   <CanDelete resource="payrolls">
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem 
+                    <DropdownMenuItem
                       onClick={() => handleAction(onDelete, "Delete")}
                       className="text-destructive focus:text-destructive"
                     >
@@ -327,13 +369,16 @@ function PayrollHeaderComponent({
                 <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <p className="text-sm text-amber-800">
-                    <strong>You're viewing an older version</strong> of this payroll. 
-                    A newer version (v{data.latestVersion[0].versionNumber}) is available.
+                    <strong>You're viewing an older version</strong> of this
+                    payroll. A newer version (v
+                    {data.latestVersion[0].versionNumber}) is available.
                   </p>
                   <Button
                     variant="link"
                     className="p-0 h-auto text-amber-700 hover:text-amber-900"
-                    onClick={() => router.push(`/payrolls/${data.latestVersion[0]?.id}`)}
+                    onClick={() =>
+                      router.push(`/payrolls/${data.latestVersion[0]?.id}`)
+                    }
                   >
                     View latest version →
                   </Button>
@@ -355,7 +400,7 @@ function PayrollHeaderSkeleton() {
         <div className="py-4">
           <div className="h-4 bg-gray-200 rounded w-32 animate-pulse" />
         </div>
-        
+
         <div className="pb-6">
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
             <div className="flex-1 min-w-0">
@@ -371,7 +416,7 @@ function PayrollHeaderSkeleton() {
                 </div>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <div className="h-10 bg-gray-200 rounded w-20 animate-pulse" />
               <div className="h-10 bg-gray-200 rounded w-10 animate-pulse" />

@@ -2,6 +2,7 @@
 
 import { useUser } from "@clerk/nextjs";
 import { PermissionGuard } from "@/components/auth/permission-guard";
+import { PageHeader } from "@/components/patterns/page-header";
 import { EnhancedTimeEntry } from "@/domains/billing/components/time-tracking/enhanced-time-entry";
 
 export default function TimeTrackingPage() {
@@ -21,22 +22,29 @@ export default function TimeTrackingPage() {
     return (
       <div className="container mx-auto py-6">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-600">Authentication Required</h1>
-          <p className="text-muted-foreground">Please sign in to access time tracking.</p>
+          <h1 className="text-2xl font-bold text-red-600">
+            Authentication Required
+          </h1>
+          <p className="text-muted-foreground">
+            Please sign in to access time tracking.
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto py-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold tracking-tight">Time Tracking</h1>
-        <p className="text-muted-foreground">
-          Track time in 6-minute increments with automated billing generation
-        </p>
-      </div>
-      
+    <div className="container mx-auto py-6 space-y-6">
+      <PageHeader
+        title="Time Tracking"
+        description="Track time in 6-minute increments with automated billing generation"
+        breadcrumbs={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Billing", href: "/billing" },
+          { label: "Time Tracking" },
+        ]}
+      />
+
       <PermissionGuard action="create">
         <EnhancedTimeEntry staffUserId={user.id} />
       </PermissionGuard>

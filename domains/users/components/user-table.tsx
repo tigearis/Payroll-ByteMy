@@ -11,8 +11,8 @@
  * as UserTable with the same props interface for backward compatibility.
  */
 
-import { UsersTableUnified } from './users-table-unified';
 import { logger } from '@/lib/logging/enterprise-logger';
+import { UsersTableUnified } from './users-table-unified';
 
 // Interface adapter to maintain backward compatibility
 interface UserTableProps {

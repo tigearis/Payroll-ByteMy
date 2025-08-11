@@ -8,6 +8,7 @@ import {
 } from '@/domains/billing/graphql/generated/graphql';
 import { executeTypedQuery, executeTypedMutation } from '@/lib/apollo/query-helpers';
 import { withAuthParams } from '@/lib/auth/api-auth';
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 interface StatusTransitionRequest {
   newStatus: 'draft' | 'confirmed' | 'invoiced' | 'paid' | 'rejected';

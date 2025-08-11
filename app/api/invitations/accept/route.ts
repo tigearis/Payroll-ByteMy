@@ -25,6 +25,7 @@ import {
   getReliableEmailFromTicket,
   logTicketData 
 } from "@/lib/clerk-ticket-utils";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 import { 
   syncUserRoleAssignmentsHierarchical,
   syncPermissionOverridesToClerk 

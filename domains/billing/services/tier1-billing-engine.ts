@@ -1,5 +1,5 @@
-import { serverApolloClient } from '@/lib/apollo/unified-client';
 import { gql } from '@apollo/client';
+import { serverApolloClient } from '@/lib/apollo/unified-client';
 import { logger } from '@/lib/logging/enterprise-logger';
 
 /**
@@ -517,7 +517,7 @@ export class Tier1BillingEngine {
     
     // Get base approval level from service configuration
     const serviceConfig = SERVICE_CONFIGURATIONS[serviceCode as keyof typeof SERVICE_CONFIGURATIONS];
-    let baseApproval: 'auto' | 'review' | 'manager' | 'admin' = 
+    const baseApproval: 'auto' | 'review' | 'manager' | 'admin' = 
       (serviceConfig?.approvalLevel as 'auto' | 'review' | 'manager' | 'admin') || 'review';
 
     // Amount-based escalation

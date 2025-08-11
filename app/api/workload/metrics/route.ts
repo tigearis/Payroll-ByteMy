@@ -1,8 +1,22 @@
-import { format, parseISO, isSameDay, isSameWeek, isSameMonth, startOfWeek, addDays, startOfMonth, addWeeks } from "date-fns";
+import {
+  format,
+  parseISO,
+  isSameDay,
+  isSameWeek,
+  isSameMonth,
+  startOfWeek,
+  addDays,
+  startOfMonth,
+  addWeeks,
+} from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
-import { GetWorkSchedulesByDateRangeDocument, GetTeamWorkloadOptimizedDocument } from "@/domains/work-schedule/graphql/generated/graphql";
+import {
+  GetWorkSchedulesByDateRangeDocument,
+  GetTeamWorkloadOptimizedDocument,
+} from "@/domains/work-schedule/graphql/generated/graphql";
 import { serverApolloClient } from "@/lib/apollo/unified-client";
 import { authenticateApiRequest } from "@/lib/auth/api-auth";
+// import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 interface WorkloadMetricsInput {
   userId: string;
@@ -53,91 +67,111 @@ interface CapacitySummary {
   periodsShown: number;
 }
 
-async function getWorkScheduleData(userId: string, startDate: string, endDate: string): Promise<WorkScheduleDay[]> {
+async function getWorkScheduleData(
+  userId: string,
+  startDate: string,
+  endDate: string
+): Promise<WorkScheduleDay[]> {
   try {
     const client = serverApolloClient;
-    
+
     // Get work schedules for the date range
     const { data: scheduleData } = await client.query({
       query: GetWorkSchedulesByDateRangeDocument,
       variables: {
         startDate,
-        endDate
+        endDate,
       },
-      fetchPolicy: 'network-only'
+      fetchPolicy: "network-only",
     });
 
     // Get team workload data with assignments if the user is a manager
     const { data: workloadData } = await client.query({
       query: GetTeamWorkloadOptimizedDocument,
       variables: {
-        managerId: userId
+        managerId: userId,
       },
-      fetchPolicy: 'network-only'
+      fetchPolicy: "network-only",
     });
 
     // Filter work schedules for the specific user or their team
-    const relevantSchedules = scheduleData.workSchedule.filter((schedule: any) => 
-      schedule.userId === userId || 
-      workloadData.users.some((user: any) => user.id === schedule.userId)
+    const relevantSchedules = scheduleData.workSchedule.filter(
+      (schedule: any) =>
+        schedule.userId === userId ||
+        workloadData.users.some((user: any) => user.id === schedule.userId)
     );
 
     // Transform the data to match our interface
-    const workScheduleDays: WorkScheduleDay[] = relevantSchedules.map((schedule: any) => {
-      // Get assignments for this user from the workload data
-      const userWorkload = workloadData.users.find((user: any) => user.id === schedule.userId);
-      const assignments: AssignmentDetails[] = [];
+    const workScheduleDays: WorkScheduleDay[] = relevantSchedules.map(
+      (schedule: any) => {
+        // Get assignments for this user from the workload data
+        const userWorkload = workloadData.users.find(
+          (user: any) => user.id === schedule.userId
+        );
+        const assignments: AssignmentDetails[] = [];
 
-      if (userWorkload) {
-        // Add primary payroll assignments
-        userWorkload.primaryPayrollAssignments.forEach((payroll: any) => {
-          payroll.payrollDates.forEach((date: any) => {
-            if (isSameDay(parseISO(date.processingDate), parseISO(schedule.workDay))) {
-              assignments.push({
-                id: payroll.id,
-                name: payroll.name,
-                clientName: payroll.client.name,
-                processingTime: payroll.processingTime,
-                processingDaysBeforeEft: payroll.processingDaysBeforeEft,
-                eftDate: date.adjustedEftDate || date.originalEftDate,
-                status: payroll.status === 'active' ? 'active' : 'pending',
-                priority: 'high' // Primary assignments are high priority
-              });
-            }
+        if (userWorkload) {
+          // Add primary payroll assignments
+          userWorkload.primaryPayrollAssignments.forEach((payroll: any) => {
+            payroll.payrollDates.forEach((date: any) => {
+              if (
+                isSameDay(
+                  parseISO(date.processingDate),
+                  parseISO(schedule.workDay)
+                )
+              ) {
+                assignments.push({
+                  id: payroll.id,
+                  name: payroll.name,
+                  clientName: payroll.client.name,
+                  processingTime: payroll.processingTime,
+                  processingDaysBeforeEft: payroll.processingDaysBeforeEft,
+                  eftDate: date.adjustedEftDate || date.originalEftDate,
+                  status: payroll.status === "active" ? "active" : "pending",
+                  priority: "high", // Primary assignments are high priority
+                });
+              }
+            });
           });
-        });
 
-        // Add backup payroll assignments
-        userWorkload.backupPayrollAssignments.forEach((payroll: any) => {
-          payroll.payrollDates.forEach((date: any) => {
-            if (isSameDay(parseISO(date.processingDate), parseISO(schedule.workDay))) {
-              assignments.push({
-                id: `backup-${payroll.id}`,
-                name: `${payroll.name} (Backup)`,
-                clientName: payroll.client.name,
-                processingTime: payroll.processingTime * 0.3, // Backup assignments take less time
-                processingDaysBeforeEft: payroll.processingDaysBeforeEft,
-                eftDate: date.adjustedEftDate || date.originalEftDate,
-                status: payroll.status === 'active' ? 'active' : 'pending',
-                priority: 'medium' // Backup assignments are medium priority
-              });
-            }
+          // Add backup payroll assignments
+          userWorkload.backupPayrollAssignments.forEach((payroll: any) => {
+            payroll.payrollDates.forEach((date: any) => {
+              if (
+                isSameDay(
+                  parseISO(date.processingDate),
+                  parseISO(schedule.workDay)
+                )
+              ) {
+                assignments.push({
+                  id: `backup-${payroll.id}`,
+                  name: `${payroll.name} (Backup)`,
+                  clientName: payroll.client.name,
+                  processingTime: payroll.processingTime * 0.3, // Backup assignments take less time
+                  processingDaysBeforeEft: payroll.processingDaysBeforeEft,
+                  eftDate: date.adjustedEftDate || date.originalEftDate,
+                  status: payroll.status === "active" ? "active" : "pending",
+                  priority: "medium", // Backup assignments are medium priority
+                });
+              }
+            });
           });
-        });
+        }
+
+        return {
+          date: schedule.workDay,
+          workHours: schedule.workHours || 8,
+          adminTimeHours: schedule.adminTimeHours || 0,
+          payrollCapacityHours:
+            schedule.payrollCapacityHours || (schedule.workHours || 8) * 0.8,
+          assignments,
+        };
       }
-
-      return {
-        date: schedule.workDay,
-        workHours: schedule.workHours || 8,
-        adminTimeHours: schedule.adminTimeHours || 0,
-        payrollCapacityHours: schedule.payrollCapacityHours || (schedule.workHours || 8) * 0.8,
-        assignments
-      };
-    });
+    );
 
     return workScheduleDays;
   } catch (error) {
-    console.error('Error fetching work schedule data:', error);
+    console.error("Error fetching work schedule data:", error);
     return []; // Return empty array on error to prevent breaking the API
   }
 }
@@ -154,15 +188,20 @@ function aggregateDataByPeriod(
   if (period === "day") {
     // Daily aggregation
     while (currentDate <= endDate) {
-      const dayData = workSchedule.find(ws => isSameDay(parseISO(ws.date), currentDate));
-      
-      const totalAssignedHours = dayData?.assignments?.reduce(
-        (sum, assignment) => sum + assignment.processingTime,
-        0
-      ) || 0;
+      const dayData = workSchedule.find(ws =>
+        isSameDay(parseISO(ws.date), currentDate)
+      );
+
+      const totalAssignedHours =
+        dayData?.assignments?.reduce(
+          (sum, assignment) => sum + assignment.processingTime,
+          0
+        ) || 0;
 
       const capacity = dayData?.payrollCapacityHours || 0;
-      const utilization = capacity ? Math.round((totalAssignedHours / capacity) * 100) : 0;
+      const utilization = capacity
+        ? Math.round((totalAssignedHours / capacity) * 100)
+        : 0;
 
       data.push({
         date: format(currentDate, "EEEE, MMM dd"),
@@ -184,7 +223,7 @@ function aggregateDataByPeriod(
   } else if (period === "week") {
     // Weekly aggregation
     let weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
-    
+
     while (weekStart <= endDate) {
       const weekData: WorkloadPeriodData = {
         date: format(weekStart, "EEE dd"),
@@ -204,8 +243,10 @@ function aggregateDataByPeriod(
       // Aggregate week data
       for (let i = 0; i < 7; i++) {
         const date = addDays(weekStart, i);
-        const dayData = workSchedule.find(ws => isSameDay(parseISO(ws.date), date));
-        
+        const dayData = workSchedule.find(ws =>
+          isSameDay(parseISO(ws.date), date)
+        );
+
         if (dayData) {
           weekData.workHours += dayData.workHours;
           weekData.adminTimeHours += dayData.adminTimeHours;
@@ -218,13 +259,21 @@ function aggregateDataByPeriod(
         (sum, assignment) => sum + assignment.processingTime,
         0
       );
-      
-      weekData.utilization = weekData.payrollCapacityHours 
-        ? Math.round((weekData.assignedHours / weekData.payrollCapacityHours) * 100)
+
+      weekData.utilization = weekData.payrollCapacityHours
+        ? Math.round(
+            (weekData.assignedHours / weekData.payrollCapacityHours) * 100
+          )
         : 0;
-      
-      weekData.utilizationHours = Math.min(weekData.assignedHours, weekData.payrollCapacityHours);
-      weekData.overflowHours = Math.max(0, weekData.assignedHours - weekData.payrollCapacityHours);
+
+      weekData.utilizationHours = Math.min(
+        weekData.assignedHours,
+        weekData.payrollCapacityHours
+      );
+      weekData.overflowHours = Math.max(
+        0,
+        weekData.assignedHours - weekData.payrollCapacityHours
+      );
       weekData.isOverallocated = weekData.utilization > 100;
 
       data.push(weekData);
@@ -234,10 +283,10 @@ function aggregateDataByPeriod(
     // Monthly aggregation - group by weeks within months
     const monthStart = startOfMonth(currentDate);
     let currentWeek = startOfWeek(monthStart, { weekStartsOn: 1 });
-    
+
     while (currentWeek <= endDate) {
       const weekEnd = addDays(currentWeek, 6);
-      
+
       const weekData = workSchedule.filter(ws => {
         const wsDate = parseISO(ws.date);
         return (
@@ -246,9 +295,18 @@ function aggregateDataByPeriod(
         );
       });
 
-      const totalWorkHours = weekData.reduce((sum, day) => sum + day.workHours, 0);
-      const totalAdminHours = weekData.reduce((sum, day) => sum + day.adminTimeHours, 0);
-      const totalCapacityHours = weekData.reduce((sum, day) => sum + day.payrollCapacityHours, 0);
+      const totalWorkHours = weekData.reduce(
+        (sum, day) => sum + day.workHours,
+        0
+      );
+      const totalAdminHours = weekData.reduce(
+        (sum, day) => sum + day.adminTimeHours,
+        0
+      );
+      const totalCapacityHours = weekData.reduce(
+        (sum, day) => sum + day.payrollCapacityHours,
+        0
+      );
       const allAssignments = weekData.flatMap(day => day.assignments || []);
       const totalAssignedHours = allAssignments.reduce(
         (sum, assignment) => sum + assignment.processingTime,
@@ -259,10 +317,13 @@ function aggregateDataByPeriod(
         ? Math.round((totalAssignedHours / totalCapacityHours) * 100)
         : 0;
 
-      const weekStartInMonth = currentWeek < monthStart ? monthStart : currentWeek;
-      const weekEndInMonth = weekEnd > new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0) 
-        ? new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0) 
-        : weekEnd;
+      const weekStartInMonth =
+        currentWeek < monthStart ? monthStart : currentWeek;
+      const weekEndInMonth =
+        weekEnd >
+        new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0)
+          ? new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0)
+          : weekEnd;
 
       data.push({
         date: `${format(weekStartInMonth, "d")}-${format(weekEndInMonth, "d")}`,
@@ -290,18 +351,23 @@ function calculateSummary(periods: WorkloadPeriodData[]): CapacitySummary {
   const totalCapacity = Math.round(
     periods.reduce((sum, item) => sum + item.payrollCapacityHours, 0)
   );
-  
-  const totalAssigned = Math.round(
-    periods.reduce((sum, item) => sum + item.assignedHours, 0) * 10
-  ) / 10;
-  
-  const avgUtilization = periods.length > 0
-    ? Math.round(
-        periods.reduce((sum, item) => sum + item.utilization, 0) / periods.length
-      )
-    : 0;
-  
-  const overallocatedPeriods = periods.filter(item => item.utilization > 100).length;
+
+  const totalAssigned =
+    Math.round(
+      periods.reduce((sum, item) => sum + item.assignedHours, 0) * 10
+    ) / 10;
+
+  const avgUtilization =
+    periods.length > 0
+      ? Math.round(
+          periods.reduce((sum, item) => sum + item.utilization, 0) /
+            periods.length
+        )
+      : 0;
+
+  const overallocatedPeriods = periods.filter(
+    item => item.utilization > 100
+  ).length;
 
   return {
     totalCapacity,
@@ -318,7 +384,11 @@ export async function POST(request: NextRequest) {
     const authResult = await authenticateApiRequest(request);
     if (!authResult.success) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized", errors: ["Authentication failed"] },
+        {
+          success: false,
+          message: "Unauthorized",
+          errors: ["Authentication failed"],
+        },
         { status: 401 }
       );
     }
@@ -366,10 +436,19 @@ export async function POST(request: NextRequest) {
     }
 
     // Get work schedule data from database
-    const workSchedule = await getWorkScheduleData(input.userId, input.startDate, input.endDate);
+    const workSchedule = await getWorkScheduleData(
+      input.userId,
+      input.startDate,
+      input.endDate
+    );
 
     // Aggregate data by period
-    const periods = aggregateDataByPeriod(workSchedule, input.period, startDate, endDate);
+    const periods = aggregateDataByPeriod(
+      workSchedule,
+      input.period,
+      startDate,
+      endDate
+    );
 
     // Calculate summary statistics
     const summary = calculateSummary(periods);
@@ -381,7 +460,6 @@ export async function POST(request: NextRequest) {
       message: "Workload metrics calculated successfully",
       errors: [],
     });
-
   } catch (error) {
     console.error("Error calculating workload metrics:", error);
     return NextResponse.json(

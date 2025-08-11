@@ -200,7 +200,7 @@ function UserNotInDatabaseFallback({ clerkUser }: { clerkUser: any }) {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
-            <UserX className="w-6 h-6 text-red-600 dark:text-red-400" />
+            <UserX className="w-6 h-6 text-red-600 text-red-600" />
           </div>
           <CardTitle className="text-xl">Account Setup Required</CardTitle>
         </CardHeader>
@@ -274,7 +274,7 @@ function DatabaseErrorFallback({ error }: { error: any }) {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 w-12 h-12 rounded-full bg-orange-100 dark:bg-orange-900/20 flex items-center justify-center">
-            <Database className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+            <Database className="w-6 h-6 text-orange-600 text-orange-600" />
           </div>
           <CardTitle className="text-xl">Connection Issue</CardTitle>
         </CardHeader>
@@ -306,7 +306,7 @@ function UnexpectedStateFallback() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-900/20 flex items-center justify-center">
-            <AlertTriangle className="w-6 h-6 text-gray-600 dark:text-gray-400" />
+            <AlertTriangle className="w-6 h-6 text-gray-600 text-gray-600" />
           </div>
           <CardTitle className="text-xl">Authentication Error</CardTitle>
         </CardHeader>

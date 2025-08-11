@@ -1,14 +1,46 @@
-// Billing Domain - Main Export Index
-// Centralized access point for the entire billing domain
+/**
+ * Optimized Barrel Export for Billing Domain
+ * 
+ * PERFORMANCE OPTIMIZATION:
+ * - Lazy exports to enable tree-shaking
+ * - Grouped by functionality to reduce import overhead
+ * - Dynamic imports for heavy components
+ */
 
-// Export all components
-export * from './components';
+// Types (always imported - lightweight)
+export type * from './graphql/generated/graphql';
 
-// Export services
-export * from './services';
+// Core Components (lazy-loaded)
+export const BillingItemsManager = () => import('./components/BillingItemsManager');
+export const PayrollIntegrationHub = () => import('./components/PayrollIntegrationHub');
+export const RecurringServicesPanel = () => import('./components/RecurringServicesPanel');
 
-// Export GraphQL operations (types and operations)
-export * from './graphql/generated';
+// Dashboard Components (lazy-loaded)
+export const BusinessIntelligenceDashboard = () => import('./components/reporting/business-intelligence-dashboard');
+export const ModernBillingItemsManager = () => import('./components/ModernBillingItemsManager');
+export const OptimizedBillingDashboard = () => import('./components/OptimizedBillingDashboard');
+
+// Management Components (lazy-loaded)
+export const InvoiceManagementDashboard = () => import('./components/invoicing/invoice-management-dashboard');
+export const QuoteManagementDashboard = () => import('./components/quoting/quote-management-dashboard');
+export const ServiceCatalogManager = () => import('./components/service-catalog/service-catalog-manager');
+
+// Table Components (lazy-loaded)
+export const BillingItemsTable = () => import('./components/items/billing-items-table');
+
+// Tracking Components (lazy-loaded)
+export const PayrollCompletionTracker = () => import('./components/payroll-integration/payroll-completion-tracker');
+
+// Hooks (immediately available - lightweight)
+export { useLazyBillingContext } from './hooks/use-lazy-billing-context';
+export { useOptimizedAnalytics } from './hooks/use-optimized-analytics';
+export { useOptimizedBillingDashboard } from './hooks/use-optimized-billing-dashboard';
+
+// Services (lazy-loaded)
+export const billingServices = () => import('./services');
+
+// GraphQL Operations (lazy-loaded)
+export const billingOperations = () => import('./graphql/generated/graphql');
 
 // Export shared types if any
 // export * from './shared/types';

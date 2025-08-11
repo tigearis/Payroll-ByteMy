@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 // We'll use inline GraphQL queries for now since the generated types might not be available yet
 import { executeTypedQuery, executeTypedMutation } from "@/lib/apollo/query-helpers";
 import { withAuth } from "@/lib/auth/api-auth";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 const clerkClient = createClerkClient({
   secretKey: process.env.CLERK_SECRET_KEY!,
@@ -37,7 +38,15 @@ export const POST = withAuth(async (req: NextRequest, session) => {
       );
     }
 
-    console.log("🧹 Starting orphaned data cleanup...");
+    logger.info('Starting orphaned data cleanup', {
+      namespace: 'admin_cleanup_api',
+      operation: 'start_cleanup',
+      classification: DataClassification.INTERNAL,
+      metadata: {
+        userRole,
+        timestamp: new Date().toISOString()
+      }
+    });
 
     const body = await req.json();
     const { dryRun = true, cleanupTypes = ['expired_invitations', 'orphaned_users'] } = body;
@@ -61,7 +70,14 @@ export const POST = withAuth(async (req: NextRequest, session) => {
 
     // 1. Find and clean up expired invitations
     if (cleanupTypes.includes('expired_invitations')) {
-      console.log("🔍 Finding expired invitations...");
+      logger.info('Finding expired invitations', {
+        namespace: 'admin_cleanup_api',
+        operation: 'find_expired_invitations',
+        classification: DataClassification.INTERNAL,
+        metadata: {
+          timestamp: new Date().toISOString()
+        }
+      });
       
       try {
         const now = new Date().toISOString();
@@ -117,7 +133,16 @@ export const POST = withAuth(async (req: NextRequest, session) => {
                 { invitationId: invitation.id }
               );
               result.summary.expiredInvitationsDeleted++;
-              console.log(`✅ Deleted expired invitation: ${invitation.email}`);
+              logger.info('Deleted expired invitation', {
+                namespace: 'admin_cleanup_api',
+                operation: 'delete_expired_invitation',
+                classification: DataClassification.CONFIDENTIAL,
+                metadata: {
+                  email: invitation.email,
+                  invitationId: invitation.id,
+                  timestamp: new Date().toISOString()
+                }
+              });
             } catch (deleteError: any) {
               result.errors.push(`Failed to delete invitation ${invitation.email}: ${deleteError?.message || 'Unknown error'}`);
             }
@@ -130,7 +155,14 @@ export const POST = withAuth(async (req: NextRequest, session) => {
 
     // 2. Find database users without Clerk IDs
     if (cleanupTypes.includes('orphaned_users')) {
-      console.log("🔍 Finding users without Clerk IDs...");
+      logger.info('Finding users without Clerk IDs', {
+        namespace: 'admin_cleanup_api',
+        operation: 'find_orphaned_users',
+        classification: DataClassification.INTERNAL,
+        metadata: {
+          timestamp: new Date().toISOString()
+        }
+      });
       
       try {
         const orphanedUsersData = await executeTypedQuery(
@@ -193,7 +225,16 @@ export const POST = withAuth(async (req: NextRequest, session) => {
                 { userId: user.id }
               );
               result.summary.orphanedUsersDeleted++;
-              console.log(`✅ Deleted orphaned user: ${user.email}`);
+              logger.info('Deleted orphaned user', {
+                namespace: 'admin_cleanup_api',
+                operation: 'delete_orphaned_user',
+                classification: DataClassification.CONFIDENTIAL,
+                metadata: {
+                  email: user.email,
+                  userId: user.id,
+                  timestamp: new Date().toISOString()
+                }
+              });
             } catch (deleteError: any) {
               result.errors.push(`Failed to delete user ${user.email}: ${deleteError?.message || 'Unknown error'}`);
             }
@@ -206,7 +247,14 @@ export const POST = withAuth(async (req: NextRequest, session) => {
 
     // 3. Find Clerk users without database records
     if (cleanupTypes.includes('clerk_only_users')) {
-      console.log("🔍 Finding Clerk users without database records...");
+      logger.info('Finding Clerk users without database records', {
+        namespace: 'admin_cleanup_api',
+        operation: 'find_clerk_only_users',
+        classification: DataClassification.INTERNAL,
+        metadata: {
+          timestamp: new Date().toISOString()
+        }
+      });
       
       try {
         const clerkUsers = await clerkClient.users.getUserList({
@@ -245,7 +293,14 @@ export const POST = withAuth(async (req: NextRequest, session) => {
 
     // 4. Find invitations pointing to non-existent users
     if (cleanupTypes.includes('invitations_without_users')) {
-      console.log("🔍 Finding invitations without valid users...");
+      logger.info('Finding invitations without valid users', {
+        namespace: 'admin_cleanup_api',
+        operation: 'find_invalid_invitations',
+        classification: DataClassification.INTERNAL,
+        metadata: {
+          timestamp: new Date().toISOString()
+        }
+      });
       
       try {
         const orphanedInvitationsData = await executeTypedQuery(
@@ -293,20 +348,35 @@ export const POST = withAuth(async (req: NextRequest, session) => {
     }
 
     // Log summary
-    console.log("🧹 Cleanup summary:", {
-      dryRun,
-      expiredInvitationsFound: result.details.expiredInvitations.length,
-      expiredInvitationsDeleted: result.summary.expiredInvitationsDeleted,
-      orphanedUsersFound: result.details.orphanedUsers.length,
-      orphanedUsersDeleted: result.summary.orphanedUsersDeleted,
-      clerkOnlyUsersFound: result.summary.clerkOnlyUsersFound,
-      invitationsWithoutUsersFound: result.summary.invitationsWithoutUsers,
-      errorsCount: result.errors.length,
+    logger.info('Cleanup operation completed', {
+      namespace: 'admin_cleanup_api',
+      operation: 'cleanup_summary',
+      classification: DataClassification.INTERNAL,
+      metadata: {
+        dryRun,
+        expiredInvitationsFound: result.details.expiredInvitations.length,
+        expiredInvitationsDeleted: result.summary.expiredInvitationsDeleted,
+        orphanedUsersFound: result.details.orphanedUsers.length,
+        orphanedUsersDeleted: result.summary.orphanedUsersDeleted,
+        clerkOnlyUsersFound: result.summary.clerkOnlyUsersFound,
+        invitationsWithoutUsersFound: result.summary.invitationsWithoutUsers,
+        errorsCount: result.errors.length,
+        timestamp: new Date().toISOString()
+      }
     });
 
     return NextResponse.json(result);
   } catch (error: any) {
-    console.error("❌ Cleanup operation failed:", error);
+    logger.error('Cleanup operation failed', {
+      namespace: 'admin_cleanup_api',
+      operation: 'post_cleanup',
+      classification: DataClassification.INTERNAL,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      metadata: {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+        timestamp: new Date().toISOString()
+      }
+    });
 
     return NextResponse.json(
       {
@@ -370,7 +440,16 @@ export const GET = withAuth(async (req: NextRequest, session) => {
       errors: [],
     });
   } catch (error: any) {
-    console.error("❌ Orphaned data check failed:", error);
+    logger.error('Orphaned data check failed', {
+      namespace: 'admin_cleanup_api',
+      operation: 'get_cleanup_status',
+      classification: DataClassification.INTERNAL,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      metadata: {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+        timestamp: new Date().toISOString()
+      }
+    });
     return NextResponse.json(
       { error: "Failed to check orphaned data" },
       { status: 500 }

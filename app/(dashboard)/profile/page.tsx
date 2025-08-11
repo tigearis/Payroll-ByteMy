@@ -2,12 +2,11 @@
 
 import { useQuery, useMutation } from "@apollo/client";
 import { useUser } from "@clerk/nextjs";
-import { format, addDays, startOfWeek } from "date-fns";
+import { format } from "date-fns";
 import {
   User,
   Calendar,
   Settings,
-  Save,
   AlertCircle,
   Building,
   Briefcase,
@@ -17,6 +16,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/patterns/page-header";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AvatarUpload } from "@/components/ui/avatar-upload";
 import { Badge } from "@/components/ui/badge";
@@ -147,7 +147,7 @@ export default function ProfilePage() {
           });
         }
       },
-      onError: (error) => {
+      onError: error => {
         console.error("Profile query error:", error);
         // Still allow partial data to be displayed
       },
@@ -168,7 +168,7 @@ export default function ProfilePage() {
     });
 
   const user = data?.usersByPk;
-  
+
   // If we have partial data but an error, still show what we can
   const hasPartialData = user && user.id && user.computedName;
 
@@ -282,20 +282,41 @@ export default function ProfilePage() {
   // Calculate statistics with safe access
   const stats = {
     totalPayrolls:
-      safeProfileAccess(user, 'primaryPayrollAssignments.length', 0) +
-      safeProfileAccess(user, 'backupPayrollAssignments.length', 0) +
-      safeProfileAccess(user, 'managedPayrolls.length', 0),
-    primaryPayrolls: safeProfileAccess(user, 'primaryPayrollAssignments.length', 0),
-    managedStaff: safeProfileAccess(user, 'managedUsers.length', 0),
+      safeProfileAccess(user, "primaryPayrollAssignments.length", 0) +
+      safeProfileAccess(user, "backupPayrollAssignments.length", 0) +
+      safeProfileAccess(user, "managedPayrolls.length", 0),
+    primaryPayrolls: safeProfileAccess(
+      user,
+      "primaryPayrollAssignments.length",
+      0
+    ),
+    managedStaff: safeProfileAccess(user, "managedUsers.length", 0),
     totalEmployees:
       user?.primaryPayrollAssignments?.reduce(
-        (sum: number, p: any) => sum + (safeProfileAccess(p, 'employeeCount', 0)),
+        (sum: number, p: any) => sum + safeProfileAccess(p, "employeeCount", 0),
         0
       ) || 0,
   };
 
   return (
     <div className="container mx-auto py-6 space-y-6">
+      <PageHeader
+        title="My Profile"
+        description="Manage your account settings and personal information"
+        breadcrumbs={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Profile" },
+        ]}
+        actions={[
+          isEditing
+            ? { label: "Cancel", onClick: handleCancel }
+            : {
+                label: "Edit Profile",
+                icon: Settings,
+                onClick: () => setIsEditing(true),
+              },
+        ]}
+      />
       {/* Error banner for partial data */}
       {error && hasPartialData && (
         <Card className="border-orange-200 bg-orange-50">
@@ -305,13 +326,11 @@ export default function ProfilePage() {
               <p className="text-sm font-medium text-orange-800">
                 Some profile data couldn't be loaded
               </p>
-              <p className="text-xs text-orange-600">
-                {error.message}
-              </p>
+              <p className="text-xs text-orange-600">{error.message}</p>
             </div>
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => refetch()}
               className="ml-auto"
             >
@@ -320,37 +339,8 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
       )}
-      
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">My Profile</h1>
-          <p className="text-gray-600">
-            Manage your account settings and personal information
-          </p>
-        </div>
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:space-x-2">
-          {isEditing ? (
-            <>
-              <Button variant="outline" onClick={handleCancel} className="w-full sm:w-auto">
-                Cancel
-              </Button>
-              <Button onClick={handleSaveProfile} disabled={updating} className="w-full sm:w-auto">
-                {updating ? (
-                  <ByteMySpinner size="sm" />
-                ) : (
-                  <Save className="w-4 h-4 mr-2" />
-                )}
-                Save Changes
-              </Button>
-            </>
-          ) : (
-            <Button onClick={() => setIsEditing(true)} className="w-full sm:w-auto">
-              <Settings className="w-4 h-4 mr-2" />
-              Edit Profile
-            </Button>
-          )}
-        </div>
-      </div>
+
+      {/* Actions are already provided via PageHeader; remove duplicate local header */}
 
       {/* Enhanced Profile Overview Header Card */}
       <Card>
@@ -442,7 +432,10 @@ export default function ProfilePage() {
                           placeholder="e.g., Sydney, NSW, Australia"
                           value={formData.address}
                           onChange={e =>
-                            setFormData({ ...formData, address: e.target.value })
+                            setFormData({
+                              ...formData,
+                              address: e.target.value,
+                            })
                           }
                         />
                       </div>
@@ -508,19 +501,25 @@ export default function ProfilePage() {
                     <div className="text-lg sm:text-2xl font-bold text-blue-600">
                       {stats.totalPayrolls}
                     </div>
-                    <div className="text-xs sm:text-sm text-blue-600">Total Payrolls</div>
+                    <div className="text-xs sm:text-sm text-blue-600">
+                      Total Payrolls
+                    </div>
                   </div>
                   <div className="text-center p-2 sm:p-3 bg-green-50 rounded-lg">
                     <div className="text-lg sm:text-2xl font-bold text-green-600">
                       {stats.totalEmployees}
                     </div>
-                    <div className="text-xs sm:text-sm text-green-600">Employees Managed</div>
+                    <div className="text-xs sm:text-sm text-green-600">
+                      Employees Managed
+                    </div>
                   </div>
                   <div className="text-center p-2 sm:p-3 bg-purple-50 rounded-lg">
                     <div className="text-lg sm:text-2xl font-bold text-purple-600">
                       {stats.managedStaff}
                     </div>
-                    <div className="text-xs sm:text-sm text-purple-600">Direct Reports</div>
+                    <div className="text-xs sm:text-sm text-purple-600">
+                      Direct Reports
+                    </div>
                   </div>
                 </div>
               </div>
@@ -557,10 +556,16 @@ export default function ProfilePage() {
                     <Avatar className="w-10 h-10">
                       <AvatarImage
                         src={user.manager.image || undefined}
-                        alt={user.manager.computedName || `${user.manager.firstName} ${user.manager.lastName}`}
+                        alt={
+                          user.manager.computedName ||
+                          `${user.manager.firstName} ${user.manager.lastName}`
+                        }
                       />
                       <AvatarFallback>
-                        {(user.manager.computedName || `${user.manager.firstName} ${user.manager.lastName}`)
+                        {(
+                          user.manager.computedName ||
+                          `${user.manager.firstName} ${user.manager.lastName}`
+                        )
                           .split(" ")
                           .map((n: string) => n?.[0] || "")
                           .join("")
@@ -580,31 +585,34 @@ export default function ProfilePage() {
             )}
 
             {/* Work Schedule */}
-            {data?.usersByPk?.workSchedules && data.usersByPk.workSchedules.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Clock className="w-5 h-5" />
-                    Work Schedule
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {data.usersByPk.workSchedules.map((schedule: any) => (
-                      <div
-                        key={schedule.id}
-                        className="flex justify-between items-center py-2 border-b last:border-b-0"
-                      >
-                        <span className="font-medium">{schedule.workDay}</span>
-                        <span className="text-gray-500">
-                          {schedule.workHours}h
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+            {data?.usersByPk?.workSchedules &&
+              data.usersByPk.workSchedules.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Clock className="w-5 h-5" />
+                      Work Schedule
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {data.usersByPk.workSchedules.map((schedule: any) => (
+                        <div
+                          key={schedule.id}
+                          className="flex justify-between items-center py-2 border-b last:border-b-0"
+                        >
+                          <span className="font-medium">
+                            {schedule.workDay}
+                          </span>
+                          <span className="text-gray-500">
+                            {schedule.workHours}h
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
             {/* Recent Leave */}
             {data?.userLeaves?.length > 0 && (
@@ -793,20 +801,26 @@ export default function ProfilePage() {
               <CardContent className="flex flex-col items-center space-y-4 p-8">
                 <AlertCircle className="h-12 w-12 text-red-500" />
                 <div className="text-center">
-                  <h3 className="text-lg font-semibold">Failed to load workload data</h3>
-                  <p className="text-sm text-gray-600 mt-1">{workloadError.message}</p>
+                  <h3 className="text-lg font-semibold">
+                    Failed to load workload data
+                  </h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {workloadError.message}
+                  </p>
                 </div>
               </CardContent>
             </Card>
           ) : (
             <PayrollWorkloadVisualization
               userId={user.id}
-              userName={user.computedName || `${user.firstName} ${user.lastName}`}
+              userName={
+                user.computedName || `${user.firstName} ${user.lastName}`
+              }
               userRole={user.role}
               workSchedule={workSchedule}
               viewMode="consultant"
               showCapacityComparison={true}
-              onAssignmentClick={(assignment) => {
+              onAssignmentClick={assignment => {
                 console.log("Assignment clicked:", assignment);
               }}
             />

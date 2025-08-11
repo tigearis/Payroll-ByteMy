@@ -4,7 +4,6 @@ import {
   UserCheck,
   UserPlus,
   Mail,
-  Phone,
   Badge as BadgeIcon,
   Edit,
   AlertCircle,
@@ -12,6 +11,8 @@ import {
   Clock,
 } from "lucide-react";
 import { memo, useState } from "react";
+import { toast } from "sonner";
+import { CanUpdate } from "@/components/auth/permission-guard";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -33,8 +34,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { CanUpdate } from "@/components/auth/permission-guard";
-import { toast } from "sonner";
 import type { PayrollData } from "@/domains/payrolls/hooks/usePayrollData";
 
 export interface PayrollAssignmentsProps {
@@ -50,16 +49,20 @@ export interface PayrollAssignmentsProps {
 // Helper function to generate user initials
 function getUserInitials(user: any): string {
   if (!user) return "?";
-  
-  const name = user.computedName || `${user.firstName || ""} ${user.lastName || ""}`.trim();
+
+  const name =
+    user.computedName ||
+    `${user.firstName || ""} ${user.lastName || ""}`.trim();
   if (!name || name === "Unknown User") return "U";
-  
+
   const nameParts = name.split(" ");
   if (nameParts.length === 1) {
     return nameParts[0].charAt(0).toUpperCase();
   }
-  
-  return (nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)).toUpperCase();
+
+  return (
+    nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)
+  ).toUpperCase();
 }
 
 // Helper function to format user role
@@ -71,13 +74,17 @@ function formatRole(role: string): string {
     developer: "Developer",
     viewer: "Viewer",
   };
-  
-  return roleMap[role as keyof typeof roleMap] || 
-         role.charAt(0).toUpperCase() + role.slice(1);
+
+  return (
+    roleMap[role as keyof typeof roleMap] ||
+    role.charAt(0).toUpperCase() + role.slice(1)
+  );
 }
 
 // Helper function to get role badge variant
-function getRoleBadgeVariant(role: string): "default" | "secondary" | "outline" | "destructive" {
+function getRoleBadgeVariant(
+  role: string
+): "default" | "secondary" | "outline" | "destructive" {
   const variants = {
     org_admin: "default" as const,
     manager: "default" as const,
@@ -85,25 +92,26 @@ function getRoleBadgeVariant(role: string): "default" | "secondary" | "outline" 
     developer: "outline" as const,
     viewer: "outline" as const,
   };
-  
+
   return variants[role as keyof typeof variants] || "outline";
 }
 
 // User card component
-function UserCard({ 
-  user, 
-  title, 
-  description, 
-  onEdit 
-}: { 
-  user: any; 
-  title: string; 
+function UserCard({
+  user,
+  title,
+  description,
+  onEdit,
+}: {
+  user: any;
+  title: string;
   description: string;
   onEdit?: () => void;
 }) {
-  const displayName = user?.computedName || 
-                     `${user?.firstName || ""} ${user?.lastName || ""}`.trim() || 
-                     "Unknown User";
+  const displayName =
+    user?.computedName ||
+    `${user?.firstName || ""} ${user?.lastName || ""}`.trim() ||
+    "Unknown User";
 
   if (!user) {
     return (
@@ -132,19 +140,18 @@ function UserCard({
       <CardContent className="p-6">
         <div className="flex items-start gap-4">
           <Avatar className="w-12 h-12">
-            <AvatarImage 
-              src={user.image || undefined} 
-              alt={displayName} 
-            />
+            <AvatarImage src={user.image || undefined} alt={displayName} />
             <AvatarFallback className="bg-gray-100 text-gray-600 font-medium">
               {getUserInitials(user)}
             </AvatarFallback>
           </Avatar>
-          
+
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between mb-2">
               <div>
-                <h3 className="font-semibold text-gray-900 truncate">{displayName}</h3>
+                <h3 className="font-semibold text-gray-900 truncate">
+                  {displayName}
+                </h3>
                 <p className="text-sm text-gray-500">{title}</p>
               </div>
               {onEdit && (
@@ -155,7 +162,7 @@ function UserCard({
                 </CanUpdate>
               )}
             </div>
-            
+
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Badge variant={getRoleBadgeVariant(user.role)}>
@@ -163,18 +170,24 @@ function UserCard({
                   {formatRole(user.role)}
                 </Badge>
                 {user.isActive ? (
-                  <Badge variant="outline" className="text-green-600 border-green-200">
+                  <Badge
+                    variant="outline"
+                    className="text-green-600 border-green-200"
+                  >
                     <CheckCircle2 className="w-3 h-3 mr-1" />
                     Active
                   </Badge>
                 ) : (
-                  <Badge variant="outline" className="text-gray-500 border-gray-200">
+                  <Badge
+                    variant="outline"
+                    className="text-gray-500 border-gray-200"
+                  >
                     <Clock className="w-3 h-3 mr-1" />
                     Inactive
                   </Badge>
                 )}
               </div>
-              
+
               {user.email && (
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <Mail className="w-3 h-3" />
@@ -206,7 +219,7 @@ function AssignmentEditDialog({
     backupConsultantUserId: data.payroll.backupConsultant?.id || "",
     managerUserId: data.payroll.assignedManager?.id || "",
   });
-  
+
   const [saving, setSaving] = useState(false);
 
   const handleSave = async () => {
@@ -224,17 +237,20 @@ function AssignmentEditDialog({
   };
 
   // Filter users by role for appropriate assignments
-  const consultants = data.users.filter(user => 
-    ["consultant", "manager", "org_admin", "developer"].includes(user.role) && user.isActive
+  const consultants = data.users.filter(
+    user =>
+      ["consultant", "manager", "org_admin", "developer"].includes(user.role) &&
+      user.isActive
   );
-  
-  const managers = data.users.filter(user => 
-    ["manager", "org_admin", "developer"].includes(user.role) && user.isActive
+
+  const managers = data.users.filter(
+    user =>
+      ["manager", "org_admin", "developer"].includes(user.role) && user.isActive
   );
-  
+
   // Filter backup consultants to exclude primary consultant
-  const backupConsultants = consultants.filter(user => 
-    user.id !== assignments.primaryConsultantUserId
+  const backupConsultants = consultants.filter(
+    user => user.id !== assignments.primaryConsultantUserId
   );
 
   return (
@@ -243,19 +259,22 @@ function AssignmentEditDialog({
         <DialogHeader>
           <DialogTitle>Update Assignments</DialogTitle>
           <DialogDescription>
-            Assign team members to this payroll. Changes will be saved immediately.
+            Assign team members to this payroll. Changes will be saved
+            immediately.
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-4">
           <div>
             <Label htmlFor="primary-consultant">Primary Consultant</Label>
             <Select
               value={assignments.primaryConsultantUserId}
-              onValueChange={(value) => setAssignments(prev => ({
-                ...prev,
-                primaryConsultantUserId: value,
-              }))}
+              onValueChange={value =>
+                setAssignments(prev => ({
+                  ...prev,
+                  primaryConsultantUserId: value,
+                }))
+              }
             >
               <SelectTrigger id="primary-consultant">
                 <SelectValue placeholder="Select primary consultant..." />
@@ -265,7 +284,10 @@ function AssignmentEditDialog({
                 {consultants.map(user => (
                   <SelectItem key={user.id} value={user.id}>
                     <div className="flex items-center gap-2">
-                      <span>{user.computedName || `${user.firstName} ${user.lastName}`}</span>
+                      <span>
+                        {user.computedName ||
+                          `${user.firstName} ${user.lastName}`}
+                      </span>
                       <Badge variant="outline" className="text-xs">
                         {formatRole(user.role)}
                       </Badge>
@@ -280,10 +302,12 @@ function AssignmentEditDialog({
             <Label htmlFor="backup-consultant">Backup Consultant</Label>
             <Select
               value={assignments.backupConsultantUserId}
-              onValueChange={(value) => setAssignments(prev => ({
-                ...prev,
-                backupConsultantUserId: value,
-              }))}
+              onValueChange={value =>
+                setAssignments(prev => ({
+                  ...prev,
+                  backupConsultantUserId: value,
+                }))
+              }
             >
               <SelectTrigger id="backup-consultant">
                 <SelectValue placeholder="Select backup consultant..." />
@@ -293,7 +317,10 @@ function AssignmentEditDialog({
                 {backupConsultants.map(user => (
                   <SelectItem key={user.id} value={user.id}>
                     <div className="flex items-center gap-2">
-                      <span>{user.computedName || `${user.firstName} ${user.lastName}`}</span>
+                      <span>
+                        {user.computedName ||
+                          `${user.firstName} ${user.lastName}`}
+                      </span>
                       <Badge variant="outline" className="text-xs">
                         {formatRole(user.role)}
                       </Badge>
@@ -308,10 +335,12 @@ function AssignmentEditDialog({
             <Label htmlFor="manager">Manager</Label>
             <Select
               value={assignments.managerUserId}
-              onValueChange={(value) => setAssignments(prev => ({
-                ...prev,
-                managerUserId: value,
-              }))}
+              onValueChange={value =>
+                setAssignments(prev => ({
+                  ...prev,
+                  managerUserId: value,
+                }))
+              }
             >
               <SelectTrigger id="manager">
                 <SelectValue placeholder="Select manager..." />
@@ -321,7 +350,10 @@ function AssignmentEditDialog({
                 {managers.map(user => (
                   <SelectItem key={user.id} value={user.id}>
                     <div className="flex items-center gap-2">
-                      <span>{user.computedName || `${user.firstName} ${user.lastName}`}</span>
+                      <span>
+                        {user.computedName ||
+                          `${user.firstName} ${user.lastName}`}
+                      </span>
                       <Badge variant="outline" className="text-xs">
                         {formatRole(user.role)}
                       </Badge>
@@ -332,7 +364,7 @@ function AssignmentEditDialog({
             </Select>
           </div>
         </div>
-        
+
         <div className="flex justify-end gap-2 pt-4">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
@@ -362,7 +394,6 @@ function PayrollAssignmentsComponent({
   // Check for missing assignments
   const missingAssignments = [
     !payroll.primaryConsultant && "Primary Consultant",
-    !payroll.backupConsultant && "Backup Consultant", 
     !payroll.assignedManager && "Manager",
   ].filter(Boolean);
 
@@ -388,7 +419,7 @@ function PayrollAssignmentsComponent({
                 Manage consultant and manager assignments for this payroll
               </p>
             </div>
-            
+
             <CanUpdate resource="payrolls">
               <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
                 <DialogTrigger asChild>
@@ -407,7 +438,7 @@ function PayrollAssignmentsComponent({
             </CanUpdate>
           </div>
         </CardHeader>
-        
+
         <CardContent className="space-y-6">
           {/* Warning for missing assignments */}
           {missingAssignments.length > 0 && (
@@ -415,10 +446,12 @@ function PayrollAssignmentsComponent({
               <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
                 <p className="text-sm text-amber-800">
-                  <strong>Missing assignments:</strong> {missingAssignments.join(", ")}
+                  <strong>Missing assignments:</strong>{" "}
+                  {missingAssignments.join(", ")}
                 </p>
                 <p className="text-sm text-amber-700 mt-1">
-                  Assign team members to ensure proper payroll management and oversight.
+                  Assign team members to ensure proper payroll management and
+                  oversight.
                 </p>
               </div>
             </div>
@@ -432,14 +465,14 @@ function PayrollAssignmentsComponent({
               description="Responsible for payroll processing and client communication"
               onEdit={() => setEditDialogOpen(true)}
             />
-            
+
             <UserCard
               user={payroll.backupConsultant}
               title="Backup Consultant"
               description="Secondary consultant for support and coverage"
               onEdit={() => setEditDialogOpen(true)}
             />
-            
+
             <UserCard
               user={payroll.assignedManager}
               title="Manager"
@@ -453,7 +486,9 @@ function PayrollAssignmentsComponent({
             <>
               <Separator />
               <div>
-                <h4 className="font-medium text-gray-900 mb-3">Required Skills</h4>
+                <h4 className="font-medium text-gray-900 mb-3">
+                  Required Skills
+                </h4>
                 <div className="flex flex-wrap gap-2">
                   {payroll.requiredSkills.map((skill, index) => (
                     <Badge key={index} variant="outline" className="text-sm">
@@ -462,7 +497,8 @@ function PayrollAssignmentsComponent({
                   ))}
                 </div>
                 <p className="text-sm text-muted-foreground mt-2">
-                  Team members should have these skills for optimal payroll management
+                  Team members should have these skills for optimal payroll
+                  management
                 </p>
               </div>
             </>
@@ -472,7 +508,8 @@ function PayrollAssignmentsComponent({
           <Separator />
           <div className="text-center py-4">
             <p className="text-sm text-muted-foreground">
-              Need to reassign team members? Use the "Edit Assignments" button above.
+              Need to reassign team members? Use the "Edit Assignments" button
+              above.
             </p>
           </div>
         </CardContent>
@@ -494,7 +531,7 @@ function PayrollAssignmentsSkeleton() {
           <div className="h-9 bg-gray-200 rounded w-32 animate-pulse" />
         </div>
       </CardHeader>
-      
+
       <CardContent className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {Array.from({ length: 3 }).map((_, i) => (

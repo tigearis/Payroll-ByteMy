@@ -1,0 +1,92 @@
+# Shared GraphQL Mutations
+# Updated to match actual Hasura schema
+
+# ============================================
+# Audit Mutations
+# ============================================
+
+# Log an audit event
+mutation LogAuditEvent($input: AuditAuditLogInsertInput!) {
+  insertAuditAuditLog(objects: [$input]) {
+    returning {
+      id
+      eventTime
+    }
+  }
+}
+
+# ============================================
+# Note Mutations
+# ============================================
+
+# NOTE: Note mutations moved to domains/notes/graphql/mutations.graphql
+# for better domain isolation and comprehensive operations
+
+# ============================================
+# File Operations Mutations
+# ============================================
+
+# Insert a file record
+mutation InsertFile($input: FilesInsertInput!) {
+  insertFiles(objects: [$input]) {
+    returning {
+      id
+      filename
+      bucket
+      objectKey
+      size
+      mimetype
+      url
+      clientId
+      payrollId
+      uploadedBy
+      category
+      isPublic
+      metadata
+      fileType
+      createdAt
+    }
+  }
+}
+
+# Update file metadata
+mutation UpdateFileMetadata($id: uuid!, $updates: FilesSetInput!) {
+  updateFilesByPk(pkColumns: {id: $id}, _set: $updates) {
+    id
+    filename
+    bucket
+    objectKey
+    size
+    mimetype
+    url
+    clientId
+    payrollId
+    uploadedBy
+    category
+    isPublic
+    metadata
+    fileType
+    createdAt
+  }
+}
+
+# Delete a file
+# WARNING: This mutation only deletes the database record. 
+# MinIO cleanup is handled by Hasura event trigger.
+# For programmatic deletion, use the deleteDocument service instead.
+mutation DeleteFile($id: uuid!) {
+  deleteFilesByPk(id: $id) {
+    id
+    filename
+    objectKey
+  }
+}
+
+# ============================================
+# Generic Mutations
+# ============================================
+
+# Refresh data - forces Apollo cache update
+mutation RefreshData {
+  __typename
+}

@@ -6,6 +6,7 @@
 
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 import { contextExtractor } from "../../../../lib/ai/context-extractor";
 import {
   hasuraQueryGenerator,
@@ -93,9 +94,27 @@ export async function POST(request: NextRequest) {
     let jwtToken: string | null = null;
     try {
       jwtToken = await authResult.getToken({ template: "hasura" });
-      console.log("🔑 [AI Query API] Retrieved JWT token for user:", userId);
+      logger.debug('JWT token retrieved for user', {
+        namespace: 'ai_assistant_api',
+        operation: 'get_jwt_token',
+        classification: DataClassification.INTERNAL,
+        metadata: {
+          userId,
+          timestamp: new Date().toISOString()
+        }
+      });
     } catch (error) {
-      console.warn("⚠️ [AI Query API] Failed to get JWT token:", error);
+      logger.warn('Failed to get JWT token', {
+        namespace: 'ai_assistant_api',
+        operation: 'get_jwt_token',
+        classification: DataClassification.INTERNAL,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        metadata: {
+          userId,
+          errorName: error instanceof Error ? error.name : 'UnknownError',
+          timestamp: new Date().toISOString()
+        }
+      });
     }
 
     // Rate limiting check
@@ -287,7 +306,19 @@ export async function POST(request: NextRequest) {
           context: extractedContext.page,
         });
       } catch (executionError) {
-        console.error("Enhanced query execution error:", executionError);
+        logger.error('Enhanced query execution error', {
+          namespace: 'ai_assistant_api',
+          operation: 'execute_enhanced_query',
+          classification: DataClassification.CONFIDENTIAL,
+          error: executionError instanceof Error ? executionError.message : 'Unknown execution error',
+          metadata: {
+            userId,
+            userRole,
+            queryRequest: queryRequest.substring(0, 100),
+            errorName: executionError instanceof Error ? executionError.name : 'UnknownError',
+            timestamp: new Date().toISOString()
+          }
+        });
 
         response.errors = [
           {
@@ -342,7 +373,19 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(response);
   } catch (error) {
-    console.error("AI Query API Error:", error);
+    logger.error('AI Query API Error', {
+      namespace: 'ai_assistant_api',
+      operation: 'post_query',
+      classification: DataClassification.CONFIDENTIAL,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      metadata: {
+        userId: userId || 'unknown',
+        userRole,
+        queryRequest: queryRequest?.substring(0, 100) || 'unknown',
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+        timestamp: new Date().toISOString()
+      }
+    });
 
     // Enhanced error logging for debugging
     const errorDetails = {
@@ -452,7 +495,16 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("AI Query Suggestions API Error:", error);
+    logger.error('AI Query Suggestions API Error', {
+      namespace: 'ai_assistant_api',
+      operation: 'get_suggestions',
+      classification: DataClassification.INTERNAL,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      metadata: {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+        timestamp: new Date().toISOString()
+      }
+    });
 
     return NextResponse.json(
       { error: "Failed to get query suggestions" },
@@ -495,28 +547,50 @@ async function logQueryExecution(data: {
       }
     });
 
-    console.log("✅ AI Query Execution logged to audit database:", {
-      userId: data.userId,
-      userRole: data.userRole,
-      success: data.success,
-      tablesAccessed: data.tablesAccessed.length,
-      page: data.context.title,
+    logger.info('AI Query Execution logged to audit database', {
+      namespace: 'ai_assistant_api',
+      operation: 'log_query_execution',
+      classification: DataClassification.CONFIDENTIAL,
+      metadata: {
+        userId: data.userId,
+        userRole: data.userRole,
+        success: data.success,
+        tablesAccessed: data.tablesAccessed.length,
+        page: data.context.title,
+        timestamp: new Date().toISOString()
+      }
     });
   } catch (error) {
-    console.error("❌ Failed to log query execution to audit database:", error);
+    logger.error('Failed to log query execution to audit database', {
+      namespace: 'ai_assistant_api',
+      operation: 'log_query_execution',
+      classification: DataClassification.INTERNAL,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      metadata: {
+        userId: data.userId,
+        userRole: data.userRole,
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+        timestamp: new Date().toISOString()
+      }
+    });
     
-    // Fallback to console logging
-    console.log("AI Query Execution (fallback):", {
-      userId: data.userId,
-      userRole: data.userRole,
-      requestLength: data.request.length,
-      queryLength: data.query.length,
-      success: data.success,
-      error: data.error,
-      securityViolations: data.securityViolations,
-      tablesAccessed: data.tablesAccessed,
-      page: data.context.title,
-      timestamp: new Date().toISOString(),
+    // Fallback to enterprise logging
+    logger.warn('AI Query Execution fallback logging', {
+      namespace: 'ai_assistant_api',
+      operation: 'log_query_execution_fallback',
+      classification: DataClassification.CONFIDENTIAL,
+      metadata: {
+        userId: data.userId,
+        userRole: data.userRole,
+        requestLength: data.request.length,
+        queryLength: data.query.length,
+        success: data.success,
+        error: data.error,
+        securityViolations: data.securityViolations,
+        tablesAccessed: data.tablesAccessed,
+        page: data.context.title,
+        timestamp: new Date().toISOString()
+      }
     });
     
     // Don't throw - logging failure shouldn't break the main flow
@@ -574,7 +648,16 @@ Start your response with a key insight, not a restatement of the question.`;
 
     return summary;
   } catch (error) {
-    console.error("Error generating data summary:", error);
+    logger.error('Error generating data summary', {
+      namespace: 'ai_assistant_api',
+      operation: 'generate_data_summary',
+      classification: DataClassification.INTERNAL,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      metadata: {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+        timestamp: new Date().toISOString()
+      }
+    });
 
     // Enhanced fallback with basic analysis
     const dataAnalysis = analyzeQueryResults(data);

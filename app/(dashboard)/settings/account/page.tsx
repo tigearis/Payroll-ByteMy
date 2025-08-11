@@ -3,15 +3,9 @@
 
 import { useQuery } from "@apollo/client";
 import { useUser } from "@clerk/nextjs";
-import {
-  Lock,
-  Eye,
-  Monitor,
-  Sidebar,
-  Layout,
-  RefreshCw,
-} from "lucide-react";
+import { Lock, Eye, Monitor, Sidebar, Layout, RefreshCw } from "lucide-react";
 import { useState } from "react";
+import { PageHeader } from "@/components/patterns/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ByteMyLoadingIcon } from "@/components/ui/bytemy-loading-icon";
@@ -19,7 +13,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -34,12 +27,9 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  GetUserProfileSettingsDocument,
-} from "@/domains/users";
+import { GetUserProfileSettingsDocument } from "@/domains/users";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useLayoutPreferences } from "@/lib/preferences/layout-preferences";
-
 
 export default function AccountSettings() {
   const { user: clerkUser, isLoaded } = useUser();
@@ -50,21 +40,22 @@ export default function AccountSettings() {
   const [passwordLoading, setPasswordLoading] = useState(false);
 
   // GraphQL operations
-  const {
-    data: userData,
-    loading: userLoading,
-  } = useQuery(GetUserProfileSettingsDocument, {
-    variables: { id: currentUserId! },
-    skip: !currentUserId,
-    fetchPolicy: "cache-and-network",
-  });
-
+  const { data: userData, loading: userLoading } = useQuery(
+    GetUserProfileSettingsDocument,
+    {
+      variables: { id: currentUserId! },
+      skip: !currentUserId,
+      fetchPolicy: "cache-and-network",
+    }
+  );
 
   const handlePasswordReset = async () => {
     try {
       setPasswordLoading(true);
       // For now, we'll show a message directing users to use email reset
-      alert("Please use the 'Forgot Password' link on the login page to reset your password");
+      alert(
+        "Please use the 'Forgot Password' link on the login page to reset your password"
+      );
     } catch (error) {
       console.error("Error with password reset:", error);
       alert("Failed to initiate password reset");
@@ -85,12 +76,15 @@ export default function AccountSettings() {
 
   return (
     <div className="container mx-auto py-6 space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Account Settings</h2>
-        <p className="text-muted-foreground">
-          Manage your account information and preferences.
-        </p>
-      </div>
+      <PageHeader
+        title="Account Settings"
+        description="Manage your account information and preferences."
+        breadcrumbs={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Settings", href: "/settings" },
+          { label: "Account" },
+        ]}
+      />
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-3">
@@ -98,7 +92,6 @@ export default function AccountSettings() {
           <TabsTrigger value="security">Security</TabsTrigger>
           <TabsTrigger value="preferences">Preferences</TabsTrigger>
         </TabsList>
-
 
         <TabsContent value="account" className="space-y-6">
           <Card>

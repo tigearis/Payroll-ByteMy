@@ -150,13 +150,11 @@ export function PayrollSchedule() {
   });
 
   // Get all staff workload to show all consultants (not just those with payrolls)
-  const { data: staffData, loading: staffLoading } = useQuery<GetAllStaffWorkloadQuery>(
-    GetAllStaffWorkloadDocument,
-    {
+  const { data: staffData, loading: staffLoading } =
+    useQuery<GetAllStaffWorkloadQuery>(GetAllStaffWorkloadDocument, {
       errorPolicy: "all",
       fetchPolicy: "cache-and-network",
-    }
-  );
+    });
 
   // Use GetPayrollsByMonth for holidays data
   const { data: holidaysData, loading: holidaysLoading } = useQuery(
@@ -262,10 +260,20 @@ export function PayrollSchedule() {
     // Get consultants from staff data (shows ALL consultants, not just those with payrolls)
     if (staffData?.users) {
       staffData.users
-        .filter(user => user.role === 'consultant' || user.role === 'manager' || user.role === 'org_admin')
+        .filter(
+          user =>
+            user.role === "consultant" ||
+            user.role === "manager" ||
+            user.role === "org_admin"
+        )
         .forEach(user => {
           if (!consultantMap.has(user.id)) {
-            consultantMap.set(user.id, { id: user.id, name: user.computedName || `${user.firstName} ${user.lastName}`.trim() });
+            consultantMap.set(user.id, {
+              id: user.id,
+              name:
+                user.computedName ||
+                `${user.firstName} ${user.lastName}`.trim(),
+            });
           }
         });
     }
@@ -299,7 +307,7 @@ export function PayrollSchedule() {
   const formatWeek = (date: Date) => {
     const start = startOfWeek(date);
     const end = endOfWeek(date);
-    return `${format(start, "MMM d")} - ${format(end, "MMM d, yyyy")}`;
+    return `${format(start, "dd MMM")} - ${format(end, "dd MMM yyyy")}`;
   };
 
   const navigatePrevious = () => {
@@ -521,9 +529,7 @@ export function PayrollSchedule() {
   if (loading && !payrollsData && !holidaysData) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <QuickLoading.Page
-          title="Loading payroll schedule..."
-        />
+        <QuickLoading.Page title="Loading payroll schedule..." />
       </div>
     );
   }

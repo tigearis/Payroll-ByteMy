@@ -1,0 +1,45 @@
+# Service Analytics Summary
+
+query GetServiceAnalytics(
+  $limit: Int = 20
+  $orderBy: [ServiceAnalyticsSummaryOrderBy!] = [{ totalRevenue: DESC }]
+) {
+  serviceAnalytics: serviceAnalyticsSummary(limit: $limit, orderBy: $orderBy) {
+    serviceName
+    totalUsageCount
+    uniqueClients
+    uniqueStaff
+    totalRevenue
+    averageRevenuePerUse
+    minAmount
+    maxAmount
+    totalQuantity
+    averageQuantity
+    averageHourlyRate
+    averageUnitPrice
+    approvedUsage
+    pendingUsage
+    approvalRatePercent
+    approvedRevenue
+    pendingRevenue
+    firstUsed
+    lastUsed
+    usageLast30Days
+    usageLast7Days
+  }
+
+  serviceSummary: serviceAnalyticsSummaryAggregate {
+    aggregate {
+      count
+      sum {
+        totalRevenue
+        totalUsageCount
+      }
+      avg {
+        averageRevenuePerUse
+        approvalRatePercent
+      }
+    }
+  }
+}
+

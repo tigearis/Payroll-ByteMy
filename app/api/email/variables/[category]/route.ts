@@ -13,6 +13,7 @@ import {
   SAMPLE_PREVIEW_DATA
 } from "@/domains/email/types/template-types";
 import { withAuthParams } from "@/lib/auth/api-auth";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 interface VariableResponse {
   success: boolean;

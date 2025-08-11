@@ -8,8 +8,8 @@
  * Current implementation: payrolls-table-unified.tsx
  */
 
-import { PayrollsTableUnified } from './payrolls-table-unified';
 import { logger } from '@/lib/logging/enterprise-logger';
+import { PayrollsTableUnified } from './payrolls-table-unified';
 
 // Re-export the unified implementation with interface compatibility
 export const PayrollsTable = PayrollsTableUnified;

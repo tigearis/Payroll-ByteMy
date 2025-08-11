@@ -2,20 +2,19 @@
 
 import {
   Calendar,
-  Users,
   Clock,
-  FileText,
   Eye,
+  Settings,
+  FileText,
   CheckCircle,
   AlertTriangle,
-  Settings,
 } from "lucide-react";
 import { useState } from "react";
 import {
-  EnhancedUnifiedTable,
-  UnifiedTableColumn,
-  UnifiedTableAction,
-} from "@/components/ui/enhanced-unified-table";
+  ModernDataTable,
+  type ColumnDef,
+  type RowAction,
+} from "@/components/data/modern-data-table";
 import { getScheduleSummary } from "@/domains/payrolls/utils/schedule-helpers";
 import { PayrollWithCycle } from "@/types";
 
@@ -47,7 +46,7 @@ interface ClientPayrollsTableProps {
   clientId?: string;
 }
 
-// Status configuration for payrolls  
+// Status configuration for payrolls
 const payrollStatusConfig = {
   Implementation: {
     variant: "secondary",
@@ -55,7 +54,7 @@ const payrollStatusConfig = {
     className: "bg-blue-50 text-blue-700 border-blue-200",
   },
   "Data Entry": {
-    variant: "secondary", 
+    variant: "secondary",
     icon: FileText,
     className: "bg-yellow-50 text-yellow-700 border-yellow-200",
   },
@@ -84,92 +83,60 @@ const payrollStatusConfig = {
 export function ClientPayrollsTableUnified({
   payrolls,
   loading = false,
-  onRefresh,
-  clientId,
 }: ClientPayrollsTableProps) {
-  // Pagination state
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
-  
-  // Calculate pagination values
-  const pageCount = Math.ceil(payrolls.length / pageSize);
-  const paginatedData = payrolls.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize);
 
-  // Helper functions
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString();
-  };
-
-  const formatName = (name?: string) => {
-    if (!name) return "N/A";
-    return name
-      .replace(/_/g, " ")
-      .split(" ")
-      .map(word => {
-        const specialCases = ["DOW", "EOM", "SOM"];
-        return specialCases.includes(word.toUpperCase())
-          ? word.toUpperCase()
-          : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-      })
-      .join(" ");
-  };
-
-  const formatDayOfWeek = (dayValue?: number) => {
-    if (dayValue === undefined || dayValue === null) return "N/A";
-    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    return days[dayValue] || "N/A";
-  };
-
-  // Column definitions
-  const columns: UnifiedTableColumn<PayrollWithCycle & { updated_at?: string }>[] = [
+  const columns: ColumnDef<PayrollWithCycle & { updated_at?: string }>[] = [
     {
-      accessorKey: "name",
-      header: "Payroll Name",
-      sortable: true,
-      render: (value, row) => (
-        <div className="flex items-center space-x-3">
-          <div className="flex-shrink-0">
-            <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-              <Users className="w-4 h-4 text-purple-600" />
-            </div>
-          </div>
-          <div>
-            <div className="font-medium text-gray-900">{formatName(value)}</div>
-            <div className="text-sm text-gray-500">
-              {row.employeeCount ? `${row.employeeCount} employees` : "No employees"}
-            </div>
-          </div>
-        </div>
-      ),
-    },
-    {
-      accessorKey: "status",
-      header: "Status",
-      type: "badge",
+      id: "name",
+      key: "name",
+      label: "Payroll Name",
+      essential: true,
       sortable: true,
     },
     {
-      accessorKey: "payrollCycle",
-      header: "Schedule",
-      sortable: false,
-      render: (value, row) => (
+      id: "status",
+      key: "status",
+      label: "Status",
+      essential: true,
+      sortable: true,
+    },
+    {
+      id: "payrollCycle",
+      key: "payrollCycle" as any,
+      label: "Schedule",
+      render: (_v, r) => (
         <div className="flex items-center gap-2">
           <Clock className="w-4 h-4 text-gray-500" />
-          <span className="font-medium text-sm">{getScheduleSummary(row)}</span>
+          <span className="font-medium text-sm">{getScheduleSummary(r)}</span>
         </div>
       ),
     },
     {
-      accessorKey: "primaryConsultant" as any,
-      header: "Consultant",
-      sortable: false,
-      render: (value, row) => (
+      id: "primaryConsultant",
+      key: "primaryConsultant" as any,
+      label: "Consultant",
+      render: (_v, row) => (
         <div className="text-sm">
           {(row as any).primaryConsultant || (row as any).primary_consultant ? (
             <>
-              <div className="font-medium">{((row as any).primaryConsultant || (row as any).primary_consultant).name}</div>
-              <div className="text-gray-500">{((row as any).primaryConsultant || (row as any).primary_consultant).email}</div>
+              <div className="font-medium">
+                {
+                  (
+                    (row as any).primaryConsultant ||
+                    (row as any).primary_consultant
+                  ).name
+                }
+              </div>
+              <div className="text-gray-500">
+                {
+                  (
+                    (row as any).primaryConsultant ||
+                    (row as any).primary_consultant
+                  ).email
+                }
+              </div>
             </>
           ) : (
             <span className="text-gray-400">Unassigned</span>
@@ -178,62 +145,57 @@ export function ClientPayrollsTableUnified({
       ),
     },
     {
-      accessorKey: "goLiveDate" as any,
-      header: "Go Live Date",
-      type: "date",
+      id: "goLiveDate",
+      key: "goLiveDate" as any,
+      label: "Go Live Date",
       sortable: true,
-      render: (value) => (
+      render: value => (
         <div className="flex items-center space-x-2">
           <Calendar className="w-4 h-4 text-gray-400" />
           <span className="text-sm">
-            {value ? formatDate(value) : "Not set"}
+            {value ? new Date(value).toLocaleDateString() : "Not set"}
           </span>
         </div>
       ),
     },
     {
-      accessorKey: "updated_at",
-      header: "Last Updated",
-      type: "date",
+      id: "updated_at",
+      key: "updated_at" as any,
+      label: "Last Updated",
       sortable: true,
-      render: (value) => (
+      render: value => (
         <span className="text-sm text-gray-500">
-          {formatDate(value)}
+          {value ? new Date(value).toLocaleDateString() : "—"}
         </span>
       ),
     },
   ];
 
-  // Action definitions
-  const actions: UnifiedTableAction<PayrollWithCycle & { updated_at?: string }>[] = [
+  const actions: RowAction<PayrollWithCycle & { updated_at?: string }>[] = [
     {
+      id: "view",
       label: "View Details",
       icon: Eye,
-      onClick: (row) => window.location.href = `/payrolls/${row.id}`,
+      onClick: row => (window.location.href = `/payrolls/${row.id}`),
     },
   ];
 
+  const pageCount = Math.ceil(payrolls.length / pageSize);
+  const paginatedData = payrolls.slice(
+    pageIndex * pageSize,
+    (pageIndex + 1) * pageSize
+  );
+
   return (
-    <EnhancedUnifiedTable<PayrollWithCycle & { updated_at?: string }>
+    <ModernDataTable<PayrollWithCycle & { updated_at?: string }>
       data={paginatedData}
       columns={columns}
-      actions={actions}
-      loading={loading}
-      searchable={true}
+      loading={!!loading}
+      searchable
       searchPlaceholder="Search payrolls..."
-      selectable={false}
-      pagination={{
-        pageIndex,
-        pageSize,
-        pageCount,
-        canPreviousPage: pageIndex > 0,
-        canNextPage: pageIndex < pageCount - 1,
-        onPageChange: setPageIndex,
-        onPageSizeChange: (size) => {
-          setPageSize(size);
-          setPageIndex(0); // Reset to first page when changing page size
-        },
-      }}
+      rowActions={actions}
+      pageSize={pageSize}
+      className="client-payrolls-table-unified"
     />
   );
 }

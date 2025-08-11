@@ -166,19 +166,6 @@ export function useHierarchicalPermissions(): HierarchicalPermissionHook {
   };
 }
 
-/**
- * Simplified permission hook for common use cases
- */
-export function usePermissions() {
-  const { hasPermission, hasAnyPermission, userRole, isLoading } = useHierarchicalPermissions();
-  
-  return {
-    can: hasPermission,
-    canAny: hasAnyPermission,
-    role: userRole,
-    isLoading
-  };
-}
 
 /**
  * Hook for role-based access control

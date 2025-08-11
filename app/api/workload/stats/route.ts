@@ -1,6 +1,7 @@
 import { parseISO } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateApiRequest } from "@/lib/auth/api-auth";
+// import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 interface UtilizationStatsInput {
   userId: string;
@@ -50,41 +51,52 @@ async function getWorkloadDataForStats(
   endDate: string
 ): Promise<WorkloadPeriodData[]> {
   try {
-    console.log(`📊 Fetching workload data for stats: user ${userId}, period ${period}`);
-    
+    console.log(
+      `📊 Fetching workload data for stats: user ${userId}, period ${period}`
+    );
+
     // Delegate to the metrics endpoint which has real GraphQL implementation
-    const metricsResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/workload/metrics`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        input: {
-          userId,
-          period,
-          startDate,
-          endDate
-        }
-      })
-    });
+    const metricsResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/workload/metrics`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          input: {
+            userId,
+            period,
+            startDate,
+            endDate,
+          },
+        }),
+      }
+    );
 
     if (!metricsResponse.ok) {
-      console.error('❌ Failed to fetch workload metrics:', metricsResponse.statusText);
+      console.error(
+        "❌ Failed to fetch workload metrics:",
+        metricsResponse.statusText
+      );
       return [];
     }
 
     const metricsData = await metricsResponse.json();
-    
+
     if (!metricsData.success || !metricsData.periods) {
-      console.warn('⚠️ Metrics endpoint returned unsuccessful response or no periods');
+      console.warn(
+        "⚠️ Metrics endpoint returned unsuccessful response or no periods"
+      );
       return [];
     }
 
-    console.log(`✅ Retrieved ${metricsData.periods.length} periods from metrics endpoint`);
+    console.log(
+      `✅ Retrieved ${metricsData.periods.length} periods from metrics endpoint`
+    );
     return metricsData.periods;
-
   } catch (error: any) {
-    console.error('❌ Error fetching workload data for stats:', error);
+    console.error("❌ Error fetching workload data for stats:", error);
     return [];
   }
 }
@@ -120,16 +132,19 @@ function calculateDetailedStats(periods: WorkloadPeriodData[]): {
   const totalCapacity = Math.round(
     periods.reduce((sum, item) => sum + item.payrollCapacityHours, 0)
   );
-  
-  const totalAssigned = Math.round(
-    periods.reduce((sum, item) => sum + item.assignedHours, 0) * 10
-  ) / 10;
-  
+
+  const totalAssigned =
+    Math.round(
+      periods.reduce((sum, item) => sum + item.assignedHours, 0) * 10
+    ) / 10;
+
   const avgUtilization = Math.round(
     periods.reduce((sum, item) => sum + item.utilization, 0) / periods.length
   );
-  
-  const overallocatedPeriods = periods.filter(item => item.utilization > 100).length;
+
+  const overallocatedPeriods = periods.filter(
+    item => item.utilization > 100
+  ).length;
 
   const summary: CapacitySummary = {
     totalCapacity,
@@ -147,12 +162,17 @@ function calculateDetailedStats(periods: WorkloadPeriodData[]): {
   // Calculate utilization trend (simple linear trend)
   let utilizationTrend: "increasing" | "decreasing" | "stable" = "stable";
   if (periods.length >= 3) {
-    const firstHalf = utilizationValues.slice(0, Math.floor(periods.length / 2));
+    const firstHalf = utilizationValues.slice(
+      0,
+      Math.floor(periods.length / 2)
+    );
     const secondHalf = utilizationValues.slice(Math.ceil(periods.length / 2));
-    
-    const firstHalfAvg = firstHalf.reduce((sum, val) => sum + val, 0) / firstHalf.length;
-    const secondHalfAvg = secondHalf.reduce((sum, val) => sum + val, 0) / secondHalf.length;
-    
+
+    const firstHalfAvg =
+      firstHalf.reduce((sum, val) => sum + val, 0) / firstHalf.length;
+    const secondHalfAvg =
+      secondHalf.reduce((sum, val) => sum + val, 0) / secondHalf.length;
+
     const trendThreshold = 5; // 5% threshold for trend detection
     if (secondHalfAvg > firstHalfAvg + trendThreshold) {
       utilizationTrend = "increasing";
@@ -162,12 +182,16 @@ function calculateDetailedStats(periods: WorkloadPeriodData[]): {
   }
 
   // Calculate capacity efficiency (how well capacity is being utilized without overallocation)
-  const efficientPeriods = periods.filter(p => p.utilization > 0 && p.utilization <= 100);
-  const capacityEfficiency = efficientPeriods.length > 0
-    ? Math.round(
-        efficientPeriods.reduce((sum, p) => sum + p.utilization, 0) / efficientPeriods.length
-      )
-    : 0;
+  const efficientPeriods = periods.filter(
+    p => p.utilization > 0 && p.utilization <= 100
+  );
+  const capacityEfficiency =
+    efficientPeriods.length > 0
+      ? Math.round(
+          efficientPeriods.reduce((sum, p) => sum + p.utilization, 0) /
+            efficientPeriods.length
+        )
+      : 0;
 
   return {
     summary,
@@ -186,7 +210,11 @@ export async function POST(request: NextRequest) {
     const authResult = await authenticateApiRequest(request);
     if (!authResult.success) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized", errors: ["Authentication failed"] },
+        {
+          success: false,
+          message: "Unauthorized",
+          errors: ["Authentication failed"],
+        },
         { status: 401 }
       );
     }
@@ -267,7 +295,6 @@ export async function POST(request: NextRequest) {
       message: "Utilization statistics calculated successfully",
       errors: [],
     });
-
   } catch (error) {
     console.error("Error calculating utilization stats:", error);
     return NextResponse.json(

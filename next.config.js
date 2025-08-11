@@ -1,4 +1,10 @@
 import path from "path";
+import { fileURLToPath } from 'url';
+import { createRequire } from 'module';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const require = createRequire(import.meta.url);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -57,15 +63,19 @@ const nextConfig = {
               "script-src-elem 'self' 'unsafe-inline' https://clerk.com https://accounts.bytemy.com.au https://clerk.bytemy.com.au https://*.clerk.accounts.dev https://*.vercel.app https://*.vercel-insights.com https://*.vercel-analytics.com https://challenges.cloudflare.com https://*.cloudflare.com https://api.stripe.com https://maps.googleapis.com",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: https: blob:",
-              "font-src 'self' data: https://fonts.gstatic.com", // Added for Geist fonts
-              "connect-src 'self' https://api.clerk.com https://clerk.com https://clerk-telemetry.com https://*.clerk-telemetry.com https://accounts.bytemy.com.au https://clerk.bytemy.com.au https://*.clerk.accounts.dev wss://accounts.bytemy.com.au wss://clerk.bytemy.com.au wss://*.clerk.accounts.dev https://*.neon.tech wss://*.neon.tech https://bytemy.hasura.app wss://bytemy.hasura.app https://hasura.bytemy.com.au wss://hasura.bytemy.com.au https://payroll.bytemy.com.au https://*.vercel.app https://*.vercel-insights.com https://*.vercel-analytics.com https://challenges.cloudflare.com https://*.cloudflare.com https://api.stripe.com https://maps.googleapis.com",
+              "font-src 'self' data: https://fonts.gstatic.com",
+              // Allow local development Hasura endpoints (HTTP and WebSocket)
+              "connect-src 'self' https://api.clerk.com https://clerk.com https://clerk-telemetry.com https://*.clerk-telemetry.com https://accounts.bytemy.com.au https://clerk.bytemy.com.au https://*.clerk.accounts.dev wss://accounts.bytemy.com.au wss://clerk.bytemy.com.au wss://*.clerk.accounts.dev https://*.neon.tech wss://*.neon.tech https://bytemy.hasura.app wss://bytemy.hasura.app https://hasura.bytemy.com.au wss://hasura.bytemy.com.au https://payroll.bytemy.com.au https://*.vercel.app https://*.vercel-insights.com https://*.vercel-analytics.com https://challenges.cloudflare.com https://*.cloudflare.com https://api.stripe.com https://maps.googleapis.com http://localhost:8081 ws://localhost:8081 http://127.0.0.1:8081 ws://127.0.0.1:8081 http://192.168.1.229:8081 ws://192.168.1.229:8081",
               "worker-src 'self' blob:",
               "frame-src 'self' https://clerk.com https://accounts.bytemy.com.au https://clerk.bytemy.com.au https://*.clerk.accounts.dev https://challenges.cloudflare.com https://*.cloudflare.com",
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",
               "frame-ancestors 'none'",
-              "upgrade-insecure-requests",
+              // Only upgrade insecure requests in production; allow http in dev for local Hasura
+              ...(process.env.NODE_ENV === "production"
+                ? ["upgrade-insecure-requests"]
+                : []),
             ].join("; "),
           },
         ],
@@ -82,8 +92,15 @@ const nextConfig = {
             key: "Access-Control-Allow-Origin",
             value:
               process.env.NODE_ENV === "production"
-                ? (process.env.NEXT_PUBLIC_APP_URL || "https://payroll.bytemy.com.au").trim()
+                ? (
+                    process.env.NEXT_PUBLIC_APP_URL ||
+                    "https://payroll.bytemy.com.au"
+                  ).trim()
                 : "http://localhost:3000",
+          },
+          {
+            key: "Access-Control-Allow-Private-Network",
+            value: "true",
           },
           {
             key: "Access-Control-Allow-Methods",
@@ -117,6 +134,14 @@ const nextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
   compress: true,
+
+  // Disabled modularizeImports for lucide-react to allow barrel exports
+  // modularizeImports: {
+  //   "lucide-react": {
+  //     transform: "lucide-react/dist/esm/icons/{{member}}",
+  //     preventFullImport: true,
+  //   },
+  // },
 
   // Image optimization (Next.js 15 enhanced)
   images: {
@@ -160,7 +185,7 @@ const nextConfig = {
     dirs: ["app", "components", "lib", "hooks", "domains", "shared"],
   },
 
-  // Compiler optimizations (Next.js 15 features)
+  // SWC Compiler optimizations (Next.js 15 features)
   compiler: {
     // Remove console logs in production
     removeConsole: {
@@ -168,7 +193,10 @@ const nextConfig = {
     },
     // Remove React dev properties in production
     reactRemoveProperties: true,
+    // Enable SWC minification (faster than Terser)
+    styledComponents: true,
   },
+
 
   // Experimental features (stable and tested in Next.js 15.3.4)
   experimental: {
@@ -176,27 +204,30 @@ const nextConfig = {
     serverActions: {
       allowedOrigins: [
         "localhost:3000",
+        "127.0.0.1:3000",
         "payroll.bytemy.com.au",
         "*.vercel.app",
+        // local Hasura hosts for dev proxy callbacks
+        "localhost:8081",
+        "127.0.0.1:8081",
+        "192.168.1.229:8081",
       ],
       bodySizeLimit: "2mb",
     },
 
-    // Package optimization for better tree shaking
+    // Enhanced package optimization for better tree shaking and module splitting
     optimizePackageImports: [
       "@clerk/nextjs",
       "@apollo/client",
-      "lodash",
       "date-fns",
-      "@headlessui/react",
-      "@radix-ui/react-dialog",
-      "@radix-ui/react-dropdown-menu",
-      "@radix-ui/react-select",
-      "lucide-react",
+      "class-variance-authority",
+      "clsx", 
+      "tailwind-merge",
     ],
 
-    // CSS optimization
-    optimizeCss: false,
+
+    // CSS optimization (disabled due to critters compatibility issues)
+    // optimizeCss: true,
 
     // Memory optimization
     isrFlushToDisk: true,
@@ -252,14 +283,14 @@ const nextConfig = {
       "./coverage/**/*",
       "./.storybook/**/*",
       "./stories/**/*",
-      
+
       // Documentation and reports
       "./docs/**/*",
       "./Screenshots/**/*",
       "./APP_AUDIT/**/*",
       "./audit-reports/**/*",
       "./**/*.md",
-      
+
       // Legacy and backup files
       "./backups/**/*",
       "./_backup_delete/**/*",
@@ -276,20 +307,20 @@ const nextConfig = {
       "./**/*-legacy.*",
       "./**/*.backup",
       "./**/*.old",
-      
+
       // Scripts (most not needed in production)
       "./scripts/**/*.js",
-      "./scripts/**/*.mjs", 
+      "./scripts/**/*.mjs",
       "./scripts/**/*.cjs",
       "./scripts/lint-fixes/**/*",
       "./scripts/tests/**/*",
-      
+
       // Database and Hasura files
       "./database/**/*",
       "./hasura/**/*",
       "./schema.sql",
       "./**/*.sql",
-      
+
       // Development artifacts
       "./dev-startup.log",
       "./tsconfig.tsbuildinfo",
@@ -298,27 +329,27 @@ const nextConfig = {
       "./graphql-test-report.html",
       "./pnpm-lock.yaml",
       "./work-schedule-implmentation.md",
-      
+
       // IDE and system files
       "./.git/**/*",
       "./node_modules/@types/**/*",
       "./*.code-workspace",
       "./.cursorrules",
       "./.github/**/*",
-      
+
       // Binary and media files
       "./**/*.xlsm",
-      "./**/*.xlsx", 
+      "./**/*.xlsx",
       "./**/*.pdf",
       "./**/*.png",
       "./**/*.jpg",
       "./**/*.webm",
-      
+
       // Temporary files
       "./middleware-disabled.ts",
       "./**/*.temp",
       "./**/*.tmp",
-      "./**/*.disabled"
+      "./**/*.disabled",
     ],
   },
 
@@ -356,16 +387,148 @@ const nextConfig = {
       use: ["@svgr/webpack"],
     });
 
-    // Bundle analyzer (development only)
+    // Enhanced bundle analyzer with performance optimizations
     if (process.env.ANALYZE === "true" && !isServer) {
-      const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
-      config.plugins.push(
-        new BundleAnalyzerPlugin({
-          analyzerMode: "static",
-          openAnalyzer: false,
-          reportFilename: "../bundle-analyzer-report.html",
-        })
-      );
+      try {
+        const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
+        config.plugins.push(
+          new BundleAnalyzerPlugin({
+            analyzerMode: "static",
+            openAnalyzer: false,
+            reportFilename: "../bundle-analyzer-report.html",
+            generateStatsFile: true,
+            statsFilename: "../bundle-stats.json",
+          })
+        );
+      } catch (error) {
+        console.warn('webpack-bundle-analyzer not available:', error.message);
+      }
+    }
+
+    // Performance optimizations for module compilation
+    if (!isServer) {
+      // Enable persistent caching for faster rebuilds
+      config.cache = {
+        type: 'filesystem',
+        cacheDirectory: path.resolve(__dirname, '.next/cache/webpack'),
+        buildDependencies: {
+          config: [__filename],
+        },
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+      };
+
+      // Advanced code splitting for optimal module loading
+      config.optimization = {
+        ...config.optimization,
+        splitChunks: {
+          chunks: 'all',
+          minSize: 20000,
+          minRemainingSize: 0,
+          minChunks: 1,
+          maxAsyncRequests: 30,
+          maxInitialRequests: 30,
+          enforceSizeThreshold: 50000,
+          cacheGroups: {
+            // React core (highest priority - most stable)
+            reactVendor: {
+              test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+              name: 'react-vendor',
+              priority: 40,
+              reuseExistingChunk: true,
+            },
+            // Apollo Client and GraphQL (separate chunk - heavy)
+            apolloVendor: {
+              test: /[\\/]node_modules[\\/](@apollo|@graphql-typed-document-node|graphql)[\\/]/,
+              name: 'apollo-vendor', 
+              priority: 35,
+              reuseExistingChunk: true,
+            },
+            // Radix UI components (separate chunk - UI heavy)
+            radixVendor: {
+              test: /[\\/]node_modules[\\/]@radix-ui[\\/]/,
+              name: 'radix-vendor',
+              priority: 30,
+              reuseExistingChunk: true,
+            },
+            // Chart libraries (lazy loaded - separate chunk)
+            chartsVendor: {
+              test: /[\\/]node_modules[\\/](recharts|d3)[\\/]/,
+              name: 'charts-vendor',
+              priority: 25,
+              reuseExistingChunk: true,
+            },
+            // Icons (optimized separately)
+            iconsVendor: {
+              test: /[\\/]node_modules[\\/](lucide-react|@radix-ui\/react-icons)[\\/]/,
+              name: 'icons-vendor',
+              priority: 20,
+              reuseExistingChunk: true,
+            },
+            // Other stable vendor dependencies
+            vendor: {
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendors',
+              priority: 10,
+              reuseExistingChunk: true,
+              chunks: 'initial',
+            },
+            // GraphQL generated types (separate chunk - large)
+            graphqlTypes: {
+              test: /[\\/](domains|shared)[\\/].*[\\/]generated[\\/]/,
+              name: 'graphql-types',
+              priority: 18,
+              reuseExistingChunk: true,
+            },
+            // Domain-specific chunks (dynamic naming)
+            domainPayrolls: {
+              test: /[\\/]domains[\\/]payrolls[\\/]/,
+              name: 'domain-payrolls',
+              priority: 8,
+              reuseExistingChunk: true,
+            },
+            domainBilling: {
+              test: /[\\/]domains[\\/]billing[\\/]/,
+              name: 'domain-billing', 
+              priority: 8,
+              reuseExistingChunk: true,
+            },
+            domainClients: {
+              test: /[\\/]domains[\\/]clients[\\/]/,
+              name: 'domain-clients',
+              priority: 8,
+              reuseExistingChunk: true,
+            },
+            domainUsers: {
+              test: /[\\/]domains[\\/]users[\\/]/,
+              name: 'domain-users',
+              priority: 8,
+              reuseExistingChunk: true,
+            },
+            // Common domain utilities
+            domainCommon: {
+              test: /[\\/]domains[\\/]/,
+              name: 'domain-common',
+              priority: 5,
+              reuseExistingChunk: true,
+            },
+            // Shared utilities and components
+            shared: {
+              test: /[\\/](shared|lib|components)[\\/]/,
+              name: 'shared-utils',
+              priority: 7,
+              reuseExistingChunk: true,
+              minChunks: 2, // Only if used by multiple modules
+            },
+            // Default fallback
+            default: {
+              minChunks: 2,
+              priority: -10,
+              reuseExistingChunk: true,
+              name: 'common',
+            },
+          },
+        },
+      };
     }
 
     // Production optimizations

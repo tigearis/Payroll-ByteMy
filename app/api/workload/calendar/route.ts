@@ -1,6 +1,7 @@
-import { parseISO, isSameDay, format } from "date-fns";
+import { parseISO } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateApiRequest } from "@/lib/auth/api-auth";
+// import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 interface AssignmentCalendarInput {
   userId: string;
@@ -45,50 +46,61 @@ async function getWorkScheduleForCalendar(
 ): Promise<WorkScheduleDay[]> {
   try {
     console.log(`📅 Fetching work schedule for calendar: user ${userId}`);
-    
+
     // Delegate to the metrics endpoint which has real GraphQL implementation
     // Use 'day' period for calendar granularity
-    const metricsResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/workload/metrics`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        input: {
-          userId,
-          period: 'day', // Use daily granularity for calendar
-          startDate,
-          endDate
-        }
-      })
-    });
+    const metricsResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/workload/metrics`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          input: {
+            userId,
+            period: "day", // Use daily granularity for calendar
+            startDate,
+            endDate,
+          },
+        }),
+      }
+    );
 
     if (!metricsResponse.ok) {
-      console.error('❌ Failed to fetch workload metrics for calendar:', metricsResponse.statusText);
+      console.error(
+        "❌ Failed to fetch workload metrics for calendar:",
+        metricsResponse.statusText
+      );
       return [];
     }
 
     const metricsData = await metricsResponse.json();
-    
+
     if (!metricsData.success || !metricsData.periods) {
-      console.warn('⚠️ Metrics endpoint returned unsuccessful response or no periods');
+      console.warn(
+        "⚠️ Metrics endpoint returned unsuccessful response or no periods"
+      );
       return [];
     }
 
     // Convert metrics data to calendar format
-    const workScheduleDays: WorkScheduleDay[] = metricsData.periods.map((period: any) => ({
-      date: period.date,
-      workHours: period.workHours,
-      adminTimeHours: period.adminTimeHours,
-      payrollCapacityHours: period.payrollCapacityHours,
-      assignments: period.assignments || []
-    }));
+    const workScheduleDays: WorkScheduleDay[] = metricsData.periods.map(
+      (period: any) => ({
+        date: period.date,
+        workHours: period.workHours,
+        adminTimeHours: period.adminTimeHours,
+        payrollCapacityHours: period.payrollCapacityHours,
+        assignments: period.assignments || [],
+      })
+    );
 
-    console.log(`✅ Retrieved ${workScheduleDays.length} calendar days from metrics endpoint`);
+    console.log(
+      `✅ Retrieved ${workScheduleDays.length} calendar days from metrics endpoint`
+    );
     return workScheduleDays;
-
   } catch (error: any) {
-    console.error('❌ Error fetching work schedule for calendar:', error);
+    console.error("❌ Error fetching work schedule for calendar:", error);
     return [];
   }
 }
@@ -100,7 +112,7 @@ function processCalendarData(workSchedule: WorkScheduleDay[]): CalendarDay[] {
       0
     );
 
-    const utilization = day.payrollCapacityHours 
+    const utilization = day.payrollCapacityHours
       ? Math.round((totalAssignedHours / day.payrollCapacityHours) * 100)
       : 0;
 
@@ -123,7 +135,11 @@ export async function POST(request: NextRequest) {
     const authResult = await authenticateApiRequest(request);
     if (!authResult.success) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized", errors: ["Authentication failed"] },
+        {
+          success: false,
+          message: "Unauthorized",
+          errors: ["Authentication failed"],
+        },
         { status: 401 }
       );
     }
@@ -185,7 +201,6 @@ export async function POST(request: NextRequest) {
       message: "Assignment calendar data retrieved successfully",
       errors: [],
     });
-
   } catch (error) {
     console.error("Error getting assignment calendar:", error);
     return NextResponse.json(

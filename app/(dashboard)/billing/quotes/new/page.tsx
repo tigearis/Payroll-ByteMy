@@ -1,29 +1,27 @@
 "use client";
 
 import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 import { PermissionGuard } from "@/components/auth/permission-guard";
-import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/patterns/page-header";
 import { QuoteBuilder } from "@/domains/billing/components/quoting/quote-builder";
 
 export default function NewQuotePage() {
   return (
-    <div className="container mx-auto py-6">
-      <div className="mb-6">
-        <div className="flex items-center gap-4 mb-2">
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/billing/quotes">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Quotes
-            </Link>
-          </Button>
-        </div>
-        <h1 className="text-3xl font-bold tracking-tight">Create New Quote</h1>
-        <p className="text-muted-foreground">
-          Build a comprehensive quote for a prospective client
-        </p>
-      </div>
-      
+    <div className="container mx-auto py-6 space-y-6">
+      <PageHeader
+        title="Create New Quote"
+        description="Build a comprehensive quote for a prospective client"
+        breadcrumbs={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Billing", href: "/billing" },
+          { label: "Quotes", href: "/billing/quotes" },
+          { label: "New" },
+        ]}
+        actions={[
+          { label: "Back to Quotes", icon: ArrowLeft, href: "/billing/quotes" },
+        ]}
+      />
+
       <PermissionGuard action="create">
         <QuoteBuilder />
       </PermissionGuard>

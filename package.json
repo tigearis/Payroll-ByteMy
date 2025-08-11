@@ -24,6 +24,13 @@
     "codegen:watch": "graphql-codegen --config config/codegen.ts --watch",
     "codegen:debug": "graphql-codegen --config config/codegen.ts --verbose",
     "codegen:dry-run": "graphql-codegen --config config/codegen.ts --check",
+    "codegen:optimized": "graphql-codegen --config config/codegen.optimized.ts",
+    "codegen:optimized:watch": "graphql-codegen --config config/codegen.optimized.ts --watch",
+    "codegen:ultra": "graphql-codegen --config config/codegen.ultra-optimized.ts",
+    "codegen:ultra:watch": "graphql-codegen --config config/codegen.ultra-optimized.ts --watch",
+    "codegen:compare": "node scripts/compare-codegen-sizes.js",
+    "codegen:migrate": "pnpm codegen:compare && pnpm codegen:ultra",
+    "codegen:tree-shaking": "graphql-codegen --config config/codegen.tree-shaking.ts",
     "codegen:schema": "graphql-codegen --config config/codegen-schema.ts",
     "codegen:schema:sql": "HASURA_SCHEMA_SOURCE=sql graphql-codegen --config config/codegen-schema.ts",
     "codegen:schema:local": "HASURA_SCHEMA_SOURCE=local graphql-codegen --config config/codegen-schema.ts",
@@ -41,7 +48,10 @@
     "test:protection": "jest --selectProjects='Protection Tests'",
     "test:scheduler": "jest --testPathPattern=scheduler",
     "test:silent": "jest --silent",
-    "test:verbose": "JEST_VERBOSE=true jest --verbose"
+    "test:verbose": "JEST_VERBOSE=true jest --verbose",
+    "perf:measure": "node scripts/measure-performance.js",
+    "perf:analyze": "node scripts/analyze-dependencies.js",
+    "perf:build": "ANALYZE=true pnpm build"
   },
   "dependencies": {
     "@apollo/client": "^3.13.9",
@@ -85,6 +95,7 @@
     "@tanstack/react-query": "^5.84.1",
     "@tanstack/react-query-devtools": "^5.84.1",
     "@tanstack/react-table": "^8.21.3",
+    "@tanstack/react-virtual": "^3.10.7",
     "@turf/distance": "^7.2.0",
     "@turf/helpers": "^7.2.0",
     "@types/d3": "^7.4.3",
@@ -102,6 +113,7 @@
     "embla-carousel-react": "^8.6.0",
     "express": "^5.1.0",
     "file-type": "^21.0.0",
+    "framer-motion": "^11.11.17",
     "fuse.js": "^7.1.0",
     "glob": "^11.0.3",
     "graphql": "^16.11.0",
@@ -147,6 +159,7 @@
     "@graphql-codegen/introspection": "^4.0.3",
     "@graphql-codegen/schema-ast": "^4.1.0",
     "@graphql-eslint/eslint-plugin": "^4.4.0",
+    "@tailwindcss/postcss": "^4.1.11",
     "@testing-library/jest-dom": "^6.6.4",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
@@ -162,6 +175,7 @@
     "@typescript-eslint/eslint-plugin": "^8.39.0",
     "@typescript-eslint/parser": "^8.39.0",
     "autoprefixer": "^10.4.21",
+    "critters": "^0.0.25",
     "dotenv": "^17.2.1",
     "eslint": "^9.32.0",
     "eslint-config-next": "15.4.5",
@@ -175,9 +189,10 @@
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
-    "tailwindcss": "^3.4.17",
+    "tailwindcss": "^4.1.11",
     "ts-jest": "^29.4.1",
     "tsx": "^4.20.3",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "webpack-bundle-analyzer": "^4.10.2"
   }
 }

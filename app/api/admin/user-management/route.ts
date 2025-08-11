@@ -3,6 +3,7 @@ import { createClerkClient } from "@clerk/backend";
 import { NextRequest, NextResponse } from "next/server";
 import { executeTypedQuery, executeTypedMutation } from "@/lib/apollo/query-helpers";
 import { withAuth } from "@/lib/auth/api-auth";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 const clerkClient = createClerkClient({
   secretKey: process.env.CLERK_SECRET_KEY!,

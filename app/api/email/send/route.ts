@@ -17,6 +17,7 @@ import { variableProcessor } from "@/domains/email/services/variable-processor";
 import type { EmailComposition, EmailCategory } from "@/domains/email/types";
 import { executeTypedMutation, executeTypedQuery } from "@/lib/apollo/query-helpers";
 import { withAuthParams } from "@/lib/auth/api-auth";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 import { getHierarchicalPermissionsFromDatabase, hasHierarchicalPermission } from "@/lib/permissions/hierarchical-permissions";
 
 interface EmailSendRequest {

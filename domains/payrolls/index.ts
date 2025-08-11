@@ -1,5 +1,10 @@
 /**
- * THIS FILE IS AUTO-GENERATED - DO NOT EDIT MANUALLY
+ * Optimized Barrel Export for Payrolls Domain
+ * 
+ * PERFORMANCE OPTIMIZATION:
+ * - Lazy exports to enable tree-shaking
+ * - Grouped by functionality to reduce import overhead
+ * - Dynamic imports for heavy components
  * 
  * SOC2 Compliant GraphQL Operations
  * Security Classifications Applied:
@@ -7,32 +12,79 @@
  * - HIGH: PII, client data, employee info - Requires role-based access
  * - MEDIUM: Internal business data - Requires authentication
  * - LOW: Public/aggregate data - Basic access control
- * 
- * Compliance Features:
- * ✓ Role-based access control (RBAC)
- * ✓ Audit logging integration
- * ✓ Data classification enforcement
- * ✓ Permission boundary validation
- * ✓ Automatic domain isolation and exports
- * 
- * Generated: 2025-06-25T10:56:21.987Z
- * Schema Version: Latest from Hasura
- * CodeGen Version: Unified v2.0
  */
 
+// Types (always imported - lightweight)
+export type * from './graphql/generated/graphql';
 
-/* 
- * DOMAIN: PAYROLLS
- * SECURITY LEVEL: MEDIUM
- * ACCESS CONTROLS: Authentication + Basic Audit
- * AUTO-EXPORTED: This file is automatically exported from domain index
- */
+// Core Components (lazy-loaded)
+export const PayrollAssignments = () => import('./components/PayrollAssignments');
+export const PayrollHeader = () => import('./components/PayrollHeader');
+export const PayrollOverview = () => import('./components/PayrollOverview');
+export const PayrollScheduleInfo = () => import('./components/PayrollScheduleInfo');
 
+// Advanced Components (lazy-loaded)
+export const AdvancedPayrollScheduler = () => import('./components/advanced-payroll-scheduler');
+export const PayrollDatesView = () => import('./components/payroll-dates-view');
+export const PayrollSchedule = () => import('./components/payroll-schedule');
 
-// Auto-generated domain exports - isolated to prevent conflicts
+// Dialog Components (lazy-loaded)
+export const EditPayrollDialog = () => import('./components/edit-payroll-dialog').then(m => ({ default: m.EditPayrollDialog }));
+export const EditAssignmentsDialog = () => import('./components/edit-assignments-dialog').then(m => ({ default: m.EditAssignmentsDialog }));
+export const EditScheduleDialog = () => import('./components/edit-schedule-dialog').then(m => ({ default: m.EditScheduleDialog }));
+export const UploadDocumentDialog = () => import('./components/upload-document-dialog').then(m => ({ default: m.UploadDocumentDialog }));
 
-// Export domain-specific GraphQL operations and types
-export * from './graphql/generated/graphql';
+// Table Components (lazy-loaded)
+export const PayrollsTableUnified = () => import('./components/payrolls-table-unified');
 
-// Note: Fragment masking and gql utilities are exported from shared/types/generated
-// Import those directly when needed to avoid conflicts
+// Modals (lazy-loaded)
+export const NotesListModal = () => import('./components/notes-list-modal');
+
+// Analytics (lazy-loaded)
+export const PayrollAnalytics = () => import('./components/PayrollAnalytics');
+export const PayrollTimeline = () => import('./components/PayrollTimeline');
+
+// Hooks (immediately available - lightweight)
+export { useOptimizedPayrollQueries } from './hooks/use-optimized-payroll-queries';
+
+// GraphQL Operations (lazy-loaded)
+export const payrollOperations = () => import('./graphql/generated/graphql');
+
+// Feature groups for selective importing
+export const payrollFeatures = {
+  // Core functionality
+  core: {
+    PayrollAssignments,
+    PayrollHeader,
+    PayrollOverview,
+    PayrollScheduleInfo,
+  },
+  
+  // Scheduling features
+  scheduling: {
+    AdvancedPayrollScheduler,
+    PayrollDatesView,
+    PayrollSchedule,
+    EditScheduleDialog,
+  },
+  
+  // Management features
+  management: {
+    EditPayrollDialog,
+    EditAssignmentsDialog,
+    UploadDocumentDialog,
+    NotesListModal,
+  },
+  
+  // Analytics features
+  analytics: {
+    PayrollAnalytics,
+    PayrollTimeline,
+  },
+  
+  // Data features
+  data: {
+    PayrollsTableUnified,
+    payrollOperations,
+  },
+};

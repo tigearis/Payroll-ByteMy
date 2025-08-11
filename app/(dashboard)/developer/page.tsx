@@ -1,16 +1,18 @@
 "use client";
 
-import { 
-  Code, 
-  Database, 
-  RefreshCw, 
+import {
+  Code,
+  Database,
+  RefreshCw,
   Calendar,
   Users,
   Eye,
   TestTube,
-  Palette
+  Palette,
 } from "lucide-react";
 import Link from "next/link";
+import { PermissionGuard } from "@/components/auth/permission-guard";
+import { PageHeader } from "@/components/patterns/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ByteMySpinner } from "@/components/ui/bytemy-loading-icon";
@@ -108,187 +110,218 @@ const getStatusColor = (status: string) => {
 
 export default function DeveloperPage() {
   return (
-    <FeatureFlagGuard 
+    <FeatureFlagGuard
       feature="devTools"
       fallback={
         <div className="container mx-auto py-6 space-y-6">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Developer Tools</h1>
-            <p className="text-gray-500 mt-2">
-              Developer tools are currently disabled
-            </p>
-          </div>
+          <PageHeader
+            title="Developer Tools"
+            description="Developer tools are currently disabled"
+            breadcrumbs={[
+              { label: "Dashboard", href: "/dashboard" },
+              { label: "Developer" },
+            ]}
+          />
           <div className="flex items-center justify-center h-[400px] border-2 border-dashed border-gray-300 rounded-lg">
             <div className="text-center">
-              <p className="text-lg font-medium text-gray-900">Developer Tools Unavailable</p>
+              <p className="text-lg font-medium text-gray-900">
+                Developer Tools Unavailable
+              </p>
               <p className="text-sm text-gray-500 mt-2">
-                This feature is currently disabled. Please contact your administrator to enable it.
+                This feature is currently disabled. Please contact your
+                administrator to enable it.
               </p>
             </div>
           </div>
         </div>
       }
     >
-      <div className="container mx-auto py-6 space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Developer Tools</h1>
-        <p className="text-gray-500 mt-2">
-          Development utilities, component galleries, and debugging tools
-        </p>
-      </div>
+      <PermissionGuard minRole="developer">
+        <div className="container mx-auto py-6 space-y-6">
+          <PageHeader
+            title="Developer Tools"
+            description="Development utilities, component galleries, and debugging tools"
+            breadcrumbs={[
+              { label: "Dashboard", href: "/dashboard" },
+              { label: "Developer" },
+            ]}
+          />
 
-      {/* Environment Info */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Code className="h-5 w-5" />
-            Environment Information
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-            <div>
-              <span className="font-medium">Environment:</span>
-              <Badge variant="secondary" className="ml-2">
-                {process.env.NODE_ENV || "development"}
-              </Badge>
-            </div>
-            <div>
-              <span className="font-medium">Build Mode:</span>
-              <Badge variant="outline" className="ml-2">
-                Next.js 15
-              </Badge>
-            </div>
-            <div>
-              <span className="font-medium">TypeScript:</span>
-              <Badge variant="outline" className="ml-2">
-                5.8+
-              </Badge>
-            </div>
-            <div>
-              <span className="font-medium">Tailwind:</span>
-              <Badge variant="outline" className="ml-2">
-                3.4+
-              </Badge>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Developer Tools Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {developerTools.map((tool) => {
-          const IconComponent = tool.icon;
-          
-          return (
-            <Card key={tool.title} className={tool.disabled ? "opacity-60" : ""}>
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <IconComponent className="h-6 w-6 text-blue-600" />
-                    <div>
-                      <CardTitle className="text-lg">{tool.title}</CardTitle>
-                      <Badge 
-                        variant="secondary" 
-                        className="text-xs mt-1"
-                      >
-                        {tool.badge}
-                      </Badge>
-                    </div>
-                  </div>
-                  <Badge 
-                    className={getStatusColor(tool.status)}
-                  >
-                    {tool.status}
+          {/* Environment Info */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Code className="h-5 w-5" />
+                Environment Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div>
+                  <span className="font-medium">Environment:</span>
+                  <Badge variant="secondary" className="ml-2">
+                    {process.env.NODE_ENV || "development"}
                   </Badge>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-600 mb-4">{tool.description}</p>
-                
-                {tool.disabled ? (
-                  <Button disabled variant="outline" className="w-full">
-                    Coming Soon
-                  </Button>
-                ) : tool.external ? (
-                  <Button asChild variant="outline" className="w-full">
-                    <a href={tool.href} target="_blank" rel="noopener noreferrer">
-                      <Eye className="w-4 h-4 mr-2" />
-                      Open Tool
-                    </a>
-                  </Button>
-                ) : (
-                  <Button asChild className="w-full">
-                    <Link href={tool.href}>
-                      <Eye className="w-4 h-4 mr-2" />
-                      View Tool
-                    </Link>
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+                <div>
+                  <span className="font-medium">Build Mode:</span>
+                  <Badge variant="outline" className="ml-2">
+                    Next.js 15
+                  </Badge>
+                </div>
+                <div>
+                  <span className="font-medium">TypeScript:</span>
+                  <Badge variant="outline" className="ml-2">
+                    5.8+
+                  </Badge>
+                </div>
+                <div>
+                  <span className="font-medium">Tailwind:</span>
+                  <Badge variant="outline" className="ml-2">
+                    3.4+
+                  </Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-      {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm" asChild>
-              <Link href="/dev/loading-states">
-                <ByteMySpinner size="sm" className="mr-2" />
-                Loading States
-              </Link>
-            </Button>
-            <Button variant="outline" size="sm" asChild>
-              <a href="/api/developer" target="_blank" rel="noopener noreferrer">
-                <Database className="w-4 h-4 mr-2" />
-                Database Tools
-              </a>
-            </Button>
-            <Button variant="outline" size="sm" disabled>
-              <TestTube className="w-4 h-4 mr-2" />
-              Component Tests
-            </Button>
+          {/* Developer Tools Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {developerTools.map(tool => {
+              const IconComponent = tool.icon;
+
+              return (
+                <Card
+                  key={tool.title}
+                  className={tool.disabled ? "opacity-60" : ""}
+                >
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        <IconComponent className="h-6 w-6 text-blue-600" />
+                        <div>
+                          <CardTitle className="text-lg">
+                            {tool.title}
+                          </CardTitle>
+                          <Badge variant="secondary" className="text-xs mt-1">
+                            {tool.badge}
+                          </Badge>
+                        </div>
+                      </div>
+                      <Badge className={getStatusColor(tool.status)}>
+                        {tool.status}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-gray-600 mb-4">
+                      {tool.description}
+                    </p>
+
+                    {tool.disabled ? (
+                      <Button disabled variant="outline" className="w-full">
+                        Coming Soon
+                      </Button>
+                    ) : tool.external ? (
+                      <Button asChild variant="outline" className="w-full">
+                        <a
+                          href={tool.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Eye className="w-4 h-4 mr-2" />
+                          Open Tool
+                        </a>
+                      </Button>
+                    ) : (
+                      <Button asChild className="w-full">
+                        <Link href={tool.href}>
+                          <Eye className="w-4 h-4 mr-2" />
+                          View Tool
+                        </Link>
+                      </Button>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
-        </CardContent>
-      </Card>
 
-      {/* Holiday Sync */}
-      <div className="space-y-4">
-        <div>
-          <h2 className="text-xl font-semibold text-gray-900">External Systems & Configuration</h2>
-          <p className="text-gray-500 text-sm">
-            Manage integrations, feature flags, and system configurations
-          </p>
-        </div>
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          <HolidaySyncPanel />
-          <FeatureFlagManagement />
-        </div>
-      </div>
+          {/* Quick Actions */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Quick Actions</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="outline" size="sm" asChild>
+                  <Link href="/dev/loading-states">
+                    <ByteMySpinner size="sm" className="mr-2" />
+                    Loading States
+                  </Link>
+                </Button>
+                <Button variant="outline" size="sm" asChild>
+                  <a
+                    href="/api/developer"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Database className="w-4 h-4 mr-2" />
+                    Database Tools
+                  </a>
+                </Button>
+                <Button variant="outline" size="sm" disabled>
+                  <TestTube className="w-4 h-4 mr-2" />
+                  Component Tests
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
 
-      {/* Developer Notes */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Development Notes</CardTitle>
-        </CardHeader>
-        <CardContent className="prose prose-sm max-w-none">
-          <ul className="text-sm text-gray-600">
-            <li>This page is only accessible to users with developer role</li>
-            <li>Loading states gallery showcases all available loading components</li>
-            <li>Database tools provide utilities for cleaning and regenerating test data</li>
-            <li>More development tools will be added as needed</li>
-            <li>All tools respect the current authentication and permission system</li>
-          </ul>
-        </CardContent>
-      </Card>
-      </div>
+          {/* Holiday Sync */}
+          <div className="space-y-4">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">
+                External Systems & Configuration
+              </h2>
+              <p className="text-gray-500 text-sm">
+                Manage integrations, feature flags, and system configurations
+              </p>
+            </div>
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+              <HolidaySyncPanel />
+              <FeatureFlagManagement />
+            </div>
+          </div>
+
+          {/* Developer Notes */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Development Notes</CardTitle>
+            </CardHeader>
+            <CardContent className="prose prose-sm max-w-none">
+              <ul className="text-sm text-gray-600">
+                <li>
+                  This page is only accessible to users with developer role
+                </li>
+                <li>
+                  Loading states gallery showcases all available loading
+                  components
+                </li>
+                <li>
+                  Database tools provide utilities for cleaning and regenerating
+                  test data
+                </li>
+                <li>More development tools will be added as needed</li>
+                <li>
+                  All tools respect the current authentication and permission
+                  system
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
+        </div>
+      </PermissionGuard>
     </FeatureFlagGuard>
   );
 }

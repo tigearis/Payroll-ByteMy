@@ -2,6 +2,7 @@ import { gql } from "@apollo/client";
 import { NextRequest, NextResponse } from "next/server";
 import { executeQuery } from "@/lib/apollo/query-helpers";
 import { withAuth } from "@/lib/auth/api-auth";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 // Introspection query to get schema information
 const INTROSPECTION_QUERY = gql`

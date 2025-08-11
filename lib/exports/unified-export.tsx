@@ -4,7 +4,6 @@
 import { Download, FileText, FileSpreadsheet, FileImage } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { logger } from '@/lib/logging/enterprise-logger';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { logger } from '@/lib/logging/enterprise-logger';
 import { LazyExcelExport } from "./excel-export-lazy";
 import { LazyPDFExport } from "./pdf-export-lazy";
 

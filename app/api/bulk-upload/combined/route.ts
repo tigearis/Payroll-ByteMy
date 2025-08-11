@@ -7,7 +7,8 @@ import { CreatePayrollDocument } from "@/domains/payrolls/graphql/generated/grap
 import { GetPayrollCyclesDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { GetPayrollDateTypesDocument } from "@/domains/payrolls/graphql/generated/graphql";
 import { GetUsersDocument } from "@/domains/users/graphql/generated/graphql";
-import { clientApolloClient } from "@/lib/apollo/unified-client";
+import { serverApolloClient } from "@/lib/apollo/unified-client";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 // Schema for client data
 const clientSchema = z.object({
@@ -210,16 +211,16 @@ export async function POST(request: NextRequest) {
     // Get reference data
     const [clientsResponse, usersResponse, cyclesResponse, dateTypesResponse] =
       await Promise.all([
-        clientApolloClient.query({
+        serverApolloClient.query({
           query: GetClientsDocument,
         }),
-        clientApolloClient.query({
+        serverApolloClient.query({
           query: GetUsersDocument,
         }),
-        clientApolloClient.query({
+        serverApolloClient.query({
           query: GetPayrollCyclesDocument,
         }),
-        clientApolloClient.query({
+        serverApolloClient.query({
           query: GetPayrollDateTypesDocument,
         }),
       ]);
@@ -302,7 +303,7 @@ export async function POST(request: NextRequest) {
               active: validatedData.clientActive,
             };
 
-            const clientResponse = await clientApolloClient.mutate({
+            const clientResponse = await serverApolloClient.mutate({
               mutation: CreateClientDocument,
               variables: { object: clientData },
             });
@@ -399,27 +400,27 @@ export async function POST(request: NextRequest) {
         try {
           const payrollData = {
             name: validatedData.payrollName,
-            client_id: clientId,
-            cycle_id: cycle.id,
-            date_type_id: dateType.id,
-            date_value: validatedData.dateValue,
-            primary_consultant_id: primaryConsultant.id,
-            backup_consultant_id: validatedData.backupConsultantEmail
+            clientId: clientId,
+            cycleId: cycle.id,
+            dateTypeId: dateType.id,
+            dateValue: validatedData.dateValue ?? undefined,
+            primaryConsultantUserId: primaryConsultant.id,
+            backupConsultantUserId: validatedData.backupConsultantEmail
               ? existingUsers.find(
                   u =>
                     u.email.toLowerCase() ===
                     validatedData.backupConsultantEmail!.toLowerCase()
                 )?.id || null
               : null,
-            manager_id: manager.id,
-            processing_time: validatedData.processingTime,
-            processing_days_before_eft: validatedData.processingDaysBeforeEft,
-            employee_count: validatedData.employeeCount,
-            payroll_system: validatedData.payrollSystem || null,
+            managerUserId: manager.id,
+            processingTime: validatedData.processingTime,
+            processingDaysBeforeEft: validatedData.processingDaysBeforeEft,
+            employeeCount: validatedData.employeeCount ?? undefined,
+            payrollSystem: validatedData.payrollSystem || undefined,
             status: validatedData.payrollStatus,
           };
 
-          const payrollResponse = await clientApolloClient.mutate({
+          const payrollResponse = await serverApolloClient.mutate({
             mutation: CreatePayrollDocument,
             variables: { object: payrollData },
           });
@@ -468,13 +469,23 @@ export async function POST(request: NextRequest) {
     }
 
     // Log audit entry
-    console.log(
-      `[AUDIT] Combined bulk upload by user ${userId}: ${results.data!.clientsCreated} clients created, ${results.data!.payrollsCreated} payrolls created`
-    );
+    logger.info("Combined bulk upload summary", {
+      namespace: "bulk_upload_combined_api",
+      classification: DataClassification.CONFIDENTIAL,
+      metadata: {
+        userId,
+        clientsCreated: results.data!.clientsCreated,
+        payrollsCreated: results.data!.payrollsCreated,
+      },
+    });
 
     return NextResponse.json(results);
   } catch (error) {
-    console.error("Combined bulk upload error:", error);
+    logger.error("Combined bulk upload error", {
+      namespace: "bulk_upload_combined_api",
+      classification: DataClassification.CONFIDENTIAL,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
     return NextResponse.json(
       {
         error: "Failed to process combined bulk upload",

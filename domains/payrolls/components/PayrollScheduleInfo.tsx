@@ -13,6 +13,8 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { memo, useState } from "react";
+import { toast } from "sonner";
+import { CanUpdate } from "@/components/auth/permission-guard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,10 +35,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { CanUpdate } from "@/components/auth/permission-guard";
-import { toast } from "sonner";
 import type { PayrollData } from "@/domains/payrolls/hooks/usePayrollData";
 import { getScheduleSummary } from "@/domains/payrolls/utils/schedule-helpers";
+import { safeFormatDate } from "@/lib/utils/date-utils";
 
 export interface PayrollScheduleInfoProps {
   data: PayrollData;
@@ -45,33 +46,25 @@ export interface PayrollScheduleInfoProps {
   onRegenerateDates?: () => Promise<void>;
 }
 
-// Helper function to format date
+// Helper function to format date (dd MMM yyyy)
 function formatDate(date: string | Date | null | undefined): string {
-  if (!date) return "Not set";
-  
-  const d = typeof date === "string" ? new Date(date) : date;
-  return d.toLocaleDateString("en-AU", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+  return safeFormatDate(date as any, "dd MMM yyyy", "Not set");
 }
 
 // Helper function to format relative date
 function formatRelativeDate(date: string | Date | null | undefined): string {
   if (!date) return "";
-  
+
   const d = typeof date === "string" ? new Date(date) : date;
   const now = new Date();
   const diffTime = d.getTime() - now.getTime();
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  
+
   if (diffDays === 0) return "(Today)";
   if (diffDays === 1) return "(Tomorrow)";
   if (diffDays > 1 && diffDays <= 7) return `(In ${diffDays} days)`;
   if (diffDays < 0 && diffDays >= -7) return `(${Math.abs(diffDays)} days ago)`;
-  
+
   return "";
 }
 
@@ -79,7 +72,7 @@ function formatRelativeDate(date: string | Date | null | undefined): string {
 function getDateTypeDescription(dateTypeName: string): string {
   const descriptions = {
     som: "Start of Month - Pays on the 1st of each month",
-    eom: "End of Month - Pays on the last day of each month", 
+    eom: "End of Month - Pays on the last day of each month",
     mid_month: "Mid Month - Pays on the 15th of each month",
     fixed_date: "Fixed Date - Pays on a specific date each month",
     week_a: "Week A - First week of fortnightly cycle",
@@ -87,23 +80,27 @@ function getDateTypeDescription(dateTypeName: string): string {
     quarterly_som: "Quarterly Start - Beginning of each quarter",
     quarterly_eom: "Quarterly End - End of each quarter",
   };
-  
-  return descriptions[dateTypeName?.toLowerCase() as keyof typeof descriptions] || 
-         "Custom schedule configuration";
+
+  return (
+    descriptions[dateTypeName?.toLowerCase() as keyof typeof descriptions] ||
+    "Custom schedule configuration"
+  );
 }
 
 // Helper function to get cycle description
 function getCycleDescription(cycleName: string): string {
   const descriptions = {
     weekly: "Pays every week on the same day",
-    fortnightly: "Pays every two weeks on the same day", 
+    fortnightly: "Pays every two weeks on the same day",
     bi_monthly: "Pays twice per month (1st/15th or 15th/last)",
     monthly: "Pays once per month",
     quarterly: "Pays once every three months",
   };
-  
-  return descriptions[cycleName?.toLowerCase() as keyof typeof descriptions] || 
-         "Custom payroll frequency";
+
+  return (
+    descriptions[cycleName?.toLowerCase() as keyof typeof descriptions] ||
+    "Custom payroll frequency"
+  );
 }
 
 // Schedule regeneration dialog
@@ -141,21 +138,22 @@ function RegenerateDatesDialog({
             Regenerate Payroll Dates
           </DialogTitle>
           <DialogDescription>
-            This will regenerate all future payroll dates based on the current schedule configuration. 
-            Existing dates will be replaced.
+            This will regenerate all future payroll dates based on the current
+            schedule configuration. Existing dates will be replaced.
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-4">
           <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">
             <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
             <div className="text-sm text-amber-800">
-              <strong>Warning:</strong> This action will replace all future payroll dates. 
-              Any manual adjustments to future dates will be lost.
+              <strong>Warning:</strong> This action will replace all future
+              payroll dates. Any manual adjustments to future dates will be
+              lost.
             </div>
           </div>
         </div>
-        
+
         <div className="flex justify-end gap-2 pt-4">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
@@ -193,14 +191,17 @@ function PayrollScheduleInfoComponent({
 
   const { payroll } = data;
   const scheduleInfo = getScheduleSummary(payroll);
-  
+
   // Get upcoming payroll dates for timeline
-  const upcomingDates = payroll.detailPayrollDates
-    ?.filter(date => {
-      const dateToCheck = new Date(date.adjustedEftDate || date.originalEftDate);
-      return dateToCheck >= new Date();
-    })
-    .slice(0, 8) || [];
+  const upcomingDates =
+    payroll.detailPayrollDates
+      ?.filter(date => {
+        const dateToCheck = new Date(
+          date.adjustedEftDate || date.originalEftDate
+        );
+        return dateToCheck >= new Date();
+      })
+      .slice(0, 8) || [];
 
   const handleRegenerateDates = async () => {
     if (onRegenerateDates) {
@@ -233,16 +234,23 @@ function PayrollScheduleInfoComponent({
                 Payroll frequency and processing settings
               </p>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <CanUpdate resource="payrolls">
-                <Button variant="outline" size="sm" onClick={handleEditSchedule}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleEditSchedule}
+                >
                   <Edit className="w-4 h-4 mr-2" />
                   Edit Schedule
                 </Button>
               </CanUpdate>
-              
-              <Dialog open={regenerateDialogOpen} onOpenChange={setRegenerateDialogOpen}>
+
+              <Dialog
+                open={regenerateDialogOpen}
+                onOpenChange={setRegenerateDialogOpen}
+              >
                 <DialogTrigger asChild>
                   <Button variant="outline" size="sm">
                     <RefreshCw className="w-4 h-4 mr-2" />
@@ -258,13 +266,15 @@ function PayrollScheduleInfoComponent({
             </div>
           </div>
         </CardHeader>
-        
+
         <CardContent className="space-y-6">
           {/* Main schedule info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div>
-                <h4 className="font-medium text-gray-900 mb-2">Payroll Frequency</h4>
+                <h4 className="font-medium text-gray-900 mb-2">
+                  Payroll Frequency
+                </h4>
                 <div className="flex items-center gap-3">
                   <Calendar className="w-5 h-5 text-blue-600" />
                   <div>
@@ -275,14 +285,18 @@ function PayrollScheduleInfoComponent({
                   </div>
                 </div>
               </div>
-              
+
               {payroll.payrollDateType && (
                 <div>
-                  <h4 className="font-medium text-gray-900 mb-2">Date Configuration</h4>
+                  <h4 className="font-medium text-gray-900 mb-2">
+                    Date Configuration
+                  </h4>
                   <div className="flex items-center gap-3">
                     <CalendarDays className="w-5 h-5 text-green-600" />
                     <div>
-                      <p className="font-medium">{payroll.payrollDateType.name}</p>
+                      <p className="font-medium">
+                        {payroll.payrollDateType.name}
+                      </p>
                       <p className="text-sm text-muted-foreground">
                         {getDateTypeDescription(payroll.payrollDateType.name)}
                       </p>
@@ -291,10 +305,12 @@ function PayrollScheduleInfoComponent({
                 </div>
               )}
             </div>
-            
+
             <div className="space-y-4">
               <div>
-                <h4 className="font-medium text-gray-900 mb-2">Processing Settings</h4>
+                <h4 className="font-medium text-gray-900 mb-2">
+                  Processing Settings
+                </h4>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <Timer className="w-5 h-5 text-orange-600" />
@@ -307,12 +323,14 @@ function PayrollScheduleInfoComponent({
                       </p>
                     </div>
                   </div>
-                  
+
                   {payroll.processingTime && (
                     <div className="flex items-center gap-3">
                       <Clock className="w-5 h-5 text-purple-600" />
                       <div>
-                        <p className="font-medium">{payroll.processingTime} hours</p>
+                        <p className="font-medium">
+                          {payroll.processingTime} hours
+                        </p>
                         <p className="text-sm text-muted-foreground">
                           Estimated processing time
                         </p>
@@ -336,12 +354,14 @@ function PayrollScheduleInfoComponent({
                     <span className="font-medium">{payroll.dateValue}</span>
                   </div>
                 )}
-                
+
                 {payroll.goLiveDate && (
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-muted-foreground" />
                     <span className="text-muted-foreground">Go Live Date:</span>
-                    <span className="font-medium">{formatDate(payroll.goLiveDate)}</span>
+                    <span className="font-medium">
+                      {formatDate(payroll.goLiveDate)}
+                    </span>
                   </div>
                 )}
               </div>
@@ -359,10 +379,11 @@ function PayrollScheduleInfoComponent({
               Upcoming Payroll Dates
             </CardTitle>
             <p className="text-sm text-muted-foreground">
-              Next {upcomingDates.length} scheduled pay dates with processing information
+              Next {upcomingDates.length} scheduled pay dates with processing
+              information
             </p>
           </CardHeader>
-          
+
           <CardContent>
             <div className="overflow-x-auto">
               <Table>
@@ -376,10 +397,12 @@ function PayrollScheduleInfoComponent({
                 </TableHeader>
                 <TableBody>
                   {upcomingDates.map((date, index) => {
-                    const eftDate = date.adjustedEftDate || date.originalEftDate;
-                    const isAdjusted = date.adjustedEftDate !== date.originalEftDate;
+                    const eftDate =
+                      date.adjustedEftDate || date.originalEftDate;
+                    const isAdjusted =
+                      date.adjustedEftDate !== date.originalEftDate;
                     const isOverdue = new Date(eftDate) < new Date();
-                    
+
                     return (
                       <TableRow key={date.id}>
                         <TableCell>
@@ -392,33 +415,41 @@ function PayrollScheduleInfoComponent({
                             </span>
                           </div>
                         </TableCell>
-                        
+
                         <TableCell>
                           <span className="text-sm">
                             {formatDate(date.processingDate)}
                           </span>
                         </TableCell>
-                        
+
                         <TableCell>
                           <div className="flex flex-col gap-1">
-                            <Badge 
+                            <Badge
                               variant={
-                                date.status === "completed" ? "default" :
-                                isOverdue ? "destructive" :
-                                index === 0 ? "secondary" : "outline"
+                                date.status === "completed"
+                                  ? "default"
+                                  : isOverdue
+                                    ? "destructive"
+                                    : index === 0
+                                      ? "secondary"
+                                      : "outline"
                               }
                               className="w-fit"
                             >
-                              {date.status || (index === 0 ? "Upcoming" : "Scheduled")}
+                              {date.status ||
+                                (index === 0 ? "Upcoming" : "Scheduled")}
                             </Badge>
                             {isAdjusted && (
-                              <Badge variant="outline" className="w-fit text-xs">
+                              <Badge
+                                variant="outline"
+                                className="w-fit text-xs"
+                              >
                                 Adjusted
                               </Badge>
                             )}
                           </div>
                         </TableCell>
-                        
+
                         <TableCell>
                           {date.notes ? (
                             <div className="flex items-center gap-2 text-sm">
@@ -428,7 +459,9 @@ function PayrollScheduleInfoComponent({
                               </span>
                             </div>
                           ) : (
-                            <span className="text-muted-foreground text-sm">—</span>
+                            <span className="text-muted-foreground text-sm">
+                              —
+                            </span>
                           )}
                         </TableCell>
                       </TableRow>
@@ -437,10 +470,11 @@ function PayrollScheduleInfoComponent({
                 </TableBody>
               </Table>
             </div>
-            
+
             <div className="mt-4 text-center">
               <p className="text-sm text-muted-foreground">
-                Dates are automatically adjusted for weekends and public holidays
+                Dates are automatically adjusted for weekends and public
+                holidays
               </p>
             </div>
           </CardContent>
@@ -452,11 +486,17 @@ function PayrollScheduleInfoComponent({
         <Card>
           <CardContent className="text-center py-12">
             <CalendarDays className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="font-medium text-gray-900 mb-2">No Upcoming Dates</h3>
+            <h3 className="font-medium text-gray-900 mb-2">
+              No Upcoming Dates
+            </h3>
             <p className="text-sm text-muted-foreground mb-4">
-              No payroll dates have been scheduled yet. Generate dates to get started.
+              No payroll dates have been scheduled yet. Generate dates to get
+              started.
             </p>
-            <Button variant="outline" onClick={() => setRegenerateDialogOpen(true)}>
+            <Button
+              variant="outline"
+              onClick={() => setRegenerateDialogOpen(true)}
+            >
               <RefreshCw className="w-4 h-4 mr-2" />
               Generate Payroll Dates
             </Button>
@@ -484,7 +524,7 @@ function PayrollScheduleInfoSkeleton() {
             </div>
           </div>
         </CardHeader>
-        
+
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {Array.from({ length: 2 }).map((_, i) => (
@@ -502,7 +542,7 @@ function PayrollScheduleInfoSkeleton() {
           </div>
         </CardContent>
       </Card>
-      
+
       <Card>
         <CardHeader>
           <div className="h-6 bg-gray-200 rounded w-48 animate-pulse mb-2" />
@@ -511,7 +551,10 @@ function PayrollScheduleInfoSkeleton() {
         <CardContent>
           <div className="space-y-4">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="flex items-center justify-between p-4 border rounded-lg">
+              <div
+                key={i}
+                className="flex items-center justify-between p-4 border rounded-lg"
+              >
                 <div className="h-4 bg-gray-200 rounded w-32 animate-pulse" />
                 <div className="h-4 bg-gray-200 rounded w-24 animate-pulse" />
                 <div className="h-6 bg-gray-200 rounded w-20 animate-pulse" />

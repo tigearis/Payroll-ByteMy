@@ -90,10 +90,10 @@ function UnauthorizedContent() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">{icon}</div>
-          <CardTitle className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <CardTitle className="text-2xl font-bold text-foreground">
             {title}
           </CardTitle>
-          <CardDescription className="text-gray-600 dark:text-gray-400">
+          <CardDescription className="text-foreground opacity-75">
             {description}
           </CardDescription>
         </CardHeader>
@@ -108,7 +108,7 @@ function UnauthorizedContent() {
           </div>
 
           {reason === "inactive" && (
-            <div className="text-center text-sm text-gray-500 dark:text-gray-400">
+            <div className="text-center text-sm text-foreground opacity-60">
               Need help? Contact support at{" "}
               <a
                 href="mailto:support@payrollmatrix.com"

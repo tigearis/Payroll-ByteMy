@@ -4,7 +4,6 @@
 import { useMutation } from "@apollo/client";
 import { useState, memo } from "react";
 import { toast } from "sonner";
-import { PermissionGuard } from "@/components/auth/permission-guard";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -22,7 +21,6 @@ import {
   GetPayrollsDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
 import { handleGraphQLError } from "@/lib/utils/handle-graphql-error";
-
 
 interface EditPayrollDialogProps {
   payroll: {
@@ -82,7 +80,9 @@ const EditPayrollDialogComponent: React.FC<EditPayrollDialogProps> = ({
           clientId: payroll.clientId,
           cycleId: payroll.cycleId,
           dateTypeId: payroll.dateTypeId,
-          primaryConsultant: payroll.primaryConsultantUserId ? { id: payroll.primaryConsultantUserId } : (payroll as any).primaryConsultant,
+          primaryConsultant: payroll.primaryConsultantUserId
+            ? { id: payroll.primaryConsultantUserId }
+            : (payroll as any).primaryConsultant,
           employeeCount: payroll.employeeCount,
           client: {
             __typename: "Clients",
@@ -97,9 +97,9 @@ const EditPayrollDialogComponent: React.FC<EditPayrollDialogProps> = ({
           requiredSkills: [],
         },
       },
-      update: (cache, { data }) => {
+      update: (cache, { data: _data }) => {
         // We could also use the updatePayrollInCache utility here, but this way works too
-        if (!data?.updatePayrollsByPk) {
+        if (!_data?.updatePayrollsByPk) {
           return;
         }
 
@@ -142,14 +142,22 @@ const EditPayrollDialogComponent: React.FC<EditPayrollDialogProps> = ({
   const handleSave = async () => {
     // Validate processing days
     const processingDaysNum = parseInt(processingDaysBeforeEft);
-    if (isNaN(processingDaysNum) || processingDaysNum < 1 || processingDaysNum > 10) {
+    if (
+      isNaN(processingDaysNum) ||
+      processingDaysNum < 1 ||
+      processingDaysNum > 10
+    ) {
       toast.error("Processing days must be between 1 and 10");
       return;
     }
 
     // Validate processing time
     const processingTimeNum = parseInt(processingTime);
-    if (isNaN(processingTimeNum) || processingTimeNum < 1 || processingTimeNum > 24) {
+    if (
+      isNaN(processingTimeNum) ||
+      processingTimeNum < 1 ||
+      processingTimeNum > 24
+    ) {
       toast.error("Processing time must be between 1 and 24 hours");
       return;
     }
@@ -208,7 +216,8 @@ const EditPayrollDialogComponent: React.FC<EditPayrollDialogProps> = ({
                 placeholder="e.g., 3"
               />
               <p className="text-xs text-gray-500 mt-1">
-                Business days required for payroll processing before EFT date (1-10 days)
+                Business days required for payroll processing before EFT date
+                (1-10 days)
               </p>
             </div>
             <div>
@@ -262,7 +271,7 @@ function areEditPayrollDialogPropsEqual(
   if (prevProps.payroll !== nextProps.payroll) {
     const prev = prevProps.payroll;
     const next = nextProps.payroll;
-    
+
     return (
       prev.id === next.id &&
       prev.name === next.name &&
@@ -278,13 +287,13 @@ function areEditPayrollDialogPropsEqual(
 
   // Function comparison - onSuccess typically changes, but we don't need to re-render for that
   // Dialog behavior remains the same regardless of the callback function reference
-  
+
   return true;
 }
 
 /**
  * Memoized EditPayrollDialog Component
- * 
+ *
  * Prevents unnecessary re-renders when payroll data hasn't changed.
  * Optimized for dialog interactions and form updates.
  */

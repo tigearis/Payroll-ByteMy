@@ -9,6 +9,7 @@ import {
 } from "@/domains/leave/graphql/generated/graphql";
 import { executeTypedQuery, executeTypedMutation } from "@/lib/apollo/query-helpers";
 import { withAuthParams } from "@/lib/auth/api-auth";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 // GET /api/leave/[id] - Get specific leave request
 export const GET = withAuthParams(async (req, { params }, session) => {

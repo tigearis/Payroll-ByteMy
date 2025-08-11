@@ -18,6 +18,7 @@ import type { EmailCategory, EmailTemplate } from "@/domains/email/types";
 import { EMAIL_CATEGORIES } from "@/domains/email/types/template-types";
 import { executeTypedMutation, executeTypedQuery } from "@/lib/apollo/query-helpers";
 import { withAuthParams } from "@/lib/auth/api-auth";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 import { getHierarchicalPermissionsFromDatabase, hasHierarchicalPermission } from "@/lib/permissions/hierarchical-permissions";
 
 interface CreateTemplateRequest {

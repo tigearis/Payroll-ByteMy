@@ -392,3 +392,345 @@ fragment PermissionOverrideInfo on PermissionOverrides {
   createdAt
   # user relationships not available in schema
 }
+
+# ============================================
+# Shared Payroll Table Fragments
+# ============================================
+
+# Payroll table row - used across domains
+fragment PayrollTableRow on Payrolls {
+  ...PayrollListItem
+  goLiveDate
+  processingTime
+  versionNumber
+
+  # Payroll cycle for schedule column
+  cycleId
+  payrollCycle {
+    id
+    name
+    description
+  }
+
+  # Next EFT date - use adjusted if present, otherwise original; match detail page behavior
+  nextPayrollDate: payrollDates(
+    where: {
+      _or: [
+        { adjustedEftDate: { _gte: "now()" } }
+        { originalEftDate: { _gte: "now()" } }
+      ]
+    }
+    orderBy: [{ adjustedEftDate: ASC }, { originalEftDate: ASC }]
+    limit: 1
+  ) {
+    originalEftDate
+    adjustedEftDate
+    processingDate
+  }
+}
+
+# ============================================
+# Billing Fragments
+# ============================================
+
+# Minimal billing item info
+fragment BillingItemMinimal on BillingItems {
+  id
+  description
+  amount
+  status
+  createdAt
+}
+
+# Basic billing item info for lists
+fragment BillingItemBase on BillingItems {
+  ...BillingItemMinimal
+  clientId
+  staffUserId
+  isApproved
+  approvalDate
+  approvedBy
+  createdAt
+  updatedAt
+}
+
+# Billing item with client info
+fragment BillingItemWithClient on BillingItems {
+  ...BillingItemBase
+  client {
+    ...ClientMinimal
+  }
+  staffUser {
+    ...UserMinimal
+  }
+  approver: approvedByUser {
+    ...UserMinimal
+  }
+}
+
+# Invoice minimal info
+fragment InvoiceMinimal on Invoices {
+  id
+  invoiceNumber
+  totalAmount
+  status
+  dueDate
+}
+
+# Invoice base info
+fragment InvoiceBase on Invoices {
+  ...InvoiceMinimal
+  clientId
+  invoiceDate
+  taxAmount
+  subtotal
+  notes
+  createdAt
+  updatedAt
+}
+
+# Invoice with client
+fragment InvoiceWithClient on Invoices {
+  ...InvoiceBase
+  client {
+    ...ClientMinimal
+  }
+}
+
+# ============================================
+# Leave Management Fragments
+# ============================================
+
+# Leave fragments moved to domains/leave/graphql/fragments.graphql to avoid duplicates
+# Use domain-specific Leave fragments instead
+
+# ============================================
+# Work Schedule Fragments
+# ============================================
+
+# Work schedule fragments moved to domains/work-schedule/graphql/fragments.graphql to avoid duplicates
+# Use domain-specific WorkSchedule fragments instead
+
+# ============================================
+# Email Template Fragments
+# ============================================
+
+# Email template fragments moved to domains/email/graphql/fragments.graphql to avoid duplicates
+# Use domain-specific EmailTemplate fragments instead
+
+# ============================================
+# File Management Fragments
+# ============================================
+
+# File minimal info
+fragment FileMinimal on Files {
+  id
+  filename
+  size
+  mimetype
+  url
+}
+
+# File base info
+fragment FileBase on Files {
+  ...FileMinimal
+  bucket
+  objectKey
+  uploadedBy
+  category
+  fileType
+  isPublic
+  createdAt
+}
+
+# File with uploader
+fragment FileWithUploader on Files {
+  ...FileBase
+  uploadedByUser {
+    ...UserMinimal
+  }
+}
+
+# ============================================
+# Invitation Fragments
+# ============================================
+
+# Invitation minimal
+fragment InvitationMinimal on UserInvitations {
+  id
+  email
+  invitedRole
+  invitationStatus
+}
+
+# Invitation base
+fragment InvitationBase on UserInvitations {
+  ...InvitationMinimal
+  invitedBy
+  expiresAt
+  acceptedAt
+  revokedAt
+  createdAt
+}
+
+# Invitation with inviter
+fragment InvitationWithInviter on UserInvitations {
+  ...InvitationBase
+  invitedByUser {
+    ...UserMinimal
+  }
+}
+
+# ============================================
+# Common Search and Filter Fragments
+# ============================================
+
+# Generic count aggregate for search results - DEPRECATED: Use specific aggregates instead
+# fragment CountAggregate on IntAggregateFunctions {
+#   count
+# }
+
+# Generic list metadata for pagination - DEPRECATED: Use query-specific aggregates instead
+# fragment ListMetadata on Query {
+#   totalCount: usersAggregate {
+#     aggregate {
+#       count
+#     }
+#   }
+# }
+
+# ============================================
+# Dashboard Statistics Fragments
+# ============================================
+
+# Client dashboard stats
+fragment ClientDashboardStats on Clients {
+  ...ClientMinimal
+  totalPayrolls: payrollsAggregate {
+    aggregate {
+      count
+    }
+  }
+  activePayrolls: payrollsAggregate(
+    where: { status: { _eq: "Active" } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  totalEmployees: payrollsAggregate {
+    aggregate {
+      sum {
+        employeeCount
+      }
+    }
+  }
+}
+
+# User activity stats
+fragment UserActivityStats on Users {
+  ...UserMinimal
+  staffBillingItems(
+    orderBy: { createdAt: DESC }
+    limit: 5
+  ) {
+    ...BillingItemMinimal
+  }
+  # notes relationship not available - use authoredNotes instead
+  authoredNotes(
+    orderBy: { createdAt: DESC }
+    limit: 3
+  ) {
+    ...NoteWithAuthor
+  }
+}
+
+# System health stats (for admin dashboard) - DEPRECATED: Use query-specific fields instead
+# fragment SystemHealthStats on Query {
+#   totalUsers: usersAggregate {
+#     aggregate {
+#       count
+#     }
+#   }
+#   activeUsers: usersAggregate(
+#     where: { isActive: { _eq: true } }
+#   ) {
+#     aggregate {
+#       count
+#     }
+#   }
+#   totalClients: clientsAggregate {
+#     aggregate {
+#       count
+#     }
+#   }
+#   activeClients: clientsAggregate(
+#     where: { active: { _eq: true } }
+#   ) {
+#     aggregate {
+#       count
+#     }
+#   }
+#   totalPayrolls: payrollsAggregate {
+#     aggregate {
+#       count
+#     }
+#   }
+#   activePayrolls: payrollsAggregate(
+#     where: { status: { _eq: "Active" } }
+#   ) {
+#     aggregate {
+#       count
+#     }
+#   }
+# }
+
+# ============================================
+# Time-based Fragments for Reporting
+# ============================================
+
+# Last 30 days activity - DEPRECATED: Audit tables not available as user relationships
+# fragment RecentActivity on Users {
+#   recentLogins: auditAuthEvents(
+#     where: { eventTime: { _gte: "30 days ago" } }
+#     orderBy: { eventTime: DESC }
+#     limit: 10
+#   ) {
+#     ...AuthEvent
+#   }
+#   recentActions: auditAuditLog(
+#     where: { eventTime: { _gte: "30 days ago" } }
+#     orderBy: { eventTime: DESC }
+#     limit: 10
+#   ) {
+#     ...AuditLogEntry
+#   }
+# }
+
+# Monthly revenue stats - DEPRECATED: Use query-level aggregates instead
+# fragment MonthlyRevenueStats on BillingItems {
+#   thisMonthRevenue: billingItemsAggregate(
+#     where: {
+#       createdAt: { _gte: "start of month" }
+#       status: { _eq: "confirmed" }
+#     }
+#   ) {
+#     aggregate {
+#       sum {
+#         amount
+#       }
+#     }
+#   }
+#   lastMonthRevenue: billingItemsAggregate(
+#     where: {
+#       createdAt: { _gte: "start of last month", _lt: "start of month" }
+#       status: { _eq: "confirmed" }
+#     }
+#   ) {
+#     aggregate {
+#       sum {
+#         amount
+#       }
+#     }
+#   }
+# }

@@ -22,6 +22,7 @@ import type { EmailCategory } from "@/domains/email/types";
 import { EMAIL_CATEGORIES, SAMPLE_PREVIEW_DATA } from "@/domains/email/types/template-types";
 import { executeTypedMutation, executeTypedQuery } from "@/lib/apollo/query-helpers";
 import { withAuthParams } from "@/lib/auth/api-auth";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 interface UpdateTemplateRequest {
   name?: string;

@@ -9,20 +9,24 @@ import {
   Edit,
   Trash2,
   Search,
-  Filter,
   MoreHorizontal,
   RefreshCw,
-  Calendar,
   User,
   Building,
   Briefcase,
   Plus,
 } from "lucide-react";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,7 +36,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -84,42 +94,42 @@ interface Filters {
 }
 
 const DOCUMENT_CATEGORIES = [
-  { value: 'contract', label: 'Contract' },
-  { value: 'invoice', label: 'Invoice' },
-  { value: 'report', label: 'Report' },
-  { value: 'timesheet', label: 'Timesheet' },
-  { value: 'correspondence', label: 'Correspondence' },
-  { value: 'other', label: 'Other' },
+  { value: "contract", label: "Contract" },
+  { value: "invoice", label: "Invoice" },
+  { value: "report", label: "Report" },
+  { value: "timesheet", label: "Timesheet" },
+  { value: "correspondence", label: "Correspondence" },
+  { value: "other", label: "Other" },
 ];
 
 function getFileIcon(mimetype: string) {
-  if (mimetype.startsWith('image/')) {
+  if (mimetype.startsWith("image/")) {
     return <Image className="w-4 h-4 text-blue-500" />;
-  } else if (mimetype === 'application/pdf') {
+  } else if (mimetype === "application/pdf") {
     return <FileText className="w-4 h-4 text-red-500" />;
-  } else if (mimetype.includes('word') || mimetype.includes('document')) {
+  } else if (mimetype.includes("word") || mimetype.includes("document")) {
     return <FileText className="w-4 h-4 text-blue-600" />;
-  } else if (mimetype.includes('excel') || mimetype.includes('spreadsheet')) {
+  } else if (mimetype.includes("excel") || mimetype.includes("spreadsheet")) {
     return <FileText className="w-4 h-4 text-green-600" />;
   }
   return <File className="w-4 h-4 text-gray-500" />;
 }
 
 function formatFileSize(bytes: number): string {
-  if (bytes === 0) return '0 Bytes';
+  if (bytes === 0) return "0 Bytes";
   const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const sizes = ["Bytes", "KB", "MB", "GB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
 }
 
 function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString('en-AU', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
+  return new Date(dateString).toLocaleDateString("en-AU", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 }
 
@@ -142,19 +152,19 @@ export function DocumentList({
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const [filters, setFilters] = useState<Filters>({
-    search: '',
-    category: '',
-    isPublic: '',
-    uploadedBy: uploadedBy || '',
+    search: "",
+    category: "",
+    isPublic: "",
+    uploadedBy: uploadedBy || "",
   });
 
   const itemsPerPage = 20;
 
   // Check permissions
-  const canView = can('files', 'read');
-  const canEdit = can('files', 'update');
-  const canDelete = can('files', 'delete');
-  const canUpload = can('files', 'create');
+  const canView = can("files", "read");
+  const canEdit = can("files", "update");
+  const canDelete = can("files", "delete");
+  const canUpload = can("files", "create");
 
   // Load documents
   const loadDocuments = async (page = 1, isRefresh = false) => {
@@ -171,11 +181,13 @@ export function DocumentList({
       });
 
       // Add filters
-      if (clientId) params.append('clientId', clientId);
-      if (payrollId) params.append('payrollId', payrollId);
-      if (filters.uploadedBy) params.append('uploadedBy', filters.uploadedBy);
-      if (filters.category && filters.category !== 'all') params.append('category', filters.category);
-      if (filters.isPublic && filters.isPublic !== 'all') params.append('isPublic', filters.isPublic);
+      if (clientId) params.append("clientId", clientId);
+      if (payrollId) params.append("payrollId", payrollId);
+      if (filters.uploadedBy) params.append("uploadedBy", filters.uploadedBy);
+      if (filters.category && filters.category !== "all")
+        params.append("category", filters.category);
+      if (filters.isPublic && filters.isPublic !== "all")
+        params.append("isPublic", filters.isPublic);
 
       const response = await fetch(`/api/documents/list?${params.toString()}`);
       const result = await response.json();
@@ -186,24 +198,27 @@ export function DocumentList({
         // Apply client-side search filter
         if (filters.search) {
           const searchLower = filters.search.toLowerCase();
-          filteredDocuments = filteredDocuments.filter((doc: Document) =>
-            doc.filename.toLowerCase().includes(searchLower) ||
-            (doc.metadata?.description || '').toLowerCase().includes(searchLower) ||
-            (doc.clientName || '').toLowerCase().includes(searchLower) ||
-            (doc.payrollName || '').toLowerCase().includes(searchLower)
+          filteredDocuments = filteredDocuments.filter(
+            (doc: Document) =>
+              doc.filename.toLowerCase().includes(searchLower) ||
+              (doc.metadata?.description || "")
+                .toLowerCase()
+                .includes(searchLower) ||
+              (doc.clientName || "").toLowerCase().includes(searchLower) ||
+              (doc.payrollName || "").toLowerCase().includes(searchLower)
           );
         }
 
         setDocuments(filteredDocuments);
         setTotalCount(result.totalCount);
       } else {
-        toast.error('Failed to load documents', {
+        toast.error("Failed to load documents", {
           description: result.error,
         });
       }
     } catch (error) {
-      console.error('Error loading documents:', error);
-      toast.error('Failed to load documents');
+      console.error("Error loading documents:", error);
+      toast.error("Failed to load documents");
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -215,7 +230,14 @@ export function DocumentList({
     if (canView) {
       loadDocuments(1);
     }
-  }, [canView, clientId, payrollId, filters.uploadedBy, filters.category, filters.isPublic]);
+  }, [
+    canView,
+    clientId,
+    payrollId,
+    filters.uploadedBy,
+    filters.category,
+    filters.isPublic,
+  ]);
 
   // Handle search with debounce
   useEffect(() => {
@@ -234,33 +256,33 @@ export function DocumentList({
       // Use the existing presigned URL from the document record
       // This avoids authentication issues and is more efficient
       if (document.url) {
-        window.open(document.url, '_blank');
+        window.open(document.url, "_blank");
       } else {
         // Fallback to API if no URL is available
         const response = await fetch(`/api/documents/${document.id}/view`);
         const result = await response.json();
 
         if (result.success) {
-          window.open(result.viewUrl, '_blank');
+          window.open(result.viewUrl, "_blank");
         } else {
-          toast.error('Failed to open document', {
+          toast.error("Failed to open document", {
             description: result.error,
           });
         }
       }
     } catch (error) {
-      toast.error('Failed to open document');
+      toast.error("Failed to open document");
     }
   };
 
   const handleDownload = async (document: Document) => {
     try {
       const response = await fetch(`/api/documents/${document.id}/download`);
-      
+
       if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
-        const a = window.document.createElement('a');
+        const a = window.document.createElement("a");
         a.href = url;
         a.download = document.filename;
         window.document.body.appendChild(a);
@@ -269,12 +291,12 @@ export function DocumentList({
         window.URL.revokeObjectURL(url);
       } else {
         const result = await response.json();
-        toast.error('Failed to download document', {
+        toast.error("Failed to download document", {
           description: result.error,
         });
       }
     } catch (error) {
-      toast.error('Failed to download document');
+      toast.error("Failed to download document");
     }
   };
 
@@ -285,22 +307,22 @@ export function DocumentList({
 
     try {
       const response = await fetch(`/api/documents/${document.id}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       const result = await response.json();
 
       if (result.success) {
-        toast.success('Document deleted successfully');
+        toast.success("Document deleted successfully");
         loadDocuments(currentPage);
         onDocumentUpdate?.();
       } else {
-        toast.error('Failed to delete document', {
+        toast.error("Failed to delete document", {
           description: result.error,
         });
       }
     } catch (error) {
-      toast.error('Failed to delete document');
+      toast.error("Failed to delete document");
     }
   };
 
@@ -312,7 +334,9 @@ export function DocumentList({
     return (
       <Card className={className}>
         <CardContent className="p-6 text-center">
-          <p className="text-gray-500">You don't have permission to view documents.</p>
+          <p className="text-gray-500">
+            You don't have permission to view documents.
+          </p>
         </CardContent>
       </Card>
     );
@@ -321,33 +345,37 @@ export function DocumentList({
   return (
     <Card className={className}>
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <File className="w-5 h-5" />
-            Documents
-            {totalCount > 0 && (
-              <Badge variant="secondary">{totalCount}</Badge>
-            )}
-          </CardTitle>
-          <div className="flex items-center gap-2">
-            {showUploadButton && canUpload && (
+        <div className="flex flex-col space-y-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="w-5 h-5" />
+              Documents
+              {totalCount > 0 && (
+                <Badge variant="secondary">{totalCount}</Badge>
+              )}
+            </CardTitle>
+            <div className="flex items-center gap-2">
+              {showUploadButton && canUpload && (
+                <Button onClick={onUploadClick} size="sm">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Upload Documents
+                </Button>
+              )}
               <Button
-                onClick={onUploadClick}
+                variant="outline"
                 size="sm"
+                onClick={handleRefresh}
+                disabled={isRefreshing}
               >
-                <Plus className="w-4 h-4 mr-2" />
-                Upload Documents
+                <RefreshCw
+                  className={cn("w-4 h-4", isRefreshing && "animate-spin")}
+                />
               </Button>
-            )}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleRefresh}
-              disabled={isRefreshing}
-            >
-              <RefreshCw className={cn("w-4 h-4", isRefreshing && "animate-spin")} />
-            </Button>
+            </div>
           </div>
+          <CardDescription>
+            Browse, upload, and manage documents
+          </CardDescription>
         </div>
       </CardHeader>
 
@@ -363,7 +391,9 @@ export function DocumentList({
                   id="search"
                   placeholder="Search documents..."
                   value={filters.search}
-                  onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                  onChange={e =>
+                    setFilters(prev => ({ ...prev, search: e.target.value }))
+                  }
                   className="pl-10"
                 />
               </div>
@@ -373,7 +403,9 @@ export function DocumentList({
               <Label htmlFor="category">Category</Label>
               <Select
                 value={filters.category}
-                onValueChange={(value) => setFilters(prev => ({ ...prev, category: value }))}
+                onValueChange={value =>
+                  setFilters(prev => ({ ...prev, category: value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="All categories" />
@@ -393,7 +425,9 @@ export function DocumentList({
               <Label htmlFor="visibility">Visibility</Label>
               <Select
                 value={filters.isPublic}
-                onValueChange={(value) => setFilters(prev => ({ ...prev, isPublic: value }))}
+                onValueChange={value =>
+                  setFilters(prev => ({ ...prev, isPublic: value }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="All documents" />
@@ -413,7 +447,12 @@ export function DocumentList({
                   id="uploader"
                   placeholder="User ID..."
                   value={filters.uploadedBy}
-                  onChange={(e) => setFilters(prev => ({ ...prev, uploadedBy: e.target.value }))}
+                  onChange={e =>
+                    setFilters(prev => ({
+                      ...prev,
+                      uploadedBy: e.target.value,
+                    }))
+                  }
                 />
               </div>
             )}
@@ -438,13 +477,27 @@ export function DocumentList({
               {isLoading ? (
                 Array.from({ length: 5 }).map((_, i) => (
                   <TableRow key={i}>
-                    <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-16" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-16" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-32" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-20" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-16" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-24" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-20" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-16" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-20" />
+                    </TableCell>
                   </TableRow>
                 ))
               ) : documents.length === 0 ? (
@@ -453,11 +506,20 @@ export function DocumentList({
                     <div className="flex flex-col items-center space-y-2">
                       <File className="w-8 h-8 text-gray-400" />
                       <p className="text-gray-500">No documents found</p>
-                      {(filters.search || (filters.category && filters.category !== 'all') || (filters.isPublic && filters.isPublic !== 'all')) && (
+                      {(filters.search ||
+                        (filters.category && filters.category !== "all") ||
+                        (filters.isPublic && filters.isPublic !== "all")) && (
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => setFilters({ search: '', category: '', isPublic: '', uploadedBy: uploadedBy || '' })}
+                          onClick={() =>
+                            setFilters({
+                              search: "",
+                              category: "",
+                              isPublic: "",
+                              uploadedBy: uploadedBy || "",
+                            })
+                          }
                         >
                           Clear filters
                         </Button>
@@ -466,7 +528,7 @@ export function DocumentList({
                   </TableCell>
                 </TableRow>
               ) : (
-                documents.map((document) => (
+                documents.map(document => (
                   <TableRow
                     key={document.id}
                     className="cursor-pointer hover:bg-gray-50"
@@ -476,7 +538,9 @@ export function DocumentList({
                       <div className="flex items-center space-x-3">
                         {getFileIcon(document.mimetype)}
                         <div className="min-w-0 flex-1">
-                          <p className="font-medium truncate">{document.filename}</p>
+                          <p className="font-medium truncate">
+                            {document.filename}
+                          </p>
                           {document.metadata?.description && (
                             <p className="text-sm text-gray-500 truncate">
                               {document.metadata.description}
@@ -487,7 +551,9 @@ export function DocumentList({
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline">
-                        {DOCUMENT_CATEGORIES.find(cat => cat.value === document.category)?.label || 'Other'}
+                        {DOCUMENT_CATEGORIES.find(
+                          cat => cat.value === document.category
+                        )?.label || "Other"}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-sm text-gray-500">
@@ -495,7 +561,9 @@ export function DocumentList({
                     </TableCell>
                     <TableCell>
                       <div className="space-y-1">
-                        <div className="text-sm">{formatDate(document.createdAt)}</div>
+                        <div className="text-sm">
+                          {formatDate(document.createdAt)}
+                        </div>
                         {document.uploaderName && (
                           <div className="flex items-center text-xs text-gray-500">
                             <User className="w-3 h-3 mr-1" />
@@ -521,37 +589,48 @@ export function DocumentList({
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={document.isPublic ? "default" : "secondary"}>
+                      <Badge
+                        variant={document.isPublic ? "default" : "secondary"}
+                      >
                         {document.isPublic ? "Public" : "Private"}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
-                        <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                        <DropdownMenuTrigger
+                          asChild
+                          onClick={e => e.stopPropagation()}
+                        >
                           <Button variant="ghost" size="sm">
                             <MoreHorizontal className="w-4 h-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={(e) => {
-                            e.stopPropagation();
-                            handleView(document);
-                          }}>
+                          <DropdownMenuItem
+                            onClick={e => {
+                              e.stopPropagation();
+                              handleView(document);
+                            }}
+                          >
                             <Eye className="w-4 h-4 mr-2" />
                             View
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={(e) => {
-                            e.stopPropagation();
-                            handleDownload(document);
-                          }}>
+                          <DropdownMenuItem
+                            onClick={e => {
+                              e.stopPropagation();
+                              handleDownload(document);
+                            }}
+                          >
                             <Download className="w-4 h-4 mr-2" />
                             Download
                           </DropdownMenuItem>
                           {canEdit && (
-                            <DropdownMenuItem onClick={(e) => {
-                              e.stopPropagation();
-                              // TODO: Open edit modal
-                            }}>
+                            <DropdownMenuItem
+                              onClick={e => {
+                                e.stopPropagation();
+                                // TODO: Open edit modal
+                              }}
+                            >
                               <Edit className="w-4 h-4 mr-2" />
                               Edit
                             </DropdownMenuItem>
@@ -560,7 +639,7 @@ export function DocumentList({
                             <>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem
-                                onClick={(e) => {
+                                onClick={e => {
                                   e.stopPropagation();
                                   handleDelete(document);
                                 }}
@@ -585,8 +664,10 @@ export function DocumentList({
         {totalCount > itemsPerPage && (
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-500">
-              Showing {Math.min((currentPage - 1) * itemsPerPage + 1, totalCount)} to{' '}
-              {Math.min(currentPage * itemsPerPage, totalCount)} of {totalCount} documents
+              Showing{" "}
+              {Math.min((currentPage - 1) * itemsPerPage + 1, totalCount)} to{" "}
+              {Math.min(currentPage * itemsPerPage, totalCount)} of {totalCount}{" "}
+              documents
             </p>
             <div className="flex gap-2">
               <Button

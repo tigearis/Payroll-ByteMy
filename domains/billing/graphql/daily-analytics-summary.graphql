@@ -1,0 +1,41 @@
+# Daily Analytics Summary
+
+query GetDailyAnalyticsSummary($daysBack: Int = 14) {
+  dailyTrends: billingAnalyticsDaily(
+    where: {
+      analyticsDate: {
+        _gte: "date_trunc('day', now() - interval '$daysBack days')"
+      }
+    }
+    orderBy: { analyticsDate: ASC }
+  ) {
+    analyticsDate
+    totalRevenue
+    approvedRevenue
+    pendingRevenue
+    itemCount
+    approvedCount
+    pendingCount
+  }
+
+  summary: billingAnalyticsDailyAggregate(
+    where: {
+      analyticsDate: {
+        _gte: "date_trunc('day', now() - interval '$daysBack days')"
+      }
+    }
+  ) {
+    aggregate {
+      sum {
+        totalRevenue
+        approvedRevenue
+        pendingRevenue
+        itemCount
+      }
+      avg {
+        totalAmount
+      }
+    }
+  }
+}
+

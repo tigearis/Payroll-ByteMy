@@ -6,7 +6,6 @@ import {
   Plus,
   Eye,
   Edit,
-  Trash2,
   Send,
   CheckCircle,
   XCircle,
@@ -14,11 +13,10 @@ import {
   DollarSign,
   Users,
   TrendingUp,
-  Filter,
   Download,
   Search,
 } from "lucide-react";
-import React, { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,13 +27,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -54,11 +45,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cn } from "@/lib/utils";
+import { safeFormatDate } from "@/lib/utils/date-utils";
 
 // GraphQL operations (these would be imported from generated types)
 const GET_QUOTES = gql`
-  query GetQuotes($limit: Int, $offset: Int, $where: QuotesBoolExp, $orderBy: [QuotesOrderBy!]) {
+  query GetQuotes(
+    $limit: Int
+    $offset: Int
+    $where: QuotesBoolExp
+    $orderBy: [QuotesOrderBy!]
+  ) {
     quotes(limit: $limit, offset: $offset, where: $where, orderBy: $orderBy) {
       id
       quoteNumber
@@ -99,7 +95,7 @@ const GET_QUOTES = gql`
 
 const GET_QUOTE_ANALYTICS = gql`
   query GetQuoteAnalytics($where: QuoteAnalyticsBoolExp) {
-    quoteAnalytics(where: $where, orderBy: {createdAt: DESC}) {
+    quoteAnalytics(where: $where, orderBy: { createdAt: DESC }) {
       id
       quoteNumber
       status
@@ -119,7 +115,7 @@ const GET_QUOTE_ANALYTICS = gql`
 
 const UPDATE_QUOTE_STATUS = gql`
   mutation UpdateQuoteStatus($id: uuid!, $status: String!) {
-    updateQuotesByPk(pkColumns: {id: $id}, _set: {status: $status}) {
+    updateQuotesByPk(pkColumns: { id: $id }, _set: { status: $status }) {
       id
       status
       updatedAt
@@ -133,7 +129,7 @@ interface Quote {
   clientId?: string;
   prospectName?: string;
   prospectCompany?: string;
-  status: 'draft' | 'sent' | 'accepted' | 'rejected' | 'expired' | 'converted';
+  status: "draft" | "sent" | "accepted" | "rejected" | "expired" | "converted";
   totalAmount: number;
   validUntil?: string;
   createdAt: string;
@@ -175,71 +171,129 @@ export function QuoteManagementDashboard() {
   const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null);
 
   // GraphQL queries
-  const { data: quotesData, loading: quotesLoading, refetch } = useQuery(GET_QUOTES, {
+  const {
+    data: quotesData,
+    loading: quotesLoading,
+    refetch,
+  } = useQuery(GET_QUOTES, {
     variables: {
       limit: 100,
       offset: 0,
       orderBy: [{ createdAt: "DESC" }],
     },
-    fetchPolicy: 'cache-and-network',
+    fetchPolicy: "cache-and-network",
   });
 
-  const { data: analyticsData, loading: analyticsLoading } = useQuery(GET_QUOTE_ANALYTICS, {
-    fetchPolicy: 'cache-and-network',
-  });
+  const { data: analyticsData, loading: analyticsLoading } = useQuery(
+    GET_QUOTE_ANALYTICS,
+    {
+      fetchPolicy: "cache-and-network",
+    }
+  );
 
   const [updateQuoteStatus] = useMutation(UPDATE_QUOTE_STATUS, {
     onCompleted: () => {
       toast.success("Quote status updated successfully");
       refetch();
     },
-    onError: (error) => {
+    onError: error => {
       toast.error(`Error updating quote: ${error.message}`);
     },
   });
 
   const quotes: Quote[] = quotesData?.quotes || [];
   const quoteAnalytics: QuoteAnalytics[] = analyticsData?.quoteAnalytics || [];
-
   // Filter quotes based on search and status
   const filteredQuotes = useMemo(() => {
-    return quotes.filter((quote) => {
-      const matchesSearch = 
+    return quotes.filter(quote => {
+      const matchesSearch =
         quote.quoteNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
         quote.prospectName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        quote.prospectCompany?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        quote.prospectCompany
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
         quote.client?.name.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchesStatus = statusFilter === "all" || quote.status === statusFilter;
-      
+
+      const matchesStatus =
+        statusFilter === "all" || quote.status === statusFilter;
+
       return matchesSearch && matchesStatus;
     });
   }, [quotes, searchTerm, statusFilter]);
 
+  // Export listener for PageHeader overflow action
+  useEffect(() => {
+    const handleExport = () => {
+      const headers = [
+        "Quote #",
+        "Client/Prospect",
+        "Status",
+        "Total",
+        "Created",
+        "Valid Until",
+      ];
+      const escape = (val: unknown) => {
+        const s = String(val ?? "");
+        const escaped = s.replace(/"/g, '""');
+        return `"${escaped}"`;
+      };
+      const rows = filteredQuotes.map(q => [
+        escape(q.quoteNumber),
+        escape(q.client?.name || q.prospectCompany || q.prospectName || ""),
+        escape(q.status),
+        escape(q.totalAmount ?? 0),
+        escape(q.createdAt ?? ""),
+        escape(q.validUntil ?? ""),
+      ]);
+      const csv = [
+        headers.map(escape).join(","),
+        ...rows.map(r => r.join(",")),
+      ].join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `quotes-export-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    };
+    window.addEventListener("quotes:export", handleExport);
+    return () => window.removeEventListener("quotes:export", handleExport);
+  }, [filteredQuotes]);
+
   // Calculate dashboard metrics
   const metrics = useMemo(() => {
     const totalQuotes = quotes.length;
-    const totalValue = quotes.reduce((sum, quote) => sum + quote.totalAmount, 0);
+    const totalValue = quotes.reduce(
+      (sum, quote) => sum + quote.totalAmount,
+      0
+    );
     const avgValue = totalQuotes > 0 ? totalValue / totalQuotes : 0;
-    const conversionRate = quotes.length > 0 
-      ? (quotes.filter(q => q.status === 'converted').length / quotes.length) * 100 
-      : 0;
+    const conversionRate =
+      quotes.length > 0
+        ? (quotes.filter(q => q.status === "converted").length /
+            quotes.length) *
+          100
+        : 0;
 
     return {
       totalQuotes,
       totalValue,
       avgValue,
       conversionRate,
-      pending: quotes.filter(q => ['draft', 'sent'].includes(q.status)).length,
-      converted: quotes.filter(q => q.status === 'converted').length,
-      lost: quotes.filter(q => ['rejected', 'expired'].includes(q.status)).length,
+      pending: quotes.filter(q => ["draft", "sent"].includes(q.status)).length,
+      converted: quotes.filter(q => q.status === "converted").length,
+      lost: quotes.filter(q => ["rejected", "expired"].includes(q.status))
+        .length,
     };
   }, [quotes]);
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-AU', {
-      style: 'currency',
-      currency: 'AUD'
+    return new Intl.NumberFormat("en-AU", {
+      style: "currency",
+      currency: "AUD",
     }).format(amount);
   };
 
@@ -247,13 +301,26 @@ export function QuoteManagementDashboard() {
     const statusConfig = {
       draft: { variant: "secondary" as const, label: "Draft", icon: Edit },
       sent: { variant: "default" as const, label: "Sent", icon: Send },
-      accepted: { variant: "default" as const, label: "Accepted", icon: CheckCircle },
-      converted: { variant: "default" as const, label: "Converted", icon: CheckCircle },
-      rejected: { variant: "destructive" as const, label: "Rejected", icon: XCircle },
+      accepted: {
+        variant: "default" as const,
+        label: "Accepted",
+        icon: CheckCircle,
+      },
+      converted: {
+        variant: "default" as const,
+        label: "Converted",
+        icon: CheckCircle,
+      },
+      rejected: {
+        variant: "destructive" as const,
+        label: "Rejected",
+        icon: XCircle,
+      },
       expired: { variant: "secondary" as const, label: "Expired", icon: Clock },
     };
 
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.draft;
+    const config =
+      statusConfig[status as keyof typeof statusConfig] || statusConfig.draft;
     const Icon = config.icon;
 
     return (
@@ -267,10 +334,10 @@ export function QuoteManagementDashboard() {
   const handleStatusChange = async (quoteId: string, newStatus: string) => {
     try {
       await updateQuoteStatus({
-        variables: { id: quoteId, status: newStatus }
+        variables: { id: quoteId, status: newStatus },
       });
     } catch (error) {
-      console.error('Error updating quote status:', error);
+      console.error("Error updating quote status:", error);
     }
   };
 
@@ -279,7 +346,9 @@ export function QuoteManagementDashboard() {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-2 text-sm text-muted-foreground">Loading quotes...</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Loading quotes...
+          </p>
         </div>
       </div>
     );
@@ -290,7 +359,9 @@ export function QuoteManagementDashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Quote Management</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Quote Management
+          </h1>
           <p className="text-muted-foreground">
             Manage quotes, track conversions, and analyze sales performance
           </p>
@@ -324,11 +395,15 @@ export function QuoteManagementDashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pipeline Value</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Pipeline Value
+            </CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(metrics.totalValue)}</div>
+            <div className="text-2xl font-bold">
+              {formatCurrency(metrics.totalValue)}
+            </div>
             <p className="text-xs text-muted-foreground">
               Avg: {formatCurrency(metrics.avgValue)}
             </p>
@@ -337,11 +412,15 @@ export function QuoteManagementDashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Conversion Rate</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Conversion Rate
+            </CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{metrics.conversionRate.toFixed(1)}%</div>
+            <div className="text-2xl font-bold">
+              {metrics.conversionRate.toFixed(1)}%
+            </div>
             <p className="text-xs text-muted-foreground">
               {metrics.converted} converted
             </p>
@@ -354,10 +433,10 @@ export function QuoteManagementDashboard() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{metrics.converted}/{metrics.lost}</div>
-            <p className="text-xs text-muted-foreground">
-              Won vs Lost
-            </p>
+            <div className="text-2xl font-bold">
+              {metrics.converted}/{metrics.lost}
+            </div>
+            <p className="text-xs text-muted-foreground">Won vs Lost</p>
           </CardContent>
         </Card>
       </div>
@@ -386,7 +465,7 @@ export function QuoteManagementDashboard() {
                       id="search"
                       placeholder="Search quotes, clients, prospects..."
                       value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onChange={e => setSearchTerm(e.target.value)}
                       className="pl-9"
                     />
                   </div>
@@ -434,7 +513,7 @@ export function QuoteManagementDashboard() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredQuotes.map((quote) => (
+                  {filteredQuotes.map(quote => (
                     <TableRow key={quote.id}>
                       <TableCell className="font-medium">
                         {quote.quoteNumber}
@@ -442,27 +521,24 @@ export function QuoteManagementDashboard() {
                       <TableCell>
                         <div>
                           <div className="font-medium">
-                            {quote.client?.name || quote.prospectName || quote.prospectCompany}
+                            {quote.client?.name ||
+                              quote.prospectName ||
+                              quote.prospectCompany}
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            {quote.client ? 'Existing Client' : 'Prospect'}
+                            {quote.client ? "Existing Client" : "Prospect"}
                           </div>
                         </div>
                       </TableCell>
+                      <TableCell>{getStatusBadge(quote.status)}</TableCell>
+                      <TableCell>{formatCurrency(quote.totalAmount)}</TableCell>
                       <TableCell>
-                        {getStatusBadge(quote.status)}
+                        {quote.validUntil
+                          ? safeFormatDate(quote.validUntil, "dd MMM yyyy")
+                          : "No expiry"}
                       </TableCell>
                       <TableCell>
-                        {formatCurrency(quote.totalAmount)}
-                      </TableCell>
-                      <TableCell>
-                        {quote.validUntil ? 
-                          new Date(quote.validUntil).toLocaleDateString() : 
-                          'No expiry'
-                        }
-                      </TableCell>
-                      <TableCell>
-                        {new Date(quote.createdAt).toLocaleDateString()}
+                        {safeFormatDate(quote.createdAt, "dd MMM yyyy")}
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
@@ -472,7 +548,11 @@ export function QuoteManagementDashboard() {
                           <Button variant="ghost" size="sm">
                             <Edit className="w-4 h-4" />
                           </Button>
-                          <Select onValueChange={(value) => handleStatusChange(quote.id, value)}>
+                          <Select
+                            onValueChange={value =>
+                              handleStatusChange(quote.id, value)
+                            }
+                          >
                             <SelectTrigger className="w-24 h-8">
                               <SelectValue placeholder="Status" />
                             </SelectTrigger>
@@ -502,17 +582,19 @@ export function QuoteManagementDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {quotes.filter(q => q.status === 'draft').map((quote) => (
-                    <div key={quote.id} className="p-3 border rounded-lg">
-                      <div className="font-medium">{quote.quoteNumber}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {quote.client?.name || quote.prospectName}
+                  {quotes
+                    .filter(q => q.status === "draft")
+                    .map(quote => (
+                      <div key={quote.id} className="p-3 border rounded-lg">
+                        <div className="font-medium">{quote.quoteNumber}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {quote.client?.name || quote.prospectName}
+                        </div>
+                        <div className="text-sm font-medium">
+                          {formatCurrency(quote.totalAmount)}
+                        </div>
                       </div>
-                      <div className="text-sm font-medium">
-                        {formatCurrency(quote.totalAmount)}
-                      </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </CardContent>
             </Card>
@@ -523,17 +605,19 @@ export function QuoteManagementDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {quotes.filter(q => q.status === 'sent').map((quote) => (
-                    <div key={quote.id} className="p-3 border rounded-lg">
-                      <div className="font-medium">{quote.quoteNumber}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {quote.client?.name || quote.prospectName}
+                  {quotes
+                    .filter(q => q.status === "sent")
+                    .map(quote => (
+                      <div key={quote.id} className="p-3 border rounded-lg">
+                        <div className="font-medium">{quote.quoteNumber}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {quote.client?.name || quote.prospectName}
+                        </div>
+                        <div className="text-sm font-medium">
+                          {formatCurrency(quote.totalAmount)}
+                        </div>
                       </div>
-                      <div className="text-sm font-medium">
-                        {formatCurrency(quote.totalAmount)}
-                      </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </CardContent>
             </Card>
@@ -544,17 +628,19 @@ export function QuoteManagementDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {quotes.filter(q => ['accepted', 'converted'].includes(q.status)).map((quote) => (
-                    <div key={quote.id} className="p-3 border rounded-lg">
-                      <div className="font-medium">{quote.quoteNumber}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {quote.client?.name || quote.prospectName}
+                  {quotes
+                    .filter(q => ["accepted", "converted"].includes(q.status))
+                    .map(quote => (
+                      <div key={quote.id} className="p-3 border rounded-lg">
+                        <div className="font-medium">{quote.quoteNumber}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {quote.client?.name || quote.prospectName}
+                        </div>
+                        <div className="text-sm font-medium">
+                          {formatCurrency(quote.totalAmount)}
+                        </div>
                       </div>
-                      <div className="text-sm font-medium">
-                        {formatCurrency(quote.totalAmount)}
-                      </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </CardContent>
             </Card>
@@ -571,20 +657,29 @@ export function QuoteManagementDashboard() {
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
                     <span>Total Pipeline Value</span>
-                    <span className="font-bold">{formatCurrency(metrics.totalValue)}</span>
+                    <span className="font-bold">
+                      {formatCurrency(metrics.totalValue)}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span>Average Quote Value</span>
-                    <span className="font-bold">{formatCurrency(metrics.avgValue)}</span>
+                    <span className="font-bold">
+                      {formatCurrency(metrics.avgValue)}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span>Conversion Rate</span>
-                    <span className="font-bold">{metrics.conversionRate.toFixed(1)}%</span>
+                    <span className="font-bold">
+                      {metrics.conversionRate.toFixed(1)}%
+                    </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span>Win/Loss Ratio</span>
                     <span className="font-bold">
-                      {metrics.lost > 0 ? (metrics.converted / metrics.lost).toFixed(1) : '∞'}:1
+                      {metrics.lost > 0
+                        ? (metrics.converted / metrics.lost).toFixed(1)
+                        : "∞"}
+                      :1
                     </span>
                   </div>
                 </div>
@@ -597,8 +692,11 @@ export function QuoteManagementDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {quotes.slice(0, 5).map((quote) => (
-                    <div key={quote.id} className="flex items-center justify-between p-2 border rounded">
+                  {quotes.slice(0, 5).map(quote => (
+                    <div
+                      key={quote.id}
+                      className="flex items-center justify-between p-2 border rounded"
+                    >
                       <div>
                         <div className="font-medium">{quote.quoteNumber}</div>
                         <div className="text-sm text-muted-foreground">

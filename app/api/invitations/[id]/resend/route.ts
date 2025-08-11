@@ -8,6 +8,7 @@ import {
 } from "@/domains/auth/graphql/generated/graphql";
 import { executeTypedMutation, executeTypedQuery } from "@/lib/apollo/query-helpers";
 import { withAuthParams } from "@/lib/auth/api-auth";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 import { 
   getHierarchicalPermissionsFromDatabase,
   type UserRole as HierarchicalUserRole 

@@ -2,6 +2,7 @@
 import crypto from "crypto";
 import { gql } from "@apollo/client";
 import { adminApolloClient } from "@/lib/apollo/unified-client";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 // Type definitions
 export type UserRole =
@@ -146,7 +147,15 @@ export async function getHierarchicalPermissionsFromDatabase(
   userId: string
 ): Promise<HierarchicalPermissionData> {
   try {
-    console.log(`🔍 Getting hierarchical permissions for user: ${userId}`);
+    logger.debug('Getting hierarchical permissions for user', {
+      namespace: 'hierarchical_permissions',
+      operation: 'get_permissions_start',
+      classification: DataClassification.INTERNAL,
+      metadata: {
+        userId,
+        timestamp: new Date().toISOString()
+      }
+    });
 
     // Get user's role assignments from database
     const { data: userData } = await adminApolloClient.query({
@@ -171,9 +180,15 @@ export async function getHierarchicalPermissionsFromDatabase(
     const roleAssignments = userData?.roleAssignments || [];
 
     if (roleAssignments.length === 0) {
-      console.warn(
-        `⚠️ No role assignments found for user ${userId}, defaulting to viewer`
-      );
+      logger.warn('No role assignments found for user, defaulting to viewer', {
+        namespace: 'hierarchical_permissions',
+        operation: 'default_to_viewer',
+        classification: DataClassification.INTERNAL,
+        metadata: {
+          userId,
+          timestamp: new Date().toISOString()
+        }
+      });
       return {
         role: "viewer",
         allowedRoles: ["viewer"],
@@ -201,9 +216,19 @@ export async function getHierarchicalPermissionsFromDatabase(
     );
     const permissionVersion = generatePermissionVersion();
 
-    console.log(`✅ Hierarchical permissions for ${highestRole}:`);
-    console.log(`🎭 Allowed roles: ${allowedRoles.join(", ")}`);
-    console.log(`❌ Excluded permissions: ${excludedPermissions.length}`);
+    logger.info('Hierarchical permissions retrieved successfully', {
+      namespace: 'hierarchical_permissions',
+      operation: 'get_permissions_success',
+      classification: DataClassification.INTERNAL,
+      metadata: {
+        userId,
+        role: highestRole,
+        allowedRolesCount: allowedRoles.length,
+        excludedPermissionsCount: excludedPermissions.length,
+        allowedRoles: allowedRoles.join(', '),
+        timestamp: new Date().toISOString()
+      }
+    });
 
     return {
       role: highestRole,
@@ -213,10 +238,17 @@ export async function getHierarchicalPermissionsFromDatabase(
       permissionVersion,
     };
   } catch (error) {
-    console.error(
-      `❌ Error getting hierarchical permissions from database:`,
-      error
-    );
+    logger.error('Error getting hierarchical permissions from database', {
+      namespace: 'hierarchical_permissions',
+      operation: 'get_permissions_error',
+      classification: DataClassification.INTERNAL,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      metadata: {
+        userId,
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+        timestamp: new Date().toISOString()
+      }
+    });
     throw error;
   }
 }
@@ -306,7 +338,18 @@ async function calculateExcludedPermissions(
 
     return excludedPermissions;
   } catch (error) {
-    console.error("Error calculating excluded permissions:", error);
+    logger.error('Error calculating excluded permissions', {
+      namespace: 'hierarchical_permissions',
+      operation: 'calculate_excluded_permissions_error',
+      classification: DataClassification.INTERNAL,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      metadata: {
+        userId,
+        userRole,
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+        timestamp: new Date().toISOString()
+      }
+    });
     return []; // Fail safe - no exclusions
   }
 }
@@ -480,9 +523,16 @@ export async function syncUserRoleAssignmentsHierarchical(
   directRole: UserRole
 ): Promise<void> {
   try {
-    console.log(
-      `🔄 Syncing hierarchical role assignments for user ${userId}: ${directRole}`
-    );
+    logger.info('Syncing hierarchical role assignments for user', {
+      namespace: 'hierarchical_permissions',
+      operation: 'sync_role_assignments_start',
+      classification: DataClassification.INTERNAL,
+      metadata: {
+        userId,
+        directRole,
+        timestamp: new Date().toISOString()
+      }
+    });
 
     // Get the role ID for the direct role
     const { data: roleData } = await adminApolloClient.query({
@@ -500,7 +550,15 @@ export async function syncUserRoleAssignmentsHierarchical(
 
     const role = roleData?.roles?.[0];
     if (!role) {
-      console.error(`❌ Role ${directRole} not found in database`);
+      logger.error('Role not found in database', {
+        namespace: 'hierarchical_permissions',
+        operation: 'role_not_found_error',
+        classification: DataClassification.INTERNAL,
+        metadata: {
+          directRole,
+          timestamp: new Date().toISOString()
+        }
+      });
       return;
     }
 
@@ -530,11 +588,29 @@ export async function syncUserRoleAssignmentsHierarchical(
       variables: { userId, roleId: role.id },
     });
 
-    console.log(
-      `✅ Synced hierarchical role assignment: User ${userId} → Role ${directRole}`
-    );
+    logger.info('Synced hierarchical role assignment successfully', {
+      namespace: 'hierarchical_permissions',
+      operation: 'sync_role_assignments_success',
+      classification: DataClassification.INTERNAL,
+      metadata: {
+        userId,
+        directRole,
+        timestamp: new Date().toISOString()
+      }
+    });
   } catch (error) {
-    console.error(`❌ Error syncing hierarchical role assignments:`, error);
+    logger.error('Error syncing hierarchical role assignments', {
+      namespace: 'hierarchical_permissions',
+      operation: 'sync_role_assignments_error',
+      classification: DataClassification.INTERNAL,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      metadata: {
+        userId,
+        directRole,
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+        timestamp: new Date().toISOString()
+      }
+    });
     throw error;
   }
 }
@@ -553,13 +629,33 @@ export async function syncPermissionOverridesToClerk(
   
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      console.log(`🔄 Syncing permission overrides to Clerk for user ${userId} (attempt ${attempt}/${maxRetries})`);
+      logger.debug('Syncing permission overrides to Clerk', {
+        namespace: 'hierarchical_permissions',
+        operation: 'sync_clerk_overrides',
+        classification: DataClassification.INTERNAL,
+        metadata: {
+          userId,
+          attempt,
+          maxRetries,
+          timestamp: new Date().toISOString()
+        }
+      });
 
       // Get fresh hierarchical permission data from database
       let hierarchicalData;
       try {
         hierarchicalData = await getHierarchicalPermissionsFromDatabase(userId);
-        console.log(`📊 Retrieved hierarchical data: ${hierarchicalData.excludedPermissions.length} exclusions, ${hierarchicalData.allowedRoles.length} roles`);
+        logger.debug('Retrieved hierarchical data for Clerk sync', {
+          namespace: 'hierarchical_permissions',
+          operation: 'get_hierarchical_data',
+          classification: DataClassification.INTERNAL,
+          metadata: {
+            userId,
+            excludedPermissionsCount: hierarchicalData.excludedPermissions.length,
+            allowedRolesCount: hierarchicalData.allowedRoles.length,
+            timestamp: new Date().toISOString()
+          }
+        });
       } catch (dataError: any) {
         throw new Error(`Failed to get hierarchical permissions: ${dataError.message}`);
       }
@@ -601,12 +697,33 @@ export async function syncPermissionOverridesToClerk(
         
         lastError = error;
         const delayMs = Math.min(1000 * Math.pow(2, attempt - 1), 5000); // Exponential backoff, max 5s
-        console.log(`⏳ Retryable error, waiting ${delayMs}ms before retry: ${error.message}`);
+        logger.warn('Retryable error during Clerk sync, waiting before retry', {
+          namespace: 'hierarchical_permissions',
+          operation: 'clerk_sync_retry_wait',
+          classification: DataClassification.INTERNAL,
+          error: error.message,
+          metadata: {
+            userId,
+            attempt,
+            maxRetries,
+            delayMs,
+            timestamp: new Date().toISOString()
+          }
+        });
         await new Promise(resolve => setTimeout(resolve, delayMs));
         continue;
       }
 
-      console.log(`✅ Successfully synced permission overrides to Clerk for user ${userId} on attempt ${attempt}`);
+      logger.info('Successfully synced permission overrides to Clerk', {
+        namespace: 'hierarchical_permissions',
+        operation: 'clerk_sync_success',
+        classification: DataClassification.INTERNAL,
+        metadata: {
+          userId,
+          attempt,
+          timestamp: new Date().toISOString()
+        }
+      });
       
       // Create audit log for successful sync
       try {
@@ -627,7 +744,16 @@ export async function syncPermissionOverridesToClerk(
           }
         });
       } catch (auditError) {
-        console.warn('Failed to create audit log for Clerk sync:', auditError);
+        logger.warn('Failed to create audit log for Clerk sync', {
+          namespace: 'hierarchical_permissions',
+          operation: 'audit_log_warning',
+          classification: DataClassification.INTERNAL,
+          error: auditError instanceof Error ? auditError.message : 'Unknown error',
+          metadata: {
+            userId,
+            timestamp: new Date().toISOString()
+          }
+        });
         // Don't fail the entire operation for audit log failures
       }
 
@@ -635,17 +761,47 @@ export async function syncPermissionOverridesToClerk(
 
     } catch (error: any) {
       lastError = error;
-      console.error(`❌ Attempt ${attempt}/${maxRetries} failed:`, error.message);
+      logger.error('Clerk sync attempt failed', {
+        namespace: 'hierarchical_permissions',
+        operation: 'clerk_sync_attempt_failed',
+        classification: DataClassification.INTERNAL,
+        error: error.message,
+        metadata: {
+          userId,
+          attempt,
+          maxRetries,
+          timestamp: new Date().toISOString()
+        }
+      });
       
       if (attempt === maxRetries) {
-        console.error(`❌ All ${maxRetries} attempts failed for Clerk sync`);
+        logger.error('All Clerk sync attempts failed', {
+          namespace: 'hierarchical_permissions',
+          operation: 'clerk_sync_all_failed',
+          classification: DataClassification.INTERNAL,
+          metadata: {
+            userId,
+            maxRetries,
+            timestamp: new Date().toISOString()
+          }
+        });
         break;
       }
       
       // Wait before retry (if it's not the last attempt)
       if (attempt < maxRetries) {
         const delayMs = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
-        console.log(`⏳ Waiting ${delayMs}ms before retry...`);
+        logger.debug('Waiting before retry attempt', {
+          namespace: 'hierarchical_permissions',
+          operation: 'retry_delay',
+          classification: DataClassification.INTERNAL,
+          metadata: {
+            userId,
+            attempt,
+            delayMs,
+            timestamp: new Date().toISOString()
+          }
+        });
         await new Promise(resolve => setTimeout(resolve, delayMs));
       }
     }
@@ -675,7 +831,18 @@ export async function createPermissionOverrideWithSync(
   let overrideId: string | null = null;
   
   try {
-    console.log(`🔄 Creating permission override: ${resource}.${operation} = ${granted}`);
+    logger.info('Creating permission override', {
+      namespace: 'hierarchical_permissions',
+      operation: 'create_permission_override',
+      classification: DataClassification.CONFIDENTIAL,
+      metadata: {
+        userId,
+        resource,
+        operation: operation,
+        granted,
+        timestamp: new Date().toISOString()
+      }
+    });
 
     // Step 1: Create the override in database
     try {
@@ -714,22 +881,74 @@ export async function createPermissionOverrideWithSync(
         throw new Error("Failed to create permission override - no ID returned from database");
       }
 
-      console.log(`✅ Created permission override ${overrideId} in database`);
+      logger.info('Created permission override in database', {
+        namespace: 'hierarchical_permissions',
+        operation: 'override_created_database',
+        classification: DataClassification.CONFIDENTIAL,
+        metadata: {
+          overrideId,
+          userId,
+          resource,
+          granted,
+          timestamp: new Date().toISOString()
+        }
+      });
     } catch (dbError: any) {
-      console.error(`❌ Database operation failed for ${resource}.${operation}:`, dbError);
+      logger.error('Database operation failed for permission override', {
+        namespace: 'hierarchical_permissions',
+        operation: 'override_database_error',
+        classification: DataClassification.CONFIDENTIAL,
+        error: dbError instanceof Error ? dbError.message : 'Unknown error',
+        metadata: {
+          userId,
+          resource,
+          operation: operation,
+          errorName: dbError instanceof Error ? dbError.name : 'UnknownError',
+          timestamp: new Date().toISOString()
+        }
+      });
       throw new Error(`Database operation failed: ${dbError.message}`);
     }
 
     // Step 2: Sync with Clerk metadata (with retry)
     try {
       await syncPermissionOverridesToClerk(userId, clerkUserId, userRole);
-      console.log(`✅ Successfully synced permission override ${overrideId} to Clerk`);
+      logger.info('Successfully synced permission override to Clerk', {
+        namespace: 'hierarchical_permissions',
+        operation: 'override_clerk_sync_success',
+        classification: DataClassification.CONFIDENTIAL,
+        metadata: {
+          overrideId,
+          userId,
+          timestamp: new Date().toISOString()
+        }
+      });
     } catch (clerkError: any) {
-      console.error(`❌ Clerk sync failed for override ${overrideId}:`, clerkError);
+      logger.error('Clerk sync failed for permission override', {
+        namespace: 'hierarchical_permissions',
+        operation: 'override_clerk_sync_failed',
+        classification: DataClassification.CONFIDENTIAL,
+        error: clerkError instanceof Error ? clerkError.message : 'Unknown error',
+        metadata: {
+          overrideId,
+          userId,
+          errorName: clerkError instanceof Error ? clerkError.name : 'UnknownError',
+          timestamp: new Date().toISOString()
+        }
+      });
       
       // Rollback: Delete the database record if Clerk sync fails
       try {
-        console.log(`🔄 Rolling back database override ${overrideId} due to Clerk sync failure`);
+        logger.warn('Rolling back database override due to Clerk sync failure', {
+          namespace: 'hierarchical_permissions',
+          operation: 'override_rollback_start',
+          classification: DataClassification.CONFIDENTIAL,
+          metadata: {
+            overrideId,
+            userId,
+            timestamp: new Date().toISOString()
+          }
+        });
         await adminApolloClient.mutate({
           mutation: gql`
             mutation RollbackPermissionOverride($id: uuid!) {
@@ -740,9 +959,29 @@ export async function createPermissionOverrideWithSync(
           `,
           variables: { id: overrideId }
         });
-        console.log(`✅ Successfully rolled back override ${overrideId}`);
+        logger.info('Successfully rolled back permission override', {
+          namespace: 'hierarchical_permissions',
+          operation: 'override_rollback_success',
+          classification: DataClassification.CONFIDENTIAL,
+          metadata: {
+            overrideId,
+            userId,
+            timestamp: new Date().toISOString()
+          }
+        });
       } catch (rollbackError) {
-        console.error(`❌ Failed to rollback override ${overrideId}:`, rollbackError);
+        logger.error('Failed to rollback permission override', {
+          namespace: 'hierarchical_permissions',
+          operation: 'override_rollback_failed',
+          classification: DataClassification.CONFIDENTIAL,
+          error: rollbackError instanceof Error ? rollbackError.message : 'Unknown error',
+          metadata: {
+            overrideId,
+            userId,
+            errorName: rollbackError instanceof Error ? rollbackError.name : 'UnknownError',
+            timestamp: new Date().toISOString()
+          }
+        });
         // Don't throw rollback error - the original Clerk error is more important
       }
       
@@ -752,7 +991,20 @@ export async function createPermissionOverrideWithSync(
     return overrideId;
 
   } catch (error: any) {
-    console.error(`❌ Error creating permission override for ${resource}.${operation}:`, error);
+    logger.error('Error creating permission override', {
+      namespace: 'hierarchical_permissions',
+      operation: 'create_override_error',
+      classification: DataClassification.CONFIDENTIAL,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      metadata: {
+        userId,
+        resource,
+        operation: operation,
+        granted,
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+        timestamp: new Date().toISOString()
+      }
+    });
     
     // Enhance error message with context
     const contextualError = new Error(
@@ -775,7 +1027,16 @@ export async function deletePermissionOverrideWithSync(
   let overrideBackup: any = null;
   
   try {
-    console.log(`🔄 Deleting permission override: ${overrideId}`);
+    logger.info('Deleting permission override', {
+      namespace: 'hierarchical_permissions',
+      operation: 'delete_permission_override',
+      classification: DataClassification.CONFIDENTIAL,
+      metadata: {
+        overrideId,
+        userId,
+        timestamp: new Date().toISOString()
+      }
+    });
 
     // Step 1: Get override details for potential rollback
     try {
@@ -803,9 +1064,29 @@ export async function deletePermissionOverrideWithSync(
         throw new Error(`Permission override ${overrideId} not found - may have been already deleted`);
       }
 
-      console.log(`📋 Backed up override data for ${overrideBackup.resource}.${overrideBackup.operation}`);
+      logger.debug('Backed up override data for deletion', {
+        namespace: 'hierarchical_permissions',
+        operation: 'override_backup_success',
+        classification: DataClassification.CONFIDENTIAL,
+        metadata: {
+          overrideId,
+          resource: overrideBackup.resource,
+          operation: overrideBackup.operation,
+          timestamp: new Date().toISOString()
+        }
+      });
     } catch (backupError: any) {
-      console.error(`❌ Failed to backup override ${overrideId}:`, backupError);
+      logger.error('Failed to backup override for deletion', {
+        namespace: 'hierarchical_permissions',
+        operation: 'override_backup_failed',
+        classification: DataClassification.CONFIDENTIAL,
+        error: backupError instanceof Error ? backupError.message : 'Unknown error',
+        metadata: {
+          overrideId,
+          errorName: backupError instanceof Error ? backupError.name : 'UnknownError',
+          timestamp: new Date().toISOString()
+        }
+      });
       throw new Error(`Failed to backup override data: ${backupError.message}`);
     }
 
@@ -830,23 +1111,72 @@ export async function deletePermissionOverrideWithSync(
         throw new Error("Failed to delete permission override - no confirmation from database");
       }
 
-      console.log(`✅ Deleted permission override ${overrideId} from database`);
+      logger.info('Deleted permission override from database', {
+        namespace: 'hierarchical_permissions',
+        operation: 'override_deleted_database',
+        classification: DataClassification.CONFIDENTIAL,
+        metadata: {
+          overrideId,
+          userId,
+          timestamp: new Date().toISOString()
+        }
+      });
     } catch (dbError: any) {
-      console.error(`❌ Database deletion failed for override ${overrideId}:`, dbError);
+      logger.error('Database deletion failed for permission override', {
+        namespace: 'hierarchical_permissions',
+        operation: 'override_deletion_failed',
+        classification: DataClassification.CONFIDENTIAL,
+        error: dbError instanceof Error ? dbError.message : 'Unknown error',
+        metadata: {
+          overrideId,
+          userId,
+          errorName: dbError instanceof Error ? dbError.name : 'UnknownError',
+          timestamp: new Date().toISOString()
+        }
+      });
       throw new Error(`Database deletion failed: ${dbError.message}`);
     }
 
     // Step 3: Sync with Clerk metadata
     try {
       await syncPermissionOverridesToClerk(userId, clerkUserId, userRole);
-      console.log(`✅ Successfully synced override deletion to Clerk`);
+      logger.info('Successfully synced override deletion to Clerk', {
+        namespace: 'hierarchical_permissions',
+        operation: 'override_deletion_clerk_sync_success',
+        classification: DataClassification.CONFIDENTIAL,
+        metadata: {
+          overrideId,
+          userId,
+          timestamp: new Date().toISOString()
+        }
+      });
     } catch (clerkError: any) {
-      console.error(`❌ Clerk sync failed after deleting override ${overrideId}:`, clerkError);
+      logger.error('Clerk sync failed after deleting permission override', {
+        namespace: 'hierarchical_permissions',
+        operation: 'override_deletion_clerk_sync_failed',
+        classification: DataClassification.CONFIDENTIAL,
+        error: clerkError instanceof Error ? clerkError.message : 'Unknown error',
+        metadata: {
+          overrideId,
+          userId,
+          errorName: clerkError instanceof Error ? clerkError.name : 'UnknownError',
+          timestamp: new Date().toISOString()
+        }
+      });
       
       // Rollback: Recreate the database record if Clerk sync fails
       if (overrideBackup) {
         try {
-          console.log(`🔄 Rolling back deletion - recreating override ${overrideId}`);
+          logger.warn('Rolling back deletion - recreating override', {
+            namespace: 'hierarchical_permissions',
+            operation: 'override_deletion_rollback_start',
+            classification: DataClassification.CONFIDENTIAL,
+            metadata: {
+              overrideId,
+              userId,
+              timestamp: new Date().toISOString()
+            }
+          });
           await adminApolloClient.mutate({
             mutation: gql`
               mutation RestorePermissionOverride($input: PermissionOverridesInsertInput!) {
@@ -869,9 +1199,29 @@ export async function deletePermissionOverrideWithSync(
               }
             }
           });
-          console.log(`✅ Successfully restored override ${overrideId}`);
+          logger.info('Successfully restored permission override', {
+            namespace: 'hierarchical_permissions',
+            operation: 'override_deletion_rollback_success',
+            classification: DataClassification.CONFIDENTIAL,
+            metadata: {
+              overrideId,
+              userId,
+              timestamp: new Date().toISOString()
+            }
+          });
         } catch (rollbackError) {
-          console.error(`❌ Failed to restore override ${overrideId}:`, rollbackError);
+          logger.error('Failed to restore permission override during rollback', {
+            namespace: 'hierarchical_permissions',
+            operation: 'override_deletion_rollback_failed',
+            classification: DataClassification.CONFIDENTIAL,
+            error: rollbackError instanceof Error ? rollbackError.message : 'Unknown error',
+            metadata: {
+              overrideId,
+              userId,
+              errorName: rollbackError instanceof Error ? rollbackError.name : 'UnknownError',
+              timestamp: new Date().toISOString()
+            }
+          });
           // Don't throw rollback error - the original Clerk error is more important
         }
       }
@@ -880,7 +1230,18 @@ export async function deletePermissionOverrideWithSync(
     }
 
   } catch (error: any) {
-    console.error(`❌ Error deleting permission override ${overrideId}:`, error);
+    logger.error('Error deleting permission override', {
+      namespace: 'hierarchical_permissions',
+      operation: 'delete_override_error',
+      classification: DataClassification.CONFIDENTIAL,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      metadata: {
+        overrideId,
+        userId,
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+        timestamp: new Date().toISOString()
+      }
+    });
     
     // Enhance error message with context
     const contextualError = new Error(

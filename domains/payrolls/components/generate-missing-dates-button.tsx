@@ -1,17 +1,12 @@
 // components/generate-missing-dates-button.tsx
 "use client";
-import { ApolloClient, NormalizedCacheObject } from "@apollo/client";
-import { useLazyQuery, gql } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import { format, addMonths } from "date-fns";
 import { useState } from "react";
 import { toast } from "sonner";
 import { PermissionGuard } from "@/components/auth/permission-guard";
 import { Button } from "@/components/ui/button";
-import {
-  GeneratePayrollDatesQueryDocument,
-  GetPayrollsMissingDatesDocument,
-  GetPayrollsDocument,
-} from '@/domains/payrolls/graphql/generated/graphql';
+import { GeneratePayrollDatesQueryDocument } from "@/domains/payrolls/graphql/generated/graphql";
 
 interface GenerateMissingDatesButtonProps {
   payrollIds: string[];
@@ -39,7 +34,7 @@ function GenerateMissingDatesButtonInner({
   const [isGenerating, setIsGenerating] = useState(false);
 
   // Set up the query with proper refetching
-  const [generatePayrollDates, { error, client }] = useLazyQuery(
+  const [generatePayrollDates, { client }] = useLazyQuery(
     GeneratePayrollDatesQueryDocument,
     {
       fetchPolicy: "network-only",

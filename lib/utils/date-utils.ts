@@ -87,7 +87,7 @@ export function safeParseISO(
  */
 export function safeFormatDate(
   date: Date | string | null | undefined,
-  formatString: string = "MMM d, yyyy",
+  formatString: string = "d MMM yyyy",
   fallback: string = "Unknown date"
 ): string {
   if (!date) {
@@ -129,7 +129,7 @@ export function safeFormatDateTime(
   date: Date | string | null | undefined,
   fallback: string = "Unknown date"
 ): string {
-  return safeFormatDate(date, "MMM d, yyyy h:mm a", fallback);
+  return safeFormatDate(date, "d MMM, yyyy h:mm a", fallback);
 }
 
 /**
@@ -245,7 +245,7 @@ export function formatRelativeTime(
     } else if (diffInDays < 30) {
       return `${diffInDays} day${diffInDays !== 1 ? "s" : ""} ago`;
     } else {
-      return safeFormatDate(parsedDate, "MMM d, yyyy", fallback);
+      return safeFormatDate(parsedDate, "dd MMM yyyy", fallback);
     }
   } catch (error) {
     console.warn("Error formatting relative time:", date, error);
@@ -286,12 +286,14 @@ export function isValidDate(date: Date | string | null | undefined): boolean {
  * @returns Filtered list containing only NSW and National holidays
  */
 export function getEftRelevantHolidays(allHolidays: Holiday[]): Holiday[] {
-  const eftRelevantRegions = ['NSW', 'nsw', 'National', 'Australia', 'AU'];
-  
+  const eftRelevantRegions = ["NSW", "nsw", "National", "Australia", "AU"];
+
   return allHolidays.filter(holiday => {
-    const regions = Array.isArray(holiday.region) ? holiday.region : [holiday.region];
-    return regions.some(region => 
-      eftRelevantRegions.some(relevantRegion => 
+    const regions = Array.isArray(holiday.region)
+      ? holiday.region
+      : [holiday.region];
+    return regions.some(region =>
+      eftRelevantRegions.some(relevantRegion =>
         region.toLowerCase().includes(relevantRegion.toLowerCase())
       )
     );
@@ -304,11 +306,16 @@ export function getEftRelevantHolidays(allHolidays: Holiday[]): Holiday[] {
  * @param targetRegions Array of regions to include (e.g., ['NSW', 'VIC'])
  * @returns Filtered list containing only holidays from specified regions
  */
-export function filterHolidaysByRegion(allHolidays: Holiday[], targetRegions: string[]): Holiday[] {
+export function filterHolidaysByRegion(
+  allHolidays: Holiday[],
+  targetRegions: string[]
+): Holiday[] {
   return allHolidays.filter(holiday => {
-    const regions = Array.isArray(holiday.region) ? holiday.region : [holiday.region];
-    return regions.some(region => 
-      targetRegions.some(target => 
+    const regions = Array.isArray(holiday.region)
+      ? holiday.region
+      : [holiday.region];
+    return regions.some(region =>
+      targetRegions.some(target =>
         region.toLowerCase().includes(target.toLowerCase())
       )
     );
@@ -525,7 +532,11 @@ export function calculatePayrollDates(
   const eftRelevantHolidays = getEftRelevantHolidays(holidays);
 
   // Adjust EFT date if it falls on weekend or holiday (NSW + National only)
-  const adjustedEftDate = adjustDate(originalEftDate, adjustmentRule, eftRelevantHolidays);
+  const adjustedEftDate = adjustDate(
+    originalEftDate,
+    adjustmentRule,
+    eftRelevantHolidays
+  );
 
   // Calculate processing date by subtracting days from adjusted EFT date
   const rawProcessingDate = addDays(adjustedEftDate, -processingDaysBeforeEft);

@@ -16,6 +16,7 @@ import {
   executeTypedQuery,
 } from "@/lib/apollo/query-helpers";
 import { withAuth } from "@/lib/auth/api-auth";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 import {
   getEffectivePermissions
 } from "@/lib/permissions/hierarchical-permissions";

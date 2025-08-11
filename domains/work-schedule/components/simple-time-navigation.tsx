@@ -6,6 +6,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+import { safeFormatDate } from "@/lib/utils/date-utils";
 
 type ViewPeriod = "day" | "week" | "month";
 
@@ -29,13 +30,13 @@ export const SimpleTimeNavigation: React.FC<SimpleTimeNavigationProps> = ({
   const getPeriodLabel = (period: ViewPeriod, date: Date) => {
     switch (period) {
       case "day":
-        return format(date, "EEE, MMM d, yyyy");
+        return safeFormatDate(date, "dd MMM yyyy");
       case "week":
-        return `Week of ${format(date, "MMM d, yyyy")}`;
+        return `Week of ${safeFormatDate(date, "dd MMM yyyy")}`;
       case "month":
         return format(date, "MMM yyyy");
       default:
-        return format(date, "MMM d, yyyy");
+        return safeFormatDate(date, "dd MMM yyyy");
     }
   };
 
@@ -61,9 +62,9 @@ export const SimpleTimeNavigation: React.FC<SimpleTimeNavigationProps> = ({
     <div className={cn("space-y-3", className)}>
       {/* Period Selection */}
       <div className="flex justify-center">
-        <Tabs 
-          value={viewPeriod} 
-          onValueChange={(value) => onPeriodChange(value as ViewPeriod)}
+        <Tabs
+          value={viewPeriod}
+          onValueChange={value => onPeriodChange(value as ViewPeriod)}
         >
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="day" className="text-xs">
@@ -94,8 +95,12 @@ export const SimpleTimeNavigation: React.FC<SimpleTimeNavigationProps> = ({
 
         <div className="flex-1 text-center min-w-0 px-2">
           <div className="text-sm font-semibold">
-            <span className="hidden sm:inline">{getPeriodLabel(viewPeriod, currentDate)}</span>
-            <span className="sm:hidden">{getPeriodLabelMobile(viewPeriod, currentDate)}</span>
+            <span className="hidden sm:inline">
+              {getPeriodLabel(viewPeriod, currentDate)}
+            </span>
+            <span className="sm:hidden">
+              {getPeriodLabelMobile(viewPeriod, currentDate)}
+            </span>
           </div>
         </div>
 

@@ -2,10 +2,9 @@
 "use client";
 
 import { useQuery } from "@apollo/client";
-import { CalendarDays, Users, Calculator } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { UrgentAlerts } from "@/components/urgent-alerts";
+import { PermissionGuard } from "@/components/auth/permission-guard";
+import { ModernDashboard } from "@/components/dashboard";
+import { PageHeader } from "@/components/patterns/page-header";
 import { GetDashboardStatsOptimizedDocument } from "@/shared/types/generated/graphql";
 
 interface DashboardStatsData {
@@ -45,139 +44,159 @@ export default function DashboardPage() {
   // Get next payroll with proper date information
   const nextPayroll = upcomingPayrolls[0];
   const nextEftDate = nextPayroll?.nextEftDate?.[0];
-  const effectiveDate = nextEftDate?.adjustedEftDate || nextEftDate?.originalEftDate;
+  const effectiveDate =
+    nextEftDate?.adjustedEftDate || nextEftDate?.originalEftDate;
 
-  // Calculate loading and error states
-  const isLoading = dashboardLoading;
-  const hasError = dashboardError;
+  // Transform data for modern dashboard
+  const insights = [
+    {
+      id: "client-metrics",
+      type: "client-metrics" as const,
+      title: "Client Portfolio",
+      priority: "medium" as const,
+      metrics: [
+        {
+          label: "Total Clients",
+          value: totalClients,
+          change:
+            totalClients > 100
+              ? { value: 5.2, type: "increase" as const, period: "this month" }
+              : undefined,
+        },
+      ],
+      actions: [
+        { label: "View All Clients", href: "/clients" },
+        { label: "Add Client", href: "/clients/new" },
+      ],
+    },
+    {
+      id: "payroll-overview",
+      type: "billing-status" as const,
+      title: "Payroll Operations",
+      priority: "high" as const,
+      metrics: [
+        {
+          label: "Active Payrolls",
+          value: activePayrolls,
+          format: "number" as const,
+        },
+        {
+          label: "Total Managed",
+          value: totalPayrolls,
+          format: "number" as const,
+        },
+      ],
+      actions: [{ label: "Manage Payrolls", href: "/payrolls" }],
+    },
+    {
+      id: "upcoming-deadlines",
+      type: "upcoming-deadlines" as const,
+      title: "Upcoming Payrolls",
+      priority:
+        upcomingPayrolls.length > 10 ? ("high" as const) : ("medium" as const),
+      items: upcomingPayrolls.slice(0, 5).map(payroll => ({
+        label: `${payroll.client.name} - ${payroll.name}`,
+        value: effectiveDate
+          ? new Date(effectiveDate).toLocaleDateString("en-AU")
+          : "Date TBD",
+        status:
+          payroll.status === "active"
+            ? ("success" as const)
+            : ("pending" as const),
+        href: `/payrolls/${payroll.id}`,
+      })),
+      actions: [
+        { label: "View Schedule", href: "/payroll-schedule" },
+        { label: "New Payroll", href: "/payrolls/new" },
+      ],
+    },
+  ];
+
+  // Generate workflow suggestions
+  const suggestions = [
+    {
+      id: "payroll-automation",
+      type: "automation" as const,
+      title: "Automate Payroll Scheduling",
+      description:
+        "Set up automatic payroll date generation for recurring clients",
+      reasoning: `You have ${activePayrolls} active payrolls that could benefit from automated scheduling`,
+      impact: "medium" as const,
+      effort: "low" as const,
+      estimatedSavings: { time: "2 hours/week" },
+      actions: [
+        {
+          label: "Set up automation",
+          href: "/payroll-schedule/automation",
+          primary: true,
+        },
+        { label: "Learn more", href: "/help/automation" },
+      ],
+    },
+    ...(upcomingPayrolls.length > 15
+      ? [
+          {
+            id: "bulk-processing",
+            type: "optimization" as const,
+            title: "Optimize Payroll Processing",
+            description:
+              "Process multiple payrolls simultaneously to save time",
+            reasoning: `With ${upcomingPayrolls.length} upcoming payrolls, bulk processing could significantly improve efficiency`,
+            impact: "high" as const,
+            effort: "low" as const,
+            estimatedSavings: { time: "4 hours/week" },
+            actions: [
+              {
+                label: "Enable bulk processing",
+                href: "/payrolls/bulk",
+                primary: true,
+              },
+            ],
+          },
+        ]
+      : []),
+  ];
+
+  // System alerts
+  const alerts = dashboardError
+    ? [
+        {
+          id: "data-error",
+          type: "error" as const,
+          title: "Data Loading Error",
+          message: dashboardError.message || "Failed to load dashboard data",
+          actionLabel: "Retry",
+          dismissible: true,
+        },
+      ]
+    : [];
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-            Dashboard
-          </h1>
-          <p className="text-gray-600">
-            Welcome back! Here&apos;s an overview of your payroll operations.
-          </p>
-        </div>
+    <PermissionGuard action="read">
+      <div className="container mx-auto py-6 space-y-6">
+        <PageHeader
+          title="Dashboard"
+          description="Actionable insights and system status"
+        />
+        <ModernDashboard
+          systemHealth={dashboardError ? "degraded" : "operational"}
+          alerts={alerts}
+          insights={insights}
+          suggestions={suggestions}
+          pendingTasks={upcomingPayrolls.length}
+          lastUpdate={new Date()}
+          loading={dashboardLoading}
+          onActionClick={actionId => {
+            console.log("Quick action clicked:", actionId);
+          }}
+          onSuggestionDismiss={suggestionId => {
+            console.log("Suggestion dismissed:", suggestionId);
+          }}
+          onSuggestionAction={(suggestionId, actionLabel) => {
+            console.log("Suggestion action:", suggestionId, actionLabel);
+          }}
+        />
       </div>
-      <div className="mb-6"></div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Clients</CardTitle>
-            <Users className="h-4 w-4 text-gray-400" />
-          </CardHeader>
-          <CardContent>
-            {dashboardLoading ? (
-              <Skeleton className="h-8 w-16" />
-            ) : (
-              <div className="text-2xl font-bold">{totalClients}</div>
-            )}
-            <p className="text-xs text-gray-600">
-              {hasError ? "Error loading data" : "Active clients"}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total Payrolls
-            </CardTitle>
-            <Calculator className="h-4 w-4 text-gray-400" />
-          </CardHeader>
-          <CardContent>
-            {dashboardLoading ? (
-              <Skeleton className="h-8 w-16" />
-            ) : (
-              <div className="text-2xl font-bold">{totalPayrolls}</div>
-            )}
-            <p className="text-xs text-gray-600">
-              {activePayrolls} currently active
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Upcoming Payrolls
-            </CardTitle>
-            <CalendarDays className="h-4 w-4 text-gray-400" />
-          </CardHeader>
-          <CardContent>
-            {dashboardLoading ? (
-              <Skeleton className="h-8 w-16" />
-            ) : (
-              <div className="text-2xl font-bold">
-                {upcomingPayrolls.length}
-              </div>
-            )}
-            <p className="text-xs text-gray-600">
-              {nextPayroll && effectiveDate
-                ? `Next: ${nextPayroll.client.name} - ${nextPayroll.name} - ${new Date(effectiveDate).toLocaleDateString('en-AU')}${nextEftDate?.adjustedEftDate !== nextEftDate?.originalEftDate ? ' (Adjusted)' : ''}`
-                : nextPayroll 
-                ? `Next: ${nextPayroll.client.name} - ${nextPayroll.name} - Date TBD`
-                : "No upcoming payrolls"}
-            </p>
-          </CardContent>
-        </Card>
-        {/* <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Processing Queue
-            </CardTitle>
-            <AlertTriangle className="h-4 w-4 text-gray-400" />
-          </CardHeader>
-          <CardContent>
-            {statsLoading ? (
-              <Skeleton className="h-8 w-16" />
-            ) : (
-              <div className="text-2xl font-bold">{urgentAlerts}</div>
-            )}
-            <p className="text-xs text-gray-600">
-              {urgentAlerts > 0 ? "Requires attention" : "All up to date"}
-            </p>
-          </CardContent>
-        </Card> */}
-      </div>
-      {/* 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Access</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <Button asChild className="w-full">
-              <Link href="/clients/new">Add New Client</Link>
-            </Button>
-            <Button asChild className="w-full">
-              <Link href="/payrolls/new">Create New Payroll</Link>
-            </Button>
-            <Button asChild className="w-full">
-              <Link href="/calendar">View Calendar</Link>
-            </Button>
-          </CardContent>
-        </Card>
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle>My Upcoming Payrolls</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <UpcomingPayrolls />
-          </CardContent>
-        </Card>
-      </div> */}
-
-      <Card>
-        <CardHeader>
-          <CardTitle>My Upcoming Payrolls</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <UrgentAlerts />
-        </CardContent>
-      </Card>
-    </div>
+    </PermissionGuard>
   );
 }

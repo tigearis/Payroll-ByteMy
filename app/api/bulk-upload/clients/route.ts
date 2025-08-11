@@ -5,19 +5,22 @@
  * Supports validation, error handling, and progress tracking
  */
 
-import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { CreateClientDocument } from "@/domains/clients/graphql/generated/graphql";
+import { 
+  withErrorHandling, 
+  successResponse, 
+  errorResponse,
+  requirePermissions 
+} from "@/lib/api/route-helpers";
 import { serverApolloClient } from "@/lib/apollo/unified-client";
 import { auditLogger } from "@/lib/audit/audit-logger";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
+import { ClientSchemas } from "@/lib/validation/shared-schemas";
 
-// CSV validation schema
-const ClientCsvSchema = z.object({
-  name: z.string().min(1, "Client name is required"),
-  contactPerson: z.string().optional(),
-  contactEmail: z.string().email().optional().or(z.literal("")),
-  contactPhone: z.string().optional(),
+// CSV validation schema - extends shared schema for bulk upload
+const ClientCsvSchema = ClientSchemas.createClient.extend({
   active: z
     .string()
     .transform(
@@ -49,78 +52,49 @@ interface UploadResult {
  *
  * Process CSV file for bulk client creation
  */
-export async function POST(request: NextRequest) {
-  try {
-    // Authentication check
-    const { userId, sessionClaims } = await auth();
-    if (!userId) {
-      return NextResponse.json(
-        { error: "Authentication required" },
-        { status: 401 }
-      );
-    }
+export const POST = withErrorHandling(async (request: NextRequest) => {
+  // Authentication and permission check
+  const { userId } = await requirePermissions(["manager", "org_admin", "developer"]);
 
-    // Authorization check - require manager or higher
-    const userRole = (sessionClaims as any)?.metadata?.role as string;
-    if (
-      !userRole ||
-      !["manager", "org_admin", "developer"].includes(userRole)
-    ) {
-      return NextResponse.json(
-        { error: "Insufficient permissions for bulk upload" },
-        { status: 403 }
-      );
-    }
+  // Parse multipart form data
+  const formData = await request.formData();
+  const file = formData.get("file") as File;
 
-    // Parse multipart form data
-    const formData = await request.formData();
-    const file = formData.get("file") as File;
+  if (!file) {
+    return errorResponse("No file provided", 400);
+  }
 
-    if (!file) {
-      return NextResponse.json({ error: "No file provided" }, { status: 400 });
-    }
+  // Validate file type
+  if (!file.name.endsWith(".csv")) {
+    return errorResponse("Only CSV files are supported", 400);
+  }
 
-    // Validate file type
-    if (!file.name.endsWith(".csv")) {
-      return NextResponse.json(
-        { error: "Only CSV files are supported" },
-        { status: 400 }
-      );
-    }
+  // Read and parse CSV
+  const csvText = await file.text();
+  const lines = csvText.split("\n").filter(line => line.trim());
 
-    // Read and parse CSV
-    const csvText = await file.text();
-    const lines = csvText.split("\n").filter(line => line.trim());
+  if (lines.length < 2) {
+    return errorResponse("CSV file must have at least a header row and one data row", 400);
+  }
 
-    if (lines.length < 2) {
-      return NextResponse.json(
-        { error: "CSV file must have at least a header row and one data row" },
-        { status: 400 }
-      );
-    }
+  // Parse header
+  const header = lines[0].split(",").map(h => h.trim().toLowerCase());
+  const expectedHeaders = [
+    "name",
+    "contactperson",
+    "contactemail",
+    "contactphone",
+    "active",
+  ];
 
-    // Parse header
-    const header = lines[0].split(",").map(h => h.trim().toLowerCase());
-    const expectedHeaders = [
-      "name",
-      "contactperson",
-      "contactemail",
-      "contactphone",
-      "active",
-    ];
-
-    // Validate headers
-    const missingHeaders = expectedHeaders.filter(h => !header.includes(h));
-    if (missingHeaders.length > 0) {
-      return NextResponse.json(
-        {
-          error: `Missing required headers: ${missingHeaders.join(", ")}`,
-          expectedHeaders,
-          receivedHeaders: header,
-        },
-        { status: 400 }
-      );
-    }
+  // Validate headers
+  const missingHeaders = expectedHeaders.filter(h => !header.includes(h));
+  if (missingHeaders.length > 0) {
+    return errorResponse(
+      `Missing required headers: ${missingHeaders.join(", ")}`,
+      400
+    );
+  }
 
     // Process data rows
     const results: UploadResult = {
@@ -235,19 +209,8 @@ export async function POST(request: NextRequest) {
       results.message = "No clients were created";
     }
 
-    return NextResponse.json(results);
-  } catch (error) {
-    console.error("Bulk client upload error:", error);
-
-    return NextResponse.json(
-      {
-        error: "Failed to process bulk upload",
-        details: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 }
-    );
-  }
-}
+  return successResponse(results, results.message);
+});
 
 /**
  * GET /api/bulk-upload/clients

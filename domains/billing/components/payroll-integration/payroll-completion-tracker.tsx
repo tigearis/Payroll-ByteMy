@@ -13,7 +13,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import Link from "next/link";
-import React, { useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { PermissionGuard } from "@/components/auth/permission-guard";
 import { Badge } from "@/components/ui/badge";
@@ -25,65 +25,83 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import { useDatabaseUserId } from "@/hooks/use-database-user-id";
-import { PayrollCompletionMetricsForm } from "./payroll-completion-metrics-form";
-import { 
+import {
   GetPayrollDatesWithBillingStatusDocumentDocument,
   GetPayrollCompletionStatsDocumentDocument,
-  GenerateBillingFromPayrollDateDocumentDocument
+  GenerateBillingFromPayrollDateDocumentDocument,
 } from "../../graphql/generated/graphql";
+import { PayrollCompletionMetricsForm } from "./payroll-completion-metrics-form";
 
 export function PayrollCompletionTracker() {
   const { databaseUserId } = useDatabaseUserId();
   const [selectedPayrollDate, setSelectedPayrollDate] = useState<any>(null);
   const [isMetricsDialogOpen, setIsMetricsDialogOpen] = useState(false);
-  
+
   // Real GraphQL queries re-enabled - get all recent payroll dates
-  const { data: payrollDatesData, loading: payrollDatesLoading, refetch } = useQuery(GetPayrollDatesWithBillingStatusDocumentDocument, {
+  const {
+    data: payrollDatesData,
+    loading: payrollDatesLoading,
+    refetch,
+  } = useQuery(GetPayrollDatesWithBillingStatusDocumentDocument, {
     variables: {
       limit: 50,
       offset: 0,
       // Remove status filter to get all payroll dates
-      includeCompleted: true
+      includeCompleted: true,
     },
-    fetchPolicy: "cache-and-network"
-  });
-  
-  const { data: statsData } = useQuery(GetPayrollCompletionStatsDocumentDocument, {
-    fetchPolicy: "cache-and-network"
-  });
-  
-  const [generateBilling] = useMutation(GenerateBillingFromPayrollDateDocumentDocument, {
-    onCompleted: () => {
-      toast.success('Billing generated successfully');
-      refetch();
-    },
-    onError: (error) => {
-      toast.error(`Failed to generate billing: ${error.message}`);
-    }
+    fetchPolicy: "cache-and-network",
   });
 
+  const { data: statsData } = useQuery(
+    GetPayrollCompletionStatsDocumentDocument,
+    {
+      fetchPolicy: "cache-and-network",
+    }
+  );
+
+  const [generateBilling] = useMutation(
+    GenerateBillingFromPayrollDateDocumentDocument,
+    {
+      onCompleted: () => {
+        toast.success("Billing generated successfully");
+        refetch();
+      },
+      onError: error => {
+        toast.error(`Failed to generate billing: ${error.message}`);
+      },
+    }
+  );
 
   const payrollDates = payrollDatesData?.payrollDates || [];
 
   // Calculate real statistics from the data
-  const completedCount = statsData?.completedPayrollDates?.aggregate?.count || 0;
+  const completedCount =
+    statsData?.completedPayrollDates?.aggregate?.count || 0;
   const pendingCount = statsData?.pendingPayrollDates?.aggregate?.count || 0;
-  const readyForBillingCount = statsData?.readyForBilling?.aggregate?.count || 0;
-  const billingGeneratedCount = statsData?.billingGenerated?.aggregate?.count || 0;
-  
+  const readyForBillingCount =
+    statsData?.readyForBilling?.aggregate?.count || 0;
+  const billingGeneratedCount =
+    statsData?.billingGenerated?.aggregate?.count || 0;
+
   const totalCount = completedCount + pendingCount;
-  const completionRate = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
-  
+  const completionRate =
+    totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
+
   // Handle billing generation
   const handleGenerateBilling = async (payrollDateId: string) => {
     if (!databaseUserId) {
       toast.error("User authentication required");
       return;
     }
-    
+
     try {
       await generateBilling({
         variables: {
@@ -122,8 +140,9 @@ export function PayrollCompletionTracker() {
 
   const getStatusBadge = (payrollDate: any) => {
     const status = payrollDate.status;
-    const billingGenerated = (payrollDate.billingItems?.aggregate?.count || 0) > 0;
-    
+    const billingGenerated =
+      (payrollDate.billingItems?.aggregate?.count || 0) > 0;
+
     if (status === "completed") {
       if (billingGenerated) {
         return (
@@ -174,11 +193,15 @@ export function PayrollCompletionTracker() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Completion Rate
+            </CardTitle>
             <CheckCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{completionRate.toFixed(0)}%</div>
+            <div className="text-2xl font-bold">
+              {completionRate.toFixed(0)}%
+            </div>
             <Progress value={completionRate} className="mt-2" />
             <p className="text-xs text-muted-foreground mt-2">
               {completedCount} of {totalCount} payrolls completed
@@ -188,11 +211,15 @@ export function PayrollCompletionTracker() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Completion</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Pending Completion
+            </CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">{pendingCount}</div>
+            <div className="text-2xl font-bold text-yellow-600">
+              {pendingCount}
+            </div>
             <p className="text-xs text-muted-foreground mt-2">
               Payroll dates awaiting completion
             </p>
@@ -225,7 +252,7 @@ export function PayrollCompletionTracker() {
                 Track payroll date completions and billing generation
               </CardDescription>
             </div>
-            <PermissionGuard resource="payrolls" action="read">
+            <PermissionGuard action="read">
               <Button variant="outline" asChild>
                 <Link href="/payrolls">
                   <Calendar className="w-4 h-4 mr-2" />
@@ -238,7 +265,8 @@ export function PayrollCompletionTracker() {
         <CardContent>
           <div className="space-y-4">
             {payrollDates.map((payrollDate: any) => {
-              const billingGenerated = (payrollDate.billingItems?.aggregate?.count || 0) > 0;
+              const billingGenerated =
+                (payrollDate.billingItems?.aggregate?.count || 0) > 0;
               return (
                 <div
                   key={payrollDate.id}
@@ -248,7 +276,9 @@ export function PayrollCompletionTracker() {
                     {getStatusIcon(payrollDate.status)}
                     <div className="flex-1">
                       <div className="flex items-center space-x-2">
-                        <h4 className="font-medium">{payrollDate.payroll?.name}</h4>
+                        <h4 className="font-medium">
+                          {payrollDate.payroll?.name}
+                        </h4>
                         <ArrowRight className="h-3 w-3 text-gray-400" />
                         <span className="text-sm text-gray-600">
                           {payrollDate.payroll?.client?.name}
@@ -256,11 +286,17 @@ export function PayrollCompletionTracker() {
                       </div>
                       <div className="flex items-center space-x-4 mt-1">
                         <span className="text-sm text-gray-500">
-                          EFT Date: {new Date(payrollDate.adjustedEftDate).toLocaleDateString()}
+                          EFT Date:{" "}
+                          {new Date(
+                            payrollDate.adjustedEftDate
+                          ).toLocaleDateString()}
                         </span>
                         {payrollDate.completedAt && (
                           <span className="text-sm text-gray-500">
-                            Completed: {new Date(payrollDate.completedAt).toLocaleDateString()}
+                            Completed:{" "}
+                            {new Date(
+                              payrollDate.completedAt
+                            ).toLocaleDateString()}
                           </span>
                         )}
                         {payrollDate.completedByUser && (
@@ -273,12 +309,12 @@ export function PayrollCompletionTracker() {
                   </div>
                   <div className="flex items-center space-x-3">
                     {getStatusBadge(payrollDate)}
-                    
+
                     {/* Tier 1 Metrics Button - New completion flow */}
                     {payrollDate.status !== "completed" && (
                       <PermissionGuard action="update">
-                        <Button 
-                          size="sm" 
+                        <Button
+                          size="sm"
                           variant="default"
                           onClick={() => handleOpenMetricsForm(payrollDate)}
                           className="bg-green-600 hover:bg-green-700"
@@ -288,41 +324,49 @@ export function PayrollCompletionTracker() {
                         </Button>
                       </PermissionGuard>
                     )}
-                    
+
                     {/* Show Tier 1 badge if metrics exist */}
                     {hasTier1Metrics(payrollDate) && (
-                      <Badge variant="outline" className="bg-purple-50 text-purple-700">
+                      <Badge
+                        variant="outline"
+                        className="bg-purple-50 text-purple-700"
+                      >
                         <TrendingUp className="w-3 h-3 mr-1" />
                         Tier 1
                       </Badge>
                     )}
-                    
+
                     {/* Update existing metrics button */}
-                    {payrollDate.status === "completed" && hasTier1Metrics(payrollDate) && (
-                      <PermissionGuard action="update">
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => handleOpenMetricsForm(payrollDate)}
-                        >
-                          <Calculator className="w-3 h-3 mr-1" />
-                          Update Metrics
-                        </Button>
-                      </PermissionGuard>
-                    )}
-                    
+                    {payrollDate.status === "completed" &&
+                      hasTier1Metrics(payrollDate) && (
+                        <PermissionGuard action="update">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleOpenMetricsForm(payrollDate)}
+                          >
+                            <Calculator className="w-3 h-3 mr-1" />
+                            Update Metrics
+                          </Button>
+                        </PermissionGuard>
+                      )}
+
                     {/* Legacy billing generation for non-Tier 1 payrolls */}
-                    {payrollDate.status === "completed" && !billingGenerated && !hasTier1Metrics(payrollDate) && (
-                      <PermissionGuard action="create">
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => handleGenerateBilling(payrollDate.id)}
-                        >
-                          Generate Billing
-                        </Button>
-                      </PermissionGuard>
-                    )}
+                    {payrollDate.status === "completed" &&
+                      !billingGenerated &&
+                      !hasTier1Metrics(payrollDate) && (
+                        <PermissionGuard action="create">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() =>
+                              handleGenerateBilling(payrollDate.id)
+                            }
+                          >
+                            Generate Billing
+                          </Button>
+                        </PermissionGuard>
+                      )}
                   </div>
                 </div>
               );
@@ -346,7 +390,9 @@ export function PayrollCompletionTracker() {
       {/* Integration Status */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Automated Billing Integration</CardTitle>
+          <CardTitle className="text-lg">
+            Automated Billing Integration
+          </CardTitle>
           <CardDescription>
             How payroll completion triggers billing generation
           </CardDescription>
@@ -362,11 +408,12 @@ export function PayrollCompletionTracker() {
               <div>
                 <h4 className="font-medium">Tier 1 Completion Metrics</h4>
                 <p className="text-sm text-gray-600">
-                  Capture detailed deliverables and complexity for outcome-based billing
+                  Capture detailed deliverables and complexity for outcome-based
+                  billing
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-4 p-3 bg-blue-50 rounded-lg">
               <div className="flex-shrink-0">
                 <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
@@ -376,11 +423,12 @@ export function PayrollCompletionTracker() {
               <div>
                 <h4 className="font-medium">Immediate Revenue Recognition</h4>
                 <p className="text-sm text-gray-600">
-                  Billing generated instantly based on actual deliverables and service rates
+                  Billing generated instantly based on actual deliverables and
+                  service rates
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-4 p-3 bg-purple-50 rounded-lg">
               <div className="flex-shrink-0">
                 <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
@@ -390,7 +438,8 @@ export function PayrollCompletionTracker() {
               <div>
                 <h4 className="font-medium">Smart Approval Workflows</h4>
                 <p className="text-sm text-gray-600">
-                  Auto-approval for standard services, escalation for complex deliverables
+                  Auto-approval for standard services, escalation for complex
+                  deliverables
                 </p>
               </div>
             </div>
@@ -407,9 +456,16 @@ export function PayrollCompletionTracker() {
           {selectedPayrollDate && (
             <PayrollCompletionMetricsForm
               payrollDateId={selectedPayrollDate.id}
-              payrollName={selectedPayrollDate.payroll?.name || "Unknown Payroll"}
-              clientName={selectedPayrollDate.payroll?.client?.name || "Unknown Client"}
-              eftDate={selectedPayrollDate.adjustedEftDate || selectedPayrollDate.originalEftDate}
+              payrollName={
+                selectedPayrollDate.payroll?.name || "Unknown Payroll"
+              }
+              clientName={
+                selectedPayrollDate.payroll?.client?.name || "Unknown Client"
+              }
+              eftDate={
+                selectedPayrollDate.adjustedEftDate ||
+                selectedPayrollDate.originalEftDate
+              }
               onComplete={handleMetricsComplete}
             />
           )}

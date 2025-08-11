@@ -2,10 +2,11 @@
 "use client";
 
 import { useMutation } from "@apollo/client";
-import { ArrowLeft, Save } from "lucide-react";
-import Link from "next/link";
+import { Save } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { PermissionGuard } from "@/components/auth/permission-guard";
+import { PageHeader } from "@/components/patterns/page-header";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -27,6 +28,7 @@ import {
   PayrollFormData,
 } from "@/domains/payrolls/components/payroll-form";
 import { CreatePayrollDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import { useAsyncState } from "@/lib/components/loading-error-boundary";
 
 export default function NewClientPage() {
   const router = useRouter();
@@ -60,8 +62,10 @@ export default function NewClientPage() {
   });
 
   const [createPayroll, setCreatePayroll] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [isPayrollValid, setIsPayrollValid] = useState(false);
+  
+  // Use DRY loading state management
+  const { loading: isLoading, error: submitError, execute: executeSubmit } = useAsyncState();
 
   // GraphQL operations
   const [createClient] = useMutation(CreateClientDocument, {
@@ -96,9 +100,7 @@ export default function NewClientPage() {
       return;
     }
 
-    setIsLoading(true);
-
-    try {
+    await executeSubmit(async () => {
       // Create client first
       const clientResult = await createClient({
         variables: {
@@ -150,200 +152,194 @@ export default function NewClientPage() {
 
       // Redirect to the newly created client's detail page
       router.push(`/clients/${newClientId}`);
-    } catch (error) {
-      console.error("Error creating client/payroll:", error);
-      setIsLoading(false);
-    }
+    });
   };
 
   return (
     <div className="container mx-auto py-6 space-y-6">
       {/* Header */}
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-          <Link href="/clients">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Clients
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Add New Client</h1>
-            <p className="text-gray-500">
-              Create a new client and optionally set up their payroll
-            </p>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        title="Add New Client"
+        description="Create a new client and optionally set up their payroll"
+        breadcrumbs={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Clients", href: "/clients" },
+          { label: "New" },
+        ]}
+      />
 
       {/* Create Client Form with Tabs */}
-      <form onSubmit={handleSubmit}>
-        <Tabs
-          value={activeTab}
-          onValueChange={setActiveTab}
-          className="space-y-4"
-        >
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="details">Client Details</TabsTrigger>
-            <TabsTrigger value="payroll">Payroll Setup</TabsTrigger>
-          </TabsList>
+      <PermissionGuard action="create">
+        <form onSubmit={handleSubmit}>
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="space-y-4"
+          >
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="details">Client Details</TabsTrigger>
+              <TabsTrigger value="payroll">Payroll Setup</TabsTrigger>
+            </TabsList>
 
-          {/* Client Details Tab */}
-          <TabsContent value="details">
-            <Card>
-              <CardHeader>
-                <CardTitle>Client Information</CardTitle>
-                <CardDescription>
-                  Enter the basic information about the client.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="client-name">Client Name *</Label>
-                  <Input
-                    id="client-name"
-                    placeholder="Enter client name..."
-                    value={formData.name}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      handleInputChange("name", e.target.value)
-                    }
-                    className="mt-1"
-                    disabled={isLoading}
-                    required
-                  />
-                </div>
+            {/* Client Details Tab */}
+            <TabsContent value="details">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Client Information</CardTitle>
+                  <CardDescription>
+                    Enter the basic information about the client.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label htmlFor="client-name">Client Name *</Label>
+                    <Input
+                      id="client-name"
+                      placeholder="Enter client name..."
+                      value={formData.name}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleInputChange("name", e.target.value)
+                      }
+                      className="mt-1"
+                      disabled={isLoading}
+                      required
+                    />
+                  </div>
 
-                <div>
-                  <Label htmlFor="contact-person">Contact Person</Label>
-                  <Input
-                    id="contact-person"
-                    placeholder="Enter contact person name..."
-                    value={formData.contact_person}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      handleInputChange("contact_person", e.target.value)
-                    }
-                    className="mt-1"
-                    disabled={isLoading}
-                  />
-                </div>
+                  <div>
+                    <Label htmlFor="contact-person">Contact Person</Label>
+                    <Input
+                      id="contact-person"
+                      placeholder="Enter contact person name..."
+                      value={formData.contact_person}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleInputChange("contact_person", e.target.value)
+                      }
+                      className="mt-1"
+                      disabled={isLoading}
+                    />
+                  </div>
 
-                <div>
-                  <Label htmlFor="contact-email">Contact Email</Label>
-                  <Input
-                    id="contact-email"
-                    type="email"
-                    placeholder="Enter contact email..."
-                    value={formData.contact_email}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      handleInputChange("contact_email", e.target.value)
-                    }
-                    className="mt-1"
-                    disabled={isLoading}
-                  />
-                </div>
+                  <div>
+                    <Label htmlFor="contact-email">Contact Email</Label>
+                    <Input
+                      id="contact-email"
+                      type="email"
+                      placeholder="Enter contact email..."
+                      value={formData.contact_email}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleInputChange("contact_email", e.target.value)
+                      }
+                      className="mt-1"
+                      disabled={isLoading}
+                    />
+                  </div>
 
-                <div>
-                  <Label htmlFor="contact-phone">Contact Phone</Label>
-                  <Input
-                    id="contact-phone"
-                    placeholder="Enter contact phone..."
-                    value={formData.contact_phone}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      handleInputChange("contact_phone", e.target.value)
-                    }
-                    className="mt-1"
-                    disabled={isLoading}
-                  />
-                </div>
+                  <div>
+                    <Label htmlFor="contact-phone">Contact Phone</Label>
+                    <Input
+                      id="contact-phone"
+                      placeholder="Enter contact phone..."
+                      value={formData.contact_phone}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleInputChange("contact_phone", e.target.value)
+                      }
+                      className="mt-1"
+                      disabled={isLoading}
+                    />
+                  </div>
 
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="active"
-                    checked={formData.active}
-                    onCheckedChange={(checked: boolean) =>
-                      handleInputChange("active", checked)
-                    }
-                    disabled={isLoading}
-                  />
-                  <Label
-                    htmlFor="active"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    Active client
-                  </Label>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="active"
+                      checked={formData.active}
+                      onCheckedChange={(checked: boolean) =>
+                        handleInputChange("active", checked)
+                      }
+                      disabled={isLoading}
+                    />
+                    <Label
+                      htmlFor="active"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Active client
+                    </Label>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-          {/* Payroll Setup Tab */}
-          <TabsContent value="payroll" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Payroll Setup (Optional)</CardTitle>
-                <CardDescription>
-                  Optionally create a payroll for this client. Choose from
-                  weekly, fortnightly, bi-monthly, monthly, or quarterly cycles
-                  with automatic business day adjustments.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="create-payroll"
-                    checked={createPayroll}
-                    onCheckedChange={setCreatePayroll}
-                    disabled={isLoading}
-                  />
-                  <Label
-                    htmlFor="create-payroll"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    Create payroll for this client
-                  </Label>
-                </div>
-              </CardContent>
-            </Card>
+            {/* Payroll Setup Tab */}
+            <TabsContent value="payroll" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Payroll Setup (Optional)</CardTitle>
+                  <CardDescription>
+                    Optionally create a payroll for this client. Choose from
+                    weekly, fortnightly, bi-monthly, monthly, or quarterly
+                    cycles with automatic business day adjustments.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="create-payroll"
+                      checked={createPayroll}
+                      onCheckedChange={setCreatePayroll}
+                      disabled={isLoading}
+                    />
+                    <Label
+                      htmlFor="create-payroll"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Create payroll for this client
+                    </Label>
+                  </div>
+                </CardContent>
+              </Card>
 
-            {createPayroll && (
-              <PayrollForm
-                formData={payrollData}
-                onInputChange={handlePayrollInputChange}
-                onValidationChange={setIsPayrollValid}
-                isLoading={isLoading}
-                showClientField={false}
-                title="Payroll Configuration"
-                description="Set up payroll schedule and assignments for this client"
-              />
-            )}
-          </TabsContent>
+              {createPayroll && (
+                <PayrollForm
+                  formData={payrollData}
+                  onInputChange={handlePayrollInputChange}
+                  onValidationChange={setIsPayrollValid}
+                  isLoading={isLoading}
+                  showClientField={false}
+                  title="Payroll Configuration"
+                  description="Set up payroll schedule and assignments for this client"
+                />
+              )}
+            </TabsContent>
 
-          {/* Form Actions */}
-          <div className="flex justify-between">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => router.push("/clients")}
-              disabled={isLoading}
-            >
-              Cancel
-            </Button>
-            {createPayroll && (
+            {/* Form Actions */}
+            <div className="flex justify-between">
               <Button
-                type="submit"
-                disabled={isLoading || !formData.name.trim() || !isPayrollValid}
+                type="button"
+                variant="outline"
+                onClick={() => router.push("/clients")}
+                disabled={isLoading}
               >
-                {isLoading ? (
-                  <div className="w-4 h-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                ) : (
-                  <Save className="w-4 h-4 mr-2" />
-                )}
-                {isLoading ? "Creating..." : "Create Client & Payroll"}
+                Cancel
               </Button>
-            )}
-          </div>
-        </Tabs>
-      </form>
+              {createPayroll && (
+                <Button
+                  type="submit"
+                  disabled={
+                    isLoading || !formData.name.trim() || !isPayrollValid
+                  }
+                >
+                  {isLoading ? (
+                    <div className="w-4 h-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  ) : (
+                    <Save className="w-4 h-4 mr-2" />
+                  )}
+                  {isLoading ? "Creating..." : "Create Client & Payroll"}
+                </Button>
+              )}
+            </div>
+          </Tabs>
+        </form>
+      </PermissionGuard>
     </div>
   );
 }

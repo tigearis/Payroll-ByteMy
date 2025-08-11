@@ -7,6 +7,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { contextExtractor, type ExtractedContext } from "@/lib/ai/context-extractor";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 /**
  * GET /api/ai-assistant/context

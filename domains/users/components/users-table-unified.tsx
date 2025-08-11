@@ -2,13 +2,13 @@
 
 import { Shield, UserCheck, Eye, Edit, UserX, Mail } from "lucide-react";
 import { memo } from "react";
+import {
+  ModernDataTable,
+  type ColumnDef,
+  type RowAction,
+} from "@/components/data/modern-data-table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import {
-  EnhancedUnifiedTable,
-  UnifiedTableColumn,
-  UnifiedTableAction,
-} from "@/components/ui/enhanced-unified-table";
 import { getRoleDisplayName } from "@/lib/utils/role-utils";
 
 // User data type (based on existing user structure)
@@ -48,9 +48,9 @@ interface UsersTableProps {
 // Helper functions for rendering cells
 const renderUserStatus = (isActive: boolean) => {
   const StatusIcon = isActive ? UserCheck : UserX;
-  const variant = isActive ? 'default' : 'destructive';
-  const status = isActive ? 'Active' : 'Inactive';
-  
+  const variant = isActive ? "default" : "destructive";
+  const status = isActive ? "Active" : "Inactive";
+
   return (
     <Badge variant={variant} className="flex items-center gap-1">
       <StatusIcon className="w-3 h-3" />
@@ -61,23 +61,23 @@ const renderUserStatus = (isActive: boolean) => {
 
 const renderUserRole = (role: string) => {
   const displayRole = getRoleDisplayName(role);
-  
+
   const getRoleVariant = (role: string) => {
     const normalizedRole = role?.toLowerCase();
-    if (['developer', 'org_admin'].includes(normalizedRole)) return 'default';
-    if (['manager'].includes(normalizedRole)) return 'secondary';
-    return 'outline';
+    if (["developer", "org_admin"].includes(normalizedRole)) return "default";
+    if (["manager"].includes(normalizedRole)) return "secondary";
+    return "outline";
   };
 
   const getRoleIcon = (role: string) => {
     const normalizedRole = role?.toLowerCase();
-    if (['developer', 'org_admin'].includes(normalizedRole)) return Shield;
-    if (['manager', 'consultant'].includes(normalizedRole)) return UserCheck;
+    if (["developer", "org_admin"].includes(normalizedRole)) return Shield;
+    if (["manager", "consultant"].includes(normalizedRole)) return UserCheck;
     return Eye;
   };
 
   const RoleIcon = getRoleIcon(role);
-  
+
   return (
     <Badge variant={getRoleVariant(role)} className="flex items-center gap-1">
       <RoleIcon className="w-3 h-3" />
@@ -88,13 +88,17 @@ const renderUserRole = (role: string) => {
 
 const renderUserAvatar = (user: User) => {
   const displayName = user.computedName || `${user.firstName} ${user.lastName}`;
-    
+
   return (
     <div className="flex items-center space-x-3">
       <Avatar className="h-8 w-8">
         <AvatarImage src={user.imageUrl} alt={displayName} />
         <AvatarFallback>
-          {displayName.split(" ").map((n: string) => n[0]).join("").toUpperCase()}
+          {displayName
+            .split(" ")
+            .map((n: string) => n[0])
+            .join("")
+            .toUpperCase()}
         </AvatarFallback>
       </Avatar>
       <div className="min-w-0">
@@ -119,35 +123,38 @@ function UsersTableUnifiedComponent({
   onViewUser,
 }: UsersTableProps) {
   // Column definitions
-  const columns: UnifiedTableColumn<User>[] = [
+  const columns: ColumnDef<User>[] = [
     {
-      accessorKey: "computedName",
-      header: "User",
-      type: "text",
+      id: "computedName",
+      key: "computedName",
+      label: "User",
+      essential: true,
       sortable: true,
-      render: (value, row) => renderUserAvatar(row),
+      render: (_value, row) => renderUserAvatar(row),
     },
     {
-      accessorKey: "role",
-      header: "Role",
-      type: "badge",
+      id: "role",
+      key: "role",
+      label: "Role",
+      essential: true,
       sortable: true,
-      render: (role) => renderUserRole(role),
+      render: role => renderUserRole(role),
     },
     {
-      accessorKey: "isActive",
-      header: "Status",
-      type: "badge",
+      id: "isActive",
+      key: "isActive",
+      label: "Status",
+      essential: true,
       sortable: true,
-      render: (active) => renderUserStatus(active),
+      render: active => renderUserStatus(active),
     },
     {
-      accessorKey: "isStaff",
-      header: "Staff Member",
-      type: "text",
+      id: "isStaff",
+      key: "isStaff",
+      label: "Staff Member",
+      essential: false,
       sortable: true,
-      align: "center",
-      render: (isStaff) => (
+      render: isStaff => (
         <div className="flex justify-center">
           {isStaff ? (
             <UserCheck className="w-4 h-4 text-green-600" />
@@ -158,14 +165,18 @@ function UsersTableUnifiedComponent({
       ),
     },
     {
-      accessorKey: "manager",
-      header: "Manager",
-      type: "text",
+      id: "manager",
+      key: "manager" as any,
+      label: "Manager",
+      essential: false,
       sortable: false,
-      render: (manager) =>
+      render: manager =>
         manager ? (
           <div className="text-sm">
-            <div className="font-medium">{manager.computedName || `${manager.firstName} ${manager.lastName}`}</div>
+            <div className="font-medium">
+              {manager.computedName ||
+                `${manager.firstName} ${manager.lastName}`}
+            </div>
             <div className="text-muted-foreground">{manager.email}</div>
           </div>
         ) : (
@@ -173,11 +184,12 @@ function UsersTableUnifiedComponent({
         ),
     },
     {
-      accessorKey: "email",
-      header: "Email",
-      type: "text",
+      id: "email",
+      key: "email",
+      label: "Email",
+      essential: false,
       sortable: true,
-      render: (email) => (
+      render: email => (
         <div className="flex items-center gap-2">
           <Mail className="w-4 h-4 text-gray-500" />
           <span>{email}</span>
@@ -185,23 +197,27 @@ function UsersTableUnifiedComponent({
       ),
     },
     {
-      accessorKey: "createdAt",
-      header: "Created",
-      type: "date",
+      id: "createdAt",
+      key: "createdAt",
+      label: "Created",
+      essential: false,
       sortable: true,
-      render: (date) => new Date(date).toLocaleDateString(),
+      render: date => new Date(date).toLocaleDateString(),
     },
     {
-      accessorKey: "updatedAt",
-      header: "Last Updated",
-      type: "date",
+      id: "updatedAt",
+      key: "updatedAt",
+      label: "Last Updated",
+      essential: false,
       sortable: true,
-      render: (date) => {
+      render: date => {
         const dateObj = new Date(date);
         return (
           <div className="text-sm">
             <div>{dateObj.toLocaleDateString()}</div>
-            <div className="text-muted-foreground">{dateObj.toLocaleTimeString()}</div>
+            <div className="text-muted-foreground">
+              {dateObj.toLocaleTimeString()}
+            </div>
           </div>
         );
       },
@@ -209,37 +225,33 @@ function UsersTableUnifiedComponent({
   ];
 
   // Action definitions
-  const actions: UnifiedTableAction<User>[] = [
+  const actions: RowAction<User>[] = [
     {
+      id: "view",
       label: "View Details",
       icon: Eye,
       onClick: (user: User) => {
-        if (onViewUser) {
-          onViewUser(user);
-        } else {
-          window.location.href = `/staff/${user.id}`;
-        }
+        if (onViewUser) onViewUser(user);
+        else window.location.href = `/staff/${user.id}`;
       },
     },
     {
+      id: "edit",
       label: "Edit User",
       icon: Edit,
       onClick: (user: User) => {
-        if (onEditUser) {
-          onEditUser(user);
-        } else {
-          console.log("Edit user:", user.id);
-        }
+        if (onEditUser) onEditUser(user);
+        else console.log("Edit user:", user.id);
       },
     },
     {
+      id: "email",
       label: "Send Email",
       icon: Mail,
-      onClick: (user: User) => {
-        window.open(`mailto:${user.email}`, "_blank");
-      },
+      onClick: (user: User) => window.open(`mailto:${user.email}`, "_blank"),
     },
     {
+      id: "profile",
       label: "View Profile",
       icon: UserCheck,
       onClick: (user: User) => {
@@ -249,22 +261,16 @@ function UsersTableUnifiedComponent({
   ];
 
   return (
-    <EnhancedUnifiedTable
+    <ModernDataTable<User>
       data={users}
       columns={columns}
       loading={loading}
-      emptyMessage="No users found. Add your first team member to get started."
-      selectable={false}
-      actions={actions}
-      title="Team Members"
-      searchable={true}
+      searchable
       searchPlaceholder="Search team members..."
-      {...(onRefresh && { onRefresh })}
-      refreshing={loading}
-      exportable={true}
-      onExport={(format) => {
-        console.log("Export users as:", format);
-      }}
+      rowActions={actions}
+      emptyState={
+        <div className="text-sm text-muted-foreground">No users found</div>
+      }
     />
   );
 }
@@ -296,7 +302,7 @@ function areUsersTablePropsEqual(
     if (prevProps.users.length !== nextProps.users.length) {
       return false;
     }
-    
+
     // For performance, do shallow comparison of users array
     // In most cases, users will be a new array reference when it changes
     return false;
@@ -310,17 +316,20 @@ function areUsersTablePropsEqual(
     if (prevProps.visibleColumns.length !== nextProps.visibleColumns.length) {
       return false;
     }
-    return JSON.stringify(prevProps.visibleColumns) === JSON.stringify(nextProps.visibleColumns);
+    return (
+      JSON.stringify(prevProps.visibleColumns) ===
+      JSON.stringify(nextProps.visibleColumns)
+    );
   }
 
   // Function callbacks typically change, but table behavior stays consistent
-  
+
   return true;
 }
 
 /**
  * Memoized UsersTableUnified Component
- * 
+ *
  * Prevents unnecessary re-renders when user data hasn't changed.
  * Optimized for large user lists and complex table interactions.
  */

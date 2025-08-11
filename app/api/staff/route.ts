@@ -13,6 +13,7 @@ import {
 } from "@/domains/users/graphql/generated/graphql";
 import { executeTypedQuery } from "@/lib/apollo/query-helpers";
 import { withAuth } from "@/lib/auth/api-auth";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 interface StaffFilters {
   search?: string | undefined;
@@ -52,7 +53,15 @@ async function handleStaffListRequest(
 ): Promise<NextResponse<StaffListResponse>> {
   try {
     // Debug session object to see what's available
-    console.log("🔍 Session object debug:", JSON.stringify(session, null, 2));
+    logger.debug('Session object debug', {
+      namespace: 'staff_api',
+      operation: 'handle_staff_list',
+      classification: DataClassification.INTERNAL,
+      metadata: {
+        sessionStructure: Object.keys(session),
+        timestamp: new Date().toISOString()
+      }
+    });
 
     // Check if user has staff access permissions - check multiple role fields
     const userRole =
@@ -63,11 +72,17 @@ async function handleStaffListRequest(
     const hasStaffAccess =
       userRole && ["developer", "org_admin", "manager"].includes(userRole);
 
-    console.log("🔍 Role check:", {
-      userRole,
-      hasStaffAccess,
-      sessionRole: session.role,
-      sessionDefaultRole: session.defaultRole,
+    logger.debug('Role check for staff access', {
+      namespace: 'staff_api',
+      operation: 'role_validation',
+      classification: DataClassification.INTERNAL,
+      metadata: {
+        userRole,
+        hasStaffAccess,
+        sessionRole: session.role,
+        sessionDefaultRole: session.defaultRole,
+        timestamp: new Date().toISOString()
+      }
     });
 
     if (!hasStaffAccess) {
@@ -258,7 +273,16 @@ async function handleStaffListRequest(
 
     return NextResponse.json(response);
   } catch (error: any) {
-    console.error("Staff listing error:", error);
+    logger.error('Staff listing error', {
+      namespace: 'staff_api',
+      operation: 'handle_staff_list',
+      classification: DataClassification.CONFIDENTIAL,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      metadata: {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+        timestamp: new Date().toISOString()
+      }
+    });
 
     return NextResponse.json<StaffListResponse>(
       {
@@ -325,7 +349,16 @@ export const POST = withAuth(async (req: NextRequest, session) => {
 
     return handleStaffListRequest(params, session);
   } catch (error: any) {
-    console.error("Failed to parse request body:", error);
+    logger.error('Failed to parse request body', {
+      namespace: 'staff_api',
+      operation: 'post_staff_list',
+      classification: DataClassification.INTERNAL,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      metadata: {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+        timestamp: new Date().toISOString()
+      }
+    });
     return NextResponse.json(
       {
         success: false,

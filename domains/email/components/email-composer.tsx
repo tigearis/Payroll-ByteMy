@@ -1,45 +1,62 @@
-'use client';
+"use client";
 
 // Email Composer Component
 // Security Classification: HIGH - Email composition with template support
 // SOC2 Compliance: Email creation audit and validation
 
-import { useMutation, useQuery } from '@apollo/client';
-import { 
-  Send, 
-  Save, 
-  Eye, 
-  Clock, 
+import { useMutation, useQuery } from "@apollo/client";
+import DOMPurify from "isomorphic-dompurify";
+import {
+  Send,
+  Save,
+  Eye,
+  Clock,
   Plus,
   Minus,
-  FileText,
-  Variable,
   Mail,
   AlertCircle,
-  CheckCircle,
-  Loader2
-} from 'lucide-react';
-import React, { useState, useEffect, useCallback } from 'react';
-import { toast } from 'sonner';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Textarea } from '@/components/ui/textarea';
+  Loader2,
+} from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import {
   GetEmailTemplatesDocument,
   CreateEmailDraftDocument,
   LogEmailSendDocument,
   type GetEmailTemplatesQuery,
   type CreateEmailDraftMutation,
-  type LogEmailSendMutation
-} from '../graphql/generated/graphql';
-import type { EmailCategory, EmailComposition } from '../types';
-import { EMAIL_CATEGORIES } from '../types/template-types';
+  type LogEmailSendMutation,
+} from "../graphql/generated/graphql";
+import type { EmailCategory, EmailComposition } from "../types";
+import { EMAIL_CATEGORIES } from "../types/template-types";
 
 interface EmailComposerProps {
   initialData?: {
@@ -64,53 +81,57 @@ interface EmailPreview {
   textContent?: string;
 }
 
-export function EmailComposer({ 
-  initialData, 
-  onSend, 
-  onSave, 
+export function EmailComposer({
+  initialData,
+  onSend,
+  onSave,
   onCancel,
-  className 
+  className,
 }: EmailComposerProps) {
   // Form state
-  const [selectedTemplateId, setSelectedTemplateId] = useState(initialData?.templateId || '');
-  const [category, setCategory] = useState<EmailCategory>(initialData?.businessContext?.category || 'system');
-  const [recipients, setRecipients] = useState<string[]>(initialData?.recipientEmails || ['']);
-  const [subject, setSubject] = useState(initialData?.subject || '');
-  const [htmlContent, setHtmlContent] = useState(initialData?.htmlContent || '');
-  const [textContent, setTextContent] = useState('');
+  const [selectedTemplateId, setSelectedTemplateId] = useState(
+    initialData?.templateId || ""
+  );
+  const [category, setCategory] = useState<EmailCategory>(
+    initialData?.businessContext?.category || "system"
+  );
+  const [recipients, setRecipients] = useState<string[]>(
+    initialData?.recipientEmails || [""]
+  );
+  const [subject, setSubject] = useState(initialData?.subject || "");
+  const [htmlContent, setHtmlContent] = useState(
+    initialData?.htmlContent || ""
+  );
+  const [textContent, setTextContent] = useState("");
   const [variableValues, setVariableValues] = useState<Record<string, any>>({});
-  const [scheduledFor, setScheduledFor] = useState('');
-  
+  const [scheduledFor, setScheduledFor] = useState("");
+
   // UI state
-  const [activeTab, setActiveTab] = useState('compose');
+  const [activeTab, setActiveTab] = useState("compose");
   const [showPreview, setShowPreview] = useState(false);
   const [preview, setPreview] = useState<EmailPreview | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   // GraphQL queries and mutations
-  const { data: templatesData, loading: templatesLoading } = useQuery<GetEmailTemplatesQuery>(
-    GetEmailTemplatesDocument,
-    {
+  const { data: templatesData, loading: templatesLoading } =
+    useQuery<GetEmailTemplatesQuery>(GetEmailTemplatesDocument, {
       variables: { category: category || undefined },
-      skip: !category
-    }
-  );
+      skip: !category,
+    });
 
-  const [createDraft, { loading: savingDraft }] = useMutation<CreateEmailDraftMutation>(
-    CreateEmailDraftDocument
-  );
+  const [createDraft, { loading: savingDraft }] =
+    useMutation<CreateEmailDraftMutation>(CreateEmailDraftDocument);
 
-  const [sendEmail, { loading: sendingEmail }] = useMutation<LogEmailSendMutation>(
-    LogEmailSendDocument
-  );
+  const [sendEmail, { loading: sendingEmail }] =
+    useMutation<LogEmailSendMutation>(LogEmailSendDocument);
 
   // Get available templates
   const templates = templatesData?.emailTemplates || [];
 
   // Add recipient
   const addRecipient = useCallback(() => {
-    setRecipients(prev => [...prev, '']);
+    setRecipients(prev => [...prev, ""]);
   }, []);
 
   // Remove recipient
@@ -120,35 +141,39 @@ export function EmailComposer({
 
   // Update recipient
   const updateRecipient = useCallback((index: number, value: string) => {
-    setRecipients(prev => prev.map((email, i) => i === index ? value : email));
+    setRecipients(prev =>
+      prev.map((email, i) => (i === index ? value : email))
+    );
   }, []);
 
   // Validate email addresses
   const validateEmails = useCallback((emails: string[]): string[] => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emails.filter(email => email.trim() && !emailRegex.test(email.trim()));
+    return emails.filter(
+      email => email.trim() && !emailRegex.test(email.trim())
+    );
   }, []);
 
   // Validate form
   const validateForm = useCallback((): string[] => {
     const errors: string[] = [];
-    
+
     const validRecipients = recipients.filter(email => email.trim());
     if (validRecipients.length === 0) {
-      errors.push('At least one recipient is required');
+      errors.push("At least one recipient is required");
     }
 
     const invalidEmails = validateEmails(validRecipients);
     if (invalidEmails.length > 0) {
-      errors.push(`Invalid email addresses: ${invalidEmails.join(', ')}`);
+      errors.push(`Invalid email addresses: ${invalidEmails.join(", ")}`);
     }
 
     if (!subject.trim()) {
-      errors.push('Subject is required');
+      errors.push("Subject is required");
     }
 
     if (!htmlContent.trim()) {
-      errors.push('Email content is required');
+      errors.push("Email content is required");
     }
 
     return errors;
@@ -161,45 +186,48 @@ export function EmailComposer({
   }, [validateForm]);
 
   // Handle template selection
-  const handleTemplateSelect = useCallback(async (templateId: string) => {
-    if (!templateId || templateId === "none") {
-      setSelectedTemplateId('');
-      return;
-    }
-
-    setIsProcessing(true);
-    try {
-      // Fetch template and process with variables
-      const response = await fetch(`/api/email/templates/${templateId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'preview',
-          previewData: variableValues
-        })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success && data.preview) {
-          setSubject(data.preview.subject);
-          setHtmlContent(data.preview.htmlContent);
-          setTextContent(data.preview.textContent || '');
-          setSelectedTemplateId(templateId);
-        }
+  const handleTemplateSelect = useCallback(
+    async (templateId: string) => {
+      if (!templateId || templateId === "none") {
+        setSelectedTemplateId("");
+        return;
       }
-    } catch (error) {
-      console.error('Error loading template:', error);
-      toast.error('Failed to load template');
-    } finally {
-      setIsProcessing(false);
-    }
-  }, [variableValues]);
+
+      setIsProcessing(true);
+      try {
+        // Fetch template and process with variables
+        const response = await fetch(`/api/email/templates/${templateId}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "preview",
+            previewData: variableValues,
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.preview) {
+            setSubject(data.preview.subject);
+            setHtmlContent(data.preview.htmlContent);
+            setTextContent(data.preview.textContent || "");
+            setSelectedTemplateId(templateId);
+          }
+        }
+      } catch (error) {
+        console.error("Error loading template:", error);
+        toast.error("Failed to load template");
+      } finally {
+        setIsProcessing(false);
+      }
+    },
+    [variableValues]
+  );
 
   // Generate preview
   const generatePreview = useCallback(async () => {
     if (!subject || !htmlContent) {
-      toast.error('Subject and content are required for preview');
+      toast.error("Subject and content are required for preview");
       return;
     }
 
@@ -207,14 +235,17 @@ export function EmailComposer({
     try {
       if (selectedTemplateId) {
         // Preview with template
-        const response = await fetch(`/api/email/templates/${selectedTemplateId}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'preview',
-            previewData: variableValues
-          })
-        });
+        const response = await fetch(
+          `/api/email/templates/${selectedTemplateId}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "preview",
+              previewData: variableValues,
+            }),
+          }
+        );
 
         if (response.ok) {
           const data = await response.json();
@@ -228,13 +259,13 @@ export function EmailComposer({
         setPreview({
           subject,
           htmlContent,
-          textContent
+          textContent,
         });
         setShowPreview(true);
       }
     } catch (error) {
-      console.error('Error generating preview:', error);
-      toast.error('Failed to generate preview');
+      console.error("Error generating preview:", error);
+      toast.error("Failed to generate preview");
     } finally {
       setIsProcessing(false);
     }
@@ -244,13 +275,13 @@ export function EmailComposer({
   const handleSaveDraft = useCallback(async () => {
     const errors = validateForm();
     if (errors.length > 0) {
-      toast.error('Please fix validation errors before saving');
+      toast.error("Please fix validation errors before saving");
       return;
     }
 
     try {
       const validRecipients = recipients.filter(email => email.trim());
-      
+
       const result = await createDraft({
         variables: {
           input: {
@@ -259,65 +290,94 @@ export function EmailComposer({
             subject,
             htmlContent,
             textContent: textContent || null,
-            variableValues: Object.keys(variableValues).length > 0 ? JSON.stringify(variableValues) : null,
-            businessContext: initialData?.businessContext ? JSON.stringify(initialData.businessContext) : null,
-            scheduledFor: scheduledFor || null
-          }
-        }
+            variableValues:
+              Object.keys(variableValues).length > 0
+                ? JSON.stringify(variableValues)
+                : null,
+            businessContext: initialData?.businessContext
+              ? JSON.stringify(initialData.businessContext)
+              : null,
+            scheduledFor: scheduledFor || null,
+          },
+        },
       });
 
       if (result.data?.insertEmailDraftsOne) {
-        toast.success('Draft saved successfully');
+        toast.success("Draft saved successfully");
         onSave?.(result.data.insertEmailDraftsOne.id);
       }
     } catch (error) {
-      console.error('Error saving draft:', error);
-      toast.error('Failed to save draft');
+      console.error("Error saving draft:", error);
+      toast.error("Failed to save draft");
     }
-  }, [createDraft, selectedTemplateId, recipients, subject, htmlContent, textContent, variableValues, scheduledFor, initialData?.businessContext, onSave, validateForm]);
+  }, [
+    createDraft,
+    selectedTemplateId,
+    recipients,
+    subject,
+    htmlContent,
+    textContent,
+    variableValues,
+    scheduledFor,
+    initialData?.businessContext,
+    onSave,
+    validateForm,
+  ]);
 
   // Send email
   const handleSendEmail = useCallback(async () => {
     const errors = validateForm();
     if (errors.length > 0) {
-      toast.error('Please fix validation errors before sending');
+      toast.error("Please fix validation errors before sending");
       return;
     }
 
     try {
       const validRecipients = recipients.filter(email => email.trim());
-      
+
       const composition: EmailComposition = {
         templateId: selectedTemplateId || undefined,
         recipientEmails: validRecipients,
         subject,
         htmlContent,
         textContent: textContent || undefined,
-        variableValues: Object.keys(variableValues).length > 0 ? variableValues : undefined,
+        variableValues:
+          Object.keys(variableValues).length > 0 ? variableValues : undefined,
         businessContext: initialData?.businessContext,
-        scheduledFor: scheduledFor || undefined
+        scheduledFor: scheduledFor || undefined,
       };
 
       // Send via API
-      const response = await fetch('/api/email/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(composition)
+      const response = await fetch("/api/email/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(composition),
       });
 
       const result = await response.json();
 
       if (result.success) {
-        toast.success(result.message || 'Email sent successfully');
+        toast.success(result.message || "Email sent successfully");
         onSend?.(composition);
       } else {
-        toast.error(result.error || 'Failed to send email');
+        toast.error(result.error || "Failed to send email");
       }
     } catch (error) {
-      console.error('Error sending email:', error);
-      toast.error('Failed to send email');
+      console.error("Error sending email:", error);
+      toast.error("Failed to send email");
     }
-  }, [selectedTemplateId, recipients, subject, htmlContent, textContent, variableValues, scheduledFor, initialData?.businessContext, onSend, validateForm]);
+  }, [
+    selectedTemplateId,
+    recipients,
+    subject,
+    htmlContent,
+    textContent,
+    variableValues,
+    scheduledFor,
+    initialData?.businessContext,
+    onSend,
+    validateForm,
+  ]);
 
   return (
     <Card className={className}>
@@ -349,7 +409,7 @@ export function EmailComposer({
                     type="email"
                     placeholder="recipient@example.com"
                     value={email}
-                    onChange={(e) => updateRecipient(index, e.target.value)}
+                    onChange={e => updateRecipient(index, e.target.value)}
                     className="flex-1"
                   />
                   {recipients.length > 1 && (
@@ -383,7 +443,7 @@ export function EmailComposer({
                 id="subject"
                 placeholder="Email subject..."
                 value={subject}
-                onChange={(e) => setSubject(e.target.value)}
+                onChange={e => setSubject(e.target.value)}
               />
             </div>
 
@@ -394,7 +454,7 @@ export function EmailComposer({
                 id="content"
                 placeholder="Email content (HTML supported)..."
                 value={htmlContent}
-                onChange={(e) => setHtmlContent(e.target.value)}
+                onChange={e => setHtmlContent(e.target.value)}
                 rows={12}
                 className="font-mono text-sm"
               />
@@ -402,12 +462,14 @@ export function EmailComposer({
 
             {/* Scheduled sending */}
             <div className="space-y-2">
-              <Label htmlFor="scheduledFor">Schedule for later (optional)</Label>
+              <Label htmlFor="scheduledFor">
+                Schedule for later (optional)
+              </Label>
               <Input
                 id="scheduledFor"
                 type="datetime-local"
                 value={scheduledFor}
-                onChange={(e) => setScheduledFor(e.target.value)}
+                onChange={e => setScheduledFor(e.target.value)}
                 min={new Date().toISOString().slice(0, 16)}
               />
             </div>
@@ -417,12 +479,15 @@ export function EmailComposer({
             {/* Category selection */}
             <div className="space-y-2">
               <Label>Category</Label>
-              <Select value={category} onValueChange={(value: EmailCategory) => setCategory(value)}>
+              <Select
+                value={category}
+                onValueChange={(value: EmailCategory) => setCategory(value)}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select email category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {Object.values(EMAIL_CATEGORIES).map((cat) => (
+                  {Object.values(EMAIL_CATEGORIES).map(cat => (
                     <SelectItem key={cat.id} value={cat.id}>
                       <div className="flex items-center gap-2">
                         <Badge variant="outline" style={{ color: cat.color }}>
@@ -441,8 +506,8 @@ export function EmailComposer({
             {/* Template selection */}
             <div className="space-y-2">
               <Label>Template</Label>
-              <Select 
-                value={selectedTemplateId} 
+              <Select
+                value={selectedTemplateId}
                 onValueChange={handleTemplateSelect}
                 disabled={templatesLoading || isProcessing}
               >
@@ -450,8 +515,10 @@ export function EmailComposer({
                   <SelectValue placeholder="Select a template or compose from scratch" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">No template (compose from scratch)</SelectItem>
-                  {templates.map((template) => (
+                  <SelectItem value="none">
+                    No template (compose from scratch)
+                  </SelectItem>
+                  {templates.map(template => (
                     <SelectItem key={template.id} value={template.id}>
                       <div className="flex flex-col">
                         <span>{template.name}</span>
@@ -477,14 +544,15 @@ export function EmailComposer({
 
           <TabsContent value="variables" className="space-y-4">
             <div className="text-sm text-muted-foreground">
-              Template variables will be processed automatically based on your business context.
-              You can override values here if needed.
+              Template variables will be processed automatically based on your
+              business context. You can override values here if needed.
             </div>
 
             {/* Variable inputs would go here */}
             <div className="p-4 border rounded-lg">
               <p className="text-sm text-muted-foreground">
-                Variable editor coming soon. Variables are automatically populated from business context.
+                Variable editor coming soon. Variables are automatically
+                populated from business context.
               </p>
             </div>
           </TabsContent>
@@ -516,7 +584,7 @@ export function EmailComposer({
               <Eye className="h-4 w-4 mr-2" />
               Preview
             </Button>
-            
+
             <Button
               variant="outline"
               onClick={handleSaveDraft}
@@ -537,7 +605,7 @@ export function EmailComposer({
                 Cancel
               </Button>
             )}
-            
+
             <Button
               onClick={handleSendEmail}
               disabled={sendingEmail || validationErrors.length > 0}
@@ -549,7 +617,7 @@ export function EmailComposer({
               ) : (
                 <Send className="h-4 w-4 mr-2" />
               )}
-              {scheduledFor ? 'Schedule' : 'Send'} Email
+              {scheduledFor ? "Schedule" : "Send"} Email
             </Button>
           </div>
         </div>
@@ -564,24 +632,28 @@ export function EmailComposer({
               Preview how your email will appear to recipients
             </DialogDescription>
           </DialogHeader>
-          
+
           {preview && (
             <div className="space-y-4">
               <div>
                 <Label className="text-sm font-medium">Subject:</Label>
-                <p className="text-sm border rounded p-2 bg-gray-50">{preview.subject}</p>
+                <p className="text-sm border rounded p-2 bg-gray-50">
+                  {preview.subject}
+                </p>
               </div>
-              
+
               <div>
                 <Label className="text-sm font-medium">Content:</Label>
-                <div 
+                <div
                   className="border rounded p-4 bg-white min-h-[300px]"
-                  dangerouslySetInnerHTML={{ __html: preview.htmlContent }}
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(preview.htmlContent),
+                  }}
                 />
               </div>
             </div>
           )}
-          
+
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowPreview(false)}>
               Close Preview

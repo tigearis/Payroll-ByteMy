@@ -1,10 +1,11 @@
 "use client";
 
 import { ArrowLeft, Save } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { PermissionGuard } from "@/components/auth/permission-guard";
+import { PageHeader } from "@/components/patterns/page-header";
 import { Button } from "@/components/ui/button";
 import {
   PayrollForm,
@@ -64,58 +65,61 @@ export default function NewPayrollPage() {
 
   return (
     <div className="container mx-auto py-6 space-y-6">
-      {/* Header */}
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-          <Link href="/payrolls">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Payrolls
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              Create New Payroll
-            </h1>
-            <p className="text-gray-500">
-              Set up a new payroll with schedule and consultant assignments
-            </p>
+      <PageHeader
+        title="Create New Payroll"
+        description="Set up a new payroll with schedule and consultant assignments"
+        breadcrumbs={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Payrolls", href: "/payrolls" },
+          { label: "New" },
+        ]}
+        actions={[
+          { label: "Back to Payrolls", icon: ArrowLeft, href: "/payrolls" },
+        ]}
+      />
+
+      <PermissionGuard
+        resource="payrolls"
+        action="create"
+        fallback={
+          <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-4 text-destructive">
+            You do not have permission to create payrolls.
           </div>
-        </div>
-      </div>
+        }
+      >
+        {/* Create Payroll Form */}
+        <form onSubmit={handleSubmit}>
+          <PayrollForm
+            formData={formData}
+            onInputChange={handleInputChange}
+            onValidationChange={handleValidationChange}
+            isLoading={isLoading}
+            showClientField={true}
+            title="Payroll Configuration"
+            description="Configure the payroll schedule, assignments, and processing details."
+          />
 
-      {/* Create Payroll Form */}
-      <form onSubmit={handleSubmit}>
-        <PayrollForm
-          formData={formData}
-          onInputChange={handleInputChange}
-          onValidationChange={handleValidationChange}
-          isLoading={isLoading}
-          showClientField={true}
-          title="Payroll Configuration"
-          description="Configure the payroll schedule, assignments, and processing details."
-        />
-
-        {/* Form Actions */}
-        <div className="flex justify-between mt-6">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.push("/payrolls")}
-            disabled={isLoading}
-          >
-            Cancel
-          </Button>
-          <Button type="submit" disabled={!isFormValid}>
-            {isLoading ? (
-              <div className="w-4 h-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
-            ) : (
-              <Save className="w-4 h-4 mr-2" />
-            )}
-            {isLoading ? "Creating..." : "Create Payroll"}
-          </Button>
-        </div>
-      </form>
+          {/* Form Actions */}
+          <div className="flex justify-between mt-6">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.push("/payrolls")}
+              disabled={isLoading}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={!isFormValid}>
+              {isLoading ? (
+                <div className="w-4 h-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              ) : (
+                <Save className="w-4 h-4 mr-2" />
+              )}
+              {isLoading ? "Creating..." : "Create Payroll"}
+            </Button>
+          </div>
+        </form>
+      </PermissionGuard>
     </div>
   );
 }

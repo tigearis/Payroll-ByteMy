@@ -1,6 +1,7 @@
 // app/api/cron/holidays/sync/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { syncAustralianHolidays } from "@/domains/external-systems/services/holiday-sync-service";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 export const POST = async (req: NextRequest) => {
   try {
@@ -9,9 +10,14 @@ export const POST = async (req: NextRequest) => {
     const expectedSecret = process.env.CRON_SECRET || process.env.HASURA_GRAPHQL_ADMIN_SECRET;
     
     if (!cronSecret || cronSecret !== expectedSecret) {
-      console.error("❌ Unauthorized cron job attempt:", {
-        providedSecret: cronSecret ? "***PROVIDED***" : "MISSING",
-        timestamp: new Date().toISOString()
+      logger.error('Unauthorized cron job attempt', {
+        namespace: 'cron_holidays_api',
+        operation: 'authenticate_cron',
+        classification: DataClassification.INTERNAL,
+        metadata: {
+          providedSecret: cronSecret ? "***PROVIDED***" : "MISSING",
+          timestamp: new Date().toISOString()
+        }
       });
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
@@ -28,12 +34,30 @@ export const POST = async (req: NextRequest) => {
       // No body or invalid JSON, use default
     }
 
-    console.log(`🤖 Automated holiday sync started (force: ${forceSync})`);
+    logger.info('Automated holiday sync started', {
+      namespace: 'cron_holidays_api',
+      operation: 'start_sync',
+      classification: DataClassification.INTERNAL,
+      metadata: {
+        forceSync,
+        timestamp: new Date().toISOString()
+      }
+    });
 
     // Trigger comprehensive Australian holiday sync from data.gov.au
     const result = await syncAustralianHolidays(forceSync);
 
-    console.log(`✅ Automated holiday sync completed:`, result);
+    logger.info('Automated holiday sync completed', {
+      namespace: 'cron_holidays_api',
+      operation: 'complete_sync',
+      classification: DataClassification.INTERNAL,
+      metadata: {
+        totalAffected: result.totalAffected,
+        skippedCount: result.skippedCount,
+        message: result.message,
+        timestamp: new Date().toISOString()
+      }
+    });
 
     return NextResponse.json({
       success: true,
@@ -47,7 +71,16 @@ export const POST = async (req: NextRequest) => {
       },
     });
   } catch (error) {
-    console.error("❌ Automated holiday sync error:", error);
+    logger.error('Automated holiday sync error', {
+      namespace: 'cron_holidays_api',
+      operation: 'sync_holidays',
+      classification: DataClassification.INTERNAL,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      metadata: {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+        timestamp: new Date().toISOString()
+      }
+    });
     return NextResponse.json(
       {
         success: false,

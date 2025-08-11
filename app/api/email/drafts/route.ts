@@ -16,6 +16,7 @@ import {
 import type { EmailCategory } from "@/domains/email/types";
 import { executeTypedMutation, executeTypedQuery } from "@/lib/apollo/query-helpers";
 import { withAuthParams } from "@/lib/auth/api-auth";
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 interface DraftRequest {
   templateId?: string;

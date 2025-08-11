@@ -6,6 +6,7 @@ import {
 } from '@/domains/billing/graphql/generated/graphql';
 import { executeTypedQuery } from '@/lib/apollo/query-helpers';
 import { withAuth } from '@/lib/auth/api-auth';
+import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
 interface AnalyticsRequest {
   dateFrom?: string;

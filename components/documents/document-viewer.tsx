@@ -1,5 +1,6 @@
 "use client";
 
+import { format } from 'date-fns';
 import {
   File,
   Image,
@@ -29,7 +30,6 @@ import {
 } from "@/components/ui/dialog";
 import { usePermissions } from "@/hooks/use-permissions";
 import { cn } from "@/lib/utils";
-import { format } from 'date-fns';
 
 interface Document {
   id: string;
