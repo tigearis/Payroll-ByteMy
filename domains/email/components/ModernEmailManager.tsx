@@ -4,8 +4,61 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Mail, Send } from "lucide-react";
 
+interface EmailTemplate {
+  id: string;
+  name: string;
+  description?: string;
+  category: string;
+  isSystemTemplate: boolean;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  createdByUser?: {
+    id: string;
+    firstName?: string;
+    lastName?: string;
+    computedName?: string;
+    email: string;
+  } | null;
+  variableCount?: number;
+  usageCount?: number;
+  lastUsedAt?: string;
+  preview?: {
+    subject: string;
+    htmlContent: string;
+  };
+}
+
+interface EmailStats {
+  overview: {
+    totalTemplates: number;
+    activeTemplates: number;
+    systemTemplates: number;
+    recentlyUsed: number;
+    emailsSentThisMonth: number;
+    deliveryRate: number;
+  };
+  byCategory: {
+    system: number;
+    payroll: number;
+    client: number;
+    internal: number;
+    marketing: number;
+  };
+}
+
 interface ModernEmailManagerProps {
-  // Add props as needed
+  templates?: EmailTemplate[];
+  stats?: EmailStats | null;
+  loading?: boolean;
+  currentUser?: any;
+  onCreateTemplate?: () => void;
+  onEditTemplate?: (templateId: string) => void;
+  onDeleteTemplate?: (templateId: string) => void;
+  onComposeWithTemplate?: (templateId: string) => void;
+  onQuickCompose?: () => void;
+  onViewAnalytics?: () => void;
+  onManageSettings?: () => void;
 }
 
 export function ModernEmailManager(props: ModernEmailManagerProps) {

@@ -3,6 +3,7 @@
 
 import { useRouter, usePathname } from 'next/navigation';
 import React, { useCallback, useMemo } from 'react';
+import { SmartLoading } from '@/components/ui/smart-loading';
 import { 
   getRouteLoadingMessage, 
   getQueryLoadingMessage, 
@@ -126,8 +127,6 @@ export function useDynamicLoading(options: UseDynamicLoadingOptions = {}): Dynam
       className?: string;
       variant?: LoadingVariant;
     }> = ({ className, variant: propVariant }) => {
-      const SmartLoading = require('@/components/ui/smart-loading').SmartLoading;
-      
       return React.createElement(SmartLoading, {
         title: message.title,
         description: message.description,
@@ -159,10 +158,7 @@ export function useDynamicLoading(options: UseDynamicLoadingOptions = {}): Dynam
 }
 
 // Specialized hooks for common use cases
-export function useRouteLoading(routeOverride?: string) {
-  const pathname = usePathname();
-  const route = routeOverride || pathname;
-  
+export function useRouteLoading(_routeOverride?: string) {
   return useDynamicLoading({
     context: 'route',
     autoDetect: false

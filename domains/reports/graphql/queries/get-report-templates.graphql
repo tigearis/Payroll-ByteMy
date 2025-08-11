@@ -1,0 +1,29 @@
+query GetReportTemplates(
+  $userId: String
+  $isPublic: Boolean
+  $tags: [String!]
+) {
+  reportTemplates(userId: $userId, isPublic: $isPublic, tags: $tags) {
+    id
+    name
+    description
+    domains
+    fields
+    filters {
+      field
+      operator
+      value
+      conjunction
+    }
+    sorts {
+      field
+      direction
+    }
+    limit
+    createdBy
+    createdAt
+    updatedAt
+    isPublic
+    tags
+  }
+}

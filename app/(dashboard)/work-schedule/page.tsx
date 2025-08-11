@@ -1,34 +1,25 @@
 "use client";
 
-/*
- * Modern Work Schedule Management Page
- *
- * Features progressive disclosure pattern with:
- * - 4 essential columns: Team Member, Utilization, Capacity, Workload
- * - Expandable rows for detailed schedule and assignment information
- * - Smart search and contextual actions
- * - Mobile-first responsive design
- */
-
 import { useQuery, useMutation } from "@apollo/client";
 import { useUser } from "@clerk/nextjs";
 import {
   Calendar,
   Users,
   Settings,
-  AlertTriangle,
-  Info,
   RefreshCw,
+  Plus,
+  Clock,
+  TrendingUp,
+  Activity,
+  AlertCircle,
   CheckCircle2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useMemo, Suspense } from "react";
 import { PermissionGuard } from "@/components/auth/permission-guard";
 import { PageHeader } from "@/components/patterns/page-header";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import { ModernWorkScheduleManager } from "@/domains/work-schedule/components/ModernWorkScheduleManager";
 import {
   UpsertWorkScheduleDocument,
@@ -41,28 +32,286 @@ import {
   type GetAllStaffWorkloadQuery,
 } from "@/domains/work-schedule/graphql/generated/graphql";
 
-// Helper components for clean permission guard boundaries
-const HeaderSection = ({ children }: { children: React.ReactNode }) => (
-  <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
-    {children}
-  </div>
-);
+// Team member interface for work schedule management
+interface TeamMember {
+  id: string;
+  firstName: string;
+  lastName: string;
+  computedName: string;
+  email: string;
+  position: string;
+  capacity: {
+    utilizationPercentage: number;
+    totalWorkHours: number;
+    totalPayrollCapacity: number;
+    availableCapacityHours: number;
+    processingWindowDays: number;
+  };
+  assignedPayrolls: Array<{
+    id: string;
+    name: string;
+    role: "primary" | "backup";
+    processingTime: number;
+  }>;
+  workSchedules: Array<{
+    id: string;
+    workDay: string;
+    workHours: number;
+    adminTimeHours: number;
+    payrollCapacityHours: number;
+  }>;
+}
 
-const StatsSection = ({ children }: { children: React.ReactNode }) => (
-  <div className="mb-6">{children}</div>
-);
+// Enhanced metric card component with hover effects and animations
+function EnhancedMetricCard({
+  title,
+  value,
+  subtitle,
+  icon: IconComponent,
+  trend,
+  trendValue,
+  status = 'neutral',
+  onClick,
+  children,
+}: {
+  title: string;
+  value: string;
+  subtitle: string;
+  icon: React.ElementType;
+  trend?: 'up' | 'down' | 'stable';
+  trendValue?: string;
+  status?: 'good' | 'warning' | 'critical' | 'neutral';
+  onClick?: () => void;
+  children?: React.ReactNode;
+}) {
+  const statusStyles = {
+    good: 'bg-green-50 border-green-200 hover:bg-green-100',
+    warning: 'bg-amber-50 border-amber-200 hover:bg-amber-100',
+    critical: 'bg-red-50 border-red-200 hover:bg-red-100',
+    neutral: 'bg-white border-gray-200 hover:bg-gray-50',
+  };
 
-const MainContentSection = ({ children }: { children: React.ReactNode }) => (
-  <div className="space-y-6">{children}</div>
-);
+  const trendStyles = {
+    up: 'text-green-600 bg-green-100',
+    down: 'text-red-600 bg-red-100',
+    stable: 'text-gray-600 bg-gray-100',
+  };
 
-// Removed unused EnhancedWorkloadVisualization to avoid missing imports and types
+  return (
+    <Card 
+      className={cn(
+        "group cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02]",
+        statusStyles[status],
+        onClick && "hover:border-blue-300"
+      )}
+      onClick={onClick}
+    >
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium text-gray-700 group-hover:text-gray-900 transition-colors">
+            {title}
+          </CardTitle>
+          <div className="relative">
+            <IconComponent className="h-4 w-4 text-muted-foreground group-hover:text-blue-600 transition-colors" />
+            {status === 'critical' && (
+              <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+            )}
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            <div className="flex items-baseline justify-between">
+              <div className="text-2xl font-bold text-gray-900 group-hover:text-blue-900 transition-colors">
+                {value}
+              </div>
+              {trend && trendValue && (
+                <div 
+                  className={cn(
+                    'px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1',
+                    trendStyles[trend]
+                  )}
+                  title="Trend from previous period"
+                >
+                  {trend === 'up' && <TrendingUp className="w-3 h-3" />}
+                  {trend === 'down' && <Activity className="w-3 h-3 rotate-180" />}
+                  {trend === 'stable' && <Activity className="w-3 h-3" />}
+                  <span>{trendValue}</span>
+                </div>
+              )}
+            </div>
+            
+            <p className="text-xs text-muted-foreground group-hover:text-gray-600 transition-colors">
+              {subtitle}
+            </p>
+            
+            {children}
+          </div>
+        </CardContent>
+      </Card>
+  );
+}
 
-export default function WorkSchedulePage() {
-  const [operationStatus, setOperationStatus] = useState<{
-    type: "success" | "error" | null;
-    message: string;
-  }>({ type: null, message: "" });
+// Summary metrics component with enhanced styling
+function WorkScheduleSummaryCards({ teamMembers }: { teamMembers: TeamMember[] }) {
+  const metrics = useMemo(() => {
+    if (!teamMembers.length) {
+      return {
+        totalMembers: 0,
+        averageUtilization: 0,
+        totalCapacity: 0,
+        overutilized: 0,
+        teamHealth: 'neutral' as 'good' | 'warning' | 'critical' | 'neutral',
+        capacityTrend: 'stable' as 'up' | 'down' | 'stable',
+        utilizationHealth: 'neutral' as 'good' | 'warning' | 'critical' | 'neutral',
+      };
+    }
+
+    const totalMembers = teamMembers.length;
+    const averageUtilization = Math.round(
+      teamMembers.reduce(
+        (sum, member) => sum + member.capacity.utilizationPercentage,
+        0
+      ) / totalMembers
+    );
+    const totalCapacity = Math.round(
+      teamMembers.reduce(
+        (sum, member) => sum + member.capacity.availableCapacityHours,
+        0
+      )
+    );
+    const overutilized = teamMembers.filter(
+      member => member.capacity.utilizationPercentage > 100
+    ).length;
+
+    // Calculate health indicators
+    const teamHealth: 'good' | 'warning' | 'critical' | 'neutral' = totalMembers >= 5 ? 'good' : totalMembers >= 3 ? 'warning' : 'critical';
+    const utilizationHealth: 'good' | 'warning' | 'critical' | 'neutral' = averageUtilization <= 85 ? 'good' : 
+                             averageUtilization <= 100 ? 'warning' : 'critical';
+    const capacityTrend: 'up' | 'down' | 'stable' = totalCapacity > 40 ? 'up' : totalCapacity > 20 ? 'stable' : 'down';
+    const overutilizedHealth: 'good' | 'warning' | 'critical' | 'neutral' = overutilized === 0 ? 'good' : 
+                              overutilized <= 2 ? 'warning' : 'critical';
+
+    return { 
+      totalMembers, 
+      averageUtilization, 
+      totalCapacity, 
+      overutilized,
+      teamHealth,
+      utilizationHealth,
+      capacityTrend,
+      overutilizedHealth
+    };
+  }, [teamMembers]);
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Team Members Card */}
+      <EnhancedMetricCard
+        title="Team Members"
+        value={metrics.totalMembers.toString()}
+        subtitle="Active team members"
+        icon={Users}
+        status={metrics.teamHealth}
+        trend={metrics.totalMembers >= 5 ? 'up' : 'stable'}
+        trendValue={metrics.totalMembers >= 5 ? "Well staffed" : "Growing"}
+        onClick={() => console.log('Navigate to team overview')}
+      >
+        <div className="flex items-center gap-1 text-xs text-gray-600 mt-2">
+          <CheckCircle2 className={cn('h-3 w-3', 
+            metrics.teamHealth === 'good' ? 'text-green-600' : 
+            metrics.teamHealth === 'warning' ? 'text-amber-600' : 'text-red-600'
+          )} />
+          <span>
+            {metrics.teamHealth === 'good' ? 'Optimal team size' :
+             metrics.teamHealth === 'warning' ? 'Could use more staff' : 'Understaffed'}
+          </span>
+        </div>
+      </EnhancedMetricCard>
+
+      {/* Average Utilization Card */}
+      <EnhancedMetricCard
+        title="Avg. Utilization"
+        value={`${metrics.averageUtilization}%`}
+        subtitle="Team capacity usage"
+        icon={TrendingUp}
+        status={metrics.utilizationHealth}
+        trend={metrics.averageUtilization <= 85 ? 'stable' : 'up'}
+        trendValue={metrics.utilizationHealth === 'good' ? "Optimal" : "High"}
+        onClick={() => console.log('Navigate to utilization details')}
+      >
+        <div className="flex items-center gap-1 text-xs mt-2">
+          {metrics.utilizationHealth === 'good' && (
+            <div className="flex items-center gap-1 text-green-600">
+              <CheckCircle2 className="h-3 w-3" />
+              <span>Healthy utilization</span>
+            </div>
+          )}
+          {metrics.utilizationHealth === 'warning' && (
+            <div className="flex items-center gap-1 text-amber-600">
+              <AlertCircle className="h-3 w-3" />
+              <span>High utilization</span>
+            </div>
+          )}
+          {metrics.utilizationHealth === 'critical' && (
+            <div className="flex items-center gap-1 text-red-600">
+              <AlertCircle className="h-3 w-3" />
+              <span>Over capacity</span>
+            </div>
+          )}
+        </div>
+      </EnhancedMetricCard>
+
+      {/* Available Capacity Card */}
+      <EnhancedMetricCard
+        title="Available Capacity"
+        value={`${metrics.totalCapacity}h`}
+        subtitle="Hours available weekly"
+        icon={Clock}
+        status={metrics.totalCapacity > 40 ? 'good' : metrics.totalCapacity > 20 ? 'warning' : 'critical'}
+        trend={metrics.capacityTrend}
+        trendValue={metrics.capacityTrend === 'up' ? "High capacity" : 
+                   metrics.capacityTrend === 'stable' ? "Stable" : "Limited"}
+        onClick={() => console.log('Navigate to capacity planning')}
+      >
+        <div className="flex items-center gap-1 text-xs text-gray-600 mt-2">
+          <Activity className="h-3 w-3" />
+          <span>
+            {metrics.totalCapacity > 40 ? 'Excellent availability' :
+             metrics.totalCapacity > 20 ? 'Moderate capacity' : 'Capacity constrained'}
+          </span>
+        </div>
+      </EnhancedMetricCard>
+
+      {/* Overutilized Members Card */}
+      <EnhancedMetricCard
+        title="Overutilized"
+        value={metrics.overutilized.toString()}
+        subtitle="Members over capacity"
+        icon={Activity}
+        status={metrics.overutilizedHealth}
+        trend={metrics.overutilized === 0 ? 'stable' : 'up'}
+        trendValue={metrics.overutilized === 0 ? "All good" : "Needs attention"}
+        onClick={() => console.log('Navigate to overutilized members')}
+      >
+        <div className="flex items-center gap-1 text-xs mt-2">
+          {metrics.overutilized === 0 ? (
+            <div className="flex items-center gap-1 text-green-600">
+              <CheckCircle2 className="h-3 w-3" />
+              <span>All within capacity</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1 text-red-600">
+              <AlertCircle className="h-3 w-3" />
+              <span>Requires rebalancing</span>
+            </div>
+          )}
+        </div>
+      </EnhancedMetricCard>
+    </div>
+  );
+}
+
+// Main content component
+function WorkSchedulePageContent() {
   const { user } = useUser();
   const router = useRouter();
 
@@ -80,58 +329,34 @@ export default function WorkSchedulePage() {
     UpdateUserDefaultAdminTimeDocument
   );
 
-  // Removed unused payroll assignment mutations to keep page focused and error-free
-
-  // Debug: Check if user authentication is working
-  console.log("Auth debug:", {
-    currentUserId,
-    userRole: user?.publicMetadata?.role,
-    isAuthenticated: !!user,
-  });
-
   // Query for team workload including payroll assignments
   const {
     data: teamWorkloadData,
-    loading: workloadLoading,
-    error: workloadError,
-    refetch: refetchWorkload,
+    loading,
+    error,
+    refetch,
   } = useQuery<GetAllStaffWorkloadQuery>(GetAllStaffWorkloadDocument, {
     errorPolicy: "all",
   });
 
-  const isLoading = workloadLoading;
-  const error = workloadError?.message || null;
-
-  const handleRefresh = () => {
-    refetchWorkload();
-  };
-
-  // Transform GraphQL data to component format
-  const hasDataIssues =
-    !teamWorkloadData?.users || teamWorkloadData.users.length === 0;
-  const hasPartialData = (teamWorkloadData?.users?.length || 0) > 0;
-
-  const teamMembers = teamWorkloadData?.users
-    ? transformTeamWorkloadToMembers(teamWorkloadData.users)
-    : [];
-
   // Handler functions for work schedule management
   const handleViewMember = (member: any) => {
-    // Member details will be shown in the sheet
     console.log("Viewing member details:", member.computedName);
   };
 
   const handleEditSchedule = (member: any) => {
-    // Navigate to schedule editing or show modal
     console.log("Editing schedule for:", member.computedName);
-    // Could navigate to a dedicated editing page or open a modal
     router.push(`/work-schedule/${member.id}/edit`);
+  };
+
+  const handleManageSettings = () => {
+    router.push("/work-schedule/settings");
   };
 
   // Transform GraphQL data to component format
   function transformTeamWorkloadToMembers(
     users: GetAllStaffWorkloadQuery["users"]
-  ) {
+  ): TeamMember[] {
     return users.map(user => {
       // Calculate assigned hours from payroll assignments
       const primaryPayrollHours =
@@ -212,121 +437,120 @@ export default function WorkSchedulePage() {
     });
   }
 
+  const teamMembers = teamWorkloadData?.users
+    ? transformTeamWorkloadToMembers(teamWorkloadData.users)
+    : [];
+
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      {/* Operation status notifications */}
-      {operationStatus.type && (
-        <Alert
-          className={
-            operationStatus.type === "success"
-              ? "border-green-200 bg-green-50"
-              : "border-red-200 bg-red-50"
-          }
-        >
-          {operationStatus.type === "success" ? (
-            <CheckCircle2 className="h-4 w-4 text-green-600" />
-          ) : (
-            <AlertTriangle className="h-4 w-4 text-red-600" />
-          )}
-          <AlertDescription
-            className={
-              operationStatus.type === "success"
-                ? "text-green-800"
-                : "text-red-800"
-            }
-          >
-            {operationStatus.message}
-          </AlertDescription>
-        </Alert>
-      )}
-
-      {/* Partial data warning */}
-      {error && hasPartialData && (
-        <Alert className="border-amber-200 bg-amber-50">
-          <Info className="h-4 w-4 text-amber-600" />
-          <AlertDescription className="text-amber-800">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">Some data may be incomplete</p>
-                <p className="text-sm">{error}</p>
-              </div>
-              <Button
-                onClick={handleRefresh}
-                variant="outline"
-                size="sm"
-                className="text-amber-700 border-amber-200 hover:bg-amber-100"
-              >
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Refresh
-              </Button>
-            </div>
-          </AlertDescription>
-        </Alert>
-      )}
-
+    <div className="space-y-6">
       {/* Page Header */}
       <PageHeader
         title="Work Schedule Management"
-        description="Modern work schedule management with progressive disclosure"
+        description="Team capacity planning and schedule optimization"
         breadcrumbs={[
           { label: "Dashboard", href: "/dashboard" },
           { label: "Work Schedule" },
         ]}
+        actions={[
+          { label: "Refresh", icon: RefreshCw, onClick: () => refetch() },
+          {
+            label: "Manage Settings",
+            icon: Settings,
+            onClick: handleManageSettings,
+            primary: false,
+          },
+        ]}
+        overflowActions={[
+          {
+            label: "Add Team Member",
+            onClick: () => router.push("/staff/new"),
+          },
+          {
+            label: "Export Schedule",
+            onClick: () =>
+              window.dispatchEvent(new CustomEvent("schedule:export")),
+          },
+        ]}
       />
 
-      {/* Manage Settings Action (permission-protected) */}
-      <PermissionGuard
-        resource="workschedule"
-        action="manage"
-        fallback={
-          <Badge variant="outline" className="text-gray-600">
-            <Users className="w-4 h-4 mr-1" />
-            View Only
-          </Badge>
-        }
-      >
-        <Button variant="default" size="sm">
-          <Settings className="w-4 h-4 mr-2" />
-          Manage Settings
-        </Button>
-      </PermissionGuard>
+      {/* Summary Cards */}
+      <WorkScheduleSummaryCards teamMembers={teamMembers} />
 
-      {/* Permission-protected content */}
-      <PermissionGuard
-        minRole="manager"
-        fallback={
+      {/* Modern Work Schedule Manager */}
+      <ModernWorkScheduleManager
+        teamMembers={teamMembers}
+        loading={loading}
+        onViewMember={handleViewMember}
+        onEditSchedule={handleEditSchedule}
+      />
+    </div>
+  );
+}
+
+// Loading component
+function WorkScheduleLoading() {
+  return (
+    <div className="space-y-6">
+      <div className="animate-pulse">
+        <div className="h-8 bg-gray-200 rounded w-1/4 mb-2"></div>
+        <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="animate-pulse">
+            <div className="bg-gray-200 rounded-lg h-24"></div>
+          </div>
+        ))}
+      </div>
+      <div className="animate-pulse bg-gray-200 rounded-lg h-96"></div>
+    </div>
+  );
+}
+
+// Main page component with error boundary
+export default function WorkSchedulePage() {
+  return (
+    <PermissionGuard
+      minRole="manager"
+      fallback={
+        <div className="space-y-6">
+          <PageHeader
+            title="Work Schedule Management"
+            description="Team capacity planning and schedule optimization"
+            breadcrumbs={[
+              { label: "Dashboard", href: "/dashboard" },
+              { label: "Work Schedule" },
+            ]}
+          />
           <Card>
             <CardContent className="p-12">
               <div className="text-center space-y-4">
-                <Calendar className="w-16 h-16 text-gray-400 mx-auto" />
+                <Calendar className="w-16 h-16 text-foreground opacity-40 mx-auto" />
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
                     Personal Schedule View
                   </h3>
-                  <p className="text-gray-600 max-w-md mx-auto">
+                  <p className="text-foreground opacity-75 max-w-md mx-auto">
                     Contact your manager for full team overview and management
                     access.
                   </p>
                 </div>
-                <Button
-                  variant="outline"
-                  onClick={() => router.push("/schedule")}
+                <button
+                  onClick={() => window.location.href = "/schedule"}
+                  className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
                 >
                   <Calendar className="w-4 h-4 mr-2" />
                   View My Schedule
-                </Button>
+                </button>
               </div>
             </CardContent>
           </Card>
-        }
-      >
-        <ModernWorkScheduleManager
-          teamMembers={teamMembers}
-          loading={isLoading}
-          onViewMember={handleViewMember}
-          onEditSchedule={handleEditSchedule}
-        />
-      </PermissionGuard>
-    </div>
+        </div>
+      }
+    >
+      <Suspense fallback={<WorkScheduleLoading />}>
+        <WorkSchedulePageContent />
+      </Suspense>
+    </PermissionGuard>
   );
 }

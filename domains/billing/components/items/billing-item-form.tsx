@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Save, X } from "lucide-react";
 
 interface BillingItemFormProps {
+  itemId?: string;
   mode?: "create" | "edit";
   initialData?: any;
   onSave?: (data: any) => void;
@@ -12,6 +13,7 @@ interface BillingItemFormProps {
 }
 
 export function BillingItemForm({ 
+  itemId,
   mode = "create", 
   initialData, 
   onSave, 
@@ -28,6 +30,7 @@ export function BillingItemForm({
         <div className="text-center py-8 text-muted-foreground">
           <p>Billing item form placeholder</p>
           <p className="text-sm mt-2">This component needs to be implemented</p>
+          {itemId && <p className="text-xs mt-1 text-muted-foreground">Item ID: {itemId}</p>}
         </div>
         
         <div className="flex gap-3 justify-end">

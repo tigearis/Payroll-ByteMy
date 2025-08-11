@@ -1,34 +1,86 @@
 // app/api/payrolls/[id]/route.ts
 import { NextRequest } from "next/server";
-import { GetPayrollByIdDocument, type GetPayrollByIdQuery } from "@/domains/payrolls/graphql/generated/graphql";
 import { 
-  withErrorHandling, 
-  successResponse, 
-  errorResponse, 
-  validateParams, 
-  paramValidators 
+  createApiResponse,
+  createErrorResponse,
+  handleApiError 
 } from "@/lib/api/route-helpers";
-import { executeTypedQuery } from "@/lib/apollo/query-helpers";
-import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
 
-export const GET = withErrorHandling(async (
+export async function GET(
   _req: NextRequest, 
   { params }: { params: Promise<{ id: string }> }
-) => {
-  // Validate parameters
-  const { id } = await validateParams(params, { 
-    id: paramValidators.uuid 
-  });
+) {
+  try {
+    // Validate parameters
+    const { id } = await params;
+    
+    if (!id) {
+      return createErrorResponse("Payroll ID is required", 400);
+    }
 
-  // Execute authenticated GraphQL query with full type safety
-  const data = await executeTypedQuery<GetPayrollByIdQuery>(
-    GetPayrollByIdDocument,
-    { id }
-  );
-
-  if (!data.payrollsByPk) {
-    return errorResponse("Payroll not found", 404);
+    // Placeholder implementation
+    return createApiResponse(
+      {
+        id,
+        message: "Payroll detail API endpoint needs implementation"
+      },
+      "Payroll detail feature is not yet implemented",
+      501 // Not Implemented
+    );
+  } catch (error) {
+    console.error("Payroll API error:", error);
+    return handleApiError(error);
   }
+}
 
-  return successResponse(data.payrollsByPk);
-});
+export async function PUT(
+  req: NextRequest, 
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    
+    if (!id) {
+      return createErrorResponse("Payroll ID is required", 400);
+    }
+
+    // Placeholder implementation
+    return createApiResponse(
+      {
+        id,
+        message: "Payroll update API endpoint needs implementation"
+      },
+      "Payroll update feature is not yet implemented",
+      501 // Not Implemented
+    );
+  } catch (error) {
+    console.error("Payroll update API error:", error);
+    return handleApiError(error);
+  }
+}
+
+export async function DELETE(
+  _req: NextRequest, 
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    
+    if (!id) {
+      return createErrorResponse("Payroll ID is required", 400);
+    }
+
+    // Placeholder implementation
+    return createApiResponse(
+      {
+        id,
+        message: "Payroll delete API endpoint needs implementation"
+      },
+      "Payroll delete feature is not yet implemented",
+      501 // Not Implemented
+    );
+  } catch (error) {
+    console.error("Payroll delete API error:", error);
+    return handleApiError(error);
+  }
+}

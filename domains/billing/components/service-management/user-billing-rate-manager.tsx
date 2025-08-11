@@ -142,10 +142,10 @@ const UPDATE_USER_CURRENT_RATE = gql`
 `;
 
 const DEACTIVATE_USER_BILLING_RATE = gql`
-  mutation DeactivateUserBillingRate($id: uuid!) {
+  mutation DeactivateUserBillingRate($id: uuid!, $effectiveTo: timestamptz!) {
     update_user_billing_rates_by_pk(
       pk_columns: { id: $id }
-      _set: { is_active: false, effective_to: "now()" }
+      _set: { is_active: false, effective_to: $effectiveTo }
     ) {
       id
       effective_to
@@ -298,8 +298,14 @@ export function UserBillingRateManager() {
     }
 
     try {
+      // Compute current timestamp in JavaScript
+      const effectiveTo = new Date().toISOString();
+      
       await deactivateUserBillingRate({
-        variables: { id: rate.id }
+        variables: { 
+          id: rate.id,
+          effectiveTo
+        }
       });
 
       toast.success(`Billing rate deactivated for ${user.computed_name}`);

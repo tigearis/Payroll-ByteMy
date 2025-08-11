@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
-import { PageHeader, type PageHeaderProps } from "@/components/patterns/page-header";
+import { PageHeader, PageHeaderProps } from "@/components/patterns/page-header";
 import { Header } from "./header";
 import { Navigation } from "./navigation";
 

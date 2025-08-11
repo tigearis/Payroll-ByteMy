@@ -9,7 +9,7 @@ import {
 } from "@/components/data/modern-data-table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { getRoleDisplayName } from "@/lib/utils/role-utils";
+import { getRoleDisplayName, getPositionDisplayName } from "@/lib/utils/role-utils";
 
 // User data type (based on existing user structure)
 interface User {
@@ -19,6 +19,7 @@ interface User {
   computedName?: string | null;
   email: string;
   role: string;
+  position?: string;
   isStaff: boolean;
   isActive: boolean;
   createdAt: string;
@@ -103,8 +104,10 @@ const renderUserAvatar = (user: User) => {
       </Avatar>
       <div className="min-w-0">
         <div className="font-medium truncate">{displayName}</div>
-        <div className="text-sm text-muted-foreground truncate">
-          {user.email}
+        <div className="text-sm text-foreground opacity-75 truncate">
+          {getPositionDisplayName(user.position) !== 'Not specified' 
+            ? getPositionDisplayName(user.position)
+            : getRoleDisplayName(user.role)}
         </div>
       </div>
     </div>

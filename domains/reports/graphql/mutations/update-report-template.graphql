@@ -1,0 +1,25 @@
+mutation UpdateReportTemplate($id: ID!, $template: JSON!) {
+  updateReportTemplate(id: $id, template: $template) {
+    id
+    name
+    description
+    domains
+    fields
+    filters {
+      field
+      operator
+      value
+      conjunction
+    }
+    sorts {
+      field
+      direction
+    }
+    limit
+    createdBy
+    createdAt
+    updatedAt
+    isPublic
+    tags
+  }
+}

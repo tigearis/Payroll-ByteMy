@@ -1,0 +1,73 @@
+type ReportField {
+  name: String!
+  type: String!
+  domain: String!
+  description: String
+  sensitive: Boolean!
+  aggregatable: Boolean!
+}
+
+type ReportFilter {
+  field: String!
+  operator: String!
+  value: JSON
+  conjunction: String
+}
+
+type ReportSort {
+  field: String!
+  direction: String!
+}
+
+type ReportTemplate {
+  id: ID!
+  name: String!
+  description: String
+  domains: [String!]!
+  fields: JSON!
+  filters: [ReportFilter!]
+  sorts: [ReportSort!]
+  limit: Int
+  createdBy: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  isPublic: Boolean!
+  tags: [String!]
+}
+
+type ReportJob {
+  id: ID!
+  config: JSON!
+  status: String!
+  progress: Float
+  error: String
+  result: JSON
+  startedAt: DateTime
+  completedAt: DateTime
+  userId: String!
+}
+
+type ReportMetadata {
+  availableFields: JSON!
+  relationships: JSON!
+  domains: [String!]!
+}
+
+type Query {
+  reportMetadata: ReportMetadata!
+  reportTemplates(
+    userId: String
+    isPublic: Boolean
+    tags: [String!]
+  ): [ReportTemplate!]!
+  reportTemplate(id: ID!): ReportTemplate
+  reportJob(id: ID!): ReportJob
+}
+
+type Mutation {
+  generateReport(config: JSON!): ReportJob!
+  saveReportTemplate(template: JSON!): ReportTemplate!
+  updateReportTemplate(id: ID!, template: JSON!): ReportTemplate!
+  deleteReportTemplate(id: ID!): Boolean!
+  cancelReportJob(id: ID!): Boolean!
+}

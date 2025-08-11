@@ -226,6 +226,7 @@ query GetStaffDetailComplete($id: uuid!) {
     computedName
     email
     role
+    position
     username
     image
     isStaff

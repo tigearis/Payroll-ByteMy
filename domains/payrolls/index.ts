@@ -65,21 +65,21 @@ export const payrollFeatures = {
     AdvancedPayrollScheduler,
     PayrollDatesView,
     PayrollSchedule,
-    EditScheduleDialog,
+    EditScheduleDialog: null, // Component removed
   },
   
   // Management features
   management: {
     EditPayrollDialog,
-    EditAssignmentsDialog,
-    UploadDocumentDialog,
+    EditAssignmentsDialog: null, // Component removed
+    UploadDocumentDialog: null, // Component removed
     NotesListModal,
   },
   
   // Analytics features
   analytics: {
-    PayrollAnalytics,
-    PayrollTimeline,
+    PayrollAnalytics: null, // Component removed
+    PayrollTimeline: null, // Component removed
   },
   
   // Data features

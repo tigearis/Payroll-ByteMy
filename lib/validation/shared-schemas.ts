@@ -49,3 +49,20 @@ export type UserCreate = z.infer<typeof userCreateSchema>;
 export type UserUpdate = z.infer<typeof userUpdateSchema>;
 export type PayrollCreate = z.infer<typeof payrollCreateSchema>;
 export type PayrollUpdate = z.infer<typeof payrollUpdateSchema>;
+
+// User schema collections for compatibility
+export const UserSchemas = {
+  User: z.object({
+    id: uuidSchema,
+    firstName: nameSchema,
+    lastName: nameSchema,
+    email: emailSchema,
+    role: z.enum(['viewer', 'consultant', 'manager', 'org_admin', 'developer']),
+    isActive: z.boolean(),
+    clerkUserId: z.string(),
+    createdAt: z.date().optional(),
+    updatedAt: z.date().optional(),
+  }),
+  CreateUser: userCreateSchema,
+  UpdateUser: userUpdateSchema,
+};

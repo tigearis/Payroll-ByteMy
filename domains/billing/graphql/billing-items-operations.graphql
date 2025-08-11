@@ -176,12 +176,12 @@ query GetBillingItemsByUserAdvanced(
 
 query GetRecentBillingItemsAdvanced(
   $limit: Int = 10
-  $days: Int = 30
+  $startDate: timestamp!
 ) {
   billingItems(
     where: {
       createdAt: {
-        _gte: "date_trunc('day', now() - interval '$days days')"
+        _gte: $startDate
       }
     }
     limit: $limit
@@ -461,6 +461,10 @@ query GetBillingDashboardComplete(
   $orderBy: [BillingItemsOrderBy!] = [{ createdAt: DESC }]
   $timeRangeFilter: BillingItemsBoolExp = {}
   $statsFilter: BillingItemsBoolExp = {}
+  $sevenDaysAgo: timestamp!
+  $currentMonthStart: timestamp!
+  $sevenDaysAgoDate: date!
+  $thirtyDaysAgoDate: date!
 ) {
   # Core billing items with all relationships
   billingItems(
@@ -524,7 +528,7 @@ query GetBillingDashboardComplete(
     orderBy: [{ createdAt: DESC }]
     where: {
       createdAt: {
-        _gte: "date_trunc('day', now() - interval '7 days')"
+        _gte: $sevenDaysAgo
       }
     }
   ) {
@@ -553,7 +557,7 @@ query GetBillingDashboardComplete(
     billingItems(
       where: {
         createdAt: {
-          _gte: "date_trunc('month', now())"
+          _gte: $currentMonthStart
         }
       }
     ) {
@@ -588,7 +592,7 @@ query GetBillingDashboardComplete(
   # Payroll completion tracking for integration
   payrollCompletionStats: payrollDatesAggregate(
     where: { 
-      adjustedEftDate: { _gte: "date_trunc('day', now() - interval '30 days')" }
+      adjustedEftDate: { _gte: $thirtyDaysAgoDate }
     }
   ) {
     aggregate {
@@ -599,7 +603,7 @@ query GetBillingDashboardComplete(
   completedPayrollDates: payrollDatesAggregate(
     where: { 
       status: { _eq: "completed" }
-      adjustedEftDate: { _gte: "date_trunc('day', now() - interval '30 days')" }
+      adjustedEftDate: { _gte: $thirtyDaysAgoDate }
     }
   ) {
     aggregate {
@@ -612,7 +616,7 @@ query GetBillingDashboardComplete(
     where: {
       _and: [
         { status: { _eq: "completed" } }
-        { adjustedEftDate: { _gte: "date_trunc('day', now() - interval '7 days')" } }
+        { adjustedEftDate: { _gte: $sevenDaysAgoDate } }
         { _not: { billingItems: {} } }
       ]
     }
@@ -643,7 +647,7 @@ query GetBillingDashboardComplete(
   recentTimeEntries: timeEntries(
     where: {
       workDate: {
-        _gte: "date_trunc('day', now() - interval '7 days')"
+        _gte: $sevenDaysAgoDate
       }
     }
     limit: 20

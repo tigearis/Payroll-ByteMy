@@ -1,0 +1,13 @@
+query GetReportJob($id: ID!) {
+  reportJob(id: $id) {
+    id
+    config
+    status
+    progress
+    error
+    result
+    startedAt
+    completedAt
+    userId
+  }
+}

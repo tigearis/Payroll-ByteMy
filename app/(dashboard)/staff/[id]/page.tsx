@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { useAuth } from "@clerk/nextjs";
 import {
@@ -19,6 +20,10 @@ import {
   UserCheck,
   Settings,
   User,
+  TrendingUp,
+  ArrowUp,
+  ArrowDown,
+  Minus,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -58,6 +63,8 @@ import {
   GetAllUsersListDocument,
 } from "@/domains/users/graphql/generated/graphql";
 import { useRole } from "@/hooks/use-permissions";
+import { cn } from "@/lib/utils";
+import { getRoleDisplayName, getPositionDisplayName } from "@/lib/utils/role-utils";
 // Note: Complex permission GraphQL operations removed - using simplified role system
 // Note: Complex permissions system simplified - using role-based access control
 
@@ -77,6 +84,98 @@ const ROLE_OPTIONS = [
   },
   { value: "developer", label: "Developer", description: "Full system access" },
 ];
+
+// Enhanced metric card component matching other detail pages
+function EnhancedMetricCard({
+  title,
+  value,
+  subtitle,
+  icon: IconComponent,
+  trend,
+  trendValue,
+  status = 'neutral',
+  onClick,
+  children,
+}: {
+  title: string;
+  value: string;
+  subtitle: string;
+  icon: React.ElementType;
+  trend?: 'up' | 'down' | 'stable';
+  trendValue?: string;
+  status?: 'good' | 'warning' | 'critical' | 'neutral';
+  onClick?: () => void;
+  children?: React.ReactNode;
+}) {
+  const statusStyles = {
+    good: 'bg-green-50 border-green-200 hover:bg-green-100',
+    warning: 'bg-amber-50 border-amber-200 hover:bg-amber-100',
+    critical: 'bg-red-50 border-red-200 hover:bg-red-100',
+    neutral: 'bg-white border-gray-200 hover:bg-gray-50',
+  };
+
+  const trendStyles = {
+    up: 'text-green-600 bg-green-100',
+    down: 'text-red-600 bg-red-100',
+    stable: 'text-gray-600 bg-gray-100',
+  };
+
+  const trendIcons = {
+    up: ArrowUp,
+    down: ArrowDown,
+    stable: Minus,
+  };
+
+  return (
+    <Card 
+      className={cn(
+        "group cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02]",
+        statusStyles[status],
+        onClick && "hover:border-blue-300"
+      )}
+      onClick={onClick}
+    >
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium text-gray-700 group-hover:text-gray-900 transition-colors">
+          {title}
+        </CardTitle>
+        <div className="relative">
+          <IconComponent className="h-4 w-4 text-muted-foreground group-hover:text-blue-600 transition-colors" />
+          {status === 'critical' && (
+            <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+          )}
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          <div className="flex items-baseline justify-between">
+            <div className="text-2xl font-bold text-gray-900 group-hover:text-blue-900 transition-colors capitalize">
+              {value}
+            </div>
+            {trend && trendValue && (
+              <div 
+                className={cn(
+                  'px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1',
+                  trendStyles[trend]
+                )}
+                title="Trend from previous period"
+              >
+                {React.createElement(trendIcons[trend], { className: "h-3 w-3" })}
+                <span>{trendValue}</span>
+              </div>
+            )}
+          </div>
+          
+          <p className="text-xs text-muted-foreground group-hover:text-gray-600 transition-colors">
+            {subtitle}
+          </p>
+          
+          {children}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 // Get status config based on user state
 const getUserStatusConfig = (user: any) => {
@@ -495,9 +594,9 @@ export default function StaffDetailsPage() {
     ) || [];
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      <PermissionGuard action="read">
-        <div className="space-y-6">
+    <PermissionGuard action="read">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="space-y-8">
           {/* Header */}
           <PageHeader
             title={user.computedName || `${user.firstName} ${user.lastName}`}
@@ -506,6 +605,32 @@ export default function StaffDetailsPage() {
               { label: "Dashboard", href: "/dashboard" },
               { label: "Staff", href: "/staff" },
               { label: user.computedName || "User" },
+            ]}
+            metadata={[
+              { 
+                label: "Account Status", 
+                value: (
+                  <Badge 
+                    variant={user.isActive ? "default" : "destructive"} 
+                    className="flex items-center gap-1"
+                  >
+                    <CheckCircle className="w-3 h-3" />
+                    {user.isActive ? "Active" : "Inactive"}
+                  </Badge>
+                )
+              },
+              { 
+                label: "Staff Member", 
+                value: (
+                  <Badge 
+                    variant={user.isStaff ? "default" : "outline"} 
+                    className="flex items-center gap-1"
+                  >
+                    <Users className="w-3 h-3" />
+                    {user.isStaff ? "Yes" : "No"}
+                  </Badge>
+                )
+              }
             ]}
             actions={[
               {
@@ -521,79 +646,49 @@ export default function StaffDetailsPage() {
             ]}
           />
 
-          {/* Quick Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-600">Role</p>
-                    <p className="text-2xl font-bold text-gray-900 capitalize">
-                      {user.role?.replace("_", " ")}
-                    </p>
-                    {getAvailableRoles().length > 0 && !isCurrentUser(user) && (
-                      <p className="text-xs text-green-600 mt-1">
-                        Can modify role
-                      </p>
-                    )}
-                    {isCurrentUser(user) && (
-                      <p className="text-xs text-gray-500 mt-1">Your role</p>
-                    )}
-                  </div>
-                  <Shield className="w-8 h-8 text-blue-600" />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Status</p>
-                    <p className="text-2xl font-bold text-gray-900">
-                      {user.isActive ? "Active" : "Inactive"}
-                    </p>
-                  </div>
-                  <CheckCircle
-                    className={`w-8 h-8 ${user.isActive ? "text-green-600" : "text-red-600"}`}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">
-                      Staff Member
-                    </p>
-                    <p className="text-2xl font-bold text-gray-900">
-                      {user.isStaff ? "Yes" : "No"}
-                    </p>
-                  </div>
-                  <Users
-                    className={`w-8 h-8 ${user.isStaff ? "text-green-600" : "text-gray-400"}`}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Manager</p>
-                    <p className="text-2xl font-bold text-gray-900">
-                      {user.manager?.computedName ||
-                        `${user.manager?.firstName || ""} ${user.manager?.lastName || ""}`.trim() ||
-                        "No manager assigned"}
-                    </p>
-                  </div>
-                  <UserCheck className="w-8 h-8 text-purple-600" />
-                </div>
-              </CardContent>
-            </Card>
+          {/* Enhanced Metric Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <EnhancedMetricCard
+              title="Role"
+              value={getRoleDisplayName(user.role) || "Unknown"}
+              subtitle={
+                getAvailableRoles().length > 0 && !isCurrentUser(user)
+                  ? "Can modify role"
+                  : isCurrentUser(user)
+                    ? "Your role"
+                    : "Current role"
+              }
+              icon={Shield}
+              status={getAvailableRoles().length > 0 && !isCurrentUser(user) ? 'good' : 'neutral'}
+            />
+            
+            <EnhancedMetricCard
+              title="Position"
+              value={getPositionDisplayName(user.position)}
+              subtitle={
+                user.position 
+                  ? "Current position" 
+                  : "Position not specified"
+              }
+              icon={User}
+              status={user.position ? 'good' : 'neutral'}
+            />
+            
+            <EnhancedMetricCard
+              title="Manager"
+              value={
+                user.manager?.computedName ||
+                `${user.manager?.firstName || ""} ${user.manager?.lastName || ""}`.trim() ||
+                "None"
+              }
+              subtitle={
+                user.manager
+                  ? "Reports to this manager"
+                  : "No manager assigned"
+              }
+              icon={UserCheck}
+              status={user.manager ? 'good' : 'warning'}
+            />
           </div>
 
           {/* Enhanced Tabs */}
@@ -602,29 +697,17 @@ export default function StaffDetailsPage() {
             onValueChange={setActiveTab}
             className="space-y-4"
           >
-            <TabsList className="grid w-full grid-cols-4 bg-indigo-100 shadow-md rounded-lg">
-              <TabsTrigger
-                value="overview"
-                className="data-[state=active]:bg-white data-[state=active]:text-gray-900 hover:bg-indigo-300 transition-all text-gray-900"
-              >
+            <TabsList className="grid w-full grid-cols-4 bg-muted rounded-lg">
+              <TabsTrigger value="overview">
                 Overview
               </TabsTrigger>
-              <TabsTrigger
-                value="skills"
-                className="data-[state=active]:bg-white data-[state=active]:text-gray-900 hover:bg-indigo-300 transition-all text-gray-900"
-              >
+              <TabsTrigger value="skills">
                 Skills
               </TabsTrigger>
-              <TabsTrigger
-                value="permissions"
-                className="data-[state=active]:bg-white data-[state=active]:text-gray-900 hover:bg-indigo-300 transition-all text-gray-900"
-              >
+              <TabsTrigger value="permissions">
                 Permissions
               </TabsTrigger>
-              <TabsTrigger
-                value="activity"
-                className="data-[state=active]:bg-white data-[state=active]:text-gray-900 hover:bg-indigo-300 transition-all text-gray-900"
-              >
+              <TabsTrigger value="activity">
                 Activity
               </TabsTrigger>
             </TabsList>
@@ -643,15 +726,15 @@ export default function StaffDetailsPage() {
                   <CardContent className="space-y-4">
                     <div className="flex items-center space-x-3">
                       <div className="flex-shrink-0">
-                        <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                          <User className="w-4 h-4 text-blue-600" />
+                        <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                          <User className="w-4 h-4 text-primary" />
                         </div>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-500">
+                        <p className="text-sm font-medium text-foreground opacity-60">
                           Full Name
                         </p>
-                        <p className="text-sm text-gray-900">
+                        <p className="text-sm text-foreground">
                           {user.computedName ||
                             `${user.firstName} ${user.lastName}`}
                         </p>
@@ -660,29 +743,29 @@ export default function StaffDetailsPage() {
 
                     <div className="flex items-center space-x-3">
                       <div className="flex-shrink-0">
-                        <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                          <Mail className="w-4 h-4 text-green-600" />
+                        <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                          <Mail className="w-4 h-4 text-primary" />
                         </div>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-500">
+                        <p className="text-sm font-medium text-foreground opacity-60">
                           Email
                         </p>
-                        <p className="text-sm text-gray-900">{user.email}</p>
+                        <p className="text-sm text-foreground">{user.email}</p>
                       </div>
                     </div>
 
                     <div className="flex items-center space-x-3">
                       <div className="flex-shrink-0">
-                        <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                          <Settings className="w-4 h-4 text-purple-600" />
+                        <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                          <Settings className="w-4 h-4 text-primary" />
                         </div>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-500">
+                        <p className="text-sm font-medium text-foreground opacity-60">
                           Username
                         </p>
-                        <p className="text-sm text-gray-900">
+                        <p className="text-sm text-foreground">
                           {user.username || "Not set"}
                         </p>
                       </div>
@@ -690,15 +773,31 @@ export default function StaffDetailsPage() {
 
                     <div className="flex items-center space-x-3">
                       <div className="flex-shrink-0">
-                        <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                          <Clock className="w-4 h-4 text-orange-600" />
+                        <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                          <User className="w-4 h-4 text-primary" />
                         </div>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-500">
+                        <p className="text-sm font-medium text-foreground opacity-60">
+                          Position
+                        </p>
+                        <p className="text-sm text-foreground">
+                          {getPositionDisplayName(user.position)}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-3">
+                      <div className="flex-shrink-0">
+                        <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                          <Clock className="w-4 h-4 text-primary" />
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-foreground opacity-60">
                           Joined
                         </p>
-                        <p className="text-sm text-gray-900">
+                        <p className="text-sm text-foreground">
                           {user.createdAt
                             ? new Date(user.createdAt).toLocaleDateString()
                             : "Unknown"}
@@ -720,21 +819,21 @@ export default function StaffDetailsPage() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
                         <div className="flex-shrink-0">
-                          <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                            <Shield className="w-4 h-4 text-blue-600" />
+                          <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                            <Shield className="w-4 h-4 text-primary" />
                           </div>
                         </div>
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-500">
+                          <p className="text-sm font-medium text-foreground opacity-60">
                             Current Role
                           </p>
                           <div className="flex items-center gap-2">
                             <Badge className="bg-blue-100 text-blue-800 capitalize">
-                              {user.role?.replace("_", " ")}
+                              {getRoleDisplayName(user.role)}
                             </Badge>
                             {getAvailableRoles().length > 0 &&
                               !isCurrentUser(user) && (
-                                <span className="text-xs text-green-600">
+                                <span className="text-xs text-primary">
                                   Can be changed
                                 </span>
                               )}
@@ -778,15 +877,15 @@ export default function StaffDetailsPage() {
 
                     <div className="flex items-center space-x-3">
                       <div className="flex-shrink-0">
-                        <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                          <CheckCircle className="w-4 h-4 text-green-600" />
+                        <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                          <CheckCircle className="w-4 h-4 text-primary" />
                         </div>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-500">
+                        <p className="text-sm font-medium text-foreground opacity-60">
                           Account Status
                         </p>
-                        <p className="text-sm text-gray-900">
+                        <p className="text-sm text-foreground">
                           {user.isActive ? "Active" : "Inactive"}
                         </p>
                       </div>
@@ -794,15 +893,15 @@ export default function StaffDetailsPage() {
 
                     <div className="flex items-center space-x-3">
                       <div className="flex-shrink-0">
-                        <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                          <Users className="w-4 h-4 text-purple-600" />
+                        <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                          <Users className="w-4 h-4 text-primary" />
                         </div>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-500">
+                        <p className="text-sm font-medium text-foreground opacity-60">
                           Staff Member
                         </p>
-                        <p className="text-sm text-gray-900">
+                        <p className="text-sm text-foreground">
                           {user.isStaff ? "Yes" : "No"}
                         </p>
                       </div>
@@ -810,15 +909,15 @@ export default function StaffDetailsPage() {
 
                     <div className="flex items-center space-x-3">
                       <div className="flex-shrink-0">
-                        <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
-                          <UserCheck className="w-4 h-4 text-yellow-600" />
+                        <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                          <UserCheck className="w-4 h-4 text-primary" />
                         </div>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-500">
+                        <p className="text-sm font-medium text-foreground opacity-60">
                           Manager
                         </p>
-                        <p className="text-sm text-gray-900">
+                        <p className="text-sm text-foreground">
                           {user.manager?.computedName ||
                             `${user.manager?.firstName || ""} ${user.manager?.lastName || ""}`.trim() ||
                             "No manager assigned"}
@@ -1062,7 +1161,7 @@ export default function StaffDetailsPage() {
                         {user.role?.replace("_", " ")}
                       </span>
                       {isUpdatingRole && (
-                        <span className="text-blue-600"> (Updating...)</span>
+                        <span className="text-primary"> (Updating...)</span>
                       )}
                     </p>
                   </div>
@@ -1308,7 +1407,7 @@ export default function StaffDetailsPage() {
                   {isCurrentUser(user) && (
                     <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                       <div className="flex items-center space-x-2">
-                        <AlertTriangle className="w-4 h-4 text-yellow-600" />
+                        <AlertTriangle className="w-4 h-4 text-primary" />
                         <span className="text-sm font-medium text-yellow-800">
                           You cannot delete your own account
                         </span>
@@ -1353,7 +1452,7 @@ export default function StaffDetailsPage() {
             }
           />
         </div>
-      </PermissionGuard>
-    </div>
+      </div>
+    </PermissionGuard>
   );
 }

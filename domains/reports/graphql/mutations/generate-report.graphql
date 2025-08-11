@@ -1,0 +1,13 @@
+mutation GenerateReport($config: JSON!) {
+  generateReport(config: $config) {
+    id
+    config
+    status
+    progress
+    error
+    result
+    startedAt
+    completedAt
+    userId
+  }
+}

@@ -65,13 +65,30 @@ export function useBillingData(options: UseBillingDataOptions = {}): UseBillingD
     pollInterval
   } = options;
 
+  // Calculate required date variables
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  sevenDaysAgo.setHours(0, 0, 0, 0);
+
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  thirtyDaysAgo.setHours(0, 0, 0, 0);
+
+  const currentMonthStart = new Date();
+  currentMonthStart.setDate(1);
+  currentMonthStart.setHours(0, 0, 0, 0);
+
   const { data, loading, error, refetch } = useQuery(GetBillingDashboardCompleteDocument, {
     variables: {
       limit,
       offset,
       orderBy,
       timeRangeFilter,
-      statsFilter
+      statsFilter,
+      sevenDaysAgo: sevenDaysAgo.toISOString(),
+      currentMonthStart: currentMonthStart.toISOString(),
+      sevenDaysAgoDate: sevenDaysAgo.toISOString().split('T')[0],
+      thirtyDaysAgoDate: thirtyDaysAgo.toISOString().split('T')[0]
     },
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
@@ -164,9 +181,14 @@ export function useBillingData(options: UseBillingDataOptions = {}): UseBillingD
 
 // Helper hook for filtering billing data by time range
 export function useBillingDataWithTimeRange(days: number = 30) {
+  // Calculate the date in JavaScript instead of using raw SQL
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - days);
+  startDate.setHours(0, 0, 0, 0); // Set to start of day
+  
   const timeRangeFilter: BillingItemsBoolExp = {
     createdAt: {
-      _gte: `date_trunc('day', now() - interval '${days} days')`
+      _gte: startDate.toISOString()
     }
   };
 

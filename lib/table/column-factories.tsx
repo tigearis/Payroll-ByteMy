@@ -7,20 +7,37 @@ export const ColumnFactories = {
   createDateColumn: createDateColumn,
   createTextColumn: createTextColumn,
   createNumberColumn: createNumberColumn,
+  
+  // Shorthand methods
+  status: createStatusColumn,
+  date: createDateColumn,
+  text: createTextColumn,
+  number: createNumberColumn,
 };
 
 export const CommonColumnSets = {
   // Add common column sets here if needed
   basic: ["id", "name", "status", "createdAt"] as const,
   detailed: ["id", "name", "description", "status", "createdAt", "updatedAt"] as const,
+  
+  billingItemColumns: function<T>(): ColumnDef<T>[] {
+    return [
+      ColumnFactories.createTextColumn<T>("client", "Client"),
+      ColumnFactories.createTextColumn<T>("serviceName", "Service"),
+      ColumnFactories.createNumberColumn<T>("amount", "Amount", (val) => 
+        new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(val)
+      ),
+      ColumnFactories.createStatusColumn<T>("status"),
+    ];
+  }
 };
 export function createStatusColumn<T>(
-  accessor: keyof T,
+  accessor: string,
   statusMap?: Record<string, { variant: string; label: string }>
 ): ColumnDef<T> {
   return {
-    id: String(accessor),
-    key: String(accessor),
+    id: accessor,
+    key: accessor,
     label: "Status",
     essential: true,
     sortable: true,
@@ -36,12 +53,12 @@ export function createStatusColumn<T>(
 }
 
 export function createDateColumn<T>(
-  accessor: keyof T,
+  accessor: string,
   label: string = "Date"
 ): ColumnDef<T> {
   return {
-    id: String(accessor),
-    key: String(accessor),
+    id: accessor,
+    key: accessor,
     label,
     essential: true,
     sortable: true,
@@ -53,7 +70,7 @@ export function createDateColumn<T>(
 }
 
 export function createTextColumn<T>(
-  accessor: keyof T,
+  accessor: string,
   label: string,
   options: {
     essential?: boolean;
@@ -65,8 +82,8 @@ export function createTextColumn<T>(
   const { essential = true, sortable = true, truncate = false, maxLength = 50 } = options;
   
   return {
-    id: String(accessor),
-    key: String(accessor),
+    id: accessor,
+    key: accessor,
     label,
     essential,
     sortable,
@@ -82,13 +99,13 @@ export function createTextColumn<T>(
 }
 
 export function createNumberColumn<T>(
-  accessor: keyof T,
+  accessor: string,
   label: string,
   formatter?: (value: number) => string
 ): ColumnDef<T> {
   return {
-    id: String(accessor),
-    key: String(accessor),
+    id: accessor,
+    key: accessor,
     label,
     essential: true,
     sortable: true,

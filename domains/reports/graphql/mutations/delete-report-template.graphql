@@ -1,0 +1,3 @@
+mutation DeleteReportTemplate($id: ID!) {
+  deleteReportTemplate(id: $id)
+}

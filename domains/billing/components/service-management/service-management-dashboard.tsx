@@ -24,7 +24,7 @@ import { UserBillingRateManager } from './user-billing-rate-manager';
 
 // Dashboard overview queries
 const GET_SERVICE_MANAGEMENT_OVERVIEW = gql`
-  query GetServiceManagementOverview {
+  query GetServiceManagementOverview($thirtyDaysAgo: timestamptz!) {
     # Service statistics
     servicesAggregate: services_aggregate {
       aggregate {
@@ -94,7 +94,7 @@ const GET_SERVICE_MANAGEMENT_OVERVIEW = gql`
     
     # Recent activity (services created in last 30 days)
     recentServicesAggregate: services_aggregate(where: { 
-      created_at: { _gte: "now() - interval '30 days'" }
+      created_at: { _gte: $thirtyDaysAgo }
     }) {
       aggregate {
         count
@@ -116,7 +116,15 @@ const GET_SERVICE_MANAGEMENT_OVERVIEW = gql`
 export function ServiceManagementDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
   
-  const { data: overviewData, loading: overviewLoading } = useQuery(GET_SERVICE_MANAGEMENT_OVERVIEW);
+  // Calculate date for recent activity filter
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  
+  const { data: overviewData, loading: overviewLoading } = useQuery(GET_SERVICE_MANAGEMENT_OVERVIEW, {
+    variables: {
+      thirtyDaysAgo: thirtyDaysAgo.toISOString()
+    }
+  });
 
   // Statistics calculations
   const totalServices = overviewData?.servicesAggregate?.aggregate?.count || 0;
