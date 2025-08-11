@@ -18,7 +18,7 @@ export * from "./components/loading-error-boundary";
 export * from "./table/column-factories";
 
 // Permission Hooks
-export * from "./hooks/use-standardized-permissions";
+// export * from "./hooks/use-standardized-permissions"; // Removed
 
 // Re-export commonly used utilities
 export { cn } from "./utils";

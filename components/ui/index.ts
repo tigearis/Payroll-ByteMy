@@ -2,8 +2,6 @@
 
 // New Extended Components
 export * from "./status-indicator";
-export * from "./metrics-display";
-export * from "./content-section";
 
 // Existing Base Components
 export * from "./alert";

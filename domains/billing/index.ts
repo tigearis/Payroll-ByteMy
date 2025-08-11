@@ -17,8 +17,8 @@ export const RecurringServicesPanel = () => import('./components/RecurringServic
 
 // Dashboard Components (lazy-loaded)
 export const BusinessIntelligenceDashboard = () => import('./components/reporting/business-intelligence-dashboard');
-export const ModernBillingItemsManager = () => import('./components/ModernBillingItemsManager');
-export const OptimizedBillingDashboard = () => import('./components/OptimizedBillingDashboard');
+// export const ModernBillingItemsManager = () => import('./components/ModernBillingItemsManager'); // Removed
+// export const OptimizedBillingDashboard = () => import('./components/OptimizedBillingDashboard'); // Removed
 
 // Management Components (lazy-loaded)
 export const InvoiceManagementDashboard = () => import('./components/invoicing/invoice-management-dashboard');
@@ -26,15 +26,15 @@ export const QuoteManagementDashboard = () => import('./components/quoting/quote
 export const ServiceCatalogManager = () => import('./components/service-catalog/service-catalog-manager');
 
 // Table Components (lazy-loaded)
-export const BillingItemsTable = () => import('./components/items/billing-items-table');
+// export const BillingItemsTable = () => import('./components/items/billing-items-table'); // Removed
 
 // Tracking Components (lazy-loaded)
 export const PayrollCompletionTracker = () => import('./components/payroll-integration/payroll-completion-tracker');
 
 // Hooks (immediately available - lightweight)
-export { useLazyBillingContext } from './hooks/use-lazy-billing-context';
-export { useOptimizedAnalytics } from './hooks/use-optimized-analytics';
-export { useOptimizedBillingDashboard } from './hooks/use-optimized-billing-dashboard';
+// export { useLazyBillingContext } from './hooks/use-lazy-billing-context'; // Removed
+// export { useOptimizedAnalytics } from './hooks/use-optimized-analytics'; // Removed
+// export { useOptimizedBillingDashboard } from './hooks/use-optimized-billing-dashboard'; // Removed
 
 // Services (lazy-loaded)
 export const billingServices = () => import('./services');

@@ -30,9 +30,9 @@ export const PayrollSchedule = () => import('./components/payroll-schedule');
 
 // Dialog Components (lazy-loaded)
 export const EditPayrollDialog = () => import('./components/edit-payroll-dialog').then(m => ({ default: m.EditPayrollDialog }));
-export const EditAssignmentsDialog = () => import('./components/edit-assignments-dialog').then(m => ({ default: m.EditAssignmentsDialog }));
-export const EditScheduleDialog = () => import('./components/edit-schedule-dialog').then(m => ({ default: m.EditScheduleDialog }));
-export const UploadDocumentDialog = () => import('./components/upload-document-dialog').then(m => ({ default: m.UploadDocumentDialog }));
+// export const EditAssignmentsDialog = () => import('./components/edit-assignments-dialog').then(m => ({ default: m.EditAssignmentsDialog })); // Removed
+// export const EditScheduleDialog = () => import('./components/edit-schedule-dialog').then(m => ({ default: m.EditScheduleDialog })); // Removed
+// export const UploadDocumentDialog = () => import('./components/upload-document-dialog').then(m => ({ default: m.UploadDocumentDialog })); // Removed
 
 // Table Components (lazy-loaded)
 export const PayrollsTableUnified = () => import('./components/payrolls-table-unified');
@@ -41,11 +41,11 @@ export const PayrollsTableUnified = () => import('./components/payrolls-table-un
 export const NotesListModal = () => import('./components/notes-list-modal');
 
 // Analytics (lazy-loaded)
-export const PayrollAnalytics = () => import('./components/PayrollAnalytics');
-export const PayrollTimeline = () => import('./components/PayrollTimeline');
+// export const PayrollAnalytics = () => import('./components/PayrollAnalytics'); // Removed
+// export const PayrollTimeline = () => import('./components/PayrollTimeline'); // Removed
 
 // Hooks (immediately available - lightweight)
-export { useOptimizedPayrollQueries } from './hooks/use-optimized-payroll-queries';
+// export { useOptimizedPayrollQueries } from './hooks/use-optimized-payroll-queries'; // Removed
 
 // GraphQL Operations (lazy-loaded)
 export const payrollOperations = () => import('./graphql/generated/graphql');

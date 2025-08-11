@@ -39,7 +39,7 @@ import {
 } from "@/components/ui/dialog";
 import { BillingAnalytics } from "@/domains/billing/components/BillingAnalytics";
 import { BillingErrorBoundary } from "@/domains/billing/components/BillingErrorBoundary";
-import { ModernBillingItemsManager } from "@/domains/billing/components/ModernBillingItemsManager";
+import { BillingItemsManager } from "@/domains/billing/components/BillingItemsManager";
 import { PayrollIntegrationHub } from "@/domains/billing/components/PayrollIntegrationHub";
 import { RecurringServicesPanel } from "@/domains/billing/components/RecurringServicesPanel";
 import { useBillingData } from "@/domains/billing/hooks/useBillingData";
@@ -244,7 +244,7 @@ function BillingDashboardContent() {
       </div>
 
       {/* Modern Billing Items Manager */}
-      <ModernBillingItemsManager
+      <BillingItemsManager
         billingItems={billingItems}
         loading={loading}
         onRefetch={refetch}
