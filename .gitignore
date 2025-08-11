@@ -51,6 +51,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Build analysis and stats
+bundle-stats.json
+build-stats.json
+analyze.html
+
 # clerk configuration (can include secrets)
 /.clerk/
 .env*.local
