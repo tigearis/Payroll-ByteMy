@@ -1,5 +1,5 @@
-import { Redis } from "@upstash/redis";
 import { createHash } from "crypto";
+import { Redis } from "@upstash/redis";
 import { ReportJob, ReportConfig } from "../types/report.types";
 
 export class ReportQueueService {

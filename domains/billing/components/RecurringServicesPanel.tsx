@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useMutation, gql } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import {
   Plus,
   Settings,
@@ -38,76 +38,18 @@ import type {
   Service,
 } from "../types/billing.types";
 
-interface ClientServiceAssignment {
-  id: string;
-  serviceId: string;
-  clientId: string;
-  customRate?: number;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-  service: Service;
-}
+type ClientServiceAssignment = NonNullable<GetClientServiceAssignmentsForRecurringAdvancedQuery['clientServiceAgreements']>[0];
 
-// GraphQL operations for client service assignments
-const GET_CLIENT_SERVICE_ASSIGNMENTS = gql`
-  query GetClientServiceAssignments($clientId: uuid!) {
-    clientServiceAssignments(
-      where: { clientId: { _eq: $clientId }, isActive: { _eq: true } }
-    ) {
-      id
-      serviceId
-      customRate
-      isActive
-      createdAt
-      updatedAt
-      service {
-        id
-        name
-        serviceCode
-        description
-        baseRate
-        category
-        chargeBasis
-        approvalLevel
-      }
-    }
-  }
-`;
-
-const CREATE_CLIENT_SERVICE_ASSIGNMENT = gql`
-  mutation CreateClientServiceAssignment(
-    $input: ClientServiceAssignmentsInsertInput!
-  ) {
-    insertClientServiceAssignmentsOne(object: $input) {
-      id
-      serviceId
-      customRate
-      isActive
-      service {
-        id
-        name
-        serviceCode
-        baseRate
-        category
-      }
-    }
-  }
-`;
-
-const UPDATE_CLIENT_SERVICE_ASSIGNMENT = gql`
-  mutation UpdateClientServiceAssignment(
-    $id: uuid!
-    $updates: ClientServiceAssignmentsSetInput!
-  ) {
-    updateClientServiceAssignmentsByPk(pkColumns: { id: $id }, _set: $updates) {
-      id
-      serviceId
-      customRate
-      isActive
-    }
-  }
-`;
+import {
+  GetClientServiceAssignmentsForRecurringAdvancedDocument,
+  CreateClientServiceAssignmentForRecurringAdvancedDocument,
+  UpdateClientServiceAssignmentForRecurringAdvancedDocument,
+  type GetClientServiceAssignmentsForRecurringAdvancedQuery,
+  type CreateClientServiceAssignmentForRecurringAdvancedMutation,
+  type CreateClientServiceAssignmentForRecurringAdvancedMutationVariables,
+  type UpdateClientServiceAssignmentForRecurringAdvancedMutation,
+  type UpdateClientServiceAssignmentForRecurringAdvancedMutationVariables
+} from "../graphql/generated/graphql";
 
 export function RecurringServicesPanel({
   services,
@@ -127,21 +69,20 @@ export function RecurringServicesPanel({
     data: assignmentsData,
     loading: assignmentsLoading,
     refetch: refetchAssignments,
-  } = useQuery(GET_CLIENT_SERVICE_ASSIGNMENTS, {
+  } = useQuery<GetClientServiceAssignmentsForRecurringAdvancedQuery>(GetClientServiceAssignmentsForRecurringAdvancedDocument, {
     variables: { clientId: selectedClientId },
     skip: !selectedClientId,
   });
 
   // GraphQL mutations
-  const [createClientServiceAssignment] = useMutation(
-    CREATE_CLIENT_SERVICE_ASSIGNMENT
+  const [createClientServiceAssignment] = useMutation<CreateClientServiceAssignmentForRecurringAdvancedMutation, CreateClientServiceAssignmentForRecurringAdvancedMutationVariables>(
+    CreateClientServiceAssignmentForRecurringAdvancedDocument
   );
-  const [updateClientServiceAssignment] = useMutation(
-    UPDATE_CLIENT_SERVICE_ASSIGNMENT
+  const [updateClientServiceAssignment] = useMutation<UpdateClientServiceAssignmentForRecurringAdvancedMutation, UpdateClientServiceAssignmentForRecurringAdvancedMutationVariables>(
+    UpdateClientServiceAssignmentForRecurringAdvancedDocument
   );
 
-  const clientServices: ClientServiceAssignment[] =
-    assignmentsData?.clientServiceAssignments || [];
+  const clientServices = assignmentsData?.clientServiceAgreements || [];
 
   // Filter available services (those not already assigned to selected client)
   const subscribedServiceIds = new Set(
@@ -187,7 +128,7 @@ export function RecurringServicesPanel({
           input: {
             clientId: selectedClientId,
             serviceId: serviceConfig.id,
-            customRate: customRate ? parseFloat(customRate) : null,
+            customRate: customRate ? parseFloat(customRate) : undefined,
             isActive: true,
           },
         },
@@ -219,7 +160,7 @@ export function RecurringServicesPanel({
         variables: {
           id: assignmentId,
           updates: {
-            isActive: isActive,
+            isActive: Boolean(isActive),
           },
         },
       });
@@ -585,7 +526,7 @@ export function RecurringServicesPanel({
 
                           <div className="flex items-center gap-2">
                             <Switch
-                              checked={assignment.isActive}
+                              checked={Boolean(assignment.isActive)}
                               onCheckedChange={checked =>
                                 handleToggleService(assignment.id, checked)
                               }

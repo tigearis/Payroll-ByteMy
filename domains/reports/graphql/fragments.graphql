@@ -1,0 +1,21 @@
+fragment ClientDropdownFields on Clients {
+  id
+  name
+  contactPerson
+}
+
+fragment PayrollDropdownFields on Payrolls {
+  id
+  name
+  status
+  client {
+    name
+  }
+}
+
+fragment UserDropdownFields on Users {
+  id
+  firstName
+  lastName
+  role
+}

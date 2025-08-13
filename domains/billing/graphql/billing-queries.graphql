@@ -1,0 +1,341 @@
+# Billing GraphQL Operations - Corrected to match actual schema
+# These are placeholder queries that will be implemented once the billing schema is ready
+
+query GetClientBillingDashboardStats($clientId: uuid!, $dateFrom: timestamptz, $dateTo: timestamptz) {
+  # This will be implemented when billing tables are ready
+  # For now, we'll return empty structure to prevent runtime errors
+  clients(where: { id: { _eq: $clientId } }, limit: 1) {
+    id
+    name
+    contactPerson
+    contactEmail
+    # Placeholder aggregate fields - will be replaced with actual billing data
+    billingItemsAggregate: billingItemsAggregate {
+      aggregate {
+        sum {
+          totalAmount
+        }
+        count
+      }
+    }
+    payrollsAggregate: payrollsAggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+}
+
+query GetClientInvoiceHistory($clientId: uuid!) {
+  # Placeholder for client invoices - will be implemented when invoice tables exist
+  # For now return empty array to prevent runtime errors
+  clientInvoices: invoices(
+    where: { clientId: { _eq: $clientId } }
+    orderBy: { createdAt: DESC }
+  ) {
+    id
+    invoiceNumber
+    invoiceDate
+    dueDate
+    totalAmount
+    taxAmount
+    status
+    sentAt
+    paidAt
+    billingPeriodStart
+    billingPeriodEnd
+  }
+}
+
+query GetPayrollBillingStats($payrollId: uuid!) {
+  # Placeholder for payroll billing stats
+  payrolls(where: { id: { _eq: $payrollId } }, limit: 1) {
+    id
+    name
+    client {
+      id
+      name
+    }
+    # Placeholder billing aggregates
+    billingItemsAggregate: billingItemsAggregate {
+      aggregate {
+        sum {
+          totalAmount
+        }
+        count
+      }
+    }
+  }
+}
+
+query GetPayrollBillingItems(
+  $payrollId: uuid!
+) {
+  # Placeholder for payroll billing items - get all items and filter client-side
+  billingItems(
+    where: { 
+      payrollId: { _eq: $payrollId }
+    }
+    orderBy: { createdAt: DESC }
+  ) {
+    id
+    serviceName
+    description
+    quantity
+    unitPrice
+    totalAmount
+    status
+    createdAt
+    staffUserId
+    clientId
+    payrollId
+    # Relations
+    staffUser {
+      id
+      firstName
+      lastName
+      computedName
+    }
+    client {
+      id
+      name
+    }
+    payroll {
+      id
+      name
+      client {
+        id
+        name
+      }
+    }
+    service {
+      id
+      name
+      category
+    }
+  }
+}
+
+query GetPendingBillingItems {
+  # Placeholder for pending billing items (manager approval queue)
+  pendingBillingItems: billingItems(
+    where: { status: { _eq: "pending" } }
+    orderBy: { createdAt: DESC }
+  ) {
+    id
+    serviceName
+    description
+    quantity
+    unitPrice
+    totalAmount
+    status
+    createdAt
+    staffUserId
+    clientId
+    payrollId
+    # Relations
+    staffUser {
+      id
+      firstName
+      lastName
+      computedName
+    }
+    client {
+      id
+      name
+    }
+    payroll {
+      id
+      name
+      client {
+        id
+        name
+      }
+    }
+    service {
+      id
+      name
+      category
+    }
+  }
+}
+
+# Mutations - Placeholder implementations using existing fields
+mutation ApproveBillingItem($id: uuid!, $approvedBy: uuid!) {
+  updateBillingItemsByPk(
+    pkColumns: { id: $id }
+    _set: { 
+      status: "approved"
+      approvedBy: $approvedBy
+      approvalDate: "now()"
+      isApproved: true
+    }
+  ) {
+    id
+    status
+    approvedBy
+    approvalDate
+    isApproved
+  }
+}
+
+mutation RejectBillingItem($id: uuid!, $approvedBy: uuid!, $notes: String!) {
+  updateBillingItemsByPk(
+    pkColumns: { id: $id }
+    _set: { 
+      status: "rejected"
+      approvedBy: $approvedBy
+      approvalDate: "now()"
+      isApproved: false
+      notes: $notes
+    }
+  ) {
+    id
+    status
+    approvedBy
+    approvalDate
+    isApproved
+    notes
+  }
+}
+
+mutation BulkApproveBillingItems($ids: [uuid!]!, $approvedBy: uuid!) {
+  updateBillingItemsMany(
+    updates: {
+      where: { id: { _in: $ids } }
+      _set: { 
+        status: "approved"
+        approvedBy: $approvedBy
+        approvalDate: "now()"
+        isApproved: true
+      }
+    }
+  ) {
+    affectedRows
+  }
+}
+
+mutation BulkRejectBillingItems($ids: [uuid!]!, $approvedBy: uuid!, $notes: String!) {
+  updateBillingItemsMany(
+    updates: {
+      where: { id: { _in: $ids } }
+      _set: { 
+        status: "rejected"
+        approvedBy: $approvedBy
+        approvalDate: "now()"
+        isApproved: false
+        notes: $notes
+      }
+    }
+  ) {
+    affectedRows
+  }
+}
+
+mutation ResendInvoice($invoiceId: uuid!) {
+  updateInvoicesByPk(
+    pkColumns: { id: $invoiceId }
+    _set: { 
+      sentAt: "now()"
+    }
+  ) {
+    id
+    sentAt
+  }
+}
+
+# Service Management Operations for Billing Item Creation
+
+query GetClientAssignedServices($clientId: uuid!) {
+  clientServiceAssignments(
+    where: { 
+      clientId: { _eq: $clientId }
+      isActive: { _eq: true }
+    }
+    orderBy: { service: { name: ASC } }
+  ) {
+    id
+    customRate
+    customSeniorityMultipliers
+    service {
+      id
+      name
+      serviceCode
+      description
+      category
+      baseRate
+      billingUnit
+      chargeBasis
+      seniorityMultipliers
+      requiresQuantityInput
+      quantityPrompt
+      isTimeBased
+      approvalLevel
+    }
+  }
+}
+
+query GetUsersByRole {
+  users(
+    where: { 
+      isActive: { _eq: true }
+      role: { _in: ["consultant", "manager", "org_admin"] }
+    }
+    orderBy: { computedName: ASC }
+  ) {
+    id
+    firstName
+    lastName
+    computedName
+    role
+    currentHourlyRate
+  }
+}
+
+# Enhanced Billing Item Operations
+mutation CreateBillingItemFromService($input: BillingItemsInsertInput!) {
+  insertBillingItemsOne(object: $input) {
+    id
+    serviceName
+    description
+    quantity
+    unitPrice
+    totalAmount
+    status
+    createdAt
+    staffUser {
+      id
+      computedName
+    }
+    service {
+      id
+      name
+      category
+    }
+  }
+}
+
+mutation UpdateBillingItemFromService($id: uuid!, $set: BillingItemsSetInput!) {
+  updateBillingItemsByPk(pkColumns: { id: $id }, _set: $set) {
+    id
+    serviceName
+    description
+    quantity
+    unitPrice
+    totalAmount
+    status
+    updatedAt
+    staffUser {
+      id
+      computedName
+    }
+    service {
+      id
+      name
+      category
+    }
+  }
+}
+
+# Note: Download functionality will be handled via API endpoints
+# mutation DownloadInvoice is not included as it would require custom functions

@@ -1,0 +1,12 @@
+# Storage Library - File Operations  
+# Security Classification: MEDIUM - File management and cleanup
+# Used by file cleanup service for storage consistency
+
+# LIBRARY OPERATIONS - File Storage
+
+# Get all file object keys from database
+query GetAllFileObjectKeys {
+  files {
+    objectKey
+  }
+}

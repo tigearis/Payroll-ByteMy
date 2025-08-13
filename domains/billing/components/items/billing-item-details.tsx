@@ -1,8 +1,8 @@
 "use client";
 
+import { FileText, Calendar, DollarSign } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Calendar, DollarSign } from "lucide-react";
 
 interface BillingItemDetailsProps {
   itemId?: string;

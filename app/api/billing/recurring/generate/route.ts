@@ -1,8 +1,26 @@
-import { gql } from '@apollo/client';
 import { NextRequest, NextResponse } from 'next/server';
 import { serverApolloClient } from '@/lib/apollo/unified-client';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
+import {
+  GetActiveClientsForRecurringApiDocument,
+  GetActiveClientsForRecurringApiAllDocument,
+  CheckExistingRecurringBillingApiDocument,
+  CheckExistingRecurringBillingApiAllDocument,
+  CreateRecurringBillingItemApiDocument,
+  LogBillingEventApiDocument,
+  type GetActiveClientsForRecurringApiQuery,
+  type GetActiveClientsForRecurringApiQueryVariables,
+  type GetActiveClientsForRecurringApiAllQuery,
+  type CheckExistingRecurringBillingApiQuery,
+  type CheckExistingRecurringBillingApiQueryVariables,
+  type CheckExistingRecurringBillingApiAllQuery,
+  type CheckExistingRecurringBillingApiAllQueryVariables,
+  type CreateRecurringBillingItemApiMutation,
+  type CreateRecurringBillingItemApiMutationVariables,
+  type LogBillingEventApiMutation,
+  type LogBillingEventApiMutationVariables,
+} from '@/domains/billing/graphql/generated/graphql';
 
 /**
  * Recurring Billing Generation API
@@ -120,29 +138,19 @@ async function POST(request: NextRequest) {
     };
 
     // 1. Get active clients with potential recurring services
-    const GET_ACTIVE_CLIENTS = gql`
-      query GetActiveClients($clientIds: [uuid!]) {
-        clients(
-          where: {
-            active: { _eq: true }
-            ${clientIds ? 'id: { _in: $clientIds }' : ''}
-          }
-          orderBy: [{ name: ASC }]
-        ) {
-          id
-          name
-          createdAt
-          # For now, we'll simulate recurring service subscriptions
-          # In real implementation, this would be from client_recurring_services table
-        }
-      }
-    `;
-
-    const { data: clientsData } = await client.query({
-      query: GET_ACTIVE_CLIENTS,
-      variables: clientIds ? { clientIds } : {},
-      fetchPolicy: 'network-only'
-    });
+    const { data: clientsData } = clientIds 
+      ? await client.query<
+          GetActiveClientsForRecurringApiQuery,
+          GetActiveClientsForRecurringApiQueryVariables
+        >({
+          query: GetActiveClientsForRecurringApiDocument,
+          variables: { clientIds },
+          fetchPolicy: 'network-only'
+        })
+      : await client.query<GetActiveClientsForRecurringApiAllQuery>({
+          query: GetActiveClientsForRecurringApiAllDocument,
+          fetchPolicy: 'network-only'
+        });
 
     const clients = clientsData?.clients || [];
     console.log(`Found ${clients.length} active clients for billing`);
@@ -153,32 +161,30 @@ async function POST(request: NextRequest) {
         result.clientsProcessed++;
 
         // Check if billing already exists for this client/month
-        const CHECK_EXISTING_BILLING = gql`
-          query CheckExistingBilling($clientId: uuid!, $billingMonth: date!, $serviceCode: String) {
-            billingItems(
-              where: {
-                clientId: { _eq: $clientId }
-                billingPeriodStart: { _eq: $billingMonth }
-                generatedFrom: { _eq: "recurring_schedule" }
-                ${serviceCode ? 'serviceCode: { _eq: $serviceCode }' : ''}
-              }
-            ) {
-              id
-              serviceCode
-              totalAmount
-            }
-          }
-        `;
-
-        const { data: existingData } = await client.query({
-          query: CHECK_EXISTING_BILLING,
-          variables: { 
-            clientId: clientData.id, 
-            billingMonth: billingMonth,
-            ...(serviceCode && { serviceCode })
-          },
-          fetchPolicy: 'network-only'
-        });
+        const { data: existingData } = serviceCode
+          ? await client.query<
+              CheckExistingRecurringBillingApiQuery,
+              CheckExistingRecurringBillingApiQueryVariables
+            >({
+              query: CheckExistingRecurringBillingApiDocument,
+              variables: { 
+                clientId: clientData.id, 
+                billingMonth: billingMonth,
+                serviceCode
+              },
+              fetchPolicy: 'network-only'
+            })
+          : await client.query<
+              CheckExistingRecurringBillingApiAllQuery,
+              CheckExistingRecurringBillingApiAllQueryVariables
+            >({
+              query: CheckExistingRecurringBillingApiAllDocument,
+              variables: { 
+                clientId: clientData.id, 
+                billingMonth: billingMonth
+              },
+              fetchPolicy: 'network-only'
+            });
 
         const existingBilling = existingData?.billingItems || [];
         const existingServiceCodes = new Set(existingBilling.map((item: any) => item.serviceCode));
@@ -362,15 +368,6 @@ async function createRecurringBillingItem({
   billingMonth: Date;
   prorated: boolean;
 }) {
-  const CREATE_BILLING_ITEM = gql`
-    mutation CreateRecurringBillingItem($input: BillingItemsInsertInput!) {
-      insertBillingItemsOne(object: $input) {
-        id
-        totalAmount
-      }
-    }
-  `;
-
   const description = `${service.serviceName} - ${formatMonth(billingMonth)}${prorated ? ' (Pro-rated)' : ''}`;
   
   const billingItemInput = {
@@ -382,7 +379,6 @@ async function createRecurringBillingItem({
     quantity: 1,
     unitPrice: amount,
     totalAmount: amount,
-    amount,
     
     autoGenerated: true,
     generatedFrom: 'recurring_schedule',
@@ -400,37 +396,28 @@ async function createRecurringBillingItem({
       : `Standard recurring ${service.serviceName} fee`
   };
 
-  const result = await serverApolloClient.mutate({
-    mutation: CREATE_BILLING_ITEM,
+  const result = await serverApolloClient.mutate<
+    CreateRecurringBillingItemApiMutation,
+    CreateRecurringBillingItemApiMutationVariables
+  >({
+    mutation: CreateRecurringBillingItemApiDocument,
     variables: { input: billingItemInput }
   });
 
   const billingItemId = result.data?.insertBillingItemsOne?.id;
 
-  // Log in recurring billing log for audit trail
+  // Log in billing event log for audit trail
   if (billingItemId) {
-    const LOG_RECURRING_BILLING = gql`
-      mutation LogRecurringBilling($input: RecurringBillingLogInsertInput!) {
-        insertRecurringBillingLogOne(object: $input) {
-          id
-        }
-      }
-    `;
-
     try {
-      await serverApolloClient.mutate({
-        mutation: LOG_RECURRING_BILLING,
+      await serverApolloClient.mutate<
+        LogBillingEventApiMutation,
+        LogBillingEventApiMutationVariables
+      >({
+        mutation: LogBillingEventApiDocument,
         variables: {
           input: {
-            clientId,
-            serviceCode: service.serviceCode,
-            billingMonth: billingMonth.toISOString().split('T')[0],
-            generatedAt: new Date().toISOString(),
-            billingItemId,
-            amount,
-            prorated,
-            prorationReason: prorated ? 'Pro-rated for partial month' : null,
-            generatedBySystem: true
+            eventType: 'recurring_billing_item_created',
+            message: `Created recurring billing item for ${service.serviceName} - ${clientName}${prorated ? ' (Pro-rated)' : ''} [${service.serviceCode}] Amount: $${amount.toFixed(2)}${prorated ? ' (Prorated for partial month)' : ''}}`
           }
         }
       });
@@ -461,29 +448,16 @@ async function getClientHistory(clientId: string, billingMonth: Date) {
  * Log recurring billing generation event
  */
 async function logRecurringBillingGeneration(result: RecurringBillingResult) {
-  const LOG_EVENT = gql`
-    mutation LogBillingEvent($input: BillingEventLogInsertInput!) {
-      insertBillingEventLogOne(object: $input) {
-        id
-      }
-    }
-  `;
-
   try {
-    await serverApolloClient.mutate({
-      mutation: LOG_EVENT,
+    await serverApolloClient.mutate<
+      LogBillingEventApiMutation,
+      LogBillingEventApiMutationVariables
+    >({
+      mutation: LogBillingEventApiDocument,
       variables: {
         input: {
           eventType: 'recurring_billing_generated',
-          message: `Generated ${result.itemsCreated} recurring billing items for ${result.clientsProcessed} clients (${result.billingMonth}) - Total: $${result.totalAmount.toFixed(2)}`,
-          metadata: {
-            billingMonth: result.billingMonth,
-            itemsCreated: result.itemsCreated,
-            totalAmount: result.totalAmount,
-            clientsProcessed: result.clientsProcessed,
-            errors: result.errors,
-            warnings: result.warnings
-          }
+          message: `Generated ${result.itemsCreated} recurring billing items for ${result.clientsProcessed} clients (${result.billingMonth}) - Total: $${result.totalAmount.toFixed(2)} | Errors: ${result.errors.length} | Warnings: ${result.warnings.length}`
         }
       }
     });

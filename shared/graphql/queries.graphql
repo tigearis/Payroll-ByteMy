@@ -319,3 +319,23 @@ query ListFiles(
     }
   }
 }
+
+# ============================================
+# Feature Flags Queries
+# ============================================
+
+query GetFeatureFlags {
+  featureFlags {
+    featureName
+    isEnabled
+    allowedRoles
+  }
+}
+
+query GetFeatureFlagByName($featureName: String!) {
+  featureFlags(where: { featureName: { _eq: $featureName } }) {
+    featureName
+    isEnabled
+    allowedRoles
+  }
+}

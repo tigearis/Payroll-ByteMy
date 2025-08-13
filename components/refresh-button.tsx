@@ -18,11 +18,11 @@ interface RefreshButtonProps {
   type: "query" | "entity" | "payrolls" | "all";
 
   /**
-   * For 'query' type: names of queries to refresh
+   * For 'query' type: DocumentNode objects to refresh (NOT string names)
    * For 'payrolls' type: array of payroll IDs to refresh
    * For 'entity' type: entity data (typename and id)
    */
-  data?: string[] | { typename: string; id: string | number } | any;
+  data?: any[] | { typename: string; id: string | number } | any;
 
   /**
    * Whether to show toast notifications
@@ -86,10 +86,11 @@ export function RefreshButton({
       switch (type) {
         case "query":
           if (Array.isArray(data)) {
-            success = await refetchQueries(data, showToast);
+            // Use DocumentNode-based refetch instead of deprecated string-based refetch
+            success = await refetchQueriesByDocument(data, showToast);
           } else {
             console.error(
-              'Data must be an array of query names for type "query"'
+              'Data must be an array of DocumentNode objects for type "query"'
             );
           }
           break;

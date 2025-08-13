@@ -1,5 +1,8 @@
-import { gql } from '@apollo/client';
-import { executeTypedQuery } from '@/lib/apollo/query-helpers';
+import { adminApolloClient } from '@/lib/apollo/unified-client';
+import {
+  GetAllFileObjectKeysAdminDocument,
+  type GetAllFileObjectKeysAdminQuery,
+} from '@/domains/admin/graphql/generated/graphql';
 import { auditLogger } from '@/lib/audit/audit-logger';
 import { minioClient } from './minio-client';
 
@@ -56,17 +59,12 @@ const DEFAULT_OPTIONS: Required<CleanupOptions> = {
  * Get all file object keys from the database
  */
 async function getDatabaseFileKeys(): Promise<Set<string>> {
-  const query = gql`
-    query GetAllFileObjectKeys {
-      files {
-        objectKey
-      }
-    }
-  `;
-
   try {
-    const result = await executeTypedQuery(query, {});
-    const files = (result as any)?.files || [];
+    const { data } = await adminApolloClient.query<GetAllFileObjectKeysAdminQuery>({
+      query: GetAllFileObjectKeysAdminDocument,
+      fetchPolicy: 'network-only',
+    });
+    const files = data?.files || [];
     
     return new Set(
       files

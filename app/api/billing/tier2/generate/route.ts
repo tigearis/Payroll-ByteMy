@@ -1,8 +1,24 @@
-import { gql } from '@apollo/client';
 import { NextRequest, NextResponse } from 'next/server';
 import { serverApolloClient } from '@/lib/apollo/unified-client';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
+import {
+  CheckPayrollCompletionApiTier2Document,
+  GetTier2ServicesForApiDocument,
+  CheckExistingTier2BillingApiDocument,
+  CreateBillingItemApiDocument,
+  LogBillingEventApiDocument,
+  type CheckPayrollCompletionApiTier2Query,
+  type CheckPayrollCompletionApiTier2QueryVariables,
+  type GetTier2ServicesForApiQuery,
+  type GetTier2ServicesForApiQueryVariables,
+  type CheckExistingTier2BillingApiQuery,
+  type CheckExistingTier2BillingApiQueryVariables,
+  type CreateBillingItemApiMutation,
+  type CreateBillingItemApiMutationVariables,
+  type LogBillingEventApiMutation,
+  type LogBillingEventApiMutationVariables,
+} from '@/domains/billing/graphql/generated/graphql';
 
 interface GenerateTier2BillingRequest {
   payrollId: string;
@@ -45,27 +61,11 @@ async function POST(request: NextRequest) {
     const client = serverApolloClient;
 
     // First, verify the payroll exists and all payroll dates are completed
-    const CHECK_PAYROLL_COMPLETION = gql`
-      query CheckPayrollCompletion($id: uuid!) {
-        payrollsByPk(id: $id) {
-          id
-          name
-          clientId
-          status
-          client {
-            id
-            name
-          }
-          payrollDates {
-            id
-            status
-          }
-        }
-      }
-    `;
-
-    const { data: payrollData } = await client.query({
-      query: CHECK_PAYROLL_COMPLETION,
+    const { data: payrollData } = await client.query<
+      CheckPayrollCompletionApiTier2Query,
+      CheckPayrollCompletionApiTier2QueryVariables
+    >({
+      query: CheckPayrollCompletionApiTier2Document,
       variables: { id: payrollId },
       fetchPolicy: 'network-only'
     });
@@ -88,65 +88,11 @@ async function POST(request: NextRequest) {
     }
 
     // Get tier 2 services (both client agreements and payroll overrides)
-    const GET_TIER2_SERVICES = gql`
-      query GetTier2Services($payrollId: uuid!, $clientId: uuid!) {
-        # Client service agreements for tier 2
-        clientServiceAgreements(
-          where: {
-            clientId: { _eq: $clientId }
-            isActive: { _eq: true }
-            isEnabled: { _eq: true }
-            service: { 
-              billingTier: { _eq: "payroll" }
-              isActive: { _eq: true }
-            }
-            billingFrequency: { _in: ["per_payroll", "per_use"] }
-          }
-        ) {
-          id
-          serviceId
-          customRate
-          billingFrequency
-          serviceConfiguration
-          service {
-            id
-            name
-            description
-            billingUnit
-            defaultRate
-            billingTier
-            tierPriority
-          }
-        }
-        
-        # Payroll-specific service agreements (overrides)
-        payrollServiceAgreements(
-          where: {
-            payrollId: { _eq: $payrollId }
-            isActive: { _eq: true }
-            autoBillingEnabled: { _eq: true }
-          }
-        ) {
-          id
-          serviceId
-          customRate
-          billingFrequency
-          serviceConfiguration
-          service {
-            id
-            name
-            description
-            billingUnit
-            defaultRate
-            billingTier
-            tierPriority
-          }
-        }
-      }
-    `;
-
-    const { data: servicesData } = await client.query({
-      query: GET_TIER2_SERVICES,
+    const { data: servicesData } = await client.query<
+      GetTier2ServicesForApiQuery,
+      GetTier2ServicesForApiQueryVariables
+    >({
+      query: GetTier2ServicesForApiDocument,
       variables: { 
         payrollId,
         clientId: payroll.clientId 
@@ -177,23 +123,11 @@ async function POST(request: NextRequest) {
     // Create billing items for each applicable service
     for (const agreement of uniqueServices) {
       // Check if billing item already exists for this payroll + service (payroll-level)
-      const CHECK_EXISTING_BILLING = gql`
-        query CheckExistingBilling($payrollId: uuid!, $serviceId: uuid!) {
-          billingItems(
-            where: {
-              payrollId: { _eq: $payrollId }
-              serviceId: { _eq: $serviceId }
-              payrollDateId: { _is_null: true }
-              status: { _neq: "draft" }
-            }
-          ) {
-            id
-          }
-        }
-      `;
-
-      const { data: existingData } = await client.query({
-        query: CHECK_EXISTING_BILLING,
+      const { data: existingData } = await client.query<
+        CheckExistingTier2BillingApiQuery,
+        CheckExistingTier2BillingApiQueryVariables
+      >({
+        query: CheckExistingTier2BillingApiDocument,
         variables: { 
           payrollId, 
           serviceId: agreement.serviceId 
@@ -206,37 +140,29 @@ async function POST(request: NextRequest) {
       }
 
       // Calculate billing details
-      const effectiveRate = agreement.customRate || agreement.service.defaultRate || 0;
+      const effectiveRate = agreement.customRate || agreement.service?.defaultRate || agreement.payrollServiceAgreementsByServiceId?.defaultRate || 0;
       const quantity = 1; // Default quantity for tier 2 services
       const itemAmount = quantity * effectiveRate;
-
-      // Create billing item
-      const CREATE_BILLING_ITEM = gql`
-        mutation CreateBillingItem($input: BillingItemsInsertInput!) {
-          insertBillingItemsOne(object: $input) {
-            id
-            description
-            totalAmount
-          }
-        }
-      `;
+      const serviceName = agreement.service?.name || agreement.payrollServiceAgreementsByServiceId?.name || 'Unknown Service';
 
       const description = `${agreement.service.name} - ${payroll.name}${agreement.sourceType === 'payroll' ? ' (Payroll Override)' : ''}`;
 
       try {
-        await client.mutate({
-          mutation: CREATE_BILLING_ITEM,
+        await client.mutate<
+          CreateBillingItemApiMutation,
+          CreateBillingItemApiMutationVariables
+        >({
+          mutation: CreateBillingItemApiDocument,
           variables: {
             input: {
               payrollId: payrollId,
               clientId: payroll.clientId,
               serviceId: agreement.serviceId,
-              serviceName: agreement.service.name,
+              serviceName: serviceName,
               description,
               quantity,
               unitPrice: effectiveRate,
               totalAmount: itemAmount,
-              amount: itemAmount,
               staffUserId: completedBy,
               status: 'confirmed'
             }
@@ -254,7 +180,7 @@ async function POST(request: NextRequest) {
           metadata: {
             payrollId,
             serviceId: agreement.serviceId,
-            serviceName: agreement.service.name,
+            serviceName: serviceName,
             errorName: error instanceof Error ? error.name : 'UnknownError',
             timestamp: new Date().toISOString()
           }
@@ -263,16 +189,11 @@ async function POST(request: NextRequest) {
     }
 
     // Log the billing generation event
-    const LOG_EVENT = gql`
-      mutation LogBillingEvent($input: BillingEventLogInsertInput!) {
-        insertBillingEventLogOne(object: $input) {
-          id
-        }
-      }
-    `;
-
-    await client.mutate({
-      mutation: LOG_EVENT,
+    await client.mutate<
+      LogBillingEventApiMutation,
+      LogBillingEventApiMutationVariables
+    >({
+      mutation: LogBillingEventApiDocument,
       variables: {
         input: {
           eventType: 'tier2_billing_generated',

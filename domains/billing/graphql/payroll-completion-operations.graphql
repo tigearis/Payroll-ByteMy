@@ -1,0 +1,30 @@
+# Billing Domain - Payroll Completion Operations
+# Security Classification: HIGH - Financial operations and billing
+# Used by React components for payroll completion forms and workflows
+
+# COMPONENT OPERATIONS - Payroll Completion Form
+
+# Save payroll service quantities during completion
+mutation SavePayrollServiceQuantitiesComponent($quantities: [PayrollServiceQuantitiesInsertInput!]!, $payrollDateId: uuid!) {
+  deletePayrollServiceQuantities(where: { payrollDateId: { _eq: $payrollDateId } }) {
+    affectedRows
+  }
+  insertPayrollServiceQuantities(objects: $quantities) {
+    returning {
+      id
+      serviceId
+      quantity
+    }
+  }
+}
+
+# Update payroll date status during completion
+mutation UpdatePayrollDateStatusComponent($payrollDateId: uuid!, $status: String!) {
+  updatePayrollDatesByPk(
+    pkColumns: { id: $payrollDateId }
+    _set: { status: $status }
+  ) {
+    id
+    status
+  }
+}

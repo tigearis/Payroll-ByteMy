@@ -1,42 +1,13 @@
 import { useQuery } from "@apollo/client";
-import { gql } from "@apollo/client";
 import { useAuth, useUser, useSession } from "@clerk/nextjs";
 import { useMemo } from "react";
 
-// Import from shared generated types which include all fragments
-import type { GetCurrentUserQuery, GetCurrentUserQueryVariables } from "../shared/types/generated/graphql";
-
-// Use gql template literal from Apollo Client
-
-const GetCurrentUserDocument = gql`
-  query GetCurrentUser($userId: uuid!) {
-    user: usersByPk(id: $userId) {
-      id
-      firstName
-      lastName
-      computedName
-      email
-      role
-      username
-      image
-      isStaff
-      isActive
-      clerkUserId
-      managerId
-      deactivatedAt
-      deactivatedBy
-      createdAt
-      updatedAt
-      manager {
-        id
-        firstName
-        lastName
-        computedName
-        email
-      }
-    }
-  }
-`;
+// Import generated GraphQL operations and types
+import { 
+  GetCurrentUserForAuthDocument,
+  type GetCurrentUserForAuthQuery, 
+  type GetCurrentUserForAuthQueryVariables 
+} from "../domains/users/graphql/generated/graphql";
 
 /**
  * Simplified useCurrentUser hook using Apollo's built-in deduplication
@@ -132,9 +103,9 @@ export function useCurrentUser() {
 
   // Apollo automatically handles deduplication and caching
   const { data, loading, error, refetch, networkStatus } = useQuery<
-    GetCurrentUserQuery,
-    GetCurrentUserQueryVariables
-  >(GetCurrentUserDocument, {
+    GetCurrentUserForAuthQuery,
+    GetCurrentUserForAuthQueryVariables
+  >(GetCurrentUserForAuthDocument, {
     variables: { userId: databaseUserId! },
       skip: !databaseUserId, // Don't query if no database user ID
 

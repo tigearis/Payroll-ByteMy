@@ -52,8 +52,18 @@ export function useHierarchicalPermissions(): HierarchicalPermissionHook {
 
     const metadata = user.publicMetadata;
     const userRole = metadata.role as UserRole | null;
-    const allowedRoles = (metadata.allowedRoles as UserRole[]) || [];
-    const excludedPermissions = (metadata.excludedPermissions as string[]) || [];
+    
+    // Ensure allowedRoles is always an array
+    let allowedRoles: UserRole[] = [];
+    if (Array.isArray(metadata.allowedRoles)) {
+      allowedRoles = metadata.allowedRoles as UserRole[];
+    }
+    
+    // Ensure excludedPermissions is always an array
+    let excludedPermissions: string[] = [];
+    if (Array.isArray(metadata.excludedPermissions)) {
+      excludedPermissions = metadata.excludedPermissions as string[];
+    }
     
     const effectivePermissions = userRole 
       ? getEffectivePermissions(userRole, excludedPermissions)
@@ -127,8 +137,13 @@ export function useHierarchicalPermissions(): HierarchicalPermissionHook {
     return (permission: string): "inherited" | "excluded" | "denied" => {
       if (!permissionData.userRole) return "denied";
       
+      // Safety check: ensure excludedPermissions is an array
+      const safeExcludedPermissions = Array.isArray(permissionData.excludedPermissions) 
+        ? permissionData.excludedPermissions 
+        : [];
+      
       // Check if excluded
-      const isExcluded = permissionData.excludedPermissions.some(excluded => {
+      const isExcluded = safeExcludedPermissions.some(excluded => {
         if (excluded === "*") return true;
         if (excluded.endsWith(".*")) {
           const resource = excluded.replace(".*", "");

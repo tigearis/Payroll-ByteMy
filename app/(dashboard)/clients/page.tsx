@@ -41,11 +41,11 @@ import { useDynamicLoading } from "@/lib/hooks/use-dynamic-loading";
 
 // Create loading component for clients
 function ClientsLoading() {
-  const { Loading } = useDynamicLoading({
+  const { Loading: _ClientsLoading } = useDynamicLoading({
     title: "Loading Client Data...",
     description: "Fetching client information and relationships",
   });
-  return <Loading variant="minimal" />;
+  return <_ClientsLoading variant="minimal" />;
 }
 
 interface Client {
@@ -72,11 +72,11 @@ interface ClientStats {
 }
 
 function ClientsPage() {
-  const { currentUser, loading: userLoading } = useCurrentUser();
+  const { currentUser: _currentUser, loading: userLoading } = useCurrentUser();
 
   // Data state
   const [clients, setClients] = useState<Client[]>([]);
-  const [stats, setStats] = useState<ClientStats | null>(null);
+  const [_stats, setStats] = useState<ClientStats | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -123,24 +123,21 @@ function ClientsPage() {
 
   // Business logic handlers
   const handleCreateClient = () => {
-    // TODO: Navigate to client creation page
-    console.log("Create new client");
+    window.location.href = "/clients/new";
   };
 
-  const handleEditClient = (clientId: string) => {
-    // TODO: Navigate to client edit page
-    console.log("Edit client:", clientId);
+  const _handleEditClient = (clientId: string) => {
+    window.location.href = `/clients/${clientId}`;
   };
 
-  const handleViewClient = (clientId: string) => {
-    // TODO: Navigate to client details page
-    console.log("View client:", clientId);
+  const _handleViewClient = (clientId: string) => {
+    window.location.href = `/clients/${clientId}`;
   };
 
   const handleDeleteClient = async (clientId: string) => {
     try {
-      // TODO: Implement client deletion API call
-      console.log("Delete client:", clientId);
+      const res = await fetch(`/api/clients/${clientId}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed to delete client");
       refetch();
     } catch (err) {
       setError("Failed to delete client");
@@ -153,8 +150,12 @@ function ClientsPage() {
     active: boolean
   ) => {
     try {
-      // TODO: Implement client status toggle API call
-      console.log("Toggle client status:", { clientId, active });
+      const res = await fetch(`/api/clients/${clientId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ active }),
+      });
+      if (!res.ok) throw new Error("Failed to update client status");
       refetch();
     } catch (err) {
       setError("Failed to update client status");
@@ -163,8 +164,7 @@ function ClientsPage() {
   };
 
   const handleEmailClient = (clientId: string) => {
-    // TODO: Navigate to email composer with client context
-    console.log("Email client:", clientId);
+    window.location.href = `/email?client=${clientId}`;
   };
 
   if (userLoading) {
@@ -217,11 +217,7 @@ function ClientsPage() {
             ]}
             actions={[
               { label: "Refresh", icon: RefreshCw, onClick: () => refetch() },
-              {
-                label: "Email Clients",
-                icon: Mail,
-                onClick: () => console.log("Open email composer"),
-              },
+              { label: "Email Clients", icon: Mail, href: "/email" },
               {
                 label: "New Client",
                 icon: Plus,

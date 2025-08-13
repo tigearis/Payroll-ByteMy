@@ -1,16 +1,14 @@
+import { createHash } from "crypto";
 import {
   ReportConfig,
   ReportJob,
   ReportJobStatus,
 } from "../types/report.types";
-import { ReportSecurityService } from "./security.service";
-import { ReportCacheService } from "./cache.service";
 import { ReportAuditService } from "./audit.service";
-import { createHash } from "crypto";
+import { ReportCacheService } from "./cache.service";
 
 export class ReportGeneratorService {
   constructor(
-    private securityService: ReportSecurityService,
     private cacheService: ReportCacheService,
     private auditService: ReportAuditService
   ) {}
@@ -28,16 +26,12 @@ export class ReportGeneratorService {
     config: ReportConfig,
     userId: string
   ): Promise<ReportJob> {
-    // 1. Validate field access
-    await Promise.all(
-      Object.entries(config.fields).map(([domain, fields]) =>
-        this.securityService.validateFieldAccess(userId, domain, fields)
-      )
-    );
+    // Security validation is now handled at the API level via withAuth middleware
+    // This service processes pre-authorized report configs
 
-    // 2. Check cache
+    // 1. Check cache
     const reportHash = this.generateReportHash(config);
-    const cachedReport = await this.cacheService.getCachedReport(reportHash);
+    const cachedReport = await this.cacheService.getCachedReport(config);
     if (cachedReport) {
       return {
         id: reportHash,

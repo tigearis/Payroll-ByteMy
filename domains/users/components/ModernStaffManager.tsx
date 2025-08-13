@@ -1,8 +1,8 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, RefreshCw, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UsersTableUnified } from "./users-table-unified";
 
 // Staff member interface matching what's passed from staff page
@@ -49,11 +49,9 @@ export function ModernStaffManager({
   showHeader = true,
   showLocalActions = true,
 }: ModernStaffManagerProps) {
-  
   // Handle user edit actions
   const handleEditUser = (user: StaffMember) => {
-    // TODO: Implement edit user functionality
-    console.log("Edit user:", user.id);
+    window.location.href = `/staff/${user.id}/edit`;
   };
 
   // Handle user view actions
@@ -75,13 +73,15 @@ export function ModernStaffManager({
     isStaff: member.isStaff,
     createdAt: member.createdAt,
     updatedAt: member.updatedAt,
-    manager: member.managerUser ? {
-      id: member.managerUser.id,
-      firstName: member.managerUser.firstName,
-      lastName: member.managerUser.lastName,
-      computedName: member.managerUser.computedName,
-      email: member.managerUser.email,
-    } : undefined,
+    manager: member.managerUser
+      ? {
+          id: member.managerUser.id,
+          firstName: member.managerUser.firstName,
+          lastName: member.managerUser.lastName,
+          computedName: member.managerUser.computedName,
+          email: member.managerUser.email,
+        }
+      : undefined,
   }));
 
   const content = (
@@ -117,7 +117,9 @@ export function ModernStaffManager({
                   onClick={onRefetch}
                   disabled={loading}
                 >
-                  <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                  <RefreshCw
+                    className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`}
+                  />
                   Refresh
                 </Button>
               )}
@@ -129,9 +131,7 @@ export function ModernStaffManager({
           )}
         </div>
       </CardHeader>
-      <CardContent className="p-0">
-        {content}
-      </CardContent>
+      <CardContent className="p-0">{content}</CardContent>
     </Card>
   );
 }

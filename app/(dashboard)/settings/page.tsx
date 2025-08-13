@@ -70,9 +70,10 @@ export default function SettingsPage() {
   };
 
   const handleSave = async () => {
-    // Here you would typically save the role access settings to your backend
-    console.log("Role access settings:", roleAccess);
-    // Implement API call to save settings
+    // Persist locally for now; hook up to API when backend is ready
+    try {
+      localStorage.setItem("roleAccessSettings", JSON.stringify(roleAccess));
+    } catch {}
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

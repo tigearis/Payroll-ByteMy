@@ -7,7 +7,6 @@ import {
   Users,
   Settings,
   RefreshCw,
-  Plus,
   Clock,
   TrendingUp,
   Activity,
@@ -15,11 +14,10 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, useMemo, Suspense } from "react";
+import { useMemo, Suspense } from "react";
 import { PermissionGuard } from "@/components/auth/permission-guard";
 import { PageHeader } from "@/components/patterns/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 import { ModernWorkScheduleManager } from "@/domains/work-schedule/components/ModernWorkScheduleManager";
 import {
   UpsertWorkScheduleDocument,
@@ -31,6 +29,7 @@ import {
   type UpdateUserDefaultAdminTimeMutation,
   type GetAllStaffWorkloadQuery,
 } from "@/domains/work-schedule/graphql/generated/graphql";
+import { cn } from "@/lib/utils";
 
 // Team member interface for work schedule management
 interface TeamMember {
@@ -70,7 +69,7 @@ function EnhancedMetricCard({
   icon: IconComponent,
   trend,
   trendValue,
-  status = 'neutral',
+  status = "neutral",
   onClick,
   children,
 }: {
@@ -78,27 +77,27 @@ function EnhancedMetricCard({
   value: string;
   subtitle: string;
   icon: React.ElementType;
-  trend?: 'up' | 'down' | 'stable';
+  trend?: "up" | "down" | "stable";
   trendValue?: string;
-  status?: 'good' | 'warning' | 'critical' | 'neutral';
+  status?: "good" | "warning" | "critical" | "neutral";
   onClick?: () => void;
   children?: React.ReactNode;
 }) {
   const statusStyles = {
-    good: 'bg-green-50 border-green-200 hover:bg-green-100',
-    warning: 'bg-amber-50 border-amber-200 hover:bg-amber-100',
-    critical: 'bg-red-50 border-red-200 hover:bg-red-100',
-    neutral: 'bg-white border-gray-200 hover:bg-gray-50',
+    good: "bg-green-50 border-green-200 hover:bg-green-100",
+    warning: "bg-amber-50 border-amber-200 hover:bg-amber-100",
+    critical: "bg-red-50 border-red-200 hover:bg-red-100",
+    neutral: "bg-white border-gray-200 hover:bg-gray-50",
   };
 
   const trendStyles = {
-    up: 'text-green-600 bg-green-100',
-    down: 'text-red-600 bg-red-100',
-    stable: 'text-gray-600 bg-gray-100',
+    up: "text-green-600 bg-green-100",
+    down: "text-red-600 bg-red-100",
+    stable: "text-gray-600 bg-gray-100",
   };
 
   return (
-    <Card 
+    <Card
       className={cn(
         "group cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02]",
         statusStyles[status],
@@ -106,52 +105,58 @@ function EnhancedMetricCard({
       )}
       onClick={onClick}
     >
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-gray-700 group-hover:text-gray-900 transition-colors">
-            {title}
-          </CardTitle>
-          <div className="relative">
-            <IconComponent className="h-4 w-4 text-muted-foreground group-hover:text-blue-600 transition-colors" />
-            {status === 'critical' && (
-              <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium text-gray-700 group-hover:text-gray-900 transition-colors">
+          {title}
+        </CardTitle>
+        <div className="relative">
+          <IconComponent className="h-4 w-4 text-muted-foreground group-hover:text-blue-600 transition-colors" />
+          {status === "critical" && (
+            <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+          )}
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          <div className="flex items-baseline justify-between">
+            <div className="text-2xl font-bold text-gray-900 group-hover:text-blue-900 transition-colors">
+              {value}
+            </div>
+            {trend && trendValue && (
+              <div
+                className={cn(
+                  "px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1",
+                  trendStyles[trend]
+                )}
+                title="Trend from previous period"
+              >
+                {trend === "up" && <TrendingUp className="w-3 h-3" />}
+                {trend === "down" && (
+                  <Activity className="w-3 h-3 rotate-180" />
+                )}
+                {trend === "stable" && <Activity className="w-3 h-3" />}
+                <span>{trendValue}</span>
+              </div>
             )}
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <div className="flex items-baseline justify-between">
-              <div className="text-2xl font-bold text-gray-900 group-hover:text-blue-900 transition-colors">
-                {value}
-              </div>
-              {trend && trendValue && (
-                <div 
-                  className={cn(
-                    'px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1',
-                    trendStyles[trend]
-                  )}
-                  title="Trend from previous period"
-                >
-                  {trend === 'up' && <TrendingUp className="w-3 h-3" />}
-                  {trend === 'down' && <Activity className="w-3 h-3 rotate-180" />}
-                  {trend === 'stable' && <Activity className="w-3 h-3" />}
-                  <span>{trendValue}</span>
-                </div>
-              )}
-            </div>
-            
-            <p className="text-xs text-muted-foreground group-hover:text-gray-600 transition-colors">
-              {subtitle}
-            </p>
-            
-            {children}
-          </div>
-        </CardContent>
-      </Card>
+
+          <p className="text-xs text-muted-foreground group-hover:text-gray-600 transition-colors">
+            {subtitle}
+          </p>
+
+          {children}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
 // Summary metrics component with enhanced styling
-function WorkScheduleSummaryCards({ teamMembers }: { teamMembers: TeamMember[] }) {
+function WorkScheduleSummaryCards({
+  teamMembers,
+}: {
+  teamMembers: TeamMember[];
+}) {
   const metrics = useMemo(() => {
     if (!teamMembers.length) {
       return {
@@ -159,9 +164,13 @@ function WorkScheduleSummaryCards({ teamMembers }: { teamMembers: TeamMember[] }
         averageUtilization: 0,
         totalCapacity: 0,
         overutilized: 0,
-        teamHealth: 'neutral' as 'good' | 'warning' | 'critical' | 'neutral',
-        capacityTrend: 'stable' as 'up' | 'down' | 'stable',
-        utilizationHealth: 'neutral' as 'good' | 'warning' | 'critical' | 'neutral',
+        teamHealth: "neutral" as "good" | "warning" | "critical" | "neutral",
+        capacityTrend: "stable" as "up" | "down" | "stable",
+        utilizationHealth: "neutral" as
+          | "good"
+          | "warning"
+          | "critical"
+          | "neutral",
       };
     }
 
@@ -183,22 +192,28 @@ function WorkScheduleSummaryCards({ teamMembers }: { teamMembers: TeamMember[] }
     ).length;
 
     // Calculate health indicators
-    const teamHealth: 'good' | 'warning' | 'critical' | 'neutral' = totalMembers >= 5 ? 'good' : totalMembers >= 3 ? 'warning' : 'critical';
-    const utilizationHealth: 'good' | 'warning' | 'critical' | 'neutral' = averageUtilization <= 85 ? 'good' : 
-                             averageUtilization <= 100 ? 'warning' : 'critical';
-    const capacityTrend: 'up' | 'down' | 'stable' = totalCapacity > 40 ? 'up' : totalCapacity > 20 ? 'stable' : 'down';
-    const overutilizedHealth: 'good' | 'warning' | 'critical' | 'neutral' = overutilized === 0 ? 'good' : 
-                              overutilized <= 2 ? 'warning' : 'critical';
+    const teamHealth: "good" | "warning" | "critical" | "neutral" =
+      totalMembers >= 5 ? "good" : totalMembers >= 3 ? "warning" : "critical";
+    const utilizationHealth: "good" | "warning" | "critical" | "neutral" =
+      averageUtilization <= 85
+        ? "good"
+        : averageUtilization <= 100
+          ? "warning"
+          : "critical";
+    const capacityTrend: "up" | "down" | "stable" =
+      totalCapacity > 40 ? "up" : totalCapacity > 20 ? "stable" : "down";
+    const overutilizedHealth: "good" | "warning" | "critical" | "neutral" =
+      overutilized === 0 ? "good" : overutilized <= 2 ? "warning" : "critical";
 
-    return { 
-      totalMembers, 
-      averageUtilization, 
-      totalCapacity, 
+    return {
+      totalMembers,
+      averageUtilization,
+      totalCapacity,
       overutilized,
       teamHealth,
       utilizationHealth,
       capacityTrend,
-      overutilizedHealth
+      overutilizedHealth,
     };
   }, [teamMembers]);
 
@@ -211,18 +226,27 @@ function WorkScheduleSummaryCards({ teamMembers }: { teamMembers: TeamMember[] }
         subtitle="Active team members"
         icon={Users}
         status={metrics.teamHealth}
-        trend={metrics.totalMembers >= 5 ? 'up' : 'stable'}
+        trend={metrics.totalMembers >= 5 ? "up" : "stable"}
         trendValue={metrics.totalMembers >= 5 ? "Well staffed" : "Growing"}
-        onClick={() => console.log('Navigate to team overview')}
+        onClick={() => router.push("/staff")}
       >
         <div className="flex items-center gap-1 text-xs text-gray-600 mt-2">
-          <CheckCircle2 className={cn('h-3 w-3', 
-            metrics.teamHealth === 'good' ? 'text-green-600' : 
-            metrics.teamHealth === 'warning' ? 'text-amber-600' : 'text-red-600'
-          )} />
+          <CheckCircle2
+            className={cn(
+              "h-3 w-3",
+              metrics.teamHealth === "good"
+                ? "text-green-600"
+                : metrics.teamHealth === "warning"
+                  ? "text-amber-600"
+                  : "text-red-600"
+            )}
+          />
           <span>
-            {metrics.teamHealth === 'good' ? 'Optimal team size' :
-             metrics.teamHealth === 'warning' ? 'Could use more staff' : 'Understaffed'}
+            {metrics.teamHealth === "good"
+              ? "Optimal team size"
+              : metrics.teamHealth === "warning"
+                ? "Could use more staff"
+                : "Understaffed"}
           </span>
         </div>
       </EnhancedMetricCard>
@@ -234,24 +258,24 @@ function WorkScheduleSummaryCards({ teamMembers }: { teamMembers: TeamMember[] }
         subtitle="Team capacity usage"
         icon={TrendingUp}
         status={metrics.utilizationHealth}
-        trend={metrics.averageUtilization <= 85 ? 'stable' : 'up'}
-        trendValue={metrics.utilizationHealth === 'good' ? "Optimal" : "High"}
-        onClick={() => console.log('Navigate to utilization details')}
+        trend={metrics.averageUtilization <= 85 ? "stable" : "up"}
+        trendValue={metrics.utilizationHealth === "good" ? "Optimal" : "High"}
+        onClick={() => router.push("/work-schedule")}
       >
         <div className="flex items-center gap-1 text-xs mt-2">
-          {metrics.utilizationHealth === 'good' && (
+          {metrics.utilizationHealth === "good" && (
             <div className="flex items-center gap-1 text-green-600">
               <CheckCircle2 className="h-3 w-3" />
               <span>Healthy utilization</span>
             </div>
           )}
-          {metrics.utilizationHealth === 'warning' && (
+          {metrics.utilizationHealth === "warning" && (
             <div className="flex items-center gap-1 text-amber-600">
               <AlertCircle className="h-3 w-3" />
               <span>High utilization</span>
             </div>
           )}
-          {metrics.utilizationHealth === 'critical' && (
+          {metrics.utilizationHealth === "critical" && (
             <div className="flex items-center gap-1 text-red-600">
               <AlertCircle className="h-3 w-3" />
               <span>Over capacity</span>
@@ -266,17 +290,31 @@ function WorkScheduleSummaryCards({ teamMembers }: { teamMembers: TeamMember[] }
         value={`${metrics.totalCapacity}h`}
         subtitle="Hours available weekly"
         icon={Clock}
-        status={metrics.totalCapacity > 40 ? 'good' : metrics.totalCapacity > 20 ? 'warning' : 'critical'}
+        status={
+          metrics.totalCapacity > 40
+            ? "good"
+            : metrics.totalCapacity > 20
+              ? "warning"
+              : "critical"
+        }
         trend={metrics.capacityTrend}
-        trendValue={metrics.capacityTrend === 'up' ? "High capacity" : 
-                   metrics.capacityTrend === 'stable' ? "Stable" : "Limited"}
-        onClick={() => console.log('Navigate to capacity planning')}
+        trendValue={
+          metrics.capacityTrend === "up"
+            ? "High capacity"
+            : metrics.capacityTrend === "stable"
+              ? "Stable"
+              : "Limited"
+        }
+        onClick={() => router.push("/work-schedule")}
       >
         <div className="flex items-center gap-1 text-xs text-gray-600 mt-2">
           <Activity className="h-3 w-3" />
           <span>
-            {metrics.totalCapacity > 40 ? 'Excellent availability' :
-             metrics.totalCapacity > 20 ? 'Moderate capacity' : 'Capacity constrained'}
+            {metrics.totalCapacity > 40
+              ? "Excellent availability"
+              : metrics.totalCapacity > 20
+                ? "Moderate capacity"
+                : "Capacity constrained"}
           </span>
         </div>
       </EnhancedMetricCard>
@@ -288,9 +326,9 @@ function WorkScheduleSummaryCards({ teamMembers }: { teamMembers: TeamMember[] }
         subtitle="Members over capacity"
         icon={Activity}
         status={metrics.overutilizedHealth}
-        trend={metrics.overutilized === 0 ? 'stable' : 'up'}
+        trend={metrics.overutilized === 0 ? "stable" : "up"}
         trendValue={metrics.overutilized === 0 ? "All good" : "Needs attention"}
-        onClick={() => console.log('Navigate to overutilized members')}
+        onClick={() => router.push("/work-schedule")}
       >
         <div className="flex items-center gap-1 text-xs mt-2">
           {metrics.overutilized === 0 ? (
@@ -536,7 +574,7 @@ export default function WorkSchedulePage() {
                   </p>
                 </div>
                 <button
-                  onClick={() => window.location.href = "/schedule"}
+                  onClick={() => (window.location.href = "/schedule")}
                   className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
                 >
                   <Calendar className="w-4 h-4 mr-2" />

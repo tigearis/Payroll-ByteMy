@@ -1,0 +1,97 @@
+query GetExpiredInvitations($now: timestamptz!) {
+  userInvitations(
+    where: {
+      _or: [
+        { invitationStatus: { _eq: "expired" } }
+        { expiresAt: { _lt: $now } }
+      ]
+    }
+    orderBy: { expiresAt: DESC }
+  ) {
+    id
+    email
+    firstName
+    lastName
+    invitationStatus
+    expiresAt
+    createdAt
+    clerkInvitationId
+  }
+}
+
+mutation DeleteExpiredInvitation($invitationId: uuid!) {
+  deleteUserInvitationsByPk(id: $invitationId) {
+    id
+    email
+    invitationStatus
+    expiresAt
+  }
+}
+
+query GetUsersWithoutClerkId {
+  users(
+    where: {
+      _or: [
+        { clerkUserId: { _isNull: true } }
+        { clerkUserId: { _eq: "" } }
+      ]
+    }
+    orderBy: { createdAt: DESC }
+  ) {
+    id
+    email
+    firstName
+    lastName
+    role
+    createdAt
+    updatedAt
+    isActive
+  }
+}
+
+mutation DeleteUser($userId: uuid!) {
+  deleteUsersByPk(id: $userId) {
+    id
+    email
+    firstName
+    lastName
+    role
+    createdAt
+  }
+}
+
+query GetUserByClerkId($clerkUserId: String!) {
+  users(where: { clerkUserId: { _eq: $clerkUserId } }) {
+    id
+    email
+  }
+}
+
+query GetOrphanedInvitations {
+  userInvitations(
+    where: { invitationStatus: { _eq: "accepted" } }
+    orderBy: { createdAt: DESC }
+  ) {
+    id
+    email
+    firstName
+    lastName
+    invitationStatus
+    acceptedBy
+    createdAt
+    invitedBy
+    invitedByUser {
+      id
+      firstName
+      lastName
+      email
+    }
+  }
+}
+
+# Get all file object keys from database for cleanup operations
+query GetAllFileObjectKeysAdmin {
+  files {
+    objectKey
+  }
+}

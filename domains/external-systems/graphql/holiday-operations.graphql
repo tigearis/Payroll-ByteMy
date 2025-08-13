@@ -1,0 +1,64 @@
+# External Systems Domain - Holiday Operations
+# Security Classification: MEDIUM - Third-party integrations
+# Used by holiday sync service for Australian public holiday management
+
+# SERVICE OPERATIONS - Holiday Sync
+
+# Check existing holidays for a given year and country
+query CheckExistingHolidays($startDate: date!, $endDate: date!, $countryCode: bpchar!) {
+  holidaysAggregate(
+    where: {
+      countryCode: { _eq: $countryCode }
+      date: { _gte: $startDate, _lt: $endDate }
+    }
+  ) {
+    aggregate {
+      count
+    }
+  }
+  holidays(
+    where: {
+      countryCode: { _eq: $countryCode }
+      date: { _gte: $startDate, _lt: $endDate }
+    }
+    limit: 5
+    orderBy: { date: ASC }
+  ) {
+    date
+    name
+    countryCode
+  }
+}
+
+
+# Insert holidays with conflict resolution
+mutation InsertHolidays($objects: [HolidaysInsertInput!]!) {
+  insertHolidays(
+    objects: $objects
+    onConflict: {
+      constraint: holidays_pkey
+      updateColumns: [
+        date
+        localName
+        name
+        countryCode
+        region
+        isFixed
+        isGlobal
+        launchYear
+        types
+        updatedAt
+      ]
+    }
+  ) {
+    affectedRows
+    returning {
+      id
+      date
+      localName
+      name
+      countryCode
+      region
+    }
+  }
+}

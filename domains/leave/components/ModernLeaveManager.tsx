@@ -1,14 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import {
-  ModernDataTable,
-  type ColumnDef,
-  type RowAction,
-} from "@/components/data/modern-data-table";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { 
   Calendar, 
   Clock, 
@@ -21,8 +12,17 @@ import {
   AlertTriangle,
   FileText
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useState } from "react";
+import {
+  ModernDataTable,
+  type ColumnDef,
+  type RowAction,
+} from "@/components/data/modern-data-table";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { StatusIndicator } from "@/components/ui/status-indicator";
+import { cn } from "@/lib/utils";
 import { getRoleDisplayName, getPositionDisplayName } from "@/lib/utils/role-utils";
 
 interface LeaveRequest {

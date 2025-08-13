@@ -153,12 +153,12 @@ export default function BillingReportsPage() {
                 Auto Refresh
               </Button>
 
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={() => window.dispatchEvent(new CustomEvent('billing-reports:export'))}>
                 <Download className="w-4 h-4 mr-2" />
                 Export All
               </Button>
 
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={() => window.location.assign('/settings') }>
                 <Settings className="w-4 h-4 mr-2" />
                 Configure
               </Button>

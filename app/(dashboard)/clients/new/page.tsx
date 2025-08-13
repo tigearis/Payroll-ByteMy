@@ -65,7 +65,7 @@ export default function NewClientPage() {
   const [isPayrollValid, setIsPayrollValid] = useState(false);
   
   // Use DRY loading state management
-  const { loading: isLoading, error: submitError, execute: executeSubmit } = useAsyncState();
+  const { loading: isLoading, error: _submitError, execute: executeSubmit } = useAsyncState();
 
   // GraphQL operations
   const [createClient] = useMutation(CreateClientDocument, {

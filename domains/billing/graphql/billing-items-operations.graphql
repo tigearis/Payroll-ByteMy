@@ -745,6 +745,187 @@ query GetBillingItemAuditLogAdvanced(
 }
 
 # Time Entries Operations for Billing Integration
+
+# Get user time entries for payroll completion
+query GetUserTimeEntries($payrollDateId: uuid!) {
+  timeEntries(where: {
+    payrollDateId: { _eq: $payrollDateId }
+    isBillableToService: { _eq: true }
+  }) {
+    id
+    staffUserId
+    hoursSpent
+    userHourlyRate
+    calculatedFee
+    assignedServiceId
+    description
+    workDate
+    staffUser {
+      computedName
+      seniorityLevel
+    }
+    assignedService {
+      name
+      serviceCode
+      seniorityMultipliers
+    }
+  }
+}
+
+# Get payroll completion data including service agreements
+query GetPayrollCompletionData($payrollDateId: uuid!) {
+  payrollDates(where: { id: { _eq: $payrollDateId } }) {
+    id
+    originalEftDate
+    adjustedEftDate
+    status
+    completedAt
+    completedBy
+    payroll {
+      id
+      name
+      clientId
+      client {
+        id
+        name
+      }
+      payrollServiceAgreementsForPayroll(where: { isActive: { _eq: true } }) {
+        id
+        customQuantity
+        customRate
+        billingNotes
+        payrollServiceAgreementsByServiceId {
+          id
+          name
+          serviceCode
+          category
+          defaultRate
+          billingUnit
+          chargeBasis
+          serviceType
+          currency
+        }
+        clientServiceAgreement {
+          id
+          customRate
+          isActive
+        }
+      }
+    }
+  }
+  
+  billingItems(where: { 
+    payrollDateId: { _eq: $payrollDateId }
+  }) {
+    id
+    serviceId
+    serviceName
+    description
+    quantity
+    unitPrice
+    totalAmount
+    status
+  }
+}
+
+# Service Management Operations
+query GetAllServices {
+  services(orderBy: { name: ASC }) {
+    id
+    name
+    serviceCode
+    description
+    defaultRate
+    category
+    serviceType
+    billingUnitTypeId
+    billingUnitType {
+      id
+      name
+      displayName
+      description
+      defaultSource
+      requiresQuantityInput
+      quantityPrompt
+      isSystemDefined
+    }
+    seniorityMultipliers
+    approvalLevel
+    isActive
+    createdAt
+    updatedAt
+  }
+}
+
+query GetActiveBillingUnitTypes {
+  billingUnitTypes(where: { isActive: { _eq: true } }, orderBy: { isSystemDefined: DESC, name: ASC }) {
+    id
+    name
+    displayName
+    description
+    defaultSource
+    isSystemDefined
+    requiresQuantityInput
+    quantityPrompt
+  }
+}
+
+query GetServiceStatistics {
+  servicesAggregate {
+    aggregate {
+      count
+    }
+  }
+  activeServicesAggregate: servicesAggregate(where: { isActive: { _eq: true } }) {
+    aggregate {
+      count
+    }
+  }
+  servicesByCategory: servicesAggregate {
+    aggregate {
+      count
+    }
+  }
+}
+
+mutation CreateService($input: ServicesInsertInput!) {
+  insertServicesOne(object: $input) {
+    id
+    name
+    serviceCode
+    category
+    defaultRate
+    billingUnitTypeId
+    billingUnitType {
+      id
+      name
+      displayName
+    }
+  }
+}
+
+mutation UpdateService($id: uuid!, $input: ServicesSetInput!) {
+  updateServicesByPk(pkColumns: { id: $id }, _set: $input) {
+    id
+    name
+    serviceCode
+    billingUnitTypeId
+    billingUnitType {
+      id
+      name
+      displayName
+    }
+    updatedAt
+  }
+}
+
+mutation DeleteService($id: uuid!) {
+  deleteServicesByPk(id: $id) {
+    id
+    name
+  }
+}
+
 query GetTimeEntriesByPayrollDocument(
   $payrollId: uuid!
   $limit: Int = 100
@@ -1289,5 +1470,1129 @@ query GetProfitabilityStatsAdvanced(
       }
       count
     }
+  }
+}
+
+# User Billing Rate Management Operations
+query GetUserBillingRatesAdvanced {
+  users(where: { isActive: { _eq: true } }) {
+    id
+    email
+    firstName
+    lastName
+    computedName
+    role
+    currentHourlyRate
+    seniorityLevel
+    isActive
+    userBillingRates(orderBy: { effectiveFrom: DESC }) {
+      id
+      hourlyRate
+      seniorityLevel
+      effectiveFrom
+      effectiveTo
+      isActive
+      createdAt
+      createdByUser {
+        computedName
+      }
+    }
+  }
+}
+
+query GetUserBillingStatisticsAdvanced {
+  usersAggregate(where: { isActive: { _eq: true } }) {
+    aggregate {
+      count
+    }
+  }
+  usersWithRatesAggregate: usersAggregate(where: { 
+    isActive: { _eq: true } 
+    currentHourlyRate: { _isNull: false } 
+  }) {
+    aggregate {
+      count
+      avg {
+        currentHourlyRate
+      }
+      min {
+        currentHourlyRate
+      }
+      max {
+        currentHourlyRate
+      }
+    }
+  }
+  ratesByRole: usersAggregate(
+    where: { isActive: { _eq: true }, currentHourlyRate: { _isNull: false } }
+  ) {
+    aggregate {
+      count
+      avg {
+        currentHourlyRate
+      }
+    }
+  }
+}
+
+mutation CreateUserBillingRateAdvanced($input: UserBillingRatesInsertInput!) {
+  insertUserBillingRatesOne(object: $input) {
+    id
+    hourlyRate
+    seniorityLevel
+    effectiveFrom
+    user {
+      computedName
+      currentHourlyRate
+    }
+  }
+}
+
+mutation UpdateUserBillingRateAdvanced($id: uuid!, $input: UserBillingRatesSetInput!) {
+  updateUserBillingRatesByPk(pkColumns: { id: $id }, _set: $input) {
+    id
+    hourlyRate
+    effectiveFrom
+    effectiveTo
+  }
+}
+
+mutation UpdateUserCurrentRateAdvanced($userId: uuid!, $hourlyRate: numeric!, $seniorityLevel: seniority_level_type!) {
+  updateUsersByPk(
+    pkColumns: { id: $userId }
+    _set: { 
+      currentHourlyRate: $hourlyRate
+      seniorityLevel: $seniorityLevel
+    }
+  ) {
+    id
+    currentHourlyRate
+    seniorityLevel
+  }
+}
+
+mutation DeactivateUserBillingRateAdvanced($id: uuid!, $effectiveTo: date!) {
+  updateUserBillingRatesByPk(
+    pkColumns: { id: $id }
+    _set: { isActive: false, effectiveTo: $effectiveTo }
+  ) {
+    id
+    effectiveTo
+  }
+}
+
+# Service Management Dashboard Overview
+query GetServiceManagementOverviewAdvanced($thirtyDaysAgo: timestamptz!) {
+  # Service statistics
+  servicesAggregate {
+    aggregate {
+      count
+    }
+  }
+  activeServicesAggregate: servicesAggregate(where: { isActive: { _eq: true } }) {
+    aggregate {
+      count
+      avg {
+        baseRate
+      }
+    }
+  }
+  
+  # User billing rate statistics  
+  usersAggregate(where: { isActive: { _eq: true } }) {
+    aggregate {
+      count
+    }
+  }
+  usersWithRatesAggregate: usersAggregate(where: { 
+    isActive: { _eq: true }
+    currentHourlyRate: { _isNull: false }
+  }) {
+    aggregate {
+      count
+      avg {
+        currentHourlyRate
+      }
+      max {
+        currentHourlyRate
+      }
+      min {
+        currentHourlyRate
+      }
+    }
+  }
+  
+  # Client assignment statistics
+  clientsAggregate(where: { active: { _eq: true } }) {
+    aggregate {
+      count
+    }
+  }
+  assignmentsAggregate: clientServiceAgreementsAggregate(where: { isActive: { _eq: true } }) {
+    aggregate {
+      count
+    }
+  }
+  
+  # Recent activity (services created in last 30 days)
+  recentServicesAggregate: servicesAggregate(where: { 
+    createdAt: { _gte: $thirtyDaysAgo }
+  }) {
+    aggregate {
+      count
+    }
+  }
+  
+  # Assignment coverage per client
+  clientsWithAssignments: clientServiceAgreementsAggregate(
+    where: { isActive: { _eq: true } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# Client Service Assignment Management Operations
+query GetClientServiceAssignmentsAdvanced {
+  clientServiceAgreements(orderBy: { client: { name: ASC } }) {
+    id
+    clientId
+    serviceId
+    customRate
+    isActive
+    createdAt
+    updatedAt
+    client {
+      id
+      name
+      active
+    }
+    service {
+      id
+      name
+      serviceCode
+      category
+      baseRate
+      billingUnit
+      chargeBasis
+      seniorityMultipliers
+    }
+    createdByUser {
+      computedName
+    }
+  }
+}
+
+query GetClientsAndServicesAdvanced {
+  clients(where: { active: { _eq: true } }, orderBy: { name: ASC }) {
+    id
+    name
+    active
+  }
+  services(where: { isActive: { _eq: true } }, orderBy: { name: ASC }) {
+    id
+    name
+    serviceCode
+    category
+    baseRate
+    billingUnit
+    chargeBasis
+    seniorityMultipliers
+  }
+}
+
+query GetClientAssignmentStatisticsAdvanced {
+  assignmentsAggregate: clientServiceAgreementsAggregate {
+    aggregate {
+      count
+    }
+  }
+  activeAssignmentsAggregate: clientServiceAgreementsAggregate(where: { isActive: { _eq: true } }) {
+    aggregate {
+      count
+    }
+  }
+  clientsWithAssignments: clientServiceAgreementsAggregate(
+    where: { isActive: { _eq: true } }
+  ) {
+    aggregate {
+      count
+    }
+  }
+}
+
+mutation CreateClientServiceAssignmentAdvanced($input: ClientServiceAgreementsInsertInput!) {
+  insertClientServiceAgreementsOne(object: $input) {
+    id
+    client {
+      name
+    }
+    service {
+      name
+    }
+  }
+}
+
+mutation UpdateClientServiceAssignmentAdvanced($id: uuid!, $input: ClientServiceAgreementsSetInput!) {
+  updateClientServiceAgreementsByPk(pkColumns: { id: $id }, _set: $input) {
+    id
+    customRate
+    isActive
+  }
+}
+
+mutation DeleteClientServiceAssignmentAdvanced($id: uuid!) {
+  deleteClientServiceAgreementsByPk(id: $id) {
+    id
+    client {
+      name
+    }
+    service {
+      name
+    }
+  }
+}
+
+# Recurring Services Panel Operations
+query GetClientServiceAssignmentsForRecurringAdvanced($clientId: uuid!) {
+  clientServiceAgreements(
+    where: { clientId: { _eq: $clientId }, isActive: { _eq: true } }
+  ) {
+    id
+    serviceId
+    customRate
+    isActive
+    createdAt
+    updatedAt
+    service {
+      id
+      name
+      serviceCode
+      description
+      baseRate
+      category
+      chargeBasis
+      approvalLevel
+    }
+  }
+}
+
+mutation CreateClientServiceAssignmentForRecurringAdvanced(
+  $input: ClientServiceAgreementsInsertInput!
+) {
+  insertClientServiceAgreementsOne(object: $input) {
+    id
+    serviceId
+    customRate
+    isActive
+    service {
+      id
+      name
+      serviceCode
+      baseRate
+      category
+    }
+  }
+}
+
+mutation UpdateClientServiceAssignmentForRecurringAdvanced(
+  $id: uuid!
+  $updates: ClientServiceAgreementsSetInput!
+) {
+  updateClientServiceAgreementsByPk(pkColumns: { id: $id }, _set: $updates) {
+    id
+    serviceId
+    customRate
+    isActive
+  }
+}
+
+# Recurring Services Manager Operations
+query GetRecurringServicesAdvanced {
+  services(where: { 
+    chargeBasis: { _in: ["per_client_monthly", "per_payroll_monthly"] }
+    isActive: { _eq: true }
+  }) {
+    id
+    name
+    serviceCode
+    description
+    baseRate
+    category
+    chargeBasis
+    approvalLevel
+  }
+}
+
+query GetClientServiceAssignmentsForManagerAdvanced($clientId: uuid!) {
+  clientServiceAgreements(where: {
+    clientId: { _eq: $clientId }
+    isActive: { _eq: true }
+  }) {
+    id
+    serviceId
+    customRate
+    isActive
+    createdAt
+    updatedAt
+    service {
+      id
+      name
+      serviceCode
+      description
+      baseRate
+      category
+      chargeBasis
+      approvalLevel
+    }
+  }
+}
+
+mutation CreateClientServiceAssignmentForManagerAdvanced($input: ClientServiceAgreementsInsertInput!) {
+  insertClientServiceAgreementsOne(object: $input) {
+    id
+    serviceId
+    customRate
+    isActive
+    service {
+      id
+      name
+      serviceCode
+      baseRate
+      category
+    }
+  }
+}
+
+mutation UpdateClientServiceAssignmentForManagerAdvanced($id: uuid!, $updates: ClientServiceAgreementsSetInput!) {
+  updateClientServiceAgreementsByPk(pkColumns: { id: $id }, _set: $updates) {
+    id
+    serviceId
+    customRate
+    isActive
+    service {
+      id
+      name
+      serviceCode
+      baseRate
+      category
+    }
+  }
+}
+
+# Payroll Service Assignment Operations
+# These operations manage the assignment of services to specific payrolls
+# This bridges the gap between client-service assignments and billing generation
+
+fragment PayrollServiceAssignmentCore on PayrollServiceAgreements {
+  id
+  payrollId
+  serviceId
+  clientServiceAgreementId
+  customQuantity
+  customRate
+  billingNotes
+  isActive
+  createdAt
+  updatedAt
+  createdBy
+}
+
+fragment PayrollServiceAssignmentWithRelations on PayrollServiceAgreements {
+  ...PayrollServiceAssignmentCore
+  payrollServiceAgreementsForPayroll {
+    id
+    name
+    status
+    client {
+      id
+      name
+    }
+  }
+  payrollServiceAgreementsByServiceId {
+    id
+    name
+    description
+    category
+    billingUnit
+    baseRate
+    currency
+    serviceType
+  }
+  clientServiceAgreement {
+    id
+    customRate
+    isActive
+    client {
+      id
+      name
+    }
+  }
+  serviceAgreementCreatedByUser {
+    id
+    firstName
+    lastName
+    email
+  }
+}
+
+# Queries for Payroll Service Assignments
+query GetPayrollServiceAgreementsForCompletion(
+  $payrollId: uuid!
+  $limit: Int = 50
+  $offset: Int = 0
+) {
+  payrollServiceAgreements(
+    where: { 
+      payrollId: { _eq: $payrollId }
+      isActive: { _eq: true }
+    }
+    limit: $limit
+    offset: $offset
+    orderBy: [{ payrollServiceAgreementsByServiceId: { category: ASC } }, { payrollServiceAgreementsByServiceId: { name: ASC } }]
+  ) {
+    ...PayrollServiceAssignmentWithRelations
+  }
+}
+
+query GetPayrollServiceAssignmentById($id: uuid!) {
+  payrollServiceAgreementsByPk(id: $id) {
+    ...PayrollServiceAssignmentWithRelations
+  }
+}
+
+query GetAvailableServicesForPayroll(
+  $payrollId: uuid!
+  $clientId: uuid!
+) {
+  # Get services already assigned to this client that aren't yet assigned to this payroll
+  clientServiceAgreements(
+    where: {
+      _and: [
+        { clientId: { _eq: $clientId } }
+        { isActive: { _eq: true } }
+        { _not: { 
+          payrollServiceAgreements: { 
+            payrollId: { _eq: $payrollId }
+            isActive: { _eq: true }
+          } 
+        } }
+      ]
+    }
+    orderBy: [{ service: { category: ASC } }, { service: { name: ASC } }]
+  ) {
+    id
+    customRate
+    isActive
+    service {
+      id
+      name
+      description
+      category
+      billingUnit
+      baseRate
+      currency
+      serviceType
+      chargeBasis
+      approvalLevel
+    }
+    client {
+      id
+      name
+    }
+  }
+}
+
+# Mutations for Payroll Service Assignments
+mutation AssignServiceToPayroll(
+  $payrollId: uuid!
+  $serviceId: uuid!
+  $clientServiceAgreementId: uuid!
+  $customQuantity: Int = 1
+  $customRate: numeric
+  $billingNotes: String
+  $createdBy: uuid!
+) {
+  insertPayrollServiceAgreementsOne(
+    object: {
+      payrollId: $payrollId
+      serviceId: $serviceId
+      clientServiceAgreementId: $clientServiceAgreementId
+      customQuantity: $customQuantity
+      customRate: $customRate
+      billingNotes: $billingNotes
+      isActive: true
+      createdBy: $createdBy
+    }
+    onConflict: {
+      constraint: payroll_service_agreements_payroll_id_service_id_key
+      updateColumns: [customQuantity, customRate, billingNotes, isActive, updatedAt]
+    }
+  ) {
+    ...PayrollServiceAssignmentWithRelations
+  }
+}
+
+mutation UpdatePayrollServiceAssignment(
+  $id: uuid!
+  $customQuantity: Int
+  $customRate: numeric
+  $billingNotes: String
+  $isActive: Boolean
+) {
+  updatePayrollServiceAgreementsByPk(
+    pkColumns: { id: $id }
+    _set: {
+      customQuantity: $customQuantity
+      customRate: $customRate
+      billingNotes: $billingNotes
+      isActive: $isActive
+      updatedAt: "now()"
+    }
+  ) {
+    ...PayrollServiceAssignmentWithRelations
+  }
+}
+
+mutation BulkAssignServicesToPayroll(
+  $assignments: [PayrollServiceAgreementsInsertInput!]!
+) {
+  insertPayrollServiceAgreements(
+    objects: $assignments
+    onConflict: {
+      constraint: payroll_service_agreements_payroll_id_service_id_key
+      updateColumns: [customQuantity, customRate, billingNotes, isActive, updatedAt]
+    }
+  ) {
+    affectedRows
+    returning {
+      ...PayrollServiceAssignmentCore
+    }
+  }
+}
+
+mutation RemoveServiceFromPayroll(
+  $id: uuid!
+) {
+  updatePayrollServiceAgreementsByPk(
+    pkColumns: { id: $id }
+    _set: {
+      isActive: false
+      updatedAt: "now()"
+    }
+  ) {
+    ...PayrollServiceAssignmentCore
+  }
+}
+
+# Enhanced queries for service assignment workflow
+query GetPayrollWithServiceAssignments($payrollId: uuid!) {
+  payrollsByPk(id: $payrollId) {
+    id
+    name
+    status
+    clientId
+    client {
+      id
+      name
+      active
+      contactEmail
+    }
+    primaryConsultant {
+      id
+      firstName
+      lastName
+      computedName
+    }
+    serviceAssignments: payrollServiceAgreementsForPayroll(
+      where: { isActive: { _eq: true } }
+      orderBy: [{ payrollServiceAgreementsByServiceId: { category: ASC } }, { payrollServiceAgreementsByServiceId: { name: ASC } }]
+    ) {
+      ...PayrollServiceAssignmentWithRelations
+    }
+  }
+}
+
+query GetClientServiceAgreementsForPayroll(
+  $clientId: uuid!
+  $excludePayrollId: uuid
+) {
+  clientServiceAgreements(
+    where: {
+      _and: [
+        { clientId: { _eq: $clientId } }
+        { isActive: { _eq: true } }
+        { service: { isActive: { _eq: true } } }
+      ]
+    }
+    orderBy: [{ service: { category: ASC } }, { service: { name: ASC } }]
+  ) {
+    id
+    customRate
+    isActive
+    service {
+      id
+      name
+      description
+      category
+      billingUnit
+      baseRate
+      currency
+      serviceType
+      chargeBasis
+      approvalLevel
+    }
+    # Check if this service is already assigned to the payroll
+    payrollAssignments: payrollServiceAgreements(
+      where: {
+        _and: [
+          { payrollId: { _eq: $excludePayrollId } }
+          { isActive: { _eq: true } }
+        ]
+      }
+    ) {
+      id
+      customQuantity
+      customRate
+      isActive
+    }
+  }
+}
+
+# ============================================
+# Tier 1 Billing Engine Operations
+# Migrated from domains/billing/services/tier1-billing-engine.ts
+# ============================================
+
+# Get Payroll Information for Tier 1 Billing
+query GetPayrollInfoForTier1Billing($payrollDateId: uuid!) {
+  payrollDates(where: { id: { _eq: $payrollDateId } }) {
+    id
+    payrollId
+    originalEftDate
+    adjustedEftDate
+    status
+    payroll {
+      id
+      name
+      clientId
+      client {
+        id
+        name
+      }
+    }
+  }
+}
+
+# Get Client Service Agreements for Tier 1 Billing
+query GetClientServiceAgreementsForTier1Billing($clientId: uuid!) {
+  clientServiceAgreements(
+    where: { 
+      clientId: { _eq: $clientId }
+      isActive: { _eq: true }
+    }
+  ) {
+    id
+    serviceId
+    customRate
+    billingFrequency
+    autoBillingTriggers
+    service {
+      id
+      name
+      serviceCode
+      defaultRate
+    }
+  }
+}
+
+# Get Payroll Service Agreements for Tier 1 Billing
+query GetPayrollServiceAgreementsForTier1BillingEngine($payrollId: uuid!) {
+  payrollServiceAgreements(where: { payrollId: { _eq: $payrollId } }) {
+    id
+    customRate
+    customQuantity
+    customDescription
+    billingNotes
+    serviceConfiguration
+  }
+}
+
+# Insert Tier 1 Billing Items
+mutation InsertTier1BillingItems($items: [BillingItemsInsertInput!]!) {
+  insertBillingItems(objects: $items) {
+    returning {
+      id
+      serviceCode
+      serviceName
+      quantity
+      unitPrice
+      totalAmount
+      status
+      autoGenerated
+      createdAt
+    }
+  }
+}
+
+# Update Completion Metrics for Tier 1 Billing  
+mutation UpdateTier1CompletionMetrics($payrollDateId: uuid!) {
+  updatePayrollDates(
+    where: { id: { _eq: $payrollDateId } }
+    _set: { 
+      completionNotes: "Billing generated via Tier 1 engine"
+    }
+  ) {
+    affectedRows
+  }
+}
+
+# =============================================================================
+# API ROUTE OPERATIONS - Tier 1 Generation
+# =============================================================================
+
+# Check Payroll Date Status for Tier 1 API
+query CheckPayrollDateApiTier1($id: uuid!) {
+  payrollDatesByPk(id: $id) {
+    id
+    status
+    payrollId
+    completedAt
+    completedBy
+    adjustedEftDate
+    originalEftDate
+    payroll {
+      id
+      name
+      clientId
+      client {
+        id
+        name
+      }
+    }
+  }
+}
+
+# Get Tier 1 Services for API Generation
+query GetTier1ServicesForApi($clientId: uuid!) {
+  clientServiceAgreements(
+    where: {
+      clientId: { _eq: $clientId }
+      isActive: { _eq: true }
+      isEnabled: { _eq: true }
+      service: { 
+        isActive: { _eq: true }
+      }
+      billingFrequency: { _in: ["per_use", "per_payroll_date"] }
+    }
+  ) {
+    id
+    serviceId
+    customRate
+    billingFrequency
+    serviceConfiguration
+    service {
+      id
+      name
+      description
+      billingUnit
+      defaultRate
+    }
+  }
+}
+
+# Check Existing Billing for API
+query CheckExistingBillingApi($payrollDateId: uuid!, $serviceId: uuid!) {
+  billingItems(
+    where: {
+      payrollDateId: { _eq: $payrollDateId }
+      serviceId: { _eq: $serviceId }
+      status: { _neq: "draft" }
+    }
+  ) {
+    id
+  }
+}
+
+# Create Billing Item for API  
+mutation CreateBillingItemApi($input: BillingItemsInsertInput!) {
+  insertBillingItemsOne(object: $input) {
+    id
+    description
+    totalAmount
+  }
+}
+
+# Log Billing Event for API
+mutation LogBillingEventApi($input: BillingEventLogInsertInput!) {
+  insertBillingEventLogOne(object: $input) {
+    id
+  }
+}
+
+# =============================================================================
+# API ROUTE OPERATIONS - Tier 2 Generation
+# =============================================================================
+
+# Check Payroll Completion Status for Tier 2 API
+query CheckPayrollCompletionApiTier2($id: uuid!) {
+  payrollsByPk(id: $id) {
+    id
+    name
+    clientId
+    status
+    client {
+      id
+      name
+    }
+    payrollDates {
+      id
+      status
+    }
+  }
+}
+
+# Get Tier 2 Services for API Generation
+query GetTier2ServicesForApi($payrollId: uuid!, $clientId: uuid!) {
+  # Client service agreements for tier 2
+  clientServiceAgreements(
+    where: {
+      clientId: { _eq: $clientId }
+      isActive: { _eq: true }
+      isEnabled: { _eq: true }
+      service: { 
+        isActive: { _eq: true }
+      }
+      billingFrequency: { _in: ["per_payroll", "per_use"] }
+    }
+  ) {
+    id
+    serviceId
+    customRate
+    billingFrequency
+    serviceConfiguration
+    service {
+      id
+      name
+      description
+      billingUnit
+      defaultRate
+    }
+  }
+  
+  # Payroll-specific service agreements (overrides)
+  payrollServiceAgreements(
+    where: {
+      payrollId: { _eq: $payrollId }
+      isActive: { _eq: true }
+      autoBillingEnabled: { _eq: true }
+    }
+  ) {
+    id
+    serviceId
+    customRate
+    billingFrequency
+    serviceConfiguration
+    payrollServiceAgreementsByServiceId {
+      id
+      name
+      description
+      billingUnit
+      defaultRate
+    }
+  }
+}
+
+# Check Existing Tier 2 Billing for API
+query CheckExistingTier2BillingApi($payrollId: uuid!, $serviceId: uuid!) {
+  billingItems(
+    where: {
+      payrollId: { _eq: $payrollId }
+      serviceId: { _eq: $serviceId }
+      payrollDateId: { _isNull: true }
+      status: { _neq: "draft" }
+    }
+  ) {
+    id
+  }
+}
+
+# =============================================================================
+# API ROUTE OPERATIONS - Tier 3 Generation
+# =============================================================================
+
+# Check Client for Tier 3 API
+query CheckClientApiTier3($id: uuid!) {
+  clientsByPk(id: $id) {
+    id
+    name
+    active
+  }
+}
+
+# Check Monthly Billing Completion for Tier 3 API
+query CheckMonthlyCompletionApiTier3($clientId: uuid!, $billingMonth: date!) {
+  monthlyBillingCompletion(
+    where: {
+      clientId: { _eq: $clientId }
+      billingMonth: { _eq: $billingMonth }
+    }
+  ) {
+    id
+    status
+    tier3BillingGenerated
+    autoBillingEnabled
+    completedPayrolls
+    totalPayrolls
+    completedPayrollDates
+    totalPayrollDates
+  }
+}
+
+# Get Tier 3 Services for API Generation
+query GetTier3ServicesForApi($clientId: uuid!) {
+  clientServiceAgreements(
+    where: {
+      clientId: { _eq: $clientId }
+      isActive: { _eq: true }
+      isEnabled: { _eq: true }
+      service: { 
+        isActive: { _eq: true }
+      }
+      billingFrequency: { _eq: "monthly" }
+    }
+  ) {
+    id
+    serviceId
+    customRate
+    billingFrequency
+    serviceConfiguration
+    service {
+      id
+      name
+      description
+      billingUnit
+      defaultRate
+    }
+  }
+}
+
+# Check Existing Tier 3 Billing for API
+query CheckExistingTier3BillingApi($clientId: uuid!, $serviceId: uuid!, $monthStart: timestamp!, $monthEnd: timestamp!) {
+  billingItems(
+    where: {
+      clientId: { _eq: $clientId }
+      serviceId: { _eq: $serviceId }
+      payrollId: { _isNull: true }
+      payrollDateId: { _isNull: true }
+      createdAt: { _gte: $monthStart, _lte: $monthEnd }
+      status: { _neq: "draft" }
+    }
+  ) {
+    id
+  }
+}
+
+# Get Employee Count for Tier 3 API  
+query GetEmployeeCountApiTier3($clientId: uuid!, $billingMonth: date!) {
+  payrolls(
+    where: {
+      clientId: { _eq: $clientId }
+      payrollDates: {
+        adjustedEftDate: { _gte: $billingMonth }
+      }
+    }
+  ) {
+    employeeCount
+  }
+}
+
+# Update Monthly Billing Completion for Tier 3 API
+mutation UpdateMonthlyCompletionApiTier3($clientId: uuid!, $billingMonth: date!) {
+  updateMonthlyBillingCompletion(
+    where: {
+      clientId: { _eq: $clientId }
+      billingMonth: { _eq: $billingMonth }
+    }
+    _set: {
+      status: "billed"
+      tier3BillingGenerated: true
+      billingGeneratedAt: "now()"
+    }
+  ) {
+    affectedRows
+  }
+}
+
+# ===========================
+# API ROUTE OPERATIONS - Recurring Billing
+# ===========================
+
+# Get Active Clients for Recurring Billing API - All Clients
+query GetActiveClientsForRecurringApiAll {
+  clients(
+    where: {
+      active: { _eq: true }
+    }
+    orderBy: [{ name: ASC }]
+  ) {
+    id
+    name
+    createdAt
+  }
+}
+
+# Get Active Clients for Recurring Billing API - Specific Clients
+query GetActiveClientsForRecurringApi($clientIds: [uuid!]!) {
+  clients(
+    where: {
+      active: { _eq: true }
+      id: { _in: $clientIds }
+    }
+    orderBy: [{ name: ASC }]
+  ) {
+    id
+    name
+    createdAt
+  }
+}
+
+# Check Existing Recurring Billing for API - All Services
+query CheckExistingRecurringBillingApiAll($clientId: uuid!, $billingMonth: date!) {
+  billingItems(
+    where: {
+      clientId: { _eq: $clientId }
+      billingPeriodStart: { _eq: $billingMonth }
+      generatedFrom: { _eq: "recurring_schedule" }
+    }
+  ) {
+    id
+    serviceCode
+    totalAmount
+  }
+}
+
+# Check Existing Recurring Billing for API - Specific Service
+query CheckExistingRecurringBillingApi($clientId: uuid!, $billingMonth: date!, $serviceCode: String!) {
+  billingItems(
+    where: {
+      clientId: { _eq: $clientId }
+      billingPeriodStart: { _eq: $billingMonth }
+      generatedFrom: { _eq: "recurring_schedule" }
+      serviceCode: { _eq: $serviceCode }
+    }
+  ) {
+    id
+    serviceCode
+    totalAmount
+  }
+}
+
+# Create Recurring Billing Item for API
+mutation CreateRecurringBillingItemApi($input: BillingItemsInsertInput!) {
+  insertBillingItemsOne(object: $input) {
+    id
+    totalAmount
   }
 }

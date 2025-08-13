@@ -41,7 +41,7 @@ import { UserSchemas } from "@/lib/validation/shared-schemas";
 import { Users as UsersType } from "@/shared/types/generated/graphql";
 
 // Use shared schema for consistency
-const editUserSchema = UserSchemas.updateUser;
+const editUserSchema = UserSchemas.UpdateUser;
 
 type EditUserFormData = z.infer<typeof editUserSchema>;
 
@@ -325,7 +325,7 @@ function EditUserModalInner({
                       </FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        value={field.value || ""}
+                        value={field.value ?? ""}
                         disabled={isSubmitting}
                       >
                         <FormControl>

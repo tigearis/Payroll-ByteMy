@@ -1,10 +1,9 @@
 "use client";
 
-import { useMutation } from "@apollo/client";
 // Optimized icon imports - only what we actually use
 import {
   AlertTriangle,
-  RefreshCw, 
+  RefreshCw,
   Edit,
   Calendar,
   Users,
@@ -14,62 +13,57 @@ import {
   Building2,
   UserCheck,
   Upload,
-  CalendarDays,
   Eye,
   Mail,
-  MessageCircle,
-  Plus,
   Settings,
-  Save,
   AlertCircle,
   ArrowUp,
   ArrowDown,
   Minus,
   Target,
   Timer,
-  StickyNote,
+  Receipt,
+  FileBarChart,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState, useMemo, Suspense } from "react";
 import { PermissionGuard } from "@/components/auth/permission-guard";
-import { DocumentList } from "@/components/documents";
-import { PageHeader } from "@/components/patterns/page-header";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { NotesListWithAdd } from "@/domains/notes/components/notes-list";
-
-// Payroll components for notes
-import { NotesListModal } from "@/domains/payrolls/components/notes-list-modal";
-
-
-// Domain imports
-import { PayrollErrorBoundary } from "@/domains/payrolls/components/PayrollErrorBoundary";
-import { PayrollOverview } from "@/domains/payrolls/components/PayrollOverview";
-import { PayrollAssignments } from "@/domains/payrolls/components/PayrollAssignments";
-
-// Modern Data Table
 import {
   ModernDataTable,
   type ColumnDef,
   type RowAction,
 } from "@/components/data";
+import { DocumentList } from "@/components/documents";
+import { PageHeader } from "@/components/patterns/page-header";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { EmailComposeDialog } from "@/components/ui/email-compose-dialog";
+import { ExportDataDialog } from "@/components/ui/export-data-dialog";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DynamicPayrollCompletionForm } from "@/domains/billing/components/payroll-completion/dynamic-payroll-completion-form";
+import { PayrollBillingItemsTable } from "@/domains/billing/components/payroll-integration/payroll-billing-items-table";
+import { PayrollBillingOverview } from "@/domains/billing/components/payroll-integration/payroll-billing-overview";
+import { NotesListWithAdd } from "@/domains/notes/components/notes-list";
+
+// Payroll components for notes and completion
+import { NotesListModal } from "@/domains/payrolls/components/notes-list-modal";
+
+// Domain imports
+import { PayrollAssignments } from "@/domains/payrolls/components/PayrollAssignments";
+import { PayrollErrorBoundary } from "@/domains/payrolls/components/PayrollErrorBoundary";
+
+// Billing components
+
+// Modern Data Table
 import { usePayrollData } from "@/domains/payrolls/hooks/usePayrollData";
 import { getEnhancedScheduleSummary } from "@/domains/payrolls/utils/schedule-helpers";
 
@@ -252,7 +246,7 @@ function EnhancedMetricCard({
   icon: IconComponent,
   trend,
   trendValue,
-  status = 'neutral',
+  status = "neutral",
   onClick,
   children,
 }: {
@@ -260,27 +254,27 @@ function EnhancedMetricCard({
   value: string;
   subtitle: string;
   icon: React.ElementType;
-  trend?: 'up' | 'down' | 'stable';
+  trend?: "up" | "down" | "stable";
   trendValue?: string;
-  status?: 'good' | 'warning' | 'critical' | 'neutral';
+  status?: "good" | "warning" | "critical" | "neutral";
   onClick?: () => void;
   children?: React.ReactNode;
 }) {
   const statusStyles = {
-    good: 'bg-green-50 border-green-200 hover:bg-green-100',
-    warning: 'bg-amber-50 border-amber-200 hover:bg-amber-100',
-    critical: 'bg-red-50 border-red-200 hover:bg-red-100',
-    neutral: 'bg-white border-gray-200 hover:bg-gray-50',
+    good: "bg-green-50 border-green-200 hover:bg-green-100",
+    warning: "bg-amber-50 border-amber-200 hover:bg-amber-100",
+    critical: "bg-red-50 border-red-200 hover:bg-red-100",
+    neutral: "bg-white border-gray-200 hover:bg-gray-50",
   };
 
   const trendStyles = {
-    up: 'text-green-600 bg-green-100',
-    down: 'text-red-600 bg-red-100',
-    stable: 'text-gray-600 bg-gray-100',
+    up: "text-green-600 bg-green-100",
+    down: "text-red-600 bg-red-100",
+    stable: "text-gray-600 bg-gray-100",
   };
 
   return (
-    <Card 
+    <Card
       className={`group cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02] ${statusStyles[status]} ${onClick && "hover:border-blue-300"}`}
       onClick={onClick}
     >
@@ -290,7 +284,7 @@ function EnhancedMetricCard({
         </CardTitle>
         <div className="relative">
           <IconComponent className="h-4 w-4 text-muted-foreground group-hover:text-blue-600 transition-colors" />
-          {status === 'critical' && (
+          {status === "critical" && (
             <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
           )}
         </div>
@@ -302,18 +296,18 @@ function EnhancedMetricCard({
               {value}
             </div>
             {trend && trendValue && (
-              <div 
+              <div
                 className={`px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${trendStyles[trend]}`}
                 title="Trend from previous period"
               >
-                {trend === 'up' && <ArrowUp className="w-3 h-3" />}
-                {trend === 'down' && <ArrowDown className="w-3 h-3" />}
-                {trend === 'stable' && <Minus className="w-3 h-3" />}
+                {trend === "up" && <ArrowUp className="w-3 h-3" />}
+                {trend === "down" && <ArrowDown className="w-3 h-3" />}
+                {trend === "stable" && <Minus className="w-3 h-3" />}
                 <span>{trendValue}</span>
               </div>
             )}
           </div>
-          
+
           <p className="text-xs text-muted-foreground group-hover:text-gray-600 transition-colors">
             {subtitle}
           </p>
@@ -329,7 +323,7 @@ function EnhancedMetricCard({
 function PayrollOverviewCards({ data }: { data: any }) {
   const payroll = data?.payroll;
   const payrollDates = data?.payroll?.detailPayrollDates || [];
-  
+
   const scheduleInfo = useMemo(() => {
     if (!payroll?.payrollCycle?.name || !payroll?.payrollDateType?.name) {
       return null;
@@ -340,15 +334,17 @@ function PayrollOverviewCards({ data }: { data: any }) {
   // Get next EFT date - exactly as in original
   const nextPayDate = useMemo(() => {
     const today = new Date();
-    const upcomingDates = payrollDates.filter((d: any) => {
-      const eftDate = new Date(d.adjustedEftDate || d.originalEftDate);
-      return eftDate >= today && !d.completed;
-    }).sort((a: any, b: any) => {
-      const dateA = new Date(a.adjustedEftDate || a.originalEftDate);
-      const dateB = new Date(b.adjustedEftDate || b.originalEftDate);
-      return dateA.getTime() - dateB.getTime();
-    });
-    
+    const upcomingDates = payrollDates
+      .filter((d: any) => {
+        const eftDate = new Date(d.adjustedEftDate || d.originalEftDate);
+        return eftDate >= today && !d.completed;
+      })
+      .sort((a: any, b: any) => {
+        const dateA = new Date(a.adjustedEftDate || a.originalEftDate);
+        const dateB = new Date(b.adjustedEftDate || b.originalEftDate);
+        return dateA.getTime() - dateB.getTime();
+      });
+
     return upcomingDates[0] ? upcomingDates[0] : null;
   }, [payrollDates]);
 
@@ -359,11 +355,15 @@ function PayrollOverviewCards({ data }: { data: any }) {
       {/* EXACT Next Pay Date from original PayrollOverview */}
       <EnhancedMetricCard
         title="Next Pay Date"
-        value={formatDate(nextPayDate?.adjustedEftDate || nextPayDate?.originalEftDate)}
-        subtitle={formatRelativeDate(nextPayDate?.adjustedEftDate || nextPayDate?.originalEftDate)}
+        value={formatDate(
+          nextPayDate?.adjustedEftDate || nextPayDate?.originalEftDate
+        )}
+        subtitle={formatRelativeDate(
+          nextPayDate?.adjustedEftDate || nextPayDate?.originalEftDate
+        )}
         icon={Calendar}
-        status={nextPayDate ? 'good' : 'warning'}
-        onClick={() => console.log('Navigate to schedule')}
+        status={nextPayDate ? "good" : "warning"}
+        onClick={() => (window.location.href = "/payroll-schedule")}
       >
         {nextPayDate?.notes && (
           <div className="flex items-center gap-1 text-xs text-amber-600 mt-2">
@@ -376,11 +376,17 @@ function PayrollOverviewCards({ data }: { data: any }) {
       {/* Processing Schedule - Enhanced style */}
       <EnhancedMetricCard
         title="Processing Schedule"
-        value={typeof scheduleInfo === 'string' ? scheduleInfo.split(' ')[0] : 'Custom'}
-        subtitle={typeof scheduleInfo === 'string' ? scheduleInfo : 'Custom schedule'}
+        value={
+          typeof scheduleInfo === "string"
+            ? scheduleInfo.split(" ")[0]
+            : "Custom"
+        }
+        subtitle={
+          typeof scheduleInfo === "string" ? scheduleInfo : "Custom schedule"
+        }
         icon={Clock}
         status="good"
-        onClick={() => console.log('Navigate to schedule')}
+        onClick={() => (window.location.href = "/payroll-schedule")}
       >
         <div className="flex items-center gap-1 text-xs text-gray-600 mt-2">
           <RefreshCw className="h-3 w-3" />
@@ -390,20 +396,23 @@ function PayrollOverviewCards({ data }: { data: any }) {
 
       {/* EXACT Team Size from original PayrollOverview */}
       <EnhancedMetricCard
-        title="Team Size"
+        title="Employees"
         value={(payroll.employeeCount || 0).toString()}
         subtitle={`${payroll.employeeCount === 1 ? "employee" : "employees"} on payroll`}
         icon={Users}
-        trend={payroll.employeeCount > 20 ? 'up' : 'stable'}
+        trend={payroll.employeeCount > 20 ? "up" : "stable"}
         trendValue={payroll.employeeCount > 20 ? "Growing" : "Stable"}
-        status={payroll.employeeCount > 0 ? 'good' : 'critical'}
-        onClick={() => console.log('Navigate to employees')}
+        status={payroll.employeeCount > 0 ? "good" : "critical"}
+        onClick={() => (window.location.href = "/staff")}
       >
         <div className="flex items-center gap-1 text-xs text-gray-600 mt-2">
           <Target className="h-3 w-3" />
           <span>
-            {payroll.employeeCount > 50 ? 'Large payroll' : 
-             payroll.employeeCount > 10 ? 'Medium payroll' : 'Small payroll'}
+            {payroll.employeeCount > 50
+              ? "Large payroll"
+              : payroll.employeeCount > 10
+                ? "Medium payroll"
+                : "Small payroll"}
           </span>
         </div>
       </EnhancedMetricCard>
@@ -415,7 +424,7 @@ function PayrollOverviewCards({ data }: { data: any }) {
         subtitle="Processing"
         icon={Timer}
         status="good"
-        onClick={() => console.log('Navigate to processing settings')}
+        onClick={() => (window.location.href = `/payrolls/${payroll.id}/edit`)}
       >
         <div className="flex items-center gap-1 text-xs text-gray-600 mt-2">
           <Clock className="h-3 w-3" />
@@ -427,23 +436,35 @@ function PayrollOverviewCards({ data }: { data: any }) {
 }
 
 // Modern PayrollDates component using ModernDataTable with Card wrapper (matching payrolls page pattern)
-function ModernPayrollDatesTable({ data, payrollId }: { data: any; payrollId: string }) {
-  const [filterType, setFilterType] = useState<'all' | 'upcoming' | 'past'>('upcoming');
-  
+function ModernPayrollDatesTable({
+  data,
+  payrollId,
+}: {
+  data: any;
+  payrollId: string;
+}) {
+  const [filterType, setFilterType] = useState<"all" | "upcoming" | "past">(
+    "upcoming"
+  );
+  const [showAdvancedCompletion, setShowAdvancedCompletion] = useState(false);
+  const [selectedPayrollDateId, setSelectedPayrollDateId] = useState<
+    string | null
+  >(null);
+
   const payrollDates = data?.payroll?.detailPayrollDates || [];
-  
+
   // Filter dates based on selected type
   const filteredDates = useMemo(() => {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    
+
     switch (filterType) {
-      case 'upcoming':
+      case "upcoming":
         return payrollDates.filter((d: any) => {
           const eftDate = new Date(d.adjustedEftDate || d.originalEftDate);
           return eftDate >= today;
         });
-      case 'past':
+      case "past":
         return payrollDates.filter((d: any) => {
           const eftDate = new Date(d.adjustedEftDate || d.originalEftDate);
           return eftDate < today;
@@ -464,7 +485,7 @@ function ModernPayrollDatesTable({ data, payrollId }: { data: any; payrollId: st
         // Follow ModernPayrollsManager pattern: adjustedEftDate || originalEftDate
         const eftDate = row.adjustedEftDate || row.originalEftDate;
         const isAdjusted = row.originalEftDate !== row.adjustedEftDate;
-        
+
         return (
           <div className="min-w-0">
             <div className="flex items-center gap-2">
@@ -479,13 +500,14 @@ function ModernPayrollDatesTable({ data, payrollId }: { data: any; payrollId: st
                 })}
                 refetchNotes={() => {
                   // TODO: Add refetch functionality
-                  console.log('Refetch notes');
+                  console.log("Refetch notes");
                 }}
               />
             </div>
             {isAdjusted && (
               <div className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-                Adjusted from {safeFormatDate(row.originalEftDate, "dd MMM yyyy")}
+                Adjusted from{" "}
+                {safeFormatDate(row.originalEftDate, "dd MMM yyyy")}
               </div>
             )}
           </div>
@@ -498,7 +520,7 @@ function ModernPayrollDatesTable({ data, payrollId }: { data: any; payrollId: st
       label: "Processing Date",
       essential: true,
       sortable: true,
-      render: (date) => (
+      render: date => (
         <div className="text-neutral-500 dark:text-neutral-400">
           {safeFormatDate(date, "dd MMM yyyy")}
         </div>
@@ -516,17 +538,23 @@ function ModernPayrollDatesTable({ data, payrollId }: { data: any; payrollId: st
         const dateObj = new Date(eftDate);
         const isToday = dateObj.toDateString() === today.toDateString();
         const isPast = dateObj < today && !isToday;
-        
+
         if (completed) {
           return (
-            <Badge variant="default" className="bg-green-100 text-green-800 border-green-200">
+            <Badge
+              variant="default"
+              className="bg-green-100 text-green-800 border-green-200"
+            >
               <CheckCircle className="h-3 w-3 mr-1" />
               Completed
             </Badge>
           );
         } else if (isToday) {
           return (
-            <Badge variant="default" className="bg-blue-100 text-blue-800 border-blue-200">
+            <Badge
+              variant="default"
+              className="bg-blue-100 text-blue-800 border-blue-200"
+            >
               <Clock className="h-3 w-3 mr-1" />
               Today
             </Badge>
@@ -540,7 +568,10 @@ function ModernPayrollDatesTable({ data, payrollId }: { data: any; payrollId: st
           );
         } else {
           return (
-            <Badge variant="secondary" className="bg-neutral-100 text-neutral-600 border-neutral-200">
+            <Badge
+              variant="secondary"
+              className="bg-neutral-100 text-neutral-600 border-neutral-200"
+            >
               <Clock className="h-3 w-3 mr-1" />
               Upcoming
             </Badge>
@@ -550,13 +581,42 @@ function ModernPayrollDatesTable({ data, payrollId }: { data: any; payrollId: st
     },
   ];
 
+  // Completion handlers
+  const openAdvancedCompletion = (payrollDateId: string) => {
+    setSelectedPayrollDateId(payrollDateId);
+    setShowAdvancedCompletion(true);
+  };
+
+  const handleAdvancedCompletionComplete = (data: any) => {
+    console.log("Payroll completion finished:", data);
+    setShowAdvancedCompletion(false);
+    setSelectedPayrollDateId(null);
+    // TODO: Refetch data to update the table
+  };
+
+  const handleAdvancedCompletionCancel = () => {
+    setShowAdvancedCompletion(false);
+    setSelectedPayrollDateId(null);
+  };
+
   const rowActions: RowAction<any>[] = [
+    {
+      id: "complete",
+      label: "Complete Payroll",
+      icon: CheckCircle,
+      onClick: (row: any) => {
+        openAdvancedCompletion(row.id);
+      },
+      variant: "default",
+      // Only show for non-completed rows
+      disabled: (row: any) => row.completed,
+    },
     {
       id: "viewDetails",
       label: "View Details",
       icon: Eye,
-      onClick: (row) => {
-        console.log('View details for:', row);
+      onClick: (row: any) => {
+        console.log("View details for:", row);
       },
     },
   ];
@@ -574,34 +634,34 @@ function ModernPayrollDatesTable({ data, payrollId }: { data: any; payrollId: st
               Scheduled EFT and processing dates with adjustment tracking
             </p>
           </div>
-          
+
           {/* Filter buttons matching ModernPayrollsManager pattern */}
           <div className="flex items-center gap-2">
             <Button
-              variant={filterType === 'upcoming' ? 'default' : 'outline'}
+              variant={filterType === "upcoming" ? "default" : "outline"}
               size="sm"
-              onClick={() => setFilterType('upcoming')}
+              onClick={() => setFilterType("upcoming")}
             >
               Upcoming
             </Button>
             <Button
-              variant={filterType === 'past' ? 'default' : 'outline'}
+              variant={filterType === "past" ? "default" : "outline"}
               size="sm"
-              onClick={() => setFilterType('past')}
+              onClick={() => setFilterType("past")}
             >
               Past Dates
             </Button>
             <Button
-              variant={filterType === 'all' ? 'default' : 'outline'}
+              variant={filterType === "all" ? "default" : "outline"}
               size="sm"
-              onClick={() => setFilterType('all')}
+              onClick={() => setFilterType("all")}
             >
               All Dates
             </Button>
           </div>
         </div>
       </CardHeader>
-      
+
       <CardContent>
         <ModernDataTable
           data={filteredDates}
@@ -617,29 +677,62 @@ function ModernPayrollDatesTable({ data, payrollId }: { data: any; payrollId: st
                 No payroll dates found
               </h3>
               <p className="text-neutral-600 dark:text-neutral-400">
-                {filterType !== 'all' 
-                  ? `No ${filterType} dates available for this payroll` 
-                  : 'No payroll dates have been generated yet'
-                }
+                {filterType !== "all"
+                  ? `No ${filterType} dates available for this payroll`
+                  : "No payroll dates have been generated yet"}
               </p>
             </div>
           }
         />
       </CardContent>
+
+      {/* Advanced Payroll Completion Form */}
+      {showAdvancedCompletion && selectedPayrollDateId && (
+        <Dialog
+          open={showAdvancedCompletion}
+          onOpenChange={setShowAdvancedCompletion}
+        >
+          <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden">
+            <DialogHeader>
+              <DialogTitle>
+                Complete Payroll Date - Advanced Service Billing
+              </DialogTitle>
+            </DialogHeader>
+            <div className="max-h-[80vh] overflow-y-auto">
+              <DynamicPayrollCompletionForm
+                payrollDateId={selectedPayrollDateId}
+                onComplete={handleAdvancedCompletionComplete}
+                onCancel={handleAdvancedCompletionCancel}
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </Card>
   );
 }
 
 // Main component - Using Modern PayrollDetail Component
 export default function PayrollDetailPage() {
+  const [showEmail, setShowEmail] = useState(false);
+  const [showExport, setShowExport] = useState(false);
   const params = useParams();
   const payrollId = params?.id as string;
-  
-  // State management  
-  const [activeTab, setActiveTab] = useState("overview");
-  
+
+  // State management
+  const [activeTab, setActiveTab] = useState(() => {
+    // Initialize from URL hash if available, default to "overview"
+    if (typeof window !== "undefined") {
+      const hash = window.location.hash.slice(1);
+      return ["overview", "dates", "billing", "docs-notes"].includes(hash)
+        ? hash
+        : "overview";
+    }
+    return "overview";
+  });
+
   const { data, loading, error, refetch } = usePayrollData(payrollId);
-  
+
   if (loading) {
     return <PayrollDetailLoading />;
   }
@@ -706,83 +799,111 @@ export default function PayrollDetailPage() {
               { label: payroll?.name || "Payroll" },
             ]}
             status={{
-              type: payroll?.status === "paid" || payroll?.status === "approved" ? "success" : 
-                    payroll?.status === "cancelled" || payroll?.status === "on-hold" ? "error" : "warning",
-              message: payroll?.status?.replace("-", " ").replace(/\b\w/g, (l: string) => l.toUpperCase()) || "Draft",
+              type:
+                payroll?.status === "paid" || payroll?.status === "approved"
+                  ? "success"
+                  : payroll?.status === "cancelled" ||
+                      payroll?.status === "on-hold"
+                    ? "error"
+                    : "warning",
+              message:
+                payroll?.status
+                  ?.replace("-", " ")
+                  .replace(/\b\w/g, (l: string) => l.toUpperCase()) || "Draft",
             }}
             actions={[
               {
                 label: "Edit Payroll",
                 icon: Edit,
-                onClick: () => window.location.href = `/payrolls/${payrollId}/edit`,
+                onClick: () =>
+                  (window.location.href = `/payrolls/${payrollId}/edit`),
                 primary: true,
               },
               {
                 label: "Upload Document",
                 icon: Upload,
-                onClick: () => {}, // TODO: Implement upload modal
+                onClick: () =>
+                  document
+                    .getElementById("document-upload-button")
+                    ?.dispatchEvent(new Event("click", { bubbles: true })),
               },
             ]}
             overflowActions={[
               {
                 label: "Email Client",
                 icon: Mail,
-                onClick: () => {}, // TODO: Implement email dialog
+                onClick: () => setShowEmail(true),
               },
               {
                 label: "Export Dates",
-                onClick: () => {}, // TODO: Implement export
+                onClick: () => setShowExport(true),
+              },
+              {
+                label: "Generate Invoice",
+                icon: Receipt,
+                onClick: () => {
+                  // Navigate to billing tab and trigger invoice generation
+                  setActiveTab("billing");
+                  console.log("Generate invoice for payroll:", payrollId);
+                },
+              },
+              {
+                label: "View Billing Report",
+                icon: FileBarChart,
+                onClick: () => {
+                  // Navigate to billing tab
+                  setActiveTab("billing");
+                  console.log("View billing report for payroll:", payrollId);
+                },
               },
             ]}
           />
 
-        {/* Additional Header Info - Matching Clients Page Pattern */}
-        <div className="bg-white border-b border-gray-200 -mt-6 pt-4 pb-4">
-          <div className="container mx-auto">
-            <div className="flex flex-col space-y-4">
-              {/* Client and Schedule Info Row */}
-              <div className="flex flex-wrap items-center justify-between">
-                <div className="flex flex-wrap items-center gap-6 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Building2 className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">Client:</span>
-                    <Link
-                      href={`/clients/${payroll.client?.id}`}
-                      className="text-foreground font-medium"
-                    >
-                      {payroll.client?.name}
-                    </Link>
+          {/* Additional Header Info - Matching Clients Page Pattern */}
+          <div className="bg-white border-b border-gray-200 -mt-6 pt-4 pb-4">
+            <div className="container mx-auto">
+              <div className="flex flex-col space-y-4">
+                {/* Client and Schedule Info Row */}
+                <div className="flex flex-wrap items-center justify-between">
+                  <div className="flex flex-wrap items-center gap-6 text-sm">
+                    <div className="flex items-center gap-2">
+                      <Building2 className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-muted-foreground">Client:</span>
+                      <Link
+                        href={`/clients/${payroll.client?.id}`}
+                        className="text-foreground font-medium"
+                      >
+                        {payroll.client?.name}
+                      </Link>
+                    </div>
                   </div>
-
-
                 </div>
-              </div>
 
-              {/* Dates Row */}
-              <div className="flex flex-wrap items-center gap-6 text-sm">
-                {payroll.createdAt && (
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">Created:</span>
-                    <span className="text-foreground font-medium">
-                      {safeFormatDate(payroll.createdAt)}
-                    </span>
-                  </div>
-                )}
+                {/* Dates Row */}
+                <div className="flex flex-wrap items-center gap-6 text-sm">
+                  {payroll.createdAt && (
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-muted-foreground">Created:</span>
+                      <span className="text-foreground font-medium">
+                        {safeFormatDate(payroll.createdAt)}
+                      </span>
+                    </div>
+                  )}
 
-                {payroll.updatedAt && (
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">Updated:</span>
-                    <span className="text-foreground font-medium">
-                      {safeFormatDate(payroll.updatedAt)}
-                    </span>
-                  </div>
-                )}
+                  {payroll.updatedAt && (
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-muted-foreground">Updated:</span>
+                      <span className="text-foreground font-medium">
+                        {safeFormatDate(payroll.updatedAt)}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
           {/* Overview Cards - Using ModernPayrollDetail's cards */}
           <PayrollOverviewCards data={data} />
@@ -799,7 +920,7 @@ export default function PayrollDetailPage() {
             }}
             className="space-y-4"
           >
-            <TabsList className="grid w-full grid-cols-3 bg-muted shadow-md rounded-lg">
+            <TabsList className="grid w-full grid-cols-4 bg-muted shadow-md rounded-lg">
               <TabsTrigger
                 value="overview"
                 className="data-[state=active]:bg-card data-[state=active]:text-foreground hover:bg-accent transition-all text-foreground"
@@ -813,6 +934,12 @@ export default function PayrollDetailPage() {
                 Payroll Dates
               </TabsTrigger>
               <TabsTrigger
+                value="billing"
+                className="data-[state=active]:bg-card data-[state=active]:text-foreground hover:bg-accent transition-all text-foreground"
+              >
+                Billing & Revenue
+              </TabsTrigger>
+              <TabsTrigger
                 value="docs-notes"
                 className="data-[state=active]:bg-card data-[state=active]:text-foreground hover:bg-accent transition-all text-foreground"
               >
@@ -822,22 +949,27 @@ export default function PayrollDetailPage() {
 
             <TabsContent value="overview" className="space-y-6">
               {/* Staff Assignments section */}
-              <PayrollAssignments 
-                data={data} 
+              <PayrollAssignments
+                data={data}
                 loading={loading}
-                onUpdateAssignments={async (assignments) => {
+                onUpdateAssignments={async assignments => {
                   // TODO: Implement assignment update mutation
-                  console.log('Update assignments:', assignments);
+                  console.log("Update assignments:", assignments);
                 }}
               />
             </TabsContent>
 
             <TabsContent value="dates" className="space-y-6">
               {/* Use ModernDataTable with comprehensive filtering and notes */}
-              <ModernPayrollDatesTable 
-                data={data}
-                payrollId={payrollId}
-              />
+              <ModernPayrollDatesTable data={data} payrollId={payrollId} />
+            </TabsContent>
+
+            <TabsContent value="billing" className="space-y-6">
+              {/* Billing Overview Cards */}
+              <PayrollBillingOverview payrollId={payrollId} />
+
+              {/* Billing Items Table */}
+              <PayrollBillingItemsTable payrollId={payrollId} />
             </TabsContent>
 
             <TabsContent value="docs-notes" className="space-y-6">
@@ -851,13 +983,28 @@ export default function PayrollDetailPage() {
 
               {/* Documents Section - Without Card wrapper or header */}
               <Suspense fallback={<div>Loading documents...</div>}>
-                <DocumentList 
-                  payrollId={payrollId}
-                  showUploadButton={true}
-                />
+                <DocumentList payrollId={payrollId} showUploadButton={true} />
               </Suspense>
             </TabsContent>
           </Tabs>
+
+          {/* Reusable dialogs */}
+          <EmailComposeDialog
+            open={showEmail}
+            onOpenChange={setShowEmail}
+            to={[payroll?.client?.contactEmail || ""].filter(Boolean)}
+            subject={`Regarding payroll: ${payroll?.name}`}
+            onSend={() => Promise.resolve()}
+          />
+          <ExportDataDialog
+            open={showExport}
+            onOpenChange={setShowExport}
+            filename={`payroll-${payroll?.name || payrollId}-dates.csv`}
+            onExport={() => {
+              setShowExport(false);
+              window.dispatchEvent(new CustomEvent("payroll-dates:export"));
+            }}
+          />
         </div>
       </PermissionGuard>
     </PayrollErrorBoundary>

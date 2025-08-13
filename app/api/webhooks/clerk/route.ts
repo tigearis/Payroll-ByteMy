@@ -1,11 +1,18 @@
 // app/api/webhooks/clerk/route.ts
-import { gql } from "@apollo/client";
 import { createClerkClient } from "@clerk/backend";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { Webhook } from "svix";
-import { UpdateUserRoleFromClerkDocument } from "@/domains/users/graphql/generated/graphql";
-import { syncUserWithDatabase } from "@/domains/users/services/user-sync";
+import { 
+  UpdateUserRoleFromClerkDocument,
+  GetPendingInvitationForWebhookDocument,
+  WebhookAcceptInvitationDocument,
+  type GetPendingInvitationForWebhookQuery,
+  type GetPendingInvitationForWebhookQueryVariables,
+  type WebhookAcceptInvitationMutation,
+  type WebhookAcceptInvitationMutationVariables,
+} from "@/domains/users/graphql/generated/graphql";
+import { syncUserWithDatabase, getBestAvatarUrl } from "@/domains/users/services/user-sync";
 import type { UserRole } from "@/domains/users/services/user-sync";
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { 
@@ -184,28 +191,11 @@ export async function POST(req: NextRequest) {
             try {
               console.log(`🔍 INVITATION CHECK - Looking for pending invitations for email: ${userEmail}`);
               
-              const invitationCheck = await adminApolloClient.query({
-                query: gql`
-                  query GetPendingInvitationForWebhook($email: String!) {
-                    userInvitations(
-                      where: {
-                        email: { _eq: $email }
-                        invitationStatus: { _eq: "pending" }
-                        expiresAt: { _gt: "now()" }
-                      }
-                      orderBy: { createdAt: DESC }
-                      limit: 1
-                    ) {
-                      id
-                      email
-                      invitedRole
-                      managerId
-                      invitationStatus
-                      expiresAt
-                      createdAt
-                    }
-                  }
-                `,
+              const invitationCheck = await adminApolloClient.query<
+                GetPendingInvitationForWebhookQuery,
+                GetPendingInvitationForWebhookQueryVariables
+              >({
+                query: GetPendingInvitationForWebhookDocument,
                 variables: { email: userEmail },
                 fetchPolicy: 'network-only'
               });
@@ -218,7 +208,7 @@ export async function POST(req: NextRequest) {
               const pendingInvitation = invitationCheck.data?.userInvitations?.[0];
               if (pendingInvitation) {
                 roleFromInvitation = pendingInvitation.invitedRole as UserRole;
-                managerIdFromInvitation = pendingInvitation.managerId;
+                managerIdFromInvitation = pendingInvitation.managerId || undefined;
                 console.log(`✅ INVITATION FOUND - Using invitation data:`, {
                   role: roleFromInvitation,
                   managerId: managerIdFromInvitation || 'none',
@@ -248,6 +238,12 @@ export async function POST(req: NextRequest) {
             finalManagerId: finalManagerId || 'none'
           });
 
+          // Extract the best avatar URL from Clerk data (prioritize external accounts)
+          const bestAvatarUrl = getBestAvatarUrl({
+            external_accounts: clerkUser.externalAccounts,
+            image_url: clerkUser.imageUrl
+          });
+
           console.log("🔄 USER SYNC - Starting database synchronization");
           const syncedUser = await syncUserWithDatabase(
             id,
@@ -255,7 +251,7 @@ export async function POST(req: NextRequest) {
             userEmail,
             finalRole,
             finalManagerId,
-            clerkUser.imageUrl
+            bestAvatarUrl
           );
 
           console.log(`✅ USER SYNC SUCCESS - User synced with database:`, {
@@ -272,32 +268,11 @@ export async function POST(req: NextRequest) {
             try {
               console.log(`🎫 INVITATION ACCEPTANCE - Auto-accepting invitation for webhook-created user`);
               
-              const acceptInvitationResult = await adminApolloClient.mutate({
-                mutation: gql`
-                  mutation WebhookAcceptInvitation($email: String!, $acceptedBy: uuid!) {
-                    bulkUpdateUserInvitations(
-                      where: {
-                        email: { _eq: $email }
-                        invitationStatus: { _eq: "pending" }
-                        expiresAt: { _gt: "now()" }
-                      }
-                      _set: {
-                        invitationStatus: "accepted"
-                        acceptedAt: "now()"
-                        acceptedBy: $acceptedBy
-                        updatedAt: "now()"
-                      }
-                    ) {
-                      affectedRows
-                      returning {
-                        id
-                        email
-                        invitationStatus
-                        acceptedAt
-                      }
-                    }
-                  }
-                `,
+              const acceptInvitationResult = await adminApolloClient.mutate<
+                WebhookAcceptInvitationMutation,
+                WebhookAcceptInvitationMutationVariables
+              >({
+                mutation: WebhookAcceptInvitationDocument,
                 variables: {
                   email: userEmail,
                   acceptedBy: syncedUser.id
@@ -309,7 +284,7 @@ export async function POST(req: NextRequest) {
                 result: acceptInvitationResult.data
               });
               
-              const acceptedInvitations = acceptInvitationResult.data?.bulkUpdateUserInvitations?.affectedRows || 0;
+              const acceptedInvitations = acceptInvitationResult.data?.updateUserInvitations?.affectedRows || 0;
               if (acceptedInvitations > 0) {
                 console.log(`✅ Auto-accepted ${acceptedInvitations} invitation(s) for webhook-created user`);
               } else {
@@ -324,13 +299,20 @@ export async function POST(req: NextRequest) {
           console.error("❌ Failed to validate user in Clerk:", clerkError);
           // Fallback to webhook data
           const defaultRole = (evt.data.public_metadata?.role as UserRole) || "viewer";
+          
+          // Extract the best avatar URL from webhook data (prioritize external accounts)
+          const fallbackAvatarUrl = getBestAvatarUrl({
+            external_accounts,
+            image_url
+          });
+
           await syncUserWithDatabase(
             id,
             `${first_name || ""} ${last_name || ""}`.trim() || "New User",
             email_addresses[0]?.email_address || "",
             defaultRole,
             undefined,
-            image_url
+            fallbackAvatarUrl
           );
         }
         break;
@@ -370,13 +352,19 @@ export async function POST(req: NextRequest) {
           }
         } else {
           // Regular user update without role change
+          // Extract the best avatar URL from webhook data (prioritize external accounts)
+          const updateAvatarUrl = getBestAvatarUrl({
+            external_accounts,
+            image_url
+          });
+
           await syncUserWithDatabase(
             id,
             `${first_name || ""} ${last_name || ""}`.trim() || "Updated User",
             email_addresses[0]?.email_address || "",
             undefined, // Don't change role if not specified
             undefined,
-            image_url
+            updateAvatarUrl
           );
         }
         break;

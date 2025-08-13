@@ -73,6 +73,25 @@ migrate-*.sh
 *-migration*.cjs
 *migration*.js
 
+# Security: Block files with potential secrets
+*secret*
+*password*
+*credential*
+*key*.txt
+*token*.txt
+config-*.json
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Development scripts with hardcoded values
+*-direct.js
+*-manual.js
+*test-real*.js
+debug-*.js
+force-*.js
+
 # Database dumps and backups
 *.dump
 *.sql

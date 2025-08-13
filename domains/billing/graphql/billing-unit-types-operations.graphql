@@ -1,0 +1,459 @@
+# Billing Unit Types GraphQL Operations
+# Operations for managing configurable billing unit types
+
+# ===== QUERIES =====
+
+query GetAllBillingUnitTypes {
+  billingUnitTypes(orderBy: { isSystemDefined: DESC, name: ASC }) {
+    id
+    name
+    displayName
+    description
+    defaultSource
+    isSystemDefined
+    isActive
+    requiresQuantityInput
+    quantityPrompt
+    createdAt
+    updatedAt
+    createdBy
+    updatedBy
+    createdByUser {
+      id
+      computedName
+    }
+    updatedByUser {
+      id
+      computedName
+    }
+  }
+}
+
+query GetBillingUnitTypesForSelection {
+  billingUnitTypes(
+    where: { isActive: { _eq: true } }
+    orderBy: { isSystemDefined: DESC, name: ASC }
+  ) {
+    id
+    name
+    displayName
+    description
+    defaultSource
+    isSystemDefined
+    requiresQuantityInput
+    quantityPrompt
+  }
+}
+
+query GetBillingUnitTypeById($id: uuid!) {
+  billingUnitTypesByPk(id: $id) {
+    id
+    name
+    displayName
+    description
+    defaultSource
+    isSystemDefined
+    isActive
+    requiresQuantityInput
+    quantityPrompt
+    createdAt
+    updatedAt
+    createdBy
+    updatedBy
+    createdByUser {
+      id
+      computedName
+    }
+    updatedByUser {
+      id
+      computedName
+    }
+  }
+}
+
+query GetCustomBillingUnitTypes {
+  billingUnitTypes(
+    where: { isSystemDefined: { _eq: false } }
+    orderBy: { name: ASC }
+  ) {
+    id
+    name
+    displayName
+    description
+    defaultSource
+    isActive
+    requiresQuantityInput
+    quantityPrompt
+    createdAt
+    createdByUser {
+      id
+      computedName
+    }
+  }
+}
+
+query GetBillingUnitTypeUsage($unitTypeId: uuid!) {
+  # Get services using this unit type
+  services(where: { billingUnitTypeId: { _eq: $unitTypeId } }) {
+    id
+    name
+    baseRate
+    billingTier
+    isActive
+  }
+  
+  # Get count of services using this unit type
+  servicesAggregate(where: { billingUnitTypeId: { _eq: $unitTypeId } }) {
+    aggregate {
+      count
+    }
+  }
+}
+
+# ===== MUTATIONS =====
+
+mutation CreateBillingUnitType($input: BillingUnitTypesInsertInput!) {
+  insertBillingUnitTypesOne(object: $input) {
+    id
+    name
+    displayName
+    description
+    defaultSource
+    isActive
+    requiresQuantityInput
+    quantityPrompt
+    createdAt
+    createdByUser {
+      id
+      computedName
+    }
+  }
+}
+
+mutation UpdateBillingUnitType($id: uuid!, $set: BillingUnitTypesSetInput!) {
+  updateBillingUnitTypesByPk(pkColumns: { id: $id }, _set: $set) {
+    id
+    name
+    displayName
+    description
+    defaultSource
+    isActive
+    requiresQuantityInput
+    quantityPrompt
+    updatedAt
+    updatedByUser {
+      id
+      computedName
+    }
+  }
+}
+
+mutation ToggleBillingUnitTypeActive($id: uuid!, $isActive: Boolean!) {
+  updateBillingUnitTypesByPk(
+    pkColumns: { id: $id }
+    _set: { isActive: $isActive, updatedAt: "now()" }
+  ) {
+    id
+    name
+    displayName
+    isActive
+    updatedAt
+  }
+}
+
+mutation DeleteBillingUnitType($id: uuid!) {
+  deleteBillingUnitTypesByPk(id: $id) {
+    id
+    name
+    displayName
+  }
+}
+
+# ===== SERVICE QUERIES =====
+
+query GetAllServicesWithRates {
+  services(
+    where: { isActive: { _eq: true } }
+    orderBy: { name: ASC }
+  ) {
+    id
+    name
+    description
+    category
+    baseRate
+    billingTier
+    serviceType
+    isActive
+    billingUnitType {
+      id
+      name
+      displayName
+      description
+      requiresQuantityInput
+      quantityPrompt
+    }
+  }
+}
+
+query GetServiceById($id: uuid!) {
+  servicesByPk(id: $id) {
+    id
+    name
+    description
+    category
+    baseRate
+    billingTier
+    serviceType
+    isActive
+    isTemplate
+    currency
+    metadata
+    dependencies
+    createdAt
+    updatedAt
+    billingUnitType {
+      id
+      name
+      displayName
+      description
+      requiresQuantityInput
+      quantityPrompt
+      defaultSource
+    }
+  }
+}
+
+# ===== SERVICE MUTATIONS =====
+
+mutation CreateServiceWithUnitType($input: ServicesInsertInput!) {
+  insertServicesOne(object: $input) {
+    id
+    name
+    description
+    category
+    baseRate
+    billingTier
+    serviceType
+    isActive
+    createdAt
+    billingUnitType {
+      id
+      displayName
+    }
+  }
+}
+
+mutation UpdateServiceWithUnitType($id: uuid!, $set: ServicesSetInput!) {
+  updateServicesByPk(pkColumns: { id: $id }, _set: $set) {
+    id
+    name
+    description
+    category
+    baseRate
+    billingTier
+    serviceType
+    isActive
+    updatedAt
+    billingUnitType {
+      id
+      displayName
+    }
+  }
+}
+
+# ===== SERVICE POSITION RATES =====
+
+query GetServicePositionRates($serviceId: uuid!) {
+  servicePositionRates(
+    where: { serviceId: { _eq: $serviceId } }
+    orderBy: { position: ASC, effectiveFrom: DESC }
+  ) {
+    id
+    serviceId
+    position
+    ratePerUnit
+    effectiveFrom
+    effectiveTo
+    createdAt
+    createdByUser {
+      id
+      computedName
+    }
+  }
+}
+
+query GetEffectivePositionRate($serviceId: uuid!, $position: user_position!, $effectiveDate: date!) {
+  servicePositionRates(
+    where: {
+      serviceId: { _eq: $serviceId }
+      position: { _eq: $position }
+      effectiveFrom: { _lte: $effectiveDate }
+      _or: [
+        { effectiveTo: { _isNull: true } }
+        { effectiveTo: { _gte: $effectiveDate } }
+      ]
+    }
+    orderBy: { effectiveFrom: DESC }
+    limit: 1
+  ) {
+    id
+    ratePerUnit
+    effectiveFrom
+    effectiveTo
+  }
+}
+
+mutation CreateServicePositionRate($input: ServicePositionRatesInsertInput!) {
+  insertServicePositionRatesOne(object: $input) {
+    id
+    serviceId
+    position
+    ratePerUnit
+    effectiveFrom
+    effectiveTo
+    createdAt
+    createdByUser {
+      id
+      computedName
+    }
+  }
+}
+
+mutation UpdateServicePositionRate($id: uuid!, $set: ServicePositionRatesSetInput!) {
+  updateServicePositionRatesByPk(pkColumns: { id: $id }, _set: $set) {
+    id
+    serviceId
+    position
+    ratePerUnit
+    effectiveFrom
+    effectiveTo
+    updatedAt
+    updatedByUser {
+      id
+      computedName
+    }
+  }
+}
+
+mutation DeleteServicePositionRate($id: uuid!) {
+  deleteServicePositionRatesByPk(id: $id) {
+    id
+    position
+    ratePerUnit
+  }
+}
+
+# ===== PAYROLL COMPLETION WITH BILLING =====
+
+query GetPayrollDateWithServices($payrollDateId: uuid!) {
+  payrollDatesByPk(id: $payrollDateId) {
+    id
+    payrollId
+    originalEftDate
+    adjustedEftDate
+    status
+    completedAt
+    completedBy
+    totalTimeSpentMinutes
+    completionNotes
+    payroll {
+      id
+      name
+      clientId
+      employeeCount
+      primaryConsultantUserId
+      backupConsultantUserId
+      managerUserId
+      client {
+        id
+        name
+        contactEmail
+      }
+      primaryConsultant {
+        id
+        firstName
+        lastName
+        computedName
+      }
+      backupConsultant {
+        id
+        firstName
+        lastName
+        computedName
+      }
+      payrollServiceAgreementsForPayroll {
+        id
+        serviceId
+        customRate
+        customQuantity
+        isActive
+        billingFrequency
+        autoBillingEnabled
+      }
+    }
+  }
+}
+
+mutation CompletePayrollDateWithBilling(
+  $payrollDateId: uuid!
+  $completedBy: uuid!
+  $completionNotes: String
+) {
+  updatePayrollDatesByPk(
+    pkColumns: { id: $payrollDateId }
+    _set: {
+      status: "completed"
+      completedAt: "now()"
+      completedBy: $completedBy
+      completionNotes: $completionNotes
+    }
+  ) {
+    id
+    status
+    completedAt
+    completedBy
+    payrollId
+    originalEftDate
+    adjustedEftDate
+  }
+}
+
+# ===== BILLING ITEM CREATION =====
+
+mutation CreateBillingItemFromCompletion(
+  $billingItem: BillingItemsInsertInput!
+) {
+  insertBillingItemsOne(object: $billingItem) {
+    id
+    amount
+    description
+    quantity
+    unitPrice
+    status
+    createdAt
+    service {
+      id
+      name
+      billingUnitType {
+        displayName
+      }
+    }
+  }
+}
+
+# ===== TIME ENTRY OPERATIONS =====
+
+mutation CreatePayrollDateTimeEntry(
+  $timeEntry: PayrollDateTimeEntriesInsertInput!
+) {
+  insertPayrollDateTimeEntriesOne(object: $timeEntry) {
+    id
+    payrollDateId
+    userId
+    timeSpentMinutes
+    timeUnits
+    description
+    serviceId
+    createdAt
+  }
+}

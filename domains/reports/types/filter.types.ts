@@ -25,10 +25,17 @@ export const FilterConditionSchema = z.object({
   valueEnd: z.any().optional(), // For "between" operator
 });
 
-export const FilterGroupSchema = z.object({
+// Define the type interface first to avoid circular reference issues
+export interface FilterGroup {
+  conjunction: FilterConjunction;
+  conditions: Array<FilterCondition | FilterGroup>;
+}
+
+// Create the Zod schema with proper lazy evaluation
+export const FilterGroupSchema: z.ZodType<FilterGroup> = z.object({
   conjunction: FilterConjunctionSchema,
   conditions: z.array(
-    z.union([z.lazy(() => FilterGroupSchema), FilterConditionSchema])
+    z.union([FilterConditionSchema, z.lazy(() => FilterGroupSchema)])
   ),
 });
 
@@ -63,7 +70,7 @@ export const CalculatedFieldSchema = z.object({
 export type FilterOperator = z.infer<typeof FilterOperatorSchema>;
 export type FilterConjunction = z.infer<typeof FilterConjunctionSchema>;
 export type FilterCondition = z.infer<typeof FilterConditionSchema>;
-export type FilterGroup = z.infer<typeof FilterGroupSchema>;
+// FilterGroup type is already defined above as interface
 export type AggregationFunction = z.infer<typeof AggregationFunctionSchema>;
 export type Aggregation = z.infer<typeof AggregationSchema>;
 export type GroupBy = z.infer<typeof GroupBySchema>;

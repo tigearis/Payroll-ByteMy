@@ -15,6 +15,13 @@
       "documentsPath": "./domains/audit/graphql/generated/"
     },
     {
+      "name": "admin",
+      "security": "CRITICAL",
+      "description": "Administrative operations and cleanup",
+      "hasOperations": true,
+      "documentsPath": "./domains/admin/graphql/generated/"
+    },
+    {
       "name": "permissions",
       "security": "CRITICAL",
       "description": "Role-based access control",
@@ -85,6 +92,13 @@
       "documentsPath": "./domains/external-systems/graphql/generated/"
     },
     {
+      "name": "reports",
+      "security": "HIGH",
+      "description": "Custom reporting and analytics",
+      "hasOperations": true,
+      "documentsPath": "./domains/reports/graphql/generated/"
+    },
+    {
       "name": "shared",
       "security": "LOW",
       "description": "Public/aggregate data",
@@ -107,7 +121,7 @@
     "Client Preset v4.8+ for optimal type safety",
     "Zero type conflicts with modern codegen"
   ],
-  "generatedAt": "2025-08-11T15:28:24.852Z",
+  "generatedAt": "2025-08-12T23:33:21.825Z",
   "codegenVersion": "Client Preset v4.0",
   "architectureFixes": [
     "Migrated to client preset for better type safety",

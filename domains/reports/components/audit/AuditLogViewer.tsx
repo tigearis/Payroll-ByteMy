@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { useAuth } from "@clerk/nextjs";
+import { format } from "date-fns";
 import {
   Search,
   AlertTriangle,
@@ -8,18 +8,10 @@ import {
   ChevronRight,
   ChevronDown,
 } from "lucide-react";
-import { format } from "date-fns";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   CollapsibleContent,
   CollapsibleTrigger,
@@ -30,7 +22,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useRole } from "@/hooks/use-permissions";
 import {
   AuditEvent,
   AuditEventType,
@@ -52,7 +53,8 @@ export function AuditLogViewer({
   loading,
   className,
 }: AuditLogViewerProps) {
-  const { user } = useAuth();
+  const { isConsultantOrAbove } = useRole();
+  const { userId } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedEventType, setSelectedEventType] = useState<
     AuditEventType | ""

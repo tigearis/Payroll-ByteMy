@@ -39,7 +39,8 @@ import {
 } from "@/components/ui/dialog";
 import { BillingAnalytics } from "@/domains/billing/components/BillingAnalytics";
 import { BillingErrorBoundary } from "@/domains/billing/components/BillingErrorBoundary";
-import { BillingItemsManager } from "@/domains/billing/components/BillingItemsManager";
+import { EnhancedBillingItemsManager } from "@/domains/billing/components/items/enhanced-billing-items-manager";
+import { ServiceItemsViewer } from "@/domains/billing/components/service-items/service-items-viewer";
 import { PayrollIntegrationHub } from "@/domains/billing/components/PayrollIntegrationHub";
 import { RecurringServicesPanel } from "@/domains/billing/components/RecurringServicesPanel";
 import { useBillingData } from "@/domains/billing/hooks/useBillingData";
@@ -57,12 +58,12 @@ function BillingLoading() {
 
 // Main billing dashboard component
 function BillingDashboardContent() {
-  const { currentUser, loading: userLoading } = useCurrentUser();
+  const { currentUser: _currentUser, loading: userLoading } = useCurrentUser();
 
   // Data state
   const {
     billingItems,
-    recentBillingItems,
+    recentBillingItems: _recentBillingItems,
     activeClients,
     recurringServices,
     staffUsers,
@@ -81,6 +82,7 @@ function BillingDashboardContent() {
   const [showRecurringServices, setShowRecurringServices] = useState(false);
   const [showPayrollIntegration, setShowPayrollIntegration] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
+  const [showServiceItems, setShowServiceItems] = useState(false);
   const [error_state, setError] = useState<string | null>(null);
 
   // Business logic handlers (preserved from original)
@@ -129,8 +131,10 @@ function BillingDashboardContent() {
   };
 
   const handleCreateBillingItem = () => {
-    // TODO: Navigate to billing item creation
-    console.log("Create new billing item");
+    // This is now handled by the EnhancedBillingItemsManager component
+    console.log(
+      "Create new billing item - handled by EnhancedBillingItemsManager"
+    );
   };
 
   // Show error state if there's a critical error
@@ -204,6 +208,11 @@ function BillingDashboardContent() {
         actions={[
           { label: "Refresh", icon: RefreshCw, onClick: () => refetch() },
           {
+            label: "Service Overview",
+            icon: Settings,
+            onClick: () => setShowServiceItems(true),
+          },
+          {
             label: "Payroll Billing",
             icon: Calendar,
             onClick: () => setShowPayrollIntegration(true),
@@ -236,21 +245,18 @@ function BillingDashboardContent() {
         </div>
 
         <div className="flex gap-2">
-          <Button variant="outline">
+          <Button
+            variant="outline"
+            onClick={() => window.location.assign("/settings")}
+          >
             <Settings className="h-4 w-4 mr-2" />
             Settings
           </Button>
         </div>
       </div>
 
-      {/* Modern Billing Items Manager */}
-      <BillingItemsManager
-        billingItems={billingItems}
-        loading={loading}
-        onRefetch={refetch}
-        onStatusChange={handleStatusChange}
-        onBulkAction={handleBulkAction}
-      />
+      {/* Enhanced Billing Items Manager */}
+      <EnhancedBillingItemsManager />
 
       {/* Recurring Services Dialog */}
       <Dialog
@@ -301,6 +307,24 @@ function BillingDashboardContent() {
             loading={loading}
             onGenerateBilling={handleGeneratePayrollBilling}
           />
+        </DialogContent>
+      </Dialog>
+
+      {/* Service Items Overview Dialog */}
+      <Dialog open={showServiceItems} onOpenChange={setShowServiceItems}>
+        <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5" />
+              Service Items Overview
+            </DialogTitle>
+            <DialogDescription>
+              Complete view of service assignments, billing workflow, and
+              utilization analytics
+            </DialogDescription>
+          </DialogHeader>
+
+          <ServiceItemsViewer />
         </DialogContent>
       </Dialog>
 

@@ -7,7 +7,6 @@
 
 import {
   Database,
-  Zap,
   Shield,
   BarChart3,
   Users,
@@ -42,7 +41,7 @@ export default function DataAssistantPage() {
               { label: "AI Assistant", href: "/ai-assistant" },
               { label: "Data Assistant" },
             ]}
-            actions={[{ label: "Feature Disabled", icon: Zap }]}
+            actions={[{ label: "Feature Disabled" }]}
           />
           <div className="flex items-center justify-center h-[400px] border-2 border-dashed border-gray-300 rounded-lg">
             <div className="text-center">
@@ -69,7 +68,7 @@ export default function DataAssistantPage() {
               { label: "AI Assistant", href: "/ai-assistant" },
               { label: "Data Assistant" },
             ]}
-            actions={[{ label: "Feature: Dynamic Query AI", icon: Zap }]}
+            actions={[{ label: "Feature: Dynamic Query AI" }]}
           />
 
           {/* Features Overview */}

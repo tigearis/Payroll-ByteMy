@@ -39,11 +39,11 @@ import { useDynamicLoading } from "@/lib/hooks/use-dynamic-loading";
 
 // Create loading component for email
 function EmailLoading() {
-  const { Loading } = useDynamicLoading({
+  const { Loading: _EmailLoading } = useDynamicLoading({
     title: "Loading Email Templates...",
     description: "Fetching templates and email system data",
   });
-  return <Loading variant="minimal" />;
+  return <_EmailLoading variant="minimal" />;
 }
 
 interface EmailTemplate {
@@ -138,13 +138,11 @@ function EmailManagementPage() {
 
   // Handler functions for email management
   const handleCreateTemplate = () => {
-    // TODO: Navigate to template creation page or open modal
-    console.log("Create new template");
+    window.location.href = "/email?mode=new-template";
   };
 
   const handleEditTemplate = (templateId: string) => {
-    // TODO: Navigate to template editor
-    console.log("Edit template:", templateId);
+    window.location.href = `/email?edit=${templateId}`;
   };
 
   const handleDeleteTemplate = async (templateId: string) => {

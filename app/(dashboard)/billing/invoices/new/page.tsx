@@ -13,6 +13,7 @@ import { useState } from "react";
 import { PermissionGuard } from "@/components/auth/permission-guard";
 import { PageHeader } from "@/components/patterns/page-header";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -48,7 +49,7 @@ export default function NewInvoicePage() {
   );
 
   // Fetch clients
-  const { data: clientsData, loading: clientsLoading } = useQuery(
+  const { data: clientsData, loading: _clientsLoading } = useQuery(
     GetClientsForDropdownDocument,
     {
       fetchPolicy: "cache-and-network",
@@ -303,8 +304,33 @@ export default function NewInvoicePage() {
               <div className="space-y-3">
                 <Button
                   className="w-full"
-                  disabled={selectedItems.length === 0}
+                  disabled={selectedItems.length === 0 || !selectedClient}
                   size="lg"
+                  onClick={async () => {
+                    try {
+                      const res = await fetch(
+                        "/api/billing/invoices/generate",
+                        {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            clientId: selectedClient,
+                            billingItemIds: selectedItems,
+                          }),
+                        }
+                      );
+                      const data = await res.json();
+                      if (!res.ok || !data.success)
+                        throw new Error(
+                          data.error || "Failed to generate invoice"
+                        );
+                      toast.success("Invoice created");
+                      // Navigate to invoices page; if invoice id returned, could deep link
+                      window.location.href = "/billing/invoices";
+                    } catch (e: any) {
+                      toast.error(e.message || "Failed to generate invoice");
+                    }
+                  }}
                 >
                   <CheckCircle className="w-4 h-4 mr-2" />
                   Generate Invoice

@@ -1,0 +1,31 @@
+mutation LogQueryAudit(
+  $queryText: String!
+  $queryType: String!
+  $parameters: jsonb
+  $userId: uuid!
+  $executedAt: timestamptz
+  $status: String!
+  $errorMessage: String
+  $executionTime: Int!
+  $resultCount: Int
+  $fromCache: Boolean
+) {
+  insertQueryExecutions(objects: [{
+    queryText: $queryText
+    queryType: $queryType
+    parameters: $parameters
+    userId: $userId
+    executedAt: $executedAt
+    status: $status
+    errorMessage: $errorMessage
+    executionTime: $executionTime
+    resultCount: $resultCount
+    fromCache: $fromCache
+  }]) {
+    returning {
+      id
+      executedAt
+      status
+    }
+  }
+}

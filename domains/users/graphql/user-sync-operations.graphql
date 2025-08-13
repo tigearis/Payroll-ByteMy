@@ -1,0 +1,174 @@
+# Users Domain - User Sync Operations
+# Security Classification: CRITICAL - User management and authentication
+# Used by user sync service for authentication and role management
+
+# SERVICE OPERATIONS - User Sync
+
+# Find a user by email
+query GetUserByEmailUserSync($email: String!) {
+  users(where: { email: { _eq: $email } }) {
+    id
+    clerkUserId
+    role
+    computedName
+    email
+    isStaff
+    managerId
+    image
+    firstName
+    lastName
+    createdAt
+    updatedAt
+    manager {
+      id
+      computedName
+      email
+      role
+    }
+  }
+}
+
+# Find a user by Clerk ID
+query GetUserByClerkIdUserSync($clerkId: String!) {
+  users(where: { clerkUserId: { _eq: $clerkId } }) {
+    id
+    clerkUserId
+    role
+    computedName
+    email
+    isStaff
+    managerId
+    image
+    firstName
+    lastName
+    createdAt
+    updatedAt
+    manager {
+      id
+      computedName
+      email
+      role
+    }
+  }
+}
+
+# Upsert user (insert or update on conflict)
+mutation UpsertUserUserSync(
+  $clerkId: String!
+  $firstName: String!
+  $lastName: String!
+  $email: String!
+  $role: user_role = "viewer"
+  $isStaff: Boolean = false
+  $managerId: uuid
+  $image: String
+) {
+  insertUsersOne(
+    object: {
+      clerkUserId: $clerkId
+      firstName: $firstName
+      lastName: $lastName
+      email: $email
+      role: $role
+      isStaff: $isStaff
+      managerId: $managerId
+      image: $image
+    }
+    onConflict: {
+      constraint: users_clerk_user_id_key
+      updateColumns: [firstName, lastName, email, image, updatedAt]
+    }
+  ) {
+    id
+    firstName
+    lastName
+    computedName
+    email
+    role
+    clerkUserId
+    isStaff
+    managerId
+    image
+    createdAt
+    updatedAt
+  }
+}
+
+# Update user role
+mutation UpdateUserRoleUserSync(
+  $id: uuid!
+  $role: user_role!
+  $managerId: uuid
+  $isStaff: Boolean
+) {
+  updateUsersByPk(
+    pkColumns: { id: $id }
+    _set: {
+      role: $role
+      managerId: $managerId
+      isStaff: $isStaff
+      updatedAt: "now()"
+    }
+  ) {
+    id
+    computedName
+    email
+    role
+    isStaff
+    managerId
+    updatedAt
+    manager {
+      id
+      computedName
+      email
+    }
+  }
+}
+
+# Update user with Clerk ID
+mutation UpdateUserClerkIdUserSync($id: uuid!, $clerkId: String!) {
+  updateUsersByPk(
+    pkColumns: { id: $id }
+    _set: { clerkUserId: $clerkId, updatedAt: "now()" }
+  ) {
+    id
+    computedName
+    email
+    role
+    clerkUserId
+    isStaff
+    managerId
+    updatedAt
+  }
+}
+
+# Update user image
+mutation UpdateUserImageUserSync($id: uuid!, $image: String!) {
+  updateUsersByPk(
+    pkColumns: { id: $id }
+    _set: { image: $image, updatedAt: "now()" }
+  ) {
+    id
+    computedName
+    email
+    role
+    clerkUserId
+    isStaff
+    managerId
+    image
+    updatedAt
+  }
+}
+
+# Delete user by Clerk ID
+mutation DeleteUserByClerkIdUserSync($clerkId: String!) {
+  deleteUsers(where: { clerkUserId: { _eq: $clerkId } }) {
+    affectedRows
+    returning {
+      id
+      computedName
+      email
+      clerkUserId
+    }
+  }
+}

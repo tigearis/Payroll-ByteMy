@@ -1,5 +1,5 @@
 // lib/user-sync.ts
-import { gql } from "@apollo/client";
+import { DocumentNode } from "@apollo/client";
 import { clerkClient } from "@clerk/nextjs/server";
 import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { 
@@ -7,6 +7,29 @@ import {
   syncUserRoleAssignmentsHierarchical,
   type UserRole as HierarchicalUserRole
 } from "@/lib/permissions/hierarchical-permissions";
+import {
+  GetUserByEmailUserSyncDocument,
+  GetUserByEmailUserSyncQuery,
+  GetUserByEmailUserSyncQueryVariables,
+  GetUserByClerkIdUserSyncDocument,
+  GetUserByClerkIdUserSyncQuery,
+  GetUserByClerkIdUserSyncQueryVariables,
+  UpsertUserUserSyncDocument,
+  UpsertUserUserSyncMutation,
+  UpsertUserUserSyncMutationVariables,
+  UpdateUserRoleUserSyncDocument,
+  UpdateUserRoleUserSyncMutation,
+  UpdateUserRoleUserSyncMutationVariables,
+  UpdateUserClerkIdUserSyncDocument,
+  UpdateUserClerkIdUserSyncMutation,
+  UpdateUserClerkIdUserSyncMutationVariables,
+  UpdateUserImageUserSyncDocument,
+  UpdateUserImageUserSyncMutation,
+  UpdateUserImageUserSyncMutationVariables,
+  DeleteUserByClerkIdUserSyncDocument,
+  DeleteUserByClerkIdUserSyncMutation,
+  DeleteUserByClerkIdUserSyncMutationVariables
+} from "../graphql/generated/graphql";
 
 // Define user role hierarchy for permission checking
 // These must match the Hasura database enum values exactly
@@ -33,169 +56,12 @@ function booleanToString(value: boolean | null | undefined): string {
   return String(Boolean(value));
 }
 
-// Query to find a user by email
-const GET_USER_BY_EMAIL = gql`
-  query GetUserByEmail($email: String!) {
-    users(where: { email: { _eq: $email } }) {
-      id
-      clerkUserId
-      role
-      computedName
-      email
-      isStaff
-      managerId
-      image
-      createdAt
-      updatedAt
-      manager {
-        id
-        computedName
-        email
-        role
-      }
-    }
-  }
-`;
+// GraphQL operations now imported from generated types
 
-// Query to find a user by Clerk ID
-const GET_USER_BY_CLERK_ID = gql`
-  query GetUserByClerkId($clerkId: String!) {
-    users(where: { clerkUserId: { _eq: $clerkId } }) {
-      id
-      clerkUserId
-      role
-      computedName
-      email
-      isStaff
-      managerId
-      image
-      createdAt
-      updatedAt
-      manager {
-        id
-        computedName
-        email
-        role
-      }
-    }
-  }
-`;
 
-// Enhanced upsert user mutation
-const UPSERT_USER = gql`
-  mutation UpsertUser(
-    $clerkId: String!
-    $firstName: String!
-    $lastName: String!
-    $email: String!
-    $role: user_role = "viewer"
-    $isStaff: Boolean = false
-    $managerId: uuid
-    $image: String
-  ) {
-    insertUsersOne(
-      object: {
-        clerkUserId: $clerkId
-        firstName: $firstName
-        lastName: $lastName
-        email: $email
-        role: $role
-        isStaff: $isStaff
-        managerId: $managerId
-        image: $image
-      }
-      onConflict: {
-        constraint: users_clerk_user_id_key
-        updateColumns: [firstName, lastName, email, image, updatedAt]
-      }
-    ) {
-      id
-      firstName
-      lastName
-      computedName
-      email
-      role
-      clerkUserId
-      isStaff
-      managerId
-      image
-      createdAt
-      updatedAt
-    }
-  }
-`;
 
-// Update user role mutation
-const UPDATE_USER_ROLE = gql`
-  mutation UpdateUserRole(
-    $id: uuid!
-    $role: user_role!
-    $managerId: uuid
-    $isStaff: Boolean
-  ) {
-    updateUserById(
-      pkColumns: { id: $id }
-      _set: {
-        role: $role
-        managerId: $managerId
-        isStaff: $isStaff
-        updatedAt: "now()"
-      }
-    ) {
-      id
-      computedName
-      email
-      role
-      isStaff
-      managerId
-      updatedAt
-      manager {
-        id
-        computedName
-        email
-      }
-    }
-  }
-`;
 
-// Update user with Clerk ID
-const UPDATE_USER_CLERK_ID = gql`
-  mutation UpdateUserClerkId($id: uuid!, $clerkId: String!) {
-    updateUserById(
-      pkColumns: { id: $id }
-      _set: { clerkUserId: $clerkId, updatedAt: "now()" }
-    ) {
-      id
-      computedName
-      email
-      role
-      clerkUserId
-      isStaff
-      managerId
-      updatedAt
-    }
-  }
-`;
 
-// Update user image mutation
-const UPDATE_USER_IMAGE = gql`
-  mutation UpdateUserImage($id: uuid!, $image: String!) {
-    updateUserById(
-      pkColumns: { id: $id }
-      _set: { image: $image, updatedAt: "now()" }
-    ) {
-      id
-      computedName
-      email
-      role
-      clerkUserId
-      isStaff
-      managerId
-      image
-      updatedAt
-    }
-  }
-`;
 
 // Enhanced user sync function with better error handling
 export async function syncUserWithDatabase(
@@ -223,7 +89,12 @@ export async function syncUserWithDatabase(
       try {
         const client = await clerkClient();
         const clerkUser = await client.users.getUser(clerkId);
-        clerkImageUrl = clerkUser.imageUrl;
+        
+        // Use the helper function to prioritize external accounts avatar over image URL
+        clerkImageUrl = getBestAvatarUrl({
+          external_accounts: clerkUser.externalAccounts,
+          image_url: clerkUser.imageUrl
+        });
       } catch (error) {
         console.warn("Could not fetch image from Clerk:", error);
       }
@@ -231,8 +102,8 @@ export async function syncUserWithDatabase(
 
     // First, check if user exists by Clerk ID
     const { data: userData, errors: queryErrors } =
-      await adminApolloClient.query({
-        query: GET_USER_BY_CLERK_ID,
+      await adminApolloClient.query<GetUserByClerkIdUserSyncQuery, GetUserByClerkIdUserSyncQueryVariables>({
+        query: GetUserByClerkIdUserSyncDocument,
         variables: { clerkId },
         fetchPolicy: "network-only",
         errorPolicy: "all",
@@ -249,8 +120,8 @@ export async function syncUserWithDatabase(
       console.log(`🔍 No user found by Clerk ID, checking by email: ${email}`);
 
       const { data: emailUserData, errors: emailQueryErrors } =
-        await adminApolloClient.query({
-          query: GET_USER_BY_EMAIL,
+        await adminApolloClient.query<GetUserByEmailUserSyncQuery, GetUserByEmailUserSyncQueryVariables>({
+          query: GetUserByEmailUserSyncDocument,
           variables: { email },
           fetchPolicy: "network-only",
           errorPolicy: "all",
@@ -269,8 +140,8 @@ export async function syncUserWithDatabase(
 
         // Update the existing user with the Clerk ID
         const { data: updateData, errors: updateErrors } =
-          await adminApolloClient.mutate({
-            mutation: UPDATE_USER_CLERK_ID,
+          await adminApolloClient.mutate<UpdateUserClerkIdUserSyncMutation, UpdateUserClerkIdUserSyncMutationVariables>({
+            mutation: UpdateUserClerkIdUserSyncDocument,
             variables: {
               id: existingUserByEmail.id,
               clerkId,
@@ -287,7 +158,7 @@ export async function syncUserWithDatabase(
           );
         }
 
-        databaseUser = updateData?.updateUserById;
+        databaseUser = updateData?.updateUsersByPk;
         console.log("✅ Updated existing user with Clerk ID:", databaseUser);
       }
     }
@@ -304,8 +175,8 @@ export async function syncUserWithDatabase(
       );
 
       const { data: newUserData, errors: mutationErrors } =
-        await adminApolloClient.mutate({
-          mutation: UPSERT_USER,
+        await adminApolloClient.mutate<UpsertUserUserSyncMutation, UpsertUserUserSyncMutationVariables>({
+          mutation: UpsertUserUserSyncDocument,
           variables: {
             clerkId,
             firstName,
@@ -339,8 +210,8 @@ export async function syncUserWithDatabase(
       console.log(`🖼️ Updating user image: ${databaseUser.computedName}`);
 
       const { data: updateImageData, errors: updateImageErrors } =
-        await adminApolloClient.mutate({
-          mutation: UPDATE_USER_IMAGE,
+        await adminApolloClient.mutate<UpdateUserImageUserSyncMutation, UpdateUserImageUserSyncMutationVariables>({
+          mutation: UpdateUserImageUserSyncDocument,
           variables: {
             id: databaseUser.id,
             image: clerkImageUrl,
@@ -351,7 +222,7 @@ export async function syncUserWithDatabase(
       if (updateImageErrors) {
         console.warn("Image update errors:", updateImageErrors);
       } else {
-        databaseUser = updateImageData?.updateUserById || databaseUser;
+        databaseUser = updateImageData?.updateUsersByPk || databaseUser;
         console.log("✅ Updated user image in database");
       }
     } else if (databaseUser) {
@@ -380,12 +251,12 @@ export async function syncUserWithDatabase(
           role: databaseUser.role,
           databaseId: databaseUser.id, // ✅ CRITICAL: Database UUID for JWT x-hasura-user-id
           isStaff: booleanToString(databaseUser.isStaff), // ✅ Convert boolean to string for Hasura
-          managerId: databaseUser.managerId,
-          allowedRoles: permissionData.allowedRoles, // ✅ For x-hasura-allowed-roles (hierarchical) - keep as array
+          managerId: databaseUser.managerId || '', // ✅ Convert null to empty string for Hasura
+          allowedRoles: permissionData.allowedRoles, // ✅ Keep as array for JWT template without quotes
           excludedPermissions: arrayToString(permissionData.excludedPermissions), // ✅ Convert to string for Hasura compatibility
           permissionHash: permissionData.permissionHash, // ✅ For x-hasura-permission-hash (role + exclusions)
           permissionVersion: permissionData.permissionVersion, // ✅ For x-hasura-permission-version
-          organizationId: null, // ✅ For x-hasura-org-id (future multi-tenancy)
+          organizationId: '', // ✅ For x-hasura-org-id (future multi-tenancy) - must be string not null
           lastSyncAt: new Date().toISOString(),
         };
 
@@ -452,8 +323,8 @@ export async function updateUserRole(
     console.log(`🔄 Updating user role: ${userId} to ${newRole}`);
 
     // Get the user being updated
-    const { data: userData } = await adminApolloClient.query({
-      query: GET_USER_BY_CLERK_ID,
+    const { data: userData } = await adminApolloClient.query<GetUserByClerkIdUserSyncQuery, GetUserByClerkIdUserSyncQueryVariables>({
+      query: GetUserByClerkIdUserSyncDocument,
       variables: { clerkId: userId },
       fetchPolicy: "network-only",
     });
@@ -464,8 +335,8 @@ export async function updateUserRole(
     }
 
     // Update role in database
-    const { data: updateData, errors } = await adminApolloClient.mutate({
-      mutation: UPDATE_USER_ROLE,
+    const { data: updateData, errors } = await adminApolloClient.mutate<UpdateUserRoleUserSyncMutation, UpdateUserRoleUserSyncMutationVariables>({
+      mutation: UpdateUserRoleUserSyncDocument,
       variables: {
         id: databaseUser.id,
         role: newRole,
@@ -482,7 +353,7 @@ export async function updateUserRole(
       );
     }
 
-    const updatedUser = updateData?.updateUserById;
+    const updatedUser = updateData?.updateUsersByPk;
 
     // Update Clerk metadata using consistent structure
     if (updatedUser) {
@@ -503,12 +374,12 @@ export async function updateUserRole(
           role: updatedUser.role,
           databaseId: updatedUser.id,
           isStaff: booleanToString(updatedUser.isStaff), // ✅ Convert boolean to string for Hasura
-          managerId: updatedUser.managerId,
-          allowedRoles: permissionData.allowedRoles, // ✅ For x-hasura-allowed-roles (hierarchical) - keep as array
+          managerId: updatedUser.managerId || '', // ✅ Convert null to empty string for Hasura
+          allowedRoles: permissionData.allowedRoles, // ✅ Keep as array for JWT template without quotes
           excludedPermissions: arrayToString(permissionData.excludedPermissions), // ✅ Convert to string for Hasura compatibility
           permissionHash: permissionData.permissionHash, // ✅ For x-hasura-permission-hash (role + exclusions)
           permissionVersion: permissionData.permissionVersion, // ✅ For x-hasura-permission-version
-          organizationId: null, // ✅ For x-hasura-org-id
+          organizationId: '', // ✅ For x-hasura-org-id - must be string not null
           lastRoleUpdateAt: new Date().toISOString(),
         },
         privateMetadata: {
@@ -533,25 +404,13 @@ export async function updateUserRole(
 
 // Enhanced delete user function
 export async function deleteUserFromDatabase(clerkId: string) {
-  const DELETE_USER = gql`
-    mutation DeleteUserByClerkId($clerkId: String!) {
-      deleteUsers(where: { clerkUserId: { _eq: $clerkId } }) {
-        affectedRows
-        returning {
-          id
-          computedName
-          email
-          clerkUserId
-        }
-      }
-    }
-  `;
+  // Use generated DELETE_USER operation
 
   try {
     console.log(`🗑️ Deleting user from database: ${clerkId}`);
 
-    const { data, errors } = await adminApolloClient.mutate({
-      mutation: DELETE_USER,
+    const { data, errors } = await adminApolloClient.mutate<DeleteUserByClerkIdUserSyncMutation, DeleteUserByClerkIdUserSyncMutationVariables>({
+      mutation: DeleteUserByClerkIdUserSyncDocument,
       variables: { clerkId },
       errorPolicy: "all",
     });
@@ -566,11 +425,48 @@ export async function deleteUserFromDatabase(clerkId: string) {
     const deletedUsers = data?.deleteUsers?.returning || [];
     console.log(`✅ Deleted ${deletedUsers.length} user(s) from database`);
 
-    return data?.deleteUsers?.affectedRows > 0;
+    return (data?.deleteUsers?.affectedRows || 0) > 0;
   } catch (error) {
     console.error("❌ Error deleting user from database:", error);
     throw error;
   }
+}
+
+// Helper function to extract the best avatar URL from Clerk user data
+// Prioritizes external_accounts avatar_url over image_url
+export function getBestAvatarUrl(clerkUserData: {
+  external_accounts?: Array<any>; // Use any to handle Clerk's ExternalAccount type flexibility
+  image_url?: string;
+}): string | undefined {
+  console.log("🖼️ Extracting best avatar URL from Clerk data:", {
+    hasExternalAccounts: !!clerkUserData.external_accounts?.length,
+    externalAccountsCount: clerkUserData.external_accounts?.length || 0,
+    hasImageUrl: !!clerkUserData.image_url,
+    imageUrl: clerkUserData.image_url ? clerkUserData.image_url.substring(0, 50) + "..." : null
+  });
+
+  // First priority: Check external_accounts for avatar_url
+  if (clerkUserData.external_accounts?.length) {
+    for (const account of clerkUserData.external_accounts) {
+      // Check for various possible avatar URL property names
+      // Note: Clerk SDK uses 'imageUrl' for external account avatars (may be proxied)
+      const avatarUrl = account.avatar_url || account.avatarUrl || account.picture || account.avatar || account.imageUrl;
+      if (avatarUrl) {
+        console.log("✅ Using external account avatar URL:", avatarUrl.substring(0, 50) + "...");
+        return avatarUrl;
+      }
+    }
+    console.log("⚠️ External accounts found but no avatar URL in any account");
+  }
+
+  // Second priority: Fall back to image_url
+  if (clerkUserData.image_url) {
+    console.log("✅ Using fallback image_url:", clerkUserData.image_url.substring(0, 50) + "...");
+    return clerkUserData.image_url;
+  }
+
+  console.log("ℹ️ No avatar URL found in external accounts or image_url");
+  return undefined;
 }
 
 // Function to check if user has permission for role assignment

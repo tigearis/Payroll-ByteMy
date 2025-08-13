@@ -1220,6 +1220,35 @@ query GetExpiringInvitations($daysUntilExpiry: interval!) {
   }
 }
 
+# Current User Hook Query - migrated from hooks/use-current-user.ts
+query GetCurrentUserForAuth($userId: uuid!) {
+  user: usersByPk(id: $userId) {
+    id
+    firstName
+    lastName
+    computedName
+    email
+    role
+    username
+    image
+    isStaff
+    isActive
+    clerkUserId
+    managerId
+    deactivatedAt
+    deactivatedBy
+    createdAt
+    updatedAt
+    manager {
+      id
+      firstName
+      lastName
+      computedName
+      email
+    }
+  }
+}
+
 # User Status Management Queries for /api/users/manage
 query GetUsersByStatus(
   $statuses: [user_status_enum!]
@@ -1279,5 +1308,199 @@ query GetCurrentUserRoleForManagement($userId: uuid!) {
   usersByPk(id: $userId) {
     id
     role
+  }
+}
+
+# ============================================
+# Hierarchical Permissions Queries
+# Migrated from lib/permissions/hierarchical-permissions.ts
+# Note: Temporarily simplified due to permissions system schema issues
+# ============================================
+
+# Simplified query to get user role assignments
+query GetUserRoleAssignments($userId: uuid!) {
+  users(where: { id: { _eq: $userId } }) {
+    id
+    role
+    roleAssignments {
+      userId
+      roleId
+      role {
+        id
+        name
+        displayName
+        priority
+      }
+    }
+  }
+}
+
+# Basic role lookup query  
+query GetRoleByName($roleName: String!) {
+  roles(where: { name: { _eq: $roleName } }) {
+    id
+    name
+  }
+}
+
+# ===========================
+# WEBHOOK OPERATIONS - Clerk Integration
+# ===========================
+
+# Get Pending Invitation for Webhook User Creation
+query GetPendingInvitationForWebhook($email: String!) {
+  userInvitations(
+    where: {
+      email: { _eq: $email }
+      invitationStatus: { _eq: "pending" }
+      expiresAt: { _gt: "now()" }
+    }
+    orderBy: { createdAt: DESC }
+    limit: 1
+  ) {
+    id
+    email
+    invitedRole
+    managerId
+    invitationStatus
+    expiresAt
+    createdAt
+  }
+}
+
+# ===========================
+# ADMIN USER MANAGEMENT OPERATIONS
+# ===========================
+
+# Analyze User Dependencies for Admin Management
+query AnalyzeUserDependencies($userId: uuid!) {
+  user: usersByPk(id: $userId) {
+    id
+    email
+    firstName
+    lastName
+    computedName
+    clerkUserId
+    role
+    isActive
+    isStaff
+    createdAt
+    
+    # Role assignments
+    roleAssignmentsAggregate {
+      aggregate { count }
+    }
+    
+    # Content created by user
+    authoredNotesAggregate {
+      aggregate { count }
+    }
+    
+    # Payroll relationships
+    backupPayrollAssignmentsAggregate {
+      aggregate { count }
+    }
+    primaryPayrollAssignmentsAggregate {
+      aggregate { count }
+    }
+    managedPayrollsAggregate {
+      aggregate { count }
+    }
+    
+    # Management relationships
+    managedUsersAggregate {
+      aggregate { count }
+    }
+    
+    # Invitations
+    sentInvitationsAggregate {
+      aggregate { count }
+    }
+    
+    # Leave and scheduling
+    leaveRecordsAggregate {
+      aggregate { count }
+    }
+    workSchedulesAggregate {
+      aggregate { count }
+    }
+  }
+}
+
+# Get Users for Reassignment (Admin)
+query GetUsersForReassignment($excludeUserId: uuid!) {
+  users(
+    where: { 
+      id: { _neq: $excludeUserId }
+      isActive: { _eq: true }
+      role: { _in: ["developer", "org_admin", "manager"] }
+    }
+    orderBy: { role: ASC }
+    limit: 10
+  ) {
+    id
+    email
+    firstName
+    lastName
+    computedName
+    role
+  }
+}
+
+# Get User by Email (Admin)
+query GetUserByEmailAdmin($email: String!) {
+  users(where: { email: { _eq: $email } }) {
+    id
+    email
+    firstName
+    lastName
+    computedName
+    clerkUserId
+    role
+    isActive
+  }
+}
+
+# Get User by ID (Admin)
+query GetUserByIdAdmin($userId: uuid!) {
+  usersByPk(id: $userId) {
+    id
+    email
+    firstName
+    lastName
+    computedName
+    clerkUserId
+    role
+    isActive
+  }
+}
+
+# Get User for Deletion (Admin)
+query GetUserForDeletionAdmin($userId: uuid!) {
+  usersByPk(id: $userId) {
+    clerkUserId
+    email
+  }
+}
+
+# ===========================
+# REPORT GENERATION OPERATIONS  
+# ===========================
+
+# Get User with Role Assignments for Report Generation
+query GetUserWithRoles($clerkUserId: String!) {
+  users(where: { clerkUserId: { _eq: $clerkUserId } }) {
+    id
+    role
+    firstName
+    lastName
+    email
+    roleAssignments {
+      role {
+        name
+        priority
+        displayName
+      }
+    }
   }
 }

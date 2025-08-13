@@ -6,7 +6,11 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { PermissionGuard } from "@/components/auth/permission-guard";
 import { Button } from "@/components/ui/button";
-import { GeneratePayrollDatesQueryDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import { 
+  GeneratePayrollDatesQueryDocument,
+  GetPayrollsMissingDatesDocument,
+  GetPayrollsPaginatedDocument,
+} from "@/domains/payrolls/graphql/generated/graphql";
 
 interface GenerateMissingDatesButtonProps {
   payrollIds: string[];
@@ -99,7 +103,7 @@ function GenerateMissingDatesButtonInner({
 
       // Final refetch to ensure everything is up to date
       await client.refetchQueries({
-        include: ["GetPayrollsMissingDates", "GetPayrolls"],
+        include: [GetPayrollsMissingDatesDocument, GetPayrollsPaginatedDocument],
       });
 
       // Show appropriate message based on results

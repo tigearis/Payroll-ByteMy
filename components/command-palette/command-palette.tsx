@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
+import { useEffect, useState } from "react";
 
 // Simple placeholder command palette
 export default function CommandPalette() {

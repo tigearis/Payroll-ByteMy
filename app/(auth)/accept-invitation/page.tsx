@@ -68,21 +68,21 @@ function AcceptInvitationContent() {
             window.location.href
           );
           
-          console.log("🔄 Handling invitation redirect:", redirectAction);
+          console.warn("🔄 Handling invitation redirect:", redirectAction);
           
           switch (redirectAction.action) {
             case 'redirect_sign_up':
-              console.log("✅ Redirecting to sign-up for new user invitation");
+              console.warn("✅ Redirecting to sign-up for new user invitation");
               window.location.href = redirectAction.redirectUrl!;
               break;
               
             case 'redirect_sign_in':
-              console.log("✅ Redirecting to sign-in for existing user invitation");
+              console.warn("✅ Redirecting to sign-in for existing user invitation");
               window.location.href = redirectAction.redirectUrl!;
               break;
               
             case 'already_complete':
-              console.log("ℹ️ Invitation already complete, user should be signed in");
+              console.warn("ℹ️ Invitation already complete, user should be signed in");
               // This shouldn't happen if user is not authenticated, but handle gracefully
               setStatus("error");
               setError("Invitation was already completed but user is not signed in");
@@ -94,7 +94,7 @@ function AcceptInvitationContent() {
           }
         } else {
           // No valid ticket, fall back to basic sign-up
-          console.log("⚠️ No valid invitation ticket, redirecting to basic sign-up");
+          console.warn("⚠️ No valid invitation ticket, redirecting to basic sign-up");
           window.location.href = `/sign-up?redirect_url=${encodeURIComponent(window.location.href)}`;
         }
       }
@@ -143,7 +143,7 @@ function AcceptInvitationContent() {
         
         if (isEmailConflict) {
           setEmailConflictDetected(true);
-          console.log("🔍 Email conflict detected during invitation acceptance");
+          console.warn("🔍 Email conflict detected during invitation acceptance");
         }
         
         setStatus("error");

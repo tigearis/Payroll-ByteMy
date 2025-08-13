@@ -326,3 +326,152 @@ mutation ReactivateUserWithReason(
     statusChangedAt
   }
 }
+
+# ============================================
+# Hierarchical Permissions Mutations
+# Migrated from lib/permissions/hierarchical-permissions.ts
+# Note: Temporarily simplified due to permissions system schema issues
+# ============================================
+
+# Basic user role assignment management
+mutation RemoveExistingRoleAssignments($userId: uuid!) {
+  deleteUserRoles(where: { userId: { _eq: $userId } }) {
+    affectedRows
+  }
+}
+
+mutation InsertUserRoleAssignment($userId: uuid!, $roleId: uuid!) {
+  insertUserRolesOne(object: { userId: $userId, roleId: $roleId }) {
+    id
+    userId
+    roleId
+  }
+}
+
+# ===========================
+# WEBHOOK OPERATIONS - Clerk Integration  
+# ===========================
+
+# Accept Invitation for Webhook User Creation
+mutation WebhookAcceptInvitation($email: String!, $acceptedBy: uuid!) {
+  updateUserInvitations(
+    where: {
+      email: { _eq: $email }
+      invitationStatus: { _eq: "pending" }
+      expiresAt: { _gt: "now()" }
+    }
+    _set: {
+      invitationStatus: "accepted"
+      acceptedAt: "now()"
+      acceptedBy: $acceptedBy
+      updatedAt: "now()"
+    }
+  ) {
+    affectedRows
+    returning {
+      id
+      email
+      invitationStatus
+      acceptedAt
+    }
+  }
+}
+
+# ===========================
+# ADMIN USER MANAGEMENT OPERATIONS
+# ===========================
+
+# Reassign Managed Users (Admin)
+mutation ReassignManagedUsers($fromUserId: uuid!, $toUserId: uuid!) {
+  updateUsers(
+    where: { managerId: { _eq: $fromUserId } }
+    _set: { managerId: $toUserId }
+  ) {
+    affectedRows
+  }
+}
+
+# Reassign Backup Consultant Payrolls (Admin)
+mutation ReassignBackupConsultant($fromUserId: uuid!, $toUserId: uuid!) {
+  updatePayrolls(
+    where: { backupConsultantUserId: { _eq: $fromUserId } }
+    _set: { backupConsultantUserId: $toUserId }
+  ) {
+    affectedRows
+  }
+}
+
+# Reassign Primary Consultant Payrolls (Admin)
+mutation ReassignPrimaryConsultant($fromUserId: uuid!, $toUserId: uuid!) {
+  updatePayrolls(
+    where: { primaryConsultantUserId: { _eq: $fromUserId } }
+    _set: { primaryConsultantUserId: $toUserId }
+  ) {
+    affectedRows
+  }
+}
+
+# Reassign Sent Invitations (Admin)
+mutation ReassignSentInvitations($fromUserId: uuid!, $toUserId: uuid!) {
+  updateUserInvitations(
+    where: { invitedBy: { _eq: $fromUserId } }
+    _set: { invitedBy: $toUserId }
+  ) {
+    affectedRows
+  }
+}
+
+# Delete User (Admin)
+mutation DeleteUserAdmin($userId: uuid!) {
+  deleteUsersByPk(id: $userId) {
+    id
+    email
+  }
+}
+
+# ===========================
+# INVITATION ACCEPTANCE OPERATIONS
+# ===========================
+
+# Update User Role for Invitation Acceptance
+mutation UpdateUserRoleForInvitation($userId: uuid!, $role: user_role!, $managerId: uuid, $isStaff: Boolean!) {
+  updateUsersByPk(
+    pkColumns: { id: $userId }
+    _set: { 
+      role: $role
+      managerId: $managerId
+      isStaff: $isStaff
+      updatedAt: "now()" 
+    }
+  ) {
+    id
+    firstName
+    lastName
+    computedName
+    email
+    role
+    clerkUserId
+    isStaff
+    managerId
+    isActive
+  }
+}
+
+# Update User Clerk ID (for webhook-created users)
+mutation UpdateUserClerkId($userId: uuid!, $clerkUserId: String!) {
+  updateUsersByPk(
+    pkColumns: { id: $userId }
+    _set: { clerkUserId: $clerkUserId, updatedAt: "now()" }
+  ) {
+    id
+    firstName
+    lastName
+    computedName
+    email
+    role
+    clerkUserId
+    isStaff
+    managerId
+    isActive
+  }
+}

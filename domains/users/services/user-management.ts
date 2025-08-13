@@ -29,9 +29,9 @@ export async function deleteUser(userId: string, reason?: string): Promise<boole
       reason: reason || 'User deactivated by admin',
       deactivatedBy: claims.databaseId,
       deactivatedByString: claims.databaseId
-    }) as { updateUserById: Users | null };
+    }) as { updateUsersByPk: Users | null };
 
-    if (!result?.updateUserById) {
+    if (!result?.updateUsersByPk) {
       throw new Error('Failed to deactivate user');
     }
 

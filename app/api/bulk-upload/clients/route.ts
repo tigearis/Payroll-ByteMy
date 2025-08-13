@@ -7,10 +7,12 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { 
+import { adminApolloClient } from "@/lib/apollo/unified-client";
+import { CreateClientDocument } from "@/domains/clients/graphql/generated/graphql";
+import {
   createApiResponse,
   createErrorResponse,
-  handleApiError 
+  handleApiError,
 } from "@/lib/api/route-helpers";
 import { clientCreateSchema } from "@/lib/validation/shared-schemas";
 
@@ -49,19 +51,66 @@ interface UploadResult {
  */
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
-    // Placeholder implementation
+    const formData = await request.formData();
+    const file = formData.get("file");
+    if (!(file instanceof File)) {
+      return createErrorResponse("CSV file required (field 'file')", 400);
+    }
+
+    const text = await file.text();
+    const lines = text.split(/\r?\n/).filter(Boolean);
+    const [header, ...rows] = lines;
+    const headers = header.split(",").map(h => h.trim().toLowerCase());
+    const expected = ["name", "email", "phone", "address", "notes", "active"];
+    const missing = expected.filter(h => !headers.includes(h));
+    if (missing.length) {
+      return createErrorResponse(
+        `Missing CSV headers: ${missing.join(", ")}`,
+        400
+      );
+    }
+
+    let created = 0;
+    let failed = 0;
+    const errors: UploadResult["data"]["errors"] = [] as any;
+
+    for (let i = 0; i < rows.length; i++) {
+      const cols = rows[i].split(",").map(c => c.trim());
+      const data = Object.fromEntries(
+        headers.map((h, idx) => [h, cols[idx] ?? ""])
+      ) as any;
+      try {
+        const parsed = ClientCsvSchema.parse(data) as ClientCsvRow;
+        const { data: insertData } = await adminApolloClient.mutate({
+          mutation: CreateClientDocument as any,
+          variables: {
+            object: {
+              name: parsed.name,
+              contactEmail: parsed.email,
+              contactPhone: parsed.phone,
+              address: parsed.address,
+              notes: (parsed as any).notes,
+              active: parsed.active as unknown as boolean,
+            },
+          },
+        });
+        const returned = insertData?.insertClients?.returning?.[0];
+        if (!returned?.id) throw new Error("Insert failed");
+        created++;
+      } catch (e: any) {
+        failed++;
+        errors.push({
+          row: i + 2, // account for header
+          field: "row",
+          message: e?.message || "Validation/insert error",
+          data,
+        });
+      }
+    }
+
     return createApiResponse(
-      {
-        success: false,
-        message: "Bulk client upload endpoint needs implementation",
-        data: {
-          created: 0,
-          failed: 0,
-          errors: []
-        }
-      },
-      "Bulk upload feature is not yet implemented",
-      501 // Not Implemented
+      { created, failed, errors },
+      "Bulk client upload processed"
     );
   } catch (error) {
     console.error("Bulk client upload error:", error);
@@ -80,8 +129,15 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       {
         template: {
           headers: ["name", "email", "phone", "address", "notes", "active"],
-          example: ["Example Client", "client@example.com", "+1234567890", "123 Main St", "Notes", "true"]
-        }
+          example: [
+            "Example Client",
+            "client@example.com",
+            "+1234567890",
+            "123 Main St",
+            "Notes",
+            "true",
+          ],
+        },
       },
       "CSV template for bulk client upload"
     );

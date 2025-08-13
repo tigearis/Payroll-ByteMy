@@ -14,9 +14,10 @@ import {
   CalendarDays,
   Plus,
   RefreshCw,
+  Settings,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { PermissionGuard } from "@/components/auth/permission-guard";
 import {
   ModernDataTable,
@@ -34,6 +35,7 @@ import {
 } from "@/components/ui/status-indicator";
 import { getEnhancedScheduleSummary } from "@/domains/payrolls/utils/schedule-helpers";
 import { calculatePayrollDates, safeFormatDate } from "@/lib/utils/date-utils";
+import { PayrollServiceAssignmentModal } from "./payroll-service-assignment-modal";
 
 // Payroll interface (compatible with PayrollListItem fragment)
 interface Payroll {
@@ -382,6 +384,21 @@ export function ModernPayrollsManager({
   showHeader = true,
   showLocalActions = true,
 }: PayrollsManagerProps) {
+  // State for service assignment modal
+  const [serviceAssignmentModal, setServiceAssignmentModal] = useState<{
+    open: boolean;
+    payrollId: string;
+    payrollName: string;
+    clientId: string;
+    clientName: string;
+  }>({
+    open: false,
+    payrollId: "",
+    payrollName: "",
+    clientId: "",
+    clientName: "",
+  });
+
   // Debug logging
   useEffect(() => {
     if (payrolls?.length > 0) {
@@ -507,6 +524,25 @@ export function ModernPayrollsManager({
       onClick: payroll => {
         window.open(`/payrolls/${payroll.id}/schedule`, "_blank");
       },
+    },
+    {
+      id: "services",
+      label: "Manage Services",
+      icon: Settings,
+      onClick: payroll => {
+        if (payroll.client?.id) {
+          setServiceAssignmentModal({
+            open: true,
+            payrollId: payroll.id,
+            payrollName: payroll.name,
+            clientId: payroll.client.id,
+            clientName: payroll.client.name,
+          });
+        } else {
+          console.error("No client associated with this payroll");
+        }
+      },
+      disabled: payroll => !payroll.client?.id,
     },
     {
       id: "employees",
@@ -693,6 +729,20 @@ export function ModernPayrollsManager({
             )}
           </div>
         }
+      />
+
+      {/* Service Assignment Modal */}
+      <PayrollServiceAssignmentModal
+        payrollId={serviceAssignmentModal.payrollId}
+        payrollName={serviceAssignmentModal.payrollName}
+        clientId={serviceAssignmentModal.clientId}
+        clientName={serviceAssignmentModal.clientName}
+        open={serviceAssignmentModal.open}
+        onOpenChange={(open) => setServiceAssignmentModal(prev => ({ ...prev, open }))}
+        onAssignmentComplete={() => {
+          // Optionally refetch payrolls to update any service counts
+          onRefetch?.();
+        }}
       />
     </div>
   );

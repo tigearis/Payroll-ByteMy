@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useMutation, gql } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import { 
   Plus, 
   Search, 
@@ -30,121 +30,41 @@ import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  GetAllServicesDocument,
+  GetActiveBillingUnitTypesDocument,
+  GetServiceStatisticsDocument,
+  CreateServiceDocument,
+  UpdateServiceDocument,
+  DeleteServiceDocument,
+  type GetAllServicesQuery,
+  type GetActiveBillingUnitTypesQuery,
+  type GetServiceStatisticsQuery,
+  type CreateServiceMutation,
+  type CreateServiceMutationVariables,
+  type UpdateServiceMutation,
+  type UpdateServiceMutationVariables,
+  type DeleteServiceMutation,
+  type DeleteServiceMutationVariables
+} from "../../graphql/generated/graphql";
 
-// GraphQL Queries
-const GET_ALL_SERVICES = gql`
-  query GetAllServices {
-    services(order_by: { name: asc }) {
-      id
-      name
-      service_code
-      description
-      base_rate
-      category
-      service_type
-      charge_basis
-      billing_unit
-      seniority_multipliers
-      requires_quantity_input
-      quantity_prompt
-      is_time_based
-      approval_level
-      is_active
-      created_at
-      updated_at
-    }
-  }
-`;
-
-const GET_SERVICE_STATISTICS = gql`
-  query GetServiceStatistics {
-    servicesAggregate: services_aggregate {
-      aggregate {
-        count
-      }
-    }
-    activeServicesAggregate: services_aggregate(where: { is_active: { _eq: true } }) {
-      aggregate {
-        count
-      }
-    }
-    servicesByCategory: services_aggregate(group_by: category) {
-      nodes {
-        category
-      }
-      aggregate {
-        count
-      }
-    }
-  }
-`;
-
-const CREATE_SERVICE = gql`
-  mutation CreateService($input: services_insert_input!) {
-    insert_services_one(object: $input) {
-      id
-      name
-      service_code
-      category
-      base_rate
-    }
-  }
-`;
-
-const UPDATE_SERVICE = gql`
-  mutation UpdateService($id: uuid!, $input: services_set_input!) {
-    update_services_by_pk(pk_columns: { id: $id }, _set: $input) {
-      id
-      name
-      service_code
-      updated_at
-    }
-  }
-`;
-
-const DELETE_SERVICE = gql`
-  mutation DeleteService($id: uuid!) {
-    delete_services_by_pk(id: $id) {
-      id
-      name
-    }
-  }
-`;
-
-// Types
-interface Service {
-  id: string;
-  name: string;
-  service_code: string;
-  description?: string;
-  base_rate?: number;
-  category: string;
-  service_type?: string;
-  charge_basis: string;
-  billing_unit?: string;
-  seniority_multipliers?: any;
-  requires_quantity_input?: boolean;
-  quantity_prompt?: string;
-  is_time_based?: boolean;
-  approval_level?: string;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
-}
+// Types - Use the generated GraphQL types instead of local interface
+type Service = NonNullable<GetAllServicesQuery['services'][0]>;
 
 interface ServiceFormData {
   name: string;
   description: string;
   category: string;
   service_type: string;
-  charge_basis: string;
+  billing_unit_type_id: string;
   base_rate: number;
-  billing_unit: string;
   approval_level: string;
+  is_active: boolean;
+  chargeBasis: string;
+  billing_unit: string;
   requires_quantity_input: boolean;
   quantity_prompt: string;
   is_time_based: boolean;
-  is_active: boolean;
   seniority_multipliers: {
     junior: number;
     senior: number;
@@ -158,14 +78,15 @@ const defaultFormData: ServiceFormData = {
   description: "",
   category: "standard",
   service_type: "standard",
-  charge_basis: "per_payroll_processed",
+  billing_unit_type_id: "",
   base_rate: 0,
-  billing_unit: "Per Unit",
   approval_level: "review",
+  is_active: true,
+  chargeBasis: "fixed",
+  billing_unit: "each",
   requires_quantity_input: false,
   quantity_prompt: "",
   is_time_based: false,
-  is_active: true,
   seniority_multipliers: {
     junior: 1.0,
     senior: 1.3,
@@ -174,16 +95,7 @@ const defaultFormData: ServiceFormData = {
   }
 };
 
-const CHARGE_BASIS_OPTIONS = [
-  { value: "per_client_monthly", label: "Per Client Monthly" },
-  { value: "per_payroll_monthly", label: "Per Payroll Monthly" },
-  { value: "per_payroll_processed", label: "Per Payroll Processed" },
-  { value: "ad_hoc", label: "Ad Hoc" },
-  { value: "per_payroll_per_employee", label: "Per Payroll Per Employee" },
-  { value: "per_payroll_processed_per_employee", label: "Per Payroll Processed Per Employee" },
-  { value: "per_payroll_by_time_and_seniority", label: "Per Payroll By Time and Seniority" },
-  { value: "per_client_by_time_and_seniority", label: "Per Client By Time and Seniority" }
-];
+// Legacy charge basis options - now replaced by configurable billing unit types
 
 const CATEGORY_OPTIONS = [
   { value: "standard", label: "Standard", color: "bg-blue-100 text-blue-800" },
@@ -214,12 +126,13 @@ export function MasterServiceCatalogue() {
   const [formData, setFormData] = useState<ServiceFormData>(defaultFormData);
 
   // GraphQL hooks
-  const { data: servicesData, loading: servicesLoading, refetch } = useQuery(GET_ALL_SERVICES);
-  const { data: statsData } = useQuery(GET_SERVICE_STATISTICS);
+  const { data: servicesData, loading: servicesLoading, refetch } = useQuery<GetAllServicesQuery>(GetAllServicesDocument);
+  const { data: statsData } = useQuery<GetServiceStatisticsQuery>(GetServiceStatisticsDocument);
+  const { data: billingUnitTypesData, loading: billingUnitTypesLoading } = useQuery<GetActiveBillingUnitTypesQuery>(GetActiveBillingUnitTypesDocument);
   
-  const [createService] = useMutation(CREATE_SERVICE);
-  const [updateService] = useMutation(UPDATE_SERVICE);
-  const [deleteService] = useMutation(DELETE_SERVICE);
+  const [createService] = useMutation<CreateServiceMutation, CreateServiceMutationVariables>(CreateServiceDocument);
+  const [updateService] = useMutation<UpdateServiceMutation, UpdateServiceMutationVariables>(UpdateServiceDocument);
+  const [deleteService] = useMutation<DeleteServiceMutation, DeleteServiceMutationVariables>(DeleteServiceDocument);
 
   const services: Service[] = servicesData?.services || [];
 
@@ -227,13 +140,13 @@ export function MasterServiceCatalogue() {
   const filteredServices = useMemo(() => {
     return services.filter(service => {
       const matchesSearch = service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          service.service_code?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          service.serviceCode?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           service.description?.toLowerCase().includes(searchTerm.toLowerCase());
       
       const matchesCategory = categoryFilter === "all" || service.category === categoryFilter;
       const matchesStatus = statusFilter === "all" || 
-                          (statusFilter === "active" && service.is_active) ||
-                          (statusFilter === "inactive" && !service.is_active);
+                          (statusFilter === "active" && service.isActive) ||
+                          (statusFilter === "inactive" && !service.isActive);
 
       return matchesSearch && matchesCategory && matchesStatus;
     });
@@ -242,10 +155,20 @@ export function MasterServiceCatalogue() {
   // Statistics
   const totalServices = statsData?.servicesAggregate?.aggregate?.count || 0;
   const activeServices = statsData?.activeServicesAggregate?.aggregate?.count || 0;
-  const categoryStats = statsData?.servicesByCategory?.map((item: any) => ({
-    category: item.nodes[0]?.category || 'Unknown',
-    count: item.aggregate.count
-  })) || [];
+  
+  // Calculate category stats from the actual services data
+  const categoryStats = useMemo(() => {
+    const categoryCounts: Record<string, number> = {};
+    services.forEach(service => {
+      const category = service.category || 'Unknown';
+      categoryCounts[category] = (categoryCounts[category] || 0) + 1;
+    });
+    
+    return Object.entries(categoryCounts).map(([category, count]) => ({
+      category,
+      count
+    }));
+  }, [services]);
 
   const getCategoryColor = (category: string) => {
     const option = CATEGORY_OPTIONS.find(opt => opt.value === category);
@@ -260,16 +183,16 @@ export function MasterServiceCatalogue() {
             name: formData.name,
             description: formData.description,
             category: formData.category,
-            service_type: formData.service_type,
-            charge_basis: formData.charge_basis,
-            base_rate: formData.base_rate,
-            billing_unit: formData.billing_unit,
-            approval_level: formData.approval_level,
-            requires_quantity_input: formData.requires_quantity_input,
-            quantity_prompt: formData.requires_quantity_input ? formData.quantity_prompt : null,
-            is_time_based: formData.is_time_based,
-            is_active: formData.is_active,
-            seniority_multipliers: JSON.stringify(formData.seniority_multipliers)
+            serviceType: formData.service_type,
+            chargeBasis: formData.chargeBasis,
+            baseRate: formData.base_rate,
+            billingUnitTypeId: formData.billing_unit_type_id,
+            approvalLevel: formData.approval_level,
+            requiresQuantityInput: formData.requires_quantity_input,
+            quantityPrompt: formData.requires_quantity_input ? formData.quantity_prompt : null,
+            isTimeBased: formData.is_time_based,
+            isActive: formData.is_active,
+            seniorityMultipliers: JSON.stringify(formData.seniority_multipliers)
           }
         }
       });
@@ -289,17 +212,18 @@ export function MasterServiceCatalogue() {
       name: service.name,
       description: service.description || "",
       category: service.category,
-      service_type: service.service_type || "standard",
-      charge_basis: service.charge_basis,
-      base_rate: service.base_rate || 0,
-      billing_unit: service.billing_unit || "Per Unit",
-      approval_level: service.approval_level || "review",
-      requires_quantity_input: service.requires_quantity_input || false,
-      quantity_prompt: service.quantity_prompt || "",
-      is_time_based: service.is_time_based || false,
-      is_active: service.is_active,
-      seniority_multipliers: service.seniority_multipliers ? 
-        JSON.parse(service.seniority_multipliers) : 
+      service_type: service.serviceType || "standard",
+      billing_unit_type_id: service.billingUnitTypeId || "",
+      base_rate: service.defaultRate || 0,
+      approval_level: service.approvalLevel || "review",
+      is_active: service.isActive || false,
+      chargeBasis: (service as any).chargeBasis || "fixed",
+      billing_unit: (service as any).billing_unit || "each",
+      requires_quantity_input: (service as any).requires_quantity_input || false,
+      quantity_prompt: (service as any).quantity_prompt || "",
+      is_time_based: (service as any).is_time_based || false,
+      seniority_multipliers: service.seniorityMultipliers ? 
+        JSON.parse(service.seniorityMultipliers) : 
         { junior: 1.0, senior: 1.3, manager: 1.6, partner: 2.0 }
     });
     setIsEditDialogOpen(true);
@@ -316,16 +240,16 @@ export function MasterServiceCatalogue() {
             name: formData.name,
             description: formData.description,
             category: formData.category,
-            service_type: formData.service_type,
-            charge_basis: formData.charge_basis,
-            base_rate: formData.base_rate,
-            billing_unit: formData.billing_unit,
-            approval_level: formData.approval_level,
-            requires_quantity_input: formData.requires_quantity_input,
-            quantity_prompt: formData.requires_quantity_input ? formData.quantity_prompt : null,
-            is_time_based: formData.is_time_based,
-            is_active: formData.is_active,
-            seniority_multipliers: JSON.stringify(formData.seniority_multipliers)
+            serviceType: formData.service_type,
+            chargeBasis: formData.chargeBasis,
+            baseRate: formData.base_rate,
+            billingUnitTypeId: formData.billing_unit_type_id,
+            approvalLevel: formData.approval_level,
+            requiresQuantityInput: formData.requires_quantity_input,
+            quantityPrompt: formData.requires_quantity_input ? formData.quantity_prompt : null,
+            isTimeBased: formData.is_time_based,
+            isActive: formData.is_active,
+            seniorityMultipliers: JSON.stringify(formData.seniority_multipliers)
           }
         }
       });
@@ -458,19 +382,32 @@ export function MasterServiceCatalogue() {
           </div>
 
           <div>
-            <Label htmlFor="charge_basis">Charge Basis</Label>
-            <Select value={formData.charge_basis} onValueChange={(value) => setFormData(prev => ({ ...prev, charge_basis: value }))}>
+            <Label htmlFor="billing_unit_type_id">Billing Unit Type</Label>
+            <Select 
+              value={formData.billing_unit_type_id} 
+              onValueChange={(value) => setFormData(prev => ({ ...prev, billing_unit_type_id: value }))}
+            >
               <SelectTrigger>
-                <SelectValue placeholder="Select charge basis" />
+                <SelectValue placeholder="Select billing unit type" />
               </SelectTrigger>
               <SelectContent>
-                {CHARGE_BASIS_OPTIONS.map(option => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
+                {billingUnitTypesData?.billingUnitTypes.map((unitType: any) => (
+                  <SelectItem key={unitType.id} value={unitType.id}>
+                    <div className="flex items-center gap-2">
+                      <span>{unitType.display_name}</span>
+                      {unitType.is_system_defined && (
+                        <Badge variant="secondary" className="text-xs">System</Badge>
+                      )}
+                    </div>
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
+            {formData.billing_unit_type_id && (
+              <div className="mt-2 text-sm text-foreground opacity-75">
+                {billingUnitTypesData?.billingUnitTypes.find((ut: any) => ut.id === formData.billing_unit_type_id)?.description}
+              </div>
+            )}
           </div>
 
           <div className="space-y-4">
@@ -697,7 +634,7 @@ export function MasterServiceCatalogue() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ${(services.reduce((sum, s) => sum + (s.base_rate || 0), 0) / (services.length || 1)).toFixed(0)}
+              ${(services.reduce((sum, s) => sum + (s.defaultRate || 0), 0) / (services.length || 1)).toFixed(0)}
             </div>
             <p className="text-xs text-muted-foreground">
               Across all services
@@ -784,7 +721,7 @@ export function MasterServiceCatalogue() {
                         <div className="space-y-1">
                           <div className="font-medium">{service.name}</div>
                           <div className="text-sm text-muted-foreground">
-                            {service.service_code}
+                            {service.serviceCode}
                           </div>
                           {service.description && (
                             <div className="text-sm text-muted-foreground line-clamp-1">
@@ -802,22 +739,32 @@ export function MasterServiceCatalogue() {
                       
                       <TableCell>
                         <div className="text-sm">
-                          {CHARGE_BASIS_OPTIONS.find(opt => opt.value === service.charge_basis)?.label || service.charge_basis}
+                          <div className="flex items-center gap-2">
+                            <span>{service.billingUnitType?.displayName || 'Not Set'}</span>
+                            {service.billingUnitType?.isSystemDefined && (
+                              <Badge variant="secondary" className="text-xs">System</Badge>
+                            )}
+                          </div>
+                          {service.billingUnitType?.description && (
+                            <div className="text-xs text-foreground opacity-60 mt-1">
+                              {service.billingUnitType.description}
+                            </div>
+                          )}
                         </div>
                       </TableCell>
                       
                       <TableCell>
                         <div className="font-medium">
-                          {service.base_rate ? `$${service.base_rate.toFixed(2)}` : 'Variable'}
+                          {service.defaultRate ? `$${service.defaultRate.toFixed(2)}` : 'Variable'}
                         </div>
                         <div className="text-sm text-muted-foreground">
-                          {service.billing_unit || 'per unit'}
+                          {(service as any).billing_unit || service.billingUnitType?.displayName || 'per unit'}
                         </div>
                       </TableCell>
                       
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          {service.is_active ? (
+                          {service.isActive ? (
                             <>
                               <CheckCircle className="h-4 w-4 text-green-600" />
                               <span className="text-green-600">Active</span>

@@ -1,0 +1,25 @@
+# Audit Domain - Audit Operations
+# Security Classification: CRITICAL - SOC2 compliance and logging
+# Used by audit logger service for compliance and security tracking
+
+# SERVICE OPERATIONS - Audit Logging
+
+# Insert audit log entry
+mutation InsertAuditLog($event: AuditAuditLogInsertInput!) {
+  insertAuditAuditLog(objects: [$event]) {
+    returning {
+      id
+      eventTime
+    }
+  }
+}
+
+# Insert authentication event
+mutation InsertAuthEvent($event: AuditAuthEventsInsertInput!) {
+  insertAuditAuthEvents(objects: [$event]) {
+    returning {
+      id
+      eventTime
+    }
+  }
+}

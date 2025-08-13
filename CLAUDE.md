@@ -13,6 +13,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Database URL Handling**: Never use `$DATABASE_URL` always use the literal connection string `'postgresql://admin:[REDACTED_DB_PASSWORD]@192.168.1.229:5432/payroll_local?sslmode=disable'` always in single quotes
 - **Package Management**: Only run pnpm commands, never npm
 - **Tailwind v4 Migration**: Use `@theme` directive with `--color-` prefixed variables, but avoid `theme()` functions in base styles - use direct HSL values instead
+- **Apollo Error Resolution**: PostgreSQL functions cannot be used in GraphQL queries - use pure GraphQL syntax only in Hasura operations
 
 ## 🎨 Semantic Text Color Standards
 
@@ -189,6 +190,68 @@ hasura metadata ic list
 - `email_templates`: Corrected column references and approval logic
 - `notes`, `files`, `leave`: Fixed all snake_case column names
 - `payrolls`, `clients`: Proper relationship-based filtering
+
+## 🔍 GraphQL & Apollo Client Best Practices
+
+### **CRITICAL**: Never Use PostgreSQL Syntax in GraphQL
+
+**Context**: The billing system experienced a critical Apollo Error due to PostgreSQL-specific functions in GraphQL queries.
+
+#### ❌ **Wrong - PostgreSQL Functions in GraphQL**
+```graphql
+query GetClientsForBilling {
+  billingItemsAggregate(
+    where: { 
+      createdAt: { _gte: "now() - interval '30 days'" }  # ❌ Invalid
+    }
+  ) {
+    aggregate { count sum { amount } }
+  }
+}
+```
+
+#### ✅ **Correct - Pure GraphQL Syntax**
+```graphql
+query GetClientsForBilling {
+  billingItemsAggregate {  # ✅ Simple aggregate without PostgreSQL functions
+    aggregate { count sum { amount } }
+  }
+}
+```
+
+### GraphQL Development Guidelines
+
+**Environment Configuration**
+- Always use local Hasura endpoint for development: `http://192.168.1.229:8081/v1/graphql`
+- Test queries directly with GraphQL client before frontend integration
+- Use admin secret from .env.local: `5kUfSRaIURApdr6405A5DzomIi5jNVAF`
+
+**Query Development Process**
+1. Check Hasura introspection schema first
+2. Write pure GraphQL syntax (no PostgreSQL functions)
+3. Test query independently before component integration
+4. Run `pnpm codegen` to regenerate TypeScript types
+5. Handle date filtering in React components if needed
+
+**Error Debugging**
+- Test GraphQL queries with graphql-request directly
+- Use proper error logging in Apollo error link
+- Verify environment variables match intended endpoint
+- Check schema alignment with actual database structure
+
+### Apollo Error Prevention
+
+**Never Use**:
+- `"now() - interval 'X days'"` - PostgreSQL function
+- `EXTRACT()` functions - Database-specific
+- Raw SQL syntax within GraphQL queries
+- Complex PostgreSQL date arithmetic
+
+**Always Use**:
+- Pure GraphQL comparison operators: `_eq`, `_gte`, `_lte`, `_in`
+- Simple ISO date strings: `"2024-01-01T00:00:00Z"`
+- Frontend date filtering for complex logic
+- Hasura's built-in GraphQL features only
 
 ## 🔧 TypeScript Standards & Error Resolution
 
@@ -414,3 +477,5 @@ ORDER BY original_eft_date;"
 - **Primary**: `/docs/business-logic/payroll-restrictions-and-validation.md`
 - **Business Logic**: Comprehensive documentation of all cycle types and date generation rules
 - **Migration History**: All fixes documented with before/after examples
+- Always use the variables from the .env.local
+- If any database changes are made, you must update the hasura metadata to track the tables and track the relationships. The relationship name should be meaningful to the relationship and easily understandable to what they are.

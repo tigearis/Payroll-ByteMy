@@ -1,144 +1,54 @@
-import { useQuery, useMutation } from "@apollo/client";
-import {
-  GET_REPORT_METADATA,
-  GET_REPORT_TEMPLATES,
-  GET_REPORT_JOB,
-  GENERATE_REPORT,
-  SAVE_REPORT_TEMPLATE,
-  UPDATE_REPORT_TEMPLATE,
-  DELETE_REPORT_TEMPLATE,
-} from "../graphql/operations";
-import type {
-  ReportMetadata,
-  ReportTemplate,
-  ReportJob,
-  ReportConfig,
-} from "../types/report.types";
+// TODO: This hook needs to be implemented with actual Hasura operations
+// The previous implementation used non-existent GraphQL operations
+// Report functionality should be implemented using actual database tables
+
+import { useCallback } from "react";
 
 export function useReportOperations() {
-  // Queries
-  const {
-    data: metadataData,
-    loading: metadataLoading,
-    error: metadataError,
-    refetch: refetchMetadata,
-  } = useQuery<{ reportMetadata: ReportMetadata }>(GET_REPORT_METADATA);
+  // Placeholder implementations - these need to be replaced with actual database operations
+  const generateReport = useCallback(async (config: any) => {
+    console.warn("Report generation not implemented - needs actual database operations");
+    throw new Error("Report generation functionality not implemented");
+  }, []);
 
-  const {
-    data: templatesData,
-    loading: templatesLoading,
-    error: templatesError,
-    refetch: refetchTemplates,
-  } = useQuery<{
-    reportTemplates: ReportTemplate[];
-  }>(GET_REPORT_TEMPLATES);
+  const saveTemplate = useCallback(async (template: any) => {
+    console.warn("Template saving not implemented - needs actual database operations");
+    throw new Error("Template saving functionality not implemented");
+  }, []);
 
-  // Mutations
-  const [generateReportMutation] = useMutation<
-    { generateReport: ReportJob },
-    { config: ReportConfig }
-  >(GENERATE_REPORT);
+  const updateTemplate = useCallback(async (id: string, template: any) => {
+    console.warn("Template updating not implemented - needs actual database operations");
+    throw new Error("Template updating functionality not implemented");
+  }, []);
 
-  const [saveTemplateMutation] = useMutation<
-    { saveReportTemplate: ReportTemplate },
-    { template: Omit<ReportTemplate, "id"> }
-  >(SAVE_REPORT_TEMPLATE);
+  const deleteTemplate = useCallback(async (id: string) => {
+    console.warn("Template deletion not implemented - needs actual database operations");
+    throw new Error("Template deletion functionality not implemented");
+  }, []);
 
-  const [updateTemplateMutation] = useMutation<
-    { updateReportTemplate: ReportTemplate },
-    { id: string; template: Partial<ReportTemplate> }
-  >(UPDATE_REPORT_TEMPLATE);
-
-  const [deleteTemplateMutation] = useMutation<
-    { deleteReportTemplate: boolean },
-    { id: string }
-  >(DELETE_REPORT_TEMPLATE);
-
-  // Report Generation
-  const generateReport = async (config: ReportConfig) => {
-    try {
-      const { data } = await generateReportMutation({
-        variables: { config },
-      });
-      return data?.generateReport;
-    } catch (error) {
-      console.error("Error generating report:", error);
-      throw error;
-    }
-  };
-
-  // Template Operations
-  const saveTemplate = async (template: Omit<ReportTemplate, "id">) => {
-    try {
-      const { data } = await saveTemplateMutation({
-        variables: { template },
-      });
-      return data?.saveReportTemplate;
-    } catch (error) {
-      console.error("Error saving template:", error);
-      throw error;
-    }
-  };
-
-  const updateTemplate = async (
-    id: string,
-    template: Partial<ReportTemplate>
-  ) => {
-    try {
-      const { data } = await updateTemplateMutation({
-        variables: { id, template },
-      });
-      return data?.updateReportTemplate;
-    } catch (error) {
-      console.error("Error updating template:", error);
-      throw error;
-    }
-  };
-
-  const deleteTemplate = async (id: string) => {
-    try {
-      const { data } = await deleteTemplateMutation({
-        variables: { id },
-      });
-      return data?.deleteReportTemplate;
-    } catch (error) {
-      console.error("Error deleting template:", error);
-      throw error;
-    }
-  };
-
-  // Job Status Query
-  const useReportJobStatus = (jobId: string) => {
-    const { data, loading, error, refetch } = useQuery<{
-      reportJob: ReportJob;
-    }>(GET_REPORT_JOB, {
-      variables: { id: jobId },
-      pollInterval: 2000, // Poll every 2 seconds
-      skip: !jobId,
-    });
-
+  const useReportJobStatus = useCallback((jobId: string) => {
     return {
-      job: data?.reportJob,
-      loading,
-      error,
-      refetch,
+      job: null,
+      loading: false,
+      error: new Error("Report job status not implemented"),
+      refetch: () => Promise.resolve(),
     };
-  };
+  }, []);
 
   return {
-    // Metadata
-    metadata: metadataData?.reportMetadata,
-    metadataLoading,
-    metadataError,
-    refetchMetadata,
+    // Metadata - stub values
+    metadata: null,
+    metadataLoading: false,
+    metadataError: null,
+    refetchMetadata: () => Promise.resolve(),
 
-    // Templates
-    templates: templatesData?.reportTemplates || [],
-    templatesLoading,
-    templatesError,
-    refetchTemplates,
+    // Templates - stub values
+    templates: [],
+    templatesLoading: false,
+    templatesError: null,
+    refetchTemplates: () => Promise.resolve(),
 
-    // Operations
+    // Operations - placeholder implementations
     generateReport,
     saveTemplate,
     updateTemplate,

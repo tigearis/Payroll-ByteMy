@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
 import { Download, RefreshCw } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -50,7 +50,7 @@ export function PreviewPane({
     const headers = Object.keys(currentJob.result[0] || {});
     const csvContent = [
       headers.join(","),
-      ...currentJob.result.map(row =>
+      ...currentJob.result.map((row: any) =>
         headers.map(header => JSON.stringify(row[header])).join(",")
       ),
     ].join("\n");
@@ -141,7 +141,7 @@ export function PreviewPane({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {currentJob.result.map((row, i) => (
+              {currentJob.result.map((row: any, i: number) => (
                 <TableRow key={i}>
                   {Object.values(row).map((value, j) => (
                     <TableCell key={j}>

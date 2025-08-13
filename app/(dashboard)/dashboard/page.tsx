@@ -187,13 +187,20 @@ export default function DashboardPage() {
           lastUpdate={new Date()}
           loading={dashboardLoading}
           onActionClick={actionId => {
-            console.log("Quick action clicked:", actionId);
+            // Simple router mapping for known actions
+            const map: Record<string, string> = {
+              "Manage Payrolls": "/payrolls",
+              "View All Clients": "/clients",
+              "Add Client": "/clients/new",
+            };
+            const href = map[actionId] || "/dashboard";
+            if (typeof window !== "undefined") window.location.href = href;
           }}
-          onSuggestionDismiss={suggestionId => {
-            console.log("Suggestion dismissed:", suggestionId);
-          }}
-          onSuggestionAction={(suggestionId, actionLabel) => {
-            console.log("Suggestion action:", suggestionId, actionLabel);
+          onSuggestionDismiss={() => {}}
+          onSuggestionAction={(_, actionLabel) => {
+            if (actionLabel?.toLowerCase().includes("automation")) {
+              window.location.href = "/payroll-schedule";
+            }
           }}
         />
       </div>

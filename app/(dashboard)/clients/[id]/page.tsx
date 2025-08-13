@@ -26,6 +26,9 @@ import {
   ArrowDown,
   Minus,
   Target,
+  Receipt,
+  FileBarChart,
+  History,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -70,6 +73,8 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ClientBillingHistory } from "@/domains/billing/components/client-analytics/client-billing-history";
+import { ClientBillingMetrics } from "@/domains/billing/components/client-analytics/client-billing-metrics";
 import { ClientServiceAgreements } from "@/domains/billing/components/service-catalog/client-service-agreements";
 import {
   GetClientByIdDocument,
@@ -83,8 +88,8 @@ import { NotesListWithAdd } from "@/domains/notes/components/notes-list";
 import { type PayrollListItemFragment } from "@/domains/payrolls/graphql/generated/graphql";
 import { getEnhancedScheduleSummary } from "@/domains/payrolls/utils/schedule-helpers";
 import { useSmartPolling } from "@/hooks/use-polling";
-import { safeFormatDate } from "@/lib/utils/date-utils";
 import { cn } from "@/lib/utils";
+import { safeFormatDate } from "@/lib/utils/date-utils";
 
 // EnhancedMetricCard component - EXACT copy from PayrollOverview
 function EnhancedMetricCard({
@@ -94,7 +99,7 @@ function EnhancedMetricCard({
   icon: IconComponent,
   trend,
   trendValue,
-  status = 'neutral',
+  status = "neutral",
   onClick,
   children,
 }: {
@@ -102,27 +107,27 @@ function EnhancedMetricCard({
   value: string;
   subtitle: string;
   icon: React.ElementType;
-  trend?: 'up' | 'down' | 'stable';
+  trend?: "up" | "down" | "stable";
   trendValue?: string;
-  status?: 'good' | 'warning' | 'critical' | 'neutral';
+  status?: "good" | "warning" | "critical" | "neutral";
   onClick?: () => void;
   children?: React.ReactNode;
 }) {
   const statusStyles = {
-    good: 'bg-green-50 border-green-200 hover:bg-green-100',
-    warning: 'bg-amber-50 border-amber-200 hover:bg-amber-100',
-    critical: 'bg-red-50 border-red-200 hover:bg-red-100',
-    neutral: 'bg-white border-gray-200 hover:bg-gray-50',
+    good: "bg-green-50 border-green-200 hover:bg-green-100",
+    warning: "bg-amber-50 border-amber-200 hover:bg-amber-100",
+    critical: "bg-red-50 border-red-200 hover:bg-red-100",
+    neutral: "bg-white border-gray-200 hover:bg-gray-50",
   };
 
   const trendStyles = {
-    up: 'text-green-600 bg-green-100',
-    down: 'text-red-600 bg-red-100',
-    stable: 'text-gray-600 bg-gray-100',
+    up: "text-green-600 bg-green-100",
+    down: "text-red-600 bg-red-100",
+    stable: "text-gray-600 bg-gray-100",
   };
 
   return (
-    <Card 
+    <Card
       className={cn(
         "group cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02]",
         statusStyles[status],
@@ -136,7 +141,7 @@ function EnhancedMetricCard({
         </CardTitle>
         <div className="relative">
           <IconComponent className="h-4 w-4 text-muted-foreground group-hover:text-blue-600 transition-colors" />
-          {status === 'critical' && (
+          {status === "critical" && (
             <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
           )}
         </div>
@@ -148,21 +153,21 @@ function EnhancedMetricCard({
               {value}
             </div>
             {trend && trendValue && (
-              <div 
+              <div
                 className={cn(
-                  'px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1',
+                  "px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1",
                   trendStyles[trend]
                 )}
                 title="Trend from previous period"
               >
-                {trend === 'up' && <ArrowUp className="w-3 h-3" />}
-                {trend === 'down' && <ArrowDown className="w-3 h-3" />}
-                {trend === 'stable' && <Minus className="w-3 h-3" />}
+                {trend === "up" && <ArrowUp className="w-3 h-3" />}
+                {trend === "down" && <ArrowDown className="w-3 h-3" />}
+                {trend === "stable" && <Minus className="w-3 h-3" />}
                 <span>{trendValue}</span>
               </div>
             )}
           </div>
-          
+
           <p className="text-xs text-muted-foreground group-hover:text-gray-600 transition-colors">
             {subtitle}
           </p>
@@ -256,7 +261,9 @@ export default function ClientDetailPage() {
     // Initialize from URL hash if available, default to "payrolls"
     if (typeof window !== "undefined") {
       const hash = window.location.hash.slice(1);
-      return hash === "billing" || hash === "documents" ? hash : "payrolls";
+      return ["payrolls", "billing", "documents"].includes(hash)
+        ? hash
+        : "payrolls";
     }
     return "payrolls";
   });
@@ -781,6 +788,33 @@ export default function ClientDetailPage() {
               onClick: () =>
                 window.dispatchEvent(new CustomEvent("client:export-payrolls")),
             },
+            {
+              label: "View Invoice History",
+              icon: History,
+              onClick: () => {
+                // Navigate to billing tab
+                setActiveTab("billing");
+                console.log("View invoice history for client:", id);
+              },
+            },
+            {
+              label: "Generate Statement",
+              icon: Receipt,
+              onClick: () => {
+                // Navigate to billing tab and trigger statement generation
+                setActiveTab("billing");
+                console.log("Generate statement for client:", id);
+              },
+            },
+            {
+              label: "Export Billing Report",
+              icon: FileBarChart,
+              onClick: () => {
+                // Navigate to billing tab
+                setActiveTab("billing");
+                console.log("Export billing report for client:", id);
+              },
+            },
           ]}
         />
 
@@ -849,25 +883,32 @@ export default function ClientDetailPage() {
           </div>
         </div>
 
-        {/* Enhanced Metric Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Enhanced Metric Cards - Expanded to 6 cards in 2 rows */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Row 1: Existing Core Metrics */}
           {/* Active Payrolls Card */}
           <EnhancedMetricCard
             title="Active Payrolls"
             value={activePayrolls.toString()}
             subtitle={`${totalPayrolls} total payrolls`}
             icon={Calendar}
-            status={activePayrolls > 0 ? 'good' : 'critical'}
-            trend={activePayrolls > totalPayrolls * 0.7 ? 'up' : 'stable'}
-            trendValue={activePayrolls > totalPayrolls * 0.7 ? 'Growing' : 'Stable'}
-            onClick={() => console.log('Navigate to payrolls')}
+            status={activePayrolls > 0 ? "good" : "critical"}
+            trend={activePayrolls > totalPayrolls * 0.7 ? "up" : "stable"}
+            trendValue={
+              activePayrolls > totalPayrolls * 0.7 ? "Growing" : "Stable"
+            }
+            onClick={() => (window.location.href = `/payrolls?clientId=${id}`)}
           >
             <div className="flex items-center gap-1 text-xs text-gray-600 mt-2">
               <Target className="h-3 w-3" />
               <span>
-                {activePayrolls === 0 ? 'No active payrolls' :
-                 activePayrolls === 1 ? 'Single payroll client' :
-                 activePayrolls > 3 ? 'Multi-payroll client' : 'Standard client'}
+                {activePayrolls === 0
+                  ? "No active payrolls"
+                  : activePayrolls === 1
+                    ? "Single payroll client"
+                    : activePayrolls > 3
+                      ? "Multi-payroll client"
+                      : "Standard client"}
               </span>
             </div>
           </EnhancedMetricCard>
@@ -878,17 +919,33 @@ export default function ClientDetailPage() {
             value={totalEmployees.toString()}
             subtitle="Across all payrolls"
             icon={Users}
-            status={totalEmployees > 0 ? 'good' : 'warning'}
-            trend={totalEmployees > 50 ? 'up' : totalEmployees > 10 ? 'stable' : 'down'}
-            trendValue={totalEmployees > 50 ? 'Large client' : totalEmployees > 10 ? 'Medium client' : 'Small client'}
-            onClick={() => console.log('Navigate to employees')}
+            status={totalEmployees > 0 ? "good" : "warning"}
+            trend={
+              totalEmployees > 50
+                ? "up"
+                : totalEmployees > 10
+                  ? "stable"
+                  : "down"
+            }
+            trendValue={
+              totalEmployees > 50
+                ? "Large client"
+                : totalEmployees > 10
+                  ? "Medium client"
+                  : "Small client"
+            }
+            onClick={() => (window.location.href = `/staff?clientId=${id}`)}
           >
             <div className="flex items-center gap-1 text-xs text-gray-600 mt-2">
               <Users className="h-3 w-3" />
               <span>
-                {totalEmployees === 0 ? 'No employees yet' :
-                 totalEmployees > 100 ? 'Enterprise client' :
-                 totalEmployees > 20 ? 'Growing business' : 'Small business'}
+                {totalEmployees === 0
+                  ? "No employees yet"
+                  : totalEmployees > 100
+                    ? "Enterprise client"
+                    : totalEmployees > 20
+                      ? "Growing business"
+                      : "Small business"}
               </span>
             </div>
           </EnhancedMetricCard>
@@ -899,20 +956,38 @@ export default function ClientDetailPage() {
             value={formatCurrency(estimatedMonthlyValue)}
             subtitle="Estimated revenue"
             icon={DollarSign}
-            status={estimatedMonthlyValue > 1000 ? 'good' : estimatedMonthlyValue > 500 ? 'neutral' : 'warning'}
-            trend={estimatedMonthlyValue > 2000 ? 'up' : 'stable'}
-            trendValue={estimatedMonthlyValue > 2000 ? 'High value' : 'Standard'}
-            onClick={() => console.log('Navigate to billing')}
+            status={
+              estimatedMonthlyValue > 1000
+                ? "good"
+                : estimatedMonthlyValue > 500
+                  ? "neutral"
+                  : "warning"
+            }
+            trend={estimatedMonthlyValue > 2000 ? "up" : "stable"}
+            trendValue={
+              estimatedMonthlyValue > 2000 ? "High value" : "Standard"
+            }
+            onClick={() => (window.location.href = `/billing?clientId=${id}`)}
           >
             <div className="flex items-center gap-1 text-xs text-gray-600 mt-2">
               <DollarSign className="h-3 w-3" />
               <span>
-                {estimatedMonthlyValue === 0 ? 'Setup pending' :
-                 estimatedMonthlyValue > 5000 ? 'Premium client' :
-                 estimatedMonthlyValue > 1000 ? 'Standard client' : 'Basic client'}
+                {estimatedMonthlyValue === 0
+                  ? "Setup pending"
+                  : estimatedMonthlyValue > 5000
+                    ? "Premium client"
+                    : estimatedMonthlyValue > 1000
+                      ? "Standard client"
+                      : "Basic client"}
               </span>
             </div>
           </EnhancedMetricCard>
+
+          {/* Row 2: Billing-Specific Metrics */}
+          <ClientBillingMetrics
+            clientId={id}
+            parentLoading={loading && !data}
+          />
         </div>
 
         {/* Main Content Tabs */}
@@ -1221,10 +1296,15 @@ export default function ClientDetailPage() {
           </TabsContent>
 
           {/* Billing Tab */}
-          <TabsContent value="billing">
-            {/* Client Billing Overview */}
-
+          <TabsContent value="billing" className="space-y-6">
+            {/* Client Service Agreements */}
             <ClientServiceAgreements
+              clientId={id}
+              clientName={client?.name || ""}
+            />
+
+            {/* Client Billing History */}
+            <ClientBillingHistory
               clientId={id}
               clientName={client?.name || ""}
             />
@@ -1388,7 +1468,7 @@ export default function ClientDetailPage() {
           isOpen={showUploadModal}
           onClose={() => setShowUploadModal(false)}
           clientId={id}
-          onUploadComplete={documents => {
+          onUploadComplete={_documents => {
             // Refresh document list when upload completes
             window.location.reload();
           }}

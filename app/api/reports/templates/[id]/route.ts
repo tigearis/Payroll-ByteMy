@@ -1,174 +1,271 @@
-import { auth } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
-import { ReportTemplateSchema } from "@/domains/reports/types/report.types";
-import { ReportSecurityService } from "@/domains/reports/services/security.service";
+import { NextRequest, NextResponse } from "next/server";
 import { ReportAuditService } from "@/domains/reports/services/audit.service";
+import { ReportTemplateSchema } from "@/domains/reports/types/report.types";
+import { withAuthParams } from "@/lib/auth/api-auth";
+import { adminApolloClient } from "@/lib/apollo/unified-client";
+import { gql } from "@apollo/client";
 
-const securityService = new ReportSecurityService();
 const auditService = new ReportAuditService();
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  try {
-    // 1. Authenticate request
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+export const GET = withAuthParams(
+  async (
+    request: NextRequest,
+    context: { params: Promise<{ id: string }> },
+    session
+  ): Promise<NextResponse> => {
+    try {
+      const params = await context.params;
 
-    // 2. Fetch template
-    // TODO: Implement actual database query
-    const template: any = null; // Fetch from database
+      // Check if user has report template access permissions
+      const userRole = session.role || session.defaultRole || "viewer";
 
-    if (!template) {
-      return NextResponse.json(
-        { error: "Template not found" },
-        { status: 404 }
-      );
-    }
+      const hasReportAccess =
+        userRole &&
+        ["developer", "org_admin", "manager", "consultant"].includes(userRole);
 
-    // 3. Check access
-    if (!template.isPublic && template.createdBy !== userId) {
-      return NextResponse.json({ error: "Permission denied" }, { status: 403 });
-    }
-
-    return NextResponse.json(template);
-  } catch (error) {
-    console.error("Error fetching template:", error);
-    return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 }
-    );
-  }
-}
-
-export async function PATCH(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  try {
-    // 1. Authenticate request
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // 2. Fetch existing template
-    // TODO: Implement actual database query
-    const existingTemplate: any = null; // Fetch from database
-
-    if (!existingTemplate) {
-      return NextResponse.json(
-        { error: "Template not found" },
-        { status: 404 }
-      );
-    }
-
-    // 3. Check ownership
-    if (existingTemplate.createdBy !== userId) {
-      return NextResponse.json({ error: "Permission denied" }, { status: 403 });
-    }
-
-    // 4. Validate and update template
-    const body = await request.json();
-    const validatedUpdates = ReportTemplateSchema.partial().parse({
-      ...body,
-      updatedAt: new Date(),
-    });
-
-    // 5. Check field permissions if fields are being updated
-    if (validatedUpdates.fields) {
-      for (const domain of Object.keys(validatedUpdates.fields)) {
-        const accessResult = await securityService.validateFieldAccess(
-          userId,
-          domain,
-          validatedUpdates.fields[domain]
+      if (!hasReportAccess) {
+        return NextResponse.json(
+          {
+            error: `Insufficient permissions for report templates. Current role: ${userRole}`,
+          },
+          { status: 403 }
         );
-
-        if (accessResult.denied.length > 0) {
-          return NextResponse.json(
-            {
-              error: "Permission denied",
-              fields: accessResult.denied,
-            },
-            { status: 403 }
-          );
-        }
       }
-    }
 
-    // 6. Update template
-    // TODO: Implement actual database update
-    const updatedTemplate = {
-      ...(existingTemplate as any),
-      ...validatedUpdates,
-    };
+      // Fetch template from Hasura
+      const { data } = await adminApolloClient.query({
+        query: gql`
+          query GetTemplate($id: uuid!) {
+            customQueryTemplatesByPk(id: $id) {
+              id
+              name
+              description
+              query
+              variables
+              isPublic
+              tags
+              createdAt
+              updatedAt
+              createdBy
+            }
+          }
+        `,
+        variables: { id: params.id },
+        fetchPolicy: "no-cache",
+      });
+      const template = data?.customQueryTemplatesByPk;
 
-    // 7. Log audit event
-    await auditService.logTemplateAction(
-      userId,
-      "UPDATE",
-      params.id,
-      updatedTemplate
-    );
+      if (!template) {
+        return NextResponse.json(
+          { error: "Template not found" },
+          { status: 404 }
+        );
+      }
 
-    return NextResponse.json(updatedTemplate);
-  } catch (error) {
-    console.error("Error updating template:", error);
-    return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 }
-    );
-  }
-}
+      // Check access
+      if (!template.isPublic && template.createdBy !== session.userId) {
+        return NextResponse.json(
+          { error: "Permission denied" },
+          { status: 403 }
+        );
+      }
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  try {
-    // 1. Authenticate request
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // 2. Fetch template
-    // TODO: Implement actual database query
-    const template: any = null; // Fetch from database
-
-    if (!template) {
+      return NextResponse.json(template);
+    } catch (error) {
+      console.error("Error fetching template:", error);
       return NextResponse.json(
-        { error: "Template not found" },
-        { status: 404 }
+        {
+          error: error instanceof Error ? error.message : "Unknown error",
+        },
+        { status: 500 }
       );
     }
-
-    // 3. Check ownership
-    if (template.createdBy !== userId) {
-      return NextResponse.json({ error: "Permission denied" }, { status: 403 });
-    }
-
-    // 4. Delete template
-    // TODO: Implement actual database delete
-
-    // 5. Log audit event
-    await auditService.logTemplateAction(userId, "DELETE", params.id);
-
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Error deleting template:", error);
-    return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 }
-    );
   }
-}
+);
+
+export const PATCH = withAuthParams(
+  async (
+    request: NextRequest,
+    context: { params: Promise<{ id: string }> },
+    session
+  ): Promise<NextResponse> => {
+    try {
+      const params = await context.params;
+
+      // Check permissions
+      const userRole = session.role || session.defaultRole || "viewer";
+
+      const hasUpdateAccess =
+        userRole && ["developer", "org_admin", "manager"].includes(userRole);
+
+      if (!hasUpdateAccess) {
+        return NextResponse.json(
+          {
+            error: `Insufficient permissions to update report templates. Current role: ${userRole}`,
+          },
+          { status: 403 }
+        );
+      }
+
+      // Fetch existing template
+      const { data: existingData } = await adminApolloClient.query({
+        query: gql`
+          query GetTemplate($id: uuid!) {
+            customQueryTemplatesByPk(id: $id) {
+              id
+              createdBy
+            }
+          }
+        `,
+        variables: { id: params.id },
+        fetchPolicy: "no-cache",
+      });
+      const existingTemplate = existingData?.customQueryTemplatesByPk;
+
+      if (!existingTemplate) {
+        return NextResponse.json(
+          { error: "Template not found" },
+          { status: 404 }
+        );
+      }
+
+      // Check ownership
+      if (existingTemplate.createdBy !== session.userId) {
+        return NextResponse.json(
+          { error: "Permission denied" },
+          { status: 403 }
+        );
+      }
+
+      // Validate and update template
+      const body = await request.json();
+      const validatedUpdates = ReportTemplateSchema.partial().parse({
+        ...body,
+        updatedAt: new Date(),
+      });
+
+      // Update template
+      const { data: updatedData } = await adminApolloClient.mutate({
+        mutation: gql`
+          mutation UpdateTemplate(
+            $id: uuid!
+            $set: custom_query_templates_set_input!
+          ) {
+            updateCustomQueryTemplatesByPk(pkColumns: { id: $id }, _set: $set) {
+              id
+              name
+              description
+              query
+              variables
+              isPublic
+              tags
+              updatedAt
+            }
+          }
+        `,
+        variables: { id: params.id, set: validatedUpdates },
+      });
+      const updatedTemplate = updatedData?.updateCustomQueryTemplatesByPk;
+
+      // Log audit event
+      await auditService.logTemplateAction(
+        session.userId,
+        "UPDATE",
+        params.id,
+        updatedTemplate
+      );
+
+      return NextResponse.json(updatedTemplate);
+    } catch (error) {
+      console.error("Error updating template:", error);
+      return NextResponse.json(
+        {
+          error: error instanceof Error ? error.message : "Unknown error",
+        },
+        { status: 500 }
+      );
+    }
+  }
+);
+
+export const DELETE = withAuthParams(
+  async (
+    request: NextRequest,
+    context: { params: Promise<{ id: string }> },
+    session
+  ): Promise<NextResponse> => {
+    try {
+      const params = await context.params;
+
+      // Check permissions
+      const userRole = session.role || session.defaultRole || "viewer";
+
+      const hasDeleteAccess =
+        userRole && ["developer", "org_admin", "manager"].includes(userRole);
+
+      if (!hasDeleteAccess) {
+        return NextResponse.json(
+          {
+            error: `Insufficient permissions to delete report templates. Current role: ${userRole}`,
+          },
+          { status: 403 }
+        );
+      }
+
+      // Fetch template
+      const { data } = await adminApolloClient.query({
+        query: gql`
+          query GetTemplate($id: uuid!) {
+            customQueryTemplatesByPk(id: $id) {
+              id
+              createdBy
+            }
+          }
+        `,
+        variables: { id: params.id },
+        fetchPolicy: "no-cache",
+      });
+      const template = data?.customQueryTemplatesByPk;
+
+      if (!template) {
+        return NextResponse.json(
+          { error: "Template not found" },
+          { status: 404 }
+        );
+      }
+
+      // Check ownership
+      if (template.createdBy !== session.userId) {
+        return NextResponse.json(
+          { error: "Permission denied" },
+          { status: 403 }
+        );
+      }
+
+      // Delete template
+      await adminApolloClient.mutate({
+        mutation: gql`
+          mutation DeleteTemplate($id: uuid!) {
+            deleteCustomQueryTemplatesByPk(id: $id) {
+              id
+            }
+          }
+        `,
+        variables: { id: params.id },
+      });
+
+      // Log audit event
+      await auditService.logTemplateAction(session.userId, "DELETE", params.id);
+
+      return NextResponse.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting template:", error);
+      return NextResponse.json(
+        {
+          error: error instanceof Error ? error.message : "Unknown error",
+        },
+        { status: 500 }
+      );
+    }
+  }
+);

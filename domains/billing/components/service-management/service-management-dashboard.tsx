@@ -1,7 +1,6 @@
 "use client";
 
 import { useQuery } from "@apollo/client";
-import { gql } from "@apollo/client";
 import { 
   Settings, 
   Package, 
@@ -18,100 +17,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Import service management components
+import {
+  GetServiceManagementOverviewAdvancedDocument,
+  type GetServiceManagementOverviewAdvancedQuery
+} from "../../graphql/generated/graphql";
 import { ClientServiceAssignmentManager } from './client-service-assignment-manager';
 import { MasterServiceCatalogue } from './master-service-catalogue';
 import { UserBillingRateManager } from './user-billing-rate-manager';
 
-// Dashboard overview queries
-const GET_SERVICE_MANAGEMENT_OVERVIEW = gql`
-  query GetServiceManagementOverview($thirtyDaysAgo: timestamptz!) {
-    # Service statistics
-    servicesAggregate: services_aggregate {
-      aggregate {
-        count
-      }
-    }
-    activeServicesAggregate: services_aggregate(where: { is_active: { _eq: true } }) {
-      aggregate {
-        count
-        avg {
-          base_rate
-        }
-      }
-    }
-    
-    # User billing rate statistics  
-    usersAggregate: users_aggregate(where: { is_active: { _eq: true } }) {
-      aggregate {
-        count
-      }
-    }
-    usersWithRatesAggregate: users_aggregate(where: { 
-      is_active: { _eq: true }
-      current_hourly_rate: { _is_null: false }
-    }) {
-      aggregate {
-        count
-        avg {
-          current_hourly_rate
-        }
-        max {
-          current_hourly_rate
-        }
-        min {
-          current_hourly_rate
-        }
-      }
-    }
-    
-    # Client assignment statistics
-    clientsAggregate: clients_aggregate(where: { active: { _eq: true } }) {
-      aggregate {
-        count
-      }
-    }
-    assignmentsAggregate: client_service_assignments_aggregate(where: { is_active: { _eq: true } }) {
-      aggregate {
-        count
-      }
-    }
-    
-    # Category breakdown
-    servicesByCategory: services_aggregate(
-      where: { is_active: { _eq: true } }
-      group_by: category
-    ) {
-      nodes {
-        category
-      }
-      aggregate {
-        count
-        avg {
-          base_rate
-        }
-      }
-    }
-    
-    # Recent activity (services created in last 30 days)
-    recentServicesAggregate: services_aggregate(where: { 
-      created_at: { _gte: $thirtyDaysAgo }
-    }) {
-      aggregate {
-        count
-      }
-    }
-    
-    # Assignment coverage per client
-    clientsWithAssignments: client_service_assignments_aggregate(
-      where: { is_active: { _eq: true } }
-      group_by: client_id
-    ) {
-      aggregate {
-        count
-      }
-    }
-  }
-`;
 
 export function ServiceManagementDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -120,7 +33,7 @@ export function ServiceManagementDashboard() {
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
   
-  const { data: overviewData, loading: overviewLoading } = useQuery(GET_SERVICE_MANAGEMENT_OVERVIEW, {
+  const { data: overviewData, loading: overviewLoading } = useQuery<GetServiceManagementOverviewAdvancedQuery>(GetServiceManagementOverviewAdvancedDocument, {
     variables: {
       thirtyDaysAgo: thirtyDaysAgo.toISOString()
     }
@@ -129,24 +42,20 @@ export function ServiceManagementDashboard() {
   // Statistics calculations
   const totalServices = overviewData?.servicesAggregate?.aggregate?.count || 0;
   const activeServices = overviewData?.activeServicesAggregate?.aggregate?.count || 0;
-  const avgServiceRate = overviewData?.activeServicesAggregate?.aggregate?.avg?.base_rate || 0;
+  const avgServiceRate = overviewData?.activeServicesAggregate?.aggregate?.avg?.baseRate || 0;
   
   const totalUsers = overviewData?.usersAggregate?.aggregate?.count || 0;
   const usersWithRates = overviewData?.usersWithRatesAggregate?.aggregate?.count || 0;
-  const avgUserRate = overviewData?.usersWithRatesAggregate?.aggregate?.avg?.current_hourly_rate || 0;
-  const maxUserRate = overviewData?.usersWithRatesAggregate?.aggregate?.max?.current_hourly_rate || 0;
-  const minUserRate = overviewData?.usersWithRatesAggregate?.aggregate?.min?.current_hourly_rate || 0;
+  const avgUserRate = overviewData?.usersWithRatesAggregate?.aggregate?.avg?.currentHourlyRate || 0;
+  const maxUserRate = overviewData?.usersWithRatesAggregate?.aggregate?.max?.currentHourlyRate || 0;
+  const minUserRate = overviewData?.usersWithRatesAggregate?.aggregate?.min?.currentHourlyRate || 0;
   
   const totalClients = overviewData?.clientsAggregate?.aggregate?.count || 0;
   const totalAssignments = overviewData?.assignmentsAggregate?.aggregate?.count || 0;
   const avgAssignmentsPerClient = totalClients > 0 ? Math.round(totalAssignments / totalClients) : 0;
   
   const recentServices = overviewData?.recentServicesAggregate?.aggregate?.count || 0;
-  const categoryBreakdown = overviewData?.servicesByCategory?.map((item: any) => ({
-    category: item.nodes[0]?.category || 'Unknown',
-    count: item.aggregate.count,
-    avgRate: item.aggregate.avg?.base_rate || 0
-  })) || [];
+  const categoryBreakdown: { category: string; count: number; avgRate: number }[] = [];
 
   const userRateCoverage = totalUsers > 0 ? Math.round((usersWithRates / totalUsers) * 100) : 0;
 

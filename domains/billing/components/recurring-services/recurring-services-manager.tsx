@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useMutation, gql } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import { format } from 'date-fns';
 import { Plus, Settings, Calendar, DollarSign, AlertCircle, Clock, TrendingUp, Users } from "lucide-react";
 import React, { useState, useEffect } from "react";
@@ -22,110 +22,23 @@ interface RecurringServicesManagerProps {
   clientName: string;
 }
 
+import {
+  GetRecurringServicesAdvancedDocument,
+  GetClientServiceAssignmentsForManagerAdvancedDocument,
+  CreateClientServiceAssignmentForManagerAdvancedDocument,
+  UpdateClientServiceAssignmentForManagerAdvancedDocument,
+  type GetRecurringServicesAdvancedQuery,
+  type GetClientServiceAssignmentsForManagerAdvancedQuery,
+  type CreateClientServiceAssignmentForManagerAdvancedMutation,
+  type CreateClientServiceAssignmentForManagerAdvancedMutationVariables,
+  type UpdateClientServiceAssignmentForManagerAdvancedMutation,
+  type UpdateClientServiceAssignmentForManagerAdvancedMutationVariables
+} from "../../graphql/generated/graphql";
+
 // TypeScript interfaces for GraphQL data
-interface Service {
-  id: string;
-  name: string;
-  serviceCode: string;
-  description?: string;
-  baseRate?: number;
-  category: string;
-  chargeBasis: string;
-  approvalLevel?: string;
-}
+type Service = NonNullable<GetRecurringServicesAdvancedQuery['services']>[0];
+type ClientServiceAssignment = NonNullable<GetClientServiceAssignmentsForManagerAdvancedQuery['clientServiceAgreements']>[0];
 
-interface ClientServiceAssignment {
-  id: string;
-  serviceId: string;
-  clientId: string;
-  customRate?: number;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-  service: Service;
-}
-
-// GraphQL query to fetch recurring services from the database
-const GET_RECURRING_SERVICES = gql`
-  query GetRecurringServices {
-    services(where: { 
-      chargeBasis: { _in: ["per_client_monthly", "per_payroll_monthly"] }
-      isActive: { _eq: true }
-    }) {
-      id
-      name
-      serviceCode
-      description
-      baseRate
-      category
-      chargeBasis
-      approvalLevel
-    }
-  }
-`;
-
-const GET_CLIENT_SERVICE_ASSIGNMENTS = gql`
-  query GetClientServiceAssignments($clientId: uuid!) {
-    clientServiceAssignments(where: {
-      clientId: { _eq: $clientId }
-      isActive: { _eq: true }
-    }) {
-      id
-      serviceId
-      customRate
-      isActive
-      createdAt
-      updatedAt
-      service {
-        id
-        name
-        serviceCode
-        description
-        baseRate
-        category
-        chargeBasis
-        approvalLevel
-      }
-    }
-  }
-`;
-
-// GraphQL mutations for client service assignments
-const CREATE_CLIENT_SERVICE_ASSIGNMENT = gql`
-  mutation CreateClientServiceAssignment($input: ClientServiceAssignmentsInsertInput!) {
-    insertClientServiceAssignmentsOne(object: $input) {
-      id
-      serviceId
-      customRate
-      isActive
-      service {
-        id
-        name
-        serviceCode
-        baseRate
-        category
-      }
-    }
-  }
-`;
-
-const UPDATE_CLIENT_SERVICE_ASSIGNMENT = gql`
-  mutation UpdateClientServiceAssignment($id: uuid!, $updates: ClientServiceAssignmentsSetInput!) {
-    updateClientServiceAssignmentsByPk(pkColumns: { id: $id }, _set: $updates) {
-      id
-      serviceId
-      customRate
-      isActive
-      service {
-        id
-        name
-        serviceCode
-        baseRate
-        category
-      }
-    }
-  }
-`;
 
 export function RecurringServicesManager({ clientId, clientName }: RecurringServicesManagerProps) {
   const [selectedService, setSelectedService] = useState<string>("");
@@ -133,19 +46,19 @@ export function RecurringServicesManager({ clientId, clientName }: RecurringServ
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Fetch recurring services from database
-  const { data: servicesData, loading: servicesLoading } = useQuery(GET_RECURRING_SERVICES);
+  const { data: servicesData, loading: servicesLoading } = useQuery<GetRecurringServicesAdvancedQuery>(GetRecurringServicesAdvancedDocument);
   
   // Fetch client service assignments from database
-  const { data: assignmentsData, loading: assignmentsLoading, refetch: refetchAssignments } = useQuery(GET_CLIENT_SERVICE_ASSIGNMENTS, {
+  const { data: assignmentsData, loading: assignmentsLoading, refetch: refetchAssignments } = useQuery<GetClientServiceAssignmentsForManagerAdvancedQuery>(GetClientServiceAssignmentsForManagerAdvancedDocument, {
     variables: { clientId }
   });
 
   // GraphQL mutations
-  const [createClientServiceAssignment] = useMutation(CREATE_CLIENT_SERVICE_ASSIGNMENT);
-  const [updateClientServiceAssignment] = useMutation(UPDATE_CLIENT_SERVICE_ASSIGNMENT);
+  const [createClientServiceAssignment] = useMutation<CreateClientServiceAssignmentForManagerAdvancedMutation, CreateClientServiceAssignmentForManagerAdvancedMutationVariables>(CreateClientServiceAssignmentForManagerAdvancedDocument);
+  const [updateClientServiceAssignment] = useMutation<UpdateClientServiceAssignmentForManagerAdvancedMutation, UpdateClientServiceAssignmentForManagerAdvancedMutationVariables>(UpdateClientServiceAssignmentForManagerAdvancedDocument);
 
-  const availableServices: Service[] = servicesData?.services || [];
-  const clientServices: ClientServiceAssignment[] = assignmentsData?.clientServiceAssignments || [];
+  const availableServices = servicesData?.services || [];
+  const clientServices = assignmentsData?.clientServiceAgreements || [];
 
   // Calculate monthly recurring total
   const monthlyTotal = clientServices.reduce((total: number, assignment: ClientServiceAssignment) => {
@@ -172,7 +85,7 @@ export function RecurringServicesManager({ clientId, clientName }: RecurringServ
           input: {
             clientId: clientId,
             serviceId: serviceConfig.id,
-            customRate: customRate ? parseFloat(customRate) : null,
+            customRate: customRate ? parseFloat(customRate) : undefined,
             isActive: true
           }
         }
@@ -197,7 +110,7 @@ export function RecurringServicesManager({ clientId, clientName }: RecurringServ
         variables: {
           id: serviceId,
           updates: {
-            isActive: isActive
+            isActive: Boolean(isActive)
           }
         }
       });
@@ -358,7 +271,7 @@ export function RecurringServicesManager({ clientId, clientName }: RecurringServ
                         </SelectTrigger>
                         <SelectContent>
                           {availableStandardServices.map((service: Service) => (
-                            <SelectItem key={service.serviceCode} value={service.serviceCode}>
+                            <SelectItem key={service.serviceCode || service.id} value={service.serviceCode || service.id}>
                               <div className="flex items-center justify-between w-full">
                                 <span>{service.name}</span>
                                 <span className="text-sm text-muted-foreground ml-2">
@@ -483,7 +396,7 @@ export function RecurringServicesManager({ clientId, clientName }: RecurringServ
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <Switch
-                              checked={assignment.isActive}
+                              checked={Boolean(assignment.isActive)}
                               onCheckedChange={(checked) => 
                                 handleToggleService(assignment.id, checked)
                               }

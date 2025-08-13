@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 // Common validation schemas
 export const uuidSchema = z.string().uuid();
@@ -22,8 +22,9 @@ export const userCreateSchema = z.object({
   firstName: nameSchema,
   lastName: nameSchema,
   email: emailSchema,
-  role: z.enum(['viewer', 'consultant', 'manager', 'org_admin', 'developer']),
+  role: z.enum(["viewer", "consultant", "manager", "org_admin", "developer"]),
   isActive: z.boolean().default(true),
+  managerId: uuidSchema.optional(),
 });
 
 export const userUpdateSchema = userCreateSchema.partial();
@@ -57,7 +58,7 @@ export const UserSchemas = {
     firstName: nameSchema,
     lastName: nameSchema,
     email: emailSchema,
-    role: z.enum(['viewer', 'consultant', 'manager', 'org_admin', 'developer']),
+    role: z.enum(["viewer", "consultant", "manager", "org_admin", "developer"]),
     isActive: z.boolean(),
     clerkUserId: z.string(),
     createdAt: z.date().optional(),

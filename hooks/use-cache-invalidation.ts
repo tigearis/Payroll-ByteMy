@@ -2,7 +2,7 @@
 import { useApolloClient, DocumentNode } from "@apollo/client";
 import { useCallback, useMemo } from "react";
 import { toast } from "sonner";
-import { GetPayrollsDocument } from "@/domains/payrolls/graphql/generated/graphql";
+import { GetPayrollsDocument, GetPayrollsPaginatedDocument } from "@/domains/payrolls/graphql/generated/graphql";
 
 /**
  * Options for invalidating a specific entity
@@ -106,31 +106,20 @@ export function useCacheInvalidation() {
   /**
    * Refetch multiple queries by their names, optionally notifying the user
    * Memoized to prevent unnecessary re-renders when used in useEffect
+   * NOTE: Apollo Client doesn't support string query names in refetchQueries.include
+   * Use refetchQueriesByDocument instead with DocumentNode objects
    */
   const refetchQueries = useCallback(async (queryNames: string[], notifyUser = false) => {
-    try {
-      if (notifyUser) {
-        toast.info("Refreshing data...");
-      }
-
-      const result = await client.refetchQueries({
-        include: queryNames,
-      });
-
-      if (notifyUser && result.length > 0) {
-        toast.success("Data refreshed successfully");
-      }
-
-      return true;
-    } catch (error) {
-      console.error("Error refetching queries:", error);
-
-      if (notifyUser) {
-        toast.error("Failed to refresh data");
-      }
-
-      return false;
+    if (notifyUser) {
+      toast.warning("String-based query refetch not supported. Use refetchQueriesByDocument with DocumentNode objects.");
     }
+    
+    console.warn(
+      "refetchQueries with string names is deprecated. Use refetchQueriesByDocument with DocumentNode objects instead.",
+      { queryNames }
+    );
+    
+    return false;
   }, [client]);
 
   /**
@@ -219,10 +208,16 @@ export function useCacheInvalidation() {
       client.cache.gc();
 
       // OPTIMIZATION 3: Use DocumentNode instead of string for better type safety
+      // Refetch both the basic payrolls query and the paginated query used by the main payrolls page
       await client.refetchQueries({
-        include: [GetPayrollsDocument],
+        include: [GetPayrollsPaginatedDocument, GetPayrollsDocument],
         updateCache: (cache) => {
           // OPTIMIZATION 4: Cache warming - preload related data
+          try {
+            cache.readQuery({ query: GetPayrollsPaginatedDocument });
+          } catch {
+            // Query not in cache yet - that's fine
+          }
           try {
             // Pre-fetch any related queries that might be needed
             cache.readQuery({ query: GetPayrollsDocument });

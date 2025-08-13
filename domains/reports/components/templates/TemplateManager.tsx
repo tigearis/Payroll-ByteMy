@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useAuth, useUser } from "@clerk/nextjs";
 import { Plus, Star, StarOff, Share2, Tags } from "lucide-react";
-import { useAuth } from "@clerk/nextjs";
+import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
@@ -10,12 +10,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TemplateForm } from "./TemplateForm";
+import { useRole } from "@/hooks/use-permissions";
 import { useReportTemplates } from "../../hooks/useReportTemplates";
 import type { ReportTemplate, ReportConfig } from "../../types/report.types";
+import { TemplateForm } from "./TemplateForm";
 
 interface TemplateManagerProps {
   templates: ReportTemplate[];
@@ -30,7 +31,8 @@ export function TemplateManager({
   currentConfig,
   className,
 }: TemplateManagerProps) {
-  const { user } = useAuth();
+  const { user } = useUser();
+  const { isConsultantOrAbove } = useRole();
   const [searchTerm, setSearchTerm] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [selectedTab, setSelectedTab] = useState<
@@ -54,7 +56,6 @@ export function TemplateManager({
     if (template) {
       await updateTemplate(templateId, {
         ...template,
-        isFavorite: !favorites.has(templateId),
       });
     }
   };
@@ -99,10 +100,12 @@ export function TemplateManager({
           onChange={e => setSearchTerm(e.target.value)}
           className="max-w-sm"
         />
-        <Button onClick={() => setShowForm(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          New Template
-        </Button>
+        {isConsultantOrAbove && (
+          <Button onClick={() => setShowForm(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            New Template
+          </Button>
+        )}
       </div>
 
       <Tabs value={selectedTab} onValueChange={(v: any) => setSelectedTab(v)}>

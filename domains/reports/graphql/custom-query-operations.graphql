@@ -1,0 +1,142 @@
+# Custom Query Template Operations
+
+# Get available tables and their permissions for the current user
+query GetUserTablePermissions {
+  userAccessibleTables {
+    tableSchema
+    tableName
+    selectPermission
+    insertPermission
+    updatePermission
+    deletePermission
+  }
+}
+
+# Save a custom query as a template
+mutation SaveCustomQueryTemplate($input: CustomQueryTemplatesInsertInput!) {
+  insertCustomQueryTemplatesOne(object: $input) {
+    id
+    name
+    description
+    queryType
+    queryText
+    parameters
+    createdBy
+    createdAt
+    updatedAt
+    isPublic
+    tags
+  }
+}
+
+# Get custom query templates
+query GetCustomQueryTemplates($where: CustomQueryTemplatesBoolExp) {
+  customQueryTemplates(where: $where, orderBy: { createdAt: DESC }) {
+    id
+    name
+    description
+    queryType
+    queryText
+    parameters
+    createdBy
+    createdAt
+    updatedAt
+    isPublic
+    tags
+    user {
+      id
+      firstName
+      lastName
+      email
+    }
+  }
+}
+
+# Get custom query execution history
+query GetQueryExecutionHistory($limit: Int, $offset: Int, $where: QueryExecutionsBoolExp) {
+  queryExecutions(
+    limit: $limit
+    offset: $offset
+    where: $where
+    orderBy: { executedAt: DESC }
+  ) {
+    id
+    queryText
+    queryType
+    parameters
+    executedAt
+    executionTime
+    status
+    resultCount
+    fromCache
+    errorMessage
+    user {
+      id
+      firstName
+      lastName
+      email
+    }
+  }
+}
+
+# Note: ExecuteCustomQuery would need to be implemented as a Hasura action
+# For now, this is commented out until the action is properly configured
+
+# Get schema metadata for building the query UI
+query GetSchemaMetadata {
+  __schema {
+    queryType {
+      name
+      fields {
+        name
+        description
+        args {
+          name
+          description
+          type {
+            name
+            kind
+            ofType {
+              name
+              kind
+            }
+          }
+          defaultValue
+        }
+        type {
+          name
+          kind
+          ofType {
+            name
+            kind
+            ofType {
+              name
+              kind
+            }
+          }
+        }
+      }
+    }
+    types {
+      name
+      kind
+      description
+      fields {
+        name
+        description
+        type {
+          name
+          kind
+          ofType {
+            name
+            kind
+            ofType {
+              name
+              kind
+            }
+          }
+        }
+      }
+    }
+  }
+}

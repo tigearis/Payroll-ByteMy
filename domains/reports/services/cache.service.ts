@@ -2,7 +2,9 @@ export class ReportCacheService {
   private cache: Map<string, { data: any; timestamp: number }> = new Map();
   private readonly CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
-  async getCachedReport(hash: string): Promise<any | null> {
+  async getCachedReport(config: any): Promise<any | null> {
+    // Generate hash from config for consistency with generate route
+    const hash = this.generateConfigHash(config);
     const cached = this.cache.get(hash);
     if (!cached) return null;
 
@@ -13,6 +15,11 @@ export class ReportCacheService {
     }
 
     return cached.data;
+  }
+
+  generateConfigHash(config: any): string {
+    // Simple hash generation for config
+    return JSON.stringify(config).replace(/\s/g, '');
   }
 
   async cacheReport(hash: string, data: any): Promise<void> {

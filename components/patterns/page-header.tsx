@@ -2,8 +2,8 @@
 
 import { ArrowLeft, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,

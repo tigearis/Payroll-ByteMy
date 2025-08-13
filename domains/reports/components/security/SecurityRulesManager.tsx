@@ -1,18 +1,8 @@
-import { useState } from "react";
-import { useAuth } from "@clerk/nextjs";
 import { Shield, Lock, Eye, Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -20,6 +10,16 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { useRole } from "@/hooks/use-permissions";
 import {
   DataClassificationLevel,
   FieldSecurityRule,
@@ -42,12 +42,26 @@ export function SecurityRulesManager({
   availablePermissions,
   className,
 }: SecurityRulesManagerProps) {
-  const { user } = useAuth();
+  const { isDeveloper, isAdminOrAbove } = useRole();
   const [selectedDomain, setSelectedDomain] = useState<string>("");
   const [showFieldRuleDialog, setShowFieldRuleDialog] = useState(false);
   const [editingRule, setEditingRule] = useState<FieldSecurityRule | null>(
     null
   );
+
+  // Check if user can manage security rules
+  if (!isDeveloper) {
+    return (
+      <Card className={className}>
+        <CardContent className="p-6">
+          <div className="text-center text-foreground opacity-60">
+            <Shield className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <p>Developer access required to manage security rules.</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const handleUpdateDomainRule = (
     domain: string,
@@ -300,7 +314,15 @@ export function SecurityRulesManager({
             >
               Cancel
             </Button>
-            <Button onClick={() => {}}>Save Rule</Button>
+            <Button
+              onClick={() => {
+                // If parent provided onUpdatePolicy, call with current policy state
+                onUpdatePolicy?.(policy);
+                setShowFieldRuleDialog(false);
+              }}
+            >
+              Save Rule
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

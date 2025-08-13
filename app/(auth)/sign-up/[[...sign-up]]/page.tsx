@@ -64,7 +64,7 @@ function InvitationSignUpForm({ clerkTicket, ticketData, onSuccess, onError }: I
     setIsSubmitting(true);
 
     try {
-      console.log('🎫 Creating sign-up with ticket strategy (simplified)');
+      console.warn('🎫 Creating sign-up with ticket strategy (simplified)');
 
       // Create a new sign-up with the supplied invitation token
       // After this call, the user's email address will be automatically verified
@@ -76,7 +76,7 @@ function InvitationSignUpForm({ clerkTicket, ticketData, onSuccess, onError }: I
         password,
       });
 
-      console.log('Sign-up attempt status:', signUpAttempt.status);
+      console.warn('Sign-up attempt status:', signUpAttempt.status);
 
       // If the sign-up was completed, set the session to active
       if (signUpAttempt.status === 'complete') {
@@ -166,7 +166,7 @@ function InvitationSignUpForm({ clerkTicket, ticketData, onSuccess, onError }: I
 
 export default function SignUpPage() {
   const { isLoaded, signUp } = useSignUp();
-  const { setActive } = useClerk();
+  const { setActive: _setActive } = useClerk();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useUser();
@@ -248,7 +248,7 @@ export default function SignUpPage() {
   const handleEmailConflictError = useCallback((error: any, email?: string) => {
     if (!detectEmailConflict(error)) return false;
     
-    console.log("🔍 Email conflict detected:", { 
+    console.warn("🔍 Email conflict detected:", { 
       error: error.message || error,
       email,
       errorCode: error.code || error.type 
@@ -277,7 +277,7 @@ export default function SignUpPage() {
       
       // Perform comprehensive ticket validation for invitation flows
       if (newInvitationState.hasTicket && newInvitationState.ticketData?.ticket) {
-        console.log("🎫 Validating invitation ticket before form render...");
+        console.warn("🎫 Validating invitation ticket before form render...");
         
         try {
           // Add small delay to prevent UI flashing
@@ -293,7 +293,7 @@ export default function SignUpPage() {
             validatedAt: new Date()
           };
           
-          console.log("🔍 Ticket validation result:", {
+          console.warn("🔍 Ticket validation result:", {
             isValid: validationResult.isValid,
             isExpired: validationResult.isExpired,
             hasUserData: !!validationResult.userData,
@@ -312,7 +312,7 @@ export default function SignUpPage() {
           } else if (validationResult.isExpired) {
             console.warn("⚠️ Ticket has expired");
           } else {
-            console.log("✅ Ticket validation passed");
+            console.warn("✅ Ticket validation passed");
           }
         } catch (error) {
           console.error("❌ Ticket validation error:", error);
@@ -341,7 +341,7 @@ export default function SignUpPage() {
   // Separate effect for Clerk state logging and initialization completion
   useEffect(() => {
     if (isLoaded && !isTicketValidating) {
-      console.log("🔍 SignUp Page State:", {
+      console.warn("🔍 SignUp Page State:", {
         isLoaded,
         signUpExists: !!signUp,
         signUpStatus: signUp?.status,
@@ -372,7 +372,7 @@ export default function SignUpPage() {
       if (emailVerification?.error) {
         const emailFromForm = signUp.emailAddress;
         if (handleEmailConflictError(emailVerification.error, emailFromForm || undefined)) {
-          console.log("🔄 Email conflict handled during verification");
+          console.warn("🔄 Email conflict handled during verification");
         }
       }
       
@@ -384,7 +384,7 @@ export default function SignUpPage() {
           const emailFromForm = signUp.emailAddress;
           attemptErrors.forEach((error: any) => {
             if (handleEmailConflictError(error, emailFromForm || undefined)) {
-              console.log("🔄 Email conflict handled during sign-up attempt");
+              console.warn("🔄 Email conflict handled during sign-up attempt");
             }
           });
         }
@@ -396,7 +396,7 @@ export default function SignUpPage() {
   useEffect(() => {
     if (isLoaded && signUp) {
       if (signUp.status === "complete") {
-        console.log("Sign-up completed", {
+        console.warn("Sign-up completed", {
           signUpId: signUp.id,
           authFlow: "clerk_elements",
           method: invitationState.hasTicket ? "invitation_ticket" : "email_password",
@@ -407,7 +407,7 @@ export default function SignUpPage() {
         // If this was an invitation flow, redirect back to accept invitation
         if (invitationState.hasTicket) {
           const redirectUrl = searchParams.get('redirect_url');
-          console.log("🎉 Invitation sign-up completed, redirecting back to invitation");
+          console.warn("🎉 Invitation sign-up completed, redirecting back to invitation");
           
           if (redirectUrl) {
             window.location.href = redirectUrl;
@@ -421,7 +421,7 @@ export default function SignUpPage() {
 
   // Handle Google OAuth signup
   const handleGoogleSignUp = async () => {
-    console.log("Google OAuth sign-up attempt", {
+    console.warn("Google OAuth sign-up attempt", {
       authFlow: "oauth_redirect",
       provider: "google",
       page: "signup",
@@ -433,7 +433,7 @@ export default function SignUpPage() {
   // Handle form submission logging
   const handleFormSubmit = useCallback(async (_e: React.FormEvent) => {
     try {
-      console.log("Email sign-up attempt", {
+      console.warn("Email sign-up attempt", {
         authFlow: "clerk_elements",
         method: "email_password",
         page: "signup",

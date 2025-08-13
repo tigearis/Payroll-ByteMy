@@ -15,7 +15,7 @@ export default function SignInPage() {
   const [error, setError] = useState("");
   const router = useRouter();
 
-  console.log("Sign-in page rendered, Clerk loaded:", isLoaded);
+  console.warn("Sign-in page rendered, Clerk loaded:", isLoaded);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +35,7 @@ export default function SignInPage() {
 
       if (result.status === "complete") {
         // Log successful sign-in for debugging
-        console.log("Sign-in completed", {
+        console.warn("Sign-in completed", {
           email: email,
           sessionId: result.createdSessionId,
           authFlow: "manual_signin",
@@ -82,7 +82,7 @@ export default function SignInPage() {
       });
 
       // Note: OAuth sign-in attempt (success logging will happen after redirect)
-      console.log("Google OAuth sign-in attempt", {
+      console.warn("Google OAuth sign-in attempt", {
         authFlow: "oauth_redirect",
         provider: "google",
       });

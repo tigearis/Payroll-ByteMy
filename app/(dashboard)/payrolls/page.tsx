@@ -140,10 +140,10 @@ function PayrollsPage() {
     error: payrollsError,
     refetch,
   } = useQuery(GetPayrollsPaginatedDocument, {
-    variables: { 
-      limit: 100, 
+    variables: {
+      limit: 100,
       offset: 0,
-      where: { supersededDate: { _isNull: true } }
+      where: { supersededDate: { _isNull: true } },
     },
     errorPolicy: "all",
     pollInterval: 30000, // Poll every 30 seconds for real-time updates
@@ -164,27 +164,34 @@ function PayrollsPage() {
             name: payroll.name,
             status: payroll.status ?? "Implementation",
             employeeCount: payroll.employeeCount ?? 0,
-            client: payroll.client ? {
-              id: payroll.client.id,
-              name: payroll.client.name,
-              active: payroll.client.active
-            } : undefined,
-            payrollCycle: payroll.payrollCycle ? {
-              id: payroll.payrollCycle.id,
-              name: payroll.payrollCycle.name,
-              description: payroll.payrollCycle.description
-            } : undefined,
-            payrollDateType: payroll.payrollDateType ? {
-              id: payroll.payrollDateType.id,
-              name: payroll.payrollDateType.name,
-              description: payroll.payrollDateType.description
-            } : undefined,
+            client: payroll.client
+              ? {
+                  id: payroll.client.id,
+                  name: payroll.client.name,
+                  active: payroll.client.active,
+                }
+              : undefined,
+            payrollCycle: payroll.payrollCycle
+              ? {
+                  id: payroll.payrollCycle.id,
+                  name: payroll.payrollCycle.name,
+                  description: payroll.payrollCycle.description,
+                }
+              : undefined,
+            payrollDateType: payroll.payrollDateType
+              ? {
+                  id: payroll.payrollDateType.id,
+                  name: payroll.payrollDateType.name,
+                  description: payroll.payrollDateType.description,
+                }
+              : undefined,
             dateValue: payroll.dateValue,
             primaryConsultant: payroll.primaryConsultant,
             backupConsultant: payroll.backupConsultant,
             assignedManager: payroll.assignedManager,
             nextPayrollDate: payroll.nextPayrollDate ?? undefined,
-            nextEftDate: payroll.nextEftDate ?? payroll.nextPayrollDate ?? undefined,
+            nextEftDate:
+              payroll.nextEftDate ?? payroll.nextPayrollDate ?? undefined,
             createdAt: payroll.createdAt,
             updatedAt: payroll.updatedAt,
             processingDaysBeforeEft: payroll.processingDaysBeforeEft ?? 0,
@@ -225,19 +232,19 @@ function PayrollsPage() {
   };
 
   const handleEditPayroll = (payrollId: string) => {
-    // TODO: Navigate to payroll edit page
-    console.log("Edit payroll:", payrollId);
+    window.location.href = `/payrolls/${payrollId}/edit`;
   };
 
   const handleViewPayroll = (payrollId: string) => {
-    // TODO: Navigate to payroll details page
-    console.log("View payroll:", payrollId);
+    window.location.href = `/payrolls/${payrollId}`;
   };
 
   const handleDeletePayroll = async (payrollId: string) => {
     try {
-      // TODO: Implement payroll deletion API call
-      console.log("Delete payroll:", payrollId);
+      const res = await fetch(`/api/payrolls/${payrollId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed to delete payroll");
       refetch();
     } catch (err) {
       setError("Failed to delete payroll");
@@ -247,8 +254,12 @@ function PayrollsPage() {
 
   const handleStatusChange = async (payrollId: string, status: string) => {
     try {
-      // TODO: Implement payroll status change API call
-      console.log("Change payroll status:", { payrollId, status });
+      const res = await fetch(`/api/payrolls/${payrollId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      if (!res.ok) throw new Error("Failed to update payroll status");
       refetch();
     } catch (err) {
       setError("Failed to update payroll status");
@@ -262,8 +273,16 @@ function PayrollsPage() {
     isPrimary: boolean
   ) => {
     try {
-      // TODO: Implement consultant assignment API call
-      console.log("Assign consultant:", { payrollId, consultantId, isPrimary });
+      const res = await fetch(`/api/payrolls/${payrollId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(
+          isPrimary
+            ? { primaryConsultantUserId: consultantId }
+            : { backupConsultantUserId: consultantId }
+        ),
+      });
+      if (!res.ok) throw new Error("Failed to assign consultant");
       refetch();
     } catch (err) {
       setError("Failed to assign consultant");
@@ -273,8 +292,12 @@ function PayrollsPage() {
 
   const handleBulkAction = async (payrollIds: string[], action: string) => {
     try {
-      // TODO: Implement bulk action API call
-      console.log("Bulk action:", { payrollIds, action });
+      const res = await fetch(`/api/payrolls`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: payrollIds, action }),
+      });
+      if (!res.ok) throw new Error("Failed bulk operation");
       refetch();
     } catch (err) {
       setError("Failed to perform bulk action");
@@ -283,13 +306,11 @@ function PayrollsPage() {
   };
 
   const handleProcessPayroll = (payrollId: string) => {
-    // TODO: Navigate to payroll processing workflow
-    console.log("Process payroll:", payrollId);
+    window.location.href = `/payrolls/${payrollId}?tab=dates`;
   };
 
   const handleGenerateReports = (payrollId: string) => {
-    // TODO: Navigate to payroll reports
-    console.log("Generate reports for payroll:", payrollId);
+    window.location.href = `/payrolls/${payrollId}?tab=billing`;
   };
 
   const handleBulkUpload = () => {
@@ -376,20 +397,20 @@ function PayrollsPage() {
           />
 
           {/* Local action removed to avoid duplication with header */}
-          
+
           {/* Additional Actions Bar - unique actions not in header */}
           <div className="flex flex-col sm:flex-row justify-between gap-4">
             <div className="flex gap-2">
               <Button
                 variant="outline"
-                onClick={() => console.log("Process payrolls")}
+                onClick={() => window.location.assign("/payroll-schedule")}
               >
                 <Clock className="h-4 w-4 mr-2" />
                 Process Ready
               </Button>
               <Button
                 variant="outline"
-                onClick={() => console.log("Generate reports")}
+                onClick={() => window.location.assign("/billing/reports")}
               >
                 <FileText className="h-4 w-4 mr-2" />
                 Reports
@@ -399,12 +420,15 @@ function PayrollsPage() {
             <div className="flex gap-2">
               <Button
                 variant="outline"
-                onClick={() => console.log("Payroll analytics")}
+                onClick={() => window.location.assign("/billing/reports")}
               >
                 <BarChart3 className="h-4 w-4 mr-2" />
                 Analytics
               </Button>
-              <Button variant="outline">
+              <Button
+                variant="outline"
+                onClick={() => window.location.assign("/settings")}
+              >
                 <Settings className="h-4 w-4 mr-2" />
                 Settings
               </Button>

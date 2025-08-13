@@ -1,4 +1,3 @@
-import { gql } from "@apollo/client";
 import { createClerkClient } from "@clerk/backend";
 import { NextRequest, NextResponse } from "next/server";
 import {
@@ -16,6 +15,12 @@ import {
   type GetUserByClerkIdQuery,
   GetUserByEmailDocument,
   type GetUserByEmailQuery,
+  UpdateUserRoleForInvitationDocument,
+  type UpdateUserRoleForInvitationMutation,
+  type UpdateUserRoleForInvitationMutationVariables,
+  UpdateUserClerkIdDocument,
+  type UpdateUserClerkIdMutation,
+  type UpdateUserClerkIdMutationVariables,
 } from "@/domains/users/graphql/generated/graphql";
 import { executeTypedMutation, executeTypedQuery } from "@/lib/apollo/query-helpers";
 import { withAuth } from "@/lib/auth/api-auth";
@@ -316,41 +321,18 @@ export const POST = withAuth(async (req: NextRequest, session) => {
         });
         
         try {
-          const updateUserRoleData = await executeTypedMutation(
-            gql`
-              mutation UpdateUserRoleForInvitation($userId: uuid!, $role: user_role!, $managerId: uuid, $isStaff: Boolean!) {
-                updateUsersByPk(
-                  pkColumns: { id: $userId }
-                  _set: { 
-                    role: $role
-                    managerId: $managerId
-                    isStaff: $isStaff
-                    updatedAt: "now()" 
-                  }
-                ) {
-                  id
-                  firstName
-                  lastName
-                  computedName
-                  email
-                  role
-                  clerkUserId
-                  isStaff
-                  managerId
-                  isActive
-                }
-              }
-            `,
-            {
-              userId: existingUser.id,
-              role: invitation.invitedRole,
-              managerId: invitation.managerId,
-              isStaff: invitationIsStaff,
-            }
-          );
+          const updateUserRoleData = await executeTypedMutation<
+            UpdateUserRoleForInvitationMutation,
+            UpdateUserRoleForInvitationMutationVariables
+          >(UpdateUserRoleForInvitationDocument, {
+            userId: existingUser.id,
+            role: invitation.invitedRole,
+            managerId: invitation.managerId,
+            isStaff: invitationIsStaff,
+          });
           
-          newUser = (updateUserRoleData as any)?.updateUsersByPk;
-          console.log("✅ Updated existing user role to match invitation:", newUser.role);
+          newUser = updateUserRoleData?.updateUsersByPk;
+          console.log("✅ Updated existing user role to match invitation:", newUser?.role);
 
           // ✅ Sync role permissions after role update
           if (newUser && needsRoleUpdate) {
@@ -445,32 +427,14 @@ export const POST = withAuth(async (req: NextRequest, session) => {
               // Update the user with correct Clerk ID if missing
               if (!newUser.clerkUserId || newUser.clerkUserId !== clerkUserId) {
                 console.log("🔄 Updating user with correct Clerk ID");
-                const updateClerkIdData = await executeTypedMutation(
-                  gql`
-                    mutation UpdateUserClerkId($userId: uuid!, $clerkUserId: String!) {
-                      updateUsersByPk(
-                        pkColumns: { id: $userId }
-                        _set: { clerkUserId: $clerkUserId, updatedAt: "now()" }
-                      ) {
-                        id
-                        firstName
-                        lastName
-                        computedName
-                        email
-                        role
-                        clerkUserId
-                        isStaff
-                        managerId
-                        isActive
-                      }
-                    }
-                  `,
-                  {
-                    userId: newUser.id,
-                    clerkUserId: clerkUserId,
-                  }
-                );
-                newUser = (updateClerkIdData as any)?.updateUsersByPk;
+                const updateClerkIdData = await executeTypedMutation<
+                  UpdateUserClerkIdMutation,
+                  UpdateUserClerkIdMutationVariables
+                >(UpdateUserClerkIdDocument, {
+                  userId: newUser.id,
+                  clerkUserId: clerkUserId,
+                });
+                newUser = updateClerkIdData?.updateUsersByPk;
               }
             } else {
               throw createUserError; // Re-throw original error if no existing user found
@@ -518,6 +482,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
 
       // ✅ CRITICAL: Sync role permissions to database tables
       try {
+        if (!newUser) throw new Error("User creation failed");
         console.log(`🔄 Syncing role permissions for user ${newUser.id} with role ${newUser.role}`);
         await syncUserRoleAssignmentsHierarchical(newUser.id, newUser.role);
         console.log(`✅ Role permissions synced successfully for ${newUser.role} role`);
@@ -542,9 +507,9 @@ export const POST = withAuth(async (req: NextRequest, session) => {
     console.log("🔍 Final validation before accepting invitation:");
     console.log("   - Invitation ID:", invitation.id);
     console.log("   - Invitation Email:", invitation.email);
-    console.log("   - User ID:", newUser.id);
-    console.log("   - User Email:", newUser.email);
-    console.log("   - User Clerk ID:", newUser.clerkUserId || 'None');
+    console.log("   - User ID:", newUser?.id);
+    console.log("   - User Email:", newUser?.email);
+    console.log("   - User Clerk ID:", newUser?.clerkUserId || 'None');
     console.log("   - Request Clerk ID:", clerkUserId);
 
     // Accept the invitation
@@ -552,7 +517,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
       AcceptInvitationEnhancedDocument,
       {
         invitationId: invitation.id,
-        acceptedBy: newUser.id,
+        acceptedBy: newUser!.id,
       }
     );
 
@@ -568,8 +533,8 @@ export const POST = withAuth(async (req: NextRequest, session) => {
     }
 
     console.log(`✅ Invitation accepted successfully: ${invitation.id}`);
-    console.log(`✅ User linked: ${newUser.id} (${newUser.email})`);
-    console.log(`✅ Email match verified: ${invitation.email} === ${newUser.email}`);
+    console.log(`✅ User linked: ${newUser!.id} (${newUser!.email})`);
+    console.log(`✅ Email match verified: ${invitation.email} === ${newUser!.email}`);
 
     return NextResponse.json<AcceptInvitationResponse>({
       success: true,

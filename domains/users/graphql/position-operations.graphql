@@ -1,0 +1,33 @@
+query GetUserPosition($id: uuid!) {
+  usersByPk(id: $id) {
+    id
+    firstName
+    lastName
+    email
+    role
+  }
+}
+
+mutation UpdateUserPosition(
+  $userId: uuid!
+  $position: String!
+  $adminPercentage: numeric!
+) {
+  updateUsersByPk(
+    pkColumns: { id: $userId }
+    _set: {
+      # position: $position
+      # defaultAdminTimePercentage: $adminPercentage
+      updatedAt: "now()"
+    }
+  ) {
+    id
+    firstName
+    lastName
+    email
+    role
+    updatedAt
+    # position
+    # defaultAdminTimePercentage
+  }
+}

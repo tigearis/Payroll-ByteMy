@@ -1,0 +1,30 @@
+query GetClientsForDropdown {
+  clients(where: { active: { _eq: true } }, orderBy: { name: ASC }) {
+    id
+    name
+    contactPerson
+  }
+}
+
+query GetPayrollsForDropdown {
+  payrolls(orderBy: { name: ASC }, limit: 100) {
+    id
+    name
+    status
+    client {
+      name
+    }
+  }
+}
+
+query GetStaffForDropdown {
+  users(
+    where: { isStaff: { _eq: true }, isActive: { _eq: true } }
+    orderBy: { lastName: ASC, firstName: ASC }
+  ) {
+    id
+    firstName
+    lastName
+    role
+  }
+}

@@ -18,7 +18,7 @@
  * ✓ Client Preset v4.8+ for optimal type safety
  * ✓ Zero type conflicts with modern codegen
  * 
- * Generated: 2025-08-11T15:28:24.853Z
+ * Generated: 2025-08-12T23:33:21.827Z
  * Schema Version: Latest from Hasura
  * CodeGen Version: Client Preset v4.0
  */
@@ -2727,6 +2727,14 @@ export type BillingItemsAggregateOrderBy = {
   variance?: InputMaybe<BillingItemsVarianceOrderBy>;
 };
 
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type BillingItemsAppendInput = {
+  /** Array of payroll date IDs that contributed to this billing item */
+  sourcePayrollDates?: InputMaybe<Scalars['jsonb']['input']>;
+  /** Detailed breakdown of units contributed per payroll date for aggregated services */
+  unitBreakdown?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
 /** input type for inserting array relation for remote table "billing_items" */
 export type BillingItemsArrRelInsertInput = {
   data: Array<BillingItemsInsertInput>;
@@ -2758,6 +2766,8 @@ export type BillingItemsBoolExp = {
   billingPeriodStart?: InputMaybe<DateComparisonExp>;
   billingPlanId?: InputMaybe<UuidComparisonExp>;
   billingTier?: InputMaybe<StringComparisonExp>;
+  billingUnitType?: InputMaybe<BillingUnitTypesBoolExp>;
+  billingUnitTypeId?: InputMaybe<UuidComparisonExp>;
   client?: InputMaybe<ClientsBoolExp>;
   clientId?: InputMaybe<UuidComparisonExp>;
   confirmedAt?: InputMaybe<TimestamptzComparisonExp>;
@@ -2781,6 +2791,7 @@ export type BillingItemsBoolExp = {
   payrollDateId?: InputMaybe<UuidComparisonExp>;
   payrollId?: InputMaybe<UuidComparisonExp>;
   quantity?: InputMaybe<IntComparisonExp>;
+  quantityOverride?: InputMaybe<BooleanComparisonExp>;
   quote?: InputMaybe<QuotesBoolExp>;
   quoteId?: InputMaybe<UuidComparisonExp>;
   rateJustification?: InputMaybe<StringComparisonExp>;
@@ -2789,12 +2800,14 @@ export type BillingItemsBoolExp = {
   serviceId?: InputMaybe<UuidComparisonExp>;
   serviceName?: InputMaybe<StringComparisonExp>;
   sourceMetricsId?: InputMaybe<UuidComparisonExp>;
+  sourcePayrollDates?: InputMaybe<JsonbComparisonExp>;
   staffUser?: InputMaybe<UsersBoolExp>;
   staffUserId?: InputMaybe<UuidComparisonExp>;
   status?: InputMaybe<StringComparisonExp>;
   timeEntries?: InputMaybe<TimeEntriesBoolExp>;
   timeEntriesAggregate?: InputMaybe<TimeEntriesAggregateBoolExp>;
   totalAmount?: InputMaybe<NumericComparisonExp>;
+  unitBreakdown?: InputMaybe<JsonbComparisonExp>;
   unitPrice?: InputMaybe<NumericComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
 };
@@ -2804,6 +2817,30 @@ export type BillingItemsConstraint =
   /** unique or primary key constraint on columns "id" */
   | 'billing_items_pkey'
   | '%future added value';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type BillingItemsDeleteAtPathInput = {
+  /** Array of payroll date IDs that contributed to this billing item */
+  sourcePayrollDates?: InputMaybe<Array<Scalars['String']['input']>>;
+  /** Detailed breakdown of units contributed per payroll date for aggregated services */
+  unitBreakdown?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type BillingItemsDeleteElemInput = {
+  /** Array of payroll date IDs that contributed to this billing item */
+  sourcePayrollDates?: InputMaybe<Scalars['Int']['input']>;
+  /** Detailed breakdown of units contributed per payroll date for aggregated services */
+  unitBreakdown?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type BillingItemsDeleteKeyInput = {
+  /** Array of payroll date IDs that contributed to this billing item */
+  sourcePayrollDates?: InputMaybe<Scalars['String']['input']>;
+  /** Detailed breakdown of units contributed per payroll date for aggregated services */
+  unitBreakdown?: InputMaybe<Scalars['String']['input']>;
+};
 
 /** input type for incrementing numeric columns in table "billing_items" */
 export type BillingItemsIncInput = {
@@ -2824,6 +2861,8 @@ export type BillingItemsInsertInput = {
   billingPeriodStart?: InputMaybe<Scalars['date']['input']>;
   billingPlanId?: InputMaybe<Scalars['uuid']['input']>;
   billingTier?: InputMaybe<Scalars['String']['input']>;
+  billingUnitType?: InputMaybe<BillingUnitTypesObjRelInsertInput>;
+  billingUnitTypeId?: InputMaybe<Scalars['uuid']['input']>;
   client?: InputMaybe<ClientsObjRelInsertInput>;
   clientId?: InputMaybe<Scalars['uuid']['input']>;
   /** When this item was confirmed by manager */
@@ -2849,6 +2888,7 @@ export type BillingItemsInsertInput = {
   payrollDateId?: InputMaybe<Scalars['uuid']['input']>;
   payrollId?: InputMaybe<Scalars['uuid']['input']>;
   quantity?: InputMaybe<Scalars['Int']['input']>;
+  quantityOverride?: InputMaybe<Scalars['Boolean']['input']>;
   quote?: InputMaybe<QuotesObjRelInsertInput>;
   quoteId?: InputMaybe<Scalars['uuid']['input']>;
   rateJustification?: InputMaybe<Scalars['String']['input']>;
@@ -2858,6 +2898,8 @@ export type BillingItemsInsertInput = {
   serviceId?: InputMaybe<Scalars['uuid']['input']>;
   serviceName?: InputMaybe<Scalars['String']['input']>;
   sourceMetricsId?: InputMaybe<Scalars['uuid']['input']>;
+  /** Array of payroll date IDs that contributed to this billing item */
+  sourcePayrollDates?: InputMaybe<Scalars['jsonb']['input']>;
   staffUser?: InputMaybe<UsersObjRelInsertInput>;
   /** Staff member who performed the service */
   staffUserId?: InputMaybe<Scalars['uuid']['input']>;
@@ -2865,6 +2907,8 @@ export type BillingItemsInsertInput = {
   status?: InputMaybe<Scalars['String']['input']>;
   timeEntries?: InputMaybe<TimeEntriesArrRelInsertInput>;
   totalAmount?: InputMaybe<Scalars['numeric']['input']>;
+  /** Detailed breakdown of units contributed per payroll date for aggregated services */
+  unitBreakdown?: InputMaybe<Scalars['jsonb']['input']>;
   unitPrice?: InputMaybe<Scalars['numeric']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
@@ -2879,6 +2923,7 @@ export type BillingItemsMaxOrderBy = {
   billingPeriodStart?: InputMaybe<OrderBy>;
   billingPlanId?: InputMaybe<OrderBy>;
   billingTier?: InputMaybe<OrderBy>;
+  billingUnitTypeId?: InputMaybe<OrderBy>;
   clientId?: InputMaybe<OrderBy>;
   /** When this item was confirmed by manager */
   confirmedAt?: InputMaybe<OrderBy>;
@@ -2922,6 +2967,7 @@ export type BillingItemsMinOrderBy = {
   billingPeriodStart?: InputMaybe<OrderBy>;
   billingPlanId?: InputMaybe<OrderBy>;
   billingTier?: InputMaybe<OrderBy>;
+  billingUnitTypeId?: InputMaybe<OrderBy>;
   clientId?: InputMaybe<OrderBy>;
   /** When this item was confirmed by manager */
   confirmedAt?: InputMaybe<OrderBy>;
@@ -2981,6 +3027,8 @@ export type BillingItemsOrderBy = {
   billingPeriodStart?: InputMaybe<OrderBy>;
   billingPlanId?: InputMaybe<OrderBy>;
   billingTier?: InputMaybe<OrderBy>;
+  billingUnitType?: InputMaybe<BillingUnitTypesOrderBy>;
+  billingUnitTypeId?: InputMaybe<OrderBy>;
   client?: InputMaybe<ClientsOrderBy>;
   clientId?: InputMaybe<OrderBy>;
   confirmedAt?: InputMaybe<OrderBy>;
@@ -3002,6 +3050,7 @@ export type BillingItemsOrderBy = {
   payrollDateId?: InputMaybe<OrderBy>;
   payrollId?: InputMaybe<OrderBy>;
   quantity?: InputMaybe<OrderBy>;
+  quantityOverride?: InputMaybe<OrderBy>;
   quote?: InputMaybe<QuotesOrderBy>;
   quoteId?: InputMaybe<OrderBy>;
   rateJustification?: InputMaybe<OrderBy>;
@@ -3010,11 +3059,13 @@ export type BillingItemsOrderBy = {
   serviceId?: InputMaybe<OrderBy>;
   serviceName?: InputMaybe<OrderBy>;
   sourceMetricsId?: InputMaybe<OrderBy>;
+  sourcePayrollDates?: InputMaybe<OrderBy>;
   staffUser?: InputMaybe<UsersOrderBy>;
   staffUserId?: InputMaybe<OrderBy>;
   status?: InputMaybe<OrderBy>;
   timeEntriesAggregate?: InputMaybe<TimeEntriesAggregateOrderBy>;
   totalAmount?: InputMaybe<OrderBy>;
+  unitBreakdown?: InputMaybe<OrderBy>;
   unitPrice?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
 };
@@ -3022,6 +3073,14 @@ export type BillingItemsOrderBy = {
 /** primary key columns input for table: billing_items */
 export type BillingItemsPkColumnsInput = {
   id: Scalars['uuid']['input'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type BillingItemsPrependInput = {
+  /** Array of payroll date IDs that contributed to this billing item */
+  sourcePayrollDates?: InputMaybe<Scalars['jsonb']['input']>;
+  /** Detailed breakdown of units contributed per payroll date for aggregated services */
+  unitBreakdown?: InputMaybe<Scalars['jsonb']['input']>;
 };
 
 /** select columns of table "billing_items" */
@@ -3044,6 +3103,8 @@ export type BillingItemsSelectColumn =
   | 'billingPlanId'
   /** column name */
   | 'billingTier'
+  /** column name */
+  | 'billingUnitTypeId'
   /** column name */
   | 'clientId'
   /** column name */
@@ -3075,6 +3136,8 @@ export type BillingItemsSelectColumn =
   /** column name */
   | 'quantity'
   /** column name */
+  | 'quantityOverride'
+  /** column name */
   | 'quoteId'
   /** column name */
   | 'rateJustification'
@@ -3087,11 +3150,15 @@ export type BillingItemsSelectColumn =
   /** column name */
   | 'sourceMetricsId'
   /** column name */
+  | 'sourcePayrollDates'
+  /** column name */
   | 'staffUserId'
   /** column name */
   | 'status'
   /** column name */
   | 'totalAmount'
+  /** column name */
+  | 'unitBreakdown'
   /** column name */
   | 'unitPrice'
   /** column name */
@@ -3106,6 +3173,8 @@ export type BillingItemsSelectColumnBillingItemsAggregateBoolExpBool_AndArgument
   | 'isApproved'
   /** column name */
   | 'isAutoGenerated'
+  /** column name */
+  | 'quantityOverride'
   | '%future added value';
 
 /** select "billingItemsAggregateBoolExpBool_orArgumentsColumns" columns of table "billing_items" */
@@ -3116,6 +3185,8 @@ export type BillingItemsSelectColumnBillingItemsAggregateBoolExpBool_OrArguments
   | 'isApproved'
   /** column name */
   | 'isAutoGenerated'
+  /** column name */
+  | 'quantityOverride'
   | '%future added value';
 
 /** input type for updating data in table "billing_items" */
@@ -3128,6 +3199,7 @@ export type BillingItemsSetInput = {
   billingPeriodStart?: InputMaybe<Scalars['date']['input']>;
   billingPlanId?: InputMaybe<Scalars['uuid']['input']>;
   billingTier?: InputMaybe<Scalars['String']['input']>;
+  billingUnitTypeId?: InputMaybe<Scalars['uuid']['input']>;
   clientId?: InputMaybe<Scalars['uuid']['input']>;
   /** When this item was confirmed by manager */
   confirmedAt?: InputMaybe<Scalars['timestamptz']['input']>;
@@ -3147,6 +3219,7 @@ export type BillingItemsSetInput = {
   payrollDateId?: InputMaybe<Scalars['uuid']['input']>;
   payrollId?: InputMaybe<Scalars['uuid']['input']>;
   quantity?: InputMaybe<Scalars['Int']['input']>;
+  quantityOverride?: InputMaybe<Scalars['Boolean']['input']>;
   quoteId?: InputMaybe<Scalars['uuid']['input']>;
   rateJustification?: InputMaybe<Scalars['String']['input']>;
   serviceCode?: InputMaybe<Scalars['String']['input']>;
@@ -3154,11 +3227,15 @@ export type BillingItemsSetInput = {
   serviceId?: InputMaybe<Scalars['uuid']['input']>;
   serviceName?: InputMaybe<Scalars['String']['input']>;
   sourceMetricsId?: InputMaybe<Scalars['uuid']['input']>;
+  /** Array of payroll date IDs that contributed to this billing item */
+  sourcePayrollDates?: InputMaybe<Scalars['jsonb']['input']>;
   /** Staff member who performed the service */
   staffUserId?: InputMaybe<Scalars['uuid']['input']>;
   /** Status: draft, confirmed, billed */
   status?: InputMaybe<Scalars['String']['input']>;
   totalAmount?: InputMaybe<Scalars['numeric']['input']>;
+  /** Detailed breakdown of units contributed per payroll date for aggregated services */
+  unitBreakdown?: InputMaybe<Scalars['jsonb']['input']>;
   unitPrice?: InputMaybe<Scalars['numeric']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
@@ -3209,6 +3286,7 @@ export type BillingItemsStreamCursorValueInput = {
   billingPeriodStart?: InputMaybe<Scalars['date']['input']>;
   billingPlanId?: InputMaybe<Scalars['uuid']['input']>;
   billingTier?: InputMaybe<Scalars['String']['input']>;
+  billingUnitTypeId?: InputMaybe<Scalars['uuid']['input']>;
   clientId?: InputMaybe<Scalars['uuid']['input']>;
   /** When this item was confirmed by manager */
   confirmedAt?: InputMaybe<Scalars['timestamptz']['input']>;
@@ -3228,6 +3306,7 @@ export type BillingItemsStreamCursorValueInput = {
   payrollDateId?: InputMaybe<Scalars['uuid']['input']>;
   payrollId?: InputMaybe<Scalars['uuid']['input']>;
   quantity?: InputMaybe<Scalars['Int']['input']>;
+  quantityOverride?: InputMaybe<Scalars['Boolean']['input']>;
   quoteId?: InputMaybe<Scalars['uuid']['input']>;
   rateJustification?: InputMaybe<Scalars['String']['input']>;
   serviceCode?: InputMaybe<Scalars['String']['input']>;
@@ -3235,11 +3314,15 @@ export type BillingItemsStreamCursorValueInput = {
   serviceId?: InputMaybe<Scalars['uuid']['input']>;
   serviceName?: InputMaybe<Scalars['String']['input']>;
   sourceMetricsId?: InputMaybe<Scalars['uuid']['input']>;
+  /** Array of payroll date IDs that contributed to this billing item */
+  sourcePayrollDates?: InputMaybe<Scalars['jsonb']['input']>;
   /** Staff member who performed the service */
   staffUserId?: InputMaybe<Scalars['uuid']['input']>;
   /** Status: draft, confirmed, billed */
   status?: InputMaybe<Scalars['String']['input']>;
   totalAmount?: InputMaybe<Scalars['numeric']['input']>;
+  /** Detailed breakdown of units contributed per payroll date for aggregated services */
+  unitBreakdown?: InputMaybe<Scalars['jsonb']['input']>;
   unitPrice?: InputMaybe<Scalars['numeric']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
 };
@@ -3272,6 +3355,8 @@ export type BillingItemsUpdateColumn =
   /** column name */
   | 'billingTier'
   /** column name */
+  | 'billingUnitTypeId'
+  /** column name */
   | 'clientId'
   /** column name */
   | 'confirmedAt'
@@ -3302,6 +3387,8 @@ export type BillingItemsUpdateColumn =
   /** column name */
   | 'quantity'
   /** column name */
+  | 'quantityOverride'
+  /** column name */
   | 'quoteId'
   /** column name */
   | 'rateJustification'
@@ -3314,11 +3401,15 @@ export type BillingItemsUpdateColumn =
   /** column name */
   | 'sourceMetricsId'
   /** column name */
+  | 'sourcePayrollDates'
+  /** column name */
   | 'staffUserId'
   /** column name */
   | 'status'
   /** column name */
   | 'totalAmount'
+  /** column name */
+  | 'unitBreakdown'
   /** column name */
   | 'unitPrice'
   /** column name */
@@ -3326,8 +3417,18 @@ export type BillingItemsUpdateColumn =
   | '%future added value';
 
 export type BillingItemsUpdates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<BillingItemsAppendInput>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _deleteAtPath?: InputMaybe<BillingItemsDeleteAtPathInput>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _deleteElem?: InputMaybe<BillingItemsDeleteElemInput>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _deleteKey?: InputMaybe<BillingItemsDeleteKeyInput>;
   /** increments the numeric columns with given value of the filtered values */
   _inc?: InputMaybe<BillingItemsIncInput>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<BillingItemsPrependInput>;
   /** sets the columns of the filtered rows to the given values */
   _set?: InputMaybe<BillingItemsSetInput>;
   /** filter the rows which have to be updated */
@@ -3826,6 +3927,300 @@ export type BillingTierLevelComparisonExp = {
   _lte?: InputMaybe<Scalars['billing_tier_level']['input']>;
   _neq?: InputMaybe<Scalars['billing_tier_level']['input']>;
   _nin?: InputMaybe<Array<Scalars['billing_tier_level']['input']>>;
+};
+
+export type BillingUnitTypesAggregateBoolExp = {
+  bool_and?: InputMaybe<BillingUnitTypesAggregateBoolExpBool_And>;
+  bool_or?: InputMaybe<BillingUnitTypesAggregateBoolExpBool_Or>;
+  count?: InputMaybe<BillingUnitTypesAggregateBoolExpCount>;
+};
+
+/** order by aggregate values of table "billing_unit_types" */
+export type BillingUnitTypesAggregateOrderBy = {
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<BillingUnitTypesMaxOrderBy>;
+  min?: InputMaybe<BillingUnitTypesMinOrderBy>;
+};
+
+/** input type for inserting array relation for remote table "billing_unit_types" */
+export type BillingUnitTypesArrRelInsertInput = {
+  data: Array<BillingUnitTypesInsertInput>;
+  /** upsert condition */
+  onConflict?: InputMaybe<BillingUnitTypesOnConflict>;
+};
+
+/** Boolean expression to filter rows from the table "billing_unit_types". All fields are combined with a logical 'AND'. */
+export type BillingUnitTypesBoolExp = {
+  _and?: InputMaybe<Array<BillingUnitTypesBoolExp>>;
+  _not?: InputMaybe<BillingUnitTypesBoolExp>;
+  _or?: InputMaybe<Array<BillingUnitTypesBoolExp>>;
+  billingItems?: InputMaybe<BillingItemsBoolExp>;
+  billingItemsAggregate?: InputMaybe<BillingItemsAggregateBoolExp>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  createdBy?: InputMaybe<UuidComparisonExp>;
+  createdByUser?: InputMaybe<UsersBoolExp>;
+  defaultSource?: InputMaybe<StringComparisonExp>;
+  description?: InputMaybe<StringComparisonExp>;
+  displayName?: InputMaybe<StringComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  isActive?: InputMaybe<BooleanComparisonExp>;
+  isSystemDefined?: InputMaybe<BooleanComparisonExp>;
+  name?: InputMaybe<StringComparisonExp>;
+  payrollDateTimeEntries?: InputMaybe<PayrollDateTimeEntriesBoolExp>;
+  payrollDateTimeEntriesAggregate?: InputMaybe<PayrollDateTimeEntriesAggregateBoolExp>;
+  quantityPrompt?: InputMaybe<StringComparisonExp>;
+  requiresQuantityInput?: InputMaybe<BooleanComparisonExp>;
+  servicesUsingThisUnitType?: InputMaybe<ServicesBoolExp>;
+  servicesUsingThisUnitTypeAggregate?: InputMaybe<ServicesAggregateBoolExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+  updatedBy?: InputMaybe<UuidComparisonExp>;
+  updatedByUser?: InputMaybe<UsersBoolExp>;
+};
+
+/** unique or primary key constraints on table "billing_unit_types" */
+export type BillingUnitTypesConstraint =
+  /** unique or primary key constraint on columns "name" */
+  | 'billing_unit_types_name_key'
+  /** unique or primary key constraint on columns "id" */
+  | 'billing_unit_types_pkey'
+  | '%future added value';
+
+/** input type for inserting data into table "billing_unit_types" */
+export type BillingUnitTypesInsertInput = {
+  billingItems?: InputMaybe<BillingItemsArrRelInsertInput>;
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  createdByUser?: InputMaybe<UsersObjRelInsertInput>;
+  /** Where to get default quantity from (payroll_employees, payroll_payslips, manual, etc.) */
+  defaultSource?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  displayName?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  /** System-defined units cannot be deleted or have core properties modified */
+  isSystemDefined?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Unique identifier for the unit type (e.g., time, fixed, per_employee, per_task) */
+  name?: InputMaybe<Scalars['String']['input']>;
+  payrollDateTimeEntries?: InputMaybe<PayrollDateTimeEntriesArrRelInsertInput>;
+  /** User-friendly prompt for quantity input (e.g., "Number of employees") */
+  quantityPrompt?: InputMaybe<Scalars['String']['input']>;
+  requiresQuantityInput?: InputMaybe<Scalars['Boolean']['input']>;
+  servicesUsingThisUnitType?: InputMaybe<ServicesArrRelInsertInput>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+  updatedByUser?: InputMaybe<UsersObjRelInsertInput>;
+};
+
+/** order by max() on columns of table "billing_unit_types" */
+export type BillingUnitTypesMaxOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
+  createdBy?: InputMaybe<OrderBy>;
+  /** Where to get default quantity from (payroll_employees, payroll_payslips, manual, etc.) */
+  defaultSource?: InputMaybe<OrderBy>;
+  description?: InputMaybe<OrderBy>;
+  displayName?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  /** Unique identifier for the unit type (e.g., time, fixed, per_employee, per_task) */
+  name?: InputMaybe<OrderBy>;
+  /** User-friendly prompt for quantity input (e.g., "Number of employees") */
+  quantityPrompt?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  updatedBy?: InputMaybe<OrderBy>;
+};
+
+/** order by min() on columns of table "billing_unit_types" */
+export type BillingUnitTypesMinOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
+  createdBy?: InputMaybe<OrderBy>;
+  /** Where to get default quantity from (payroll_employees, payroll_payslips, manual, etc.) */
+  defaultSource?: InputMaybe<OrderBy>;
+  description?: InputMaybe<OrderBy>;
+  displayName?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  /** Unique identifier for the unit type (e.g., time, fixed, per_employee, per_task) */
+  name?: InputMaybe<OrderBy>;
+  /** User-friendly prompt for quantity input (e.g., "Number of employees") */
+  quantityPrompt?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  updatedBy?: InputMaybe<OrderBy>;
+};
+
+/** input type for inserting object relation for remote table "billing_unit_types" */
+export type BillingUnitTypesObjRelInsertInput = {
+  data: BillingUnitTypesInsertInput;
+  /** upsert condition */
+  onConflict?: InputMaybe<BillingUnitTypesOnConflict>;
+};
+
+/** on_conflict condition type for table "billing_unit_types" */
+export type BillingUnitTypesOnConflict = {
+  constraint: BillingUnitTypesConstraint;
+  updateColumns?: Array<BillingUnitTypesUpdateColumn>;
+  where?: InputMaybe<BillingUnitTypesBoolExp>;
+};
+
+/** Ordering options when selecting data from "billing_unit_types". */
+export type BillingUnitTypesOrderBy = {
+  billingItemsAggregate?: InputMaybe<BillingItemsAggregateOrderBy>;
+  createdAt?: InputMaybe<OrderBy>;
+  createdBy?: InputMaybe<OrderBy>;
+  createdByUser?: InputMaybe<UsersOrderBy>;
+  defaultSource?: InputMaybe<OrderBy>;
+  description?: InputMaybe<OrderBy>;
+  displayName?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  isActive?: InputMaybe<OrderBy>;
+  isSystemDefined?: InputMaybe<OrderBy>;
+  name?: InputMaybe<OrderBy>;
+  payrollDateTimeEntriesAggregate?: InputMaybe<PayrollDateTimeEntriesAggregateOrderBy>;
+  quantityPrompt?: InputMaybe<OrderBy>;
+  requiresQuantityInput?: InputMaybe<OrderBy>;
+  servicesUsingThisUnitTypeAggregate?: InputMaybe<ServicesAggregateOrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  updatedBy?: InputMaybe<OrderBy>;
+  updatedByUser?: InputMaybe<UsersOrderBy>;
+};
+
+/** primary key columns input for table: billing_unit_types */
+export type BillingUnitTypesPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** select columns of table "billing_unit_types" */
+export type BillingUnitTypesSelectColumn =
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'createdBy'
+  /** column name */
+  | 'defaultSource'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'displayName'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isSystemDefined'
+  /** column name */
+  | 'name'
+  /** column name */
+  | 'quantityPrompt'
+  /** column name */
+  | 'requiresQuantityInput'
+  /** column name */
+  | 'updatedAt'
+  /** column name */
+  | 'updatedBy'
+  | '%future added value';
+
+/** select "billingUnitTypesAggregateBoolExpBool_andArgumentsColumns" columns of table "billing_unit_types" */
+export type BillingUnitTypesSelectColumnBillingUnitTypesAggregateBoolExpBool_AndArgumentsColumns =
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isSystemDefined'
+  /** column name */
+  | 'requiresQuantityInput'
+  | '%future added value';
+
+/** select "billingUnitTypesAggregateBoolExpBool_orArgumentsColumns" columns of table "billing_unit_types" */
+export type BillingUnitTypesSelectColumnBillingUnitTypesAggregateBoolExpBool_OrArgumentsColumns =
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isSystemDefined'
+  /** column name */
+  | 'requiresQuantityInput'
+  | '%future added value';
+
+/** input type for updating data in table "billing_unit_types" */
+export type BillingUnitTypesSetInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  /** Where to get default quantity from (payroll_employees, payroll_payslips, manual, etc.) */
+  defaultSource?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  displayName?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  /** System-defined units cannot be deleted or have core properties modified */
+  isSystemDefined?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Unique identifier for the unit type (e.g., time, fixed, per_employee, per_task) */
+  name?: InputMaybe<Scalars['String']['input']>;
+  /** User-friendly prompt for quantity input (e.g., "Number of employees") */
+  quantityPrompt?: InputMaybe<Scalars['String']['input']>;
+  requiresQuantityInput?: InputMaybe<Scalars['Boolean']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** Streaming cursor of the table "billing_unit_types" */
+export type BillingUnitTypesStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: BillingUnitTypesStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type BillingUnitTypesStreamCursorValueInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  /** Where to get default quantity from (payroll_employees, payroll_payslips, manual, etc.) */
+  defaultSource?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  displayName?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  /** System-defined units cannot be deleted or have core properties modified */
+  isSystemDefined?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Unique identifier for the unit type (e.g., time, fixed, per_employee, per_task) */
+  name?: InputMaybe<Scalars['String']['input']>;
+  /** User-friendly prompt for quantity input (e.g., "Number of employees") */
+  quantityPrompt?: InputMaybe<Scalars['String']['input']>;
+  requiresQuantityInput?: InputMaybe<Scalars['Boolean']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** update columns of table "billing_unit_types" */
+export type BillingUnitTypesUpdateColumn =
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'createdBy'
+  /** column name */
+  | 'defaultSource'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'displayName'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isActive'
+  /** column name */
+  | 'isSystemDefined'
+  /** column name */
+  | 'name'
+  /** column name */
+  | 'quantityPrompt'
+  /** column name */
+  | 'requiresQuantityInput'
+  /** column name */
+  | 'updatedAt'
+  /** column name */
+  | 'updatedBy'
+  | '%future added value';
+
+export type BillingUnitTypesUpdates = {
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<BillingUnitTypesSetInput>;
+  /** filter the rows which have to be updated */
+  where: BillingUnitTypesBoolExp;
 };
 
 /** Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'. */
@@ -5429,6 +5824,284 @@ export type CursorOrdering =
   /** descending ordering of the cursor */
   | 'DESC'
   | '%future added value';
+
+export type CustomQueryTemplatesAggregateBoolExp = {
+  bool_and?: InputMaybe<CustomQueryTemplatesAggregateBoolExpBool_And>;
+  bool_or?: InputMaybe<CustomQueryTemplatesAggregateBoolExpBool_Or>;
+  count?: InputMaybe<CustomQueryTemplatesAggregateBoolExpCount>;
+};
+
+/** order by aggregate values of table "custom_query_templates" */
+export type CustomQueryTemplatesAggregateOrderBy = {
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<CustomQueryTemplatesMaxOrderBy>;
+  min?: InputMaybe<CustomQueryTemplatesMinOrderBy>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type CustomQueryTemplatesAppendInput = {
+  /** JSON array containing parameter definitions with type, default value, and validation rules */
+  parameters?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** input type for inserting array relation for remote table "custom_query_templates" */
+export type CustomQueryTemplatesArrRelInsertInput = {
+  data: Array<CustomQueryTemplatesInsertInput>;
+  /** upsert condition */
+  onConflict?: InputMaybe<CustomQueryTemplatesOnConflict>;
+};
+
+/** Boolean expression to filter rows from the table "custom_query_templates". All fields are combined with a logical 'AND'. */
+export type CustomQueryTemplatesBoolExp = {
+  _and?: InputMaybe<Array<CustomQueryTemplatesBoolExp>>;
+  _not?: InputMaybe<CustomQueryTemplatesBoolExp>;
+  _or?: InputMaybe<Array<CustomQueryTemplatesBoolExp>>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  createdBy?: InputMaybe<UuidComparisonExp>;
+  description?: InputMaybe<StringComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  isPublic?: InputMaybe<BooleanComparisonExp>;
+  name?: InputMaybe<StringComparisonExp>;
+  parameters?: InputMaybe<JsonbComparisonExp>;
+  queryExecutions?: InputMaybe<QueryExecutionsBoolExp>;
+  queryExecutionsAggregate?: InputMaybe<QueryExecutionsAggregateBoolExp>;
+  queryText?: InputMaybe<StringComparisonExp>;
+  queryType?: InputMaybe<StringComparisonExp>;
+  tags?: InputMaybe<StringArrayComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+  user?: InputMaybe<UsersBoolExp>;
+};
+
+/** unique or primary key constraints on table "custom_query_templates" */
+export type CustomQueryTemplatesConstraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'custom_query_templates_pkey'
+  | '%future added value';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type CustomQueryTemplatesDeleteAtPathInput = {
+  /** JSON array containing parameter definitions with type, default value, and validation rules */
+  parameters?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type CustomQueryTemplatesDeleteElemInput = {
+  /** JSON array containing parameter definitions with type, default value, and validation rules */
+  parameters?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type CustomQueryTemplatesDeleteKeyInput = {
+  /** JSON array containing parameter definitions with type, default value, and validation rules */
+  parameters?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** input type for inserting data into table "custom_query_templates" */
+export type CustomQueryTemplatesInsertInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isPublic?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  /** JSON array containing parameter definitions with type, default value, and validation rules */
+  parameters?: InputMaybe<Scalars['jsonb']['input']>;
+  queryExecutions?: InputMaybe<QueryExecutionsArrRelInsertInput>;
+  queryText?: InputMaybe<Scalars['String']['input']>;
+  queryType?: InputMaybe<Scalars['String']['input']>;
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  user?: InputMaybe<UsersObjRelInsertInput>;
+};
+
+/** order by max() on columns of table "custom_query_templates" */
+export type CustomQueryTemplatesMaxOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
+  createdBy?: InputMaybe<OrderBy>;
+  description?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  name?: InputMaybe<OrderBy>;
+  queryText?: InputMaybe<OrderBy>;
+  queryType?: InputMaybe<OrderBy>;
+  tags?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** order by min() on columns of table "custom_query_templates" */
+export type CustomQueryTemplatesMinOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
+  createdBy?: InputMaybe<OrderBy>;
+  description?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  name?: InputMaybe<OrderBy>;
+  queryText?: InputMaybe<OrderBy>;
+  queryType?: InputMaybe<OrderBy>;
+  tags?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+};
+
+/** input type for inserting object relation for remote table "custom_query_templates" */
+export type CustomQueryTemplatesObjRelInsertInput = {
+  data: CustomQueryTemplatesInsertInput;
+  /** upsert condition */
+  onConflict?: InputMaybe<CustomQueryTemplatesOnConflict>;
+};
+
+/** on_conflict condition type for table "custom_query_templates" */
+export type CustomQueryTemplatesOnConflict = {
+  constraint: CustomQueryTemplatesConstraint;
+  updateColumns?: Array<CustomQueryTemplatesUpdateColumn>;
+  where?: InputMaybe<CustomQueryTemplatesBoolExp>;
+};
+
+/** Ordering options when selecting data from "custom_query_templates". */
+export type CustomQueryTemplatesOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
+  createdBy?: InputMaybe<OrderBy>;
+  description?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  isPublic?: InputMaybe<OrderBy>;
+  name?: InputMaybe<OrderBy>;
+  parameters?: InputMaybe<OrderBy>;
+  queryExecutionsAggregate?: InputMaybe<QueryExecutionsAggregateOrderBy>;
+  queryText?: InputMaybe<OrderBy>;
+  queryType?: InputMaybe<OrderBy>;
+  tags?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  user?: InputMaybe<UsersOrderBy>;
+};
+
+/** primary key columns input for table: custom_query_templates */
+export type CustomQueryTemplatesPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type CustomQueryTemplatesPrependInput = {
+  /** JSON array containing parameter definitions with type, default value, and validation rules */
+  parameters?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** select columns of table "custom_query_templates" */
+export type CustomQueryTemplatesSelectColumn =
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'createdBy'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isPublic'
+  /** column name */
+  | 'name'
+  /** column name */
+  | 'parameters'
+  /** column name */
+  | 'queryText'
+  /** column name */
+  | 'queryType'
+  /** column name */
+  | 'tags'
+  /** column name */
+  | 'updatedAt'
+  | '%future added value';
+
+/** select "customQueryTemplatesAggregateBoolExpBool_andArgumentsColumns" columns of table "custom_query_templates" */
+export type CustomQueryTemplatesSelectColumnCustomQueryTemplatesAggregateBoolExpBool_AndArgumentsColumns =
+  /** column name */
+  | 'isPublic'
+  | '%future added value';
+
+/** select "customQueryTemplatesAggregateBoolExpBool_orArgumentsColumns" columns of table "custom_query_templates" */
+export type CustomQueryTemplatesSelectColumnCustomQueryTemplatesAggregateBoolExpBool_OrArgumentsColumns =
+  /** column name */
+  | 'isPublic'
+  | '%future added value';
+
+/** input type for updating data in table "custom_query_templates" */
+export type CustomQueryTemplatesSetInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isPublic?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  /** JSON array containing parameter definitions with type, default value, and validation rules */
+  parameters?: InputMaybe<Scalars['jsonb']['input']>;
+  queryText?: InputMaybe<Scalars['String']['input']>;
+  queryType?: InputMaybe<Scalars['String']['input']>;
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** Streaming cursor of the table "custom_query_templates" */
+export type CustomQueryTemplatesStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: CustomQueryTemplatesStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type CustomQueryTemplatesStreamCursorValueInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  isPublic?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  /** JSON array containing parameter definitions with type, default value, and validation rules */
+  parameters?: InputMaybe<Scalars['jsonb']['input']>;
+  queryText?: InputMaybe<Scalars['String']['input']>;
+  queryType?: InputMaybe<Scalars['String']['input']>;
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+};
+
+/** update columns of table "custom_query_templates" */
+export type CustomQueryTemplatesUpdateColumn =
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'createdBy'
+  /** column name */
+  | 'description'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'isPublic'
+  /** column name */
+  | 'name'
+  /** column name */
+  | 'parameters'
+  /** column name */
+  | 'queryText'
+  /** column name */
+  | 'queryType'
+  /** column name */
+  | 'tags'
+  /** column name */
+  | 'updatedAt'
+  | '%future added value';
+
+export type CustomQueryTemplatesUpdates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<CustomQueryTemplatesAppendInput>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _deleteAtPath?: InputMaybe<CustomQueryTemplatesDeleteAtPathInput>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _deleteElem?: InputMaybe<CustomQueryTemplatesDeleteElemInput>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _deleteKey?: InputMaybe<CustomQueryTemplatesDeleteKeyInput>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<CustomQueryTemplatesPrependInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<CustomQueryTemplatesSetInput>;
+  /** filter the rows which have to be updated */
+  where: CustomQueryTemplatesBoolExp;
+};
 
 export type DataBackupsAggregateBoolExp = {
   count?: InputMaybe<DataBackupsAggregateBoolExpCount>;
@@ -11090,6 +11763,293 @@ export type PayrollDateCompletionAnalyticsStreamCursorValueInput = {
   totalTimeSpentMinutes?: InputMaybe<Scalars['Int']['input']>;
 };
 
+export type PayrollDateCompletionContextAggregateBoolExp = {
+  count?: InputMaybe<PayrollDateCompletionContextAggregateBoolExpCount>;
+};
+
+/** order by aggregate values of table "payroll_date_completion_context" */
+export type PayrollDateCompletionContextAggregateOrderBy = {
+  avg?: InputMaybe<PayrollDateCompletionContextAvgOrderBy>;
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<PayrollDateCompletionContextMaxOrderBy>;
+  min?: InputMaybe<PayrollDateCompletionContextMinOrderBy>;
+  stddev?: InputMaybe<PayrollDateCompletionContextStddevOrderBy>;
+  stddevPop?: InputMaybe<PayrollDateCompletionContextStddevPopOrderBy>;
+  stddevSamp?: InputMaybe<PayrollDateCompletionContextStddevSampOrderBy>;
+  sum?: InputMaybe<PayrollDateCompletionContextSumOrderBy>;
+  varPop?: InputMaybe<PayrollDateCompletionContextVarPopOrderBy>;
+  varSamp?: InputMaybe<PayrollDateCompletionContextVarSampOrderBy>;
+  variance?: InputMaybe<PayrollDateCompletionContextVarianceOrderBy>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type PayrollDateCompletionContextAppendInput = {
+  /** JSON object mapping unit type IDs to quantities for custom billing units */
+  customQuantities?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** input type for inserting array relation for remote table "payroll_date_completion_context" */
+export type PayrollDateCompletionContextArrRelInsertInput = {
+  data: Array<PayrollDateCompletionContextInsertInput>;
+  /** upsert condition */
+  onConflict?: InputMaybe<PayrollDateCompletionContextOnConflict>;
+};
+
+/** order by avg() on columns of table "payroll_date_completion_context" */
+export type PayrollDateCompletionContextAvgOrderBy = {
+  employeeCount?: InputMaybe<OrderBy>;
+  payslipCount?: InputMaybe<OrderBy>;
+};
+
+/** Boolean expression to filter rows from the table "payroll_date_completion_context". All fields are combined with a logical 'AND'. */
+export type PayrollDateCompletionContextBoolExp = {
+  _and?: InputMaybe<Array<PayrollDateCompletionContextBoolExp>>;
+  _not?: InputMaybe<PayrollDateCompletionContextBoolExp>;
+  _or?: InputMaybe<Array<PayrollDateCompletionContextBoolExp>>;
+  completedAt?: InputMaybe<TimestamptzComparisonExp>;
+  completedBy?: InputMaybe<UuidComparisonExp>;
+  completedByUser?: InputMaybe<UsersBoolExp>;
+  customQuantities?: InputMaybe<JsonbComparisonExp>;
+  employeeCount?: InputMaybe<IntComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  payrollDate?: InputMaybe<PayrollDatesBoolExp>;
+  payrollDateId?: InputMaybe<UuidComparisonExp>;
+  payslipCount?: InputMaybe<IntComparisonExp>;
+};
+
+/** unique or primary key constraints on table "payroll_date_completion_context" */
+export type PayrollDateCompletionContextConstraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'payroll_date_completion_context_pkey'
+  /** unique or primary key constraint on columns "payroll_date_id" */
+  | 'unique_payroll_date_completion'
+  | '%future added value';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type PayrollDateCompletionContextDeleteAtPathInput = {
+  /** JSON object mapping unit type IDs to quantities for custom billing units */
+  customQuantities?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type PayrollDateCompletionContextDeleteElemInput = {
+  /** JSON object mapping unit type IDs to quantities for custom billing units */
+  customQuantities?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type PayrollDateCompletionContextDeleteKeyInput = {
+  /** JSON object mapping unit type IDs to quantities for custom billing units */
+  customQuantities?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** input type for incrementing numeric columns in table "payroll_date_completion_context" */
+export type PayrollDateCompletionContextIncInput = {
+  employeeCount?: InputMaybe<Scalars['Int']['input']>;
+  payslipCount?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** input type for inserting data into table "payroll_date_completion_context" */
+export type PayrollDateCompletionContextInsertInput = {
+  completedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  completedBy?: InputMaybe<Scalars['uuid']['input']>;
+  completedByUser?: InputMaybe<UsersObjRelInsertInput>;
+  /** JSON object mapping unit type IDs to quantities for custom billing units */
+  customQuantities?: InputMaybe<Scalars['jsonb']['input']>;
+  employeeCount?: InputMaybe<Scalars['Int']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  payrollDate?: InputMaybe<PayrollDatesObjRelInsertInput>;
+  payrollDateId?: InputMaybe<Scalars['uuid']['input']>;
+  payslipCount?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** order by max() on columns of table "payroll_date_completion_context" */
+export type PayrollDateCompletionContextMaxOrderBy = {
+  completedAt?: InputMaybe<OrderBy>;
+  completedBy?: InputMaybe<OrderBy>;
+  employeeCount?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  payrollDateId?: InputMaybe<OrderBy>;
+  payslipCount?: InputMaybe<OrderBy>;
+};
+
+/** order by min() on columns of table "payroll_date_completion_context" */
+export type PayrollDateCompletionContextMinOrderBy = {
+  completedAt?: InputMaybe<OrderBy>;
+  completedBy?: InputMaybe<OrderBy>;
+  employeeCount?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  payrollDateId?: InputMaybe<OrderBy>;
+  payslipCount?: InputMaybe<OrderBy>;
+};
+
+/** input type for inserting object relation for remote table "payroll_date_completion_context" */
+export type PayrollDateCompletionContextObjRelInsertInput = {
+  data: PayrollDateCompletionContextInsertInput;
+  /** upsert condition */
+  onConflict?: InputMaybe<PayrollDateCompletionContextOnConflict>;
+};
+
+/** on_conflict condition type for table "payroll_date_completion_context" */
+export type PayrollDateCompletionContextOnConflict = {
+  constraint: PayrollDateCompletionContextConstraint;
+  updateColumns?: Array<PayrollDateCompletionContextUpdateColumn>;
+  where?: InputMaybe<PayrollDateCompletionContextBoolExp>;
+};
+
+/** Ordering options when selecting data from "payroll_date_completion_context". */
+export type PayrollDateCompletionContextOrderBy = {
+  completedAt?: InputMaybe<OrderBy>;
+  completedBy?: InputMaybe<OrderBy>;
+  completedByUser?: InputMaybe<UsersOrderBy>;
+  customQuantities?: InputMaybe<OrderBy>;
+  employeeCount?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  payrollDate?: InputMaybe<PayrollDatesOrderBy>;
+  payrollDateId?: InputMaybe<OrderBy>;
+  payslipCount?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: payroll_date_completion_context */
+export type PayrollDateCompletionContextPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type PayrollDateCompletionContextPrependInput = {
+  /** JSON object mapping unit type IDs to quantities for custom billing units */
+  customQuantities?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** select columns of table "payroll_date_completion_context" */
+export type PayrollDateCompletionContextSelectColumn =
+  /** column name */
+  | 'completedAt'
+  /** column name */
+  | 'completedBy'
+  /** column name */
+  | 'customQuantities'
+  /** column name */
+  | 'employeeCount'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'payrollDateId'
+  /** column name */
+  | 'payslipCount'
+  | '%future added value';
+
+/** input type for updating data in table "payroll_date_completion_context" */
+export type PayrollDateCompletionContextSetInput = {
+  completedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  completedBy?: InputMaybe<Scalars['uuid']['input']>;
+  /** JSON object mapping unit type IDs to quantities for custom billing units */
+  customQuantities?: InputMaybe<Scalars['jsonb']['input']>;
+  employeeCount?: InputMaybe<Scalars['Int']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  payrollDateId?: InputMaybe<Scalars['uuid']['input']>;
+  payslipCount?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** order by stddev() on columns of table "payroll_date_completion_context" */
+export type PayrollDateCompletionContextStddevOrderBy = {
+  employeeCount?: InputMaybe<OrderBy>;
+  payslipCount?: InputMaybe<OrderBy>;
+};
+
+/** order by stddevPop() on columns of table "payroll_date_completion_context" */
+export type PayrollDateCompletionContextStddevPopOrderBy = {
+  employeeCount?: InputMaybe<OrderBy>;
+  payslipCount?: InputMaybe<OrderBy>;
+};
+
+/** order by stddevSamp() on columns of table "payroll_date_completion_context" */
+export type PayrollDateCompletionContextStddevSampOrderBy = {
+  employeeCount?: InputMaybe<OrderBy>;
+  payslipCount?: InputMaybe<OrderBy>;
+};
+
+/** Streaming cursor of the table "payroll_date_completion_context" */
+export type PayrollDateCompletionContextStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: PayrollDateCompletionContextStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type PayrollDateCompletionContextStreamCursorValueInput = {
+  completedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  completedBy?: InputMaybe<Scalars['uuid']['input']>;
+  /** JSON object mapping unit type IDs to quantities for custom billing units */
+  customQuantities?: InputMaybe<Scalars['jsonb']['input']>;
+  employeeCount?: InputMaybe<Scalars['Int']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  payrollDateId?: InputMaybe<Scalars['uuid']['input']>;
+  payslipCount?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** order by sum() on columns of table "payroll_date_completion_context" */
+export type PayrollDateCompletionContextSumOrderBy = {
+  employeeCount?: InputMaybe<OrderBy>;
+  payslipCount?: InputMaybe<OrderBy>;
+};
+
+/** update columns of table "payroll_date_completion_context" */
+export type PayrollDateCompletionContextUpdateColumn =
+  /** column name */
+  | 'completedAt'
+  /** column name */
+  | 'completedBy'
+  /** column name */
+  | 'customQuantities'
+  /** column name */
+  | 'employeeCount'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'payrollDateId'
+  /** column name */
+  | 'payslipCount'
+  | '%future added value';
+
+export type PayrollDateCompletionContextUpdates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<PayrollDateCompletionContextAppendInput>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _deleteAtPath?: InputMaybe<PayrollDateCompletionContextDeleteAtPathInput>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _deleteElem?: InputMaybe<PayrollDateCompletionContextDeleteElemInput>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _deleteKey?: InputMaybe<PayrollDateCompletionContextDeleteKeyInput>;
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<PayrollDateCompletionContextIncInput>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<PayrollDateCompletionContextPrependInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<PayrollDateCompletionContextSetInput>;
+  /** filter the rows which have to be updated */
+  where: PayrollDateCompletionContextBoolExp;
+};
+
+/** order by varPop() on columns of table "payroll_date_completion_context" */
+export type PayrollDateCompletionContextVarPopOrderBy = {
+  employeeCount?: InputMaybe<OrderBy>;
+  payslipCount?: InputMaybe<OrderBy>;
+};
+
+/** order by varSamp() on columns of table "payroll_date_completion_context" */
+export type PayrollDateCompletionContextVarSampOrderBy = {
+  employeeCount?: InputMaybe<OrderBy>;
+  payslipCount?: InputMaybe<OrderBy>;
+};
+
+/** order by variance() on columns of table "payroll_date_completion_context" */
+export type PayrollDateCompletionContextVarianceOrderBy = {
+  employeeCount?: InputMaybe<OrderBy>;
+  payslipCount?: InputMaybe<OrderBy>;
+};
+
 export type PayrollDateTimeEntriesAggregateBoolExp = {
   bool_and?: InputMaybe<PayrollDateTimeEntriesAggregateBoolExpBool_And>;
   bool_or?: InputMaybe<PayrollDateTimeEntriesAggregateBoolExpBool_Or>;
@@ -11120,9 +12080,13 @@ export type PayrollDateTimeEntriesArrRelInsertInput = {
 
 /** order by avg() on columns of table "payroll_date_time_entries" */
 export type PayrollDateTimeEntriesAvgOrderBy = {
+  /** Rate per unit that was effective when this time entry was created */
+  effectiveRatePerUnit?: InputMaybe<OrderBy>;
   /** Hourly rate applied when this time entry was created */
   hourlyRateUsed?: InputMaybe<OrderBy>;
   timeSpentMinutes?: InputMaybe<OrderBy>;
+  /** 6-minute units (1 hour = 10 units) */
+  timeUnits?: InputMaybe<OrderBy>;
   /** Calculated internal cost (time * rate) */
   totalCost?: InputMaybe<OrderBy>;
 };
@@ -11133,15 +12097,23 @@ export type PayrollDateTimeEntriesBoolExp = {
   _not?: InputMaybe<PayrollDateTimeEntriesBoolExp>;
   _or?: InputMaybe<Array<PayrollDateTimeEntriesBoolExp>>;
   billingNotes?: InputMaybe<StringComparisonExp>;
+  billingUnitType?: InputMaybe<BillingUnitTypesBoolExp>;
+  billingUnitTypeId?: InputMaybe<UuidComparisonExp>;
   costCenter?: InputMaybe<StringComparisonExp>;
   createdAt?: InputMaybe<TimestamptzComparisonExp>;
   description?: InputMaybe<StringComparisonExp>;
+  effectiveRatePerUnit?: InputMaybe<NumericComparisonExp>;
   hourlyRateUsed?: InputMaybe<NumericComparisonExp>;
   id?: InputMaybe<UuidComparisonExp>;
   isBillable?: InputMaybe<BooleanComparisonExp>;
+  isBillableToService?: InputMaybe<BooleanComparisonExp>;
   payrollDate?: InputMaybe<PayrollDatesBoolExp>;
   payrollDateId?: InputMaybe<UuidComparisonExp>;
+  service?: InputMaybe<ServicesBoolExp>;
+  serviceId?: InputMaybe<UuidComparisonExp>;
+  serviceNotes?: InputMaybe<StringComparisonExp>;
   timeSpentMinutes?: InputMaybe<IntComparisonExp>;
+  timeUnits?: InputMaybe<IntComparisonExp>;
   totalCost?: InputMaybe<NumericComparisonExp>;
   updatedAt?: InputMaybe<TimestamptzComparisonExp>;
   user?: InputMaybe<UsersBoolExp>;
@@ -11159,25 +12131,39 @@ export type PayrollDateTimeEntriesConstraint =
 
 /** input type for incrementing numeric columns in table "payroll_date_time_entries" */
 export type PayrollDateTimeEntriesIncInput = {
+  /** Rate per unit that was effective when this time entry was created */
+  effectiveRatePerUnit?: InputMaybe<Scalars['numeric']['input']>;
   /** Hourly rate applied when this time entry was created */
   hourlyRateUsed?: InputMaybe<Scalars['numeric']['input']>;
   timeSpentMinutes?: InputMaybe<Scalars['Int']['input']>;
+  /** 6-minute units (1 hour = 10 units) */
+  timeUnits?: InputMaybe<Scalars['Int']['input']>;
 };
 
 /** input type for inserting data into table "payroll_date_time_entries" */
 export type PayrollDateTimeEntriesInsertInput = {
   billingNotes?: InputMaybe<Scalars['String']['input']>;
+  billingUnitType?: InputMaybe<BillingUnitTypesObjRelInsertInput>;
+  billingUnitTypeId?: InputMaybe<Scalars['uuid']['input']>;
   costCenter?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  /** Rate per unit that was effective when this time entry was created */
+  effectiveRatePerUnit?: InputMaybe<Scalars['numeric']['input']>;
   /** Hourly rate applied when this time entry was created */
   hourlyRateUsed?: InputMaybe<Scalars['numeric']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   /** Whether this time should be included in client billing */
   isBillable?: InputMaybe<Scalars['Boolean']['input']>;
+  isBillableToService?: InputMaybe<Scalars['Boolean']['input']>;
   payrollDate?: InputMaybe<PayrollDatesObjRelInsertInput>;
   payrollDateId?: InputMaybe<Scalars['uuid']['input']>;
+  service?: InputMaybe<ServicesObjRelInsertInput>;
+  serviceId?: InputMaybe<Scalars['uuid']['input']>;
+  serviceNotes?: InputMaybe<Scalars['String']['input']>;
   timeSpentMinutes?: InputMaybe<Scalars['Int']['input']>;
+  /** 6-minute units (1 hour = 10 units) */
+  timeUnits?: InputMaybe<Scalars['Int']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   user?: InputMaybe<UsersObjRelInsertInput>;
   userId?: InputMaybe<Scalars['uuid']['input']>;
@@ -11187,14 +12173,21 @@ export type PayrollDateTimeEntriesInsertInput = {
 /** order by max() on columns of table "payroll_date_time_entries" */
 export type PayrollDateTimeEntriesMaxOrderBy = {
   billingNotes?: InputMaybe<OrderBy>;
+  billingUnitTypeId?: InputMaybe<OrderBy>;
   costCenter?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   description?: InputMaybe<OrderBy>;
+  /** Rate per unit that was effective when this time entry was created */
+  effectiveRatePerUnit?: InputMaybe<OrderBy>;
   /** Hourly rate applied when this time entry was created */
   hourlyRateUsed?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   payrollDateId?: InputMaybe<OrderBy>;
+  serviceId?: InputMaybe<OrderBy>;
+  serviceNotes?: InputMaybe<OrderBy>;
   timeSpentMinutes?: InputMaybe<OrderBy>;
+  /** 6-minute units (1 hour = 10 units) */
+  timeUnits?: InputMaybe<OrderBy>;
   /** Calculated internal cost (time * rate) */
   totalCost?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
@@ -11205,14 +12198,21 @@ export type PayrollDateTimeEntriesMaxOrderBy = {
 /** order by min() on columns of table "payroll_date_time_entries" */
 export type PayrollDateTimeEntriesMinOrderBy = {
   billingNotes?: InputMaybe<OrderBy>;
+  billingUnitTypeId?: InputMaybe<OrderBy>;
   costCenter?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   description?: InputMaybe<OrderBy>;
+  /** Rate per unit that was effective when this time entry was created */
+  effectiveRatePerUnit?: InputMaybe<OrderBy>;
   /** Hourly rate applied when this time entry was created */
   hourlyRateUsed?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   payrollDateId?: InputMaybe<OrderBy>;
+  serviceId?: InputMaybe<OrderBy>;
+  serviceNotes?: InputMaybe<OrderBy>;
   timeSpentMinutes?: InputMaybe<OrderBy>;
+  /** 6-minute units (1 hour = 10 units) */
+  timeUnits?: InputMaybe<OrderBy>;
   /** Calculated internal cost (time * rate) */
   totalCost?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
@@ -11230,15 +12230,23 @@ export type PayrollDateTimeEntriesOnConflict = {
 /** Ordering options when selecting data from "payroll_date_time_entries". */
 export type PayrollDateTimeEntriesOrderBy = {
   billingNotes?: InputMaybe<OrderBy>;
+  billingUnitType?: InputMaybe<BillingUnitTypesOrderBy>;
+  billingUnitTypeId?: InputMaybe<OrderBy>;
   costCenter?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   description?: InputMaybe<OrderBy>;
+  effectiveRatePerUnit?: InputMaybe<OrderBy>;
   hourlyRateUsed?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
   isBillable?: InputMaybe<OrderBy>;
+  isBillableToService?: InputMaybe<OrderBy>;
   payrollDate?: InputMaybe<PayrollDatesOrderBy>;
   payrollDateId?: InputMaybe<OrderBy>;
+  service?: InputMaybe<ServicesOrderBy>;
+  serviceId?: InputMaybe<OrderBy>;
+  serviceNotes?: InputMaybe<OrderBy>;
   timeSpentMinutes?: InputMaybe<OrderBy>;
+  timeUnits?: InputMaybe<OrderBy>;
   totalCost?: InputMaybe<OrderBy>;
   updatedAt?: InputMaybe<OrderBy>;
   user?: InputMaybe<UsersOrderBy>;
@@ -11256,11 +12264,15 @@ export type PayrollDateTimeEntriesSelectColumn =
   /** column name */
   | 'billingNotes'
   /** column name */
+  | 'billingUnitTypeId'
+  /** column name */
   | 'costCenter'
   /** column name */
   | 'createdAt'
   /** column name */
   | 'description'
+  /** column name */
+  | 'effectiveRatePerUnit'
   /** column name */
   | 'hourlyRateUsed'
   /** column name */
@@ -11268,9 +12280,17 @@ export type PayrollDateTimeEntriesSelectColumn =
   /** column name */
   | 'isBillable'
   /** column name */
+  | 'isBillableToService'
+  /** column name */
   | 'payrollDateId'
   /** column name */
+  | 'serviceId'
+  /** column name */
+  | 'serviceNotes'
+  /** column name */
   | 'timeSpentMinutes'
+  /** column name */
+  | 'timeUnits'
   /** column name */
   | 'totalCost'
   /** column name */
@@ -11285,27 +12305,39 @@ export type PayrollDateTimeEntriesSelectColumn =
 export type PayrollDateTimeEntriesSelectColumnPayrollDateTimeEntriesAggregateBoolExpBool_AndArgumentsColumns =
   /** column name */
   | 'isBillable'
+  /** column name */
+  | 'isBillableToService'
   | '%future added value';
 
 /** select "payrollDateTimeEntriesAggregateBoolExpBool_orArgumentsColumns" columns of table "payroll_date_time_entries" */
 export type PayrollDateTimeEntriesSelectColumnPayrollDateTimeEntriesAggregateBoolExpBool_OrArgumentsColumns =
   /** column name */
   | 'isBillable'
+  /** column name */
+  | 'isBillableToService'
   | '%future added value';
 
 /** input type for updating data in table "payroll_date_time_entries" */
 export type PayrollDateTimeEntriesSetInput = {
   billingNotes?: InputMaybe<Scalars['String']['input']>;
+  billingUnitTypeId?: InputMaybe<Scalars['uuid']['input']>;
   costCenter?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  /** Rate per unit that was effective when this time entry was created */
+  effectiveRatePerUnit?: InputMaybe<Scalars['numeric']['input']>;
   /** Hourly rate applied when this time entry was created */
   hourlyRateUsed?: InputMaybe<Scalars['numeric']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   /** Whether this time should be included in client billing */
   isBillable?: InputMaybe<Scalars['Boolean']['input']>;
+  isBillableToService?: InputMaybe<Scalars['Boolean']['input']>;
   payrollDateId?: InputMaybe<Scalars['uuid']['input']>;
+  serviceId?: InputMaybe<Scalars['uuid']['input']>;
+  serviceNotes?: InputMaybe<Scalars['String']['input']>;
   timeSpentMinutes?: InputMaybe<Scalars['Int']['input']>;
+  /** 6-minute units (1 hour = 10 units) */
+  timeUnits?: InputMaybe<Scalars['Int']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   userId?: InputMaybe<Scalars['uuid']['input']>;
   workDate?: InputMaybe<Scalars['date']['input']>;
@@ -11313,27 +12345,39 @@ export type PayrollDateTimeEntriesSetInput = {
 
 /** order by stddev() on columns of table "payroll_date_time_entries" */
 export type PayrollDateTimeEntriesStddevOrderBy = {
+  /** Rate per unit that was effective when this time entry was created */
+  effectiveRatePerUnit?: InputMaybe<OrderBy>;
   /** Hourly rate applied when this time entry was created */
   hourlyRateUsed?: InputMaybe<OrderBy>;
   timeSpentMinutes?: InputMaybe<OrderBy>;
+  /** 6-minute units (1 hour = 10 units) */
+  timeUnits?: InputMaybe<OrderBy>;
   /** Calculated internal cost (time * rate) */
   totalCost?: InputMaybe<OrderBy>;
 };
 
 /** order by stddevPop() on columns of table "payroll_date_time_entries" */
 export type PayrollDateTimeEntriesStddevPopOrderBy = {
+  /** Rate per unit that was effective when this time entry was created */
+  effectiveRatePerUnit?: InputMaybe<OrderBy>;
   /** Hourly rate applied when this time entry was created */
   hourlyRateUsed?: InputMaybe<OrderBy>;
   timeSpentMinutes?: InputMaybe<OrderBy>;
+  /** 6-minute units (1 hour = 10 units) */
+  timeUnits?: InputMaybe<OrderBy>;
   /** Calculated internal cost (time * rate) */
   totalCost?: InputMaybe<OrderBy>;
 };
 
 /** order by stddevSamp() on columns of table "payroll_date_time_entries" */
 export type PayrollDateTimeEntriesStddevSampOrderBy = {
+  /** Rate per unit that was effective when this time entry was created */
+  effectiveRatePerUnit?: InputMaybe<OrderBy>;
   /** Hourly rate applied when this time entry was created */
   hourlyRateUsed?: InputMaybe<OrderBy>;
   timeSpentMinutes?: InputMaybe<OrderBy>;
+  /** 6-minute units (1 hour = 10 units) */
+  timeUnits?: InputMaybe<OrderBy>;
   /** Calculated internal cost (time * rate) */
   totalCost?: InputMaybe<OrderBy>;
 };
@@ -11349,16 +12393,24 @@ export type PayrollDateTimeEntriesStreamCursorInput = {
 /** Initial value of the column from where the streaming should start */
 export type PayrollDateTimeEntriesStreamCursorValueInput = {
   billingNotes?: InputMaybe<Scalars['String']['input']>;
+  billingUnitTypeId?: InputMaybe<Scalars['uuid']['input']>;
   costCenter?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  /** Rate per unit that was effective when this time entry was created */
+  effectiveRatePerUnit?: InputMaybe<Scalars['numeric']['input']>;
   /** Hourly rate applied when this time entry was created */
   hourlyRateUsed?: InputMaybe<Scalars['numeric']['input']>;
   id?: InputMaybe<Scalars['uuid']['input']>;
   /** Whether this time should be included in client billing */
   isBillable?: InputMaybe<Scalars['Boolean']['input']>;
+  isBillableToService?: InputMaybe<Scalars['Boolean']['input']>;
   payrollDateId?: InputMaybe<Scalars['uuid']['input']>;
+  serviceId?: InputMaybe<Scalars['uuid']['input']>;
+  serviceNotes?: InputMaybe<Scalars['String']['input']>;
   timeSpentMinutes?: InputMaybe<Scalars['Int']['input']>;
+  /** 6-minute units (1 hour = 10 units) */
+  timeUnits?: InputMaybe<Scalars['Int']['input']>;
   /** Calculated internal cost (time * rate) */
   totalCost?: InputMaybe<Scalars['numeric']['input']>;
   updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
@@ -11368,9 +12420,13 @@ export type PayrollDateTimeEntriesStreamCursorValueInput = {
 
 /** order by sum() on columns of table "payroll_date_time_entries" */
 export type PayrollDateTimeEntriesSumOrderBy = {
+  /** Rate per unit that was effective when this time entry was created */
+  effectiveRatePerUnit?: InputMaybe<OrderBy>;
   /** Hourly rate applied when this time entry was created */
   hourlyRateUsed?: InputMaybe<OrderBy>;
   timeSpentMinutes?: InputMaybe<OrderBy>;
+  /** 6-minute units (1 hour = 10 units) */
+  timeUnits?: InputMaybe<OrderBy>;
   /** Calculated internal cost (time * rate) */
   totalCost?: InputMaybe<OrderBy>;
 };
@@ -11380,11 +12436,15 @@ export type PayrollDateTimeEntriesUpdateColumn =
   /** column name */
   | 'billingNotes'
   /** column name */
+  | 'billingUnitTypeId'
+  /** column name */
   | 'costCenter'
   /** column name */
   | 'createdAt'
   /** column name */
   | 'description'
+  /** column name */
+  | 'effectiveRatePerUnit'
   /** column name */
   | 'hourlyRateUsed'
   /** column name */
@@ -11392,9 +12452,17 @@ export type PayrollDateTimeEntriesUpdateColumn =
   /** column name */
   | 'isBillable'
   /** column name */
+  | 'isBillableToService'
+  /** column name */
   | 'payrollDateId'
   /** column name */
+  | 'serviceId'
+  /** column name */
+  | 'serviceNotes'
+  /** column name */
   | 'timeSpentMinutes'
+  /** column name */
+  | 'timeUnits'
   /** column name */
   | 'updatedAt'
   /** column name */
@@ -11414,27 +12482,39 @@ export type PayrollDateTimeEntriesUpdates = {
 
 /** order by varPop() on columns of table "payroll_date_time_entries" */
 export type PayrollDateTimeEntriesVarPopOrderBy = {
+  /** Rate per unit that was effective when this time entry was created */
+  effectiveRatePerUnit?: InputMaybe<OrderBy>;
   /** Hourly rate applied when this time entry was created */
   hourlyRateUsed?: InputMaybe<OrderBy>;
   timeSpentMinutes?: InputMaybe<OrderBy>;
+  /** 6-minute units (1 hour = 10 units) */
+  timeUnits?: InputMaybe<OrderBy>;
   /** Calculated internal cost (time * rate) */
   totalCost?: InputMaybe<OrderBy>;
 };
 
 /** order by varSamp() on columns of table "payroll_date_time_entries" */
 export type PayrollDateTimeEntriesVarSampOrderBy = {
+  /** Rate per unit that was effective when this time entry was created */
+  effectiveRatePerUnit?: InputMaybe<OrderBy>;
   /** Hourly rate applied when this time entry was created */
   hourlyRateUsed?: InputMaybe<OrderBy>;
   timeSpentMinutes?: InputMaybe<OrderBy>;
+  /** 6-minute units (1 hour = 10 units) */
+  timeUnits?: InputMaybe<OrderBy>;
   /** Calculated internal cost (time * rate) */
   totalCost?: InputMaybe<OrderBy>;
 };
 
 /** order by variance() on columns of table "payroll_date_time_entries" */
 export type PayrollDateTimeEntriesVarianceOrderBy = {
+  /** Rate per unit that was effective when this time entry was created */
+  effectiveRatePerUnit?: InputMaybe<OrderBy>;
   /** Hourly rate applied when this time entry was created */
   hourlyRateUsed?: InputMaybe<OrderBy>;
   timeSpentMinutes?: InputMaybe<OrderBy>;
+  /** 6-minute units (1 hour = 10 units) */
+  timeUnits?: InputMaybe<OrderBy>;
   /** Calculated internal cost (time * rate) */
   totalCost?: InputMaybe<OrderBy>;
 };
@@ -11637,6 +12717,7 @@ export type PayrollDatesBoolExp = {
   billingItemsAggregate?: InputMaybe<BillingItemsAggregateBoolExp>;
   completedAt?: InputMaybe<TimestamptzComparisonExp>;
   completedBy?: InputMaybe<UuidComparisonExp>;
+  completionContext?: InputMaybe<PayrollDateCompletionContextBoolExp>;
   completionNotes?: InputMaybe<StringComparisonExp>;
   createdAt?: InputMaybe<TimestamptzComparisonExp>;
   id?: InputMaybe<UuidComparisonExp>;
@@ -11683,6 +12764,7 @@ export type PayrollDatesInsertInput = {
   completedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   /** User who marked the payroll date as completed */
   completedBy?: InputMaybe<Scalars['uuid']['input']>;
+  completionContext?: InputMaybe<PayrollDateCompletionContextObjRelInsertInput>;
   /** Additional notes about the completion of this payroll date */
   completionNotes?: InputMaybe<Scalars['String']['input']>;
   /** Timestamp when the date record was created */
@@ -11792,6 +12874,7 @@ export type PayrollDatesOrderBy = {
   billingItemsAggregate?: InputMaybe<BillingItemsAggregateOrderBy>;
   completedAt?: InputMaybe<OrderBy>;
   completedBy?: InputMaybe<OrderBy>;
+  completionContext?: InputMaybe<PayrollDateCompletionContextOrderBy>;
   completionNotes?: InputMaybe<OrderBy>;
   createdAt?: InputMaybe<OrderBy>;
   id?: InputMaybe<OrderBy>;
@@ -15468,6 +16551,360 @@ export type PositionAdminDefaultsUpdates = {
   where: PositionAdminDefaultsBoolExp;
 };
 
+export type QueryExecutionsAggregateBoolExp = {
+  bool_and?: InputMaybe<QueryExecutionsAggregateBoolExpBool_And>;
+  bool_or?: InputMaybe<QueryExecutionsAggregateBoolExpBool_Or>;
+  count?: InputMaybe<QueryExecutionsAggregateBoolExpCount>;
+};
+
+/** order by aggregate values of table "query_executions" */
+export type QueryExecutionsAggregateOrderBy = {
+  avg?: InputMaybe<QueryExecutionsAvgOrderBy>;
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<QueryExecutionsMaxOrderBy>;
+  min?: InputMaybe<QueryExecutionsMinOrderBy>;
+  stddev?: InputMaybe<QueryExecutionsStddevOrderBy>;
+  stddevPop?: InputMaybe<QueryExecutionsStddevPopOrderBy>;
+  stddevSamp?: InputMaybe<QueryExecutionsStddevSampOrderBy>;
+  sum?: InputMaybe<QueryExecutionsSumOrderBy>;
+  varPop?: InputMaybe<QueryExecutionsVarPopOrderBy>;
+  varSamp?: InputMaybe<QueryExecutionsVarSampOrderBy>;
+  variance?: InputMaybe<QueryExecutionsVarianceOrderBy>;
+};
+
+/** append existing jsonb value of filtered columns with new jsonb value */
+export type QueryExecutionsAppendInput = {
+  parameters?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** input type for inserting array relation for remote table "query_executions" */
+export type QueryExecutionsArrRelInsertInput = {
+  data: Array<QueryExecutionsInsertInput>;
+  /** upsert condition */
+  onConflict?: InputMaybe<QueryExecutionsOnConflict>;
+};
+
+/** order by avg() on columns of table "query_executions" */
+export type QueryExecutionsAvgOrderBy = {
+  /** Query execution time in milliseconds for performance monitoring */
+  executionTime?: InputMaybe<OrderBy>;
+  resultCount?: InputMaybe<OrderBy>;
+};
+
+/** Boolean expression to filter rows from the table "query_executions". All fields are combined with a logical 'AND'. */
+export type QueryExecutionsBoolExp = {
+  _and?: InputMaybe<Array<QueryExecutionsBoolExp>>;
+  _not?: InputMaybe<QueryExecutionsBoolExp>;
+  _or?: InputMaybe<Array<QueryExecutionsBoolExp>>;
+  customQueryTemplate?: InputMaybe<CustomQueryTemplatesBoolExp>;
+  errorMessage?: InputMaybe<StringComparisonExp>;
+  executedAt?: InputMaybe<TimestamptzComparisonExp>;
+  executionTime?: InputMaybe<IntComparisonExp>;
+  fromCache?: InputMaybe<BooleanComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  parameters?: InputMaybe<JsonbComparisonExp>;
+  queryText?: InputMaybe<StringComparisonExp>;
+  queryType?: InputMaybe<StringComparisonExp>;
+  resultCount?: InputMaybe<IntComparisonExp>;
+  status?: InputMaybe<StringComparisonExp>;
+  templateId?: InputMaybe<UuidComparisonExp>;
+  user?: InputMaybe<UsersBoolExp>;
+  userId?: InputMaybe<UuidComparisonExp>;
+};
+
+/** unique or primary key constraints on table "query_executions" */
+export type QueryExecutionsConstraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'query_executions_pkey'
+  | '%future added value';
+
+/** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+export type QueryExecutionsDeleteAtPathInput = {
+  parameters?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+export type QueryExecutionsDeleteElemInput = {
+  parameters?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** delete key/value pair or string element. key/value pairs are matched based on their key value */
+export type QueryExecutionsDeleteKeyInput = {
+  parameters?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** input type for incrementing numeric columns in table "query_executions" */
+export type QueryExecutionsIncInput = {
+  /** Query execution time in milliseconds for performance monitoring */
+  executionTime?: InputMaybe<Scalars['Int']['input']>;
+  resultCount?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** input type for inserting data into table "query_executions" */
+export type QueryExecutionsInsertInput = {
+  customQueryTemplate?: InputMaybe<CustomQueryTemplatesObjRelInsertInput>;
+  errorMessage?: InputMaybe<Scalars['String']['input']>;
+  executedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Query execution time in milliseconds for performance monitoring */
+  executionTime?: InputMaybe<Scalars['Int']['input']>;
+  /** Whether the result was served from cache rather than executed fresh */
+  fromCache?: InputMaybe<Scalars['Boolean']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  parameters?: InputMaybe<Scalars['jsonb']['input']>;
+  queryText?: InputMaybe<Scalars['String']['input']>;
+  queryType?: InputMaybe<Scalars['String']['input']>;
+  resultCount?: InputMaybe<Scalars['Int']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
+  templateId?: InputMaybe<Scalars['uuid']['input']>;
+  user?: InputMaybe<UsersObjRelInsertInput>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** order by max() on columns of table "query_executions" */
+export type QueryExecutionsMaxOrderBy = {
+  errorMessage?: InputMaybe<OrderBy>;
+  executedAt?: InputMaybe<OrderBy>;
+  /** Query execution time in milliseconds for performance monitoring */
+  executionTime?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  queryText?: InputMaybe<OrderBy>;
+  queryType?: InputMaybe<OrderBy>;
+  resultCount?: InputMaybe<OrderBy>;
+  status?: InputMaybe<OrderBy>;
+  templateId?: InputMaybe<OrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** order by min() on columns of table "query_executions" */
+export type QueryExecutionsMinOrderBy = {
+  errorMessage?: InputMaybe<OrderBy>;
+  executedAt?: InputMaybe<OrderBy>;
+  /** Query execution time in milliseconds for performance monitoring */
+  executionTime?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  queryText?: InputMaybe<OrderBy>;
+  queryType?: InputMaybe<OrderBy>;
+  resultCount?: InputMaybe<OrderBy>;
+  status?: InputMaybe<OrderBy>;
+  templateId?: InputMaybe<OrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** on_conflict condition type for table "query_executions" */
+export type QueryExecutionsOnConflict = {
+  constraint: QueryExecutionsConstraint;
+  updateColumns?: Array<QueryExecutionsUpdateColumn>;
+  where?: InputMaybe<QueryExecutionsBoolExp>;
+};
+
+/** Ordering options when selecting data from "query_executions". */
+export type QueryExecutionsOrderBy = {
+  customQueryTemplate?: InputMaybe<CustomQueryTemplatesOrderBy>;
+  errorMessage?: InputMaybe<OrderBy>;
+  executedAt?: InputMaybe<OrderBy>;
+  executionTime?: InputMaybe<OrderBy>;
+  fromCache?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  parameters?: InputMaybe<OrderBy>;
+  queryText?: InputMaybe<OrderBy>;
+  queryType?: InputMaybe<OrderBy>;
+  resultCount?: InputMaybe<OrderBy>;
+  status?: InputMaybe<OrderBy>;
+  templateId?: InputMaybe<OrderBy>;
+  user?: InputMaybe<UsersOrderBy>;
+  userId?: InputMaybe<OrderBy>;
+};
+
+/** primary key columns input for table: query_executions */
+export type QueryExecutionsPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** prepend existing jsonb value of filtered columns with new jsonb value */
+export type QueryExecutionsPrependInput = {
+  parameters?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** select columns of table "query_executions" */
+export type QueryExecutionsSelectColumn =
+  /** column name */
+  | 'errorMessage'
+  /** column name */
+  | 'executedAt'
+  /** column name */
+  | 'executionTime'
+  /** column name */
+  | 'fromCache'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'parameters'
+  /** column name */
+  | 'queryText'
+  /** column name */
+  | 'queryType'
+  /** column name */
+  | 'resultCount'
+  /** column name */
+  | 'status'
+  /** column name */
+  | 'templateId'
+  /** column name */
+  | 'userId'
+  | '%future added value';
+
+/** select "queryExecutionsAggregateBoolExpBool_andArgumentsColumns" columns of table "query_executions" */
+export type QueryExecutionsSelectColumnQueryExecutionsAggregateBoolExpBool_AndArgumentsColumns =
+  /** column name */
+  | 'fromCache'
+  | '%future added value';
+
+/** select "queryExecutionsAggregateBoolExpBool_orArgumentsColumns" columns of table "query_executions" */
+export type QueryExecutionsSelectColumnQueryExecutionsAggregateBoolExpBool_OrArgumentsColumns =
+  /** column name */
+  | 'fromCache'
+  | '%future added value';
+
+/** input type for updating data in table "query_executions" */
+export type QueryExecutionsSetInput = {
+  errorMessage?: InputMaybe<Scalars['String']['input']>;
+  executedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Query execution time in milliseconds for performance monitoring */
+  executionTime?: InputMaybe<Scalars['Int']['input']>;
+  /** Whether the result was served from cache rather than executed fresh */
+  fromCache?: InputMaybe<Scalars['Boolean']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  parameters?: InputMaybe<Scalars['jsonb']['input']>;
+  queryText?: InputMaybe<Scalars['String']['input']>;
+  queryType?: InputMaybe<Scalars['String']['input']>;
+  resultCount?: InputMaybe<Scalars['Int']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
+  templateId?: InputMaybe<Scalars['uuid']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** order by stddev() on columns of table "query_executions" */
+export type QueryExecutionsStddevOrderBy = {
+  /** Query execution time in milliseconds for performance monitoring */
+  executionTime?: InputMaybe<OrderBy>;
+  resultCount?: InputMaybe<OrderBy>;
+};
+
+/** order by stddevPop() on columns of table "query_executions" */
+export type QueryExecutionsStddevPopOrderBy = {
+  /** Query execution time in milliseconds for performance monitoring */
+  executionTime?: InputMaybe<OrderBy>;
+  resultCount?: InputMaybe<OrderBy>;
+};
+
+/** order by stddevSamp() on columns of table "query_executions" */
+export type QueryExecutionsStddevSampOrderBy = {
+  /** Query execution time in milliseconds for performance monitoring */
+  executionTime?: InputMaybe<OrderBy>;
+  resultCount?: InputMaybe<OrderBy>;
+};
+
+/** Streaming cursor of the table "query_executions" */
+export type QueryExecutionsStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: QueryExecutionsStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type QueryExecutionsStreamCursorValueInput = {
+  errorMessage?: InputMaybe<Scalars['String']['input']>;
+  executedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  /** Query execution time in milliseconds for performance monitoring */
+  executionTime?: InputMaybe<Scalars['Int']['input']>;
+  /** Whether the result was served from cache rather than executed fresh */
+  fromCache?: InputMaybe<Scalars['Boolean']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  parameters?: InputMaybe<Scalars['jsonb']['input']>;
+  queryText?: InputMaybe<Scalars['String']['input']>;
+  queryType?: InputMaybe<Scalars['String']['input']>;
+  resultCount?: InputMaybe<Scalars['Int']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
+  templateId?: InputMaybe<Scalars['uuid']['input']>;
+  userId?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** order by sum() on columns of table "query_executions" */
+export type QueryExecutionsSumOrderBy = {
+  /** Query execution time in milliseconds for performance monitoring */
+  executionTime?: InputMaybe<OrderBy>;
+  resultCount?: InputMaybe<OrderBy>;
+};
+
+/** update columns of table "query_executions" */
+export type QueryExecutionsUpdateColumn =
+  /** column name */
+  | 'errorMessage'
+  /** column name */
+  | 'executedAt'
+  /** column name */
+  | 'executionTime'
+  /** column name */
+  | 'fromCache'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'parameters'
+  /** column name */
+  | 'queryText'
+  /** column name */
+  | 'queryType'
+  /** column name */
+  | 'resultCount'
+  /** column name */
+  | 'status'
+  /** column name */
+  | 'templateId'
+  /** column name */
+  | 'userId'
+  | '%future added value';
+
+export type QueryExecutionsUpdates = {
+  /** append existing jsonb value of filtered columns with new jsonb value */
+  _append?: InputMaybe<QueryExecutionsAppendInput>;
+  /** delete the field or element with specified path (for JSON arrays, negative integers count from the end) */
+  _deleteAtPath?: InputMaybe<QueryExecutionsDeleteAtPathInput>;
+  /** delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array */
+  _deleteElem?: InputMaybe<QueryExecutionsDeleteElemInput>;
+  /** delete key/value pair or string element. key/value pairs are matched based on their key value */
+  _deleteKey?: InputMaybe<QueryExecutionsDeleteKeyInput>;
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<QueryExecutionsIncInput>;
+  /** prepend existing jsonb value of filtered columns with new jsonb value */
+  _prepend?: InputMaybe<QueryExecutionsPrependInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<QueryExecutionsSetInput>;
+  /** filter the rows which have to be updated */
+  where: QueryExecutionsBoolExp;
+};
+
+/** order by varPop() on columns of table "query_executions" */
+export type QueryExecutionsVarPopOrderBy = {
+  /** Query execution time in milliseconds for performance monitoring */
+  executionTime?: InputMaybe<OrderBy>;
+  resultCount?: InputMaybe<OrderBy>;
+};
+
+/** order by varSamp() on columns of table "query_executions" */
+export type QueryExecutionsVarSampOrderBy = {
+  /** Query execution time in milliseconds for performance monitoring */
+  executionTime?: InputMaybe<OrderBy>;
+  resultCount?: InputMaybe<OrderBy>;
+};
+
+/** order by variance() on columns of table "query_executions" */
+export type QueryExecutionsVarianceOrderBy = {
+  /** Query execution time in milliseconds for performance monitoring */
+  executionTime?: InputMaybe<OrderBy>;
+  resultCount?: InputMaybe<OrderBy>;
+};
+
 /** Boolean expression to filter rows from the table "quote_analytics". All fields are combined with a logical 'AND'. */
 export type QuoteAnalyticsBoolExp = {
   _and?: InputMaybe<Array<QuoteAnalyticsBoolExp>>;
@@ -17986,6 +19423,284 @@ export type SeniorityLevelTypeComparisonExp = {
   _nin?: InputMaybe<Array<Scalars['seniority_level_type']['input']>>;
 };
 
+export type ServicePositionRatesAggregateBoolExp = {
+  count?: InputMaybe<ServicePositionRatesAggregateBoolExpCount>;
+};
+
+/** order by aggregate values of table "service_position_rates" */
+export type ServicePositionRatesAggregateOrderBy = {
+  avg?: InputMaybe<ServicePositionRatesAvgOrderBy>;
+  count?: InputMaybe<OrderBy>;
+  max?: InputMaybe<ServicePositionRatesMaxOrderBy>;
+  min?: InputMaybe<ServicePositionRatesMinOrderBy>;
+  stddev?: InputMaybe<ServicePositionRatesStddevOrderBy>;
+  stddevPop?: InputMaybe<ServicePositionRatesStddevPopOrderBy>;
+  stddevSamp?: InputMaybe<ServicePositionRatesStddevSampOrderBy>;
+  sum?: InputMaybe<ServicePositionRatesSumOrderBy>;
+  varPop?: InputMaybe<ServicePositionRatesVarPopOrderBy>;
+  varSamp?: InputMaybe<ServicePositionRatesVarSampOrderBy>;
+  variance?: InputMaybe<ServicePositionRatesVarianceOrderBy>;
+};
+
+/** input type for inserting array relation for remote table "service_position_rates" */
+export type ServicePositionRatesArrRelInsertInput = {
+  data: Array<ServicePositionRatesInsertInput>;
+  /** upsert condition */
+  onConflict?: InputMaybe<ServicePositionRatesOnConflict>;
+};
+
+/** order by avg() on columns of table "service_position_rates" */
+export type ServicePositionRatesAvgOrderBy = {
+  /** Rate per unit of the services billing unit type */
+  ratePerUnit?: InputMaybe<OrderBy>;
+};
+
+/** Boolean expression to filter rows from the table "service_position_rates". All fields are combined with a logical 'AND'. */
+export type ServicePositionRatesBoolExp = {
+  _and?: InputMaybe<Array<ServicePositionRatesBoolExp>>;
+  _not?: InputMaybe<ServicePositionRatesBoolExp>;
+  _or?: InputMaybe<Array<ServicePositionRatesBoolExp>>;
+  createdAt?: InputMaybe<TimestamptzComparisonExp>;
+  createdBy?: InputMaybe<UuidComparisonExp>;
+  createdByUser?: InputMaybe<UsersBoolExp>;
+  effectiveFrom?: InputMaybe<DateComparisonExp>;
+  effectiveTo?: InputMaybe<DateComparisonExp>;
+  id?: InputMaybe<UuidComparisonExp>;
+  position?: InputMaybe<UserPositionComparisonExp>;
+  ratePerUnit?: InputMaybe<NumericComparisonExp>;
+  service?: InputMaybe<ServicesBoolExp>;
+  serviceId?: InputMaybe<UuidComparisonExp>;
+  updatedAt?: InputMaybe<TimestamptzComparisonExp>;
+  updatedBy?: InputMaybe<UuidComparisonExp>;
+  updatedByUser?: InputMaybe<UsersBoolExp>;
+};
+
+/** unique or primary key constraints on table "service_position_rates" */
+export type ServicePositionRatesConstraint =
+  /** unique or primary key constraint on columns "id" */
+  | 'service_position_rates_pkey'
+  | '%future added value';
+
+/** input type for incrementing numeric columns in table "service_position_rates" */
+export type ServicePositionRatesIncInput = {
+  /** Rate per unit of the services billing unit type */
+  ratePerUnit?: InputMaybe<Scalars['numeric']['input']>;
+};
+
+/** input type for inserting data into table "service_position_rates" */
+export type ServicePositionRatesInsertInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  createdByUser?: InputMaybe<UsersObjRelInsertInput>;
+  effectiveFrom?: InputMaybe<Scalars['date']['input']>;
+  effectiveTo?: InputMaybe<Scalars['date']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  position?: InputMaybe<Scalars['user_position']['input']>;
+  /** Rate per unit of the services billing unit type */
+  ratePerUnit?: InputMaybe<Scalars['numeric']['input']>;
+  service?: InputMaybe<ServicesObjRelInsertInput>;
+  serviceId?: InputMaybe<Scalars['uuid']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+  updatedByUser?: InputMaybe<UsersObjRelInsertInput>;
+};
+
+/** order by max() on columns of table "service_position_rates" */
+export type ServicePositionRatesMaxOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
+  createdBy?: InputMaybe<OrderBy>;
+  effectiveFrom?: InputMaybe<OrderBy>;
+  effectiveTo?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  position?: InputMaybe<OrderBy>;
+  /** Rate per unit of the services billing unit type */
+  ratePerUnit?: InputMaybe<OrderBy>;
+  serviceId?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  updatedBy?: InputMaybe<OrderBy>;
+};
+
+/** order by min() on columns of table "service_position_rates" */
+export type ServicePositionRatesMinOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
+  createdBy?: InputMaybe<OrderBy>;
+  effectiveFrom?: InputMaybe<OrderBy>;
+  effectiveTo?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  position?: InputMaybe<OrderBy>;
+  /** Rate per unit of the services billing unit type */
+  ratePerUnit?: InputMaybe<OrderBy>;
+  serviceId?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  updatedBy?: InputMaybe<OrderBy>;
+};
+
+/** on_conflict condition type for table "service_position_rates" */
+export type ServicePositionRatesOnConflict = {
+  constraint: ServicePositionRatesConstraint;
+  updateColumns?: Array<ServicePositionRatesUpdateColumn>;
+  where?: InputMaybe<ServicePositionRatesBoolExp>;
+};
+
+/** Ordering options when selecting data from "service_position_rates". */
+export type ServicePositionRatesOrderBy = {
+  createdAt?: InputMaybe<OrderBy>;
+  createdBy?: InputMaybe<OrderBy>;
+  createdByUser?: InputMaybe<UsersOrderBy>;
+  effectiveFrom?: InputMaybe<OrderBy>;
+  effectiveTo?: InputMaybe<OrderBy>;
+  id?: InputMaybe<OrderBy>;
+  position?: InputMaybe<OrderBy>;
+  ratePerUnit?: InputMaybe<OrderBy>;
+  service?: InputMaybe<ServicesOrderBy>;
+  serviceId?: InputMaybe<OrderBy>;
+  updatedAt?: InputMaybe<OrderBy>;
+  updatedBy?: InputMaybe<OrderBy>;
+  updatedByUser?: InputMaybe<UsersOrderBy>;
+};
+
+/** primary key columns input for table: service_position_rates */
+export type ServicePositionRatesPkColumnsInput = {
+  id: Scalars['uuid']['input'];
+};
+
+/** select columns of table "service_position_rates" */
+export type ServicePositionRatesSelectColumn =
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'createdBy'
+  /** column name */
+  | 'effectiveFrom'
+  /** column name */
+  | 'effectiveTo'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'position'
+  /** column name */
+  | 'ratePerUnit'
+  /** column name */
+  | 'serviceId'
+  /** column name */
+  | 'updatedAt'
+  /** column name */
+  | 'updatedBy'
+  | '%future added value';
+
+/** input type for updating data in table "service_position_rates" */
+export type ServicePositionRatesSetInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  effectiveFrom?: InputMaybe<Scalars['date']['input']>;
+  effectiveTo?: InputMaybe<Scalars['date']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  position?: InputMaybe<Scalars['user_position']['input']>;
+  /** Rate per unit of the services billing unit type */
+  ratePerUnit?: InputMaybe<Scalars['numeric']['input']>;
+  serviceId?: InputMaybe<Scalars['uuid']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** order by stddev() on columns of table "service_position_rates" */
+export type ServicePositionRatesStddevOrderBy = {
+  /** Rate per unit of the services billing unit type */
+  ratePerUnit?: InputMaybe<OrderBy>;
+};
+
+/** order by stddevPop() on columns of table "service_position_rates" */
+export type ServicePositionRatesStddevPopOrderBy = {
+  /** Rate per unit of the services billing unit type */
+  ratePerUnit?: InputMaybe<OrderBy>;
+};
+
+/** order by stddevSamp() on columns of table "service_position_rates" */
+export type ServicePositionRatesStddevSampOrderBy = {
+  /** Rate per unit of the services billing unit type */
+  ratePerUnit?: InputMaybe<OrderBy>;
+};
+
+/** Streaming cursor of the table "service_position_rates" */
+export type ServicePositionRatesStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: ServicePositionRatesStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type ServicePositionRatesStreamCursorValueInput = {
+  createdAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  createdBy?: InputMaybe<Scalars['uuid']['input']>;
+  effectiveFrom?: InputMaybe<Scalars['date']['input']>;
+  effectiveTo?: InputMaybe<Scalars['date']['input']>;
+  id?: InputMaybe<Scalars['uuid']['input']>;
+  position?: InputMaybe<Scalars['user_position']['input']>;
+  /** Rate per unit of the services billing unit type */
+  ratePerUnit?: InputMaybe<Scalars['numeric']['input']>;
+  serviceId?: InputMaybe<Scalars['uuid']['input']>;
+  updatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
+  updatedBy?: InputMaybe<Scalars['uuid']['input']>;
+};
+
+/** order by sum() on columns of table "service_position_rates" */
+export type ServicePositionRatesSumOrderBy = {
+  /** Rate per unit of the services billing unit type */
+  ratePerUnit?: InputMaybe<OrderBy>;
+};
+
+/** update columns of table "service_position_rates" */
+export type ServicePositionRatesUpdateColumn =
+  /** column name */
+  | 'createdAt'
+  /** column name */
+  | 'createdBy'
+  /** column name */
+  | 'effectiveFrom'
+  /** column name */
+  | 'effectiveTo'
+  /** column name */
+  | 'id'
+  /** column name */
+  | 'position'
+  /** column name */
+  | 'ratePerUnit'
+  /** column name */
+  | 'serviceId'
+  /** column name */
+  | 'updatedAt'
+  /** column name */
+  | 'updatedBy'
+  | '%future added value';
+
+export type ServicePositionRatesUpdates = {
+  /** increments the numeric columns with given value of the filtered values */
+  _inc?: InputMaybe<ServicePositionRatesIncInput>;
+  /** sets the columns of the filtered rows to the given values */
+  _set?: InputMaybe<ServicePositionRatesSetInput>;
+  /** filter the rows which have to be updated */
+  where: ServicePositionRatesBoolExp;
+};
+
+/** order by varPop() on columns of table "service_position_rates" */
+export type ServicePositionRatesVarPopOrderBy = {
+  /** Rate per unit of the services billing unit type */
+  ratePerUnit?: InputMaybe<OrderBy>;
+};
+
+/** order by varSamp() on columns of table "service_position_rates" */
+export type ServicePositionRatesVarSampOrderBy = {
+  /** Rate per unit of the services billing unit type */
+  ratePerUnit?: InputMaybe<OrderBy>;
+};
+
+/** order by variance() on columns of table "service_position_rates" */
+export type ServicePositionRatesVarianceOrderBy = {
+  /** Rate per unit of the services billing unit type */
+  ratePerUnit?: InputMaybe<OrderBy>;
+};
+
 export type ServicePricingRulesAggregateBoolExp = {
   bool_and?: InputMaybe<ServicePricingRulesAggregateBoolExpBool_And>;
   bool_or?: InputMaybe<ServicePricingRulesAggregateBoolExpBool_Or>;
@@ -18806,6 +20521,8 @@ export type ServicesBoolExp = {
   billingItemsAggregate?: InputMaybe<BillingItemsAggregateBoolExp>;
   billingTier?: InputMaybe<BillingTierLevelComparisonExp>;
   billingUnit?: InputMaybe<StringComparisonExp>;
+  billingUnitType?: InputMaybe<BillingUnitTypesBoolExp>;
+  billingUnitTypeId?: InputMaybe<UuidComparisonExp>;
   category?: InputMaybe<StringComparisonExp>;
   chargeBasis?: InputMaybe<ChargeBasisTypeComparisonExp>;
   clientAgreements?: InputMaybe<ClientServiceAgreementsBoolExp>;
@@ -18825,6 +20542,8 @@ export type ServicesBoolExp = {
   isTimeBased?: InputMaybe<BooleanComparisonExp>;
   metadata?: InputMaybe<JsonbComparisonExp>;
   name?: InputMaybe<StringComparisonExp>;
+  payrollDateTimeEntries?: InputMaybe<PayrollDateTimeEntriesBoolExp>;
+  payrollDateTimeEntriesAggregate?: InputMaybe<PayrollDateTimeEntriesAggregateBoolExp>;
   payrollServiceAgreementsForService?: InputMaybe<PayrollServiceAgreementsBoolExp>;
   payrollServiceAgreementsForServiceAggregate?: InputMaybe<PayrollServiceAgreementsAggregateBoolExp>;
   payrollServiceOverrides?: InputMaybe<PayrollServiceOverridesBoolExp>;
@@ -18840,6 +20559,8 @@ export type ServicesBoolExp = {
   requiresQuantityInput?: InputMaybe<BooleanComparisonExp>;
   seniorityMultipliers?: InputMaybe<JsonbComparisonExp>;
   serviceCode?: InputMaybe<StringComparisonExp>;
+  servicePositionRates?: InputMaybe<ServicePositionRatesBoolExp>;
+  servicePositionRatesAggregate?: InputMaybe<ServicePositionRatesAggregateBoolExp>;
   servicePricingRules?: InputMaybe<ServicePricingRulesBoolExp>;
   servicePricingRulesAggregate?: InputMaybe<ServicePricingRulesAggregateBoolExp>;
   serviceType?: InputMaybe<StringComparisonExp>;
@@ -18908,6 +20629,8 @@ export type ServicesInsertInput = {
   billingTier?: InputMaybe<Scalars['billing_tier_level']['input']>;
   /** How this service is billed: Per Payroll, Per Employee, Per Hour, etc. */
   billingUnit?: InputMaybe<Scalars['String']['input']>;
+  billingUnitType?: InputMaybe<BillingUnitTypesObjRelInsertInput>;
+  billingUnitTypeId?: InputMaybe<Scalars['uuid']['input']>;
   category?: InputMaybe<Scalars['String']['input']>;
   /** Determines how this service is billed (per client, per payroll, by time, etc.) */
   chargeBasis?: InputMaybe<Scalars['charge_basis_type']['input']>;
@@ -18927,6 +20650,7 @@ export type ServicesInsertInput = {
   isTimeBased?: InputMaybe<Scalars['Boolean']['input']>;
   metadata?: InputMaybe<Scalars['jsonb']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
+  payrollDateTimeEntries?: InputMaybe<PayrollDateTimeEntriesArrRelInsertInput>;
   payrollServiceAgreementsForService?: InputMaybe<PayrollServiceAgreementsArrRelInsertInput>;
   payrollServiceOverrides?: InputMaybe<PayrollServiceOverridesArrRelInsertInput>;
   payrollServiceQuantities?: InputMaybe<PayrollServiceQuantitiesArrRelInsertInput>;
@@ -18940,6 +20664,7 @@ export type ServicesInsertInput = {
   /** JSON object with multipliers for each seniority level */
   seniorityMultipliers?: InputMaybe<Scalars['jsonb']['input']>;
   serviceCode?: InputMaybe<Scalars['String']['input']>;
+  servicePositionRates?: InputMaybe<ServicePositionRatesArrRelInsertInput>;
   servicePricingRules?: InputMaybe<ServicePricingRulesArrRelInsertInput>;
   /** standard: regular service, template: reusable template, custom: client-specific */
   serviceType?: InputMaybe<Scalars['String']['input']>;
@@ -18959,6 +20684,7 @@ export type ServicesMaxOrderBy = {
   billingTier?: InputMaybe<OrderBy>;
   /** How this service is billed: Per Payroll, Per Employee, Per Hour, etc. */
   billingUnit?: InputMaybe<OrderBy>;
+  billingUnitTypeId?: InputMaybe<OrderBy>;
   category?: InputMaybe<OrderBy>;
   /** Determines how this service is billed (per client, per payroll, by time, etc.) */
   chargeBasis?: InputMaybe<OrderBy>;
@@ -18987,6 +20713,7 @@ export type ServicesMinOrderBy = {
   billingTier?: InputMaybe<OrderBy>;
   /** How this service is billed: Per Payroll, Per Employee, Per Hour, etc. */
   billingUnit?: InputMaybe<OrderBy>;
+  billingUnitTypeId?: InputMaybe<OrderBy>;
   category?: InputMaybe<OrderBy>;
   /** Determines how this service is billed (per client, per payroll, by time, etc.) */
   chargeBasis?: InputMaybe<OrderBy>;
@@ -19028,6 +20755,8 @@ export type ServicesOrderBy = {
   billingItemsAggregate?: InputMaybe<BillingItemsAggregateOrderBy>;
   billingTier?: InputMaybe<OrderBy>;
   billingUnit?: InputMaybe<OrderBy>;
+  billingUnitType?: InputMaybe<BillingUnitTypesOrderBy>;
+  billingUnitTypeId?: InputMaybe<OrderBy>;
   category?: InputMaybe<OrderBy>;
   chargeBasis?: InputMaybe<OrderBy>;
   clientAgreementsAggregate?: InputMaybe<ClientServiceAgreementsAggregateOrderBy>;
@@ -19045,6 +20774,7 @@ export type ServicesOrderBy = {
   isTimeBased?: InputMaybe<OrderBy>;
   metadata?: InputMaybe<OrderBy>;
   name?: InputMaybe<OrderBy>;
+  payrollDateTimeEntriesAggregate?: InputMaybe<PayrollDateTimeEntriesAggregateOrderBy>;
   payrollServiceAgreementsForServiceAggregate?: InputMaybe<PayrollServiceAgreementsAggregateOrderBy>;
   payrollServiceOverridesAggregate?: InputMaybe<PayrollServiceOverridesAggregateOrderBy>;
   payrollServiceQuantitiesAggregate?: InputMaybe<PayrollServiceQuantitiesAggregateOrderBy>;
@@ -19056,6 +20786,7 @@ export type ServicesOrderBy = {
   requiresQuantityInput?: InputMaybe<OrderBy>;
   seniorityMultipliers?: InputMaybe<OrderBy>;
   serviceCode?: InputMaybe<OrderBy>;
+  servicePositionRatesAggregate?: InputMaybe<ServicePositionRatesAggregateOrderBy>;
   servicePricingRulesAggregate?: InputMaybe<ServicePricingRulesAggregateOrderBy>;
   serviceType?: InputMaybe<OrderBy>;
   tierPriority?: InputMaybe<OrderBy>;
@@ -19090,6 +20821,8 @@ export type ServicesSelectColumn =
   | 'billingTier'
   /** column name */
   | 'billingUnit'
+  /** column name */
+  | 'billingUnitTypeId'
   /** column name */
   | 'category'
   /** column name */
@@ -19182,6 +20915,7 @@ export type ServicesSetInput = {
   billingTier?: InputMaybe<Scalars['billing_tier_level']['input']>;
   /** How this service is billed: Per Payroll, Per Employee, Per Hour, etc. */
   billingUnit?: InputMaybe<Scalars['String']['input']>;
+  billingUnitTypeId?: InputMaybe<Scalars['uuid']['input']>;
   category?: InputMaybe<Scalars['String']['input']>;
   /** Determines how this service is billed (per client, per payroll, by time, etc.) */
   chargeBasis?: InputMaybe<Scalars['charge_basis_type']['input']>;
@@ -19255,6 +20989,7 @@ export type ServicesStreamCursorValueInput = {
   billingTier?: InputMaybe<Scalars['billing_tier_level']['input']>;
   /** How this service is billed: Per Payroll, Per Employee, Per Hour, etc. */
   billingUnit?: InputMaybe<Scalars['String']['input']>;
+  billingUnitTypeId?: InputMaybe<Scalars['uuid']['input']>;
   category?: InputMaybe<Scalars['String']['input']>;
   /** Determines how this service is billed (per client, per payroll, by time, etc.) */
   chargeBasis?: InputMaybe<Scalars['charge_basis_type']['input']>;
@@ -19306,6 +21041,8 @@ export type ServicesUpdateColumn =
   | 'billingTier'
   /** column name */
   | 'billingUnit'
+  /** column name */
+  | 'billingUnitTypeId'
   /** column name */
   | 'category'
   /** column name */
@@ -20627,6 +22364,63 @@ export type TimestamptzComparisonExp = {
   _lte?: InputMaybe<Scalars['timestamptz']['input']>;
   _neq?: InputMaybe<Scalars['timestamptz']['input']>;
   _nin?: InputMaybe<Array<Scalars['timestamptz']['input']>>;
+};
+
+/** Boolean expression to filter rows from the table "user_accessible_tables". All fields are combined with a logical 'AND'. */
+export type UserAccessibleTablesBoolExp = {
+  _and?: InputMaybe<Array<UserAccessibleTablesBoolExp>>;
+  _not?: InputMaybe<UserAccessibleTablesBoolExp>;
+  _or?: InputMaybe<Array<UserAccessibleTablesBoolExp>>;
+  deletePermission?: InputMaybe<BooleanComparisonExp>;
+  insertPermission?: InputMaybe<BooleanComparisonExp>;
+  selectPermission?: InputMaybe<BooleanComparisonExp>;
+  tableName?: InputMaybe<NameComparisonExp>;
+  tableSchema?: InputMaybe<NameComparisonExp>;
+  updatePermission?: InputMaybe<BooleanComparisonExp>;
+};
+
+/** Ordering options when selecting data from "user_accessible_tables". */
+export type UserAccessibleTablesOrderBy = {
+  deletePermission?: InputMaybe<OrderBy>;
+  insertPermission?: InputMaybe<OrderBy>;
+  selectPermission?: InputMaybe<OrderBy>;
+  tableName?: InputMaybe<OrderBy>;
+  tableSchema?: InputMaybe<OrderBy>;
+  updatePermission?: InputMaybe<OrderBy>;
+};
+
+/** select columns of table "user_accessible_tables" */
+export type UserAccessibleTablesSelectColumn =
+  /** column name */
+  | 'deletePermission'
+  /** column name */
+  | 'insertPermission'
+  /** column name */
+  | 'selectPermission'
+  /** column name */
+  | 'tableName'
+  /** column name */
+  | 'tableSchema'
+  /** column name */
+  | 'updatePermission'
+  | '%future added value';
+
+/** Streaming cursor of the table "user_accessible_tables" */
+export type UserAccessibleTablesStreamCursorInput = {
+  /** Stream column input with initial value */
+  initialValue: UserAccessibleTablesStreamCursorValueInput;
+  /** cursor ordering */
+  ordering?: InputMaybe<CursorOrdering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type UserAccessibleTablesStreamCursorValueInput = {
+  deletePermission?: InputMaybe<Scalars['Boolean']['input']>;
+  insertPermission?: InputMaybe<Scalars['Boolean']['input']>;
+  selectPermission?: InputMaybe<Scalars['Boolean']['input']>;
+  tableName?: InputMaybe<Scalars['name']['input']>;
+  tableSchema?: InputMaybe<Scalars['name']['input']>;
+  updatePermission?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type UserBillingRatesAggregateBoolExp = {
@@ -22392,6 +24186,12 @@ export type UsersBoolExp = {
   backupPayrollAssignments?: InputMaybe<PayrollsBoolExp>;
   backupPayrollAssignmentsAggregate?: InputMaybe<PayrollsAggregateBoolExp>;
   billingCategory?: InputMaybe<StringComparisonExp>;
+  billingUnitTypes?: InputMaybe<BillingUnitTypesBoolExp>;
+  billingUnitTypesAggregate?: InputMaybe<BillingUnitTypesAggregateBoolExp>;
+  billingUnitTypesCreated?: InputMaybe<BillingUnitTypesBoolExp>;
+  billingUnitTypesCreatedAggregate?: InputMaybe<BillingUnitTypesAggregateBoolExp>;
+  billingUnitTypesUpdated?: InputMaybe<BillingUnitTypesBoolExp>;
+  billingUnitTypesUpdatedAggregate?: InputMaybe<BillingUnitTypesAggregateBoolExp>;
   bio?: InputMaybe<StringComparisonExp>;
   clerkUserId?: InputMaybe<StringComparisonExp>;
   clientServiceAssignmentsCreated?: InputMaybe<ClientServiceAssignmentsBoolExp>;
@@ -22422,6 +24222,8 @@ export type UsersBoolExp = {
   createdServices?: InputMaybe<ServicesBoolExp>;
   createdServicesAggregate?: InputMaybe<ServicesAggregateBoolExp>;
   currentHourlyRate?: InputMaybe<NumericComparisonExp>;
+  customQueryTemplates?: InputMaybe<CustomQueryTemplatesBoolExp>;
+  customQueryTemplatesAggregate?: InputMaybe<CustomQueryTemplatesAggregateBoolExp>;
   dataBackups?: InputMaybe<DataBackupsBoolExp>;
   dataBackupsAggregate?: InputMaybe<DataBackupsAggregateBoolExp>;
   deactivatedAt?: InputMaybe<TimestamptzComparisonExp>;
@@ -22461,6 +24263,8 @@ export type UsersBoolExp = {
   managerId?: InputMaybe<UuidComparisonExp>;
   originalConsultantAssignments?: InputMaybe<PayrollAssignmentsBoolExp>;
   originalConsultantAssignmentsAggregate?: InputMaybe<PayrollAssignmentsAggregateBoolExp>;
+  payrollDateCompletionContexts?: InputMaybe<PayrollDateCompletionContextBoolExp>;
+  payrollDateCompletionContextsAggregate?: InputMaybe<PayrollDateCompletionContextAggregateBoolExp>;
   payrollDateTimeEntries?: InputMaybe<PayrollDateTimeEntriesBoolExp>;
   payrollDateTimeEntriesAggregate?: InputMaybe<PayrollDateTimeEntriesAggregateBoolExp>;
   payrollDates?: InputMaybe<PayrollDatesBoolExp>;
@@ -22483,6 +24287,8 @@ export type UsersBoolExp = {
   position?: InputMaybe<UserPositionComparisonExp>;
   primaryPayrollAssignments?: InputMaybe<PayrollsBoolExp>;
   primaryPayrollAssignmentsAggregate?: InputMaybe<PayrollsAggregateBoolExp>;
+  queryExecutions?: InputMaybe<QueryExecutionsBoolExp>;
+  queryExecutionsAggregate?: InputMaybe<QueryExecutionsAggregateBoolExp>;
   quoteConversions?: InputMaybe<QuoteConversionsBoolExp>;
   quoteConversionsAggregate?: InputMaybe<QuoteConversionsAggregateBoolExp>;
   quoteTemplates?: InputMaybe<QuoteTemplatesBoolExp>;
@@ -22506,6 +24312,10 @@ export type UsersBoolExp = {
   sentEmailsAggregate?: InputMaybe<EmailSendLogsAggregateBoolExp>;
   sentInvitations?: InputMaybe<UserInvitationsBoolExp>;
   sentInvitationsAggregate?: InputMaybe<UserInvitationsAggregateBoolExp>;
+  servicePositionRatesCreated?: InputMaybe<ServicePositionRatesBoolExp>;
+  servicePositionRatesCreatedAggregate?: InputMaybe<ServicePositionRatesAggregateBoolExp>;
+  servicePositionRatesUpdated?: InputMaybe<ServicePositionRatesBoolExp>;
+  servicePositionRatesUpdatedAggregate?: InputMaybe<ServicePositionRatesAggregateBoolExp>;
   skills?: InputMaybe<UserSkillsBoolExp>;
   skillsAggregate?: InputMaybe<UserSkillsAggregateBoolExp>;
   staffBillingItems?: InputMaybe<BillingItemsBoolExp>;
@@ -22583,6 +24393,9 @@ export type UsersInsertInput = {
   backupPayrollAssignments?: InputMaybe<PayrollsArrRelInsertInput>;
   /** Category for billing purposes (consultant, manager, etc.) */
   billingCategory?: InputMaybe<Scalars['String']['input']>;
+  billingUnitTypes?: InputMaybe<BillingUnitTypesArrRelInsertInput>;
+  billingUnitTypesCreated?: InputMaybe<BillingUnitTypesArrRelInsertInput>;
+  billingUnitTypesUpdated?: InputMaybe<BillingUnitTypesArrRelInsertInput>;
   /** User biography or description */
   bio?: InputMaybe<Scalars['String']['input']>;
   /** External identifier from Clerk authentication service */
@@ -22604,6 +24417,7 @@ export type UsersInsertInput = {
   createdServiceTemplates?: InputMaybe<ServiceTemplatesArrRelInsertInput>;
   createdServices?: InputMaybe<ServicesArrRelInsertInput>;
   currentHourlyRate?: InputMaybe<Scalars['numeric']['input']>;
+  customQueryTemplates?: InputMaybe<CustomQueryTemplatesArrRelInsertInput>;
   dataBackups?: InputMaybe<DataBackupsArrRelInsertInput>;
   deactivatedAt?: InputMaybe<Scalars['timestamptz']['input']>;
   deactivatedBy?: InputMaybe<Scalars['String']['input']>;
@@ -22637,6 +24451,7 @@ export type UsersInsertInput = {
   /** Reference to the user's manager */
   managerId?: InputMaybe<Scalars['uuid']['input']>;
   originalConsultantAssignments?: InputMaybe<PayrollAssignmentsArrRelInsertInput>;
+  payrollDateCompletionContexts?: InputMaybe<PayrollDateCompletionContextArrRelInsertInput>;
   payrollDateTimeEntries?: InputMaybe<PayrollDateTimeEntriesArrRelInsertInput>;
   payrollDates?: InputMaybe<PayrollDatesArrRelInsertInput>;
   payrollServiceAgreementsCreatedBy?: InputMaybe<PayrollServiceAgreementsArrRelInsertInput>;
@@ -22651,6 +24466,7 @@ export type UsersInsertInput = {
   /** Organizational position affecting admin time allocation */
   position?: InputMaybe<Scalars['user_position']['input']>;
   primaryPayrollAssignments?: InputMaybe<PayrollsArrRelInsertInput>;
+  queryExecutions?: InputMaybe<QueryExecutionsArrRelInsertInput>;
   quoteConversions?: InputMaybe<QuoteConversionsArrRelInsertInput>;
   quoteTemplates?: InputMaybe<QuoteTemplatesArrRelInsertInput>;
   quotes?: InputMaybe<QuotesArrRelInsertInput>;
@@ -22665,6 +24481,8 @@ export type UsersInsertInput = {
   seniorityLevel?: InputMaybe<Scalars['seniority_level_type']['input']>;
   sentEmails?: InputMaybe<EmailSendLogsArrRelInsertInput>;
   sentInvitations?: InputMaybe<UserInvitationsArrRelInsertInput>;
+  servicePositionRatesCreated?: InputMaybe<ServicePositionRatesArrRelInsertInput>;
+  servicePositionRatesUpdated?: InputMaybe<ServicePositionRatesArrRelInsertInput>;
   skills?: InputMaybe<UserSkillsArrRelInsertInput>;
   staffBillingItems?: InputMaybe<BillingItemsArrRelInsertInput>;
   /** Current user status - must be consistent with isActive field */
@@ -22830,6 +24648,9 @@ export type UsersOrderBy = {
   authoredNotesAggregate?: InputMaybe<NotesAggregateOrderBy>;
   backupPayrollAssignmentsAggregate?: InputMaybe<PayrollsAggregateOrderBy>;
   billingCategory?: InputMaybe<OrderBy>;
+  billingUnitTypesAggregate?: InputMaybe<BillingUnitTypesAggregateOrderBy>;
+  billingUnitTypesCreatedAggregate?: InputMaybe<BillingUnitTypesAggregateOrderBy>;
+  billingUnitTypesUpdatedAggregate?: InputMaybe<BillingUnitTypesAggregateOrderBy>;
   bio?: InputMaybe<OrderBy>;
   clerkUserId?: InputMaybe<OrderBy>;
   clientServiceAssignmentsCreatedAggregate?: InputMaybe<ClientServiceAssignmentsAggregateOrderBy>;
@@ -22848,6 +24669,7 @@ export type UsersOrderBy = {
   createdServiceTemplatesAggregate?: InputMaybe<ServiceTemplatesAggregateOrderBy>;
   createdServicesAggregate?: InputMaybe<ServicesAggregateOrderBy>;
   currentHourlyRate?: InputMaybe<OrderBy>;
+  customQueryTemplatesAggregate?: InputMaybe<CustomQueryTemplatesAggregateOrderBy>;
   dataBackupsAggregate?: InputMaybe<DataBackupsAggregateOrderBy>;
   deactivatedAt?: InputMaybe<OrderBy>;
   deactivatedBy?: InputMaybe<OrderBy>;
@@ -22874,6 +24696,7 @@ export type UsersOrderBy = {
   manager?: InputMaybe<UsersOrderBy>;
   managerId?: InputMaybe<OrderBy>;
   originalConsultantAssignmentsAggregate?: InputMaybe<PayrollAssignmentsAggregateOrderBy>;
+  payrollDateCompletionContextsAggregate?: InputMaybe<PayrollDateCompletionContextAggregateOrderBy>;
   payrollDateTimeEntriesAggregate?: InputMaybe<PayrollDateTimeEntriesAggregateOrderBy>;
   payrollDatesAggregate?: InputMaybe<PayrollDatesAggregateOrderBy>;
   payrollServiceAgreementsCreatedByAggregate?: InputMaybe<PayrollServiceAgreementsAggregateOrderBy>;
@@ -22886,6 +24709,7 @@ export type UsersOrderBy = {
   phone?: InputMaybe<OrderBy>;
   position?: InputMaybe<OrderBy>;
   primaryPayrollAssignmentsAggregate?: InputMaybe<PayrollsAggregateOrderBy>;
+  queryExecutionsAggregate?: InputMaybe<QueryExecutionsAggregateOrderBy>;
   quoteConversionsAggregate?: InputMaybe<QuoteConversionsAggregateOrderBy>;
   quoteTemplatesAggregate?: InputMaybe<QuoteTemplatesAggregateOrderBy>;
   quotesAggregate?: InputMaybe<QuotesAggregateOrderBy>;
@@ -22899,6 +24723,8 @@ export type UsersOrderBy = {
   seniorityLevel?: InputMaybe<OrderBy>;
   sentEmailsAggregate?: InputMaybe<EmailSendLogsAggregateOrderBy>;
   sentInvitationsAggregate?: InputMaybe<UserInvitationsAggregateOrderBy>;
+  servicePositionRatesCreatedAggregate?: InputMaybe<ServicePositionRatesAggregateOrderBy>;
+  servicePositionRatesUpdatedAggregate?: InputMaybe<ServicePositionRatesAggregateOrderBy>;
   skillsAggregate?: InputMaybe<UserSkillsAggregateOrderBy>;
   staffBillingItemsAggregate?: InputMaybe<BillingItemsAggregateOrderBy>;
   status?: InputMaybe<OrderBy>;
@@ -23790,6 +25616,27 @@ export type BillingPeriodsAggregateBoolExpCount = {
   predicate: IntComparisonExp;
 };
 
+export type BillingUnitTypesAggregateBoolExpBool_And = {
+  arguments: BillingUnitTypesSelectColumnBillingUnitTypesAggregateBoolExpBool_AndArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<BillingUnitTypesBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type BillingUnitTypesAggregateBoolExpBool_Or = {
+  arguments: BillingUnitTypesSelectColumnBillingUnitTypesAggregateBoolExpBool_OrArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<BillingUnitTypesBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type BillingUnitTypesAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<BillingUnitTypesSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<BillingUnitTypesBoolExp>;
+  predicate: IntComparisonExp;
+};
+
 export type ClientExternalSystemsAggregateBoolExpCount = {
   arguments?: InputMaybe<Array<ClientExternalSystemsSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
@@ -23857,6 +25704,27 @@ export type CreatePayrollVersionArgs = {
 export type CreatePayrollVersionSimpleArgs = {
   payroll_id?: InputMaybe<Scalars['uuid']['input']>;
   version_reason?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CustomQueryTemplatesAggregateBoolExpBool_And = {
+  arguments: CustomQueryTemplatesSelectColumnCustomQueryTemplatesAggregateBoolExpBool_AndArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<CustomQueryTemplatesBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type CustomQueryTemplatesAggregateBoolExpBool_Or = {
+  arguments: CustomQueryTemplatesSelectColumnCustomQueryTemplatesAggregateBoolExpBool_OrArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<CustomQueryTemplatesBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type CustomQueryTemplatesAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<CustomQueryTemplatesSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<CustomQueryTemplatesBoolExp>;
+  predicate: IntComparisonExp;
 };
 
 export type DataBackupsAggregateBoolExpCount = {
@@ -24049,6 +25917,13 @@ export type PayrollAssignmentsAggregateBoolExpCount = {
   predicate: IntComparisonExp;
 };
 
+export type PayrollDateCompletionContextAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<PayrollDateCompletionContextSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<PayrollDateCompletionContextBoolExp>;
+  predicate: IntComparisonExp;
+};
+
 export type PayrollDateTimeEntriesAggregateBoolExpBool_And = {
   arguments: PayrollDateTimeEntriesSelectColumnPayrollDateTimeEntriesAggregateBoolExpBool_AndArgumentsColumns;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
@@ -24161,6 +26036,27 @@ export type PermissionsAggregateBoolExpCount = {
   predicate: IntComparisonExp;
 };
 
+export type QueryExecutionsAggregateBoolExpBool_And = {
+  arguments: QueryExecutionsSelectColumnQueryExecutionsAggregateBoolExpBool_AndArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<QueryExecutionsBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type QueryExecutionsAggregateBoolExpBool_Or = {
+  arguments: QueryExecutionsSelectColumnQueryExecutionsAggregateBoolExpBool_OrArgumentsColumns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<QueryExecutionsBoolExp>;
+  predicate: BooleanComparisonExp;
+};
+
+export type QueryExecutionsAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<QueryExecutionsSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<QueryExecutionsBoolExp>;
+  predicate: IntComparisonExp;
+};
+
 export type QuoteConversionsAggregateBoolExpCount = {
   arguments?: InputMaybe<Array<QuoteConversionsSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
@@ -24249,6 +26145,13 @@ export type SecuritySettingsAggregateBoolExpCount = {
   arguments?: InputMaybe<Array<SecuritySettingsSelectColumn>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
   filter?: InputMaybe<SecuritySettingsBoolExp>;
+  predicate: IntComparisonExp;
+};
+
+export type ServicePositionRatesAggregateBoolExpCount = {
+  arguments?: InputMaybe<Array<ServicePositionRatesSelectColumn>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<ServicePositionRatesBoolExp>;
   predicate: IntComparisonExp;
 };
 
@@ -24884,6 +26787,57 @@ export type GetBillingItemAuditLogAdvancedQueryVariables = Exact<{
 
 export type GetBillingItemAuditLogAdvancedQuery = { __typename?: 'query_root', auditAuditLog: Array<{ __typename?: 'AuditAuditLog', id: string, action: string, oldValues?: any | null, newValues?: any | null, createdAt?: string | null, ipAddress?: any | null, userAgent?: string | null, userId?: string | null, userEmail?: string | null, userRole?: string | null }> };
 
+export type GetUserTimeEntriesQueryVariables = Exact<{
+  payrollDateId: Scalars['uuid']['input'];
+}>;
+
+
+export type GetUserTimeEntriesQuery = { __typename?: 'query_root', timeEntries: Array<{ __typename?: 'TimeEntries', id: string, staffUserId: string, hoursSpent: number, userHourlyRate?: number | null, calculatedFee?: number | null, assignedServiceId?: string | null, description?: string | null, workDate: string, staffUser: { __typename?: 'Users', computedName?: string | null, seniorityLevel?: any | null }, assignedService?: { __typename?: 'Services', name: string, serviceCode?: string | null, seniorityMultipliers?: any | null } | null }> };
+
+export type GetPayrollCompletionDataQueryVariables = Exact<{
+  payrollDateId: Scalars['uuid']['input'];
+}>;
+
+
+export type GetPayrollCompletionDataQuery = { __typename?: 'query_root', payrollDates: Array<{ __typename?: 'PayrollDates', id: string, originalEftDate: string, adjustedEftDate: string, status?: string | null, completedAt?: string | null, completedBy?: string | null, payroll: { __typename?: 'Payrolls', id: string, name: string, clientId: string, client: { __typename?: 'Clients', id: string, name: string }, payrollServiceAgreementsForPayroll: Array<{ __typename?: 'PayrollServiceAgreements', id: string, customQuantity?: number | null, customRate?: number | null, billingNotes?: string | null, payrollServiceAgreementsByServiceId: { __typename?: 'Services', id: string, name: string, serviceCode?: string | null, category: string, defaultRate: number, billingUnit: string, chargeBasis: any, serviceType: string, currency: string }, clientServiceAgreement?: { __typename?: 'ClientServiceAgreements', id: string, customRate?: number | null, isActive?: boolean | null } | null }> } }>, billingItems: Array<{ __typename?: 'BillingItems', id: string, serviceId?: string | null, serviceName?: string | null, description?: string | null, quantity: number, unitPrice: number, totalAmount?: number | null, status?: string | null }> };
+
+export type GetAllServicesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllServicesQuery = { __typename?: 'query_root', services: Array<{ __typename?: 'Services', id: string, name: string, serviceCode?: string | null, description?: string | null, defaultRate: number, category: string, serviceType: string, billingUnitTypeId?: string | null, seniorityMultipliers?: any | null, approvalLevel?: string | null, isActive?: boolean | null, createdAt?: string | null, updatedAt?: string | null, billingUnitType?: { __typename?: 'BillingUnitTypes', id: string, name: string, displayName: string, description?: string | null, defaultSource?: string | null, requiresQuantityInput?: boolean | null, quantityPrompt?: string | null, isSystemDefined?: boolean | null } | null }> };
+
+export type GetActiveBillingUnitTypesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetActiveBillingUnitTypesQuery = { __typename?: 'query_root', billingUnitTypes: Array<{ __typename?: 'BillingUnitTypes', id: string, name: string, displayName: string, description?: string | null, defaultSource?: string | null, isSystemDefined?: boolean | null, requiresQuantityInput?: boolean | null, quantityPrompt?: string | null }> };
+
+export type GetServiceStatisticsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetServiceStatisticsQuery = { __typename?: 'query_root', servicesAggregate: { __typename?: 'ServicesAggregate', aggregate?: { __typename?: 'ServicesAggregateFields', count: number } | null }, activeServicesAggregate: { __typename?: 'ServicesAggregate', aggregate?: { __typename?: 'ServicesAggregateFields', count: number } | null }, servicesByCategory: { __typename?: 'ServicesAggregate', aggregate?: { __typename?: 'ServicesAggregateFields', count: number } | null } };
+
+export type CreateServiceMutationVariables = Exact<{
+  input: ServicesInsertInput;
+}>;
+
+
+export type CreateServiceMutation = { __typename?: 'mutation_root', insertServicesOne?: { __typename?: 'Services', id: string, name: string, serviceCode?: string | null, category: string, defaultRate: number, billingUnitTypeId?: string | null, billingUnitType?: { __typename?: 'BillingUnitTypes', id: string, name: string, displayName: string } | null } | null };
+
+export type UpdateServiceMutationVariables = Exact<{
+  id: Scalars['uuid']['input'];
+  input: ServicesSetInput;
+}>;
+
+
+export type UpdateServiceMutation = { __typename?: 'mutation_root', updateServicesByPk?: { __typename?: 'Services', id: string, name: string, serviceCode?: string | null, billingUnitTypeId?: string | null, updatedAt?: string | null, billingUnitType?: { __typename?: 'BillingUnitTypes', id: string, name: string, displayName: string } | null } | null };
+
+export type DeleteServiceMutationVariables = Exact<{
+  id: Scalars['uuid']['input'];
+}>;
+
+
+export type DeleteServiceMutation = { __typename?: 'mutation_root', deleteServicesByPk?: { __typename?: 'Services', id: string, name: string } | null };
+
 export type GetTimeEntriesByPayrollDocumentQueryVariables = Exact<{
   payrollId: Scalars['uuid']['input'];
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -24984,6 +26938,752 @@ export type GetProfitabilityStatsAdvancedQueryVariables = Exact<{
 
 
 export type GetProfitabilityStatsAdvancedQuery = { __typename?: 'query_root', totalRevenue: { __typename?: 'BillingItemsAggregate', aggregate?: { __typename?: 'BillingItemsAggregateFields', count: number, sum?: { __typename?: 'BillingItemsSumFields', totalAmount?: number | null } | null } | null }, totalHours: { __typename?: 'TimeEntriesAggregate', aggregate?: { __typename?: 'TimeEntriesAggregateFields', count: number, sum?: { __typename?: 'TimeEntriesSumFields', hoursSpent?: number | null } | null } | null }, pendingRevenue: { __typename?: 'BillingItemsAggregate', aggregate?: { __typename?: 'BillingItemsAggregateFields', count: number, sum?: { __typename?: 'BillingItemsSumFields', totalAmount?: number | null } | null } | null } };
+
+export type GetUserBillingRatesAdvancedQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetUserBillingRatesAdvancedQuery = { __typename?: 'query_root', users: Array<{ __typename?: 'Users', id: string, email: string, firstName: string, lastName: string, computedName?: string | null, role: any, currentHourlyRate?: number | null, seniorityLevel?: any | null, isActive?: boolean | null, userBillingRates: Array<{ __typename?: 'UserBillingRates', id: string, hourlyRate: number, seniorityLevel: any, effectiveFrom: string, effectiveTo?: string | null, isActive?: boolean | null, createdAt?: string | null, createdByUser: { __typename?: 'Users', computedName?: string | null } }> }> };
+
+export type GetUserBillingStatisticsAdvancedQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetUserBillingStatisticsAdvancedQuery = { __typename?: 'query_root', usersAggregate: { __typename?: 'UsersAggregate', aggregate?: { __typename?: 'UsersAggregateFields', count: number } | null }, usersWithRatesAggregate: { __typename?: 'UsersAggregate', aggregate?: { __typename?: 'UsersAggregateFields', count: number, avg?: { __typename?: 'UsersAvgFields', currentHourlyRate?: number | null } | null, min?: { __typename?: 'UsersMinFields', currentHourlyRate?: number | null } | null, max?: { __typename?: 'UsersMaxFields', currentHourlyRate?: number | null } | null } | null }, ratesByRole: { __typename?: 'UsersAggregate', aggregate?: { __typename?: 'UsersAggregateFields', count: number, avg?: { __typename?: 'UsersAvgFields', currentHourlyRate?: number | null } | null } | null } };
+
+export type CreateUserBillingRateAdvancedMutationVariables = Exact<{
+  input: UserBillingRatesInsertInput;
+}>;
+
+
+export type CreateUserBillingRateAdvancedMutation = { __typename?: 'mutation_root', insertUserBillingRatesOne?: { __typename?: 'UserBillingRates', id: string, hourlyRate: number, seniorityLevel: any, effectiveFrom: string, user: { __typename?: 'Users', computedName?: string | null, currentHourlyRate?: number | null } } | null };
+
+export type UpdateUserBillingRateAdvancedMutationVariables = Exact<{
+  id: Scalars['uuid']['input'];
+  input: UserBillingRatesSetInput;
+}>;
+
+
+export type UpdateUserBillingRateAdvancedMutation = { __typename?: 'mutation_root', updateUserBillingRatesByPk?: { __typename?: 'UserBillingRates', id: string, hourlyRate: number, effectiveFrom: string, effectiveTo?: string | null } | null };
+
+export type UpdateUserCurrentRateAdvancedMutationVariables = Exact<{
+  userId: Scalars['uuid']['input'];
+  hourlyRate: Scalars['numeric']['input'];
+  seniorityLevel: Scalars['seniority_level_type']['input'];
+}>;
+
+
+export type UpdateUserCurrentRateAdvancedMutation = { __typename?: 'mutation_root', updateUsersByPk?: { __typename?: 'Users', id: string, currentHourlyRate?: number | null, seniorityLevel?: any | null } | null };
+
+export type DeactivateUserBillingRateAdvancedMutationVariables = Exact<{
+  id: Scalars['uuid']['input'];
+  effectiveTo: Scalars['date']['input'];
+}>;
+
+
+export type DeactivateUserBillingRateAdvancedMutation = { __typename?: 'mutation_root', updateUserBillingRatesByPk?: { __typename?: 'UserBillingRates', id: string, effectiveTo?: string | null } | null };
+
+export type GetServiceManagementOverviewAdvancedQueryVariables = Exact<{
+  thirtyDaysAgo: Scalars['timestamptz']['input'];
+}>;
+
+
+export type GetServiceManagementOverviewAdvancedQuery = { __typename?: 'query_root', servicesAggregate: { __typename?: 'ServicesAggregate', aggregate?: { __typename?: 'ServicesAggregateFields', count: number } | null }, activeServicesAggregate: { __typename?: 'ServicesAggregate', aggregate?: { __typename?: 'ServicesAggregateFields', count: number, avg?: { __typename?: 'ServicesAvgFields', baseRate?: number | null } | null } | null }, usersAggregate: { __typename?: 'UsersAggregate', aggregate?: { __typename?: 'UsersAggregateFields', count: number } | null }, usersWithRatesAggregate: { __typename?: 'UsersAggregate', aggregate?: { __typename?: 'UsersAggregateFields', count: number, avg?: { __typename?: 'UsersAvgFields', currentHourlyRate?: number | null } | null, max?: { __typename?: 'UsersMaxFields', currentHourlyRate?: number | null } | null, min?: { __typename?: 'UsersMinFields', currentHourlyRate?: number | null } | null } | null }, clientsAggregate: { __typename?: 'ClientsAggregate', aggregate?: { __typename?: 'ClientsAggregateFields', count: number } | null }, assignmentsAggregate: { __typename?: 'ClientServiceAgreementsAggregate', aggregate?: { __typename?: 'ClientServiceAgreementsAggregateFields', count: number } | null }, recentServicesAggregate: { __typename?: 'ServicesAggregate', aggregate?: { __typename?: 'ServicesAggregateFields', count: number } | null }, clientsWithAssignments: { __typename?: 'ClientServiceAgreementsAggregate', aggregate?: { __typename?: 'ClientServiceAgreementsAggregateFields', count: number } | null } };
+
+export type GetClientServiceAssignmentsAdvancedQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetClientServiceAssignmentsAdvancedQuery = { __typename?: 'query_root', clientServiceAgreements: Array<{ __typename?: 'ClientServiceAgreements', id: string, clientId: string, serviceId: string, customRate?: number | null, isActive?: boolean | null, createdAt?: string | null, updatedAt?: string | null, client: { __typename?: 'Clients', id: string, name: string, active?: boolean | null }, service: { __typename?: 'Services', id: string, name: string, serviceCode?: string | null, category: string, baseRate?: number | null, billingUnit: string, chargeBasis: any, seniorityMultipliers?: any | null }, createdByUser?: { __typename?: 'Users', computedName?: string | null } | null }> };
+
+export type GetClientsAndServicesAdvancedQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetClientsAndServicesAdvancedQuery = { __typename?: 'query_root', clients: Array<{ __typename?: 'Clients', id: string, name: string, active?: boolean | null }>, services: Array<{ __typename?: 'Services', id: string, name: string, serviceCode?: string | null, category: string, baseRate?: number | null, billingUnit: string, chargeBasis: any, seniorityMultipliers?: any | null }> };
+
+export type GetClientAssignmentStatisticsAdvancedQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetClientAssignmentStatisticsAdvancedQuery = { __typename?: 'query_root', assignmentsAggregate: { __typename?: 'ClientServiceAgreementsAggregate', aggregate?: { __typename?: 'ClientServiceAgreementsAggregateFields', count: number } | null }, activeAssignmentsAggregate: { __typename?: 'ClientServiceAgreementsAggregate', aggregate?: { __typename?: 'ClientServiceAgreementsAggregateFields', count: number } | null }, clientsWithAssignments: { __typename?: 'ClientServiceAgreementsAggregate', aggregate?: { __typename?: 'ClientServiceAgreementsAggregateFields', count: number } | null } };
+
+export type CreateClientServiceAssignmentAdvancedMutationVariables = Exact<{
+  input: ClientServiceAgreementsInsertInput;
+}>;
+
+
+export type CreateClientServiceAssignmentAdvancedMutation = { __typename?: 'mutation_root', insertClientServiceAgreementsOne?: { __typename?: 'ClientServiceAgreements', id: string, client: { __typename?: 'Clients', name: string }, service: { __typename?: 'Services', name: string } } | null };
+
+export type UpdateClientServiceAssignmentAdvancedMutationVariables = Exact<{
+  id: Scalars['uuid']['input'];
+  input: ClientServiceAgreementsSetInput;
+}>;
+
+
+export type UpdateClientServiceAssignmentAdvancedMutation = { __typename?: 'mutation_root', updateClientServiceAgreementsByPk?: { __typename?: 'ClientServiceAgreements', id: string, customRate?: number | null, isActive?: boolean | null } | null };
+
+export type DeleteClientServiceAssignmentAdvancedMutationVariables = Exact<{
+  id: Scalars['uuid']['input'];
+}>;
+
+
+export type DeleteClientServiceAssignmentAdvancedMutation = { __typename?: 'mutation_root', deleteClientServiceAgreementsByPk?: { __typename?: 'ClientServiceAgreements', id: string, client: { __typename?: 'Clients', name: string }, service: { __typename?: 'Services', name: string } } | null };
+
+export type GetClientServiceAssignmentsForRecurringAdvancedQueryVariables = Exact<{
+  clientId: Scalars['uuid']['input'];
+}>;
+
+
+export type GetClientServiceAssignmentsForRecurringAdvancedQuery = { __typename?: 'query_root', clientServiceAgreements: Array<{ __typename?: 'ClientServiceAgreements', id: string, serviceId: string, customRate?: number | null, isActive?: boolean | null, createdAt?: string | null, updatedAt?: string | null, service: { __typename?: 'Services', id: string, name: string, serviceCode?: string | null, description?: string | null, baseRate?: number | null, category: string, chargeBasis: any, approvalLevel?: string | null } }> };
+
+export type CreateClientServiceAssignmentForRecurringAdvancedMutationVariables = Exact<{
+  input: ClientServiceAgreementsInsertInput;
+}>;
+
+
+export type CreateClientServiceAssignmentForRecurringAdvancedMutation = { __typename?: 'mutation_root', insertClientServiceAgreementsOne?: { __typename?: 'ClientServiceAgreements', id: string, serviceId: string, customRate?: number | null, isActive?: boolean | null, service: { __typename?: 'Services', id: string, name: string, serviceCode?: string | null, baseRate?: number | null, category: string } } | null };
+
+export type UpdateClientServiceAssignmentForRecurringAdvancedMutationVariables = Exact<{
+  id: Scalars['uuid']['input'];
+  updates: ClientServiceAgreementsSetInput;
+}>;
+
+
+export type UpdateClientServiceAssignmentForRecurringAdvancedMutation = { __typename?: 'mutation_root', updateClientServiceAgreementsByPk?: { __typename?: 'ClientServiceAgreements', id: string, serviceId: string, customRate?: number | null, isActive?: boolean | null } | null };
+
+export type GetRecurringServicesAdvancedQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetRecurringServicesAdvancedQuery = { __typename?: 'query_root', services: Array<{ __typename?: 'Services', id: string, name: string, serviceCode?: string | null, description?: string | null, baseRate?: number | null, category: string, chargeBasis: any, approvalLevel?: string | null }> };
+
+export type GetClientServiceAssignmentsForManagerAdvancedQueryVariables = Exact<{
+  clientId: Scalars['uuid']['input'];
+}>;
+
+
+export type GetClientServiceAssignmentsForManagerAdvancedQuery = { __typename?: 'query_root', clientServiceAgreements: Array<{ __typename?: 'ClientServiceAgreements', id: string, serviceId: string, customRate?: number | null, isActive?: boolean | null, createdAt?: string | null, updatedAt?: string | null, service: { __typename?: 'Services', id: string, name: string, serviceCode?: string | null, description?: string | null, baseRate?: number | null, category: string, chargeBasis: any, approvalLevel?: string | null } }> };
+
+export type CreateClientServiceAssignmentForManagerAdvancedMutationVariables = Exact<{
+  input: ClientServiceAgreementsInsertInput;
+}>;
+
+
+export type CreateClientServiceAssignmentForManagerAdvancedMutation = { __typename?: 'mutation_root', insertClientServiceAgreementsOne?: { __typename?: 'ClientServiceAgreements', id: string, serviceId: string, customRate?: number | null, isActive?: boolean | null, service: { __typename?: 'Services', id: string, name: string, serviceCode?: string | null, baseRate?: number | null, category: string } } | null };
+
+export type UpdateClientServiceAssignmentForManagerAdvancedMutationVariables = Exact<{
+  id: Scalars['uuid']['input'];
+  updates: ClientServiceAgreementsSetInput;
+}>;
+
+
+export type UpdateClientServiceAssignmentForManagerAdvancedMutation = { __typename?: 'mutation_root', updateClientServiceAgreementsByPk?: { __typename?: 'ClientServiceAgreements', id: string, serviceId: string, customRate?: number | null, isActive?: boolean | null, service: { __typename?: 'Services', id: string, name: string, serviceCode?: string | null, baseRate?: number | null, category: string } } | null };
+
+export type PayrollServiceAssignmentCoreFragment = { __typename?: 'PayrollServiceAgreements', id: string, payrollId: string, serviceId: string, clientServiceAgreementId?: string | null, customQuantity?: number | null, customRate?: number | null, billingNotes?: string | null, isActive?: boolean | null, createdAt?: string | null, updatedAt?: string | null, createdBy?: string | null };
+
+export type PayrollServiceAssignmentWithRelationsFragment = { __typename?: 'PayrollServiceAgreements', id: string, payrollId: string, serviceId: string, clientServiceAgreementId?: string | null, customQuantity?: number | null, customRate?: number | null, billingNotes?: string | null, isActive?: boolean | null, createdAt?: string | null, updatedAt?: string | null, createdBy?: string | null, payrollServiceAgreementsForPayroll: { __typename?: 'Payrolls', id: string, name: string, status: any, client: { __typename?: 'Clients', id: string, name: string } }, payrollServiceAgreementsByServiceId: { __typename?: 'Services', id: string, name: string, description?: string | null, category: string, billingUnit: string, baseRate?: number | null, currency: string, serviceType: string }, clientServiceAgreement?: { __typename?: 'ClientServiceAgreements', id: string, customRate?: number | null, isActive?: boolean | null, client: { __typename?: 'Clients', id: string, name: string } } | null, serviceAgreementCreatedByUser?: { __typename?: 'Users', id: string, firstName: string, lastName: string, email: string } | null };
+
+export type GetPayrollServiceAgreementsForCompletionQueryVariables = Exact<{
+  payrollId: Scalars['uuid']['input'];
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type GetPayrollServiceAgreementsForCompletionQuery = { __typename?: 'query_root', payrollServiceAgreements: Array<{ __typename?: 'PayrollServiceAgreements', id: string, payrollId: string, serviceId: string, clientServiceAgreementId?: string | null, customQuantity?: number | null, customRate?: number | null, billingNotes?: string | null, isActive?: boolean | null, createdAt?: string | null, updatedAt?: string | null, createdBy?: string | null, payrollServiceAgreementsForPayroll: { __typename?: 'Payrolls', id: string, name: string, status: any, client: { __typename?: 'Clients', id: string, name: string } }, payrollServiceAgreementsByServiceId: { __typename?: 'Services', id: string, name: string, description?: string | null, category: string, billingUnit: string, baseRate?: number | null, currency: string, serviceType: string }, clientServiceAgreement?: { __typename?: 'ClientServiceAgreements', id: string, customRate?: number | null, isActive?: boolean | null, client: { __typename?: 'Clients', id: string, name: string } } | null, serviceAgreementCreatedByUser?: { __typename?: 'Users', id: string, firstName: string, lastName: string, email: string } | null }> };
+
+export type GetPayrollServiceAssignmentByIdQueryVariables = Exact<{
+  id: Scalars['uuid']['input'];
+}>;
+
+
+export type GetPayrollServiceAssignmentByIdQuery = { __typename?: 'query_root', payrollServiceAgreementsByPk?: { __typename?: 'PayrollServiceAgreements', id: string, payrollId: string, serviceId: string, clientServiceAgreementId?: string | null, customQuantity?: number | null, customRate?: number | null, billingNotes?: string | null, isActive?: boolean | null, createdAt?: string | null, updatedAt?: string | null, createdBy?: string | null, payrollServiceAgreementsForPayroll: { __typename?: 'Payrolls', id: string, name: string, status: any, client: { __typename?: 'Clients', id: string, name: string } }, payrollServiceAgreementsByServiceId: { __typename?: 'Services', id: string, name: string, description?: string | null, category: string, billingUnit: string, baseRate?: number | null, currency: string, serviceType: string }, clientServiceAgreement?: { __typename?: 'ClientServiceAgreements', id: string, customRate?: number | null, isActive?: boolean | null, client: { __typename?: 'Clients', id: string, name: string } } | null, serviceAgreementCreatedByUser?: { __typename?: 'Users', id: string, firstName: string, lastName: string, email: string } | null } | null };
+
+export type GetAvailableServicesForPayrollQueryVariables = Exact<{
+  payrollId: Scalars['uuid']['input'];
+  clientId: Scalars['uuid']['input'];
+}>;
+
+
+export type GetAvailableServicesForPayrollQuery = { __typename?: 'query_root', clientServiceAgreements: Array<{ __typename?: 'ClientServiceAgreements', id: string, customRate?: number | null, isActive?: boolean | null, service: { __typename?: 'Services', id: string, name: string, description?: string | null, category: string, billingUnit: string, baseRate?: number | null, currency: string, serviceType: string, chargeBasis: any, approvalLevel?: string | null }, client: { __typename?: 'Clients', id: string, name: string } }> };
+
+export type AssignServiceToPayrollMutationVariables = Exact<{
+  payrollId: Scalars['uuid']['input'];
+  serviceId: Scalars['uuid']['input'];
+  clientServiceAgreementId: Scalars['uuid']['input'];
+  customQuantity?: InputMaybe<Scalars['Int']['input']>;
+  customRate?: InputMaybe<Scalars['numeric']['input']>;
+  billingNotes?: InputMaybe<Scalars['String']['input']>;
+  createdBy: Scalars['uuid']['input'];
+}>;
+
+
+export type AssignServiceToPayrollMutation = { __typename?: 'mutation_root', insertPayrollServiceAgreementsOne?: { __typename?: 'PayrollServiceAgreements', id: string, payrollId: string, serviceId: string, clientServiceAgreementId?: string | null, customQuantity?: number | null, customRate?: number | null, billingNotes?: string | null, isActive?: boolean | null, createdAt?: string | null, updatedAt?: string | null, createdBy?: string | null, payrollServiceAgreementsForPayroll: { __typename?: 'Payrolls', id: string, name: string, status: any, client: { __typename?: 'Clients', id: string, name: string } }, payrollServiceAgreementsByServiceId: { __typename?: 'Services', id: string, name: string, description?: string | null, category: string, billingUnit: string, baseRate?: number | null, currency: string, serviceType: string }, clientServiceAgreement?: { __typename?: 'ClientServiceAgreements', id: string, customRate?: number | null, isActive?: boolean | null, client: { __typename?: 'Clients', id: string, name: string } } | null, serviceAgreementCreatedByUser?: { __typename?: 'Users', id: string, firstName: string, lastName: string, email: string } | null } | null };
+
+export type UpdatePayrollServiceAssignmentMutationVariables = Exact<{
+  id: Scalars['uuid']['input'];
+  customQuantity?: InputMaybe<Scalars['Int']['input']>;
+  customRate?: InputMaybe<Scalars['numeric']['input']>;
+  billingNotes?: InputMaybe<Scalars['String']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+}>;
+
+
+export type UpdatePayrollServiceAssignmentMutation = { __typename?: 'mutation_root', updatePayrollServiceAgreementsByPk?: { __typename?: 'PayrollServiceAgreements', id: string, payrollId: string, serviceId: string, clientServiceAgreementId?: string | null, customQuantity?: number | null, customRate?: number | null, billingNotes?: string | null, isActive?: boolean | null, createdAt?: string | null, updatedAt?: string | null, createdBy?: string | null, payrollServiceAgreementsForPayroll: { __typename?: 'Payrolls', id: string, name: string, status: any, client: { __typename?: 'Clients', id: string, name: string } }, payrollServiceAgreementsByServiceId: { __typename?: 'Services', id: string, name: string, description?: string | null, category: string, billingUnit: string, baseRate?: number | null, currency: string, serviceType: string }, clientServiceAgreement?: { __typename?: 'ClientServiceAgreements', id: string, customRate?: number | null, isActive?: boolean | null, client: { __typename?: 'Clients', id: string, name: string } } | null, serviceAgreementCreatedByUser?: { __typename?: 'Users', id: string, firstName: string, lastName: string, email: string } | null } | null };
+
+export type BulkAssignServicesToPayrollMutationVariables = Exact<{
+  assignments: Array<PayrollServiceAgreementsInsertInput> | PayrollServiceAgreementsInsertInput;
+}>;
+
+
+export type BulkAssignServicesToPayrollMutation = { __typename?: 'mutation_root', insertPayrollServiceAgreements?: { __typename?: 'PayrollServiceAgreementsMutationResponse', affectedRows: number, returning: Array<{ __typename?: 'PayrollServiceAgreements', id: string, payrollId: string, serviceId: string, clientServiceAgreementId?: string | null, customQuantity?: number | null, customRate?: number | null, billingNotes?: string | null, isActive?: boolean | null, createdAt?: string | null, updatedAt?: string | null, createdBy?: string | null }> } | null };
+
+export type RemoveServiceFromPayrollMutationVariables = Exact<{
+  id: Scalars['uuid']['input'];
+}>;
+
+
+export type RemoveServiceFromPayrollMutation = { __typename?: 'mutation_root', updatePayrollServiceAgreementsByPk?: { __typename?: 'PayrollServiceAgreements', id: string, payrollId: string, serviceId: string, clientServiceAgreementId?: string | null, customQuantity?: number | null, customRate?: number | null, billingNotes?: string | null, isActive?: boolean | null, createdAt?: string | null, updatedAt?: string | null, createdBy?: string | null } | null };
+
+export type GetPayrollWithServiceAssignmentsQueryVariables = Exact<{
+  payrollId: Scalars['uuid']['input'];
+}>;
+
+
+export type GetPayrollWithServiceAssignmentsQuery = { __typename?: 'query_root', payrollsByPk?: { __typename?: 'Payrolls', id: string, name: string, status: any, clientId: string, client: { __typename?: 'Clients', id: string, name: string, active?: boolean | null, contactEmail?: string | null }, primaryConsultant?: { __typename?: 'Users', id: string, firstName: string, lastName: string, computedName?: string | null } | null, serviceAssignments: Array<{ __typename?: 'PayrollServiceAgreements', id: string, payrollId: string, serviceId: string, clientServiceAgreementId?: string | null, customQuantity?: number | null, customRate?: number | null, billingNotes?: string | null, isActive?: boolean | null, createdAt?: string | null, updatedAt?: string | null, createdBy?: string | null, payrollServiceAgreementsForPayroll: { __typename?: 'Payrolls', id: string, name: string, status: any, client: { __typename?: 'Clients', id: string, name: string } }, payrollServiceAgreementsByServiceId: { __typename?: 'Services', id: string, name: string, description?: string | null, category: string, billingUnit: string, baseRate?: number | null, currency: string, serviceType: string }, clientServiceAgreement?: { __typename?: 'ClientServiceAgreements', id: string, customRate?: number | null, isActive?: boolean | null, client: { __typename?: 'Clients', id: string, name: string } } | null, serviceAgreementCreatedByUser?: { __typename?: 'Users', id: string, firstName: string, lastName: string, email: string } | null }> } | null };
+
+export type GetClientServiceAgreementsForPayrollQueryVariables = Exact<{
+  clientId: Scalars['uuid']['input'];
+  excludePayrollId?: InputMaybe<Scalars['uuid']['input']>;
+}>;
+
+
+export type GetClientServiceAgreementsForPayrollQuery = { __typename?: 'query_root', clientServiceAgreements: Array<{ __typename?: 'ClientServiceAgreements', id: string, customRate?: number | null, isActive?: boolean | null, service: { __typename?: 'Services', id: string, name: string, description?: string | null, category: string, billingUnit: string, baseRate?: number | null, currency: string, serviceType: string, chargeBasis: any, approvalLevel?: string | null }, payrollAssignments: Array<{ __typename?: 'PayrollServiceAgreements', id: string, customQuantity?: number | null, customRate?: number | null, isActive?: boolean | null }> }> };
+
+export type GetPayrollInfoForTier1BillingQueryVariables = Exact<{
+  payrollDateId: Scalars['uuid']['input'];
+}>;
+
+
+export type GetPayrollInfoForTier1BillingQuery = { __typename?: 'query_root', payrollDates: Array<{ __typename?: 'PayrollDates', id: string, payrollId: string, originalEftDate: string, adjustedEftDate: string, status?: string | null, payroll: { __typename?: 'Payrolls', id: string, name: string, clientId: string, client: { __typename?: 'Clients', id: string, name: string } } }> };
+
+export type GetClientServiceAgreementsForTier1BillingQueryVariables = Exact<{
+  clientId: Scalars['uuid']['input'];
+}>;
+
+
+export type GetClientServiceAgreementsForTier1BillingQuery = { __typename?: 'query_root', clientServiceAgreements: Array<{ __typename?: 'ClientServiceAgreements', id: string, serviceId: string, customRate?: number | null, billingFrequency?: string | null, autoBillingTriggers?: any | null, service: { __typename?: 'Services', id: string, name: string, serviceCode?: string | null, defaultRate: number } }> };
+
+export type GetPayrollServiceAgreementsForTier1BillingEngineQueryVariables = Exact<{
+  payrollId: Scalars['uuid']['input'];
+}>;
+
+
+export type GetPayrollServiceAgreementsForTier1BillingEngineQuery = { __typename?: 'query_root', payrollServiceAgreements: Array<{ __typename?: 'PayrollServiceAgreements', id: string, customRate?: number | null, customQuantity?: number | null, customDescription?: string | null, billingNotes?: string | null, serviceConfiguration?: any | null }> };
+
+export type InsertTier1BillingItemsMutationVariables = Exact<{
+  items: Array<BillingItemsInsertInput> | BillingItemsInsertInput;
+}>;
+
+
+export type InsertTier1BillingItemsMutation = { __typename?: 'mutation_root', insertBillingItems?: { __typename?: 'BillingItemsMutationResponse', returning: Array<{ __typename?: 'BillingItems', id: string, serviceCode?: string | null, serviceName?: string | null, quantity: number, unitPrice: number, totalAmount?: number | null, status?: string | null, autoGenerated?: boolean | null, createdAt?: any | null }> } | null };
+
+export type UpdateTier1CompletionMetricsMutationVariables = Exact<{
+  payrollDateId: Scalars['uuid']['input'];
+}>;
+
+
+export type UpdateTier1CompletionMetricsMutation = { __typename?: 'mutation_root', updatePayrollDates?: { __typename?: 'PayrollDatesMutationResponse', affectedRows: number } | null };
+
+export type CheckPayrollDateApiTier1QueryVariables = Exact<{
+  id: Scalars['uuid']['input'];
+}>;
+
+
+export type CheckPayrollDateApiTier1Query = { __typename?: 'query_root', payrollDatesByPk?: { __typename?: 'PayrollDates', id: string, status?: string | null, payrollId: string, completedAt?: string | null, completedBy?: string | null, adjustedEftDate: string, originalEftDate: string, payroll: { __typename?: 'Payrolls', id: string, name: string, clientId: string, client: { __typename?: 'Clients', id: string, name: string } } } | null };
+
+export type GetTier1ServicesForApiQueryVariables = Exact<{
+  clientId: Scalars['uuid']['input'];
+}>;
+
+
+export type GetTier1ServicesForApiQuery = { __typename?: 'query_root', clientServiceAgreements: Array<{ __typename?: 'ClientServiceAgreements', id: string, serviceId: string, customRate?: number | null, billingFrequency?: string | null, serviceConfiguration?: any | null, service: { __typename?: 'Services', id: string, name: string, description?: string | null, billingUnit: string, defaultRate: number } }> };
+
+export type CheckExistingBillingApiQueryVariables = Exact<{
+  payrollDateId: Scalars['uuid']['input'];
+  serviceId: Scalars['uuid']['input'];
+}>;
+
+
+export type CheckExistingBillingApiQuery = { __typename?: 'query_root', billingItems: Array<{ __typename?: 'BillingItems', id: string }> };
+
+export type CreateBillingItemApiMutationVariables = Exact<{
+  input: BillingItemsInsertInput;
+}>;
+
+
+export type CreateBillingItemApiMutation = { __typename?: 'mutation_root', insertBillingItemsOne?: { __typename?: 'BillingItems', id: string, description?: string | null, totalAmount?: number | null } | null };
+
+export type LogBillingEventApiMutationVariables = Exact<{
+  input: BillingEventLogInsertInput;
+}>;
+
+
+export type LogBillingEventApiMutation = { __typename?: 'mutation_root', insertBillingEventLogOne?: { __typename?: 'BillingEventLog', id: string } | null };
+
+export type CheckPayrollCompletionApiTier2QueryVariables = Exact<{
+  id: Scalars['uuid']['input'];
+}>;
+
+
+export type CheckPayrollCompletionApiTier2Query = { __typename?: 'query_root', payrollsByPk?: { __typename?: 'Payrolls', id: string, name: string, clientId: string, status: any, client: { __typename?: 'Clients', id: string, name: string }, payrollDates: Array<{ __typename?: 'PayrollDates', id: string, status?: string | null }> } | null };
+
+export type GetTier2ServicesForApiQueryVariables = Exact<{
+  payrollId: Scalars['uuid']['input'];
+  clientId: Scalars['uuid']['input'];
+}>;
+
+
+export type GetTier2ServicesForApiQuery = { __typename?: 'query_root', clientServiceAgreements: Array<{ __typename?: 'ClientServiceAgreements', id: string, serviceId: string, customRate?: number | null, billingFrequency?: string | null, serviceConfiguration?: any | null, service: { __typename?: 'Services', id: string, name: string, description?: string | null, billingUnit: string, defaultRate: number } }>, payrollServiceAgreements: Array<{ __typename?: 'PayrollServiceAgreements', id: string, serviceId: string, customRate?: number | null, billingFrequency?: string | null, serviceConfiguration?: any | null, payrollServiceAgreementsByServiceId: { __typename?: 'Services', id: string, name: string, description?: string | null, billingUnit: string, defaultRate: number } }> };
+
+export type CheckExistingTier2BillingApiQueryVariables = Exact<{
+  payrollId: Scalars['uuid']['input'];
+  serviceId: Scalars['uuid']['input'];
+}>;
+
+
+export type CheckExistingTier2BillingApiQuery = { __typename?: 'query_root', billingItems: Array<{ __typename?: 'BillingItems', id: string }> };
+
+export type CheckClientApiTier3QueryVariables = Exact<{
+  id: Scalars['uuid']['input'];
+}>;
+
+
+export type CheckClientApiTier3Query = { __typename?: 'query_root', clientsByPk?: { __typename?: 'Clients', id: string, name: string, active?: boolean | null } | null };
+
+export type CheckMonthlyCompletionApiTier3QueryVariables = Exact<{
+  clientId: Scalars['uuid']['input'];
+  billingMonth: Scalars['date']['input'];
+}>;
+
+
+export type CheckMonthlyCompletionApiTier3Query = { __typename?: 'query_root', monthlyBillingCompletion: Array<{ __typename?: 'MonthlyBillingCompletion', id: string, status?: any | null, tier3BillingGenerated?: boolean | null, autoBillingEnabled?: boolean | null, completedPayrolls?: number | null, totalPayrolls?: number | null, completedPayrollDates?: number | null, totalPayrollDates?: number | null }> };
+
+export type GetTier3ServicesForApiQueryVariables = Exact<{
+  clientId: Scalars['uuid']['input'];
+}>;
+
+
+export type GetTier3ServicesForApiQuery = { __typename?: 'query_root', clientServiceAgreements: Array<{ __typename?: 'ClientServiceAgreements', id: string, serviceId: string, customRate?: number | null, billingFrequency?: string | null, serviceConfiguration?: any | null, service: { __typename?: 'Services', id: string, name: string, description?: string | null, billingUnit: string, defaultRate: number } }> };
+
+export type CheckExistingTier3BillingApiQueryVariables = Exact<{
+  clientId: Scalars['uuid']['input'];
+  serviceId: Scalars['uuid']['input'];
+  monthStart: Scalars['timestamp']['input'];
+  monthEnd: Scalars['timestamp']['input'];
+}>;
+
+
+export type CheckExistingTier3BillingApiQuery = { __typename?: 'query_root', billingItems: Array<{ __typename?: 'BillingItems', id: string }> };
+
+export type GetEmployeeCountApiTier3QueryVariables = Exact<{
+  clientId: Scalars['uuid']['input'];
+  billingMonth: Scalars['date']['input'];
+}>;
+
+
+export type GetEmployeeCountApiTier3Query = { __typename?: 'query_root', payrolls: Array<{ __typename?: 'Payrolls', employeeCount?: number | null }> };
+
+export type UpdateMonthlyCompletionApiTier3MutationVariables = Exact<{
+  clientId: Scalars['uuid']['input'];
+  billingMonth: Scalars['date']['input'];
+}>;
+
+
+export type UpdateMonthlyCompletionApiTier3Mutation = { __typename?: 'mutation_root', updateMonthlyBillingCompletion?: { __typename?: 'MonthlyBillingCompletionMutationResponse', affectedRows: number } | null };
+
+export type GetActiveClientsForRecurringApiAllQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetActiveClientsForRecurringApiAllQuery = { __typename?: 'query_root', clients: Array<{ __typename?: 'Clients', id: string, name: string, createdAt?: string | null }> };
+
+export type GetActiveClientsForRecurringApiQueryVariables = Exact<{
+  clientIds: Array<Scalars['uuid']['input']> | Scalars['uuid']['input'];
+}>;
+
+
+export type GetActiveClientsForRecurringApiQuery = { __typename?: 'query_root', clients: Array<{ __typename?: 'Clients', id: string, name: string, createdAt?: string | null }> };
+
+export type CheckExistingRecurringBillingApiAllQueryVariables = Exact<{
+  clientId: Scalars['uuid']['input'];
+  billingMonth: Scalars['date']['input'];
+}>;
+
+
+export type CheckExistingRecurringBillingApiAllQuery = { __typename?: 'query_root', billingItems: Array<{ __typename?: 'BillingItems', id: string, serviceCode?: string | null, totalAmount?: number | null }> };
+
+export type CheckExistingRecurringBillingApiQueryVariables = Exact<{
+  clientId: Scalars['uuid']['input'];
+  billingMonth: Scalars['date']['input'];
+  serviceCode: Scalars['String']['input'];
+}>;
+
+
+export type CheckExistingRecurringBillingApiQuery = { __typename?: 'query_root', billingItems: Array<{ __typename?: 'BillingItems', id: string, serviceCode?: string | null, totalAmount?: number | null }> };
+
+export type CreateRecurringBillingItemApiMutationVariables = Exact<{
+  input: BillingItemsInsertInput;
+}>;
+
+
+export type CreateRecurringBillingItemApiMutation = { __typename?: 'mutation_root', insertBillingItemsOne?: { __typename?: 'BillingItems', id: string, totalAmount?: number | null } | null };
+
+export type GetClientBillingDashboardStatsQueryVariables = Exact<{
+  clientId: Scalars['uuid']['input'];
+  dateFrom?: InputMaybe<Scalars['timestamptz']['input']>;
+  dateTo?: InputMaybe<Scalars['timestamptz']['input']>;
+}>;
+
+
+export type GetClientBillingDashboardStatsQuery = { __typename?: 'query_root', clients: Array<{ __typename?: 'Clients', id: string, name: string, contactPerson?: string | null, contactEmail?: string | null, billingItemsAggregate: { __typename?: 'BillingItemsAggregate', aggregate?: { __typename?: 'BillingItemsAggregateFields', count: number, sum?: { __typename?: 'BillingItemsSumFields', totalAmount?: number | null } | null } | null }, payrollsAggregate: { __typename?: 'PayrollsAggregate', aggregate?: { __typename?: 'PayrollsAggregateFields', count: number } | null } }> };
+
+export type GetClientInvoiceHistoryQueryVariables = Exact<{
+  clientId: Scalars['uuid']['input'];
+}>;
+
+
+export type GetClientInvoiceHistoryQuery = { __typename?: 'query_root', clientInvoices: Array<{ __typename?: 'Invoices', id: string, invoiceNumber: string, invoiceDate: string, dueDate: string, totalAmount: number, taxAmount?: number | null, status?: any | null, sentAt?: string | null, paidAt?: string | null, billingPeriodStart: string, billingPeriodEnd: string }> };
+
+export type GetPayrollBillingStatsQueryVariables = Exact<{
+  payrollId: Scalars['uuid']['input'];
+}>;
+
+
+export type GetPayrollBillingStatsQuery = { __typename?: 'query_root', payrolls: Array<{ __typename?: 'Payrolls', id: string, name: string, client: { __typename?: 'Clients', id: string, name: string }, billingItemsAggregate: { __typename?: 'BillingItemsAggregate', aggregate?: { __typename?: 'BillingItemsAggregateFields', count: number, sum?: { __typename?: 'BillingItemsSumFields', totalAmount?: number | null } | null } | null } }> };
+
+export type GetPayrollBillingItemsQueryVariables = Exact<{
+  payrollId: Scalars['uuid']['input'];
+}>;
+
+
+export type GetPayrollBillingItemsQuery = { __typename?: 'query_root', billingItems: Array<{ __typename?: 'BillingItems', id: string, serviceName?: string | null, description?: string | null, quantity: number, unitPrice: number, totalAmount?: number | null, status?: string | null, createdAt?: any | null, staffUserId?: string | null, clientId?: string | null, payrollId?: string | null, staffUser?: { __typename?: 'Users', id: string, firstName: string, lastName: string, computedName?: string | null } | null, client?: { __typename?: 'Clients', id: string, name: string } | null, payroll?: { __typename?: 'Payrolls', id: string, name: string, client: { __typename?: 'Clients', id: string, name: string } } | null, service?: { __typename?: 'Services', id: string, name: string, category: string } | null }> };
+
+export type GetPendingBillingItemsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetPendingBillingItemsQuery = { __typename?: 'query_root', pendingBillingItems: Array<{ __typename?: 'BillingItems', id: string, serviceName?: string | null, description?: string | null, quantity: number, unitPrice: number, totalAmount?: number | null, status?: string | null, createdAt?: any | null, staffUserId?: string | null, clientId?: string | null, payrollId?: string | null, staffUser?: { __typename?: 'Users', id: string, firstName: string, lastName: string, computedName?: string | null } | null, client?: { __typename?: 'Clients', id: string, name: string } | null, payroll?: { __typename?: 'Payrolls', id: string, name: string, client: { __typename?: 'Clients', id: string, name: string } } | null, service?: { __typename?: 'Services', id: string, name: string, category: string } | null }> };
+
+export type ApproveBillingItemMutationVariables = Exact<{
+  id: Scalars['uuid']['input'];
+  approvedBy: Scalars['uuid']['input'];
+}>;
+
+
+export type ApproveBillingItemMutation = { __typename?: 'mutation_root', updateBillingItemsByPk?: { __typename?: 'BillingItems', id: string, status?: string | null, approvedBy?: string | null, approvalDate?: string | null, isApproved?: boolean | null } | null };
+
+export type RejectBillingItemMutationVariables = Exact<{
+  id: Scalars['uuid']['input'];
+  approvedBy: Scalars['uuid']['input'];
+  notes: Scalars['String']['input'];
+}>;
+
+
+export type RejectBillingItemMutation = { __typename?: 'mutation_root', updateBillingItemsByPk?: { __typename?: 'BillingItems', id: string, status?: string | null, approvedBy?: string | null, approvalDate?: string | null, isApproved?: boolean | null, notes?: string | null } | null };
+
+export type BulkApproveBillingItemsMutationVariables = Exact<{
+  ids: Array<Scalars['uuid']['input']> | Scalars['uuid']['input'];
+  approvedBy: Scalars['uuid']['input'];
+}>;
+
+
+export type BulkApproveBillingItemsMutation = { __typename?: 'mutation_root', updateBillingItemsMany?: Array<{ __typename?: 'BillingItemsMutationResponse', affectedRows: number } | null> | null };
+
+export type BulkRejectBillingItemsMutationVariables = Exact<{
+  ids: Array<Scalars['uuid']['input']> | Scalars['uuid']['input'];
+  approvedBy: Scalars['uuid']['input'];
+  notes: Scalars['String']['input'];
+}>;
+
+
+export type BulkRejectBillingItemsMutation = { __typename?: 'mutation_root', updateBillingItemsMany?: Array<{ __typename?: 'BillingItemsMutationResponse', affectedRows: number } | null> | null };
+
+export type ResendInvoiceMutationVariables = Exact<{
+  invoiceId: Scalars['uuid']['input'];
+}>;
+
+
+export type ResendInvoiceMutation = { __typename?: 'mutation_root', updateInvoicesByPk?: { __typename?: 'Invoices', id: string, sentAt?: string | null } | null };
+
+export type GetClientAssignedServicesQueryVariables = Exact<{
+  clientId: Scalars['uuid']['input'];
+}>;
+
+
+export type GetClientAssignedServicesQuery = { __typename?: 'query_root', clientServiceAssignments: Array<{ __typename?: 'ClientServiceAssignments', id: string, customRate?: number | null, customSeniorityMultipliers?: any | null, service: { __typename?: 'Services', id: string, name: string, serviceCode?: string | null, description?: string | null, category: string, baseRate?: number | null, billingUnit: string, chargeBasis: any, seniorityMultipliers?: any | null, requiresQuantityInput?: boolean | null, quantityPrompt?: string | null, isTimeBased?: boolean | null, approvalLevel?: string | null } }> };
+
+export type GetUsersByRoleQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetUsersByRoleQuery = { __typename?: 'query_root', users: Array<{ __typename?: 'Users', id: string, firstName: string, lastName: string, computedName?: string | null, role: any, currentHourlyRate?: number | null }> };
+
+export type CreateBillingItemFromServiceMutationVariables = Exact<{
+  input: BillingItemsInsertInput;
+}>;
+
+
+export type CreateBillingItemFromServiceMutation = { __typename?: 'mutation_root', insertBillingItemsOne?: { __typename?: 'BillingItems', id: string, serviceName?: string | null, description?: string | null, quantity: number, unitPrice: number, totalAmount?: number | null, status?: string | null, createdAt?: any | null, staffUser?: { __typename?: 'Users', id: string, computedName?: string | null } | null, service?: { __typename?: 'Services', id: string, name: string, category: string } | null } | null };
+
+export type UpdateBillingItemFromServiceMutationVariables = Exact<{
+  id: Scalars['uuid']['input'];
+  set: BillingItemsSetInput;
+}>;
+
+
+export type UpdateBillingItemFromServiceMutation = { __typename?: 'mutation_root', updateBillingItemsByPk?: { __typename?: 'BillingItems', id: string, serviceName?: string | null, description?: string | null, quantity: number, unitPrice: number, totalAmount?: number | null, status?: string | null, updatedAt?: string | null, staffUser?: { __typename?: 'Users', id: string, computedName?: string | null } | null, service?: { __typename?: 'Services', id: string, name: string, category: string } | null } | null };
+
+export type GetAllBillingUnitTypesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllBillingUnitTypesQuery = { __typename?: 'query_root', billingUnitTypes: Array<{ __typename?: 'BillingUnitTypes', id: string, name: string, displayName: string, description?: string | null, defaultSource?: string | null, isSystemDefined?: boolean | null, isActive?: boolean | null, requiresQuantityInput?: boolean | null, quantityPrompt?: string | null, createdAt?: string | null, updatedAt?: string | null, createdBy?: string | null, updatedBy?: string | null, createdByUser?: { __typename?: 'Users', id: string, computedName?: string | null } | null, updatedByUser?: { __typename?: 'Users', id: string, computedName?: string | null } | null }> };
+
+export type GetBillingUnitTypesForSelectionQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetBillingUnitTypesForSelectionQuery = { __typename?: 'query_root', billingUnitTypes: Array<{ __typename?: 'BillingUnitTypes', id: string, name: string, displayName: string, description?: string | null, defaultSource?: string | null, isSystemDefined?: boolean | null, requiresQuantityInput?: boolean | null, quantityPrompt?: string | null }> };
+
+export type GetBillingUnitTypeByIdQueryVariables = Exact<{
+  id: Scalars['uuid']['input'];
+}>;
+
+
+export type GetBillingUnitTypeByIdQuery = { __typename?: 'query_root', billingUnitTypesByPk?: { __typename?: 'BillingUnitTypes', id: string, name: string, displayName: string, description?: string | null, defaultSource?: string | null, isSystemDefined?: boolean | null, isActive?: boolean | null, requiresQuantityInput?: boolean | null, quantityPrompt?: string | null, createdAt?: string | null, updatedAt?: string | null, createdBy?: string | null, updatedBy?: string | null, createdByUser?: { __typename?: 'Users', id: string, computedName?: string | null } | null, updatedByUser?: { __typename?: 'Users', id: string, computedName?: string | null } | null } | null };
+
+export type GetCustomBillingUnitTypesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetCustomBillingUnitTypesQuery = { __typename?: 'query_root', billingUnitTypes: Array<{ __typename?: 'BillingUnitTypes', id: string, name: string, displayName: string, description?: string | null, defaultSource?: string | null, isActive?: boolean | null, requiresQuantityInput?: boolean | null, quantityPrompt?: string | null, createdAt?: string | null, createdByUser?: { __typename?: 'Users', id: string, computedName?: string | null } | null }> };
+
+export type GetBillingUnitTypeUsageQueryVariables = Exact<{
+  unitTypeId: Scalars['uuid']['input'];
+}>;
+
+
+export type GetBillingUnitTypeUsageQuery = { __typename?: 'query_root', services: Array<{ __typename?: 'Services', id: string, name: string, baseRate?: number | null, billingTier?: any | null, isActive?: boolean | null }>, servicesAggregate: { __typename?: 'ServicesAggregate', aggregate?: { __typename?: 'ServicesAggregateFields', count: number } | null } };
+
+export type CreateBillingUnitTypeMutationVariables = Exact<{
+  input: BillingUnitTypesInsertInput;
+}>;
+
+
+export type CreateBillingUnitTypeMutation = { __typename?: 'mutation_root', insertBillingUnitTypesOne?: { __typename?: 'BillingUnitTypes', id: string, name: string, displayName: string, description?: string | null, defaultSource?: string | null, isActive?: boolean | null, requiresQuantityInput?: boolean | null, quantityPrompt?: string | null, createdAt?: string | null, createdByUser?: { __typename?: 'Users', id: string, computedName?: string | null } | null } | null };
+
+export type UpdateBillingUnitTypeMutationVariables = Exact<{
+  id: Scalars['uuid']['input'];
+  set: BillingUnitTypesSetInput;
+}>;
+
+
+export type UpdateBillingUnitTypeMutation = { __typename?: 'mutation_root', updateBillingUnitTypesByPk?: { __typename?: 'BillingUnitTypes', id: string, name: string, displayName: string, description?: string | null, defaultSource?: string | null, isActive?: boolean | null, requiresQuantityInput?: boolean | null, quantityPrompt?: string | null, updatedAt?: string | null, updatedByUser?: { __typename?: 'Users', id: string, computedName?: string | null } | null } | null };
+
+export type ToggleBillingUnitTypeActiveMutationVariables = Exact<{
+  id: Scalars['uuid']['input'];
+  isActive: Scalars['Boolean']['input'];
+}>;
+
+
+export type ToggleBillingUnitTypeActiveMutation = { __typename?: 'mutation_root', updateBillingUnitTypesByPk?: { __typename?: 'BillingUnitTypes', id: string, name: string, displayName: string, isActive?: boolean | null, updatedAt?: string | null } | null };
+
+export type DeleteBillingUnitTypeMutationVariables = Exact<{
+  id: Scalars['uuid']['input'];
+}>;
+
+
+export type DeleteBillingUnitTypeMutation = { __typename?: 'mutation_root', deleteBillingUnitTypesByPk?: { __typename?: 'BillingUnitTypes', id: string, name: string, displayName: string } | null };
+
+export type GetAllServicesWithRatesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllServicesWithRatesQuery = { __typename?: 'query_root', services: Array<{ __typename?: 'Services', id: string, name: string, description?: string | null, category: string, baseRate?: number | null, billingTier?: any | null, serviceType: string, isActive?: boolean | null, billingUnitType?: { __typename?: 'BillingUnitTypes', id: string, name: string, displayName: string, description?: string | null, requiresQuantityInput?: boolean | null, quantityPrompt?: string | null } | null }> };
+
+export type GetServiceByIdQueryVariables = Exact<{
+  id: Scalars['uuid']['input'];
+}>;
+
+
+export type GetServiceByIdQuery = { __typename?: 'query_root', servicesByPk?: { __typename?: 'Services', id: string, name: string, description?: string | null, category: string, baseRate?: number | null, billingTier?: any | null, serviceType: string, isActive?: boolean | null, isTemplate?: boolean | null, currency: string, metadata?: any | null, dependencies?: any | null, createdAt?: string | null, updatedAt?: string | null, billingUnitType?: { __typename?: 'BillingUnitTypes', id: string, name: string, displayName: string, description?: string | null, requiresQuantityInput?: boolean | null, quantityPrompt?: string | null, defaultSource?: string | null } | null } | null };
+
+export type CreateServiceWithUnitTypeMutationVariables = Exact<{
+  input: ServicesInsertInput;
+}>;
+
+
+export type CreateServiceWithUnitTypeMutation = { __typename?: 'mutation_root', insertServicesOne?: { __typename?: 'Services', id: string, name: string, description?: string | null, category: string, baseRate?: number | null, billingTier?: any | null, serviceType: string, isActive?: boolean | null, createdAt?: string | null, billingUnitType?: { __typename?: 'BillingUnitTypes', id: string, displayName: string } | null } | null };
+
+export type UpdateServiceWithUnitTypeMutationVariables = Exact<{
+  id: Scalars['uuid']['input'];
+  set: ServicesSetInput;
+}>;
+
+
+export type UpdateServiceWithUnitTypeMutation = { __typename?: 'mutation_root', updateServicesByPk?: { __typename?: 'Services', id: string, name: string, description?: string | null, category: string, baseRate?: number | null, billingTier?: any | null, serviceType: string, isActive?: boolean | null, updatedAt?: string | null, billingUnitType?: { __typename?: 'BillingUnitTypes', id: string, displayName: string } | null } | null };
+
+export type GetServicePositionRatesQueryVariables = Exact<{
+  serviceId: Scalars['uuid']['input'];
+}>;
+
+
+export type GetServicePositionRatesQuery = { __typename?: 'query_root', servicePositionRates: Array<{ __typename?: 'ServicePositionRates', id: string, serviceId: string, position: any, ratePerUnit: number, effectiveFrom: string, effectiveTo?: string | null, createdAt?: string | null, createdByUser?: { __typename?: 'Users', id: string, computedName?: string | null } | null }> };
+
+export type GetEffectivePositionRateQueryVariables = Exact<{
+  serviceId: Scalars['uuid']['input'];
+  position: Scalars['user_position']['input'];
+  effectiveDate: Scalars['date']['input'];
+}>;
+
+
+export type GetEffectivePositionRateQuery = { __typename?: 'query_root', servicePositionRates: Array<{ __typename?: 'ServicePositionRates', id: string, ratePerUnit: number, effectiveFrom: string, effectiveTo?: string | null }> };
+
+export type CreateServicePositionRateMutationVariables = Exact<{
+  input: ServicePositionRatesInsertInput;
+}>;
+
+
+export type CreateServicePositionRateMutation = { __typename?: 'mutation_root', insertServicePositionRatesOne?: { __typename?: 'ServicePositionRates', id: string, serviceId: string, position: any, ratePerUnit: number, effectiveFrom: string, effectiveTo?: string | null, createdAt?: string | null, createdByUser?: { __typename?: 'Users', id: string, computedName?: string | null } | null } | null };
+
+export type UpdateServicePositionRateMutationVariables = Exact<{
+  id: Scalars['uuid']['input'];
+  set: ServicePositionRatesSetInput;
+}>;
+
+
+export type UpdateServicePositionRateMutation = { __typename?: 'mutation_root', updateServicePositionRatesByPk?: { __typename?: 'ServicePositionRates', id: string, serviceId: string, position: any, ratePerUnit: number, effectiveFrom: string, effectiveTo?: string | null, updatedAt?: string | null, updatedByUser?: { __typename?: 'Users', id: string, computedName?: string | null } | null } | null };
+
+export type DeleteServicePositionRateMutationVariables = Exact<{
+  id: Scalars['uuid']['input'];
+}>;
+
+
+export type DeleteServicePositionRateMutation = { __typename?: 'mutation_root', deleteServicePositionRatesByPk?: { __typename?: 'ServicePositionRates', id: string, position: any, ratePerUnit: number } | null };
+
+export type GetPayrollDateWithServicesQueryVariables = Exact<{
+  payrollDateId: Scalars['uuid']['input'];
+}>;
+
+
+export type GetPayrollDateWithServicesQuery = { __typename?: 'query_root', payrollDatesByPk?: { __typename?: 'PayrollDates', id: string, payrollId: string, originalEftDate: string, adjustedEftDate: string, status?: string | null, completedAt?: string | null, completedBy?: string | null, totalTimeSpentMinutes?: number | null, completionNotes?: string | null, payroll: { __typename?: 'Payrolls', id: string, name: string, clientId: string, employeeCount?: number | null, primaryConsultantUserId?: string | null, backupConsultantUserId?: string | null, managerUserId?: string | null, client: { __typename?: 'Clients', id: string, name: string, contactEmail?: string | null }, primaryConsultant?: { __typename?: 'Users', id: string, firstName: string, lastName: string, computedName?: string | null } | null, backupConsultant?: { __typename?: 'Users', id: string, firstName: string, lastName: string, computedName?: string | null } | null, payrollServiceAgreementsForPayroll: Array<{ __typename?: 'PayrollServiceAgreements', id: string, serviceId: string, customRate?: number | null, customQuantity?: number | null, isActive?: boolean | null, billingFrequency?: string | null, autoBillingEnabled?: boolean | null }> } } | null };
+
+export type CompletePayrollDateWithBillingMutationVariables = Exact<{
+  payrollDateId: Scalars['uuid']['input'];
+  completedBy: Scalars['uuid']['input'];
+  completionNotes?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type CompletePayrollDateWithBillingMutation = { __typename?: 'mutation_root', updatePayrollDatesByPk?: { __typename?: 'PayrollDates', id: string, status?: string | null, completedAt?: string | null, completedBy?: string | null, payrollId: string, originalEftDate: string, adjustedEftDate: string } | null };
+
+export type CreateBillingItemFromCompletionMutationVariables = Exact<{
+  billingItem: BillingItemsInsertInput;
+}>;
+
+
+export type CreateBillingItemFromCompletionMutation = { __typename?: 'mutation_root', insertBillingItemsOne?: { __typename?: 'BillingItems', id: string, amount?: number | null, description?: string | null, quantity: number, unitPrice: number, status?: string | null, createdAt?: any | null, service?: { __typename?: 'Services', id: string, name: string, billingUnitType?: { __typename?: 'BillingUnitTypes', displayName: string } | null } | null } | null };
+
+export type CreatePayrollDateTimeEntryMutationVariables = Exact<{
+  timeEntry: PayrollDateTimeEntriesInsertInput;
+}>;
+
+
+export type CreatePayrollDateTimeEntryMutation = { __typename?: 'mutation_root', insertPayrollDateTimeEntriesOne?: { __typename?: 'PayrollDateTimeEntries', id: string, payrollDateId: string, userId: string, timeSpentMinutes: number, timeUnits?: number | null, description?: string | null, serviceId?: string | null, createdAt?: string | null } | null };
+
+export type GetAllBillingItemsWithDetailsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllBillingItemsWithDetailsQuery = { __typename?: 'query_root', billingItems: Array<{ __typename?: 'BillingItems', id: string, amount?: number | null, unitPrice: number, quantity: number, description?: string | null, status?: string | null, notes?: string | null, createdAt?: any | null, updatedAt?: string | null, approvalDate?: string | null, confirmedAt?: string | null, billingPeriodStart?: string | null, billingPeriodEnd?: string | null, approvalLevel?: string | null, isApproved?: boolean | null, isAutoGenerated?: boolean | null, clientId?: string | null, serviceId?: string | null, payrollId?: string | null, payrollDateId?: string | null, client?: { __typename?: 'Clients', id: string, name: string, active?: boolean | null, contactEmail?: string | null } | null, service?: { __typename?: 'Services', id: string, name: string, description?: string | null, serviceCode?: string | null, category: string, baseRate?: number | null, billingUnit: string, chargeBasis: any, approvalLevel?: string | null, billingTier?: any | null, isTimeBased?: boolean | null, billingUnitType?: { __typename?: 'BillingUnitTypes', id: string, name: string, displayName: string, requiresQuantityInput?: boolean | null, quantityPrompt?: string | null } | null } | null, staffUser?: { __typename?: 'Users', id: string, firstName: string, lastName: string, computedName?: string | null, role: any } | null, approvedByUser?: { __typename?: 'Users', id: string, firstName: string, lastName: string, computedName?: string | null } | null, confirmedByUser?: { __typename?: 'Users', id: string, firstName: string, lastName: string, computedName?: string | null } | null, payroll?: { __typename?: 'Payrolls', id: string, name: string, client: { __typename?: 'Clients', id: string, name: string } } | null, payrollDate?: { __typename?: 'PayrollDates', id: string, originalEftDate: string, adjustedEftDate: string, status?: string | null } | null, billingUnitType?: { __typename?: 'BillingUnitTypes', id: string, name: string, displayName: string, description?: string | null, requiresQuantityInput?: boolean | null, quantityPrompt?: string | null } | null }> };
+
+export type GetClientsForBillingQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetClientsForBillingQuery = { __typename?: 'query_root', clients: Array<{ __typename?: 'Clients', id: string, name: string, contactEmail?: string | null, active?: boolean | null, clientServiceAssignmentsAggregate: { __typename?: 'ClientServiceAssignmentsAggregate', aggregate?: { __typename?: 'ClientServiceAssignmentsAggregateFields', count: number } | null }, billingItemsAggregate: { __typename?: 'BillingItemsAggregate', aggregate?: { __typename?: 'BillingItemsAggregateFields', count: number, sum?: { __typename?: 'BillingItemsSumFields', amount?: number | null } | null } | null } }> };
+
+export type GetClientAssignedServicesEnhancedQueryVariables = Exact<{
+  clientId: Scalars['uuid']['input'];
+}>;
+
+
+export type GetClientAssignedServicesEnhancedQuery = { __typename?: 'query_root', clientServiceAssignments: Array<{ __typename?: 'ClientServiceAssignments', id: string, clientId: string, serviceId: string, customRate?: number | null, isActive?: boolean | null, notes?: string | null, customSeniorityMultipliers?: any | null, service: { __typename?: 'Services', id: string, name: string, description?: string | null, serviceCode?: string | null, category: string, baseRate?: number | null, billingUnit: string, chargeBasis: any, approvalLevel?: string | null, billingTier?: any | null, isTimeBased?: boolean | null, seniorityMultipliers?: any | null, billingUnitType?: { __typename?: 'BillingUnitTypes', id: string, name: string, displayName: string, description?: string | null, requiresQuantityInput?: boolean | null, quantityPrompt?: string | null, defaultSource?: string | null } | null }, client: { __typename?: 'Clients', id: string, name: string } }> };
+
+export type GetUsersByRoleEnhancedQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetUsersByRoleEnhancedQuery = { __typename?: 'query_root', users: Array<{ __typename?: 'Users', id: string, firstName: string, lastName: string, computedName?: string | null, role: any, position?: any | null, currentHourlyRate?: number | null, isActive?: boolean | null }> };
+
+export type CreateBillingItemFromServiceEnhancedMutationVariables = Exact<{
+  input: BillingItemsInsertInput;
+}>;
+
+
+export type CreateBillingItemFromServiceEnhancedMutation = { __typename?: 'mutation_root', insertBillingItemsOne?: { __typename?: 'BillingItems', id: string, amount?: number | null, unitPrice: number, quantity: number, description?: string | null, status?: string | null, notes?: string | null, createdAt?: any | null, client?: { __typename?: 'Clients', id: string, name: string } | null, service?: { __typename?: 'Services', id: string, name: string, category: string } | null, staffUser?: { __typename?: 'Users', id: string, computedName?: string | null } | null } | null };
+
+export type UpdateBillingItemFromServiceEnhancedMutationVariables = Exact<{
+  id: Scalars['uuid']['input'];
+  set: BillingItemsSetInput;
+}>;
+
+
+export type UpdateBillingItemFromServiceEnhancedMutation = { __typename?: 'mutation_root', updateBillingItemsByPk?: { __typename?: 'BillingItems', id: string, amount?: number | null, unitPrice: number, quantity: number, description?: string | null, status?: string | null, notes?: string | null, updatedAt?: string | null, client?: { __typename?: 'Clients', id: string, name: string } | null, service?: { __typename?: 'Services', id: string, name: string, category: string } | null } | null };
+
+export type UpdateBillingItemStatusMutationVariables = Exact<{
+  id: Scalars['uuid']['input'];
+  status: Scalars['String']['input'];
+  approvedBy?: InputMaybe<Scalars['uuid']['input']>;
+  approvalDate?: InputMaybe<Scalars['timestamptz']['input']>;
+}>;
+
+
+export type UpdateBillingItemStatusMutation = { __typename?: 'mutation_root', updateBillingItemsByPk?: { __typename?: 'BillingItems', id: string, status?: string | null, approvalDate?: string | null, approvedBy?: string | null, approvedByUser?: { __typename?: 'Users', id: string, computedName?: string | null } | null } | null };
+
+export type DeleteBillingItemMutationVariables = Exact<{
+  id: Scalars['uuid']['input'];
+}>;
+
+
+export type DeleteBillingItemMutation = { __typename?: 'mutation_root', deleteBillingItemsByPk?: { __typename?: 'BillingItems', id: string, description?: string | null, amount?: number | null } | null };
+
+export type GetPayrollServiceAgreementsEnhancedQueryVariables = Exact<{
+  payrollId: Scalars['uuid']['input'];
+}>;
+
+
+export type GetPayrollServiceAgreementsEnhancedQuery = { __typename?: 'query_root', payrollServiceAgreements: Array<{ __typename?: 'PayrollServiceAgreements', id: string, payrollId: string, serviceId: string, clientServiceAgreementId?: string | null, customRate?: number | null, customQuantity?: number | null, customDescription?: string | null, isActive?: boolean | null, isOneTime?: boolean | null, billingFrequency?: string | null, autoBillingEnabled?: boolean | null, billingItemsGenerated?: boolean | null, serviceConfiguration?: any | null, billingNotes?: string | null, createdAt?: string | null, payrollServiceAgreementsByServiceId: { __typename?: 'Services', id: string, name: string, description?: string | null, category: string, baseRate?: number | null, billingUnit: string, chargeBasis: any, billingTier?: any | null, isTimeBased?: boolean | null, billingUnitType?: { __typename?: 'BillingUnitTypes', id: string, name: string, displayName: string, requiresQuantityInput?: boolean | null, quantityPrompt?: string | null, defaultSource?: string | null } | null }, clientServiceAgreement?: { __typename?: 'ClientServiceAgreements', id: string, customRate?: number | null, billingFrequency?: string | null, isActive?: boolean | null, service: { __typename?: 'Services', id: string, name: string, description?: string | null, category: string, baseRate?: number | null, billingUnit: string, billingTier?: any | null }, client: { __typename?: 'Clients', id: string, name: string } } | null, payrollServiceAgreementsForPayroll: { __typename?: 'Payrolls', id: string, name: string, employeeCount?: number | null, primaryConsultantUserId?: string | null, backupConsultantUserId?: string | null, managerUserId?: string | null, client: { __typename?: 'Clients', id: string, name: string } } }> };
+
+export type CreatePayrollServiceAgreementEnhancedMutationVariables = Exact<{
+  input: PayrollServiceAgreementsInsertInput;
+}>;
+
+
+export type CreatePayrollServiceAgreementEnhancedMutation = { __typename?: 'mutation_root', insertPayrollServiceAgreementsOne?: { __typename?: 'PayrollServiceAgreements', id: string, payrollId: string, serviceId: string, customRate?: number | null, customQuantity?: number | null, isActive?: boolean | null, isOneTime?: boolean | null, createdAt?: string | null, payrollServiceAgreementsByServiceId: { __typename?: 'Services', id: string, name: string, category: string }, payrollServiceAgreementsForPayroll: { __typename?: 'Payrolls', id: string, name: string, client: { __typename?: 'Clients', id: string, name: string } } } | null };
+
+export type UpdatePayrollServiceAgreementEnhancedMutationVariables = Exact<{
+  id: Scalars['uuid']['input'];
+  set: PayrollServiceAgreementsSetInput;
+}>;
+
+
+export type UpdatePayrollServiceAgreementEnhancedMutation = { __typename?: 'mutation_root', updatePayrollServiceAgreementsByPk?: { __typename?: 'PayrollServiceAgreements', id: string, payrollId: string, serviceId: string, customRate?: number | null, customQuantity?: number | null, isActive?: boolean | null, isOneTime?: boolean | null, updatedAt?: string | null, payrollServiceAgreementsByServiceId: { __typename?: 'Services', id: string, name: string, category: string } } | null };
+
+export type DeletePayrollServiceAgreementEnhancedMutationVariables = Exact<{
+  id: Scalars['uuid']['input'];
+}>;
+
+
+export type DeletePayrollServiceAgreementEnhancedMutation = { __typename?: 'mutation_root', deletePayrollServiceAgreementsByPk?: { __typename?: 'PayrollServiceAgreements', id: string, payrollId: string, serviceId: string, payrollServiceAgreementsByServiceId: { __typename?: 'Services', name: string }, payrollServiceAgreementsForPayroll: { __typename?: 'Payrolls', name: string, client: { __typename?: 'Clients', name: string } } } | null };
+
+export type GetServiceAssignmentAnalyticsQueryVariables = Exact<{
+  clientId?: InputMaybe<Scalars['uuid']['input']>;
+}>;
+
+
+export type GetServiceAssignmentAnalyticsQuery = { __typename?: 'query_root', clientServiceAgreements: Array<{ __typename?: 'ClientServiceAgreements', id: string, customRate?: number | null, billingFrequency?: string | null, service: { __typename?: 'Services', id: string, name: string, category: string, baseRate?: number | null, billingTier?: any | null, billingItemsAggregate: { __typename?: 'BillingItemsAggregate', aggregate?: { __typename?: 'BillingItemsAggregateFields', count: number, sum?: { __typename?: 'BillingItemsSumFields', amount?: number | null } | null } | null } }, payrollServiceAgreementsAggregate: { __typename?: 'PayrollServiceAgreementsAggregate', aggregate?: { __typename?: 'PayrollServiceAgreementsAggregateFields', count: number } | null } }>, payrollServiceAgreements: Array<{ __typename?: 'PayrollServiceAgreements', id: string, isOneTime?: boolean | null, billingItemsGenerated?: boolean | null, customRate?: number | null, payrollServiceAgreementsByServiceId: { __typename?: 'Services', id: string, name: string, category: string }, payrollServiceAgreementsForPayroll: { __typename?: 'Payrolls', id: string, name: string } }>, billingItemsAggregate: { __typename?: 'BillingItemsAggregate', aggregate?: { __typename?: 'BillingItemsAggregateFields', count: number, sum?: { __typename?: 'BillingItemsSumFields', amount?: number | null } | null, avg?: { __typename?: 'BillingItemsAvgFields', amount?: number | null } | null } | null, nodes: Array<{ __typename?: 'BillingItems', status?: string | null, amount?: number | null, createdAt?: any | null, service?: { __typename?: 'Services', name: string, category: string } | null }> } };
+
+export type GetBillingWorkflowOverviewQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetBillingWorkflowOverviewQuery = { __typename?: 'query_root', draftItems: { __typename?: 'BillingItemsAggregate', aggregate?: { __typename?: 'BillingItemsAggregateFields', count: number, sum?: { __typename?: 'BillingItemsSumFields', amount?: number | null } | null } | null }, pendingItems: { __typename?: 'BillingItemsAggregate', aggregate?: { __typename?: 'BillingItemsAggregateFields', count: number, sum?: { __typename?: 'BillingItemsSumFields', amount?: number | null } | null } | null }, approvedItems: { __typename?: 'BillingItemsAggregate', aggregate?: { __typename?: 'BillingItemsAggregateFields', count: number, sum?: { __typename?: 'BillingItemsSumFields', amount?: number | null } | null } | null }, recentActivity: Array<{ __typename?: 'BillingItems', id: string, description?: string | null, amount?: number | null, status?: string | null, createdAt?: any | null, client?: { __typename?: 'Clients', name: string } | null, service?: { __typename?: 'Services', name: string, category: string } | null, staffUser?: { __typename?: 'Users', computedName?: string | null } | null }>, serviceUtilization: Array<{ __typename?: 'Services', id: string, name: string, category: string, billingItemsAggregate: { __typename?: 'BillingItemsAggregate', aggregate?: { __typename?: 'BillingItemsAggregateFields', count: number, sum?: { __typename?: 'BillingItemsSumFields', amount?: number | null } | null } | null } }> };
 
 export type CreateTimeEntryWithUnitsMutationVariables = Exact<{
   input: TimeEntriesInsertInput;
@@ -25294,6 +27994,42 @@ export type AutoGenerateInvoicesMutationVariables = Exact<{
 
 
 export type AutoGenerateInvoicesMutation = { __typename?: 'mutation_root', insertBillingPeriods?: { __typename?: 'BillingPeriodsMutationResponse', affectedRows: number, returning: Array<{ __typename?: 'BillingPeriods', id: string, clientId: string, periodStart: string, periodEnd: string, status?: string | null }> } | null };
+
+export type SavePayrollServiceQuantitiesComponentMutationVariables = Exact<{
+  quantities: Array<PayrollServiceQuantitiesInsertInput> | PayrollServiceQuantitiesInsertInput;
+  payrollDateId: Scalars['uuid']['input'];
+}>;
+
+
+export type SavePayrollServiceQuantitiesComponentMutation = { __typename?: 'mutation_root', deletePayrollServiceQuantities?: { __typename?: 'PayrollServiceQuantitiesMutationResponse', affectedRows: number } | null, insertPayrollServiceQuantities?: { __typename?: 'PayrollServiceQuantitiesMutationResponse', returning: Array<{ __typename?: 'PayrollServiceQuantities', id: string, serviceId: string, quantity: number }> } | null };
+
+export type UpdatePayrollDateStatusComponentMutationVariables = Exact<{
+  payrollDateId: Scalars['uuid']['input'];
+  status: Scalars['String']['input'];
+}>;
+
+
+export type UpdatePayrollDateStatusComponentMutation = { __typename?: 'mutation_root', updatePayrollDatesByPk?: { __typename?: 'PayrollDates', id: string, status?: string | null } | null };
+
+export type GetTier1CandidatesApiQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetTier1CandidatesApiQuery = { __typename?: 'query_root', payrollDates: Array<{ __typename?: 'PayrollDates', id: string, completedBy?: string | null, completedAt?: string | null, payrollId: string, payroll: { __typename?: 'Payrolls', id: string, name: string, client: { __typename?: 'Clients', id: string, name: string } } }> };
+
+export type GetTier2CandidatesApiQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetTier2CandidatesApiQuery = { __typename?: 'query_root', payrolls: Array<{ __typename?: 'Payrolls', id: string, name: string, primaryConsultantUserId?: string | null, client: { __typename?: 'Clients', id: string, name: string } }> };
+
+export type GetTier3CandidatesApiQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetTier3CandidatesApiQuery = { __typename?: 'query_root', monthlyBillingCompletion: Array<{ __typename?: 'MonthlyBillingCompletion', id: string, clientId: string, billingMonth: string, client: { __typename?: 'Clients', id: string, name: string } }> };
+
+export type GetBillingCandidatesApiQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetBillingCandidatesApiQuery = { __typename?: 'query_root', tier1Candidates: { __typename?: 'PayrollDatesAggregate', aggregate?: { __typename?: 'PayrollDatesAggregateFields', count: number } | null }, tier2Candidates: { __typename?: 'PayrollsAggregate', aggregate?: { __typename?: 'PayrollsAggregateFields', count: number } | null }, tier3Candidates: { __typename?: 'MonthlyBillingCompletionAggregate', aggregate?: { __typename?: 'MonthlyBillingCompletionAggregateFields', count: number } | null } };
 
 export type CreateQuoteMutationVariables = Exact<{
   input: QuotesInsertInput;
@@ -25667,6 +28403,64 @@ export type GetServiceCategoriesQueryVariables = Exact<{ [key: string]: never; }
 
 export type GetServiceCategoriesQuery = { __typename?: 'query_root', services: Array<{ __typename?: 'Services', category: string }> };
 
+export type CheckPayrollDateApiTier1CompletionQueryVariables = Exact<{
+  payrollDateId: Scalars['uuid']['input'];
+}>;
+
+
+export type CheckPayrollDateApiTier1CompletionQuery = { __typename?: 'query_root', payrollDates: Array<{ __typename?: 'PayrollDates', id: string, status?: string | null, payroll: { __typename?: 'Payrolls', id: string, name: string, client: { __typename?: 'Clients', id: string, name: string } } }>, existingContext: Array<{ __typename?: 'PayrollDateCompletionContext', id: string }> };
+
+export type CreateCompletionContextApiMutationVariables = Exact<{
+  input: PayrollDateCompletionContextInsertInput;
+}>;
+
+
+export type CreateCompletionContextApiMutation = { __typename?: 'mutation_root', insertPayrollDateCompletionContextOne?: { __typename?: 'PayrollDateCompletionContext', id: string, payrollDateId: string, completedAt?: string | null } | null };
+
+export type UpdatePayrollDateStatusApiMutationVariables = Exact<{
+  payrollDateId: Scalars['uuid']['input'];
+  completedBy: Scalars['uuid']['input'];
+}>;
+
+
+export type UpdatePayrollDateStatusApiMutation = { __typename?: 'mutation_root', updatePayrollDates?: { __typename?: 'PayrollDatesMutationResponse', affectedRows: number } | null };
+
+export type LogCompletionEventApiMutationVariables = Exact<{
+  input: BillingEventLogInsertInput;
+}>;
+
+
+export type LogCompletionEventApiMutation = { __typename?: 'mutation_root', insertBillingEventLogOne?: { __typename?: 'BillingEventLog', id: string } | null };
+
+export type CheckExistingContextApiQueryVariables = Exact<{
+  payrollDateId: Scalars['uuid']['input'];
+}>;
+
+
+export type CheckExistingContextApiQuery = { __typename?: 'query_root', payrollDateCompletionContext: Array<{ __typename?: 'PayrollDateCompletionContext', id: string }>, payrollDates: Array<{ __typename?: 'PayrollDates', id: string, payroll: { __typename?: 'Payrolls', id: string, name: string, client: { __typename?: 'Clients', id: string, name: string } } }> };
+
+export type UpdateCompletionContextApiMutationVariables = Exact<{
+  payrollDateId: Scalars['uuid']['input'];
+  updates: PayrollDateCompletionContextSetInput;
+}>;
+
+
+export type UpdateCompletionContextApiMutation = { __typename?: 'mutation_root', updatePayrollDateCompletionContext?: { __typename?: 'PayrollDateCompletionContextMutationResponse', affectedRows: number, returning: Array<{ __typename?: 'PayrollDateCompletionContext', id: string }> } | null };
+
+export type DeleteExistingBillingApiMutationVariables = Exact<{
+  payrollDateId: Scalars['uuid']['input'];
+}>;
+
+
+export type DeleteExistingBillingApiMutation = { __typename?: 'mutation_root', deleteBillingItems?: { __typename?: 'BillingItemsMutationResponse', affectedRows: number } | null };
+
+export type GetCompletionContextApiQueryVariables = Exact<{
+  payrollDateId: Scalars['uuid']['input'];
+}>;
+
+
+export type GetCompletionContextApiQuery = { __typename?: 'query_root', payrollDateCompletionContext: Array<{ __typename?: 'PayrollDateCompletionContext', id: string, payrollDateId: string, completedBy: string, completedAt?: string | null, payslipCount?: number | null, employeeCount?: number | null, customQuantities?: any | null, completedByUser: { __typename?: 'Users', id: string, firstName: string, lastName: string, computedName?: string | null } }>, payrollDates: Array<{ __typename?: 'PayrollDates', id: string, originalEftDate: string, adjustedEftDate: string, status?: string | null, payroll: { __typename?: 'Payrolls', id: string, name: string, client: { __typename?: 'Clients', id: string, name: string } }, billingItems: Array<{ __typename?: 'BillingItems', id: string, serviceCode?: string | null, serviceName?: string | null, description?: string | null, quantity: number, unitPrice: number, totalAmount?: number | null, status?: string | null, approvalLevel?: string | null, rateJustification?: string | null, createdAt?: any | null }> }> };
+
 export type UserMinimalFragment = { __typename?: 'Users', id: string, firstName: string, lastName: string, computedName?: string | null, email: string };
 
 export type UserCoreSharedFragment = { __typename?: 'Users', role: any, isActive?: boolean | null, id: string, firstName: string, lastName: string, computedName?: string | null, email: string };
@@ -25783,6 +28577,31 @@ export type RefreshDataMutationVariables = Exact<{ [key: string]: never; }>;
 
 export type RefreshDataMutation = { __typename: 'mutation_root' };
 
+export type UpdateFeatureFlagMutationVariables = Exact<{
+  id: Scalars['uuid']['input'];
+  isEnabled: Scalars['Boolean']['input'];
+  allowedRoles?: InputMaybe<Scalars['jsonb']['input']>;
+}>;
+
+
+export type UpdateFeatureFlagMutation = { __typename?: 'mutation_root', updateFeatureFlagsByPk?: { __typename?: 'FeatureFlags', id: string, featureName: string, isEnabled?: boolean | null, allowedRoles: any, updatedAt?: string | null } | null };
+
+export type CreateFeatureFlagMutationVariables = Exact<{
+  featureName: Scalars['String']['input'];
+  isEnabled: Scalars['Boolean']['input'];
+  allowedRoles?: InputMaybe<Scalars['jsonb']['input']>;
+}>;
+
+
+export type CreateFeatureFlagMutation = { __typename?: 'mutation_root', insertFeatureFlagsOne?: { __typename?: 'FeatureFlags', id: string, featureName: string, isEnabled?: boolean | null, allowedRoles: any, updatedAt?: string | null } | null };
+
+export type DeleteFeatureFlagMutationVariables = Exact<{
+  id: Scalars['uuid']['input'];
+}>;
+
+
+export type DeleteFeatureFlagMutation = { __typename?: 'mutation_root', deleteFeatureFlagsByPk?: { __typename?: 'FeatureFlags', id: string, featureName: string } | null };
+
 export type GetDashboardMetricsQueryVariables = Exact<{
   userId: Scalars['uuid']['input'];
 }>;
@@ -25845,6 +28664,18 @@ export type ListFilesQueryVariables = Exact<{
 
 export type ListFilesQuery = { __typename?: 'query_root', files: Array<{ __typename?: 'Files', id: string, filename: string, bucket: string, objectKey: string, size?: number | null, mimetype?: string | null, url?: string | null, clientId?: string | null, payrollId?: string | null, uploadedBy?: string | null, category?: string | null, isPublic?: boolean | null, metadata?: any | null, fileType?: string | null, createdAt?: string | null, client?: { __typename?: 'Clients', name: string } | null, payroll?: { __typename?: 'Payrolls', name: string } | null }>, filesAggregate: { __typename?: 'FilesAggregate', aggregate?: { __typename?: 'FilesAggregateFields', count: number } | null } };
 
+export type GetFeatureFlagsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetFeatureFlagsQuery = { __typename?: 'query_root', featureFlags: Array<{ __typename?: 'FeatureFlags', featureName: string, isEnabled?: boolean | null, allowedRoles: any }> };
+
+export type GetFeatureFlagByNameQueryVariables = Exact<{
+  featureName: Scalars['String']['input'];
+}>;
+
+
+export type GetFeatureFlagByNameQuery = { __typename?: 'query_root', featureFlags: Array<{ __typename?: 'FeatureFlags', featureName: string, isEnabled?: boolean | null, allowedRoles: any }> };
+
 export type RecentActivitySubscriptionVariables = Exact<{
   resourceTypes?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
 }>;
@@ -25882,6 +28713,8 @@ export const UserProductivityAnalysisFragmentFragmentDoc = {"kind":"Document","d
 export const BillingItemCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BillingItemCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BillingItems"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"unitPrice"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"approvalDate"}},{"kind":"Field","name":{"kind":"Name","value":"isApproved"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"staffUserId"}},{"kind":"Field","name":{"kind":"Name","value":"approvedBy"}},{"kind":"Field","name":{"kind":"Name","value":"confirmedAt"}},{"kind":"Field","name":{"kind":"Name","value":"confirmedBy"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceName"}},{"kind":"Field","name":{"kind":"Name","value":"hourlyRate"}},{"kind":"Field","name":{"kind":"Name","value":"invoiceId"}}]}}]} as unknown as DocumentNode<BillingItemCoreFragment, unknown>;
 export const BillingItemWithRelationsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BillingItemWithRelations"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BillingItems"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"BillingItemCore"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"contactEmail"}}]}},{"kind":"Field","name":{"kind":"Name","value":"staffUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"Field","name":{"kind":"Name","value":"approvedByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"defaultRate"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"serviceType"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BillingItemCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BillingItems"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"unitPrice"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"approvalDate"}},{"kind":"Field","name":{"kind":"Name","value":"isApproved"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"staffUserId"}},{"kind":"Field","name":{"kind":"Name","value":"approvedBy"}},{"kind":"Field","name":{"kind":"Name","value":"confirmedAt"}},{"kind":"Field","name":{"kind":"Name","value":"confirmedBy"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceName"}},{"kind":"Field","name":{"kind":"Name","value":"hourlyRate"}},{"kind":"Field","name":{"kind":"Name","value":"invoiceId"}}]}}]} as unknown as DocumentNode<BillingItemWithRelationsFragment, unknown>;
 export const BillingItemStatsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BillingItemStats"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BillingItemsAggregate"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}}]}},{"kind":"Field","name":{"kind":"Name","value":"avg"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}}]}}]}}]}}]} as unknown as DocumentNode<BillingItemStatsFragment, unknown>;
+export const PayrollServiceAssignmentCoreFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollServiceAssignmentCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollServiceAgreements"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreementId"}},{"kind":"Field","name":{"kind":"Name","value":"customQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingNotes"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}}]}}]} as unknown as DocumentNode<PayrollServiceAssignmentCoreFragment, unknown>;
+export const PayrollServiceAssignmentWithRelationsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollServiceAssignmentWithRelations"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollServiceAgreements"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollServiceAssignmentCore"}},{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreementsForPayroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreementsByServiceId"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"baseRate"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"serviceType"}}]}},{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreement"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"serviceAgreementCreatedByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollServiceAssignmentCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollServiceAgreements"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreementId"}},{"kind":"Field","name":{"kind":"Name","value":"customQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingNotes"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}}]}}]} as unknown as DocumentNode<PayrollServiceAssignmentWithRelationsFragment, unknown>;
 export const ServiceCatalogFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ServiceCatalogFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Services"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"defaultRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"serviceType"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<ServiceCatalogFragmentFragment, unknown>;
 export const ClientServiceAgreementFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientServiceAgreementFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ClientServiceAgreements"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingFrequency"}},{"kind":"Field","name":{"kind":"Name","value":"contractStartDate"}},{"kind":"Field","name":{"kind":"Name","value":"isEnabled"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ServiceCatalogFragment"}}]}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ServiceCatalogFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Services"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"defaultRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"serviceType"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<ClientServiceAgreementFragmentFragment, unknown>;
 export const QuoteLineItemFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"QuoteLineItemFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"QuoteLineItems"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"quoteId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"unitRate"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ServiceCatalogFragment"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ServiceCatalogFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Services"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"defaultRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"serviceType"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]} as unknown as DocumentNode<QuoteLineItemFragmentFragment, unknown>;
@@ -25989,6 +28822,14 @@ export const GetBillingDashboardCompleteDocument = {"kind":"Document","definitio
 export const GetClientsForBillingItemsAdvancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetClientsForBillingItemsAdvanced"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clients"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"active"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"contactEmail"}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}}]}}]} as unknown as DocumentNode<GetClientsForBillingItemsAdvancedQuery, GetClientsForBillingItemsAdvancedQueryVariables>;
 export const GetUsersForBillingItemsAdvancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUsersForBillingItemsAdvanced"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"firstName"},"value":{"kind":"EnumValue","value":"ASC"}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"lastName"},"value":{"kind":"EnumValue","value":"ASC"}}]}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}}]}}]}}]} as unknown as DocumentNode<GetUsersForBillingItemsAdvancedQuery, GetUsersForBillingItemsAdvancedQueryVariables>;
 export const GetBillingItemAuditLogAdvancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetBillingItemAuditLogAdvanced"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"billingItemId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"50"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"0"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"auditAuditLog"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"resourceType"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"billing_items","block":false}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"resourceId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"billingItemId"}}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"oldValues"}},{"kind":"Field","name":{"kind":"Name","value":"newValues"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"ipAddress"}},{"kind":"Field","name":{"kind":"Name","value":"userAgent"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"userEmail"}},{"kind":"Field","name":{"kind":"Name","value":"userRole"}}]}}]}}]} as unknown as DocumentNode<GetBillingItemAuditLogAdvancedQuery, GetBillingItemAuditLogAdvancedQueryVariables>;
+export const GetUserTimeEntriesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserTimeEntries"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"timeEntries"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDateId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"isBillableToService"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"staffUserId"}},{"kind":"Field","name":{"kind":"Name","value":"hoursSpent"}},{"kind":"Field","name":{"kind":"Name","value":"userHourlyRate"}},{"kind":"Field","name":{"kind":"Name","value":"calculatedFee"}},{"kind":"Field","name":{"kind":"Name","value":"assignedServiceId"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"workDate"}},{"kind":"Field","name":{"kind":"Name","value":"staffUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"computedName"}},{"kind":"Field","name":{"kind":"Name","value":"seniorityLevel"}}]}},{"kind":"Field","name":{"kind":"Name","value":"assignedService"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"serviceCode"}},{"kind":"Field","name":{"kind":"Name","value":"seniorityMultipliers"}}]}}]}}]}}]} as unknown as DocumentNode<GetUserTimeEntriesQuery, GetUserTimeEntriesQueryVariables>;
+export const GetPayrollCompletionDataDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPayrollCompletionData"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrollDates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"originalEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"adjustedEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"completedAt"}},{"kind":"Field","name":{"kind":"Name","value":"completedBy"}},{"kind":"Field","name":{"kind":"Name","value":"payroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreementsForPayroll"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"customQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingNotes"}},{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreementsByServiceId"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"serviceCode"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"defaultRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"chargeBasis"}},{"kind":"Field","name":{"kind":"Name","value":"serviceType"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}}]}},{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreement"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"billingItems"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDateId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"unitPrice"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}}]} as unknown as DocumentNode<GetPayrollCompletionDataQuery, GetPayrollCompletionDataQueryVariables>;
+export const GetAllServicesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetAllServices"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"services"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"serviceCode"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"defaultRate"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"serviceType"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnitTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnitType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"defaultSource"}},{"kind":"Field","name":{"kind":"Name","value":"requiresQuantityInput"}},{"kind":"Field","name":{"kind":"Name","value":"quantityPrompt"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemDefined"}}]}},{"kind":"Field","name":{"kind":"Name","value":"seniorityMultipliers"}},{"kind":"Field","name":{"kind":"Name","value":"approvalLevel"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<GetAllServicesQuery, GetAllServicesQueryVariables>;
+export const GetActiveBillingUnitTypesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetActiveBillingUnitTypes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"billingUnitTypes"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isSystemDefined"},"value":{"kind":"EnumValue","value":"DESC"}},{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"defaultSource"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemDefined"}},{"kind":"Field","name":{"kind":"Name","value":"requiresQuantityInput"}},{"kind":"Field","name":{"kind":"Name","value":"quantityPrompt"}}]}}]}}]} as unknown as DocumentNode<GetActiveBillingUnitTypesQuery, GetActiveBillingUnitTypesQueryVariables>;
+export const GetServiceStatisticsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetServiceStatistics"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"servicesAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"activeServicesAggregate"},"name":{"kind":"Name","value":"servicesAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"servicesByCategory"},"name":{"kind":"Name","value":"servicesAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<GetServiceStatisticsQuery, GetServiceStatisticsQueryVariables>;
+export const CreateServiceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateService"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ServicesInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertServicesOne"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"serviceCode"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"defaultRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnitTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnitType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}}]}}]}}]} as unknown as DocumentNode<CreateServiceMutation, CreateServiceMutationVariables>;
+export const UpdateServiceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateService"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ServicesSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateServicesByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"serviceCode"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnitTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnitType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<UpdateServiceMutation, UpdateServiceMutationVariables>;
+export const DeleteServiceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteService"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteServicesByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<DeleteServiceMutation, DeleteServiceMutationVariables>;
 export const GetTimeEntriesByPayrollDocumentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTimeEntriesByPayrollDocument"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"100"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"0"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"timeEntries"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"workDate"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"staffUserId"}},{"kind":"Field","name":{"kind":"Name","value":"hoursSpent"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"workDate"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"contactEmail"}}]}},{"kind":"Field","name":{"kind":"Name","value":"staffUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"timeEntriesAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hoursSpent"}}]}},{"kind":"Field","name":{"kind":"Name","value":"avg"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hoursSpent"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetTimeEntriesByPayrollDocumentQuery, GetTimeEntriesByPayrollDocumentQueryVariables>;
 export const GetTimeEntriesByPayrollDateDocumentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTimeEntriesByPayrollDateDocument"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"100"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"0"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"timeEntries"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDateId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"workDate"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"payrollDateId"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"staffUserId"}},{"kind":"Field","name":{"kind":"Name","value":"hoursSpent"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"workDate"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"staffUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}}]}}]}}]}}]} as unknown as DocumentNode<GetTimeEntriesByPayrollDateDocumentQuery, GetTimeEntriesByPayrollDateDocumentQueryVariables>;
 export const GetTimeEntriesForBillingDocumentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTimeEntriesForBillingDocument"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"staffUserId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"timeEntries"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"staffUserId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"staffUserId"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"workDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"_lte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"workDate"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"staffUserId"}},{"kind":"Field","name":{"kind":"Name","value":"hoursSpent"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"workDate"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"staffUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"timeEntriesAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"staffUserId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"staffUserId"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"workDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"_lte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}}}]}}]}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hoursSpent"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetTimeEntriesForBillingDocumentQuery, GetTimeEntriesForBillingDocumentQueryVariables>;
@@ -26000,6 +28841,109 @@ export const GenerateBillingFromPayrollDateDocumentDocument = {"kind":"Document"
 export const GetPayrollProfitabilityAnalyticsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPayrollProfitabilityAnalytics"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"dateFrom"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"timestamptz"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"dateTo"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"timestamptz"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"50"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"0"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"dateFrom"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_lte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"dateTo"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"primaryConsultant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"backupConsultant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"billingItems"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"approved","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"serviceName"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"timeEntries"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"hoursSpent"}},{"kind":"Field","name":{"kind":"Name","value":"workDate"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]}}]} as unknown as DocumentNode<GetPayrollProfitabilityAnalyticsQuery, GetPayrollProfitabilityAnalyticsQueryVariables>;
 export const GetStaffBillingPerformanceAnalyticsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetStaffBillingPerformanceAnalytics"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"staffUserId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"timestampFrom"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"timestamp"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"timestampTo"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"timestamp"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"dateFrom"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"dateTo"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"50"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"billingItems"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"staffUserId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"staffUserId"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"timestampFrom"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_lte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"timestampTo"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"approved","block":false}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"serviceName"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"staffUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"role"}}]}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"timeEntries"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"staffUserId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"staffUserId"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"workDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"dateFrom"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"workDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_lte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"dateTo"}}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"workDate"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"hoursSpent"}},{"kind":"Field","name":{"kind":"Name","value":"workDate"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"staffUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GetStaffBillingPerformanceAnalyticsQuery, GetStaffBillingPerformanceAnalyticsQueryVariables>;
 export const GetProfitabilityStatsAdvancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetProfitabilityStatsAdvanced"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"staffUserId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"timestampFrom"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"timestamp"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"timestampTo"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"timestamp"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"dateFrom"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"dateTo"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"totalRevenue"},"name":{"kind":"Name","value":"billingItemsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"timestampFrom"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_lte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"timestampTo"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"approved","block":false}}]}}]}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}}]}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"totalHours"},"name":{"kind":"Name","value":"timeEntriesAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"workDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"dateFrom"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"workDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_lte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"dateTo"}}}]}}]}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hoursSpent"}}]}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"pendingRevenue"},"name":{"kind":"Name","value":"billingItemsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"timestampFrom"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_lte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"timestampTo"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"pending","block":false}}]}}]}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}}]}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<GetProfitabilityStatsAdvancedQuery, GetProfitabilityStatsAdvancedQueryVariables>;
+export const GetUserBillingRatesAdvancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserBillingRatesAdvanced"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"currentHourlyRate"}},{"kind":"Field","name":{"kind":"Name","value":"seniorityLevel"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"userBillingRates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"effectiveFrom"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"hourlyRate"}},{"kind":"Field","name":{"kind":"Name","value":"seniorityLevel"}},{"kind":"Field","name":{"kind":"Name","value":"effectiveFrom"}},{"kind":"Field","name":{"kind":"Name","value":"effectiveTo"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"computedName"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetUserBillingRatesAdvancedQuery, GetUserBillingRatesAdvancedQueryVariables>;
+export const GetUserBillingStatisticsAdvancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserBillingStatisticsAdvanced"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"usersAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"usersWithRatesAggregate"},"name":{"kind":"Name","value":"usersAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"currentHourlyRate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"avg"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentHourlyRate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"min"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentHourlyRate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"max"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentHourlyRate"}}]}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"ratesByRole"},"name":{"kind":"Name","value":"usersAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"currentHourlyRate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"avg"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentHourlyRate"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetUserBillingStatisticsAdvancedQuery, GetUserBillingStatisticsAdvancedQueryVariables>;
+export const CreateUserBillingRateAdvancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateUserBillingRateAdvanced"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UserBillingRatesInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertUserBillingRatesOne"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"hourlyRate"}},{"kind":"Field","name":{"kind":"Name","value":"seniorityLevel"}},{"kind":"Field","name":{"kind":"Name","value":"effectiveFrom"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"computedName"}},{"kind":"Field","name":{"kind":"Name","value":"currentHourlyRate"}}]}}]}}]}}]} as unknown as DocumentNode<CreateUserBillingRateAdvancedMutation, CreateUserBillingRateAdvancedMutationVariables>;
+export const UpdateUserBillingRateAdvancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateUserBillingRateAdvanced"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UserBillingRatesSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUserBillingRatesByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"hourlyRate"}},{"kind":"Field","name":{"kind":"Name","value":"effectiveFrom"}},{"kind":"Field","name":{"kind":"Name","value":"effectiveTo"}}]}}]}}]} as unknown as DocumentNode<UpdateUserBillingRateAdvancedMutation, UpdateUserBillingRateAdvancedMutationVariables>;
+export const UpdateUserCurrentRateAdvancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateUserCurrentRateAdvanced"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"hourlyRate"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"numeric"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"seniorityLevel"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"seniority_level_type"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUsersByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"currentHourlyRate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"hourlyRate"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"seniorityLevel"},"value":{"kind":"Variable","name":{"kind":"Name","value":"seniorityLevel"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"currentHourlyRate"}},{"kind":"Field","name":{"kind":"Name","value":"seniorityLevel"}}]}}]}}]} as unknown as DocumentNode<UpdateUserCurrentRateAdvancedMutation, UpdateUserCurrentRateAdvancedMutationVariables>;
+export const DeactivateUserBillingRateAdvancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeactivateUserBillingRateAdvanced"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"effectiveTo"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateUserBillingRatesByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"BooleanValue","value":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"effectiveTo"},"value":{"kind":"Variable","name":{"kind":"Name","value":"effectiveTo"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"effectiveTo"}}]}}]}}]} as unknown as DocumentNode<DeactivateUserBillingRateAdvancedMutation, DeactivateUserBillingRateAdvancedMutationVariables>;
+export const GetServiceManagementOverviewAdvancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetServiceManagementOverviewAdvanced"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"thirtyDaysAgo"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"timestamptz"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"servicesAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"activeServicesAggregate"},"name":{"kind":"Name","value":"servicesAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"avg"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"baseRate"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"usersAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"usersWithRatesAggregate"},"name":{"kind":"Name","value":"usersAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"currentHourlyRate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"avg"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentHourlyRate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"max"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentHourlyRate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"min"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"currentHourlyRate"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"clientsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"active"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"assignmentsAggregate"},"name":{"kind":"Name","value":"clientServiceAgreementsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"recentServicesAggregate"},"name":{"kind":"Name","value":"servicesAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"thirtyDaysAgo"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"clientsWithAssignments"},"name":{"kind":"Name","value":"clientServiceAgreementsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<GetServiceManagementOverviewAdvancedQuery, GetServiceManagementOverviewAdvancedQueryVariables>;
+export const GetClientServiceAssignmentsAdvancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetClientServiceAssignmentsAdvanced"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreements"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"client"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"serviceCode"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"baseRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"chargeBasis"}},{"kind":"Field","name":{"kind":"Name","value":"seniorityMultipliers"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"computedName"}}]}}]}}]}}]} as unknown as DocumentNode<GetClientServiceAssignmentsAdvancedQuery, GetClientServiceAssignmentsAdvancedQueryVariables>;
+export const GetClientsAndServicesAdvancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetClientsAndServicesAdvanced"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clients"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"active"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}},{"kind":"Field","name":{"kind":"Name","value":"services"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"serviceCode"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"baseRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"chargeBasis"}},{"kind":"Field","name":{"kind":"Name","value":"seniorityMultipliers"}}]}}]}}]} as unknown as DocumentNode<GetClientsAndServicesAdvancedQuery, GetClientsAndServicesAdvancedQueryVariables>;
+export const GetClientAssignmentStatisticsAdvancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetClientAssignmentStatisticsAdvanced"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"assignmentsAggregate"},"name":{"kind":"Name","value":"clientServiceAgreementsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"activeAssignmentsAggregate"},"name":{"kind":"Name","value":"clientServiceAgreementsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"clientsWithAssignments"},"name":{"kind":"Name","value":"clientServiceAgreementsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<GetClientAssignmentStatisticsAdvancedQuery, GetClientAssignmentStatisticsAdvancedQueryVariables>;
+export const CreateClientServiceAssignmentAdvancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateClientServiceAssignmentAdvanced"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ClientServiceAgreementsInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertClientServiceAgreementsOne"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<CreateClientServiceAssignmentAdvancedMutation, CreateClientServiceAssignmentAdvancedMutationVariables>;
+export const UpdateClientServiceAssignmentAdvancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateClientServiceAssignmentAdvanced"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ClientServiceAgreementsSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateClientServiceAgreementsByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]}}]} as unknown as DocumentNode<UpdateClientServiceAssignmentAdvancedMutation, UpdateClientServiceAssignmentAdvancedMutationVariables>;
+export const DeleteClientServiceAssignmentAdvancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteClientServiceAssignmentAdvanced"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteClientServiceAgreementsByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<DeleteClientServiceAssignmentAdvancedMutation, DeleteClientServiceAssignmentAdvancedMutationVariables>;
+export const GetClientServiceAssignmentsForRecurringAdvancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetClientServiceAssignmentsForRecurringAdvanced"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreements"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"serviceCode"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"baseRate"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"chargeBasis"}},{"kind":"Field","name":{"kind":"Name","value":"approvalLevel"}}]}}]}}]}}]} as unknown as DocumentNode<GetClientServiceAssignmentsForRecurringAdvancedQuery, GetClientServiceAssignmentsForRecurringAdvancedQueryVariables>;
+export const CreateClientServiceAssignmentForRecurringAdvancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateClientServiceAssignmentForRecurringAdvanced"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ClientServiceAgreementsInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertClientServiceAgreementsOne"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"serviceCode"}},{"kind":"Field","name":{"kind":"Name","value":"baseRate"}},{"kind":"Field","name":{"kind":"Name","value":"category"}}]}}]}}]}}]} as unknown as DocumentNode<CreateClientServiceAssignmentForRecurringAdvancedMutation, CreateClientServiceAssignmentForRecurringAdvancedMutationVariables>;
+export const UpdateClientServiceAssignmentForRecurringAdvancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateClientServiceAssignmentForRecurringAdvanced"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"updates"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ClientServiceAgreementsSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateClientServiceAgreementsByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"updates"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]}}]} as unknown as DocumentNode<UpdateClientServiceAssignmentForRecurringAdvancedMutation, UpdateClientServiceAssignmentForRecurringAdvancedMutationVariables>;
+export const GetRecurringServicesAdvancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetRecurringServicesAdvanced"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"services"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"chargeBasis"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"per_client_monthly","block":false},{"kind":"StringValue","value":"per_payroll_monthly","block":false}]}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"serviceCode"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"baseRate"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"chargeBasis"}},{"kind":"Field","name":{"kind":"Name","value":"approvalLevel"}}]}}]}}]} as unknown as DocumentNode<GetRecurringServicesAdvancedQuery, GetRecurringServicesAdvancedQueryVariables>;
+export const GetClientServiceAssignmentsForManagerAdvancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetClientServiceAssignmentsForManagerAdvanced"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreements"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"serviceCode"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"baseRate"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"chargeBasis"}},{"kind":"Field","name":{"kind":"Name","value":"approvalLevel"}}]}}]}}]}}]} as unknown as DocumentNode<GetClientServiceAssignmentsForManagerAdvancedQuery, GetClientServiceAssignmentsForManagerAdvancedQueryVariables>;
+export const CreateClientServiceAssignmentForManagerAdvancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateClientServiceAssignmentForManagerAdvanced"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ClientServiceAgreementsInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertClientServiceAgreementsOne"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"serviceCode"}},{"kind":"Field","name":{"kind":"Name","value":"baseRate"}},{"kind":"Field","name":{"kind":"Name","value":"category"}}]}}]}}]}}]} as unknown as DocumentNode<CreateClientServiceAssignmentForManagerAdvancedMutation, CreateClientServiceAssignmentForManagerAdvancedMutationVariables>;
+export const UpdateClientServiceAssignmentForManagerAdvancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateClientServiceAssignmentForManagerAdvanced"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"updates"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ClientServiceAgreementsSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateClientServiceAgreementsByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"updates"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"serviceCode"}},{"kind":"Field","name":{"kind":"Name","value":"baseRate"}},{"kind":"Field","name":{"kind":"Name","value":"category"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateClientServiceAssignmentForManagerAdvancedMutation, UpdateClientServiceAssignmentForManagerAdvancedMutationVariables>;
+export const GetPayrollServiceAgreementsForCompletionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPayrollServiceAgreementsForCompletion"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"50"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"0"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreements"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollServiceAgreementsByServiceId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"category"},"value":{"kind":"EnumValue","value":"ASC"}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollServiceAgreementsByServiceId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}]}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollServiceAssignmentWithRelations"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollServiceAssignmentCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollServiceAgreements"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreementId"}},{"kind":"Field","name":{"kind":"Name","value":"customQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingNotes"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollServiceAssignmentWithRelations"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollServiceAgreements"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollServiceAssignmentCore"}},{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreementsForPayroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreementsByServiceId"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"baseRate"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"serviceType"}}]}},{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreement"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"serviceAgreementCreatedByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]} as unknown as DocumentNode<GetPayrollServiceAgreementsForCompletionQuery, GetPayrollServiceAgreementsForCompletionQueryVariables>;
+export const GetPayrollServiceAssignmentByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPayrollServiceAssignmentById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreementsByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollServiceAssignmentWithRelations"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollServiceAssignmentCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollServiceAgreements"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreementId"}},{"kind":"Field","name":{"kind":"Name","value":"customQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingNotes"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollServiceAssignmentWithRelations"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollServiceAgreements"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollServiceAssignmentCore"}},{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreementsForPayroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreementsByServiceId"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"baseRate"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"serviceType"}}]}},{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreement"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"serviceAgreementCreatedByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]} as unknown as DocumentNode<GetPayrollServiceAssignmentByIdQuery, GetPayrollServiceAssignmentByIdQueryVariables>;
+export const GetAvailableServicesForPayrollDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetAvailableServicesForPayroll"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreements"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_not"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollServiceAgreements"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"service"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"category"},"value":{"kind":"EnumValue","value":"ASC"}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"service"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}]}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"baseRate"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"serviceType"}},{"kind":"Field","name":{"kind":"Name","value":"chargeBasis"}},{"kind":"Field","name":{"kind":"Name","value":"approvalLevel"}}]}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GetAvailableServicesForPayrollQuery, GetAvailableServicesForPayrollQueryVariables>;
+export const AssignServiceToPayrollDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AssignServiceToPayroll"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientServiceAgreementId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"customQuantity"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"1"}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"customRate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"numeric"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"billingNotes"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"createdBy"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertPayrollServiceAgreementsOne"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"clientServiceAgreementId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientServiceAgreementId"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"customQuantity"},"value":{"kind":"Variable","name":{"kind":"Name","value":"customQuantity"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"customRate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"customRate"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"billingNotes"},"value":{"kind":"Variable","name":{"kind":"Name","value":"billingNotes"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"BooleanValue","value":true}},{"kind":"ObjectField","name":{"kind":"Name","value":"createdBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"createdBy"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"onConflict"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"constraint"},"value":{"kind":"EnumValue","value":"payroll_service_agreements_payroll_id_service_id_key"}},{"kind":"ObjectField","name":{"kind":"Name","value":"updateColumns"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"customQuantity"},{"kind":"EnumValue","value":"customRate"},{"kind":"EnumValue","value":"billingNotes"},{"kind":"EnumValue","value":"isActive"},{"kind":"EnumValue","value":"updatedAt"}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollServiceAssignmentWithRelations"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollServiceAssignmentCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollServiceAgreements"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreementId"}},{"kind":"Field","name":{"kind":"Name","value":"customQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingNotes"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollServiceAssignmentWithRelations"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollServiceAgreements"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollServiceAssignmentCore"}},{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreementsForPayroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreementsByServiceId"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"baseRate"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"serviceType"}}]}},{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreement"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"serviceAgreementCreatedByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]} as unknown as DocumentNode<AssignServiceToPayrollMutation, AssignServiceToPayrollMutationVariables>;
+export const UpdatePayrollServiceAssignmentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdatePayrollServiceAssignment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"customQuantity"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"customRate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"numeric"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"billingNotes"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"isActive"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updatePayrollServiceAgreementsByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"customQuantity"},"value":{"kind":"Variable","name":{"kind":"Name","value":"customQuantity"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"customRate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"customRate"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"billingNotes"},"value":{"kind":"Variable","name":{"kind":"Name","value":"billingNotes"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"Variable","name":{"kind":"Name","value":"isActive"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollServiceAssignmentWithRelations"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollServiceAssignmentCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollServiceAgreements"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreementId"}},{"kind":"Field","name":{"kind":"Name","value":"customQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingNotes"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollServiceAssignmentWithRelations"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollServiceAgreements"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollServiceAssignmentCore"}},{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreementsForPayroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreementsByServiceId"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"baseRate"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"serviceType"}}]}},{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreement"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"serviceAgreementCreatedByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]} as unknown as DocumentNode<UpdatePayrollServiceAssignmentMutation, UpdatePayrollServiceAssignmentMutationVariables>;
+export const BulkAssignServicesToPayrollDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"BulkAssignServicesToPayroll"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"assignments"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollServiceAgreementsInsertInput"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertPayrollServiceAgreements"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"objects"},"value":{"kind":"Variable","name":{"kind":"Name","value":"assignments"}}},{"kind":"Argument","name":{"kind":"Name","value":"onConflict"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"constraint"},"value":{"kind":"EnumValue","value":"payroll_service_agreements_payroll_id_service_id_key"}},{"kind":"ObjectField","name":{"kind":"Name","value":"updateColumns"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"customQuantity"},{"kind":"EnumValue","value":"customRate"},{"kind":"EnumValue","value":"billingNotes"},{"kind":"EnumValue","value":"isActive"},{"kind":"EnumValue","value":"updatedAt"}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"affectedRows"}},{"kind":"Field","name":{"kind":"Name","value":"returning"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollServiceAssignmentCore"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollServiceAssignmentCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollServiceAgreements"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreementId"}},{"kind":"Field","name":{"kind":"Name","value":"customQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingNotes"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}}]}}]} as unknown as DocumentNode<BulkAssignServicesToPayrollMutation, BulkAssignServicesToPayrollMutationVariables>;
+export const RemoveServiceFromPayrollDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RemoveServiceFromPayroll"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updatePayrollServiceAgreementsByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"BooleanValue","value":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollServiceAssignmentCore"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollServiceAssignmentCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollServiceAgreements"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreementId"}},{"kind":"Field","name":{"kind":"Name","value":"customQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingNotes"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}}]}}]} as unknown as DocumentNode<RemoveServiceFromPayrollMutation, RemoveServiceFromPayrollMutationVariables>;
+export const GetPayrollWithServiceAssignmentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPayrollWithServiceAssignments"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrollsByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"contactEmail"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryConsultant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"serviceAssignments"},"name":{"kind":"Name","value":"payrollServiceAgreementsForPayroll"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollServiceAgreementsByServiceId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"category"},"value":{"kind":"EnumValue","value":"ASC"}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollServiceAgreementsByServiceId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}]}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollServiceAssignmentWithRelations"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollServiceAssignmentCore"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollServiceAgreements"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreementId"}},{"kind":"Field","name":{"kind":"Name","value":"customQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingNotes"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollServiceAssignmentWithRelations"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollServiceAgreements"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollServiceAssignmentCore"}},{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreementsForPayroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreementsByServiceId"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"baseRate"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"serviceType"}}]}},{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreement"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"serviceAgreementCreatedByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]}}]} as unknown as DocumentNode<GetPayrollWithServiceAssignmentsQuery, GetPayrollWithServiceAssignmentsQueryVariables>;
+export const GetClientServiceAgreementsForPayrollDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetClientServiceAgreementsForPayroll"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"excludePayrollId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreements"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"service"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"service"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"category"},"value":{"kind":"EnumValue","value":"ASC"}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"service"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}]}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"baseRate"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"serviceType"}},{"kind":"Field","name":{"kind":"Name","value":"chargeBasis"}},{"kind":"Field","name":{"kind":"Name","value":"approvalLevel"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"payrollAssignments"},"name":{"kind":"Name","value":"payrollServiceAgreements"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"excludePayrollId"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"customQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]}}]}}]} as unknown as DocumentNode<GetClientServiceAgreementsForPayrollQuery, GetClientServiceAgreementsForPayrollQueryVariables>;
+export const GetPayrollInfoForTier1BillingDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPayrollInfoForTier1Billing"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrollDates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"originalEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"adjustedEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"payroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetPayrollInfoForTier1BillingQuery, GetPayrollInfoForTier1BillingQueryVariables>;
+export const GetClientServiceAgreementsForTier1BillingDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetClientServiceAgreementsForTier1Billing"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreements"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingFrequency"}},{"kind":"Field","name":{"kind":"Name","value":"autoBillingTriggers"}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"serviceCode"}},{"kind":"Field","name":{"kind":"Name","value":"defaultRate"}}]}}]}}]}}]} as unknown as DocumentNode<GetClientServiceAgreementsForTier1BillingQuery, GetClientServiceAgreementsForTier1BillingQueryVariables>;
+export const GetPayrollServiceAgreementsForTier1BillingEngineDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPayrollServiceAgreementsForTier1BillingEngine"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreements"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"customQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"customDescription"}},{"kind":"Field","name":{"kind":"Name","value":"billingNotes"}},{"kind":"Field","name":{"kind":"Name","value":"serviceConfiguration"}}]}}]}}]} as unknown as DocumentNode<GetPayrollServiceAgreementsForTier1BillingEngineQuery, GetPayrollServiceAgreementsForTier1BillingEngineQueryVariables>;
+export const InsertTier1BillingItemsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"InsertTier1BillingItems"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"items"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BillingItemsInsertInput"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertBillingItems"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"objects"},"value":{"kind":"Variable","name":{"kind":"Name","value":"items"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"returning"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceCode"}},{"kind":"Field","name":{"kind":"Name","value":"serviceName"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"unitPrice"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"autoGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]}}]} as unknown as DocumentNode<InsertTier1BillingItemsMutation, InsertTier1BillingItemsMutationVariables>;
+export const UpdateTier1CompletionMetricsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateTier1CompletionMetrics"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updatePayrollDates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"completionNotes"},"value":{"kind":"StringValue","value":"Billing generated via Tier 1 engine","block":false}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"affectedRows"}}]}}]}}]} as unknown as DocumentNode<UpdateTier1CompletionMetricsMutation, UpdateTier1CompletionMetricsMutationVariables>;
+export const CheckPayrollDateApiTier1Document = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CheckPayrollDateApiTier1"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrollDatesByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"completedAt"}},{"kind":"Field","name":{"kind":"Name","value":"completedBy"}},{"kind":"Field","name":{"kind":"Name","value":"adjustedEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"originalEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"payroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]} as unknown as DocumentNode<CheckPayrollDateApiTier1Query, CheckPayrollDateApiTier1QueryVariables>;
+export const GetTier1ServicesForApiDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTier1ServicesForApi"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreements"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"isEnabled"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"service"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"billingFrequency"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"per_use","block":false},{"kind":"StringValue","value":"per_payroll_date","block":false}]}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingFrequency"}},{"kind":"Field","name":{"kind":"Name","value":"serviceConfiguration"}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"defaultRate"}}]}}]}}]}}]} as unknown as DocumentNode<GetTier1ServicesForApiQuery, GetTier1ServicesForApiQueryVariables>;
+export const CheckExistingBillingApiDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CheckExistingBillingApi"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"billingItems"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDateId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_neq"},"value":{"kind":"StringValue","value":"draft","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CheckExistingBillingApiQuery, CheckExistingBillingApiQueryVariables>;
+export const CreateBillingItemApiDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateBillingItemApi"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BillingItemsInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertBillingItemsOne"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}}]}}]}}]} as unknown as DocumentNode<CreateBillingItemApiMutation, CreateBillingItemApiMutationVariables>;
+export const LogBillingEventApiDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"LogBillingEventApi"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BillingEventLogInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertBillingEventLogOne"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<LogBillingEventApiMutation, LogBillingEventApiMutationVariables>;
+export const CheckPayrollCompletionApiTier2Document = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CheckPayrollCompletionApiTier2"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrollsByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollDates"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}}]}}]} as unknown as DocumentNode<CheckPayrollCompletionApiTier2Query, CheckPayrollCompletionApiTier2QueryVariables>;
+export const GetTier2ServicesForApiDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTier2ServicesForApi"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreements"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"isEnabled"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"service"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"billingFrequency"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"per_payroll","block":false},{"kind":"StringValue","value":"per_use","block":false}]}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingFrequency"}},{"kind":"Field","name":{"kind":"Name","value":"serviceConfiguration"}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"defaultRate"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreements"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"autoBillingEnabled"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingFrequency"}},{"kind":"Field","name":{"kind":"Name","value":"serviceConfiguration"}},{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreementsByServiceId"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"defaultRate"}}]}}]}}]}}]} as unknown as DocumentNode<GetTier2ServicesForApiQuery, GetTier2ServicesForApiQueryVariables>;
+export const CheckExistingTier2BillingApiDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CheckExistingTier2BillingApi"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"billingItems"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDateId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_neq"},"value":{"kind":"StringValue","value":"draft","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CheckExistingTier2BillingApiQuery, CheckExistingTier2BillingApiQueryVariables>;
+export const CheckClientApiTier3Document = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CheckClientApiTier3"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clientsByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}}]}}]} as unknown as DocumentNode<CheckClientApiTier3Query, CheckClientApiTier3QueryVariables>;
+export const CheckMonthlyCompletionApiTier3Document = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CheckMonthlyCompletionApiTier3"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"billingMonth"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"monthlyBillingCompletion"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"billingMonth"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"billingMonth"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"tier3BillingGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"autoBillingEnabled"}},{"kind":"Field","name":{"kind":"Name","value":"completedPayrolls"}},{"kind":"Field","name":{"kind":"Name","value":"totalPayrolls"}},{"kind":"Field","name":{"kind":"Name","value":"completedPayrollDates"}},{"kind":"Field","name":{"kind":"Name","value":"totalPayrollDates"}}]}}]}}]} as unknown as DocumentNode<CheckMonthlyCompletionApiTier3Query, CheckMonthlyCompletionApiTier3QueryVariables>;
+export const GetTier3ServicesForApiDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTier3ServicesForApi"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreements"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"isEnabled"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"service"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"billingFrequency"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"monthly","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingFrequency"}},{"kind":"Field","name":{"kind":"Name","value":"serviceConfiguration"}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"defaultRate"}}]}}]}}]}}]} as unknown as DocumentNode<GetTier3ServicesForApiQuery, GetTier3ServicesForApiQueryVariables>;
+export const CheckExistingTier3BillingApiDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CheckExistingTier3BillingApi"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"monthStart"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"timestamp"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"monthEnd"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"timestamp"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"billingItems"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"payrollId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDateId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"monthStart"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"_lte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"monthEnd"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_neq"},"value":{"kind":"StringValue","value":"draft","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CheckExistingTier3BillingApiQuery, CheckExistingTier3BillingApiQueryVariables>;
+export const GetEmployeeCountApiTier3Document = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetEmployeeCountApiTier3"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"billingMonth"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDates"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"billingMonth"}}}]}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}}]}}]}}]} as unknown as DocumentNode<GetEmployeeCountApiTier3Query, GetEmployeeCountApiTier3QueryVariables>;
+export const UpdateMonthlyCompletionApiTier3Document = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateMonthlyCompletionApiTier3"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"billingMonth"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateMonthlyBillingCompletion"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"billingMonth"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"billingMonth"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"StringValue","value":"billed","block":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"tier3BillingGenerated"},"value":{"kind":"BooleanValue","value":true}},{"kind":"ObjectField","name":{"kind":"Name","value":"billingGeneratedAt"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"affectedRows"}}]}}]}}]} as unknown as DocumentNode<UpdateMonthlyCompletionApiTier3Mutation, UpdateMonthlyCompletionApiTier3MutationVariables>;
+export const GetActiveClientsForRecurringApiAllDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetActiveClientsForRecurringApiAll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clients"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"active"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]} as unknown as DocumentNode<GetActiveClientsForRecurringApiAllQuery, GetActiveClientsForRecurringApiAllQueryVariables>;
+export const GetActiveClientsForRecurringApiDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetActiveClientsForRecurringApi"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientIds"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clients"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"active"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientIds"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]} as unknown as DocumentNode<GetActiveClientsForRecurringApiQuery, GetActiveClientsForRecurringApiQueryVariables>;
+export const CheckExistingRecurringBillingApiAllDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CheckExistingRecurringBillingApiAll"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"billingMonth"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"billingItems"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"billingPeriodStart"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"billingMonth"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"generatedFrom"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"recurring_schedule","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceCode"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}}]}}]}}]} as unknown as DocumentNode<CheckExistingRecurringBillingApiAllQuery, CheckExistingRecurringBillingApiAllQueryVariables>;
+export const CheckExistingRecurringBillingApiDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CheckExistingRecurringBillingApi"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"billingMonth"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceCode"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"billingItems"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"billingPeriodStart"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"billingMonth"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"generatedFrom"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"recurring_schedule","block":false}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"serviceCode"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceCode"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceCode"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}}]}}]}}]} as unknown as DocumentNode<CheckExistingRecurringBillingApiQuery, CheckExistingRecurringBillingApiQueryVariables>;
+export const CreateRecurringBillingItemApiDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateRecurringBillingItemApi"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BillingItemsInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertBillingItemsOne"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}}]}}]}}]} as unknown as DocumentNode<CreateRecurringBillingItemApiMutation, CreateRecurringBillingItemApiMutationVariables>;
+export const GetClientBillingDashboardStatsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetClientBillingDashboardStats"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"dateFrom"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"timestamptz"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"dateTo"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"timestamptz"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clients"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"1"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"contactPerson"}},{"kind":"Field","name":{"kind":"Name","value":"contactEmail"}},{"kind":"Field","alias":{"kind":"Name","value":"billingItemsAggregate"},"name":{"kind":"Name","value":"billingItemsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}}]}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"payrollsAggregate"},"name":{"kind":"Name","value":"payrollsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetClientBillingDashboardStatsQuery, GetClientBillingDashboardStatsQueryVariables>;
+export const GetClientInvoiceHistoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetClientInvoiceHistory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"clientInvoices"},"name":{"kind":"Name","value":"invoices"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"invoiceNumber"}},{"kind":"Field","name":{"kind":"Name","value":"invoiceDate"}},{"kind":"Field","name":{"kind":"Name","value":"dueDate"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"taxAmount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"sentAt"}},{"kind":"Field","name":{"kind":"Name","value":"paidAt"}},{"kind":"Field","name":{"kind":"Name","value":"billingPeriodStart"}},{"kind":"Field","name":{"kind":"Name","value":"billingPeriodEnd"}}]}}]}}]} as unknown as DocumentNode<GetClientInvoiceHistoryQuery, GetClientInvoiceHistoryQueryVariables>;
+export const GetPayrollBillingStatsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPayrollBillingStats"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"1"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"billingItemsAggregate"},"name":{"kind":"Name","value":"billingItemsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}}]}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetPayrollBillingStatsQuery, GetPayrollBillingStatsQueryVariables>;
+export const GetPayrollBillingItemsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPayrollBillingItems"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"billingItems"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"unitPrice"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"staffUserId"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"staffUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"category"}}]}}]}}]}}]} as unknown as DocumentNode<GetPayrollBillingItemsQuery, GetPayrollBillingItemsQueryVariables>;
+export const GetPendingBillingItemsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPendingBillingItems"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"pendingBillingItems"},"name":{"kind":"Name","value":"billingItems"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"pending","block":false}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"unitPrice"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"staffUserId"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"staffUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"category"}}]}}]}}]}}]} as unknown as DocumentNode<GetPendingBillingItemsQuery, GetPendingBillingItemsQueryVariables>;
+export const ApproveBillingItemDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ApproveBillingItem"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"approvedBy"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateBillingItemsByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"StringValue","value":"approved","block":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"approvedBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"approvedBy"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"approvalDate"},"value":{"kind":"StringValue","value":"now()","block":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"isApproved"},"value":{"kind":"BooleanValue","value":true}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"approvedBy"}},{"kind":"Field","name":{"kind":"Name","value":"approvalDate"}},{"kind":"Field","name":{"kind":"Name","value":"isApproved"}}]}}]}}]} as unknown as DocumentNode<ApproveBillingItemMutation, ApproveBillingItemMutationVariables>;
+export const RejectBillingItemDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RejectBillingItem"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"approvedBy"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"notes"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateBillingItemsByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"StringValue","value":"rejected","block":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"approvedBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"approvedBy"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"approvalDate"},"value":{"kind":"StringValue","value":"now()","block":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"isApproved"},"value":{"kind":"BooleanValue","value":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"notes"},"value":{"kind":"Variable","name":{"kind":"Name","value":"notes"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"approvedBy"}},{"kind":"Field","name":{"kind":"Name","value":"approvalDate"}},{"kind":"Field","name":{"kind":"Name","value":"isApproved"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}}]}}]}}]} as unknown as DocumentNode<RejectBillingItemMutation, RejectBillingItemMutationVariables>;
+export const BulkApproveBillingItemsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"BulkApproveBillingItems"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"ids"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"approvedBy"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateBillingItemsMany"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"updates"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"Variable","name":{"kind":"Name","value":"ids"}}}]}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"StringValue","value":"approved","block":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"approvedBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"approvedBy"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"approvalDate"},"value":{"kind":"StringValue","value":"now()","block":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"isApproved"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"affectedRows"}}]}}]}}]} as unknown as DocumentNode<BulkApproveBillingItemsMutation, BulkApproveBillingItemsMutationVariables>;
+export const BulkRejectBillingItemsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"BulkRejectBillingItems"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"ids"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"approvedBy"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"notes"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateBillingItemsMany"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"updates"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"Variable","name":{"kind":"Name","value":"ids"}}}]}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"StringValue","value":"rejected","block":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"approvedBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"approvedBy"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"approvalDate"},"value":{"kind":"StringValue","value":"now()","block":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"isApproved"},"value":{"kind":"BooleanValue","value":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"notes"},"value":{"kind":"Variable","name":{"kind":"Name","value":"notes"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"affectedRows"}}]}}]}}]} as unknown as DocumentNode<BulkRejectBillingItemsMutation, BulkRejectBillingItemsMutationVariables>;
+export const ResendInvoiceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ResendInvoice"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"invoiceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateInvoicesByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"invoiceId"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"sentAt"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"sentAt"}}]}}]}}]} as unknown as DocumentNode<ResendInvoiceMutation, ResendInvoiceMutationVariables>;
+export const GetClientAssignedServicesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetClientAssignedServices"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clientServiceAssignments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"service"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"customSeniorityMultipliers"}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"serviceCode"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"baseRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"chargeBasis"}},{"kind":"Field","name":{"kind":"Name","value":"seniorityMultipliers"}},{"kind":"Field","name":{"kind":"Name","value":"requiresQuantityInput"}},{"kind":"Field","name":{"kind":"Name","value":"quantityPrompt"}},{"kind":"Field","name":{"kind":"Name","value":"isTimeBased"}},{"kind":"Field","name":{"kind":"Name","value":"approvalLevel"}}]}}]}}]}}]} as unknown as DocumentNode<GetClientAssignedServicesQuery, GetClientAssignedServicesQueryVariables>;
+export const GetUsersByRoleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUsersByRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"role"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"consultant","block":false},{"kind":"StringValue","value":"manager","block":false},{"kind":"StringValue","value":"org_admin","block":false}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"computedName"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"currentHourlyRate"}}]}}]}}]} as unknown as DocumentNode<GetUsersByRoleQuery, GetUsersByRoleQueryVariables>;
+export const CreateBillingItemFromServiceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateBillingItemFromService"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BillingItemsInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertBillingItemsOne"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"unitPrice"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"staffUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"category"}}]}}]}}]}}]} as unknown as DocumentNode<CreateBillingItemFromServiceMutation, CreateBillingItemFromServiceMutationVariables>;
+export const UpdateBillingItemFromServiceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateBillingItemFromService"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"set"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BillingItemsSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateBillingItemsByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"set"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"unitPrice"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"staffUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"category"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateBillingItemFromServiceMutation, UpdateBillingItemFromServiceMutationVariables>;
+export const GetAllBillingUnitTypesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetAllBillingUnitTypes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"billingUnitTypes"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isSystemDefined"},"value":{"kind":"EnumValue","value":"DESC"}},{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"defaultSource"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemDefined"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"requiresQuantityInput"}},{"kind":"Field","name":{"kind":"Name","value":"quantityPrompt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"updatedBy"}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"updatedByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}}]}}]}}]}}]} as unknown as DocumentNode<GetAllBillingUnitTypesQuery, GetAllBillingUnitTypesQueryVariables>;
+export const GetBillingUnitTypesForSelectionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetBillingUnitTypesForSelection"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"billingUnitTypes"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isSystemDefined"},"value":{"kind":"EnumValue","value":"DESC"}},{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"defaultSource"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemDefined"}},{"kind":"Field","name":{"kind":"Name","value":"requiresQuantityInput"}},{"kind":"Field","name":{"kind":"Name","value":"quantityPrompt"}}]}}]}}]} as unknown as DocumentNode<GetBillingUnitTypesForSelectionQuery, GetBillingUnitTypesForSelectionQueryVariables>;
+export const GetBillingUnitTypeByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetBillingUnitTypeById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"billingUnitTypesByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"defaultSource"}},{"kind":"Field","name":{"kind":"Name","value":"isSystemDefined"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"requiresQuantityInput"}},{"kind":"Field","name":{"kind":"Name","value":"quantityPrompt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"updatedBy"}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"updatedByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}}]}}]}}]}}]} as unknown as DocumentNode<GetBillingUnitTypeByIdQuery, GetBillingUnitTypeByIdQueryVariables>;
+export const GetCustomBillingUnitTypesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCustomBillingUnitTypes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"billingUnitTypes"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isSystemDefined"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":false}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"defaultSource"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"requiresQuantityInput"}},{"kind":"Field","name":{"kind":"Name","value":"quantityPrompt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}}]}}]}}]}}]} as unknown as DocumentNode<GetCustomBillingUnitTypesQuery, GetCustomBillingUnitTypesQueryVariables>;
+export const GetBillingUnitTypeUsageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetBillingUnitTypeUsage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"unitTypeId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"services"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"billingUnitTypeId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"unitTypeId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"baseRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingTier"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}},{"kind":"Field","name":{"kind":"Name","value":"servicesAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"billingUnitTypeId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"unitTypeId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<GetBillingUnitTypeUsageQuery, GetBillingUnitTypeUsageQueryVariables>;
+export const CreateBillingUnitTypeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateBillingUnitType"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BillingUnitTypesInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertBillingUnitTypesOne"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"defaultSource"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"requiresQuantityInput"}},{"kind":"Field","name":{"kind":"Name","value":"quantityPrompt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}}]}}]}}]}}]} as unknown as DocumentNode<CreateBillingUnitTypeMutation, CreateBillingUnitTypeMutationVariables>;
+export const UpdateBillingUnitTypeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateBillingUnitType"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"set"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BillingUnitTypesSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateBillingUnitTypesByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"set"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"defaultSource"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"requiresQuantityInput"}},{"kind":"Field","name":{"kind":"Name","value":"quantityPrompt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateBillingUnitTypeMutation, UpdateBillingUnitTypeMutationVariables>;
+export const ToggleBillingUnitTypeActiveDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ToggleBillingUnitTypeActive"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"isActive"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateBillingUnitTypesByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"Variable","name":{"kind":"Name","value":"isActive"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<ToggleBillingUnitTypeActiveMutation, ToggleBillingUnitTypeActiveMutationVariables>;
+export const DeleteBillingUnitTypeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteBillingUnitType"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteBillingUnitTypesByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}}]}}]} as unknown as DocumentNode<DeleteBillingUnitTypeMutation, DeleteBillingUnitTypeMutationVariables>;
+export const GetAllServicesWithRatesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetAllServicesWithRates"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"services"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"baseRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingTier"}},{"kind":"Field","name":{"kind":"Name","value":"serviceType"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnitType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"requiresQuantityInput"}},{"kind":"Field","name":{"kind":"Name","value":"quantityPrompt"}}]}}]}}]}}]} as unknown as DocumentNode<GetAllServicesWithRatesQuery, GetAllServicesWithRatesQueryVariables>;
+export const GetServiceByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetServiceById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"servicesByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"baseRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingTier"}},{"kind":"Field","name":{"kind":"Name","value":"serviceType"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isTemplate"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"}},{"kind":"Field","name":{"kind":"Name","value":"dependencies"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnitType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"requiresQuantityInput"}},{"kind":"Field","name":{"kind":"Name","value":"quantityPrompt"}},{"kind":"Field","name":{"kind":"Name","value":"defaultSource"}}]}}]}}]}}]} as unknown as DocumentNode<GetServiceByIdQuery, GetServiceByIdQueryVariables>;
+export const CreateServiceWithUnitTypeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateServiceWithUnitType"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ServicesInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertServicesOne"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"baseRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingTier"}},{"kind":"Field","name":{"kind":"Name","value":"serviceType"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnitType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}}]}}]}}]} as unknown as DocumentNode<CreateServiceWithUnitTypeMutation, CreateServiceWithUnitTypeMutationVariables>;
+export const UpdateServiceWithUnitTypeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateServiceWithUnitType"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"set"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ServicesSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateServicesByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"set"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"baseRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingTier"}},{"kind":"Field","name":{"kind":"Name","value":"serviceType"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnitType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateServiceWithUnitTypeMutation, UpdateServiceWithUnitTypeMutationVariables>;
+export const GetServicePositionRatesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetServicePositionRates"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"servicePositionRates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"position"},"value":{"kind":"EnumValue","value":"ASC"}},{"kind":"ObjectField","name":{"kind":"Name","value":"effectiveFrom"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"ratePerUnit"}},{"kind":"Field","name":{"kind":"Name","value":"effectiveFrom"}},{"kind":"Field","name":{"kind":"Name","value":"effectiveTo"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}}]}}]}}]}}]} as unknown as DocumentNode<GetServicePositionRatesQuery, GetServicePositionRatesQueryVariables>;
+export const GetEffectivePositionRateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetEffectivePositionRate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"position"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"user_position"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"effectiveDate"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"servicePositionRates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"serviceId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"serviceId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"position"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"position"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"effectiveFrom"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_lte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"effectiveDate"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"effectiveTo"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"effectiveTo"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"effectiveDate"}}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"effectiveFrom"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"1"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"ratePerUnit"}},{"kind":"Field","name":{"kind":"Name","value":"effectiveFrom"}},{"kind":"Field","name":{"kind":"Name","value":"effectiveTo"}}]}}]}}]} as unknown as DocumentNode<GetEffectivePositionRateQuery, GetEffectivePositionRateQueryVariables>;
+export const CreateServicePositionRateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateServicePositionRate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ServicePositionRatesInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertServicePositionRatesOne"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"ratePerUnit"}},{"kind":"Field","name":{"kind":"Name","value":"effectiveFrom"}},{"kind":"Field","name":{"kind":"Name","value":"effectiveTo"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}}]}}]}}]}}]} as unknown as DocumentNode<CreateServicePositionRateMutation, CreateServicePositionRateMutationVariables>;
+export const UpdateServicePositionRateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateServicePositionRate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"set"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ServicePositionRatesSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateServicePositionRatesByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"set"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"ratePerUnit"}},{"kind":"Field","name":{"kind":"Name","value":"effectiveFrom"}},{"kind":"Field","name":{"kind":"Name","value":"effectiveTo"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateServicePositionRateMutation, UpdateServicePositionRateMutationVariables>;
+export const DeleteServicePositionRateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteServicePositionRate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteServicePositionRatesByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"ratePerUnit"}}]}}]}}]} as unknown as DocumentNode<DeleteServicePositionRateMutation, DeleteServicePositionRateMutationVariables>;
+export const GetPayrollDateWithServicesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPayrollDateWithServices"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrollDatesByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"originalEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"adjustedEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"completedAt"}},{"kind":"Field","name":{"kind":"Name","value":"completedBy"}},{"kind":"Field","name":{"kind":"Name","value":"totalTimeSpentMinutes"}},{"kind":"Field","name":{"kind":"Name","value":"completionNotes"}},{"kind":"Field","name":{"kind":"Name","value":"payroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"primaryConsultantUserId"}},{"kind":"Field","name":{"kind":"Name","value":"backupConsultantUserId"}},{"kind":"Field","name":{"kind":"Name","value":"managerUserId"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"contactEmail"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryConsultant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"backupConsultant"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreementsForPayroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"customQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"billingFrequency"}},{"kind":"Field","name":{"kind":"Name","value":"autoBillingEnabled"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetPayrollDateWithServicesQuery, GetPayrollDateWithServicesQueryVariables>;
+export const CompletePayrollDateWithBillingDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CompletePayrollDateWithBilling"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"completedBy"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"completionNotes"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updatePayrollDatesByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"StringValue","value":"completed","block":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"completedAt"},"value":{"kind":"StringValue","value":"now()","block":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"completedBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"completedBy"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"completionNotes"},"value":{"kind":"Variable","name":{"kind":"Name","value":"completionNotes"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"completedAt"}},{"kind":"Field","name":{"kind":"Name","value":"completedBy"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"originalEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"adjustedEftDate"}}]}}]}}]} as unknown as DocumentNode<CompletePayrollDateWithBillingMutation, CompletePayrollDateWithBillingMutationVariables>;
+export const CreateBillingItemFromCompletionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateBillingItemFromCompletion"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"billingItem"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BillingItemsInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertBillingItemsOne"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"billingItem"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"unitPrice"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnitType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}}]}}]}}]}}]} as unknown as DocumentNode<CreateBillingItemFromCompletionMutation, CreateBillingItemFromCompletionMutationVariables>;
+export const CreatePayrollDateTimeEntryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreatePayrollDateTimeEntry"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"timeEntry"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollDateTimeEntriesInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertPayrollDateTimeEntriesOne"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"timeEntry"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollDateId"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"timeSpentMinutes"}},{"kind":"Field","name":{"kind":"Name","value":"timeUnits"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]} as unknown as DocumentNode<CreatePayrollDateTimeEntryMutation, CreatePayrollDateTimeEntryMutationVariables>;
+export const GetAllBillingItemsWithDetailsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetAllBillingItemsWithDetails"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"billingItems"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"unitPrice"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"approvalDate"}},{"kind":"Field","name":{"kind":"Name","value":"confirmedAt"}},{"kind":"Field","name":{"kind":"Name","value":"billingPeriodStart"}},{"kind":"Field","name":{"kind":"Name","value":"billingPeriodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"approvalLevel"}},{"kind":"Field","name":{"kind":"Name","value":"isApproved"}},{"kind":"Field","name":{"kind":"Name","value":"isAutoGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"contactEmail"}}]}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"serviceCode"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"baseRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"chargeBasis"}},{"kind":"Field","name":{"kind":"Name","value":"approvalLevel"}},{"kind":"Field","name":{"kind":"Name","value":"billingTier"}},{"kind":"Field","name":{"kind":"Name","value":"isTimeBased"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnitType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"requiresQuantityInput"}},{"kind":"Field","name":{"kind":"Name","value":"quantityPrompt"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"staffUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}},{"kind":"Field","name":{"kind":"Name","value":"role"}}]}},{"kind":"Field","name":{"kind":"Name","value":"approvedByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"confirmedByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"payrollDate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"originalEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"adjustedEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollDateId"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnitType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"requiresQuantityInput"}},{"kind":"Field","name":{"kind":"Name","value":"quantityPrompt"}}]}}]}}]}}]} as unknown as DocumentNode<GetAllBillingItemsWithDetailsQuery, GetAllBillingItemsWithDetailsQueryVariables>;
+export const GetClientsForBillingDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetClientsForBilling"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clients"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"active"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"contactEmail"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"clientServiceAssignmentsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"billingItemsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"amount"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetClientsForBillingQuery, GetClientsForBillingQueryVariables>;
+export const GetClientAssignedServicesEnhancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetClientAssignedServicesEnhanced"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clientServiceAssignments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"service"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}},{"kind":"Field","name":{"kind":"Name","value":"customSeniorityMultipliers"}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"serviceCode"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"baseRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"chargeBasis"}},{"kind":"Field","name":{"kind":"Name","value":"approvalLevel"}},{"kind":"Field","name":{"kind":"Name","value":"billingTier"}},{"kind":"Field","name":{"kind":"Name","value":"isTimeBased"}},{"kind":"Field","name":{"kind":"Name","value":"seniorityMultipliers"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnitType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"requiresQuantityInput"}},{"kind":"Field","name":{"kind":"Name","value":"quantityPrompt"}},{"kind":"Field","name":{"kind":"Name","value":"defaultSource"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GetClientAssignedServicesEnhancedQuery, GetClientAssignedServicesEnhancedQueryVariables>;
+export const GetUsersByRoleEnhancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUsersByRoleEnhanced"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"firstName"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"position"}},{"kind":"Field","name":{"kind":"Name","value":"currentHourlyRate"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]}}]} as unknown as DocumentNode<GetUsersByRoleEnhancedQuery, GetUsersByRoleEnhancedQueryVariables>;
+export const CreateBillingItemFromServiceEnhancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateBillingItemFromServiceEnhanced"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BillingItemsInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertBillingItemsOne"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"unitPrice"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"category"}}]}},{"kind":"Field","name":{"kind":"Name","value":"staffUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}}]}}]}}]}}]} as unknown as DocumentNode<CreateBillingItemFromServiceEnhancedMutation, CreateBillingItemFromServiceEnhancedMutationVariables>;
+export const UpdateBillingItemFromServiceEnhancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateBillingItemFromServiceEnhanced"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"set"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BillingItemsSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateBillingItemsByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"set"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"unitPrice"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"category"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateBillingItemFromServiceEnhancedMutation, UpdateBillingItemFromServiceEnhancedMutationVariables>;
+export const UpdateBillingItemStatusDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateBillingItemStatus"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"status"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"approvedBy"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"approvalDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"timestamptz"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateBillingItemsByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"Variable","name":{"kind":"Name","value":"status"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"approvedBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"approvedBy"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"approvalDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"approvalDate"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"isApproved"},"value":{"kind":"BooleanValue","value":true}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"approvalDate"}},{"kind":"Field","name":{"kind":"Name","value":"approvedBy"}},{"kind":"Field","name":{"kind":"Name","value":"approvedByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateBillingItemStatusMutation, UpdateBillingItemStatusMutationVariables>;
+export const DeleteBillingItemDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteBillingItem"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteBillingItemsByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}}]}}]}}]} as unknown as DocumentNode<DeleteBillingItemMutation, DeleteBillingItemMutationVariables>;
+export const GetPayrollServiceAgreementsEnhancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPayrollServiceAgreementsEnhanced"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreements"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollId"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreementId"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"customQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"customDescription"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isOneTime"}},{"kind":"Field","name":{"kind":"Name","value":"billingFrequency"}},{"kind":"Field","name":{"kind":"Name","value":"autoBillingEnabled"}},{"kind":"Field","name":{"kind":"Name","value":"billingItemsGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"serviceConfiguration"}},{"kind":"Field","name":{"kind":"Name","value":"billingNotes"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreementsByServiceId"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"baseRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"chargeBasis"}},{"kind":"Field","name":{"kind":"Name","value":"billingTier"}},{"kind":"Field","name":{"kind":"Name","value":"isTimeBased"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnitType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"requiresQuantityInput"}},{"kind":"Field","name":{"kind":"Name","value":"quantityPrompt"}},{"kind":"Field","name":{"kind":"Name","value":"defaultSource"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreement"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingFrequency"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"baseRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"billingTier"}}]}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreementsForPayroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"primaryConsultantUserId"}},{"kind":"Field","name":{"kind":"Name","value":"backupConsultantUserId"}},{"kind":"Field","name":{"kind":"Name","value":"managerUserId"}}]}}]}}]}}]} as unknown as DocumentNode<GetPayrollServiceAgreementsEnhancedQuery, GetPayrollServiceAgreementsEnhancedQueryVariables>;
+export const CreatePayrollServiceAgreementEnhancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreatePayrollServiceAgreementEnhanced"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollServiceAgreementsInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertPayrollServiceAgreementsOne"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"customQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isOneTime"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreementsByServiceId"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"category"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreementsForPayroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]} as unknown as DocumentNode<CreatePayrollServiceAgreementEnhancedMutation, CreatePayrollServiceAgreementEnhancedMutationVariables>;
+export const UpdatePayrollServiceAgreementEnhancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdatePayrollServiceAgreementEnhanced"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"set"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollServiceAgreementsSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updatePayrollServiceAgreementsByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"set"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"customQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isOneTime"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreementsByServiceId"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"category"}}]}}]}}]}}]} as unknown as DocumentNode<UpdatePayrollServiceAgreementEnhancedMutation, UpdatePayrollServiceAgreementEnhancedMutationVariables>;
+export const DeletePayrollServiceAgreementEnhancedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeletePayrollServiceAgreementEnhanced"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deletePayrollServiceAgreementsByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreementsByServiceId"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreementsForPayroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]} as unknown as DocumentNode<DeletePayrollServiceAgreementEnhancedMutation, DeletePayrollServiceAgreementEnhancedMutationVariables>;
+export const GetServiceAssignmentAnalyticsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetServiceAssignmentAnalytics"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clientServiceAgreements"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingFrequency"}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"baseRate"}},{"kind":"Field","name":{"kind":"Name","value":"billingTier"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreementsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"billingItemsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"amount"}}]}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreements"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollServiceAgreementsForPayroll"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"isOneTime"}},{"kind":"Field","name":{"kind":"Name","value":"billingItemsGenerated"}},{"kind":"Field","name":{"kind":"Name","value":"customRate"}},{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreementsByServiceId"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"category"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollServiceAgreementsForPayroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"billingItemsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"amount"}}]}},{"kind":"Field","name":{"kind":"Name","value":"avg"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"amount"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"category"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetServiceAssignmentAnalyticsQuery, GetServiceAssignmentAnalyticsQueryVariables>;
+export const GetBillingWorkflowOverviewDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetBillingWorkflowOverview"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"draftItems"},"name":{"kind":"Name","value":"billingItemsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"draft","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"amount"}}]}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"pendingItems"},"name":{"kind":"Name","value":"billingItemsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"pending","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"amount"}}]}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"approvedItems"},"name":{"kind":"Name","value":"billingItemsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"approved","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"amount"}}]}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"recentActivity"},"name":{"kind":"Name","value":"billingItems"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"10"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"service"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"category"}}]}},{"kind":"Field","name":{"kind":"Name","value":"staffUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"computedName"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"serviceUtilization"},"name":{"kind":"Name","value":"services"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"billingItemsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"amount"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetBillingWorkflowOverviewQuery, GetBillingWorkflowOverviewQueryVariables>;
 export const CreateTimeEntryWithUnitsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateTimeEntryWithUnits"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TimeEntriesInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertTimeEntriesOne"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"staffUserId"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"payrollDateId"}},{"kind":"Field","name":{"kind":"Name","value":"workDate"}},{"kind":"Field","name":{"kind":"Name","value":"hoursSpent"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<CreateTimeEntryWithUnitsMutation, CreateTimeEntryWithUnitsMutationVariables>;
 export const UpdateTimeEntryWithUnitsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateTimeEntryWithUnits"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"changes"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TimeEntriesSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateTimeEntriesByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"changes"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"hoursSpent"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<UpdateTimeEntryWithUnitsMutation, UpdateTimeEntryWithUnitsMutationVariables>;
 export const GetTimeTrackingSummaryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTimeTrackingSummary"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"staffUserId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"timeEntries"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"staffUserId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"staffUserId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"workDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"_lte"},"value":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"workDate"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"staffUserId"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"workDate"}},{"kind":"Field","name":{"kind":"Name","value":"hoursSpent"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GetTimeTrackingSummaryQuery, GetTimeTrackingSummaryQueryVariables>;
@@ -26035,6 +28979,12 @@ export const GetBillingItemsForConsolidationDocument = {"kind":"Document","defin
 export const GetBillingPeriodsForConsolidationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetBillingPeriodsForConsolidation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientIds"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"billingPeriods"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientIds"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"active","block":false}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"periodStart"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"periodStart"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GetBillingPeriodsForConsolidationQuery, GetBillingPeriodsForConsolidationQueryVariables>;
 export const ConsolidateInvoicesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ConsolidateInvoices"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"consolidationDate"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"date"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertBillingInvoiceOne"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"clientId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"clientId"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"issuedDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"consolidationDate"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"StringValue","value":"draft","block":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"currency"},"value":{"kind":"StringValue","value":"AUD","block":false}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]} as unknown as DocumentNode<ConsolidateInvoicesMutation, ConsolidateInvoicesMutationVariables>;
 export const AutoGenerateInvoicesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AutoGenerateInvoices"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"billingPeriods"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BillingPeriodsInsertInput"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertBillingPeriods"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"objects"},"value":{"kind":"Variable","name":{"kind":"Name","value":"billingPeriods"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"affectedRows"}},{"kind":"Field","name":{"kind":"Name","value":"returning"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"periodStart"}},{"kind":"Field","name":{"kind":"Name","value":"periodEnd"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}}]}}]} as unknown as DocumentNode<AutoGenerateInvoicesMutation, AutoGenerateInvoicesMutationVariables>;
+export const SavePayrollServiceQuantitiesComponentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SavePayrollServiceQuantitiesComponent"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"quantities"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollServiceQuantitiesInsertInput"}}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deletePayrollServiceQuantities"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDateId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"affectedRows"}}]}},{"kind":"Field","name":{"kind":"Name","value":"insertPayrollServiceQuantities"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"objects"},"value":{"kind":"Variable","name":{"kind":"Name","value":"quantities"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"returning"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceId"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}}]}}]}}]}}]} as unknown as DocumentNode<SavePayrollServiceQuantitiesComponentMutation, SavePayrollServiceQuantitiesComponentMutationVariables>;
+export const UpdatePayrollDateStatusComponentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdatePayrollDateStatusComponent"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"status"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updatePayrollDatesByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"Variable","name":{"kind":"Name","value":"status"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}}]} as unknown as DocumentNode<UpdatePayrollDateStatusComponentMutation, UpdatePayrollDateStatusComponentMutationVariables>;
+export const GetTier1CandidatesApiDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTier1CandidatesApi"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrollDates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"completed","block":false}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"completedAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"StringValue","value":"now() - interval '7 days'","block":false}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"_not"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"billingItems"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_neq"},"value":{"kind":"StringValue","value":"draft","block":false}}]}}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"50"}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"completedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"completedBy"}},{"kind":"Field","name":{"kind":"Name","value":"completedAt"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"payroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetTier1CandidatesApiQuery, GetTier1CandidatesApiQueryVariables>;
+export const GetTier2CandidatesApiDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTier2CandidatesApi"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_not"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDates"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_neq"},"value":{"kind":"StringValue","value":"completed","block":false}}]}}]}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_not"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"billingItems"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDateId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_neq"},"value":{"kind":"StringValue","value":"draft","block":false}}]}}]}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDates"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"completedAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"StringValue","value":"now() - interval '30 days'","block":false}}]}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"25"}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"primaryConsultantUserId"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GetTier2CandidatesApiQuery, GetTier2CandidatesApiQueryVariables>;
+export const GetTier3CandidatesApiDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTier3CandidatesApi"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"monthlyBillingCompletion"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"ready_to_bill","block":false}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"tier3BillingGenerated"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":false}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"autoBillingEnabled"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"20"}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"billingMonth"},"value":{"kind":"EnumValue","value":"DESC"}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"billingReadyAt"},"value":{"kind":"EnumValue","value":"ASC"}}]}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"billingMonth"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GetTier3CandidatesApiQuery, GetTier3CandidatesApiQueryVariables>;
+export const GetBillingCandidatesApiDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetBillingCandidatesApi"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"tier1Candidates"},"name":{"kind":"Name","value":"payrollDatesAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"completed","block":false}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"completedAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"StringValue","value":"now() - interval '7 days'","block":false}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"_not"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"billingItems"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_neq"},"value":{"kind":"StringValue","value":"draft","block":false}}]}}]}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"tier2Candidates"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_and"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_not"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDates"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_neq"},"value":{"kind":"StringValue","value":"completed","block":false}}]}}]}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_not"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"billingItems"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDateId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_neq"},"value":{"kind":"StringValue","value":"draft","block":false}}]}}]}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDates"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"completedAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"StringValue","value":"now() - interval '30 days'","block":false}}]}}]}}]}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"tier3Candidates"},"name":{"kind":"Name","value":"monthlyBillingCompletionAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"ready_to_bill","block":false}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"tier3BillingGenerated"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":false}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"autoBillingEnabled"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<GetBillingCandidatesApiQuery, GetBillingCandidatesApiQueryVariables>;
 export const CreateQuoteDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateQuote"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"QuotesInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertQuotesOne"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"quoteNumber"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"prospectName"}},{"kind":"Field","name":{"kind":"Name","value":"prospectEmail"}},{"kind":"Field","name":{"kind":"Name","value":"prospectPhone"}},{"kind":"Field","name":{"kind":"Name","value":"prospectCompany"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"validUntil"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"notes"}},{"kind":"Field","name":{"kind":"Name","value":"termsConditions"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"contactEmail"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}}]}}]}}]} as unknown as DocumentNode<CreateQuoteMutation, CreateQuoteMutationVariables>;
 export const UpdateQuoteDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateQuote"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"changes"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"QuotesSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateQuotesByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"changes"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"quoteNumber"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"validUntil"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<UpdateQuoteMutation, UpdateQuoteMutationVariables>;
 export const DeleteQuoteDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteQuote"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateQuotesByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"StringValue","value":"cancelled","block":false}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}}]} as unknown as DocumentNode<DeleteQuoteMutation, DeleteQuoteMutationVariables>;
@@ -26086,11 +29036,22 @@ export const UpdateClientServiceAgreementDocument = {"kind":"Document","definiti
 export const DeactivateServiceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeactivateService"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateServicesByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"BooleanValue","value":false}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]}}]} as unknown as DocumentNode<DeactivateServiceMutation, DeactivateServiceMutationVariables>;
 export const SearchservicesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Searchservices"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"20"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"services"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"description"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"category"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"EnumValue","value":"ASC"}}]}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ServiceFragment"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ServiceFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Services"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"billingUnit"}},{"kind":"Field","name":{"kind":"Name","value":"defaultRate"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"serviceType"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"isTemplate"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"}},{"kind":"Field","name":{"kind":"Name","value":"pricingRules"}},{"kind":"Field","name":{"kind":"Name","value":"dependencies"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"}},{"kind":"Field","name":{"kind":"Name","value":"updatedBy"}}]}}]} as unknown as DocumentNode<SearchservicesQuery, SearchservicesQueryVariables>;
 export const GetServiceCategoriesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetServiceCategories"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"services"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"distinctOn"},"value":{"kind":"ListValue","values":[{"kind":"EnumValue","value":"category"}]}},{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isActive"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"category"}}]}}]}}]} as unknown as DocumentNode<GetServiceCategoriesQuery, GetServiceCategoriesQueryVariables>;
+export const CheckPayrollDateApiTier1CompletionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CheckPayrollDateApiTier1Completion"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrollDates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"payroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"existingContext"},"name":{"kind":"Name","value":"payrollDateCompletionContext"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDateId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CheckPayrollDateApiTier1CompletionQuery, CheckPayrollDateApiTier1CompletionQueryVariables>;
+export const CreateCompletionContextApiDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateCompletionContextApi"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollDateCompletionContextInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertPayrollDateCompletionContextOne"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollDateId"}},{"kind":"Field","name":{"kind":"Name","value":"completedAt"}}]}}]}}]} as unknown as DocumentNode<CreateCompletionContextApiMutation, CreateCompletionContextApiMutationVariables>;
+export const UpdatePayrollDateStatusApiDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdatePayrollDateStatusApi"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"completedBy"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updatePayrollDates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"StringValue","value":"completed","block":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"completedAt"},"value":{"kind":"StringValue","value":"now()","block":false}},{"kind":"ObjectField","name":{"kind":"Name","value":"completedBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"completedBy"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"affectedRows"}}]}}]}}]} as unknown as DocumentNode<UpdatePayrollDateStatusApiMutation, UpdatePayrollDateStatusApiMutationVariables>;
+export const LogCompletionEventApiDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"LogCompletionEventApi"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BillingEventLogInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertBillingEventLogOne"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<LogCompletionEventApiMutation, LogCompletionEventApiMutationVariables>;
+export const CheckExistingContextApiDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CheckExistingContextApi"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrollDateCompletionContext"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDateId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollDates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]} as unknown as DocumentNode<CheckExistingContextApiQuery, CheckExistingContextApiQueryVariables>;
+export const UpdateCompletionContextApiDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateCompletionContextApi"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"updates"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PayrollDateCompletionContextSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updatePayrollDateCompletionContext"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDateId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"updates"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"affectedRows"}},{"kind":"Field","name":{"kind":"Name","value":"returning"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateCompletionContextApiMutation, UpdateCompletionContextApiMutationVariables>;
+export const DeleteExistingBillingApiDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteExistingBillingApi"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteBillingItems"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDateId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"autoGenerated"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"billingTier"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"tier1","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"affectedRows"}}]}}]}}]} as unknown as DocumentNode<DeleteExistingBillingApiMutation, DeleteExistingBillingApiMutationVariables>;
+export const GetCompletionContextApiDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCompletionContextApi"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"payrollDateCompletionContext"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDateId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"payrollDateId"}},{"kind":"Field","name":{"kind":"Name","value":"completedBy"}},{"kind":"Field","name":{"kind":"Name","value":"completedAt"}},{"kind":"Field","name":{"kind":"Name","value":"payslipCount"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"customQuantities"}},{"kind":"Field","name":{"kind":"Name","value":"completedByUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrollDates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"payrollDateId"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"originalEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"adjustedEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"payroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"billingItems"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"autoGenerated"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"billingTier"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"tier1","block":false}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"createdAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serviceCode"}},{"kind":"Field","name":{"kind":"Name","value":"serviceName"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"unitPrice"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"approvalLevel"}},{"kind":"Field","name":{"kind":"Name","value":"rateJustification"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]}}]} as unknown as DocumentNode<GetCompletionContextApiQuery, GetCompletionContextApiQueryVariables>;
 export const LogAuditEventDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"LogAuditEvent"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"AuditAuditLogInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertAuditAuditLog"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"objects"},"value":{"kind":"ListValue","values":[{"kind":"Variable","name":{"kind":"Name","value":"input"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"returning"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"eventTime"}}]}}]}}]}}]} as unknown as DocumentNode<LogAuditEventMutation, LogAuditEventMutationVariables>;
 export const InsertFileDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"InsertFile"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FilesInsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertFiles"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"objects"},"value":{"kind":"ListValue","values":[{"kind":"Variable","name":{"kind":"Name","value":"input"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"returning"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"filename"}},{"kind":"Field","name":{"kind":"Name","value":"bucket"}},{"kind":"Field","name":{"kind":"Name","value":"objectKey"}},{"kind":"Field","name":{"kind":"Name","value":"size"}},{"kind":"Field","name":{"kind":"Name","value":"mimetype"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"uploadedBy"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"isPublic"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"}},{"kind":"Field","name":{"kind":"Name","value":"fileType"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]}}]} as unknown as DocumentNode<InsertFileMutation, InsertFileMutationVariables>;
 export const UpdateFileMetadataDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateFileMetadata"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"updates"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FilesSetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateFilesByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"Variable","name":{"kind":"Name","value":"updates"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"filename"}},{"kind":"Field","name":{"kind":"Name","value":"bucket"}},{"kind":"Field","name":{"kind":"Name","value":"objectKey"}},{"kind":"Field","name":{"kind":"Name","value":"size"}},{"kind":"Field","name":{"kind":"Name","value":"mimetype"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"uploadedBy"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"isPublic"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"}},{"kind":"Field","name":{"kind":"Name","value":"fileType"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]} as unknown as DocumentNode<UpdateFileMetadataMutation, UpdateFileMetadataMutationVariables>;
 export const DeleteFileDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteFile"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteFilesByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"filename"}},{"kind":"Field","name":{"kind":"Name","value":"objectKey"}}]}}]}}]} as unknown as DocumentNode<DeleteFileMutation, DeleteFileMutationVariables>;
 export const RefreshDataDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RefreshData"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}}]} as unknown as DocumentNode<RefreshDataMutation, RefreshDataMutationVariables>;
+export const UpdateFeatureFlagDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateFeatureFlag"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"isEnabled"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"allowedRoles"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"jsonb"}},"defaultValue":{"kind":"ListValue","values":[]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateFeatureFlagsByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pkColumns"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}},{"kind":"Argument","name":{"kind":"Name","value":"_set"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"isEnabled"},"value":{"kind":"Variable","name":{"kind":"Name","value":"isEnabled"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"allowedRoles"},"value":{"kind":"Variable","name":{"kind":"Name","value":"allowedRoles"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"featureName"}},{"kind":"Field","name":{"kind":"Name","value":"isEnabled"}},{"kind":"Field","name":{"kind":"Name","value":"allowedRoles"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<UpdateFeatureFlagMutation, UpdateFeatureFlagMutationVariables>;
+export const CreateFeatureFlagDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateFeatureFlag"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"featureName"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"isEnabled"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"allowedRoles"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"jsonb"}},"defaultValue":{"kind":"ListValue","values":[]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"insertFeatureFlagsOne"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"object"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"featureName"},"value":{"kind":"Variable","name":{"kind":"Name","value":"featureName"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"isEnabled"},"value":{"kind":"Variable","name":{"kind":"Name","value":"isEnabled"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"allowedRoles"},"value":{"kind":"Variable","name":{"kind":"Name","value":"allowedRoles"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"featureName"}},{"kind":"Field","name":{"kind":"Name","value":"isEnabled"}},{"kind":"Field","name":{"kind":"Name","value":"allowedRoles"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<CreateFeatureFlagMutation, CreateFeatureFlagMutationVariables>;
+export const DeleteFeatureFlagDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteFeatureFlag"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteFeatureFlagsByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"featureName"}}]}}]}}]} as unknown as DocumentNode<DeleteFeatureFlagMutation, DeleteFeatureFlagMutationVariables>;
 export const GetDashboardMetricsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetDashboardMetrics"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clientsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"active"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"activePayrollsAggregate"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_nin"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"Completed","block":false},{"kind":"StringValue","value":"Failed","block":false}]}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"totalEmployeesAggregate"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}}]}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"upcomingPayrolls"},"name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_nin"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"Completed","block":false},{"kind":"StringValue","value":"Failed","block":false},{"kind":"StringValue","value":"Cancelled","block":false}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ClientMinimal"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]} as unknown as DocumentNode<GetDashboardMetricsQuery, GetDashboardMetricsQueryVariables>;
 export const GetDashboardStatsOptimizedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetDashboardStatsOptimized"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}},"defaultValue":{"kind":"IntValue","value":"10"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clientsAggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"totalPayrolls"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"activePayrolls"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"Active","block":false}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"upcomingPayrolls"},"name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"status"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"StringValue","value":"Active","block":false}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"payrollDates"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"updatedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"nextEftDate"},"name":{"kind":"Name","value":"payrollDates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"StringValue","value":"now()","block":false}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"adjustedEftDate"},"value":{"kind":"EnumValue","value":"ASC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"1"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"originalEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"adjustedEftDate"}},{"kind":"Field","name":{"kind":"Name","value":"processingDate"}}]}}]}}]}}]} as unknown as DocumentNode<GetDashboardStatsOptimizedQuery, GetDashboardStatsOptimizedQueryVariables>;
 export const GetClientsDashboardStatsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetClientsDashboardStats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"activeClientsCount"},"name":{"kind":"Name","value":"clientsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"active"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"totalPayrollsCount"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"totalEmployeesSum"},"name":{"kind":"Name","value":"payrollsAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sum"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}}]}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"clientsNeedingAttention"},"name":{"kind":"Name","value":"clients"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"active"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"BooleanValue","value":true}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"_not"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"payrolls"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ClientMinimal"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]} as unknown as DocumentNode<GetClientsDashboardStatsQuery, GetClientsDashboardStatsQueryVariables>;
@@ -26100,6 +29061,8 @@ export const GetSystemHealthDocument = {"kind":"Document","definitions":[{"kind"
 export const GlobalSearchDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GlobalSearch"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clients"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"contactEmail"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ClientMinimal"}}]}},{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_or"},"value":{"kind":"ListValue","values":[{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"computedName"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"firstName"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"lastName"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]},{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"email"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserMinimal"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payrolls"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"client"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"name"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_ilike"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}]}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"supersededDate"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_isNull"},"value":{"kind":"BooleanValue","value":true}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"5"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PayrollMinimal"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ClientMinimal"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ClientMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Clients"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Users"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"computedName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PayrollMinimal"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Payrolls"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"employeeCount"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]} as unknown as DocumentNode<GlobalSearchQuery, GlobalSearchQueryVariables>;
 export const GetFileByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetFileById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"filesByPk"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"filename"}},{"kind":"Field","name":{"kind":"Name","value":"bucket"}},{"kind":"Field","name":{"kind":"Name","value":"objectKey"}},{"kind":"Field","name":{"kind":"Name","value":"size"}},{"kind":"Field","name":{"kind":"Name","value":"mimetype"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"uploadedBy"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"isPublic"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"}},{"kind":"Field","name":{"kind":"Name","value":"fileType"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"uploadedBy"}}]}}]}}]} as unknown as DocumentNode<GetFileByIdQuery, GetFileByIdQueryVariables>;
 export const ListFilesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ListFiles"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"FilesBoolExp"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FilesOrderBy"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"files"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"filename"}},{"kind":"Field","name":{"kind":"Name","value":"bucket"}},{"kind":"Field","name":{"kind":"Name","value":"objectKey"}},{"kind":"Field","name":{"kind":"Name","value":"size"}},{"kind":"Field","name":{"kind":"Name","value":"mimetype"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}},{"kind":"Field","name":{"kind":"Name","value":"payrollId"}},{"kind":"Field","name":{"kind":"Name","value":"uploadedBy"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"isPublic"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"}},{"kind":"Field","name":{"kind":"Name","value":"fileType"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"payroll"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"uploadedBy"}}]}},{"kind":"Field","name":{"kind":"Name","value":"filesAggregate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<ListFilesQuery, ListFilesQueryVariables>;
+export const GetFeatureFlagsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetFeatureFlags"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"featureFlags"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"featureName"}},{"kind":"Field","name":{"kind":"Name","value":"isEnabled"}},{"kind":"Field","name":{"kind":"Name","value":"allowedRoles"}}]}}]}}]} as unknown as DocumentNode<GetFeatureFlagsQuery, GetFeatureFlagsQueryVariables>;
+export const GetFeatureFlagByNameDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetFeatureFlagByName"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"featureName"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"featureFlags"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"featureName"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"featureName"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"featureName"}},{"kind":"Field","name":{"kind":"Name","value":"isEnabled"}},{"kind":"Field","name":{"kind":"Name","value":"allowedRoles"}}]}}]}}]} as unknown as DocumentNode<GetFeatureFlagByNameQuery, GetFeatureFlagByNameQueryVariables>;
 export const RecentActivityDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"RecentActivity"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"resourceTypes"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"auditAuditLog"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"resourceType"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"Variable","name":{"kind":"Name","value":"resourceTypes"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"eventTime"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"StringValue","value":"now() - interval '5 minutes'","block":false}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"eventTime"},"value":{"kind":"EnumValue","value":"DESC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"20"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AuditLogEntry"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AuditLogEntry"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"AuditAuditLog"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"userEmail"}},{"kind":"Field","name":{"kind":"Name","value":"userRole"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"resourceType"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"eventTime"}},{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"errorMessage"}},{"kind":"Field","name":{"kind":"Name","value":"ipAddress"}},{"kind":"Field","name":{"kind":"Name","value":"userAgent"}},{"kind":"Field","name":{"kind":"Name","value":"requestId"}},{"kind":"Field","name":{"kind":"Name","value":"sessionId"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"}},{"kind":"Field","name":{"kind":"Name","value":"oldValues"}},{"kind":"Field","name":{"kind":"Name","value":"newValues"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<RecentActivitySubscription, RecentActivitySubscriptionVariables>;
 export const AuthenticationEventsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"AuthenticationEvents"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"uuid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"auditAuthEvents"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"userId"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_eq"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"eventTime"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"StringValue","value":"now() - interval '10 minutes'","block":false}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"eventTime"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AuthEvent"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AuthEvent"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"AuditAuthEvents"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"userEmail"}},{"kind":"Field","name":{"kind":"Name","value":"eventType"}},{"kind":"Field","name":{"kind":"Name","value":"eventTime"}},{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"failureReason"}},{"kind":"Field","name":{"kind":"Name","value":"ipAddress"}},{"kind":"Field","name":{"kind":"Name","value":"userAgent"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"}}]}}]} as unknown as DocumentNode<AuthenticationEventsSubscription, AuthenticationEventsSubscriptionVariables>;
 export const SensitiveDataAccessDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"SensitiveDataAccess"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"resourceTypes"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"auditDataAccessLog"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"resourceType"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_in"},"value":{"kind":"Variable","name":{"kind":"Name","value":"resourceTypes"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"accessedAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"_gte"},"value":{"kind":"StringValue","value":"now() - interval '10 minutes'","block":false}}]}}]}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"accessedAt"},"value":{"kind":"EnumValue","value":"DESC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DataAccessLog"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DataAccessLog"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"AuditDataAccessLog"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"resourceType"}},{"kind":"Field","name":{"kind":"Name","value":"resourceId"}},{"kind":"Field","name":{"kind":"Name","value":"accessType"}},{"kind":"Field","name":{"kind":"Name","value":"accessedAt"}},{"kind":"Field","name":{"kind":"Name","value":"dataClassification"}},{"kind":"Field","name":{"kind":"Name","value":"fieldsAccessed"}},{"kind":"Field","name":{"kind":"Name","value":"rowCount"}},{"kind":"Field","name":{"kind":"Name","value":"ipAddress"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"}}]}}]} as unknown as DocumentNode<SensitiveDataAccessSubscription, SensitiveDataAccessSubscriptionVariables>;

@@ -1,6 +1,6 @@
 import path from "path";
-import { fileURLToPath } from 'url';
-import { createRequire } from 'module';
+import { fileURLToPath } from "url";
+import { createRequire } from "module";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -59,9 +59,9 @@ const nextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.com https://accounts.bytemy.com.au https://clerk.bytemy.com.au https://*.clerk.accounts.dev https://*.vercel.app https://*.vercel-insights.com https://*.vercel-analytics.com https://challenges.cloudflare.com https://*.cloudflare.com https://js.monitor.azure.com https://api.stripe.com https://maps.googleapis.com",
-              "script-src-elem 'self' 'unsafe-inline' https://clerk.com https://accounts.bytemy.com.au https://clerk.bytemy.com.au https://*.clerk.accounts.dev https://*.vercel.app https://*.vercel-insights.com https://*.vercel-analytics.com https://challenges.cloudflare.com https://*.cloudflare.com https://api.stripe.com https://maps.googleapis.com",
-              "style-src 'self' 'unsafe-inline'",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.com https://accounts.bytemy.com.au https://clerk.bytemy.com.au https://*.clerk.accounts.dev https://*.vercel.app https://*.vercel-insights.com https://*.vercel-analytics.com https://challenges.cloudflare.com https://*.cloudflare.com https://js.monitor.azure.com https://api.stripe.com https://maps.googleapis.com https://cdn.jsdelivr.net",
+              "script-src-elem 'self' 'unsafe-inline' https://clerk.com https://accounts.bytemy.com.au https://clerk.bytemy.com.au https://*.clerk.accounts.dev https://*.vercel.app https://*.vercel-insights.com https://*.vercel-analytics.com https://challenges.cloudflare.com https://*.cloudflare.com https://api.stripe.com https://maps.googleapis.com https://cdn.jsdelivr.net",
+              "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
               "img-src 'self' data: https: blob:",
               "font-src 'self' data: https://fonts.gstatic.com",
               // Allow local development Hasura endpoints (HTTP and WebSocket)
@@ -197,7 +197,6 @@ const nextConfig = {
     styledComponents: true,
   },
 
-
   // Experimental features (stable and tested in Next.js 15.3.4)
   experimental: {
     // Server Actions configuration (stable in Next.js 15)
@@ -221,10 +220,9 @@ const nextConfig = {
       "@apollo/client",
       "date-fns",
       "class-variance-authority",
-      "clsx", 
+      "clsx",
       "tailwind-merge",
     ],
-
 
     // CSS optimization (disabled due to critters compatibility issues)
     // optimizeCss: true,
@@ -401,7 +399,7 @@ const nextConfig = {
           })
         );
       } catch (error) {
-        console.warn('webpack-bundle-analyzer not available:', error.message);
+        console.warn("webpack-bundle-analyzer not available:", error.message);
       }
     }
 
@@ -409,8 +407,8 @@ const nextConfig = {
     if (!isServer) {
       // Enable persistent caching for faster rebuilds
       config.cache = {
-        type: 'filesystem',
-        cacheDirectory: path.resolve(__dirname, '.next/cache/webpack'),
+        type: "filesystem",
+        cacheDirectory: path.resolve(__dirname, ".next/cache/webpack"),
         buildDependencies: {
           config: [__filename],
         },
@@ -421,7 +419,7 @@ const nextConfig = {
       config.optimization = {
         ...config.optimization,
         splitChunks: {
-          chunks: 'all',
+          chunks: "all",
           minSize: 20000,
           minRemainingSize: 0,
           minChunks: 1,
@@ -432,89 +430,89 @@ const nextConfig = {
             // React core (highest priority - most stable)
             reactVendor: {
               test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
-              name: 'react-vendor',
+              name: "react-vendor",
               priority: 40,
               reuseExistingChunk: true,
             },
             // Apollo Client and GraphQL (separate chunk - heavy)
             apolloVendor: {
               test: /[\\/]node_modules[\\/](@apollo|@graphql-typed-document-node|graphql)[\\/]/,
-              name: 'apollo-vendor', 
+              name: "apollo-vendor",
               priority: 35,
               reuseExistingChunk: true,
             },
             // Radix UI components (separate chunk - UI heavy)
             radixVendor: {
               test: /[\\/]node_modules[\\/]@radix-ui[\\/]/,
-              name: 'radix-vendor',
+              name: "radix-vendor",
               priority: 30,
               reuseExistingChunk: true,
             },
             // Chart libraries (lazy loaded - separate chunk)
             chartsVendor: {
               test: /[\\/]node_modules[\\/](recharts|d3)[\\/]/,
-              name: 'charts-vendor',
+              name: "charts-vendor",
               priority: 25,
               reuseExistingChunk: true,
             },
             // Icons (optimized separately)
             iconsVendor: {
               test: /[\\/]node_modules[\\/](lucide-react|@radix-ui\/react-icons)[\\/]/,
-              name: 'icons-vendor',
+              name: "icons-vendor",
               priority: 20,
               reuseExistingChunk: true,
             },
             // Other stable vendor dependencies
             vendor: {
               test: /[\\/]node_modules[\\/]/,
-              name: 'vendors',
+              name: "vendors",
               priority: 10,
               reuseExistingChunk: true,
-              chunks: 'initial',
+              chunks: "initial",
             },
             // GraphQL generated types (separate chunk - large)
             graphqlTypes: {
               test: /[\\/](domains|shared)[\\/].*[\\/]generated[\\/]/,
-              name: 'graphql-types',
+              name: "graphql-types",
               priority: 18,
               reuseExistingChunk: true,
             },
             // Domain-specific chunks (dynamic naming)
             domainPayrolls: {
               test: /[\\/]domains[\\/]payrolls[\\/]/,
-              name: 'domain-payrolls',
+              name: "domain-payrolls",
               priority: 8,
               reuseExistingChunk: true,
             },
             domainBilling: {
               test: /[\\/]domains[\\/]billing[\\/]/,
-              name: 'domain-billing', 
+              name: "domain-billing",
               priority: 8,
               reuseExistingChunk: true,
             },
             domainClients: {
               test: /[\\/]domains[\\/]clients[\\/]/,
-              name: 'domain-clients',
+              name: "domain-clients",
               priority: 8,
               reuseExistingChunk: true,
             },
             domainUsers: {
               test: /[\\/]domains[\\/]users[\\/]/,
-              name: 'domain-users',
+              name: "domain-users",
               priority: 8,
               reuseExistingChunk: true,
             },
             // Common domain utilities
             domainCommon: {
               test: /[\\/]domains[\\/]/,
-              name: 'domain-common',
+              name: "domain-common",
               priority: 5,
               reuseExistingChunk: true,
             },
             // Shared utilities and components
             shared: {
               test: /[\\/](shared|lib|components)[\\/]/,
-              name: 'shared-utils',
+              name: "shared-utils",
               priority: 7,
               reuseExistingChunk: true,
               minChunks: 2, // Only if used by multiple modules
@@ -524,7 +522,7 @@ const nextConfig = {
               minChunks: 2,
               priority: -10,
               reuseExistingChunk: true,
-              name: 'common',
+              name: "common",
             },
           },
         },

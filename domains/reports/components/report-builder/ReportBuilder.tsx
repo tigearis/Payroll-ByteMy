@@ -1,28 +1,28 @@
+import { ShieldAlert, RefreshCcw } from "lucide-react";
 import { useState } from "react";
-import { useAuth } from "@clerk/nextjs";
 import { toast } from "sonner";
-import { Card } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { ShieldAlert, RefreshCcw } from "lucide-react";
-import { useReportOperations } from "../../hooks/useReportOperations";
+import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useRole } from "@/hooks/use-permissions";
 import { useReportMetadata } from "../../hooks/useReportMetadata";
-import { FieldSelector } from "./FieldSelector";
-import { AdvancedFilterBuilder } from "../filters/AdvancedFilterBuilder";
-import { AggregationBuilder } from "../aggregations/AggregationBuilder";
-import { PreviewPane } from "./PreviewPane";
-import { TemplateManager } from "../templates/TemplateManager";
-import type { ReportConfig, ReportTemplate } from "../../types/report.types";
+import { useReportOperations } from "../../hooks/useReportOperations";
 import type {
   FilterGroup,
   Aggregation,
   GroupBy,
   CalculatedField,
 } from "../../types/filter.types";
+import type { ReportConfig, ReportTemplate } from "../../types/report.types";
+import { AggregationBuilder } from "../aggregations/AggregationBuilder";
+import { AdvancedFilterBuilder } from "../filters/AdvancedFilterBuilder";
+import { TemplateManager } from "../templates/TemplateManager";
+import { FieldSelector } from "./FieldSelector";
+import { PreviewPane } from "./PreviewPane";
 
 export function ReportBuilder() {
-  const { isLoaded: authLoaded, isSignedIn } = useAuth();
+  const { isConsultantOrAbove } = useRole();
   const {
     metadata,
     error: metadataError,
@@ -72,7 +72,7 @@ export function ReportBuilder() {
     try {
       const reportConfig = {
         ...config,
-        filter,
+        filters: filter as any, // TODO: Convert FilterGroup to ReportFilter[]
         aggregations,
         groupBy,
         calculatedFields,
@@ -84,29 +84,19 @@ export function ReportBuilder() {
     } catch (error) {
       toast.error("Failed to generate report");
       console.error(error);
+      return null;
     }
   };
 
-  // Handle authentication loading
-  if (!authLoaded) {
-    return (
-      <Card className="p-6">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
-        </div>
-      </Card>
-    );
-  }
-
-  // Handle not signed in
-  if (!isSignedIn) {
+  // Check permissions first
+  if (!isConsultantOrAbove) {
     return (
       <Card className="p-6">
         <Alert variant="destructive">
           <ShieldAlert className="h-4 w-4" />
-          <AlertTitle>Authentication Required</AlertTitle>
+          <AlertTitle>Access Denied</AlertTitle>
           <AlertDescription>
-            Please sign in to access the reports system.
+            Consultant access or above required to use the report builder.
           </AlertDescription>
         </Alert>
       </Card>
@@ -183,7 +173,7 @@ export function ReportBuilder() {
 
             <TabsContent value="fields" className="p-4">
               <FieldSelector
-                metadata={metadata}
+                metadata={metadata as any}
                 selectedDomains={config.domains}
                 selectedFields={config.fields}
                 onChange={(domains, fields) =>
@@ -230,12 +220,12 @@ export function ReportBuilder() {
         <PreviewPane
           config={{
             ...config,
-            filter,
+            filters: filter as any, // TODO: Convert FilterGroup to ReportFilter[]
             aggregations,
             groupBy,
             calculatedFields,
-          }}
-          onGenerateReport={handleGenerateReport}
+          } as ReportConfig}
+          onGenerateReport={handleGenerateReport as any}
           className="h-full"
         />
       </div>

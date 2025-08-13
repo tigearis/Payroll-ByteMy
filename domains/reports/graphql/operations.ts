@@ -1,138 +1,24 @@
-import { gql } from "@apollo/client";
+// Re-export generated GraphQL operations from the generated files
+// This file now serves as a convenience re-export for backward compatibility
+// All actual GraphQL operations are defined in .graphql files and generated via codegen
 
-// Import all GraphQL operations
-export const GET_REPORT_METADATA = gql`
-  query GetReportMetadata {
-    reportMetadata {
-      availableFields
-      relationships
-      domains
-    }
-  }
-`;
+// Runtime exports (DocumentNodes for Apollo Client)
+export {
+  GetClientsForDropdownDocument,
+  GetPayrollsForDropdownDocument,
+  GetStaffForDropdownDocument,
+  LogQueryAuditDocument,
+} from "./generated/graphql";
 
-export const GET_REPORT_TEMPLATES = gql`
-  query GetReportTemplates(
-    $userId: String
-    $isPublic: Boolean
-    $tags: [String!]
-  ) {
-    reportTemplates(userId: $userId, isPublic: $isPublic, tags: $tags) {
-      id
-      name
-      description
-      domains
-      fields
-      filters {
-        field
-        operator
-        value
-        conjunction
-      }
-      sorts {
-        field
-        direction
-      }
-      limit
-      createdBy
-      createdAt
-      updatedAt
-      isPublic
-      tags
-    }
-  }
-`;
+// Type exports (for TypeScript typing)
+export type {
+  GetClientsForDropdownQuery,
+  GetPayrollsForDropdownQuery,
+  GetStaffForDropdownQuery,
+  LogQueryAuditMutation,
+  LogQueryAuditMutationVariables
+} from "./generated/graphql";
 
-export const GET_REPORT_JOB = gql`
-  query GetReportJob($id: ID!) {
-    reportJob(id: $id) {
-      id
-      config
-      status
-      progress
-      error
-      result
-      startedAt
-      completedAt
-      userId
-    }
-  }
-`;
-
-export const GENERATE_REPORT = gql`
-  mutation GenerateReport($config: JSON!) {
-    generateReport(config: $config) {
-      id
-      config
-      status
-      progress
-      error
-      result
-      startedAt
-      completedAt
-      userId
-    }
-  }
-`;
-
-export const SAVE_REPORT_TEMPLATE = gql`
-  mutation SaveReportTemplate($template: JSON!) {
-    saveReportTemplate(template: $template) {
-      id
-      name
-      description
-      domains
-      fields
-      filters {
-        field
-        operator
-        value
-        conjunction
-      }
-      sorts {
-        field
-        direction
-      }
-      limit
-      createdBy
-      createdAt
-      updatedAt
-      isPublic
-      tags
-    }
-  }
-`;
-
-export const UPDATE_REPORT_TEMPLATE = gql`
-  mutation UpdateReportTemplate($id: ID!, $template: JSON!) {
-    updateReportTemplate(id: $id, template: $template) {
-      id
-      name
-      description
-      domains
-      fields
-      filters {
-        field
-        operator
-        value
-        conjunction
-      }
-      sorts {
-        field
-        direction
-      }
-      limit
-      createdBy
-      createdAt
-      updatedAt
-      isPublic
-      tags
-    }
-  }
-`;
-
-export const DELETE_REPORT_TEMPLATE = gql`
-  mutation DeleteReportTemplate($id: ID!) {
-    deleteReportTemplate(id: $id)
-  }
-`;
+// Note: Report metadata, templates, and job operations were removed as they
+// don't correspond to actual Hasura schema tables. If these are needed,
+// they should be implemented as custom resolvers or separate API endpoints.

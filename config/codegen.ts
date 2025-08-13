@@ -131,6 +131,11 @@ const domains = {
     security: "CRITICAL",
     description: "SOC2 compliance and logging",
   },
+  admin: {
+    name: "admin",
+    security: "CRITICAL",
+    description: "Administrative operations and cleanup",
+  },
   permissions: {
     name: "permissions",
     security: "CRITICAL",
@@ -185,6 +190,11 @@ const domains = {
     security: "MEDIUM",
     description: "Third-party integrations",
   },
+  reports: {
+    name: "reports",
+    security: "HIGH",
+    description: "Custom reporting and analytics",
+  },
 
   // LOW Security Level - Basic access control
   shared: {
@@ -221,6 +231,23 @@ const domainHasValidOperations = (domainName: string): boolean => {
     `./domains/${domainName}/graphql/subscriptions.graphql`,
     `./domains/${domainName}/graphql/fragments.graphql`,
   ];
+
+  // Also check for any other .graphql files in the domain
+  const fs = require('fs');
+  const path = require('path');
+  const domainGraphqlDir = `./domains/${domainName}/graphql`;
+  
+  try {
+    if (fs.existsSync(domainGraphqlDir)) {
+      const allFiles = fs.readdirSync(domainGraphqlDir, { recursive: true })
+        .filter((file: string) => file.endsWith('.graphql'))
+        .map((file: string) => path.join(domainGraphqlDir, file));
+      
+      graphqlFiles.push(...allFiles);
+    }
+  } catch {
+    // Continue with default files if directory reading fails
+  }
 
   return graphqlFiles.some(file => {
     if (!existsSync(file)) return false;

@@ -18,7 +18,7 @@ import { ColumnFactories, CommonColumnSets } from "@/lib/table/column-factories"
 import { safeFormatDate } from "@/lib/utils/date-utils";
 
 export default function BillingItemsPage() {
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const [_activeTab, _setActiveTab] = useState("dashboard");
   const [statusFilter, setStatusFilter] = useState<
     "all" | "draft" | "approved"
   >("all");
@@ -77,11 +77,11 @@ export default function BillingItemsPage() {
     }).format(amount);
   }, []);
 
-  const draftItems = useMemo(
+  const _draftItems = useMemo(
     () => billingItems.filter(item => !item.isApproved),
     [billingItems]
   );
-  const confirmedItems = useMemo(
+  const _confirmedItems = useMemo(
     () => billingItems.filter(item => item.isApproved),
     [billingItems]
   );

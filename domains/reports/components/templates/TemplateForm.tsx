@@ -1,11 +1,8 @@
-import { useState } from "react";
-import { useAuth } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
 import { X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -14,7 +11,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { useRole } from "@/hooks/use-permissions";
 import type { ReportTemplate, ReportConfig } from "../../types/report.types";
 
 interface TemplateFormProps {
@@ -28,7 +29,7 @@ export function TemplateForm({
   onSave,
   onCancel,
 }: TemplateFormProps) {
-  const { user } = useAuth();
+  const { user } = useUser();
   const [formData, setFormData] = useState<Partial<ReportTemplate>>({
     name: "",
     description: "",

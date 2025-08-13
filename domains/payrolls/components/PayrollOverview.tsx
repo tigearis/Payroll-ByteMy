@@ -99,7 +99,7 @@ function EnhancedMetricCard({
   icon: IconComponent,
   trend,
   trendValue,
-  status = 'neutral',
+  status = "neutral",
   onClick,
   children,
 }: {
@@ -107,27 +107,27 @@ function EnhancedMetricCard({
   value: string;
   subtitle: string;
   icon: React.ElementType;
-  trend?: 'up' | 'down' | 'stable';
+  trend?: "up" | "down" | "stable";
   trendValue?: string;
-  status?: 'good' | 'warning' | 'critical' | 'neutral';
+  status?: "good" | "warning" | "critical" | "neutral";
   onClick?: () => void;
   children?: React.ReactNode;
 }) {
   const statusStyles = {
-    good: 'bg-green-50 border-green-200 hover:bg-green-100',
-    warning: 'bg-amber-50 border-amber-200 hover:bg-amber-100',
-    critical: 'bg-red-50 border-red-200 hover:bg-red-100',
-    neutral: 'bg-white border-gray-200 hover:bg-gray-50',
+    good: "bg-green-50 border-green-200 hover:bg-green-100",
+    warning: "bg-amber-50 border-amber-200 hover:bg-amber-100",
+    critical: "bg-red-50 border-red-200 hover:bg-red-100",
+    neutral: "bg-white border-gray-200 hover:bg-gray-50",
   };
 
   const trendStyles = {
-    up: 'text-green-600 bg-green-100',
-    down: 'text-red-600 bg-red-100',
-    stable: 'text-gray-600 bg-gray-100',
+    up: "text-green-600 bg-green-100",
+    down: "text-red-600 bg-red-100",
+    stable: "text-gray-600 bg-gray-100",
   };
 
   return (
-    <Card 
+    <Card
       className={cn(
         "group cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02]",
         statusStyles[status],
@@ -135,79 +135,84 @@ function EnhancedMetricCard({
       )}
       onClick={onClick}
     >
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-gray-700 group-hover:text-gray-900 transition-colors">
-            {title}
-          </CardTitle>
-          <div className="relative">
-            <IconComponent className="h-4 w-4 text-muted-foreground group-hover:text-blue-600 transition-colors" />
-            {status === 'critical' && (
-              <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium text-gray-700 group-hover:text-gray-900 transition-colors">
+          {title}
+        </CardTitle>
+        <div className="relative">
+          <IconComponent className="h-4 w-4 text-muted-foreground group-hover:text-blue-600 transition-colors" />
+          {status === "critical" && (
+            <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+          )}
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          <div className="flex items-baseline justify-between">
+            <div className="text-2xl font-bold text-gray-900 group-hover:text-blue-900 transition-colors">
+              {value}
+            </div>
+            {trend && trendValue && (
+              <div
+                className={cn(
+                  "px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1",
+                  trendStyles[trend]
+                )}
+                title="Trend from previous period"
+              >
+                {trend === "up" && <TrendingUp className="w-3 h-3" />}
+                {trend === "down" && (
+                  <Activity className="w-3 h-3 rotate-180" />
+                )}
+                {trend === "stable" && <Activity className="w-3 h-3" />}
+                <span>{trendValue}</span>
+              </div>
             )}
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <div className="flex items-baseline justify-between">
-              <div className="text-2xl font-bold text-gray-900 group-hover:text-blue-900 transition-colors">
-                {value}
-              </div>
-              {trend && trendValue && (
-                <div 
-                  className={cn(
-                    'px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1',
-                    trendStyles[trend]
-                  )}
-                  title="Trend from previous period"
-                >
-                  {trend === 'up' && <TrendingUp className="w-3 h-3" />}
-                  {trend === 'down' && <Activity className="w-3 h-3 rotate-180" />}
-                  {trend === 'stable' && <Activity className="w-3 h-3" />}
-                  <span>{trendValue}</span>
-                </div>
-              )}
-            </div>
-            
-            <p className="text-xs text-muted-foreground group-hover:text-gray-600 transition-colors">
-              {subtitle}
-            </p>
-            
-            {children}
-          </div>
-        </CardContent>
-      </Card>
+
+          <p className="text-xs text-muted-foreground group-hover:text-gray-600 transition-colors">
+            {subtitle}
+          </p>
+
+          {children}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
 // Smart badge component with status-based styling
-function SmartBadge({ 
-  status, 
-  children 
-}: { 
-  status: string; 
+function SmartBadge({
+  status,
+  children,
+}: {
+  status: string;
   children: React.ReactNode;
 }) {
   const getVariant = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'active':
-      case 'completed':
-      case 'good':
-        return 'default';
-      case 'warning':
-      case 'implementation':
-      case 'draft':
-        return 'secondary';
-      case 'critical':
-      case 'overdue':
-      case 'inactive':
-        return 'destructive';
+      case "active":
+      case "completed":
+      case "good":
+        return "default";
+      case "warning":
+      case "implementation":
+      case "draft":
+        return "secondary";
+      case "critical":
+      case "overdue":
+      case "inactive":
+        return "destructive";
       default:
-        return 'outline';
+        return "outline";
     }
   };
 
   return (
-    <Badge variant={getVariant(status)} className="transition-colors hover:opacity-80">
+    <Badge
+      variant={getVariant(status)}
+      className="transition-colors hover:opacity-80"
+    >
       {children}
     </Badge>
   );
@@ -226,22 +231,32 @@ function PayrollOverviewComponent({
   // Calculate key metrics with smart analysis
   const metrics = useMemo(() => {
     const nextPayDate = payroll.detailPayrollDates?.find(date => {
-      const dateToCheck = new Date(date.adjustedEftDate || date.originalEftDate);
+      const dateToCheck = new Date(
+        date.adjustedEftDate || date.originalEftDate
+      );
       return dateToCheck >= new Date();
     });
 
-    const processingProgress = getProcessingProgress(payroll.status || "Implementation");
+    const processingProgress = getProcessingProgress(
+      payroll.status || "Implementation"
+    );
     const scheduleInfo = getScheduleSummary(payroll);
     const employeeCount = payroll.employeeCount || 0;
     const fileCount = data.fileCount || 0;
 
     // Calculate health scores and trends (mock data - in production this would come from analytics)
-    const statusHealth = payroll.status === 'Active' ? 'good' : 
-                        payroll.status === 'Implementation' ? 'warning' : 'neutral';
-    
-    const employeeGrowth = employeeCount > 50 ? 'up' : employeeCount > 20 ? 'stable' : 'down';
-    const fileHealth = fileCount > 5 ? 'good' : fileCount > 2 ? 'warning' : 'critical';
-    
+    const statusHealth =
+      payroll.status === "Active"
+        ? "good"
+        : payroll.status === "Implementation"
+          ? "warning"
+          : "neutral";
+
+    const employeeGrowth =
+      employeeCount > 50 ? "up" : employeeCount > 20 ? "stable" : "down";
+    const fileHealth =
+      fileCount > 5 ? "good" : fileCount > 2 ? "warning" : "critical";
+
     return {
       nextPayDate,
       processingProgress,
@@ -255,16 +270,18 @@ function PayrollOverviewComponent({
   }, [payroll, data.fileCount]);
 
   // Upcoming dates for timeline (limited for overview)
-  const upcomingDates = useMemo(() =>
-    payroll.detailPayrollDates
-      ?.filter(date => {
-        const dateToCheck = new Date(
-          date.adjustedEftDate || date.originalEftDate
-        );
-        return dateToCheck >= new Date();
-      })
-      .slice(0, 3) || []
-  , [payroll.detailPayrollDates]);
+  const upcomingDates = useMemo(
+    () =>
+      payroll.detailPayrollDates
+        ?.filter(date => {
+          const dateToCheck = new Date(
+            date.adjustedEftDate || date.originalEftDate
+          );
+          return dateToCheck >= new Date();
+        })
+        .slice(0, 3) || [],
+    [payroll.detailPayrollDates]
+  );
 
   // Smart recommendations based on data
   const recommendations = useMemo(() => {
@@ -287,18 +304,31 @@ function PayrollOverviewComponent({
                 <Sparkles className="w-4 h-4 text-blue-600" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-blue-900 mb-1">Action Items</h3>
+                <h3 className="font-semibold text-blue-900 mb-1">
+                  Action Items
+                </h3>
                 <p className="text-sm text-blue-700 mb-3">
-                  {recommendations.length} recommended action{recommendations.length !== 1 ? 's' : ''} to improve this payroll
+                  {recommendations.length} recommended action
+                  {recommendations.length !== 1 ? "s" : ""} to improve this
+                  payroll
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {recommendations.slice(0, 3).map((rec, index) => (
-                    <Button key={index} variant="outline" size="sm" className="text-xs">
+                    <Button
+                      key={index}
+                      variant="outline"
+                      size="sm"
+                      className="text-xs"
+                    >
                       {rec}
                     </Button>
                   ))}
                   {recommendations.length > 3 && (
-                    <Button variant="ghost" size="sm" className="text-xs text-blue-600">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs text-blue-600"
+                    >
                       +{recommendations.length - 3} more
                     </Button>
                   )}
@@ -315,12 +345,18 @@ function PayrollOverviewComponent({
         <EnhancedMetricCard
           title="Status & Progress"
           value={payroll.status || "Implementation"}
-          subtitle={payroll.status === "Active" ? "Payroll is operational" : "Setup in progress"}
+          subtitle={
+            payroll.status === "Active"
+              ? "Payroll is operational"
+              : "Setup in progress"
+          }
           icon={Activity}
-          status={metrics.statusHealth as 'good' | 'warning' | 'critical' | 'neutral'}
-          trend={metrics.processingProgress > 80 ? 'up' : 'stable'}
+          status={
+            metrics.statusHealth as "good" | "warning" | "critical" | "neutral"
+          }
+          trend={metrics.processingProgress > 80 ? "up" : "stable"}
           trendValue={`${metrics.processingProgress}%`}
-          onClick={() => console.log('Navigate to status details')}
+          onClick={() => (window.location.href = `/payrolls/${payroll.id}`)}
         >
           <Progress value={metrics.processingProgress} className="h-2 mt-2" />
           <div className="flex justify-between text-xs text-gray-500 mt-1">
@@ -332,11 +368,17 @@ function PayrollOverviewComponent({
         {/* Next Pay Date Card */}
         <EnhancedMetricCard
           title="Next Pay Date"
-          value={formatDate(metrics.nextPayDate?.adjustedEftDate || metrics.nextPayDate?.originalEftDate)}
-          subtitle={formatRelativeDate(metrics.nextPayDate?.adjustedEftDate || metrics.nextPayDate?.originalEftDate)}
+          value={formatDate(
+            metrics.nextPayDate?.adjustedEftDate ||
+              metrics.nextPayDate?.originalEftDate
+          )}
+          subtitle={formatRelativeDate(
+            metrics.nextPayDate?.adjustedEftDate ||
+              metrics.nextPayDate?.originalEftDate
+          )}
           icon={Calendar}
-          status={metrics.nextPayDate ? 'good' : 'warning'}
-          onClick={() => console.log('Navigate to schedule')}
+          status={metrics.nextPayDate ? "good" : "warning"}
+          onClick={() => (window.location.href = "/payroll-schedule")}
         >
           {metrics.nextPayDate?.notes && (
             <div className="flex items-center gap-1 text-xs text-amber-600 mt-2">
@@ -352,16 +394,19 @@ function PayrollOverviewComponent({
           value={metrics.employeeCount.toString()}
           subtitle={`${metrics.employeeCount === 1 ? "employee" : "employees"} on payroll`}
           icon={Users}
-          trend={metrics.employeeGrowth as 'up' | 'down' | 'stable'}
+          trend={metrics.employeeGrowth as "up" | "down" | "stable"}
           trendValue={metrics.employeeCount > 20 ? "Growing" : "Stable"}
-          status={metrics.employeeCount > 0 ? 'good' : 'critical'}
-          onClick={() => console.log('Navigate to employees')}
+          status={metrics.employeeCount > 0 ? "good" : "critical"}
+          onClick={() => (window.location.href = "/staff")}
         >
           <div className="flex items-center gap-1 text-xs text-gray-600 mt-2">
             <Target className="h-3 w-3" />
             <span>
-              {metrics.employeeCount > 50 ? 'Large payroll' : 
-               metrics.employeeCount > 10 ? 'Medium payroll' : 'Small payroll'}
+              {metrics.employeeCount > 50
+                ? "Large payroll"
+                : metrics.employeeCount > 10
+                  ? "Medium payroll"
+                  : "Small payroll"}
             </span>
           </div>
         </EnhancedMetricCard>
@@ -372,19 +417,30 @@ function PayrollOverviewComponent({
           value={metrics.fileCount.toString()}
           subtitle="files attached"
           icon={FileText}
-          status={metrics.fileHealth as 'good' | 'warning' | 'critical' | 'neutral'}
-          trend={metrics.fileCount > 3 ? 'up' : 'stable'}
+          status={
+            metrics.fileHealth as "good" | "warning" | "critical" | "neutral"
+          }
+          trend={metrics.fileCount > 3 ? "up" : "stable"}
           trendValue={metrics.fileCount > 5 ? "Complete" : "Needs files"}
-          onClick={() => console.log('Navigate to documents')}
+          onClick={() => (window.location.href = `/payrolls/${payroll.id}`)}
         >
           <div className="flex items-center gap-1 text-xs mt-2">
-            <CheckCircle2 className={cn('h-3 w-3', 
-              metrics.fileHealth === 'good' ? 'text-green-600' : 
-              metrics.fileHealth === 'warning' ? 'text-amber-600' : 'text-red-600'
-            )} />
+            <CheckCircle2
+              className={cn(
+                "h-3 w-3",
+                metrics.fileHealth === "good"
+                  ? "text-green-600"
+                  : metrics.fileHealth === "warning"
+                    ? "text-amber-600"
+                    : "text-red-600"
+              )}
+            />
             <span className="text-gray-600">
-              {metrics.fileHealth === 'good' ? 'Complete documentation' :
-               metrics.fileHealth === 'warning' ? 'Missing some files' : 'Needs documentation'}
+              {metrics.fileHealth === "good"
+                ? "Complete documentation"
+                : metrics.fileHealth === "warning"
+                  ? "Missing some files"
+                  : "Needs documentation"}
             </span>
           </div>
         </EnhancedMetricCard>
@@ -399,7 +455,11 @@ function PayrollOverviewComponent({
               <Building2 className="h-5 w-5 text-blue-600" />
               Client Information
             </CardTitle>
-            <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="opacity-0 group-hover:opacity-100 transition-opacity"
+            >
               <BarChart3 className="h-4 w-4" />
             </Button>
           </CardHeader>
@@ -422,13 +482,15 @@ function PayrollOverviewComponent({
               </div>
 
               <div className="flex items-center justify-between">
-                <SmartBadge status={payroll.client?.active ? "active" : "inactive"}>
+                <SmartBadge
+                  status={payroll.client?.active ? "active" : "inactive"}
+                >
                   {payroll.client?.active ? "Active Client" : "Inactive Client"}
                 </SmartBadge>
                 <div className="text-right">
                   <div className="text-xs text-gray-500">Relationship</div>
                   <div className="text-sm font-medium">
-                    {payroll.client?.active ? '🟢 Strong' : '🔴 At Risk'}
+                    {payroll.client?.active ? "🟢 Strong" : "🔴 At Risk"}
                   </div>
                 </div>
               </div>
@@ -443,7 +505,11 @@ function PayrollOverviewComponent({
               <Clock className="h-5 w-5 text-indigo-600" />
               Processing Schedule
             </CardTitle>
-            <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="opacity-0 group-hover:opacity-100 transition-opacity"
+            >
               <Zap className="h-4 w-4" />
             </Button>
           </CardHeader>
@@ -454,7 +520,8 @@ function PayrollOverviewComponent({
                   {metrics.scheduleInfo}
                 </h3>
                 <p className="text-sm text-gray-600">
-                  {payroll.payrollCycle?.description || "Standard payroll cycle"}
+                  {payroll.payrollCycle?.description ||
+                    "Standard payroll cycle"}
                 </p>
               </div>
 
@@ -516,13 +583,17 @@ function PayrollOverviewComponent({
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-gray-900 mb-1">
-                        {formatDate(date.adjustedEftDate || date.originalEftDate)}
+                        {formatDate(
+                          date.adjustedEftDate || date.originalEftDate
+                        )}
                       </p>
                       <p className="text-xs text-gray-500 mb-2">
                         Processing: {formatDate(date.processingDate)}
                       </p>
                       <div className="text-xs font-medium text-blue-600">
-                        {formatRelativeDate(date.adjustedEftDate || date.originalEftDate)}
+                        {formatRelativeDate(
+                          date.adjustedEftDate || date.originalEftDate
+                        )}
                       </div>
                       {date.notes && (
                         <div className="flex items-center gap-1 text-xs text-amber-600 mt-2">
@@ -532,24 +603,28 @@ function PayrollOverviewComponent({
                       )}
                     </div>
                   </div>
-                  
+
                   {/* Progress indicator */}
                   <div className="absolute bottom-2 left-4 right-4">
                     <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
-                      <div 
+                      <div
                         className="h-full bg-blue-600 transition-all duration-300"
-                        style={{ width: `${Math.max(10, 100 - (index * 30))}%` }}
+                        style={{ width: `${Math.max(10, 100 - index * 30)}%` }}
                       />
                     </div>
                   </div>
                 </div>
               ))}
             </div>
-            
+
             {upcomingDates.length >= 3 && (
               <div className="mt-6 pt-4 border-t border-gray-200">
                 <div className="flex items-center justify-center">
-                  <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-blue-600 hover:text-blue-700"
+                  >
                     View Complete Timeline →
                   </Button>
                 </div>

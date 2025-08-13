@@ -1,14 +1,12 @@
-import { ReportQueueService } from "../services/queue.service";
-import { EnhancedReportCacheService } from "../services/enhanced-cache.service";
-import { ReportSecurityService } from "../services/security.service";
 import { ReportAuditService } from "../services/audit.service";
+import { ReportCacheService } from "../services/cache.service";
+import { ReportQueueService } from "../services/queue.service";
 import { ReportJob, ReportJobStatus } from "../types/report.types";
 
 export class ReportGeneratorWorker {
   constructor(
     private queueService: ReportQueueService,
-    private cacheService: EnhancedReportCacheService,
-    private securityService: ReportSecurityService,
+    private cacheService: ReportCacheService,
     private auditService: ReportAuditService
   ) {}
 
@@ -82,11 +80,9 @@ export class ReportGeneratorWorker {
         await this.processRelationships(results, job.config);
       }
 
-      // Cache results
-      await this.cacheService.cacheReport(job.config, results, {
-        domains: job.config.domains,
-        generatedAt: new Date().toISOString(),
-      });
+      // Cache results  
+      const configHash = this.cacheService.generateConfigHash(job.config);
+      await this.cacheService.cacheReport(configHash, results);
 
       // Update job status
       await this.queueService.updateJob(job.id, {
@@ -120,19 +116,9 @@ export class ReportGeneratorWorker {
     filters?: any[],
     userId?: string
   ): Promise<any[]> {
-    // Validate field access
-    const accessResult = await this.securityService.validateFieldAccess(
-      userId!,
-      domain,
-      fields
-    );
-
-    if (accessResult.denied.length > 0) {
-      throw new Error(
-        `Access denied to fields: ${accessResult.denied.join(", ")}`
-      );
-    }
-
+    // Security validation is now handled at the API level via withAuth middleware
+    // This worker processes pre-authorized report configs
+    
     // TODO: Implement domain-specific data fetching
     // This would typically involve GraphQL queries to Hasura
     return [];

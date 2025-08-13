@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useMutation, gql } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import { 
   Plus, 
   Edit, 
@@ -30,187 +30,28 @@ import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-
-// GraphQL Queries
-const GET_CLIENT_SERVICE_ASSIGNMENTS = gql`
-  query GetClientServiceAssignments {
-    client_service_assignments(order_by: { client: { name: asc } }) {
-      id
-      client_id
-      service_id
-      custom_rate
-      custom_seniority_multipliers
-      rate_effective_from
-      rate_effective_to
-      is_active
-      notes
-      created_at
-      updated_at
-      client {
-        id
-        name
-        active
-      }
-      service {
-        id
-        name
-        service_code
-        category
-        base_rate
-        billing_unit
-        charge_basis
-        seniority_multipliers
-      }
-      created_by_user {
-        computed_name
-      }
-    }
-  }
-`;
-
-const GET_CLIENTS_AND_SERVICES = gql`
-  query GetClientsAndServices {
-    clients(where: { active: { _eq: true } }, order_by: { name: asc }) {
-      id
-      name
-      active
-    }
-    services(where: { is_active: { _eq: true } }, order_by: { name: asc }) {
-      id
-      name
-      service_code
-      category
-      base_rate
-      billing_unit
-      charge_basis
-      seniority_multipliers
-    }
-  }
-`;
-
-const GET_CLIENT_ASSIGNMENT_STATISTICS = gql`
-  query GetClientAssignmentStatistics {
-    assignmentsAggregate: client_service_assignments_aggregate {
-      aggregate {
-        count
-      }
-    }
-    activeAssignmentsAggregate: client_service_assignments_aggregate(where: { is_active: { _eq: true } }) {
-      aggregate {
-        count
-      }
-    }
-    clientsWithAssignments: client_service_assignments_aggregate(
-      group_by: client_id
-      where: { is_active: { _eq: true } }
-    ) {
-      aggregate {
-        count
-      }
-    }
-    assignmentsByCategory: client_service_assignments_aggregate(
-      where: { is_active: { _eq: true } }
-      group_by: [service: { category: {} }]
-    ) {
-      nodes {
-        service {
-          category
-        }
-      }
-      aggregate {
-        count
-      }
-    }
-  }
-`;
-
-const CREATE_CLIENT_SERVICE_ASSIGNMENT = gql`
-  mutation CreateClientServiceAssignment($input: client_service_assignments_insert_input!) {
-    insert_client_service_assignments_one(object: $input) {
-      id
-      client {
-        name
-      }
-      service {
-        name
-      }
-    }
-  }
-`;
-
-const UPDATE_CLIENT_SERVICE_ASSIGNMENT = gql`
-  mutation UpdateClientServiceAssignment($id: uuid!, $input: client_service_assignments_set_input!) {
-    update_client_service_assignments_by_pk(pk_columns: { id: $id }, _set: $input) {
-      id
-      custom_rate
-      is_active
-    }
-  }
-`;
-
-const DELETE_CLIENT_SERVICE_ASSIGNMENT = gql`
-  mutation DeleteClientServiceAssignment($id: uuid!) {
-    delete_client_service_assignments_by_pk(id: $id) {
-      id
-      client {
-        name
-      }
-      service {
-        name
-      }
-    }
-  }
-`;
+import {
+  GetClientServiceAssignmentsAdvancedDocument,
+  GetClientsAndServicesAdvancedDocument,
+  GetClientAssignmentStatisticsAdvancedDocument,
+  CreateClientServiceAssignmentAdvancedDocument,
+  UpdateClientServiceAssignmentAdvancedDocument,
+  DeleteClientServiceAssignmentAdvancedDocument,
+  type GetClientServiceAssignmentsAdvancedQuery,
+  type GetClientsAndServicesAdvancedQuery,
+  type GetClientAssignmentStatisticsAdvancedQuery,
+  type CreateClientServiceAssignmentAdvancedMutation,
+  type CreateClientServiceAssignmentAdvancedMutationVariables,
+  type UpdateClientServiceAssignmentAdvancedMutation,
+  type UpdateClientServiceAssignmentAdvancedMutationVariables,
+  type DeleteClientServiceAssignmentAdvancedMutation,
+  type DeleteClientServiceAssignmentAdvancedMutationVariables
+} from "../../graphql/generated/graphql";
 
 // Types
-interface ClientServiceAssignment {
-  id: string;
-  client_id: string;
-  service_id: string;
-  custom_rate?: number;
-  custom_seniority_multipliers?: any;
-  rate_effective_from: string;
-  rate_effective_to?: string;
-  is_active: boolean;
-  notes?: string;
-  created_at: string;
-  updated_at: string;
-  client: {
-    id: string;
-    name: string;
-    active: boolean;
-  };
-  service: {
-    id: string;
-    name: string;
-    service_code: string;
-    category: string;
-    base_rate?: number;
-    billing_unit?: string;
-    charge_basis: string;
-    seniority_multipliers?: any;
-  };
-  created_by_user?: {
-    computed_name: string;
-  };
-}
-
-interface Client {
-  id: string;
-  name: string;
-  active: boolean;
-}
-
-interface Service {
-  id: string;
-  name: string;
-  service_code: string;
-  category: string;
-  base_rate?: number;
-  billing_unit?: string;
-  charge_basis: string;
-  seniority_multipliers?: any;
-}
+type ClientServiceAssignment = NonNullable<GetClientServiceAssignmentsAdvancedQuery['clientServiceAgreements']>[0];
+type Client = NonNullable<GetClientsAndServicesAdvancedQuery['clients']>[0];
+type Service = NonNullable<GetClientsAndServicesAdvancedQuery['services']>[0];
 
 interface AssignmentFormData {
   client_id: string;
@@ -256,17 +97,17 @@ export function ClientServiceAssignmentManager() {
   });
 
   // GraphQL hooks
-  const { data: assignmentsData, loading: assignmentsLoading, refetch } = useQuery(GET_CLIENT_SERVICE_ASSIGNMENTS);
-  const { data: clientsServicesData } = useQuery(GET_CLIENTS_AND_SERVICES);
-  const { data: statsData } = useQuery(GET_CLIENT_ASSIGNMENT_STATISTICS);
+  const { data: assignmentsData, loading: assignmentsLoading, refetch } = useQuery<GetClientServiceAssignmentsAdvancedQuery>(GetClientServiceAssignmentsAdvancedDocument);
+  const { data: clientsServicesData } = useQuery<GetClientsAndServicesAdvancedQuery>(GetClientsAndServicesAdvancedDocument);
+  const { data: statsData } = useQuery<GetClientAssignmentStatisticsAdvancedQuery>(GetClientAssignmentStatisticsAdvancedDocument);
   
-  const [createAssignment] = useMutation(CREATE_CLIENT_SERVICE_ASSIGNMENT);
-  const [updateAssignment] = useMutation(UPDATE_CLIENT_SERVICE_ASSIGNMENT);
-  const [deleteAssignment] = useMutation(DELETE_CLIENT_SERVICE_ASSIGNMENT);
+  const [createAssignment] = useMutation<CreateClientServiceAssignmentAdvancedMutation, CreateClientServiceAssignmentAdvancedMutationVariables>(CreateClientServiceAssignmentAdvancedDocument);
+  const [updateAssignment] = useMutation<UpdateClientServiceAssignmentAdvancedMutation, UpdateClientServiceAssignmentAdvancedMutationVariables>(UpdateClientServiceAssignmentAdvancedDocument);
+  const [deleteAssignment] = useMutation<DeleteClientServiceAssignmentAdvancedMutation, DeleteClientServiceAssignmentAdvancedMutationVariables>(DeleteClientServiceAssignmentAdvancedDocument);
 
-  const assignments: ClientServiceAssignment[] = assignmentsData?.client_service_assignments || [];
-  const clients: Client[] = clientsServicesData?.clients || [];
-  const services: Service[] = clientsServicesData?.services || [];
+  const assignments = assignmentsData?.clientServiceAgreements || [];
+  const clients = clientsServicesData?.clients || [];
+  const services = clientsServicesData?.services || [];
 
   // Filter assignments
   const filteredAssignments = useMemo(() => {
@@ -274,13 +115,13 @@ export function ClientServiceAssignmentManager() {
       const matchesSearch = 
         assignment.client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         assignment.service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        assignment.service.service_code?.toLowerCase().includes(searchTerm.toLowerCase());
+        assignment.service.serviceCode?.toLowerCase().includes(searchTerm.toLowerCase());
       
-      const matchesClient = clientFilter === "all" || assignment.client_id === clientFilter;
+      const matchesClient = clientFilter === "all" || assignment.clientId === clientFilter;
       const matchesCategory = categoryFilter === "all" || assignment.service.category === categoryFilter;
       const matchesStatus = statusFilter === "all" || 
-                          (statusFilter === "active" && assignment.is_active) ||
-                          (statusFilter === "inactive" && !assignment.is_active);
+                          (statusFilter === "active" && assignment.isActive) ||
+                          (statusFilter === "inactive" && !assignment.isActive);
 
       return matchesSearch && matchesClient && matchesCategory && matchesStatus;
     });
@@ -297,7 +138,7 @@ export function ClientServiceAssignmentManager() {
   };
 
   const getEffectiveRate = (assignment: ClientServiceAssignment) => {
-    return assignment.custom_rate || assignment.service.base_rate || 0;
+    return assignment.customRate || assignment.service.baseRate || 0;
   };
 
   const handleCreateAssignment = async () => {
@@ -305,16 +146,11 @@ export function ClientServiceAssignmentManager() {
       await createAssignment({
         variables: {
           input: {
-            client_id: formData.client_id,
-            service_id: formData.service_id,
-            custom_rate: formData.custom_rate || null,
-            custom_seniority_multipliers: formData.custom_seniority_multipliers ? 
-              JSON.stringify(formData.custom_seniority_multipliers) : null,
-            rate_effective_from: formData.rate_effective_from,
-            rate_effective_to: formData.rate_effective_to || null,
-            is_active: formData.is_active,
-            notes: formData.notes || null,
-            created_by: "00000000-0000-0000-0000-000000000000" // TODO: Use actual user ID
+            clientId: formData.client_id,
+            serviceId: formData.service_id,
+            customRate: formData.custom_rate || undefined,
+            isActive: formData.is_active,
+            createdBy: "00000000-0000-0000-0000-000000000000" // TODO: Use actual user ID
           }
         }
       });
@@ -339,16 +175,11 @@ export function ClientServiceAssignmentManager() {
   const handleEditAssignment = (assignment: ClientServiceAssignment) => {
     setSelectedAssignment(assignment);
     setFormData({
-      client_id: assignment.client_id,
-      service_id: assignment.service_id,
-      rate_effective_from: assignment.rate_effective_from,
-      is_active: assignment.is_active,
-      ...(assignment.custom_rate && { custom_rate: assignment.custom_rate }),
-      ...(assignment.custom_seniority_multipliers && { 
-        custom_seniority_multipliers: JSON.parse(assignment.custom_seniority_multipliers) 
-      }),
-      ...(assignment.rate_effective_to && { rate_effective_to: assignment.rate_effective_to }),
-      ...(assignment.notes && { notes: assignment.notes })
+      client_id: assignment.clientId,
+      service_id: assignment.serviceId,
+      rate_effective_from: new Date().toISOString().split('T')[0], // Default to today since field doesn't exist
+      is_active: Boolean(assignment.isActive),
+      ...(assignment.customRate && { custom_rate: assignment.customRate })
     });
     setIsEditDialogOpen(true);
   };
@@ -361,13 +192,8 @@ export function ClientServiceAssignmentManager() {
         variables: {
           id: selectedAssignment.id,
           input: {
-            custom_rate: formData.custom_rate || null,
-            custom_seniority_multipliers: formData.custom_seniority_multipliers ? 
-              JSON.stringify(formData.custom_seniority_multipliers) : null,
-            rate_effective_from: formData.rate_effective_from,
-            rate_effective_to: formData.rate_effective_to || null,
-            is_active: formData.is_active,
-            notes: formData.notes || null
+            customRate: formData.custom_rate || undefined,
+            isActive: formData.is_active
           }
         }
       });
@@ -453,9 +279,9 @@ export function ClientServiceAssignmentManager() {
                           <Badge variant="outline" className={getCategoryColor(service.category)}>
                             {service.category}
                           </Badge>
-                          {service.base_rate && (
+                          {service.baseRate && (
                             <span className="text-xs text-muted-foreground">
-                              ${service.base_rate}
+                              ${service.baseRate}
                             </span>
                           )}
                         </div>
@@ -531,7 +357,7 @@ export function ClientServiceAssignmentManager() {
               }))}
               placeholder={
                 formData.service_id 
-                  ? `Default: $${services.find(s => s.id === formData.service_id)?.base_rate || 0}`
+                  ? `Default: $${services.find(s => s.id === formData.service_id)?.baseRate || 0}`
                   : "Leave empty to use service default"
               }
             />
@@ -849,7 +675,7 @@ export function ClientServiceAssignmentManager() {
                         <div className="space-y-1">
                           <div className="font-medium">{assignment.service.name}</div>
                           <div className="text-sm text-muted-foreground">
-                            {assignment.service.service_code}
+                            {assignment.service.serviceCode}
                           </div>
                         </div>
                       </TableCell>
@@ -866,12 +692,12 @@ export function ClientServiceAssignmentManager() {
                             ${getEffectiveRate(assignment).toFixed(2)}
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            {assignment.custom_rate ? (
+                            {assignment.customRate ? (
                               <Badge variant="outline" className="bg-orange-100 text-orange-800 text-xs">
                                 Custom
                               </Badge>
                             ) : (
-                              assignment.service.billing_unit || 'per unit'
+                              assignment.service.billingUnit || 'per unit'
                             )}
                           </div>
                         </div>
@@ -879,16 +705,13 @@ export function ClientServiceAssignmentManager() {
                       
                       <TableCell>
                         <div className="text-sm">
-                          <div>From: {new Date(assignment.rate_effective_from).toLocaleDateString()}</div>
-                          {assignment.rate_effective_to && (
-                            <div>To: {new Date(assignment.rate_effective_to).toLocaleDateString()}</div>
-                          )}
+                          <div>Active</div>
                         </div>
                       </TableCell>
                       
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          {assignment.is_active ? (
+                          {assignment.isActive ? (
                             <>
                               <CheckCircle className="h-4 w-4 text-green-600" />
                               <span className="text-green-600">Active</span>

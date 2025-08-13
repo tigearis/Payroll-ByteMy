@@ -1,75 +1,39 @@
-import { gql } from '@apollo/client';
+// Feature flags GraphQL operations - now using generated types from shared GraphQL files
+// All operations moved to shared/graphql/queries.graphql and shared/graphql/mutations.graphql
 
-export const GET_FEATURE_FLAGS = gql`
-  query GetFeatureFlags {
-    featureFlags {
-      featureName
-      isEnabled
-      allowedRoles
-    }
-  }
-`;
+import {
+  GetFeatureFlagsDocument,
+  GetFeatureFlagByNameDocument,
+  UpdateFeatureFlagDocument,
+  CreateFeatureFlagDocument,
+  DeleteFeatureFlagDocument
+} from "../../shared/types/generated/graphql";
 
-export const GET_FEATURE_FLAG_BY_NAME = gql`
-  query GetFeatureFlagByName($featureName: String!) {
-    featureFlags(where: { featureName: { _eq: $featureName } }) {
-      featureName
-      isEnabled
-      allowedRoles
-    }
-  }
-`;
+// Re-export generated GraphQL operations and types
+export {
+  GetFeatureFlagsDocument,
+  GetFeatureFlagByNameDocument,
+  UpdateFeatureFlagDocument,
+  CreateFeatureFlagDocument,
+  DeleteFeatureFlagDocument
+} from "../../shared/types/generated/graphql";
 
-export const UPDATE_FEATURE_FLAG = gql`
-  mutation UpdateFeatureFlag(
-    $id: uuid!
-    $isEnabled: Boolean!
-    $allowedRoles: jsonb = []
-  ) {
-    updateFeatureFlagById(
-      id: $id
-      _set: {
-        isEnabled: $isEnabled
-        allowedRoles: $allowedRoles
-        updatedAt: "now()"
-      }
-    ) {
-      id
-      featureName
-      isEnabled
-      allowedRoles
-      updatedAt
-    }
-  }
-`;
+// Re-export types
+export type {
+  GetFeatureFlagsQuery,
+  GetFeatureFlagByNameQuery,
+  GetFeatureFlagByNameQueryVariables,
+  UpdateFeatureFlagMutation,
+  UpdateFeatureFlagMutationVariables,
+  CreateFeatureFlagMutation,
+  CreateFeatureFlagMutationVariables,
+  DeleteFeatureFlagMutation,
+  DeleteFeatureFlagMutationVariables
+} from "../../shared/types/generated/graphql";
 
-export const CREATE_FEATURE_FLAG = gql`
-  mutation CreateFeatureFlag(
-    $featureName: String!
-    $isEnabled: Boolean!
-    $allowedRoles: jsonb = []
-  ) {
-    insertFeatureFlag(
-      object: {
-        featureName: $featureName
-        isEnabled: $isEnabled
-        allowedRoles: $allowedRoles
-      }
-    ) {
-      id
-      featureName
-      isEnabled
-      allowedRoles
-      updatedAt
-    }
-  }
-`;
-
-export const DELETE_FEATURE_FLAG = gql`
-  mutation DeleteFeatureFlag($id: uuid!) {
-    deleteFeatureFlagById(id: $id) {
-      id
-      featureName
-    }
-  }
-`;
+// Legacy exports for backward compatibility
+export const GET_FEATURE_FLAGS = GetFeatureFlagsDocument;
+export const GET_FEATURE_FLAG_BY_NAME = GetFeatureFlagByNameDocument;
+export const UPDATE_FEATURE_FLAG = UpdateFeatureFlagDocument;
+export const CREATE_FEATURE_FLAG = CreateFeatureFlagDocument;
+export const DELETE_FEATURE_FLAG = DeleteFeatureFlagDocument;

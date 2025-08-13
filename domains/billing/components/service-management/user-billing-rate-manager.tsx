@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useMutation, gql } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import { format } from 'date-fns';
 import { 
   Plus, 
@@ -27,166 +27,36 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-// GraphQL Queries
-const GET_USER_BILLING_RATES = gql`
-  query GetUserBillingRates {
-    users(where: { is_active: { _eq: true } }) {
-      id
-      email
-      first_name
-      last_name
-      computed_name
-      role
-      current_hourly_rate
-      seniority_level
-      is_active
-      user_billing_rates(order_by: { effective_from: desc }) {
-        id
-        hourly_rate
-        seniority_level
-        effective_from
-        effective_to
-        is_active
-        created_at
-        created_by_user {
-          computed_name
-        }
-      }
-    }
-  }
-`;
-
-const GET_USER_BILLING_STATISTICS = gql`
-  query GetUserBillingStatistics {
-    usersAggregate: users_aggregate(where: { is_active: { _eq: true } }) {
-      aggregate {
-        count
-      }
-    }
-    usersWithRatesAggregate: users_aggregate(where: { 
-      is_active: { _eq: true } 
-      current_hourly_rate: { _is_null: false } 
-    }) {
-      aggregate {
-        count
-        avg {
-          current_hourly_rate
-        }
-        min {
-          current_hourly_rate
-        }
-        max {
-          current_hourly_rate
-        }
-      }
-    }
-    ratesByRole: users_aggregate(
-      where: { is_active: { _eq: true }, current_hourly_rate: { _is_null: false } }
-      group_by: [role, seniority_level]
-    ) {
-      nodes {
-        role
-        seniority_level
-      }
-      aggregate {
-        count
-        avg {
-          current_hourly_rate
-        }
-      }
-    }
-  }
-`;
-
-const CREATE_USER_BILLING_RATE = gql`
-  mutation CreateUserBillingRate($input: user_billing_rates_insert_input!) {
-    insert_user_billing_rates_one(object: $input) {
-      id
-      hourly_rate
-      seniority_level
-      effective_from
-      user {
-        computed_name
-        current_hourly_rate
-      }
-    }
-  }
-`;
-
-const UPDATE_USER_BILLING_RATE = gql`
-  mutation UpdateUserBillingRate($id: uuid!, $input: user_billing_rates_set_input!) {
-    update_user_billing_rates_by_pk(pk_columns: { id: $id }, _set: $input) {
-      id
-      hourly_rate
-      effective_from
-      effective_to
-    }
-  }
-`;
-
-const UPDATE_USER_CURRENT_RATE = gql`
-  mutation UpdateUserCurrentRate($userId: uuid!, $hourlyRate: numeric!, $seniorityLevel: seniority_level_type!) {
-    update_users_by_pk(
-      pk_columns: { id: $userId }
-      _set: { 
-        current_hourly_rate: $hourlyRate
-        seniority_level: $seniorityLevel
-      }
-    ) {
-      id
-      current_hourly_rate
-      seniority_level
-    }
-  }
-`;
-
-const DEACTIVATE_USER_BILLING_RATE = gql`
-  mutation DeactivateUserBillingRate($id: uuid!, $effectiveTo: timestamptz!) {
-    update_user_billing_rates_by_pk(
-      pk_columns: { id: $id }
-      _set: { is_active: false, effective_to: $effectiveTo }
-    ) {
-      id
-      effective_to
-    }
-  }
-`;
+import {
+  GetUserBillingRatesAdvancedDocument,
+  GetUserBillingStatisticsAdvancedDocument,
+  CreateUserBillingRateAdvancedDocument,
+  UpdateUserBillingRateAdvancedDocument,
+  UpdateUserCurrentRateAdvancedDocument,
+  DeactivateUserBillingRateAdvancedDocument,
+  type GetUserBillingRatesAdvancedQuery,
+  type GetUserBillingStatisticsAdvancedQuery,
+  type CreateUserBillingRateAdvancedMutation,
+  type CreateUserBillingRateAdvancedMutationVariables,
+  type UpdateUserBillingRateAdvancedMutation,
+  type UpdateUserBillingRateAdvancedMutationVariables,
+  type UpdateUserCurrentRateAdvancedMutation,
+  type UpdateUserCurrentRateAdvancedMutationVariables,
+  type DeactivateUserBillingRateAdvancedMutation,
+  type DeactivateUserBillingRateAdvancedMutationVariables
+} from "../../graphql/generated/graphql";
 
 // Types
-interface User {
-  id: string;
-  email: string;
-  first_name?: string;
-  last_name?: string;
-  computed_name: string;
-  role: string;
-  current_hourly_rate?: number;
-  seniority_level?: string;
-  is_active: boolean;
-  user_billing_rates: BillingRate[];
-}
-
-interface BillingRate {
-  id: string;
-  hourly_rate: number;
-  seniority_level: string;
-  effective_from: string;
-  effective_to?: string;
-  is_active: boolean;
-  created_at: string;
-  created_by_user?: {
-    computed_name: string;
-  };
-}
+type User = NonNullable<GetUserBillingRatesAdvancedQuery['users']>[0];
+type BillingRate = User['userBillingRates'][0];
 
 interface RateFormData {
   userId: string;
   hourly_rate: number;
-  seniority_level: string;
+  seniorityLevel: string;
   effective_from: string;
   effective_to?: string;
-  is_active: boolean;
+  isActive: boolean;
 }
 
 const SENIORITY_LEVELS = [
@@ -212,28 +82,28 @@ export function UserBillingRateManager() {
   const [formData, setFormData] = useState<RateFormData>({
     userId: "",
     hourly_rate: 0,
-    seniority_level: "junior",
+    seniorityLevel: "junior",
     effective_from: new Date().toISOString().split('T')[0],
-    is_active: true
+    isActive: true
   });
 
   // GraphQL hooks
-  const { data: usersData, loading: usersLoading, refetch } = useQuery(GET_USER_BILLING_RATES);
-  const { data: statsData } = useQuery(GET_USER_BILLING_STATISTICS);
+  const { data: usersData, loading: usersLoading, refetch } = useQuery<GetUserBillingRatesAdvancedQuery>(GetUserBillingRatesAdvancedDocument);
+  const { data: statsData } = useQuery<GetUserBillingStatisticsAdvancedQuery>(GetUserBillingStatisticsAdvancedDocument);
   
-  const [createUserBillingRate] = useMutation(CREATE_USER_BILLING_RATE);
-  const [updateUserBillingRate] = useMutation(UPDATE_USER_BILLING_RATE);
-  const [updateUserCurrentRate] = useMutation(UPDATE_USER_CURRENT_RATE);
-  const [deactivateUserBillingRate] = useMutation(DEACTIVATE_USER_BILLING_RATE);
+  const [createUserBillingRate] = useMutation<CreateUserBillingRateAdvancedMutation, CreateUserBillingRateAdvancedMutationVariables>(CreateUserBillingRateAdvancedDocument);
+  const [updateUserBillingRate] = useMutation<UpdateUserBillingRateAdvancedMutation, UpdateUserBillingRateAdvancedMutationVariables>(UpdateUserBillingRateAdvancedDocument);
+  const [updateUserCurrentRate] = useMutation<UpdateUserCurrentRateAdvancedMutation, UpdateUserCurrentRateAdvancedMutationVariables>(UpdateUserCurrentRateAdvancedDocument);
+  const [deactivateUserBillingRate] = useMutation<DeactivateUserBillingRateAdvancedMutation, DeactivateUserBillingRateAdvancedMutationVariables>(DeactivateUserBillingRateAdvancedDocument);
 
-  const users: User[] = usersData?.users || [];
+  const users = usersData?.users || [];
 
   // Statistics
   const totalUsers = statsData?.usersAggregate?.aggregate?.count || 0;
   const usersWithRates = statsData?.usersWithRatesAggregate?.aggregate?.count || 0;
-  const avgRate = statsData?.usersWithRatesAggregate?.aggregate?.avg?.current_hourly_rate || 0;
-  const minRate = statsData?.usersWithRatesAggregate?.aggregate?.min?.current_hourly_rate || 0;
-  const maxRate = statsData?.usersWithRatesAggregate?.aggregate?.max?.current_hourly_rate || 0;
+  const avgRate = statsData?.usersWithRatesAggregate?.aggregate?.avg?.currentHourlyRate || 0;
+  const minRate = statsData?.usersWithRatesAggregate?.aggregate?.min?.currentHourlyRate || 0;
+  const maxRate = statsData?.usersWithRatesAggregate?.aggregate?.max?.currentHourlyRate || 0;
 
   const getRoleColor = (role: string) => {
     return ROLE_COLORS[role as keyof typeof ROLE_COLORS] || "bg-gray-100 text-gray-800";
@@ -254,37 +124,37 @@ export function UserBillingRateManager() {
       const result = await createUserBillingRate({
         variables: {
           input: {
-            user_id: formData.userId,
-            hourly_rate: formData.hourly_rate,
-            seniority_level: formData.seniority_level,
-            effective_from: formData.effective_from,
-            effective_to: formData.effective_to || null,
-            is_active: formData.is_active,
-            created_by: formData.userId // Self-created for now
+            userId: formData.userId,
+            hourlyRate: formData.hourly_rate,
+            seniorityLevel: formData.seniorityLevel as any,
+            effectiveFrom: formData.effective_from,
+            effectiveTo: formData.effective_to || undefined,
+            isActive: formData.isActive,
+            createdBy: formData.userId // Self-created for now
           }
         }
       });
 
       // Update user's current rate if this is the active rate
-      if (formData.is_active) {
+      if (formData.isActive) {
         await updateUserCurrentRate({
           variables: {
             userId: formData.userId,
             hourlyRate: formData.hourly_rate,
-            seniorityLevel: formData.seniority_level
+            seniorityLevel: formData.seniorityLevel
           }
         });
       }
 
       const user = users.find(u => u.id === formData.userId);
-      toast.success(`Billing rate created for ${user?.computed_name}`);
+      toast.success(`Billing rate created for ${user?.computedName}`);
       setIsCreateDialogOpen(false);
       setFormData({
         userId: "",
         hourly_rate: 0,
-        seniority_level: "junior",
+        seniorityLevel: "junior",
         effective_from: new Date().toISOString().split('T')[0],
-        is_active: true
+        isActive: true
       });
       refetch();
     } catch (error: any) {
@@ -293,13 +163,13 @@ export function UserBillingRateManager() {
   };
 
   const handleDeactivateRate = async (rate: BillingRate, user: User) => {
-    if (!confirm(`Deactivate billing rate for ${user.computed_name}? This will end the rate as of today.`)) {
+    if (!confirm(`Deactivate billing rate for ${user.computedName}? This will end the rate as of today.`)) {
       return;
     }
 
     try {
-      // Compute current timestamp in JavaScript
-      const effectiveTo = new Date().toISOString();
+      // Compute current date in JavaScript
+      const effectiveTo = new Date().toISOString().split('T')[0];
       
       await deactivateUserBillingRate({
         variables: { 
@@ -308,7 +178,7 @@ export function UserBillingRateManager() {
         }
       });
 
-      toast.success(`Billing rate deactivated for ${user.computed_name}`);
+      toast.success(`Billing rate deactivated for ${user.computedName}`);
       refetch();
     } catch (error: any) {
       toast.error(`Failed to deactivate rate: ${error.message}`);
@@ -320,8 +190,8 @@ export function UserBillingRateManager() {
       setFormData(prev => ({
         ...prev,
         userId: user.id,
-        hourly_rate: user.current_hourly_rate || 75,
-        seniority_level: user.seniority_level || "junior"
+        hourly_rate: user.currentHourlyRate || 75,
+        seniorityLevel: user.seniorityLevel || "junior"
       }));
     }
     setIsCreateDialogOpen(true);
@@ -344,7 +214,7 @@ export function UserBillingRateManager() {
             {users.map(user => (
               <SelectItem key={user.id} value={user.id}>
                 <div className="flex items-center gap-2">
-                  <span>{user.computed_name}</span>
+                  <span>{user.computedName}</span>
                   <Badge variant="outline" className={getRoleColor(user.role)}>
                     {user.role}
                   </Badge>
@@ -369,8 +239,8 @@ export function UserBillingRateManager() {
         </div>
 
         <div>
-          <Label htmlFor="seniority_level">Seniority Level *</Label>
-          <Select value={formData.seniority_level} onValueChange={(value) => setFormData(prev => ({ ...prev, seniority_level: value }))}>
+          <Label htmlFor="seniorityLevel">Seniority Level *</Label>
+          <Select value={formData.seniorityLevel} onValueChange={(value) => setFormData(prev => ({ ...prev, seniorityLevel: value }))}>
             <SelectTrigger>
               <SelectValue placeholder="Select level" />
             </SelectTrigger>
@@ -421,8 +291,8 @@ export function UserBillingRateManager() {
           </p>
         </div>
         <Switch
-          checked={formData.is_active}
-          onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_active: checked }))}
+          checked={formData.isActive}
+          onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isActive: checked }))}
         />
       </div>
     </div>
@@ -522,7 +392,7 @@ export function UserBillingRateManager() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {users.reduce((sum, user) => sum + user.user_billing_rates.length, 0)}
+              {users.reduce((sum, user) => sum + user.userBillingRates.length, 0)}
             </div>
             <p className="text-xs text-muted-foreground">
               Total rate records
@@ -564,7 +434,7 @@ export function UserBillingRateManager() {
                     <TableRow key={user.id}>
                       <TableCell>
                         <div className="space-y-1">
-                          <div className="font-medium">{user.computed_name}</div>
+                          <div className="font-medium">{user.computedName}</div>
                           <div className="text-sm text-muted-foreground">{user.email}</div>
                         </div>
                       </TableCell>
@@ -576,9 +446,9 @@ export function UserBillingRateManager() {
                       </TableCell>
                       
                       <TableCell>
-                        {user.current_hourly_rate ? (
+                        {user.currentHourlyRate ? (
                           <div className="font-medium text-green-600">
-                            ${user.current_hourly_rate.toFixed(2)}/hr
+                            ${user.currentHourlyRate.toFixed(2)}/hr
                           </div>
                         ) : (
                           <div className="text-muted-foreground">
@@ -588,9 +458,9 @@ export function UserBillingRateManager() {
                       </TableCell>
                       
                       <TableCell>
-                        {user.seniority_level ? (
-                          <Badge variant="outline" className={getSeniorityColor(user.seniority_level)}>
-                            {user.seniority_level}
+                        {user.seniorityLevel ? (
+                          <Badge variant="outline" className={getSeniorityColor(user.seniorityLevel)}>
+                            {user.seniorityLevel}
                           </Badge>
                         ) : (
                           <span className="text-muted-foreground">-</span>
@@ -600,9 +470,9 @@ export function UserBillingRateManager() {
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <span className="text-sm">
-                            {user.user_billing_rates.length} rate{user.user_billing_rates.length !== 1 ? 's' : ''}
+                            {user.userBillingRates.length} rate{user.userBillingRates.length !== 1 ? 's' : ''}
                           </span>
-                          {user.user_billing_rates.length > 0 && (
+                          {user.userBillingRates.length > 0 && (
                             <Button
                               variant="ghost"
                               size="sm"
@@ -623,12 +493,12 @@ export function UserBillingRateManager() {
                           >
                             <Plus className="h-4 w-4" />
                           </Button>
-                          {user.user_billing_rates.find(rate => rate.is_active) && (
+                          {user.userBillingRates.find(rate => rate.isActive) && (
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => handleDeactivateRate(
-                                user.user_billing_rates.find(rate => rate.is_active)!,
+                                user.userBillingRates.find(rate => rate.isActive)!,
                                 user
                               )}
                               className="text-orange-600 hover:text-orange-700"
@@ -652,7 +522,7 @@ export function UserBillingRateManager() {
         <DialogContent className="max-w-4xl">
           <DialogHeader>
             <DialogTitle>
-              Rate History: {selectedUser?.computed_name}
+              Rate History: {selectedUser?.computedName}
             </DialogTitle>
           </DialogHeader>
           
@@ -662,7 +532,7 @@ export function UserBillingRateManager() {
                 <Card>
                   <CardContent className="pt-6">
                     <div className="text-2xl font-bold text-green-600">
-                      ${selectedUser.current_hourly_rate?.toFixed(2) || '0.00'}
+                      ${selectedUser.currentHourlyRate?.toFixed(2) || '0.00'}
                     </div>
                     <p className="text-xs text-muted-foreground">Current Rate</p>
                   </CardContent>
@@ -671,7 +541,7 @@ export function UserBillingRateManager() {
                 <Card>
                   <CardContent className="pt-6">
                     <div className="text-2xl font-bold">
-                      {selectedUser.seniority_level || '-'}
+                      {selectedUser.seniorityLevel || '-'}
                     </div>
                     <p className="text-xs text-muted-foreground">Seniority Level</p>
                   </CardContent>
@@ -680,7 +550,7 @@ export function UserBillingRateManager() {
                 <Card>
                   <CardContent className="pt-6">
                     <div className="text-2xl font-bold">
-                      {selectedUser.user_billing_rates.length}
+                      {selectedUser.userBillingRates.length}
                     </div>
                     <p className="text-xs text-muted-foreground">Rate Changes</p>
                   </CardContent>
@@ -700,15 +570,15 @@ export function UserBillingRateManager() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {selectedUser.user_billing_rates.map((rate) => (
+                    {selectedUser.userBillingRates.map((rate: any) => (
                       <TableRow key={rate.id}>
                         <TableCell className="font-medium">
                           ${rate.hourly_rate.toFixed(2)}/hr
                         </TableCell>
                         
                         <TableCell>
-                          <Badge variant="outline" className={getSeniorityColor(rate.seniority_level)}>
-                            {rate.seniority_level}
+                          <Badge variant="outline" className={getSeniorityColor(rate.seniorityLevel)}>
+                            {rate.seniorityLevel}
                           </Badge>
                         </TableCell>
                         
@@ -719,14 +589,14 @@ export function UserBillingRateManager() {
                         <TableCell>
                           {rate.effective_to 
                             ? format(new Date(rate.effective_to), 'dd MM yyyy')
-                            : rate.is_active 
+                            : rate.isActive 
                               ? "Current" 
                               : "Indefinite"
                           }
                         </TableCell>
                         
                         <TableCell>
-                          {rate.is_active ? (
+                          {rate.isActive ? (
                             <Badge variant="outline" className="bg-green-100 text-green-800">
                               Active
                             </Badge>
@@ -738,7 +608,7 @@ export function UserBillingRateManager() {
                         </TableCell>
                         
                         <TableCell className="text-sm text-muted-foreground">
-                          {rate.created_by_user?.computed_name || 'System'}
+                          {rate.created_by_user?.computedName || 'System'}
                         </TableCell>
                       </TableRow>
                     ))}

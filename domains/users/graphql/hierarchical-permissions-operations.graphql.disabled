@@ -1,0 +1,102 @@
+query GetUserRoleAssignments($userId: uuid!) {
+  users(where: { id: { _eq: $userId } }) {
+    id
+    roleAssignments {
+      userId
+      roleId
+      role {
+        id
+        name
+        displayName
+        priority
+      }
+    }
+  }
+}
+
+query GetUserActualPermissions($userId: uuid!) {
+  roleAssignments(where: { userId: { _eq: $userId } }) {
+    roleId
+  }
+}
+
+query GetActualRolePermissions($roleIds: [uuid!]!) {
+  rolePermissions(where: { roleId: { _in: $roleIds } }) {
+    permission {
+      action
+      relatedResource {
+        name
+      }
+    }
+  }
+}
+
+query GetRoleByName($roleName: String!) {
+  roles(where: { name: { _eq: $roleName } }) {
+    id
+    name
+  }
+}
+
+mutation RemoveExistingRoleAssignments($userId: uuid!) {
+  bulkDeleteUserRoles(where: { userId: { _eq: $userId } }) {
+    affectedRows
+  }
+}
+
+mutation InsertUserRoleAssignment($userId: uuid!, $roleId: uuid!) {
+  insertUserRole(object: { userId: $userId, roleId: $roleId }) {
+    id
+    userId
+    roleId
+  }
+}
+
+mutation LogPermissionClerkSync($input: permissionAuditLogsInsertInput!) {
+  insertPermissionAuditLog(object: $input) {
+    id
+  }
+}
+
+mutation CreatePermissionOverrideHierarchical($input: PermissionOverridesInsertInput!) {
+  insertPermissionOverrides(objects: [$input]) {
+    returning {
+      id
+      resource
+      operation
+      granted
+    }
+  }
+}
+
+mutation RollbackPermissionOverrideHierarchical($id: uuid!) {
+  deletePermissionOverridesByPk(id: $id) {
+    id
+  }
+}
+
+query GetPermissionOverrideForBackup($id: uuid!) {
+  permissionOverridesByPk(id: $id) {
+    id
+    userId
+    resource
+    operation
+    granted
+    reason
+    expiresAt
+  }
+}
+
+mutation DeletePermissionOverrideHierarchical($id: uuid!) {
+  deletePermissionOverridesByPk(id: $id) {
+    id
+  }
+}
+
+mutation RestorePermissionOverrideHierarchical($input: PermissionOverridesInsertInput!) {
+  insertPermissionOverrides(objects: [$input]) {
+    returning {
+      id
+    }
+  }
+}

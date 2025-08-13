@@ -90,3 +90,55 @@ mutation DeleteFile($id: uuid!) {
 mutation RefreshData {
   __typename
 }
+
+# ============================================
+# Feature Flags Mutations
+# ============================================
+
+mutation UpdateFeatureFlag(
+  $id: uuid!
+  $isEnabled: Boolean!
+  $allowedRoles: jsonb = []
+) {
+  updateFeatureFlagsByPk(
+    pkColumns: { id: $id }
+    _set: {
+      isEnabled: $isEnabled
+      allowedRoles: $allowedRoles
+      updatedAt: "now()"
+    }
+  ) {
+    id
+    featureName
+    isEnabled
+    allowedRoles
+    updatedAt
+  }
+}
+
+mutation CreateFeatureFlag(
+  $featureName: String!
+  $isEnabled: Boolean!
+  $allowedRoles: jsonb = []
+) {
+  insertFeatureFlagsOne(
+    object: {
+      featureName: $featureName
+      isEnabled: $isEnabled
+      allowedRoles: $allowedRoles
+    }
+  ) {
+    id
+    featureName
+    isEnabled
+    allowedRoles
+    updatedAt
+  }
+}
+
+mutation DeleteFeatureFlag($id: uuid!) {
+  deleteFeatureFlagsByPk(id: $id) {
+    id
+    featureName
+  }
+}

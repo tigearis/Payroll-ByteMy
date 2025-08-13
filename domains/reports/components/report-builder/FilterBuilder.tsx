@@ -1,7 +1,9 @@
-import { useState } from "react";
 import { Plus, X, ArrowUpDown } from "lucide-react";
+import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -9,13 +11,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import {
   ReportMetadata,
   ReportFilter,
   ReportSort,
 } from "../../types/report.types";
+// FilterOperator type is inferred from ReportFilter
 
 interface FilterBuilderProps {
   metadata: ReportMetadata;
@@ -52,7 +53,7 @@ export function FilterBuilder({
   const [newSort, setNewSort] = useState<Partial<ReportSort>>({});
 
   const availableFields = selectedDomains.reduce((acc, domain) => {
-    const fields = metadata.availableFields[domain] || [];
+    const fields = metadata.availableFields?.[domain] || [];
     return {
       ...acc,
       ...Object.fromEntries(
@@ -144,7 +145,7 @@ export function FilterBuilder({
             <SelectContent>
               {Object.entries(availableFields).map(([value, label]) => (
                 <SelectItem key={value} value={value}>
-                  {label}
+                  {String(label)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -153,7 +154,7 @@ export function FilterBuilder({
           <Select
             value={newFilter.operator}
             onValueChange={value =>
-              setNewFilter(prev => ({ ...prev, operator: value }))
+              setNewFilter(prev => ({ ...prev, operator: value as ReportFilter['operator'] }))
             }
           >
             <SelectTrigger className="w-[150px]">
@@ -231,7 +232,7 @@ export function FilterBuilder({
             <SelectContent>
               {Object.entries(availableFields).map(([value, label]) => (
                 <SelectItem key={value} value={value}>
-                  {label}
+                  {String(label)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -240,7 +241,7 @@ export function FilterBuilder({
           <Select
             value={newSort.direction}
             onValueChange={value =>
-              setNewSort(prev => ({ ...prev, direction: value }))
+              setNewSort(prev => ({ ...prev, direction: value as "asc" | "desc" }))
             }
           >
             <SelectTrigger className="w-[100px]">

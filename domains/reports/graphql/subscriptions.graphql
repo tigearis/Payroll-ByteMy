@@ -1,0 +1,9 @@
+# Placeholder for future subscriptions
+# subscription QueryExecutionUpdates($executionId: uuid!) {
+#   queryExecutions(where: { id: { _eq: $executionId } }) {
+#     id
+#     status
+#     executedAt
+#     success
+#   }
+# }

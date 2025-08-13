@@ -1,16 +1,16 @@
-import { useState } from "react";
 import { Search, ChevronRight } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { useState } from "react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import type { ReportMetadata } from "../../types/report.types";
 
@@ -35,7 +35,7 @@ export function FieldSelector({
   const toggleDomain = (domain: string) => {
     const isSelected = selectedDomains.includes(domain);
     let newDomains: string[];
-    let newFields = { ...selectedFields };
+    const newFields = { ...selectedFields };
 
     if (isSelected) {
       newDomains = selectedDomains.filter(d => d !== domain);
@@ -51,7 +51,7 @@ export function FieldSelector({
   const toggleField = (domain: string, field: string) => {
     const domainFields = selectedFields[domain] || [];
     const isSelected = domainFields.includes(field);
-    let newFields = { ...selectedFields };
+    const newFields = { ...selectedFields };
 
     if (isSelected) {
       newFields[domain] = domainFields.filter(f => f !== field);
@@ -122,7 +122,7 @@ export function FieldSelector({
         >
           {filteredDomains.map(domain => {
             const isDomainSelected = selectedDomains.includes(domain);
-            const domainFields = metadata.availableFields[domain] || [];
+            const domainFields = metadata.availableFields?.[domain] || [];
             const selectedDomainFields = selectedFields[domain] || [];
 
             return (

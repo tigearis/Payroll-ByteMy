@@ -1,142 +1,358 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { EnhancedSecurityService } from "@/domains/reports/services/enhanced-security.service";
+import { hasMinimumRole } from "@/lib/permissions/role-utils";
 
-const securityService = new EnhancedSecurityService();
-
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    console.log("Metadata API: Request received");
-
-    // 1. Authenticate request
+    // 1. Authenticate
     const { userId, sessionClaims } = await auth();
-    console.log("Metadata API: Auth check result", {
-      userId: userId ? "Present" : "Missing",
-      sessionClaims: sessionClaims ? "Present" : "Missing",
-    });
-
     if (!userId) {
-      console.log("Metadata API: Unauthorized - No user ID");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // 2. Check developer access
-    console.log("Metadata API: Checking access permissions");
-    const hasAccess = await securityService.validateReportAccess(userId, {
-      type: "METADATA",
-      action: "READ",
-    });
-
-    console.log("Metadata API: Access check result", hasAccess);
-
-    if (!hasAccess.allowed) {
-      console.log("Metadata API: Access denied", hasAccess.reason);
+    // 2. Validate role
+    const role = sessionClaims?.metadata?.role;
+    if (!hasMinimumRole(role, "viewer")) {
       return NextResponse.json(
-        {
-          error:
-            hasAccess.reason || "Developer access required for reports schema",
-        },
+        { error: "Insufficient permissions" },
         { status: 403 }
       );
     }
 
-    // 3. Return metadata
-    console.log("Metadata API: Generating metadata response");
-    const metadata = {
-      availableFields: {
-        users: [
-          "id",
-          "name",
-          "email",
-          "role",
-          "department",
-          "created_at",
-          "updated_at",
-        ],
-        payrolls: [
-          "id",
-          "user_id",
-          "amount",
-          "period_start",
-          "period_end",
-          "status",
-          "created_at",
-        ],
-        leave: [
-          "id",
-          "user_id",
-          "type",
-          "start_date",
-          "end_date",
-          "status",
-          "created_at",
-        ],
-        clients: [
-          "id",
-          "name",
-          "contact_person",
-          "email",
-          "status",
-          "created_at",
-        ],
-        work_schedule: [
-          "id",
-          "user_id",
-          "date",
-          "hours",
-          "project",
-          "notes",
-          "created_at",
-        ],
-      },
-      relationships: {
-        users: {
-          payrolls: "user_id",
-          leave: "user_id",
-          work_schedule: "user_id",
+    // 3. Return mock metadata for now
+    // In a real implementation, this would come from Hasura introspection or a cached schema
+    return NextResponse.json({
+      domains: {
+        payrolls: {
+          displayName: "Payrolls",
+          description: "Payroll records and processing data",
+          fields: [
+            {
+              name: "id",
+              displayName: "ID",
+              type: "string",
+              description: "Unique identifier",
+            },
+            {
+              name: "employee_id",
+              displayName: "Employee",
+              type: "string",
+              description: "Employee reference",
+            },
+            {
+              name: "period_start",
+              displayName: "Period Start",
+              type: "date",
+              description: "Start date of pay period",
+              recommended: true,
+            },
+            {
+              name: "period_end",
+              displayName: "Period End",
+              type: "date",
+              description: "End date of pay period",
+              recommended: true,
+            },
+            {
+              name: "gross_amount",
+              displayName: "Gross Amount",
+              type: "number",
+              description: "Gross payment amount",
+              recommended: true,
+            },
+            {
+              name: "tax_amount",
+              displayName: "Tax Amount",
+              type: "number",
+              description: "Tax withheld",
+              recommended: true,
+            },
+            {
+              name: "net_amount",
+              displayName: "Net Amount",
+              type: "number",
+              description: "Net payment amount",
+              recommended: true,
+            },
+            {
+              name: "status",
+              displayName: "Status",
+              type: "string",
+              description: "Processing status",
+            },
+            {
+              name: "created_at",
+              displayName: "Created At",
+              type: "date",
+              description: "Creation timestamp",
+            },
+            {
+              name: "updated_at",
+              displayName: "Updated At",
+              type: "date",
+              description: "Last update timestamp",
+            },
+          ],
+        },
+        staff: {
+          displayName: "Staff",
+          description: "Employee and staff member information",
+          fields: [
+            {
+              name: "id",
+              displayName: "ID",
+              type: "string",
+              description: "Unique identifier",
+            },
+            {
+              name: "first_name",
+              displayName: "First Name",
+              type: "string",
+              description: "First name",
+              recommended: true,
+            },
+            {
+              name: "last_name",
+              displayName: "Last Name",
+              type: "string",
+              description: "Last name",
+              recommended: true,
+            },
+            {
+              name: "email",
+              displayName: "Email",
+              type: "string",
+              description: "Email address",
+              sensitive: true,
+            },
+            {
+              name: "department_id",
+              displayName: "Department",
+              type: "string",
+              description: "Department reference",
+            },
+            {
+              name: "position",
+              displayName: "Position",
+              type: "string",
+              description: "Job position",
+            },
+            {
+              name: "hire_date",
+              displayName: "Hire Date",
+              type: "date",
+              description: "Date of hire",
+              recommended: true,
+            },
+            {
+              name: "status",
+              displayName: "Status",
+              type: "string",
+              description: "Employment status",
+            },
+            {
+              name: "created_at",
+              displayName: "Created At",
+              type: "date",
+              description: "Creation timestamp",
+            },
+            {
+              name: "updated_at",
+              displayName: "Updated At",
+              type: "date",
+              description: "Last update timestamp",
+            },
+          ],
+        },
+        departments: {
+          displayName: "Departments",
+          description: "Department information",
+          fields: [
+            {
+              name: "id",
+              displayName: "ID",
+              type: "string",
+              description: "Unique identifier",
+            },
+            {
+              name: "name",
+              displayName: "Name",
+              type: "string",
+              description: "Department name",
+              recommended: true,
+            },
+            {
+              name: "manager_id",
+              displayName: "Manager",
+              type: "string",
+              description: "Department manager reference",
+            },
+            {
+              name: "created_at",
+              displayName: "Created At",
+              type: "date",
+              description: "Creation timestamp",
+            },
+            {
+              name: "updated_at",
+              displayName: "Updated At",
+              type: "date",
+              description: "Last update timestamp",
+            },
+          ],
+        },
+        leave_requests: {
+          displayName: "Leave Requests",
+          description: "Employee leave requests",
+          fields: [
+            {
+              name: "id",
+              displayName: "ID",
+              type: "string",
+              description: "Unique identifier",
+            },
+            {
+              name: "employee_id",
+              displayName: "Employee",
+              type: "string",
+              description: "Employee reference",
+            },
+            {
+              name: "start_date",
+              displayName: "Start Date",
+              type: "date",
+              description: "Leave start date",
+              recommended: true,
+            },
+            {
+              name: "end_date",
+              displayName: "End Date",
+              type: "date",
+              description: "Leave end date",
+              recommended: true,
+            },
+            {
+              name: "type",
+              displayName: "Type",
+              type: "string",
+              description: "Leave type",
+              recommended: true,
+            },
+            {
+              name: "status",
+              displayName: "Status",
+              type: "string",
+              description: "Approval status",
+              recommended: true,
+            },
+            {
+              name: "reason",
+              displayName: "Reason",
+              type: "string",
+              description: "Leave reason",
+              sensitive: true,
+            },
+            {
+              name: "created_at",
+              displayName: "Created At",
+              type: "date",
+              description: "Creation timestamp",
+            },
+            {
+              name: "updated_at",
+              displayName: "Updated At",
+              type: "date",
+              description: "Last update timestamp",
+            },
+          ],
         },
         clients: {
-          work_schedule: "client_id",
+          displayName: "Clients",
+          description: "Client information",
+          fields: [
+            {
+              name: "id",
+              displayName: "ID",
+              type: "string",
+              description: "Unique identifier",
+            },
+            {
+              name: "name",
+              displayName: "Name",
+              type: "string",
+              description: "Client name",
+              recommended: true,
+            },
+            {
+              name: "contact_person",
+              displayName: "Contact Person",
+              type: "string",
+              description: "Primary contact",
+            },
+            {
+              name: "email",
+              displayName: "Email",
+              type: "string",
+              description: "Contact email",
+              sensitive: true,
+            },
+            {
+              name: "phone",
+              displayName: "Phone",
+              type: "string",
+              description: "Contact phone",
+              sensitive: true,
+            },
+            {
+              name: "active",
+              displayName: "Active",
+              type: "boolean",
+              description: "Active status",
+            },
+            {
+              name: "created_at",
+              displayName: "Created At",
+              type: "date",
+              description: "Creation timestamp",
+            },
+            {
+              name: "updated_at",
+              displayName: "Updated At",
+              type: "date",
+              description: "Last update timestamp",
+            },
+          ],
         },
       },
-      domains: ["users", "payrolls", "leave", "clients", "work_schedule"],
+      relationships: {
+        payrolls: {
+          employee_id: "staff.id",
+        },
+        staff: {
+          department_id: "departments.id",
+        },
+        departments: {
+          manager_id: "staff.id",
+        },
+        leave_requests: {
+          employee_id: "staff.id",
+        },
+      },
       fieldTypes: {
         id: "string",
         name: "string",
         email: "string",
-        role: "string",
-        department: "string",
+        phone: "string",
+        date: "date",
         amount: "number",
         status: "string",
-        date: "date",
-        hours: "number",
-        type: "string",
-        created_at: "date",
-        updated_at: "date",
+        boolean: "boolean",
       },
-    };
-
-    console.log("Metadata API: Sending successful response");
-    return NextResponse.json(metadata);
-  } catch (error) {
-    console.error("Metadata API: Error", {
-      error,
-      message: error instanceof Error ? error.message : "Unknown error",
-      stack: error instanceof Error ? error.stack : undefined,
     });
-
+  } catch (error) {
+    console.error("Error fetching report metadata:", error);
     return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : "Unknown error",
-        details:
-          process.env.NODE_ENV === "development"
-            ? {
-                message:
-                  error instanceof Error ? error.message : "Unknown error",
-                stack: error instanceof Error ? error.stack : undefined,
-              }
-            : undefined,
-      },
+      { error: "Failed to fetch report metadata" },
       { status: 500 }
     );
   }

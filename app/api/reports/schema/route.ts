@@ -1,69 +1,20 @@
 import { gql } from "@apollo/client";
 import { NextRequest, NextResponse } from "next/server";
 import { executeQuery } from "@/lib/apollo/query-helpers";
+import { adminApolloClient } from "@/lib/apollo/unified-client";
 import { withAuth } from "@/lib/auth/api-auth";
 import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
+import { getHierarchicalPermissionsFromDatabase, hasHierarchicalPermission } from "@/lib/permissions/hierarchical-permissions";
+import {
+  GetUserWithRolesDocument,
+  type GetUserWithRolesQuery,
+  type GetUserWithRolesQueryVariables,
+} from "@/domains/users/graphql/generated/graphql";
+import {
+  IntrospectSchemaApiDocument,
+  type IntrospectSchemaApiQuery,
+} from "@/domains/reports/graphql/generated/graphql";
 
-// Introspection query to get schema information
-const INTROSPECTION_QUERY = gql`
-  query IntrospectSchema {
-    __schema {
-      types {
-        name
-        kind
-        description
-        fields {
-          name
-          type {
-            name
-            kind
-            ofType {
-              name
-              kind
-            }
-          }
-          description
-        }
-        inputFields {
-          name
-          type {
-            name
-            kind
-            ofType {
-              name
-              kind
-            }
-          }
-        }
-      }
-      queryType {
-        name
-        fields {
-          name
-          type {
-            name
-            kind
-            ofType {
-              name
-              kind
-            }
-          }
-          args {
-            name
-            type {
-              name
-              kind
-              ofType {
-                name
-                kind
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`;
 
 // Domains we're interested in for reporting
 const REPORT_DOMAINS = [
@@ -101,19 +52,64 @@ const EXCLUDED_FIELDS = [
 
 export const GET = withAuth(async (request: NextRequest, session) => {
   try {
-    // Authorization check - require developer role only
-    const userRole = session.role || session.defaultRole || 'viewer';
-    const isDeveloper = userRole === 'developer';
+    console.log("🔍 Getting user and permissions for Clerk user:", session.userId);
     
-    if (!isDeveloper) {
+    // Get user and role assignments in a single query using Clerk user ID
+    const { data: userData } = await adminApolloClient.query<
+      GetUserWithRolesQuery,
+      GetUserWithRolesQueryVariables
+    >({
+      query: GetUserWithRolesDocument,
+      variables: { clerkUserId: session.userId },
+      fetchPolicy: "network-only",
+    });
+
+    const user = userData?.users?.[0];
+    if (!user) {
       return NextResponse.json(
-        { error: "Developer access required for reports schema" },
+        { error: "User not found in database" },
+        { status: 404 }
+      );
+    }
+
+    // Determine the highest priority role (lowest priority number = highest role)
+    const roleAssignments = user.roleAssignments || [];
+    const highestRole = roleAssignments.length > 0 
+      ? roleAssignments.reduce((highest: any, current: any) => 
+          current.role.priority < highest.role.priority ? current : highest
+        ).role.name
+      : user.role; // Fallback to user.role if no assignments
+
+    console.log("📋 User role determined:", {
+      userId: user.id,
+      email: user.email,
+      userRole: user.role,
+      roleAssignments: roleAssignments.map((ra: any) => `${ra.role.name}(${ra.role.priority})`),
+      finalRole: highestRole
+    });
+    
+    // Check if user has report schema access permissions
+    const hasReportAccess = highestRole && ["developer", "org_admin"].includes(highestRole);
+    
+    if (!hasReportAccess) {
+      return NextResponse.json(
+        { 
+          error: `Developer or org_admin access required for reports schema. Current role: ${highestRole}`,
+          debug: { 
+            finalRole: highestRole,
+            userRole: user.role,
+            roleAssignments: roleAssignments.map((ra: any) => ra.role.name),
+            sessionUserId: session.userId,
+            databaseUserId: user.id,
+            userEmail: user.email
+          }
+        },
         { status: 403 }
       );
     }
 
     // Get schema via introspection using authenticated query helper
-    const response = await executeQuery(INTROSPECTION_QUERY);
+    const response = await executeQuery(IntrospectSchemaApiDocument);
 
     console.log('🔍 Introspection response:', JSON.stringify(response, null, 2));
     

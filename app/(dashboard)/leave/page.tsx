@@ -10,25 +10,36 @@
  * - Mobile-first responsive design
  */
 
-import { Plus, RefreshCw, AlertTriangle, X, Calendar, Clock, CheckCircle2, Activity, TrendingUp, Users } from "lucide-react";
+import {
+  Plus,
+  RefreshCw,
+  AlertTriangle,
+  X,
+  Calendar,
+  Clock,
+  CheckCircle2,
+  Activity,
+  TrendingUp,
+  Users,
+} from "lucide-react";
 import React, { useState, useEffect, useMemo } from "react";
 import { PermissionGuard } from "@/components/auth/permission-guard";
 import { PageHeader } from "@/components/patterns/page-header";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 import { ModernLeaveManager } from "@/domains/leave/components/ModernLeaveManager";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useDynamicLoading } from "@/lib/hooks/use-dynamic-loading";
+import { cn } from "@/lib/utils";
 
 // Create loading component for leave
 function LeaveLoading() {
-  const { Loading } = useDynamicLoading({
+  const { Loading: _LeaveLoading } = useDynamicLoading({
     title: "Loading Leave Requests...",
     description: "Fetching leave data and status information",
   });
-  return <Loading variant="minimal" />;
+  return <_LeaveLoading variant="minimal" />;
 }
 
 interface LeaveRequest {
@@ -82,7 +93,7 @@ function EnhancedMetricCard({
   icon: IconComponent,
   trend,
   trendValue,
-  status = 'neutral',
+  status = "neutral",
   onClick,
   children,
 }: {
@@ -90,27 +101,27 @@ function EnhancedMetricCard({
   value: string;
   subtitle: string;
   icon: React.ElementType;
-  trend?: 'up' | 'down' | 'stable';
+  trend?: "up" | "down" | "stable";
   trendValue?: string;
-  status?: 'good' | 'warning' | 'critical' | 'neutral';
+  status?: "good" | "warning" | "critical" | "neutral";
   onClick?: () => void;
   children?: React.ReactNode;
 }) {
   const statusStyles = {
-    good: 'bg-green-50 border-green-200 hover:bg-green-100',
-    warning: 'bg-amber-50 border-amber-200 hover:bg-amber-100',
-    critical: 'bg-red-50 border-red-200 hover:bg-red-100',
-    neutral: 'bg-white border-gray-200 hover:bg-gray-50',
+    good: "bg-green-50 border-green-200 hover:bg-green-100",
+    warning: "bg-amber-50 border-amber-200 hover:bg-amber-100",
+    critical: "bg-red-50 border-red-200 hover:bg-red-100",
+    neutral: "bg-white border-gray-200 hover:bg-gray-50",
   };
 
   const trendStyles = {
-    up: 'text-green-600 bg-green-100',
-    down: 'text-red-600 bg-red-100',
-    stable: 'text-gray-600 bg-gray-100',
+    up: "text-green-600 bg-green-100",
+    down: "text-red-600 bg-red-100",
+    stable: "text-gray-600 bg-gray-100",
   };
 
   return (
-    <Card 
+    <Card
       className={cn(
         "group cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02]",
         statusStyles[status],
@@ -118,58 +129,60 @@ function EnhancedMetricCard({
       )}
       onClick={onClick}
     >
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-gray-700 group-hover:text-gray-900 transition-colors">
-            {title}
-          </CardTitle>
-          <div className="relative">
-            <IconComponent className="h-4 w-4 text-muted-foreground group-hover:text-blue-600 transition-colors" />
-            {status === 'critical' && (
-              <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium text-gray-700 group-hover:text-gray-900 transition-colors">
+          {title}
+        </CardTitle>
+        <div className="relative">
+          <IconComponent className="h-4 w-4 text-muted-foreground group-hover:text-blue-600 transition-colors" />
+          {status === "critical" && (
+            <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+          )}
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          <div className="flex items-baseline justify-between">
+            <div className="text-2xl font-bold text-gray-900 group-hover:text-blue-900 transition-colors">
+              {value}
+            </div>
+            {trend && trendValue && (
+              <div
+                className={cn(
+                  "px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1",
+                  trendStyles[trend]
+                )}
+                title="Trend from previous period"
+              >
+                {trend === "up" && <TrendingUp className="w-3 h-3" />}
+                {trend === "down" && (
+                  <Activity className="w-3 h-3 rotate-180" />
+                )}
+                {trend === "stable" && <Activity className="w-3 h-3" />}
+                <span>{trendValue}</span>
+              </div>
             )}
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <div className="flex items-baseline justify-between">
-              <div className="text-2xl font-bold text-gray-900 group-hover:text-blue-900 transition-colors">
-                {value}
-              </div>
-              {trend && trendValue && (
-                <div 
-                  className={cn(
-                    'px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1',
-                    trendStyles[trend]
-                  )}
-                  title="Trend from previous period"
-                >
-                  {trend === 'up' && <TrendingUp className="w-3 h-3" />}
-                  {trend === 'down' && <Activity className="w-3 h-3 rotate-180" />}
-                  {trend === 'stable' && <Activity className="w-3 h-3" />}
-                  <span>{trendValue}</span>
-                </div>
-              )}
-            </div>
-            
-            <p className="text-xs text-muted-foreground group-hover:text-gray-600 transition-colors">
-              {subtitle}
-            </p>
-            
-            {children}
-          </div>
-        </CardContent>
-      </Card>
+
+          <p className="text-xs text-muted-foreground group-hover:text-gray-600 transition-colors">
+            {subtitle}
+          </p>
+
+          {children}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
 // Leave summary cards with actionable business insights
-function LeaveSummaryCards({ 
-  leaveRequests, 
-  stats, 
-  isManager 
-}: { 
-  leaveRequests: LeaveRequest[]; 
-  stats: LeaveStats | null; 
+function LeaveSummaryCards({
+  leaveRequests,
+  stats,
+  isManager,
+}: {
+  leaveRequests: LeaveRequest[];
+  stats: LeaveStats | null;
   isManager: boolean;
 }) {
   const metrics = useMemo(() => {
@@ -179,22 +192,24 @@ function LeaveSummaryCards({
         activeLeave: 0,
         approvalBacklog: 0,
         teamImpact: 0,
-        workflowHealth: 'neutral' as const,
-        coverageHealth: 'neutral' as const,
-        approvalHealth: 'neutral' as const,
-        capacityHealth: 'neutral' as const,
+        workflowHealth: "neutral" as const,
+        coverageHealth: "neutral" as const,
+        approvalHealth: "neutral" as const,
+        capacityHealth: "neutral" as const,
       };
     }
 
     const today = new Date();
     const pendingRequests = stats.overview.pending;
     const activeLeave = stats.overview.currentLeave;
-    
+
     // Calculate approval backlog (pending requests older than 3 days)
     const approvalBacklog = leaveRequests.filter(request => {
-      if (request.status !== 'Pending') return false;
+      if (request.status !== "Pending") return false;
       const requestDate = new Date(request.startDate);
-      const daysDiff = Math.floor((today.getTime() - requestDate.getTime()) / (1000 * 60 * 60 * 24));
+      const daysDiff = Math.floor(
+        (today.getTime() - requestDate.getTime()) / (1000 * 60 * 60 * 24)
+      );
       return daysDiff > 3;
     }).length;
 
@@ -202,29 +217,36 @@ function LeaveSummaryCards({
     const totalActiveRequests = leaveRequests.filter(request => {
       const start = new Date(request.startDate);
       const end = new Date(request.endDate);
-      return today >= start && today <= end && request.status === 'Approved';
+      return today >= start && today <= end && request.status === "Approved";
     }).length;
 
     // Estimate total team size (rough calculation)
     const uniqueEmployees = new Set(leaveRequests.map(r => r.userId)).size;
-    const teamImpact = uniqueEmployees > 0 ? Math.round((totalActiveRequests / uniqueEmployees) * 100) : 0;
+    const teamImpact =
+      uniqueEmployees > 0
+        ? Math.round((totalActiveRequests / uniqueEmployees) * 100)
+        : 0;
 
     // Health assessments based on business impact
-    const workflowHealth: 'good' | 'warning' | 'critical' = 
-      pendingRequests === 0 ? 'good' : 
-      pendingRequests <= 3 ? 'warning' : 'critical';
+    const workflowHealth: "good" | "warning" | "critical" =
+      pendingRequests === 0
+        ? "good"
+        : pendingRequests <= 3
+          ? "warning"
+          : "critical";
 
-    const approvalHealth: 'good' | 'warning' | 'critical' = 
-      approvalBacklog === 0 ? 'good' : 
-      approvalBacklog <= 2 ? 'warning' : 'critical';
+    const approvalHealth: "good" | "warning" | "critical" =
+      approvalBacklog === 0
+        ? "good"
+        : approvalBacklog <= 2
+          ? "warning"
+          : "critical";
 
-    const capacityHealth: 'good' | 'warning' | 'critical' = 
-      teamImpact <= 15 ? 'good' : 
-      teamImpact <= 25 ? 'warning' : 'critical';
+    const capacityHealth: "good" | "warning" | "critical" =
+      teamImpact <= 15 ? "good" : teamImpact <= 25 ? "warning" : "critical";
 
-    const coverageHealth: 'good' | 'warning' | 'critical' = 
-      activeLeave <= 2 ? 'good' : 
-      activeLeave <= 5 ? 'warning' : 'critical';
+    const coverageHealth: "good" | "warning" | "critical" =
+      activeLeave <= 2 ? "good" : activeLeave <= 5 ? "warning" : "critical";
 
     return {
       pendingRequests,
@@ -248,7 +270,7 @@ function LeaveSummaryCards({
           subtitle="Total leave requests"
           icon={Calendar}
           status="neutral"
-          onClick={() => console.log('View my requests')}
+          onClick={() => (window.location.href = "/leave")}
         >
           <div className="flex items-center gap-1 text-xs text-gray-600 mt-2">
             <CheckCircle2 className="h-3 w-3" />
@@ -258,16 +280,16 @@ function LeaveSummaryCards({
 
         <EnhancedMetricCard
           title="Pending Approval"
-          value={stats?.overview.pending.toString() || '0'}
+          value={stats?.overview.pending.toString() || "0"}
           subtitle="Awaiting manager approval"
           icon={Clock}
-          status={stats?.overview.pending ? 'warning' : 'good'}
-          onClick={() => console.log('View pending requests')}
+          status={stats?.overview.pending ? "warning" : "good"}
+          onClick={() => (window.location.href = "/leave")}
         />
 
         <EnhancedMetricCard
           title="Current Leave"
-          value={stats?.overview.currentLeave.toString() || '0'}
+          value={stats?.overview.currentLeave.toString() || "0"}
           subtitle="Active leave periods"
           icon={Users}
           status="neutral"
@@ -275,7 +297,7 @@ function LeaveSummaryCards({
 
         <EnhancedMetricCard
           title="This Year"
-          value={stats?.overview.approved.toString() || '0'}
+          value={stats?.overview.approved.toString() || "0"}
           subtitle="Approved leave days"
           icon={CheckCircle2}
           status="good"
@@ -293,12 +315,14 @@ function LeaveSummaryCards({
         subtitle="Requests awaiting approval"
         icon={Clock}
         status={metrics.workflowHealth}
-        trend={metrics.pendingRequests === 0 ? 'stable' : 'up'}
-        trendValue={metrics.workflowHealth === 'good' ? "All clear" : "Needs attention"}
-        onClick={() => console.log('Navigate to approval workflow')}
+        trend={metrics.pendingRequests === 0 ? "stable" : "up"}
+        trendValue={
+          metrics.workflowHealth === "good" ? "All clear" : "Needs attention"
+        }
+        onClick={() => (window.location.href = "/leave")}
       >
         <div className="flex items-center gap-1 text-xs mt-2">
-          {metrics.workflowHealth === 'good' ? (
+          {metrics.workflowHealth === "good" ? (
             <div className="flex items-center gap-1 text-green-600">
               <CheckCircle2 className="h-3 w-3" />
               <span>Workflow efficient</span>
@@ -319,15 +343,22 @@ function LeaveSummaryCards({
         subtitle="Available team capacity"
         icon={Users}
         status={metrics.capacityHealth}
-        trend={metrics.teamImpact <= 15 ? 'stable' : 'down'}
-        trendValue={metrics.capacityHealth === 'good' ? "Good coverage" : "Limited capacity"}
-        onClick={() => console.log('Navigate to coverage planning')}
+        trend={metrics.teamImpact <= 15 ? "stable" : "down"}
+        trendValue={
+          metrics.capacityHealth === "good"
+            ? "Good coverage"
+            : "Limited capacity"
+        }
+        onClick={() => (window.location.href = "/work-schedule")}
       >
         <div className="flex items-center gap-1 text-xs text-gray-600 mt-2">
           <Activity className="h-3 w-3" />
           <span>
-            {metrics.capacityHealth === 'good' ? 'Full service capacity' :
-             metrics.capacityHealth === 'warning' ? 'Reduced capacity' : 'Service at risk'}
+            {metrics.capacityHealth === "good"
+              ? "Full service capacity"
+              : metrics.capacityHealth === "warning"
+                ? "Reduced capacity"
+                : "Service at risk"}
           </span>
         </div>
       </EnhancedMetricCard>
@@ -339,9 +370,9 @@ function LeaveSummaryCards({
         subtitle="Requests pending >3 days"
         icon={AlertTriangle}
         status={metrics.approvalHealth}
-        trend={metrics.approvalBacklog === 0 ? 'stable' : 'up'}
-        trendValue={metrics.approvalHealth === 'good' ? "On time" : "Delayed"}
-        onClick={() => console.log('Navigate to overdue approvals')}
+        trend={metrics.approvalBacklog === 0 ? "stable" : "up"}
+        trendValue={metrics.approvalHealth === "good" ? "On time" : "Delayed"}
+        onClick={() => (window.location.href = "/leave")}
       >
         <div className="flex items-center gap-1 text-xs mt-2">
           {metrics.approvalBacklog === 0 ? (
@@ -365,15 +396,20 @@ function LeaveSummaryCards({
         subtitle="Staff currently on leave"
         icon={Calendar}
         status={metrics.coverageHealth}
-        trend={metrics.activeLeave <= 2 ? 'stable' : 'up'}
-        trendValue={metrics.coverageHealth === 'good' ? "Normal levels" : "High volume"}
-        onClick={() => console.log('Navigate to active leave calendar')}
+        trend={metrics.activeLeave <= 2 ? "stable" : "up"}
+        trendValue={
+          metrics.coverageHealth === "good" ? "Normal levels" : "High volume"
+        }
+        onClick={() => (window.location.href = "/calendar")}
       >
         <div className="flex items-center gap-1 text-xs text-gray-600 mt-2">
           <TrendingUp className="h-3 w-3" />
           <span>
-            {metrics.coverageHealth === 'good' ? 'Minimal disruption' :
-             metrics.coverageHealth === 'warning' ? 'Some impact' : 'Major impact'}
+            {metrics.coverageHealth === "good"
+              ? "Minimal disruption"
+              : metrics.coverageHealth === "warning"
+                ? "Some impact"
+                : "Major impact"}
           </span>
         </div>
       </EnhancedMetricCard>
@@ -535,7 +571,7 @@ function LeavePage() {
       />
 
       {/* Leave Summary Cards */}
-      <LeaveSummaryCards 
+      <LeaveSummaryCards
         leaveRequests={leaveRequests}
         stats={stats}
         isManager={isManager}

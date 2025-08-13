@@ -1,6 +1,13 @@
 // lib/holiday-sync-service.ts
-import { gql } from "@apollo/client";
 import { adminApolloClient } from "@/lib/apollo/unified-client";
+import {
+  CheckExistingHolidaysDocument,
+  type CheckExistingHolidaysQuery,
+  type CheckExistingHolidaysQueryVariables,
+  InsertHolidaysDocument,
+  type InsertHolidaysMutation,
+  type InsertHolidaysMutationVariables,
+} from "../graphql/generated/graphql";
 
 // Type definition for holiday API response from date.nager.at
 export interface PublicHoliday {
@@ -139,133 +146,7 @@ function generateFallbackHolidays(year: number): DataGovAuHoliday[] {
   return holidays;
 }
 
-// GraphQL query to check existing holidays
-const CHECK_EXISTING_HOLIDAYS_QUERY = gql`
-  query CheckExistingHolidays($year: Int!, $countryCode: bpchar!) {
-    holidays_aggregate(
-      where: {
-        country_code: { _eq: $countryCode }
-        date: { _gte: $year, _lt: $year }
-      }
-    ) {
-      aggregate {
-        count
-      }
-    }
-    holidays(
-      where: {
-        country_code: { _eq: $countryCode }
-        date: { _gte: $year, _lt: $year }
-      }
-      limit: 5
-    ) {
-      date
-      name
-      country_code
-    }
-  }
-`;
-
-// GraphQL mutation to insert holidays with better conflict resolution
-const INSERT_HOLIDAYS_MUTATION = gql`
-  mutation InsertHolidays($objects: [HolidaysInsertInput!]!) {
-    insertHolidays(
-      objects: $objects
-      onConflict: {
-        constraint: holidays_pkey
-        updateColumns: [
-          date
-          localName
-          name
-          countryCode
-          region
-          isFixed
-          isGlobal
-          launchYear
-          types
-          updatedAt
-        ]
-      }
-    ) {
-      affectedRows
-      returning {
-        id
-        date
-        localName
-        name
-        countryCode
-        region
-      }
-    }
-  }
-`;
-
-// Enhanced mutation with isEftRelevant field
-const INSERT_HOLIDAYS_ENHANCED_MUTATION = gql`
-  mutation InsertHolidaysEnhanced($objects: [HolidaysInsertInput!]!) {
-    insertHolidays(
-      objects: $objects
-      onConflict: {
-        constraint: holidays_pkey
-        updateColumns: [
-          date
-          localName
-          name
-          countryCode
-          region
-          isFixed
-          isGlobal
-          launchYear
-          types
-          updatedAt
-        ]
-      }
-    ) {
-      affectedRows
-      returning {
-        id
-        date
-        localName
-        name
-        countryCode
-        region
-      }
-    }
-  }
-`;
-
-// Fallback mutation if the unique constraint doesn't exist yet
-const INSERT_HOLIDAYS_FALLBACK_MUTATION = gql`
-  mutation InsertHolidaysFallback($objects: [HolidaysInsertInput!]!) {
-    insertHolidays(
-      objects: $objects
-      onConflict: {
-        constraint: holidays_pkey
-        updateColumns: [
-          date
-          localName
-          name
-          countryCode
-          region
-          isFixed
-          isGlobal
-          launchYear
-          types
-          updatedAt
-        ]
-      }
-    ) {
-      affectedRows
-      returning {
-        id
-        date
-        localName
-        name
-        countryCode
-      }
-    }
-  }
-`;
+// GraphQL operations now imported from generated types
 
 export async function fetchPublicHolidays(
   year: number,
@@ -592,37 +473,8 @@ export async function checkExistingHolidays(
       `🔍 Checking existing holidays for ${countryCode} ${year} (${startDate} to ${endDate})`
     );
 
-    const { data, errors } = await adminApolloClient.query({
-      query: gql`
-        query CheckExistingHolidays(
-          $startDate: date!
-          $endDate: date!
-          $countryCode: bpchar!
-        ) {
-          holidaysAggregate(
-            where: {
-              countryCode: { _eq: $countryCode }
-              date: { _gte: $startDate, _lt: $endDate }
-            }
-          ) {
-            aggregate {
-              count
-            }
-          }
-          holidays(
-            where: {
-              countryCode: { _eq: $countryCode }
-              date: { _gte: $startDate, _lt: $endDate }
-            }
-            limit: 3
-            orderBy: { date: ASC }
-          ) {
-            date
-            name
-            countryCode
-          }
-        }
-      `,
+    const { data, errors } = await adminApolloClient.query<CheckExistingHolidaysQuery, CheckExistingHolidaysQueryVariables>({
+      query: CheckExistingHolidaysDocument,
       variables: {
         startDate,
         endDate,
@@ -637,8 +489,8 @@ export async function checkExistingHolidays(
       console.warn("But continuing with partial data if available...");
     }
 
-    if (data && data.holidaysAggregate) {
-      const count = data.holidaysAggregate.aggregate.count;
+    if (data && data.holidaysAggregate && data.holidaysAggregate.aggregate) {
+      const count = data.holidaysAggregate.aggregate.count || 0;
       const samples = data.holidays || [];
 
       console.log(
@@ -734,8 +586,8 @@ export async function syncHolidaysForCountry(
     if (!region) {
       try {
         // Try with the proper unique constraint first
-        const { data, errors } = await adminClient.mutate({
-          mutation: INSERT_HOLIDAYS_MUTATION,
+        const { data, errors } = await adminClient.mutate<InsertHolidaysMutation, InsertHolidaysMutationVariables>({
+          mutation: InsertHolidaysDocument,
           variables: { objects: holidaysToInsert },
         });
 
@@ -745,14 +597,14 @@ export async function syncHolidaysForCountry(
         }
 
         console.log(
-          `✅ Successfully synced ${data.insertHolidays.affectedRows} holidays for ${countryCode} ${year}`
+          `✅ Successfully synced ${data?.insertHolidays?.affectedRows || 0} holidays for ${countryCode} ${year}`
         );
 
         return {
           success: true,
-          affectedRows: data.insertHolidays.affectedRows,
+          affectedRows: data?.insertHolidays?.affectedRows || 0,
           newHolidays: holidaysToInsert.length,
-          message: `Synced ${data.insertHolidays.affectedRows} holidays for ${countryCode} ${year}`,
+          message: `Synced ${data?.insertHolidays?.affectedRows || 0} holidays for ${countryCode} ${year}`,
         };
       } catch (error) {
         // If unique constraint doesn't exist, fall back to primary key constraint
@@ -761,8 +613,8 @@ export async function syncHolidaysForCountry(
           error instanceof Error ? error.message : String(error)
         );
 
-        const { data, errors } = await adminClient.mutate({
-          mutation: INSERT_HOLIDAYS_FALLBACK_MUTATION,
+        const { data, errors } = await adminClient.mutate<InsertHolidaysMutation, InsertHolidaysMutationVariables>({
+          mutation: InsertHolidaysDocument,
           variables: { objects: holidaysToInsert },
         });
 
@@ -772,14 +624,14 @@ export async function syncHolidaysForCountry(
         }
 
         console.log(
-          `✅ Successfully synced ${data.insertHolidays.affected_rows} holidays for ${countryCode} ${year} (fallback)`
+          `✅ Successfully synced ${data?.insertHolidays?.affectedRows || 0} holidays for ${countryCode} ${year} (fallback)`
         );
 
         return {
           success: true,
-          affectedRows: data.insertHolidays.affectedRows,
+          affectedRows: data?.insertHolidays?.affectedRows || 0,
           newHolidays: holidaysToInsert.length,
-          message: `Synced ${data.insertHolidays.affectedRows} holidays for ${countryCode} ${year} (fallback)`,
+          message: `Synced ${data?.insertHolidays?.affectedRows || 0} holidays for ${countryCode} ${year} (fallback)`,
         };
       }
     }
@@ -888,8 +740,8 @@ export async function syncComprehensiveAustralianHolidays(
 
     // Insert holidays using admin client
     try {
-      const { data, errors } = await adminApolloClient.mutate({
-        mutation: INSERT_HOLIDAYS_MUTATION,
+      const { data, errors } = await adminApolloClient.mutate<InsertHolidaysMutation, InsertHolidaysMutationVariables>({
+        mutation: InsertHolidaysDocument,
         variables: { objects: holidaysToInsert },
       });
 
@@ -899,11 +751,11 @@ export async function syncComprehensiveAustralianHolidays(
         throw new Error(`Failed to sync comprehensive holidays: ${errors.map(e => e.message).join(', ')}`);
       }
 
-      console.log(`✅ Successfully synced ${data.insertHolidays.affectedRows} holidays for AU ${year}`);
+      console.log(`✅ Successfully synced ${data?.insertHolidays?.affectedRows || 0} holidays for AU ${year}`);
       
       return {
         success: true,
-        affectedRows: data.insertHolidays.affectedRows,
+        affectedRows: data?.insertHolidays?.affectedRows || 0,
         totalHolidays: holidaysToInsert.length,
         originalRecordCount: dataGovHolidays.length,
         consolidatedRecordCount: holidaysToInsert.length,
@@ -911,7 +763,7 @@ export async function syncComprehensiveAustralianHolidays(
         regionalHolidays: regionalHolidays.length,
         eftRelevantHolidays: eftRelevantCount,
         coverageBreakdown: byRegionType,
-        message: `Synced ${data.insertHolidays.affectedRows} consolidated Australian holidays for ${year} (${dataGovHolidays.length} → ${holidaysToInsert.length} records, source: ${dataSource})`,
+        message: `Synced ${data?.insertHolidays?.affectedRows || 0} consolidated Australian holidays for ${year} (${dataGovHolidays.length} → ${holidaysToInsert.length} records, source: ${dataSource})`,
         dataSource,
         isGeneratedData,
         isNagerData,
@@ -920,8 +772,8 @@ export async function syncComprehensiveAustralianHolidays(
       // Fallback to basic mutation if main mutation fails
       console.warn("Falling back to basic holiday insertion...", error instanceof Error ? error.message : String(error));
       
-      const { data, errors } = await adminApolloClient.mutate({
-        mutation: INSERT_HOLIDAYS_FALLBACK_MUTATION,
+      const { data, errors } = await adminApolloClient.mutate<InsertHolidaysMutation, InsertHolidaysMutationVariables>({
+        mutation: InsertHolidaysDocument,
         variables: { objects: holidaysToInsert },
       });
 
@@ -931,11 +783,11 @@ export async function syncComprehensiveAustralianHolidays(
         throw new Error(`Failed to sync comprehensive holidays with fallback method: ${errors.map(e => e.message).join(', ')}`);
       }
 
-      console.log(`✅ Successfully synced ${data.insertHolidays.affectedRows} holidays for AU ${year} (fallback)`);
+      console.log(`✅ Successfully synced ${data?.insertHolidays?.affectedRows || 0} holidays for AU ${year} (fallback)`);
       
       return {
         success: true,
-        affectedRows: data.insertHolidays.affectedRows,
+        affectedRows: data?.insertHolidays?.affectedRows || 0,
         totalHolidays: holidaysToInsert.length,
         originalRecordCount: dataGovHolidays.length,
         consolidatedRecordCount: holidaysToInsert.length,
@@ -943,7 +795,7 @@ export async function syncComprehensiveAustralianHolidays(
         regionalHolidays: regionalHolidays.length,
         eftRelevantHolidays: eftRelevantCount,
         coverageBreakdown: byRegionType,
-        message: `Synced ${data.insertHolidays.affectedRows} consolidated Australian holidays for ${year} (fallback, ${dataGovHolidays.length} → ${holidaysToInsert.length} records, source: ${dataSource})`,
+        message: `Synced ${data?.insertHolidays?.affectedRows || 0} consolidated Australian holidays for ${year} (fallback, ${dataGovHolidays.length} → ${holidaysToInsert.length} records, source: ${dataSource})`,
         dataSource,
         isGeneratedData,
         isNagerData,

@@ -1,18 +1,8 @@
-import { useState } from "react";
 import { Plus, Trash2, Calculator } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -20,6 +10,16 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import {
   Aggregation,
   AggregationFunction,
@@ -59,11 +59,11 @@ export function AggregationBuilder({
   });
 
   const addAggregation = () => {
-    const newAggregations = [
+    const newAggregations: Aggregation[] = [
       ...aggregations,
       {
         name: "",
-        function: "sum",
+        function: "sum" as AggregationFunction,
         field: "",
       },
     ];

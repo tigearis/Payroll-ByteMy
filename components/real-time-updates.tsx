@@ -3,7 +3,8 @@ import { DocumentNode } from "@apollo/client";
 import { ReactNode, useMemo } from "react";
 import { 
   PayrollSubscriptionDocument,
-  GetPayrollsDocument
+  GetPayrollsDocument,
+  GetPayrollsPaginatedDocument
 } from "@/domains/payrolls/graphql/generated/graphql";
 import { useRealTimeSubscription } from "@/hooks/use-subscription";
 
@@ -65,7 +66,7 @@ export function RealTimeUpdates({
  * Specialized component for payroll updates
  */
 export function PayrollUpdatesListener({
-  refetchQueries = [GetPayrollsDocument],
+  refetchQueries = [GetPayrollsPaginatedDocument],
   showToasts = false,
   onUpdate,
 }: {

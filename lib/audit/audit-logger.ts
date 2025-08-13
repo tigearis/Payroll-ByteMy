@@ -8,8 +8,15 @@
  * - SOC2 compliance reporting
  */
 
-import { gql } from '@apollo/client';
 import { adminApolloClient } from '@/lib/apollo/unified-client';
+import {
+  InsertAuditLogDocument,
+  type InsertAuditLogMutation,
+  type InsertAuditLogMutationVariables,
+  InsertAuthEventDocument,
+  type InsertAuthEventMutation,
+  type InsertAuthEventMutationVariables,
+} from '@/domains/audit/graphql/generated/graphql';
 
 export interface AuditLogEntry {
   userId?: string;
@@ -39,28 +46,7 @@ export interface AuthEvent {
   metadata?: Record<string, any>;
 }
 
-// GraphQL mutations for database audit logging
-const INSERT_AUDIT_LOG = gql`
-  mutation InsertAuditLog($event: AuditAuditLogInsertInput!) {
-    insertAuditAuditLog(objects: [$event]) {
-      returning {
-        id
-        eventTime
-      }
-    }
-  }
-`;
-
-const INSERT_AUTH_EVENT = gql`
-  mutation InsertAuthEvent($event: AuditAuthEventsInsertInput!) {
-    insertAuditAuthEvents(objects: [$event]) {
-      returning {
-        id
-        eventTime
-      }
-    }
-  }
-`;
+// GraphQL operations now imported from generated types
 
 class AuditLogger {
   /**
@@ -80,8 +66,8 @@ class AuditLogger {
 
     try {
       // Store in audit database table for SOC2 compliance
-      await adminApolloClient.mutate({
-        mutation: INSERT_AUDIT_LOG,
+      await adminApolloClient.mutate<InsertAuditLogMutation, InsertAuditLogMutationVariables>({
+        mutation: InsertAuditLogDocument,
         variables: {
           event: {
             action: logEntry.action,
@@ -121,8 +107,8 @@ class AuditLogger {
     }
 
     try {
-      await adminApolloClient.mutate({
-        mutation: INSERT_AUTH_EVENT,
+      await adminApolloClient.mutate<InsertAuthEventMutation, InsertAuthEventMutationVariables>({
+        mutation: InsertAuthEventDocument,
         variables: {
           event: {
             eventType: event.eventType,

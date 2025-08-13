@@ -1,30 +1,43 @@
-import { auth } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { ReportQueueService } from "@/domains/reports/services/queue.service";
-import { ReportSecurityService } from "@/domains/reports/services/security.service";
+import { withAuthParams } from "@/lib/auth/api-auth";
 
 const queueService = new ReportQueueService();
-const securityService = new ReportSecurityService();
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export const GET = withAuthParams(async (
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> },
+  session
+): Promise<NextResponse> => {
   try {
-    // 1. Authenticate request
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const params = await context.params;
+    
+    // Check permissions
+    const userRole = 
+      session.role ||
+      session.defaultRole ||
+      'viewer';
+      
+    const hasReportAccess = 
+      userRole && ["developer", "org_admin", "manager", "consultant"].includes(userRole);
+
+    if (!hasReportAccess) {
+      return NextResponse.json(
+        { 
+          error: `Insufficient permissions to check report status. Current role: ${userRole}`,
+        },
+        { status: 403 }
+      );
     }
 
-    // 2. Get job status
+    // Get job status
     const job = await queueService.getJob(params.id);
     if (!job) {
       return NextResponse.json({ error: "Job not found" }, { status: 404 });
     }
 
-    // 3. Verify job ownership
-    if (job.userId !== userId) {
+    // Verify job ownership
+    if (job.userId !== session.userId) {
       return NextResponse.json({ error: "Permission denied" }, { status: 403 });
     }
 
@@ -38,31 +51,46 @@ export async function GET(
       { status: 500 }
     );
   }
-}
+});
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export const DELETE = withAuthParams(async (
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> },
+  session
+): Promise<NextResponse> => {
   try {
-    // 1. Authenticate request
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const params = await context.params;
+    
+    // Check permissions
+    const userRole = 
+      session.role ||
+      session.defaultRole ||
+      'viewer';
+      
+    const hasReportAccess = 
+      userRole && ["developer", "org_admin", "manager", "consultant"].includes(userRole);
+
+    if (!hasReportAccess) {
+      return NextResponse.json(
+        { 
+          error: `Insufficient permissions to cancel reports. Current role: ${userRole}`,
+        },
+        { status: 403 }
+      );
     }
 
-    // 2. Get job
+    // Get job
     const job = await queueService.getJob(params.id);
     if (!job) {
       return NextResponse.json({ error: "Job not found" }, { status: 404 });
     }
 
-    // 3. Verify job ownership
-    if (job.userId !== userId) {
+    // Verify job ownership
+    if (job.userId !== session.userId) {
       return NextResponse.json({ error: "Permission denied" }, { status: 403 });
     }
 
-    // 4. Cancel job
+    // Cancel job
     const cancelled = await queueService.cancelJob(params.id);
     if (!cancelled) {
       return NextResponse.json(
@@ -81,4 +109,4 @@ export async function DELETE(
       { status: 500 }
     );
   }
-}
+});

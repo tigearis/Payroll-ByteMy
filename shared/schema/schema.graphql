@@ -4546,6 +4546,9 @@ type BillingItems {
   billingPlanId: uuid
   billingTier: String
   """An object relationship"""
+  billingUnitType: BillingUnitTypes
+  billingUnitTypeId: uuid
+  """An object relationship"""
   client: Clients
   clientId: uuid
   """When this item was confirmed by manager"""
@@ -4626,6 +4629,7 @@ type BillingItems {
   payrollDateId: uuid
   payrollId: uuid
   quantity: Int!
+  quantityOverride: Boolean
   """An object relationship"""
   quote: Quotes
   quoteId: uuid
@@ -4637,6 +4641,11 @@ type BillingItems {
   serviceId: uuid
   serviceName: String
   sourceMetricsId: uuid
+  """Array of payroll date IDs that contributed to this billing item"""
+  sourcePayrollDates(
+    """JSON select path"""
+    path: String
+  ): jsonb
   """An object relationship"""
   staffUser: Users
   """Staff member who performed the service"""
@@ -4670,6 +4679,13 @@ type BillingItems {
     where: TimeEntriesBoolExp
   ): TimeEntriesAggregate!
   totalAmount: numeric
+  """
+  Detailed breakdown of units contributed per payroll date for aggregated services
+  """
+  unitBreakdown(
+    """JSON select path"""
+    path: String
+  ): jsonb
   unitPrice: numeric!
   updatedAt: timestamptz
 }
@@ -4722,6 +4738,16 @@ input BillingItemsAggregateOrderBy {
   variance: BillingItemsVarianceOrderBy
 }
 
+"""append existing jsonb value of filtered columns with new jsonb value"""
+input BillingItemsAppendInput {
+  """Array of payroll date IDs that contributed to this billing item"""
+  sourcePayrollDates: jsonb
+  """
+  Detailed breakdown of units contributed per payroll date for aggregated services
+  """
+  unitBreakdown: jsonb
+}
+
 """
 input type for inserting array relation for remote table "billing_items"
 """
@@ -4768,6 +4794,8 @@ input BillingItemsBoolExp {
   billingPeriodStart: DateComparisonExp
   billingPlanId: UuidComparisonExp
   billingTier: StringComparisonExp
+  billingUnitType: BillingUnitTypesBoolExp
+  billingUnitTypeId: UuidComparisonExp
   client: ClientsBoolExp
   clientId: UuidComparisonExp
   confirmedAt: TimestamptzComparisonExp
@@ -4791,6 +4819,7 @@ input BillingItemsBoolExp {
   payrollDateId: UuidComparisonExp
   payrollId: UuidComparisonExp
   quantity: IntComparisonExp
+  quantityOverride: BooleanComparisonExp
   quote: QuotesBoolExp
   quoteId: UuidComparisonExp
   rateJustification: StringComparisonExp
@@ -4799,12 +4828,14 @@ input BillingItemsBoolExp {
   serviceId: UuidComparisonExp
   serviceName: StringComparisonExp
   sourceMetricsId: UuidComparisonExp
+  sourcePayrollDates: JsonbComparisonExp
   staffUser: UsersBoolExp
   staffUserId: UuidComparisonExp
   status: StringComparisonExp
   timeEntries: TimeEntriesBoolExp
   timeEntriesAggregate: TimeEntriesAggregateBoolExp
   totalAmount: NumericComparisonExp
+  unitBreakdown: JsonbComparisonExp
   unitPrice: NumericComparisonExp
   updatedAt: TimestamptzComparisonExp
 }
@@ -4817,6 +4848,42 @@ enum BillingItemsConstraint {
   unique or primary key constraint on columns "id"
   """
   billing_items_pkey
+}
+
+"""
+delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+"""
+input BillingItemsDeleteAtPathInput {
+  """Array of payroll date IDs that contributed to this billing item"""
+  sourcePayrollDates: [String!]
+  """
+  Detailed breakdown of units contributed per payroll date for aggregated services
+  """
+  unitBreakdown: [String!]
+}
+
+"""
+delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+"""
+input BillingItemsDeleteElemInput {
+  """Array of payroll date IDs that contributed to this billing item"""
+  sourcePayrollDates: Int
+  """
+  Detailed breakdown of units contributed per payroll date for aggregated services
+  """
+  unitBreakdown: Int
+}
+
+"""
+delete key/value pair or string element. key/value pairs are matched based on their key value
+"""
+input BillingItemsDeleteKeyInput {
+  """Array of payroll date IDs that contributed to this billing item"""
+  sourcePayrollDates: String
+  """
+  Detailed breakdown of units contributed per payroll date for aggregated services
+  """
+  unitBreakdown: String
 }
 
 """
@@ -4842,6 +4909,8 @@ input BillingItemsInsertInput {
   billingPeriodStart: date
   billingPlanId: uuid
   billingTier: String
+  billingUnitType: BillingUnitTypesObjRelInsertInput
+  billingUnitTypeId: uuid
   client: ClientsObjRelInsertInput
   clientId: uuid
   """When this item was confirmed by manager"""
@@ -4869,6 +4938,7 @@ input BillingItemsInsertInput {
   payrollDateId: uuid
   payrollId: uuid
   quantity: Int
+  quantityOverride: Boolean
   quote: QuotesObjRelInsertInput
   quoteId: uuid
   rateJustification: String
@@ -4878,6 +4948,8 @@ input BillingItemsInsertInput {
   serviceId: uuid
   serviceName: String
   sourceMetricsId: uuid
+  """Array of payroll date IDs that contributed to this billing item"""
+  sourcePayrollDates: jsonb
   staffUser: UsersObjRelInsertInput
   """Staff member who performed the service"""
   staffUserId: uuid
@@ -4885,6 +4957,10 @@ input BillingItemsInsertInput {
   status: String
   timeEntries: TimeEntriesArrRelInsertInput
   totalAmount: numeric
+  """
+  Detailed breakdown of units contributed per payroll date for aggregated services
+  """
+  unitBreakdown: jsonb
   unitPrice: numeric
   updatedAt: timestamptz
 }
@@ -4899,6 +4975,7 @@ type BillingItemsMaxFields {
   billingPeriodStart: date
   billingPlanId: uuid
   billingTier: String
+  billingUnitTypeId: uuid
   clientId: uuid
   """When this item was confirmed by manager"""
   confirmedAt: timestamptz
@@ -4946,6 +5023,7 @@ input BillingItemsMaxOrderBy {
   billingPeriodStart: OrderBy
   billingPlanId: OrderBy
   billingTier: OrderBy
+  billingUnitTypeId: OrderBy
   clientId: OrderBy
   """When this item was confirmed by manager"""
   confirmedAt: OrderBy
@@ -4991,6 +5069,7 @@ type BillingItemsMinFields {
   billingPeriodStart: date
   billingPlanId: uuid
   billingTier: String
+  billingUnitTypeId: uuid
   clientId: uuid
   """When this item was confirmed by manager"""
   confirmedAt: timestamptz
@@ -5038,6 +5117,7 @@ input BillingItemsMinOrderBy {
   billingPeriodStart: OrderBy
   billingPlanId: OrderBy
   billingTier: OrderBy
+  billingUnitTypeId: OrderBy
   clientId: OrderBy
   """When this item was confirmed by manager"""
   confirmedAt: OrderBy
@@ -5113,6 +5193,8 @@ input BillingItemsOrderBy {
   billingPeriodStart: OrderBy
   billingPlanId: OrderBy
   billingTier: OrderBy
+  billingUnitType: BillingUnitTypesOrderBy
+  billingUnitTypeId: OrderBy
   client: ClientsOrderBy
   clientId: OrderBy
   confirmedAt: OrderBy
@@ -5134,6 +5216,7 @@ input BillingItemsOrderBy {
   payrollDateId: OrderBy
   payrollId: OrderBy
   quantity: OrderBy
+  quantityOverride: OrderBy
   quote: QuotesOrderBy
   quoteId: OrderBy
   rateJustification: OrderBy
@@ -5142,11 +5225,13 @@ input BillingItemsOrderBy {
   serviceId: OrderBy
   serviceName: OrderBy
   sourceMetricsId: OrderBy
+  sourcePayrollDates: OrderBy
   staffUser: UsersOrderBy
   staffUserId: OrderBy
   status: OrderBy
   timeEntriesAggregate: TimeEntriesAggregateOrderBy
   totalAmount: OrderBy
+  unitBreakdown: OrderBy
   unitPrice: OrderBy
   updatedAt: OrderBy
 }
@@ -5154,6 +5239,16 @@ input BillingItemsOrderBy {
 """primary key columns input for table: billing_items"""
 input BillingItemsPkColumnsInput {
   id: uuid!
+}
+
+"""prepend existing jsonb value of filtered columns with new jsonb value"""
+input BillingItemsPrependInput {
+  """Array of payroll date IDs that contributed to this billing item"""
+  sourcePayrollDates: jsonb
+  """
+  Detailed breakdown of units contributed per payroll date for aggregated services
+  """
+  unitBreakdown: jsonb
 }
 
 """
@@ -5178,6 +5273,8 @@ enum BillingItemsSelectColumn {
   billingPlanId
   """column name"""
   billingTier
+  """column name"""
+  billingUnitTypeId
   """column name"""
   clientId
   """column name"""
@@ -5209,6 +5306,8 @@ enum BillingItemsSelectColumn {
   """column name"""
   quantity
   """column name"""
+  quantityOverride
+  """column name"""
   quoteId
   """column name"""
   rateJustification
@@ -5221,11 +5320,15 @@ enum BillingItemsSelectColumn {
   """column name"""
   sourceMetricsId
   """column name"""
+  sourcePayrollDates
+  """column name"""
   staffUserId
   """column name"""
   status
   """column name"""
   totalAmount
+  """column name"""
+  unitBreakdown
   """column name"""
   unitPrice
   """column name"""
@@ -5242,6 +5345,8 @@ enum BillingItemsSelectColumnBillingItemsAggregateBoolExpBool_andArgumentsColumn
   isApproved
   """column name"""
   isAutoGenerated
+  """column name"""
+  quantityOverride
 }
 
 """
@@ -5254,6 +5359,8 @@ enum BillingItemsSelectColumnBillingItemsAggregateBoolExpBool_orArgumentsColumns
   isApproved
   """column name"""
   isAutoGenerated
+  """column name"""
+  quantityOverride
 }
 
 """
@@ -5268,6 +5375,7 @@ input BillingItemsSetInput {
   billingPeriodStart: date
   billingPlanId: uuid
   billingTier: String
+  billingUnitTypeId: uuid
   clientId: uuid
   """When this item was confirmed by manager"""
   confirmedAt: timestamptz
@@ -5289,6 +5397,7 @@ input BillingItemsSetInput {
   payrollDateId: uuid
   payrollId: uuid
   quantity: Int
+  quantityOverride: Boolean
   quoteId: uuid
   rateJustification: String
   serviceCode: String
@@ -5296,11 +5405,17 @@ input BillingItemsSetInput {
   serviceId: uuid
   serviceName: String
   sourceMetricsId: uuid
+  """Array of payroll date IDs that contributed to this billing item"""
+  sourcePayrollDates: jsonb
   """Staff member who performed the service"""
   staffUserId: uuid
   """Status: draft, confirmed, billed"""
   status: String
   totalAmount: numeric
+  """
+  Detailed breakdown of units contributed per payroll date for aggregated services
+  """
+  unitBreakdown: jsonb
   unitPrice: numeric
   updatedAt: timestamptz
 }
@@ -5386,6 +5501,7 @@ input BillingItemsStreamCursorValueInput {
   billingPeriodStart: date
   billingPlanId: uuid
   billingTier: String
+  billingUnitTypeId: uuid
   clientId: uuid
   """When this item was confirmed by manager"""
   confirmedAt: timestamptz
@@ -5407,6 +5523,7 @@ input BillingItemsStreamCursorValueInput {
   payrollDateId: uuid
   payrollId: uuid
   quantity: Int
+  quantityOverride: Boolean
   quoteId: uuid
   rateJustification: String
   serviceCode: String
@@ -5414,11 +5531,17 @@ input BillingItemsStreamCursorValueInput {
   serviceId: uuid
   serviceName: String
   sourceMetricsId: uuid
+  """Array of payroll date IDs that contributed to this billing item"""
+  sourcePayrollDates: jsonb
   """Staff member who performed the service"""
   staffUserId: uuid
   """Status: draft, confirmed, billed"""
   status: String
   totalAmount: numeric
+  """
+  Detailed breakdown of units contributed per payroll date for aggregated services
+  """
+  unitBreakdown: jsonb
   unitPrice: numeric
   updatedAt: timestamptz
 }
@@ -5464,6 +5587,8 @@ enum BillingItemsUpdateColumn {
   """column name"""
   billingTier
   """column name"""
+  billingUnitTypeId
+  """column name"""
   clientId
   """column name"""
   confirmedAt
@@ -5494,6 +5619,8 @@ enum BillingItemsUpdateColumn {
   """column name"""
   quantity
   """column name"""
+  quantityOverride
+  """column name"""
   quoteId
   """column name"""
   rateJustification
@@ -5506,11 +5633,15 @@ enum BillingItemsUpdateColumn {
   """column name"""
   sourceMetricsId
   """column name"""
+  sourcePayrollDates
+  """column name"""
   staffUserId
   """column name"""
   status
   """column name"""
   totalAmount
+  """column name"""
+  unitBreakdown
   """column name"""
   unitPrice
   """column name"""
@@ -5518,8 +5649,24 @@ enum BillingItemsUpdateColumn {
 }
 
 input BillingItemsUpdates {
+  """append existing jsonb value of filtered columns with new jsonb value"""
+  _append: BillingItemsAppendInput
+  """
+  delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+  """
+  _deleteAtPath: BillingItemsDeleteAtPathInput
+  """
+  delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+  """
+  _deleteElem: BillingItemsDeleteElemInput
+  """
+  delete key/value pair or string element. key/value pairs are matched based on their key value
+  """
+  _deleteKey: BillingItemsDeleteKeyInput
   """increments the numeric columns with given value of the filtered values"""
   _inc: BillingItemsIncInput
+  """prepend existing jsonb value of filtered columns with new jsonb value"""
+  _prepend: BillingItemsPrependInput
   """sets the columns of the filtered rows to the given values"""
   _set: BillingItemsSetInput
   """filter the rows which have to be updated"""
@@ -6352,6 +6499,540 @@ input BillingTierLevelComparisonExp {
   _lte: billing_tier_level
   _neq: billing_tier_level
   _nin: [billing_tier_level!]
+}
+
+"""
+Configurable unit types for service billing (time, fixed, per_employee, custom units)
+"""
+type BillingUnitTypes {
+  """An array relationship"""
+  billingItems(
+    """distinct select on columns"""
+    distinctOn: [BillingItemsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [BillingItemsOrderBy!]
+    """filter the rows returned"""
+    where: BillingItemsBoolExp
+  ): [BillingItems!]!
+  """An aggregate relationship"""
+  billingItemsAggregate(
+    """distinct select on columns"""
+    distinctOn: [BillingItemsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [BillingItemsOrderBy!]
+    """filter the rows returned"""
+    where: BillingItemsBoolExp
+  ): BillingItemsAggregate!
+  createdAt: timestamptz
+  createdBy: uuid
+  """An object relationship"""
+  createdByUser: Users
+  """
+  Where to get default quantity from (payroll_employees, payroll_payslips, manual, etc.)
+  """
+  defaultSource: String
+  description: String
+  displayName: String!
+  id: uuid!
+  isActive: Boolean
+  """
+  System-defined units cannot be deleted or have core properties modified
+  """
+  isSystemDefined: Boolean
+  """
+  Unique identifier for the unit type (e.g., time, fixed, per_employee, per_task)
+  """
+  name: String!
+  """An array relationship"""
+  payrollDateTimeEntries(
+    """distinct select on columns"""
+    distinctOn: [PayrollDateTimeEntriesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollDateTimeEntriesOrderBy!]
+    """filter the rows returned"""
+    where: PayrollDateTimeEntriesBoolExp
+  ): [PayrollDateTimeEntries!]!
+  """An aggregate relationship"""
+  payrollDateTimeEntriesAggregate(
+    """distinct select on columns"""
+    distinctOn: [PayrollDateTimeEntriesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollDateTimeEntriesOrderBy!]
+    """filter the rows returned"""
+    where: PayrollDateTimeEntriesBoolExp
+  ): PayrollDateTimeEntriesAggregate!
+  """User-friendly prompt for quantity input (e.g., "Number of employees")"""
+  quantityPrompt: String
+  requiresQuantityInput: Boolean
+  """An array relationship"""
+  servicesUsingThisUnitType(
+    """distinct select on columns"""
+    distinctOn: [ServicesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [ServicesOrderBy!]
+    """filter the rows returned"""
+    where: ServicesBoolExp
+  ): [Services!]!
+  """An aggregate relationship"""
+  servicesUsingThisUnitTypeAggregate(
+    """distinct select on columns"""
+    distinctOn: [ServicesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [ServicesOrderBy!]
+    """filter the rows returned"""
+    where: ServicesBoolExp
+  ): ServicesAggregate!
+  updatedAt: timestamptz
+  updatedBy: uuid
+  """An object relationship"""
+  updatedByUser: Users
+}
+
+"""
+aggregated selection of "billing_unit_types"
+"""
+type BillingUnitTypesAggregate {
+  aggregate: BillingUnitTypesAggregateFields
+  nodes: [BillingUnitTypes!]!
+}
+
+input BillingUnitTypesAggregateBoolExp {
+  bool_and: billingUnitTypesAggregateBoolExpBool_and
+  bool_or: billingUnitTypesAggregateBoolExpBool_or
+  count: billingUnitTypesAggregateBoolExpCount
+}
+
+"""
+aggregate fields of "billing_unit_types"
+"""
+type BillingUnitTypesAggregateFields {
+  count(columns: [BillingUnitTypesSelectColumn!], distinct: Boolean): Int!
+  max: BillingUnitTypesMaxFields
+  min: BillingUnitTypesMinFields
+}
+
+"""
+order by aggregate values of table "billing_unit_types"
+"""
+input BillingUnitTypesAggregateOrderBy {
+  count: OrderBy
+  max: BillingUnitTypesMaxOrderBy
+  min: BillingUnitTypesMinOrderBy
+}
+
+"""
+input type for inserting array relation for remote table "billing_unit_types"
+"""
+input BillingUnitTypesArrRelInsertInput {
+  data: [BillingUnitTypesInsertInput!]!
+  """upsert condition"""
+  onConflict: BillingUnitTypesOnConflict
+}
+
+"""
+Boolean expression to filter rows from the table "billing_unit_types". All fields are combined with a logical 'AND'.
+"""
+input BillingUnitTypesBoolExp {
+  _and: [BillingUnitTypesBoolExp!]
+  _not: BillingUnitTypesBoolExp
+  _or: [BillingUnitTypesBoolExp!]
+  billingItems: BillingItemsBoolExp
+  billingItemsAggregate: BillingItemsAggregateBoolExp
+  createdAt: TimestamptzComparisonExp
+  createdBy: UuidComparisonExp
+  createdByUser: UsersBoolExp
+  defaultSource: StringComparisonExp
+  description: StringComparisonExp
+  displayName: StringComparisonExp
+  id: UuidComparisonExp
+  isActive: BooleanComparisonExp
+  isSystemDefined: BooleanComparisonExp
+  name: StringComparisonExp
+  payrollDateTimeEntries: PayrollDateTimeEntriesBoolExp
+  payrollDateTimeEntriesAggregate: PayrollDateTimeEntriesAggregateBoolExp
+  quantityPrompt: StringComparisonExp
+  requiresQuantityInput: BooleanComparisonExp
+  servicesUsingThisUnitType: ServicesBoolExp
+  servicesUsingThisUnitTypeAggregate: ServicesAggregateBoolExp
+  updatedAt: TimestamptzComparisonExp
+  updatedBy: UuidComparisonExp
+  updatedByUser: UsersBoolExp
+}
+
+"""
+unique or primary key constraints on table "billing_unit_types"
+"""
+enum BillingUnitTypesConstraint {
+  """
+  unique or primary key constraint on columns "name"
+  """
+  billing_unit_types_name_key
+  """
+  unique or primary key constraint on columns "id"
+  """
+  billing_unit_types_pkey
+}
+
+"""
+input type for inserting data into table "billing_unit_types"
+"""
+input BillingUnitTypesInsertInput {
+  billingItems: BillingItemsArrRelInsertInput
+  createdAt: timestamptz
+  createdBy: uuid
+  createdByUser: UsersObjRelInsertInput
+  """
+  Where to get default quantity from (payroll_employees, payroll_payslips, manual, etc.)
+  """
+  defaultSource: String
+  description: String
+  displayName: String
+  id: uuid
+  isActive: Boolean
+  """
+  System-defined units cannot be deleted or have core properties modified
+  """
+  isSystemDefined: Boolean
+  """
+  Unique identifier for the unit type (e.g., time, fixed, per_employee, per_task)
+  """
+  name: String
+  payrollDateTimeEntries: PayrollDateTimeEntriesArrRelInsertInput
+  """User-friendly prompt for quantity input (e.g., "Number of employees")"""
+  quantityPrompt: String
+  requiresQuantityInput: Boolean
+  servicesUsingThisUnitType: ServicesArrRelInsertInput
+  updatedAt: timestamptz
+  updatedBy: uuid
+  updatedByUser: UsersObjRelInsertInput
+}
+
+"""aggregate max on columns"""
+type BillingUnitTypesMaxFields {
+  createdAt: timestamptz
+  createdBy: uuid
+  """
+  Where to get default quantity from (payroll_employees, payroll_payslips, manual, etc.)
+  """
+  defaultSource: String
+  description: String
+  displayName: String
+  id: uuid
+  """
+  Unique identifier for the unit type (e.g., time, fixed, per_employee, per_task)
+  """
+  name: String
+  """User-friendly prompt for quantity input (e.g., "Number of employees")"""
+  quantityPrompt: String
+  updatedAt: timestamptz
+  updatedBy: uuid
+}
+
+"""
+order by max() on columns of table "billing_unit_types"
+"""
+input BillingUnitTypesMaxOrderBy {
+  createdAt: OrderBy
+  createdBy: OrderBy
+  """
+  Where to get default quantity from (payroll_employees, payroll_payslips, manual, etc.)
+  """
+  defaultSource: OrderBy
+  description: OrderBy
+  displayName: OrderBy
+  id: OrderBy
+  """
+  Unique identifier for the unit type (e.g., time, fixed, per_employee, per_task)
+  """
+  name: OrderBy
+  """User-friendly prompt for quantity input (e.g., "Number of employees")"""
+  quantityPrompt: OrderBy
+  updatedAt: OrderBy
+  updatedBy: OrderBy
+}
+
+"""aggregate min on columns"""
+type BillingUnitTypesMinFields {
+  createdAt: timestamptz
+  createdBy: uuid
+  """
+  Where to get default quantity from (payroll_employees, payroll_payslips, manual, etc.)
+  """
+  defaultSource: String
+  description: String
+  displayName: String
+  id: uuid
+  """
+  Unique identifier for the unit type (e.g., time, fixed, per_employee, per_task)
+  """
+  name: String
+  """User-friendly prompt for quantity input (e.g., "Number of employees")"""
+  quantityPrompt: String
+  updatedAt: timestamptz
+  updatedBy: uuid
+}
+
+"""
+order by min() on columns of table "billing_unit_types"
+"""
+input BillingUnitTypesMinOrderBy {
+  createdAt: OrderBy
+  createdBy: OrderBy
+  """
+  Where to get default quantity from (payroll_employees, payroll_payslips, manual, etc.)
+  """
+  defaultSource: OrderBy
+  description: OrderBy
+  displayName: OrderBy
+  id: OrderBy
+  """
+  Unique identifier for the unit type (e.g., time, fixed, per_employee, per_task)
+  """
+  name: OrderBy
+  """User-friendly prompt for quantity input (e.g., "Number of employees")"""
+  quantityPrompt: OrderBy
+  updatedAt: OrderBy
+  updatedBy: OrderBy
+}
+
+"""
+response of any mutation on the table "billing_unit_types"
+"""
+type BillingUnitTypesMutationResponse {
+  """number of rows affected by the mutation"""
+  affectedRows: Int!
+  """data from the rows affected by the mutation"""
+  returning: [BillingUnitTypes!]!
+}
+
+"""
+input type for inserting object relation for remote table "billing_unit_types"
+"""
+input BillingUnitTypesObjRelInsertInput {
+  data: BillingUnitTypesInsertInput!
+  """upsert condition"""
+  onConflict: BillingUnitTypesOnConflict
+}
+
+"""
+on_conflict condition type for table "billing_unit_types"
+"""
+input BillingUnitTypesOnConflict {
+  constraint: BillingUnitTypesConstraint!
+  updateColumns: [BillingUnitTypesUpdateColumn!]! = []
+  where: BillingUnitTypesBoolExp
+}
+
+"""Ordering options when selecting data from "billing_unit_types"."""
+input BillingUnitTypesOrderBy {
+  billingItemsAggregate: BillingItemsAggregateOrderBy
+  createdAt: OrderBy
+  createdBy: OrderBy
+  createdByUser: UsersOrderBy
+  defaultSource: OrderBy
+  description: OrderBy
+  displayName: OrderBy
+  id: OrderBy
+  isActive: OrderBy
+  isSystemDefined: OrderBy
+  name: OrderBy
+  payrollDateTimeEntriesAggregate: PayrollDateTimeEntriesAggregateOrderBy
+  quantityPrompt: OrderBy
+  requiresQuantityInput: OrderBy
+  servicesUsingThisUnitTypeAggregate: ServicesAggregateOrderBy
+  updatedAt: OrderBy
+  updatedBy: OrderBy
+  updatedByUser: UsersOrderBy
+}
+
+"""primary key columns input for table: billing_unit_types"""
+input BillingUnitTypesPkColumnsInput {
+  id: uuid!
+}
+
+"""
+select columns of table "billing_unit_types"
+"""
+enum BillingUnitTypesSelectColumn {
+  """column name"""
+  createdAt
+  """column name"""
+  createdBy
+  """column name"""
+  defaultSource
+  """column name"""
+  description
+  """column name"""
+  displayName
+  """column name"""
+  id
+  """column name"""
+  isActive
+  """column name"""
+  isSystemDefined
+  """column name"""
+  name
+  """column name"""
+  quantityPrompt
+  """column name"""
+  requiresQuantityInput
+  """column name"""
+  updatedAt
+  """column name"""
+  updatedBy
+}
+
+"""
+select "billingUnitTypesAggregateBoolExpBool_andArgumentsColumns" columns of table "billing_unit_types"
+"""
+enum BillingUnitTypesSelectColumnBillingUnitTypesAggregateBoolExpBool_andArgumentsColumns {
+  """column name"""
+  isActive
+  """column name"""
+  isSystemDefined
+  """column name"""
+  requiresQuantityInput
+}
+
+"""
+select "billingUnitTypesAggregateBoolExpBool_orArgumentsColumns" columns of table "billing_unit_types"
+"""
+enum BillingUnitTypesSelectColumnBillingUnitTypesAggregateBoolExpBool_orArgumentsColumns {
+  """column name"""
+  isActive
+  """column name"""
+  isSystemDefined
+  """column name"""
+  requiresQuantityInput
+}
+
+"""
+input type for updating data in table "billing_unit_types"
+"""
+input BillingUnitTypesSetInput {
+  createdAt: timestamptz
+  createdBy: uuid
+  """
+  Where to get default quantity from (payroll_employees, payroll_payslips, manual, etc.)
+  """
+  defaultSource: String
+  description: String
+  displayName: String
+  id: uuid
+  isActive: Boolean
+  """
+  System-defined units cannot be deleted or have core properties modified
+  """
+  isSystemDefined: Boolean
+  """
+  Unique identifier for the unit type (e.g., time, fixed, per_employee, per_task)
+  """
+  name: String
+  """User-friendly prompt for quantity input (e.g., "Number of employees")"""
+  quantityPrompt: String
+  requiresQuantityInput: Boolean
+  updatedAt: timestamptz
+  updatedBy: uuid
+}
+
+"""
+Streaming cursor of the table "billing_unit_types"
+"""
+input BillingUnitTypesStreamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: BillingUnitTypesStreamCursorValueInput!
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input BillingUnitTypesStreamCursorValueInput {
+  createdAt: timestamptz
+  createdBy: uuid
+  """
+  Where to get default quantity from (payroll_employees, payroll_payslips, manual, etc.)
+  """
+  defaultSource: String
+  description: String
+  displayName: String
+  id: uuid
+  isActive: Boolean
+  """
+  System-defined units cannot be deleted or have core properties modified
+  """
+  isSystemDefined: Boolean
+  """
+  Unique identifier for the unit type (e.g., time, fixed, per_employee, per_task)
+  """
+  name: String
+  """User-friendly prompt for quantity input (e.g., "Number of employees")"""
+  quantityPrompt: String
+  requiresQuantityInput: Boolean
+  updatedAt: timestamptz
+  updatedBy: uuid
+}
+
+"""
+update columns of table "billing_unit_types"
+"""
+enum BillingUnitTypesUpdateColumn {
+  """column name"""
+  createdAt
+  """column name"""
+  createdBy
+  """column name"""
+  defaultSource
+  """column name"""
+  description
+  """column name"""
+  displayName
+  """column name"""
+  id
+  """column name"""
+  isActive
+  """column name"""
+  isSystemDefined
+  """column name"""
+  name
+  """column name"""
+  quantityPrompt
+  """column name"""
+  requiresQuantityInput
+  """column name"""
+  updatedAt
+  """column name"""
+  updatedBy
+}
+
+input BillingUnitTypesUpdates {
+  """sets the columns of the filtered rows to the given values"""
+  _set: BillingUnitTypesSetInput
+  """filter the rows which have to be updated"""
+  where: BillingUnitTypesBoolExp!
 }
 
 """
@@ -9531,6 +10212,448 @@ enum CursorOrdering {
   ASC
   """descending ordering of the cursor"""
   DESC
+}
+
+"""
+Storage for user-created GraphQL and SQL query templates in the reporting system
+"""
+type CustomQueryTemplates {
+  createdAt: timestamptz
+  createdBy: uuid!
+  description: String
+  id: uuid!
+  isPublic: Boolean
+  name: String!
+  """
+  JSON array containing parameter definitions with type, default value, and validation rules
+  """
+  parameters(
+    """JSON select path"""
+    path: String
+  ): jsonb
+  """An array relationship"""
+  queryExecutions(
+    """distinct select on columns"""
+    distinctOn: [QueryExecutionsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [QueryExecutionsOrderBy!]
+    """filter the rows returned"""
+    where: QueryExecutionsBoolExp
+  ): [QueryExecutions!]!
+  """An aggregate relationship"""
+  queryExecutionsAggregate(
+    """distinct select on columns"""
+    distinctOn: [QueryExecutionsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [QueryExecutionsOrderBy!]
+    """filter the rows returned"""
+    where: QueryExecutionsBoolExp
+  ): QueryExecutionsAggregate!
+  queryText: String!
+  queryType: String!
+  tags: [String!]
+  updatedAt: timestamptz
+  """An object relationship"""
+  user: Users!
+}
+
+"""
+aggregated selection of "custom_query_templates"
+"""
+type CustomQueryTemplatesAggregate {
+  aggregate: CustomQueryTemplatesAggregateFields
+  nodes: [CustomQueryTemplates!]!
+}
+
+input CustomQueryTemplatesAggregateBoolExp {
+  bool_and: customQueryTemplatesAggregateBoolExpBool_and
+  bool_or: customQueryTemplatesAggregateBoolExpBool_or
+  count: customQueryTemplatesAggregateBoolExpCount
+}
+
+"""
+aggregate fields of "custom_query_templates"
+"""
+type CustomQueryTemplatesAggregateFields {
+  count(columns: [CustomQueryTemplatesSelectColumn!], distinct: Boolean): Int!
+  max: CustomQueryTemplatesMaxFields
+  min: CustomQueryTemplatesMinFields
+}
+
+"""
+order by aggregate values of table "custom_query_templates"
+"""
+input CustomQueryTemplatesAggregateOrderBy {
+  count: OrderBy
+  max: CustomQueryTemplatesMaxOrderBy
+  min: CustomQueryTemplatesMinOrderBy
+}
+
+"""append existing jsonb value of filtered columns with new jsonb value"""
+input CustomQueryTemplatesAppendInput {
+  """
+  JSON array containing parameter definitions with type, default value, and validation rules
+  """
+  parameters: jsonb
+}
+
+"""
+input type for inserting array relation for remote table "custom_query_templates"
+"""
+input CustomQueryTemplatesArrRelInsertInput {
+  data: [CustomQueryTemplatesInsertInput!]!
+  """upsert condition"""
+  onConflict: CustomQueryTemplatesOnConflict
+}
+
+"""
+Boolean expression to filter rows from the table "custom_query_templates". All fields are combined with a logical 'AND'.
+"""
+input CustomQueryTemplatesBoolExp {
+  _and: [CustomQueryTemplatesBoolExp!]
+  _not: CustomQueryTemplatesBoolExp
+  _or: [CustomQueryTemplatesBoolExp!]
+  createdAt: TimestamptzComparisonExp
+  createdBy: UuidComparisonExp
+  description: StringComparisonExp
+  id: UuidComparisonExp
+  isPublic: BooleanComparisonExp
+  name: StringComparisonExp
+  parameters: JsonbComparisonExp
+  queryExecutions: QueryExecutionsBoolExp
+  queryExecutionsAggregate: QueryExecutionsAggregateBoolExp
+  queryText: StringComparisonExp
+  queryType: StringComparisonExp
+  tags: StringArrayComparisonExp
+  updatedAt: TimestamptzComparisonExp
+  user: UsersBoolExp
+}
+
+"""
+unique or primary key constraints on table "custom_query_templates"
+"""
+enum CustomQueryTemplatesConstraint {
+  """
+  unique or primary key constraint on columns "id"
+  """
+  custom_query_templates_pkey
+}
+
+"""
+delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+"""
+input CustomQueryTemplatesDeleteAtPathInput {
+  """
+  JSON array containing parameter definitions with type, default value, and validation rules
+  """
+  parameters: [String!]
+}
+
+"""
+delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+"""
+input CustomQueryTemplatesDeleteElemInput {
+  """
+  JSON array containing parameter definitions with type, default value, and validation rules
+  """
+  parameters: Int
+}
+
+"""
+delete key/value pair or string element. key/value pairs are matched based on their key value
+"""
+input CustomQueryTemplatesDeleteKeyInput {
+  """
+  JSON array containing parameter definitions with type, default value, and validation rules
+  """
+  parameters: String
+}
+
+"""
+input type for inserting data into table "custom_query_templates"
+"""
+input CustomQueryTemplatesInsertInput {
+  createdAt: timestamptz
+  createdBy: uuid
+  description: String
+  id: uuid
+  isPublic: Boolean
+  name: String
+  """
+  JSON array containing parameter definitions with type, default value, and validation rules
+  """
+  parameters: jsonb
+  queryExecutions: QueryExecutionsArrRelInsertInput
+  queryText: String
+  queryType: String
+  tags: [String!]
+  updatedAt: timestamptz
+  user: UsersObjRelInsertInput
+}
+
+"""aggregate max on columns"""
+type CustomQueryTemplatesMaxFields {
+  createdAt: timestamptz
+  createdBy: uuid
+  description: String
+  id: uuid
+  name: String
+  queryText: String
+  queryType: String
+  tags: [String!]
+  updatedAt: timestamptz
+}
+
+"""
+order by max() on columns of table "custom_query_templates"
+"""
+input CustomQueryTemplatesMaxOrderBy {
+  createdAt: OrderBy
+  createdBy: OrderBy
+  description: OrderBy
+  id: OrderBy
+  name: OrderBy
+  queryText: OrderBy
+  queryType: OrderBy
+  tags: OrderBy
+  updatedAt: OrderBy
+}
+
+"""aggregate min on columns"""
+type CustomQueryTemplatesMinFields {
+  createdAt: timestamptz
+  createdBy: uuid
+  description: String
+  id: uuid
+  name: String
+  queryText: String
+  queryType: String
+  tags: [String!]
+  updatedAt: timestamptz
+}
+
+"""
+order by min() on columns of table "custom_query_templates"
+"""
+input CustomQueryTemplatesMinOrderBy {
+  createdAt: OrderBy
+  createdBy: OrderBy
+  description: OrderBy
+  id: OrderBy
+  name: OrderBy
+  queryText: OrderBy
+  queryType: OrderBy
+  tags: OrderBy
+  updatedAt: OrderBy
+}
+
+"""
+response of any mutation on the table "custom_query_templates"
+"""
+type CustomQueryTemplatesMutationResponse {
+  """number of rows affected by the mutation"""
+  affectedRows: Int!
+  """data from the rows affected by the mutation"""
+  returning: [CustomQueryTemplates!]!
+}
+
+"""
+input type for inserting object relation for remote table "custom_query_templates"
+"""
+input CustomQueryTemplatesObjRelInsertInput {
+  data: CustomQueryTemplatesInsertInput!
+  """upsert condition"""
+  onConflict: CustomQueryTemplatesOnConflict
+}
+
+"""
+on_conflict condition type for table "custom_query_templates"
+"""
+input CustomQueryTemplatesOnConflict {
+  constraint: CustomQueryTemplatesConstraint!
+  updateColumns: [CustomQueryTemplatesUpdateColumn!]! = []
+  where: CustomQueryTemplatesBoolExp
+}
+
+"""Ordering options when selecting data from "custom_query_templates"."""
+input CustomQueryTemplatesOrderBy {
+  createdAt: OrderBy
+  createdBy: OrderBy
+  description: OrderBy
+  id: OrderBy
+  isPublic: OrderBy
+  name: OrderBy
+  parameters: OrderBy
+  queryExecutionsAggregate: QueryExecutionsAggregateOrderBy
+  queryText: OrderBy
+  queryType: OrderBy
+  tags: OrderBy
+  updatedAt: OrderBy
+  user: UsersOrderBy
+}
+
+"""primary key columns input for table: custom_query_templates"""
+input CustomQueryTemplatesPkColumnsInput {
+  id: uuid!
+}
+
+"""prepend existing jsonb value of filtered columns with new jsonb value"""
+input CustomQueryTemplatesPrependInput {
+  """
+  JSON array containing parameter definitions with type, default value, and validation rules
+  """
+  parameters: jsonb
+}
+
+"""
+select columns of table "custom_query_templates"
+"""
+enum CustomQueryTemplatesSelectColumn {
+  """column name"""
+  createdAt
+  """column name"""
+  createdBy
+  """column name"""
+  description
+  """column name"""
+  id
+  """column name"""
+  isPublic
+  """column name"""
+  name
+  """column name"""
+  parameters
+  """column name"""
+  queryText
+  """column name"""
+  queryType
+  """column name"""
+  tags
+  """column name"""
+  updatedAt
+}
+
+"""
+select "customQueryTemplatesAggregateBoolExpBool_andArgumentsColumns" columns of table "custom_query_templates"
+"""
+enum CustomQueryTemplatesSelectColumnCustomQueryTemplatesAggregateBoolExpBool_andArgumentsColumns {
+  """column name"""
+  isPublic
+}
+
+"""
+select "customQueryTemplatesAggregateBoolExpBool_orArgumentsColumns" columns of table "custom_query_templates"
+"""
+enum CustomQueryTemplatesSelectColumnCustomQueryTemplatesAggregateBoolExpBool_orArgumentsColumns {
+  """column name"""
+  isPublic
+}
+
+"""
+input type for updating data in table "custom_query_templates"
+"""
+input CustomQueryTemplatesSetInput {
+  createdAt: timestamptz
+  createdBy: uuid
+  description: String
+  id: uuid
+  isPublic: Boolean
+  name: String
+  """
+  JSON array containing parameter definitions with type, default value, and validation rules
+  """
+  parameters: jsonb
+  queryText: String
+  queryType: String
+  tags: [String!]
+  updatedAt: timestamptz
+}
+
+"""
+Streaming cursor of the table "custom_query_templates"
+"""
+input CustomQueryTemplatesStreamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: CustomQueryTemplatesStreamCursorValueInput!
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input CustomQueryTemplatesStreamCursorValueInput {
+  createdAt: timestamptz
+  createdBy: uuid
+  description: String
+  id: uuid
+  isPublic: Boolean
+  name: String
+  """
+  JSON array containing parameter definitions with type, default value, and validation rules
+  """
+  parameters: jsonb
+  queryText: String
+  queryType: String
+  tags: [String!]
+  updatedAt: timestamptz
+}
+
+"""
+update columns of table "custom_query_templates"
+"""
+enum CustomQueryTemplatesUpdateColumn {
+  """column name"""
+  createdAt
+  """column name"""
+  createdBy
+  """column name"""
+  description
+  """column name"""
+  id
+  """column name"""
+  isPublic
+  """column name"""
+  name
+  """column name"""
+  parameters
+  """column name"""
+  queryText
+  """column name"""
+  queryType
+  """column name"""
+  tags
+  """column name"""
+  updatedAt
+}
+
+input CustomQueryTemplatesUpdates {
+  """append existing jsonb value of filtered columns with new jsonb value"""
+  _append: CustomQueryTemplatesAppendInput
+  """
+  delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+  """
+  _deleteAtPath: CustomQueryTemplatesDeleteAtPathInput
+  """
+  delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+  """
+  _deleteElem: CustomQueryTemplatesDeleteElemInput
+  """
+  delete key/value pair or string element. key/value pairs are matched based on their key value
+  """
+  _deleteKey: CustomQueryTemplatesDeleteKeyInput
+  """prepend existing jsonb value of filtered columns with new jsonb value"""
+  _prepend: CustomQueryTemplatesPrependInput
+  """sets the columns of the filtered rows to the given values"""
+  _set: CustomQueryTemplatesSetInput
+  """filter the rows which have to be updated"""
+  where: CustomQueryTemplatesBoolExp!
 }
 
 """
@@ -19006,21 +20129,524 @@ type PayrollDateCompletionAnalyticsVarianceFields {
   totalTimeSpentMinutes: Float
 }
 
+"""
+Context data captured during payroll date completion for billing calculation
+"""
+type PayrollDateCompletionContext {
+  completedAt: timestamptz
+  completedBy: uuid!
+  """An object relationship"""
+  completedByUser: Users!
+  """
+  JSON object mapping unit type IDs to quantities for custom billing units
+  """
+  customQuantities(
+    """JSON select path"""
+    path: String
+  ): jsonb
+  employeeCount: Int
+  id: uuid!
+  """An object relationship"""
+  payrollDate: PayrollDates!
+  payrollDateId: uuid!
+  payslipCount: Int
+}
+
+"""
+aggregated selection of "payroll_date_completion_context"
+"""
+type PayrollDateCompletionContextAggregate {
+  aggregate: PayrollDateCompletionContextAggregateFields
+  nodes: [PayrollDateCompletionContext!]!
+}
+
+input PayrollDateCompletionContextAggregateBoolExp {
+  count: payrollDateCompletionContextAggregateBoolExpCount
+}
+
+"""
+aggregate fields of "payroll_date_completion_context"
+"""
+type PayrollDateCompletionContextAggregateFields {
+  avg: PayrollDateCompletionContextAvgFields
+  count(columns: [PayrollDateCompletionContextSelectColumn!], distinct: Boolean): Int!
+  max: PayrollDateCompletionContextMaxFields
+  min: PayrollDateCompletionContextMinFields
+  stddev: PayrollDateCompletionContextStddevFields
+  stddevPop: PayrollDateCompletionContextStddevPopFields
+  stddevSamp: PayrollDateCompletionContextStddevSampFields
+  sum: PayrollDateCompletionContextSumFields
+  varPop: PayrollDateCompletionContextVarPopFields
+  varSamp: PayrollDateCompletionContextVarSampFields
+  variance: PayrollDateCompletionContextVarianceFields
+}
+
+"""
+order by aggregate values of table "payroll_date_completion_context"
+"""
+input PayrollDateCompletionContextAggregateOrderBy {
+  avg: PayrollDateCompletionContextAvgOrderBy
+  count: OrderBy
+  max: PayrollDateCompletionContextMaxOrderBy
+  min: PayrollDateCompletionContextMinOrderBy
+  stddev: PayrollDateCompletionContextStddevOrderBy
+  stddevPop: PayrollDateCompletionContextStddevPopOrderBy
+  stddevSamp: PayrollDateCompletionContextStddevSampOrderBy
+  sum: PayrollDateCompletionContextSumOrderBy
+  varPop: PayrollDateCompletionContextVarPopOrderBy
+  varSamp: PayrollDateCompletionContextVarSampOrderBy
+  variance: PayrollDateCompletionContextVarianceOrderBy
+}
+
+"""append existing jsonb value of filtered columns with new jsonb value"""
+input PayrollDateCompletionContextAppendInput {
+  """
+  JSON object mapping unit type IDs to quantities for custom billing units
+  """
+  customQuantities: jsonb
+}
+
+"""
+input type for inserting array relation for remote table "payroll_date_completion_context"
+"""
+input PayrollDateCompletionContextArrRelInsertInput {
+  data: [PayrollDateCompletionContextInsertInput!]!
+  """upsert condition"""
+  onConflict: PayrollDateCompletionContextOnConflict
+}
+
+"""aggregate avg on columns"""
+type PayrollDateCompletionContextAvgFields {
+  employeeCount: Float
+  payslipCount: Float
+}
+
+"""
+order by avg() on columns of table "payroll_date_completion_context"
+"""
+input PayrollDateCompletionContextAvgOrderBy {
+  employeeCount: OrderBy
+  payslipCount: OrderBy
+}
+
+"""
+Boolean expression to filter rows from the table "payroll_date_completion_context". All fields are combined with a logical 'AND'.
+"""
+input PayrollDateCompletionContextBoolExp {
+  _and: [PayrollDateCompletionContextBoolExp!]
+  _not: PayrollDateCompletionContextBoolExp
+  _or: [PayrollDateCompletionContextBoolExp!]
+  completedAt: TimestamptzComparisonExp
+  completedBy: UuidComparisonExp
+  completedByUser: UsersBoolExp
+  customQuantities: JsonbComparisonExp
+  employeeCount: IntComparisonExp
+  id: UuidComparisonExp
+  payrollDate: PayrollDatesBoolExp
+  payrollDateId: UuidComparisonExp
+  payslipCount: IntComparisonExp
+}
+
+"""
+unique or primary key constraints on table "payroll_date_completion_context"
+"""
+enum PayrollDateCompletionContextConstraint {
+  """
+  unique or primary key constraint on columns "id"
+  """
+  payroll_date_completion_context_pkey
+  """
+  unique or primary key constraint on columns "payroll_date_id"
+  """
+  unique_payroll_date_completion
+}
+
+"""
+delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+"""
+input PayrollDateCompletionContextDeleteAtPathInput {
+  """
+  JSON object mapping unit type IDs to quantities for custom billing units
+  """
+  customQuantities: [String!]
+}
+
+"""
+delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+"""
+input PayrollDateCompletionContextDeleteElemInput {
+  """
+  JSON object mapping unit type IDs to quantities for custom billing units
+  """
+  customQuantities: Int
+}
+
+"""
+delete key/value pair or string element. key/value pairs are matched based on their key value
+"""
+input PayrollDateCompletionContextDeleteKeyInput {
+  """
+  JSON object mapping unit type IDs to quantities for custom billing units
+  """
+  customQuantities: String
+}
+
+"""
+input type for incrementing numeric columns in table "payroll_date_completion_context"
+"""
+input PayrollDateCompletionContextIncInput {
+  employeeCount: Int
+  payslipCount: Int
+}
+
+"""
+input type for inserting data into table "payroll_date_completion_context"
+"""
+input PayrollDateCompletionContextInsertInput {
+  completedAt: timestamptz
+  completedBy: uuid
+  completedByUser: UsersObjRelInsertInput
+  """
+  JSON object mapping unit type IDs to quantities for custom billing units
+  """
+  customQuantities: jsonb
+  employeeCount: Int
+  id: uuid
+  payrollDate: PayrollDatesObjRelInsertInput
+  payrollDateId: uuid
+  payslipCount: Int
+}
+
+"""aggregate max on columns"""
+type PayrollDateCompletionContextMaxFields {
+  completedAt: timestamptz
+  completedBy: uuid
+  employeeCount: Int
+  id: uuid
+  payrollDateId: uuid
+  payslipCount: Int
+}
+
+"""
+order by max() on columns of table "payroll_date_completion_context"
+"""
+input PayrollDateCompletionContextMaxOrderBy {
+  completedAt: OrderBy
+  completedBy: OrderBy
+  employeeCount: OrderBy
+  id: OrderBy
+  payrollDateId: OrderBy
+  payslipCount: OrderBy
+}
+
+"""aggregate min on columns"""
+type PayrollDateCompletionContextMinFields {
+  completedAt: timestamptz
+  completedBy: uuid
+  employeeCount: Int
+  id: uuid
+  payrollDateId: uuid
+  payslipCount: Int
+}
+
+"""
+order by min() on columns of table "payroll_date_completion_context"
+"""
+input PayrollDateCompletionContextMinOrderBy {
+  completedAt: OrderBy
+  completedBy: OrderBy
+  employeeCount: OrderBy
+  id: OrderBy
+  payrollDateId: OrderBy
+  payslipCount: OrderBy
+}
+
+"""
+response of any mutation on the table "payroll_date_completion_context"
+"""
+type PayrollDateCompletionContextMutationResponse {
+  """number of rows affected by the mutation"""
+  affectedRows: Int!
+  """data from the rows affected by the mutation"""
+  returning: [PayrollDateCompletionContext!]!
+}
+
+"""
+input type for inserting object relation for remote table "payroll_date_completion_context"
+"""
+input PayrollDateCompletionContextObjRelInsertInput {
+  data: PayrollDateCompletionContextInsertInput!
+  """upsert condition"""
+  onConflict: PayrollDateCompletionContextOnConflict
+}
+
+"""
+on_conflict condition type for table "payroll_date_completion_context"
+"""
+input PayrollDateCompletionContextOnConflict {
+  constraint: PayrollDateCompletionContextConstraint!
+  updateColumns: [PayrollDateCompletionContextUpdateColumn!]! = []
+  where: PayrollDateCompletionContextBoolExp
+}
+
+"""
+Ordering options when selecting data from "payroll_date_completion_context".
+"""
+input PayrollDateCompletionContextOrderBy {
+  completedAt: OrderBy
+  completedBy: OrderBy
+  completedByUser: UsersOrderBy
+  customQuantities: OrderBy
+  employeeCount: OrderBy
+  id: OrderBy
+  payrollDate: PayrollDatesOrderBy
+  payrollDateId: OrderBy
+  payslipCount: OrderBy
+}
+
+"""primary key columns input for table: payroll_date_completion_context"""
+input PayrollDateCompletionContextPkColumnsInput {
+  id: uuid!
+}
+
+"""prepend existing jsonb value of filtered columns with new jsonb value"""
+input PayrollDateCompletionContextPrependInput {
+  """
+  JSON object mapping unit type IDs to quantities for custom billing units
+  """
+  customQuantities: jsonb
+}
+
+"""
+select columns of table "payroll_date_completion_context"
+"""
+enum PayrollDateCompletionContextSelectColumn {
+  """column name"""
+  completedAt
+  """column name"""
+  completedBy
+  """column name"""
+  customQuantities
+  """column name"""
+  employeeCount
+  """column name"""
+  id
+  """column name"""
+  payrollDateId
+  """column name"""
+  payslipCount
+}
+
+"""
+input type for updating data in table "payroll_date_completion_context"
+"""
+input PayrollDateCompletionContextSetInput {
+  completedAt: timestamptz
+  completedBy: uuid
+  """
+  JSON object mapping unit type IDs to quantities for custom billing units
+  """
+  customQuantities: jsonb
+  employeeCount: Int
+  id: uuid
+  payrollDateId: uuid
+  payslipCount: Int
+}
+
+"""aggregate stddev on columns"""
+type PayrollDateCompletionContextStddevFields {
+  employeeCount: Float
+  payslipCount: Float
+}
+
+"""
+order by stddev() on columns of table "payroll_date_completion_context"
+"""
+input PayrollDateCompletionContextStddevOrderBy {
+  employeeCount: OrderBy
+  payslipCount: OrderBy
+}
+
+"""aggregate stddevPop on columns"""
+type PayrollDateCompletionContextStddevPopFields {
+  employeeCount: Float
+  payslipCount: Float
+}
+
+"""
+order by stddevPop() on columns of table "payroll_date_completion_context"
+"""
+input PayrollDateCompletionContextStddevPopOrderBy {
+  employeeCount: OrderBy
+  payslipCount: OrderBy
+}
+
+"""aggregate stddevSamp on columns"""
+type PayrollDateCompletionContextStddevSampFields {
+  employeeCount: Float
+  payslipCount: Float
+}
+
+"""
+order by stddevSamp() on columns of table "payroll_date_completion_context"
+"""
+input PayrollDateCompletionContextStddevSampOrderBy {
+  employeeCount: OrderBy
+  payslipCount: OrderBy
+}
+
+"""
+Streaming cursor of the table "payroll_date_completion_context"
+"""
+input PayrollDateCompletionContextStreamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: PayrollDateCompletionContextStreamCursorValueInput!
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input PayrollDateCompletionContextStreamCursorValueInput {
+  completedAt: timestamptz
+  completedBy: uuid
+  """
+  JSON object mapping unit type IDs to quantities for custom billing units
+  """
+  customQuantities: jsonb
+  employeeCount: Int
+  id: uuid
+  payrollDateId: uuid
+  payslipCount: Int
+}
+
+"""aggregate sum on columns"""
+type PayrollDateCompletionContextSumFields {
+  employeeCount: Int
+  payslipCount: Int
+}
+
+"""
+order by sum() on columns of table "payroll_date_completion_context"
+"""
+input PayrollDateCompletionContextSumOrderBy {
+  employeeCount: OrderBy
+  payslipCount: OrderBy
+}
+
+"""
+update columns of table "payroll_date_completion_context"
+"""
+enum PayrollDateCompletionContextUpdateColumn {
+  """column name"""
+  completedAt
+  """column name"""
+  completedBy
+  """column name"""
+  customQuantities
+  """column name"""
+  employeeCount
+  """column name"""
+  id
+  """column name"""
+  payrollDateId
+  """column name"""
+  payslipCount
+}
+
+input PayrollDateCompletionContextUpdates {
+  """append existing jsonb value of filtered columns with new jsonb value"""
+  _append: PayrollDateCompletionContextAppendInput
+  """
+  delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+  """
+  _deleteAtPath: PayrollDateCompletionContextDeleteAtPathInput
+  """
+  delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+  """
+  _deleteElem: PayrollDateCompletionContextDeleteElemInput
+  """
+  delete key/value pair or string element. key/value pairs are matched based on their key value
+  """
+  _deleteKey: PayrollDateCompletionContextDeleteKeyInput
+  """increments the numeric columns with given value of the filtered values"""
+  _inc: PayrollDateCompletionContextIncInput
+  """prepend existing jsonb value of filtered columns with new jsonb value"""
+  _prepend: PayrollDateCompletionContextPrependInput
+  """sets the columns of the filtered rows to the given values"""
+  _set: PayrollDateCompletionContextSetInput
+  """filter the rows which have to be updated"""
+  where: PayrollDateCompletionContextBoolExp!
+}
+
+"""aggregate varPop on columns"""
+type PayrollDateCompletionContextVarPopFields {
+  employeeCount: Float
+  payslipCount: Float
+}
+
+"""
+order by varPop() on columns of table "payroll_date_completion_context"
+"""
+input PayrollDateCompletionContextVarPopOrderBy {
+  employeeCount: OrderBy
+  payslipCount: OrderBy
+}
+
+"""aggregate varSamp on columns"""
+type PayrollDateCompletionContextVarSampFields {
+  employeeCount: Float
+  payslipCount: Float
+}
+
+"""
+order by varSamp() on columns of table "payroll_date_completion_context"
+"""
+input PayrollDateCompletionContextVarSampOrderBy {
+  employeeCount: OrderBy
+  payslipCount: OrderBy
+}
+
+"""aggregate variance on columns"""
+type PayrollDateCompletionContextVarianceFields {
+  employeeCount: Float
+  payslipCount: Float
+}
+
+"""
+order by variance() on columns of table "payroll_date_completion_context"
+"""
+input PayrollDateCompletionContextVarianceOrderBy {
+  employeeCount: OrderBy
+  payslipCount: OrderBy
+}
+
 """Detailed time tracking for individual users working on payroll dates"""
 type PayrollDateTimeEntries {
   billingNotes: String
+  """An object relationship"""
+  billingUnitType: BillingUnitTypes
+  billingUnitTypeId: uuid
   costCenter: String
   createdAt: timestamptz
   description: String
+  """Rate per unit that was effective when this time entry was created"""
+  effectiveRatePerUnit: numeric
   """Hourly rate applied when this time entry was created"""
   hourlyRateUsed: numeric
   id: uuid!
   """Whether this time should be included in client billing"""
   isBillable: Boolean
+  isBillableToService: Boolean
   """An object relationship"""
   payrollDate: PayrollDates!
   payrollDateId: uuid!
+  """An object relationship"""
+  service: Services
+  serviceId: uuid
+  serviceNotes: String
   timeSpentMinutes: Int!
+  """6-minute units (1 hour = 10 units)"""
+  timeUnits: Int
   """Calculated internal cost (time * rate)"""
   totalCost: numeric
   updatedAt: timestamptz
@@ -19089,9 +20715,13 @@ input PayrollDateTimeEntriesArrRelInsertInput {
 
 """aggregate avg on columns"""
 type PayrollDateTimeEntriesAvgFields {
+  """Rate per unit that was effective when this time entry was created"""
+  effectiveRatePerUnit: Float
   """Hourly rate applied when this time entry was created"""
   hourlyRateUsed: Float
   timeSpentMinutes: Float
+  """6-minute units (1 hour = 10 units)"""
+  timeUnits: Float
   """Calculated internal cost (time * rate)"""
   totalCost: Float
 }
@@ -19100,9 +20730,13 @@ type PayrollDateTimeEntriesAvgFields {
 order by avg() on columns of table "payroll_date_time_entries"
 """
 input PayrollDateTimeEntriesAvgOrderBy {
+  """Rate per unit that was effective when this time entry was created"""
+  effectiveRatePerUnit: OrderBy
   """Hourly rate applied when this time entry was created"""
   hourlyRateUsed: OrderBy
   timeSpentMinutes: OrderBy
+  """6-minute units (1 hour = 10 units)"""
+  timeUnits: OrderBy
   """Calculated internal cost (time * rate)"""
   totalCost: OrderBy
 }
@@ -19115,15 +20749,23 @@ input PayrollDateTimeEntriesBoolExp {
   _not: PayrollDateTimeEntriesBoolExp
   _or: [PayrollDateTimeEntriesBoolExp!]
   billingNotes: StringComparisonExp
+  billingUnitType: BillingUnitTypesBoolExp
+  billingUnitTypeId: UuidComparisonExp
   costCenter: StringComparisonExp
   createdAt: TimestamptzComparisonExp
   description: StringComparisonExp
+  effectiveRatePerUnit: NumericComparisonExp
   hourlyRateUsed: NumericComparisonExp
   id: UuidComparisonExp
   isBillable: BooleanComparisonExp
+  isBillableToService: BooleanComparisonExp
   payrollDate: PayrollDatesBoolExp
   payrollDateId: UuidComparisonExp
+  service: ServicesBoolExp
+  serviceId: UuidComparisonExp
+  serviceNotes: StringComparisonExp
   timeSpentMinutes: IntComparisonExp
+  timeUnits: IntComparisonExp
   totalCost: NumericComparisonExp
   updatedAt: TimestamptzComparisonExp
   user: UsersBoolExp
@@ -19149,9 +20791,13 @@ enum PayrollDateTimeEntriesConstraint {
 input type for incrementing numeric columns in table "payroll_date_time_entries"
 """
 input PayrollDateTimeEntriesIncInput {
+  """Rate per unit that was effective when this time entry was created"""
+  effectiveRatePerUnit: numeric
   """Hourly rate applied when this time entry was created"""
   hourlyRateUsed: numeric
   timeSpentMinutes: Int
+  """6-minute units (1 hour = 10 units)"""
+  timeUnits: Int
 }
 
 """
@@ -19159,17 +20805,27 @@ input type for inserting data into table "payroll_date_time_entries"
 """
 input PayrollDateTimeEntriesInsertInput {
   billingNotes: String
+  billingUnitType: BillingUnitTypesObjRelInsertInput
+  billingUnitTypeId: uuid
   costCenter: String
   createdAt: timestamptz
   description: String
+  """Rate per unit that was effective when this time entry was created"""
+  effectiveRatePerUnit: numeric
   """Hourly rate applied when this time entry was created"""
   hourlyRateUsed: numeric
   id: uuid
   """Whether this time should be included in client billing"""
   isBillable: Boolean
+  isBillableToService: Boolean
   payrollDate: PayrollDatesObjRelInsertInput
   payrollDateId: uuid
+  service: ServicesObjRelInsertInput
+  serviceId: uuid
+  serviceNotes: String
   timeSpentMinutes: Int
+  """6-minute units (1 hour = 10 units)"""
+  timeUnits: Int
   updatedAt: timestamptz
   user: UsersObjRelInsertInput
   userId: uuid
@@ -19179,14 +20835,21 @@ input PayrollDateTimeEntriesInsertInput {
 """aggregate max on columns"""
 type PayrollDateTimeEntriesMaxFields {
   billingNotes: String
+  billingUnitTypeId: uuid
   costCenter: String
   createdAt: timestamptz
   description: String
+  """Rate per unit that was effective when this time entry was created"""
+  effectiveRatePerUnit: numeric
   """Hourly rate applied when this time entry was created"""
   hourlyRateUsed: numeric
   id: uuid
   payrollDateId: uuid
+  serviceId: uuid
+  serviceNotes: String
   timeSpentMinutes: Int
+  """6-minute units (1 hour = 10 units)"""
+  timeUnits: Int
   """Calculated internal cost (time * rate)"""
   totalCost: numeric
   updatedAt: timestamptz
@@ -19199,14 +20862,21 @@ order by max() on columns of table "payroll_date_time_entries"
 """
 input PayrollDateTimeEntriesMaxOrderBy {
   billingNotes: OrderBy
+  billingUnitTypeId: OrderBy
   costCenter: OrderBy
   createdAt: OrderBy
   description: OrderBy
+  """Rate per unit that was effective when this time entry was created"""
+  effectiveRatePerUnit: OrderBy
   """Hourly rate applied when this time entry was created"""
   hourlyRateUsed: OrderBy
   id: OrderBy
   payrollDateId: OrderBy
+  serviceId: OrderBy
+  serviceNotes: OrderBy
   timeSpentMinutes: OrderBy
+  """6-minute units (1 hour = 10 units)"""
+  timeUnits: OrderBy
   """Calculated internal cost (time * rate)"""
   totalCost: OrderBy
   updatedAt: OrderBy
@@ -19217,14 +20887,21 @@ input PayrollDateTimeEntriesMaxOrderBy {
 """aggregate min on columns"""
 type PayrollDateTimeEntriesMinFields {
   billingNotes: String
+  billingUnitTypeId: uuid
   costCenter: String
   createdAt: timestamptz
   description: String
+  """Rate per unit that was effective when this time entry was created"""
+  effectiveRatePerUnit: numeric
   """Hourly rate applied when this time entry was created"""
   hourlyRateUsed: numeric
   id: uuid
   payrollDateId: uuid
+  serviceId: uuid
+  serviceNotes: String
   timeSpentMinutes: Int
+  """6-minute units (1 hour = 10 units)"""
+  timeUnits: Int
   """Calculated internal cost (time * rate)"""
   totalCost: numeric
   updatedAt: timestamptz
@@ -19237,14 +20914,21 @@ order by min() on columns of table "payroll_date_time_entries"
 """
 input PayrollDateTimeEntriesMinOrderBy {
   billingNotes: OrderBy
+  billingUnitTypeId: OrderBy
   costCenter: OrderBy
   createdAt: OrderBy
   description: OrderBy
+  """Rate per unit that was effective when this time entry was created"""
+  effectiveRatePerUnit: OrderBy
   """Hourly rate applied when this time entry was created"""
   hourlyRateUsed: OrderBy
   id: OrderBy
   payrollDateId: OrderBy
+  serviceId: OrderBy
+  serviceNotes: OrderBy
   timeSpentMinutes: OrderBy
+  """6-minute units (1 hour = 10 units)"""
+  timeUnits: OrderBy
   """Calculated internal cost (time * rate)"""
   totalCost: OrderBy
   updatedAt: OrderBy
@@ -19274,15 +20958,23 @@ input PayrollDateTimeEntriesOnConflict {
 """Ordering options when selecting data from "payroll_date_time_entries"."""
 input PayrollDateTimeEntriesOrderBy {
   billingNotes: OrderBy
+  billingUnitType: BillingUnitTypesOrderBy
+  billingUnitTypeId: OrderBy
   costCenter: OrderBy
   createdAt: OrderBy
   description: OrderBy
+  effectiveRatePerUnit: OrderBy
   hourlyRateUsed: OrderBy
   id: OrderBy
   isBillable: OrderBy
+  isBillableToService: OrderBy
   payrollDate: PayrollDatesOrderBy
   payrollDateId: OrderBy
+  service: ServicesOrderBy
+  serviceId: OrderBy
+  serviceNotes: OrderBy
   timeSpentMinutes: OrderBy
+  timeUnits: OrderBy
   totalCost: OrderBy
   updatedAt: OrderBy
   user: UsersOrderBy
@@ -19302,11 +20994,15 @@ enum PayrollDateTimeEntriesSelectColumn {
   """column name"""
   billingNotes
   """column name"""
+  billingUnitTypeId
+  """column name"""
   costCenter
   """column name"""
   createdAt
   """column name"""
   description
+  """column name"""
+  effectiveRatePerUnit
   """column name"""
   hourlyRateUsed
   """column name"""
@@ -19314,9 +21010,17 @@ enum PayrollDateTimeEntriesSelectColumn {
   """column name"""
   isBillable
   """column name"""
+  isBillableToService
+  """column name"""
   payrollDateId
   """column name"""
+  serviceId
+  """column name"""
+  serviceNotes
+  """column name"""
   timeSpentMinutes
+  """column name"""
+  timeUnits
   """column name"""
   totalCost
   """column name"""
@@ -19333,6 +21037,8 @@ select "payrollDateTimeEntriesAggregateBoolExpBool_andArgumentsColumns" columns 
 enum PayrollDateTimeEntriesSelectColumnPayrollDateTimeEntriesAggregateBoolExpBool_andArgumentsColumns {
   """column name"""
   isBillable
+  """column name"""
+  isBillableToService
 }
 
 """
@@ -19341,6 +21047,8 @@ select "payrollDateTimeEntriesAggregateBoolExpBool_orArgumentsColumns" columns o
 enum PayrollDateTimeEntriesSelectColumnPayrollDateTimeEntriesAggregateBoolExpBool_orArgumentsColumns {
   """column name"""
   isBillable
+  """column name"""
+  isBillableToService
 }
 
 """
@@ -19348,16 +21056,24 @@ input type for updating data in table "payroll_date_time_entries"
 """
 input PayrollDateTimeEntriesSetInput {
   billingNotes: String
+  billingUnitTypeId: uuid
   costCenter: String
   createdAt: timestamptz
   description: String
+  """Rate per unit that was effective when this time entry was created"""
+  effectiveRatePerUnit: numeric
   """Hourly rate applied when this time entry was created"""
   hourlyRateUsed: numeric
   id: uuid
   """Whether this time should be included in client billing"""
   isBillable: Boolean
+  isBillableToService: Boolean
   payrollDateId: uuid
+  serviceId: uuid
+  serviceNotes: String
   timeSpentMinutes: Int
+  """6-minute units (1 hour = 10 units)"""
+  timeUnits: Int
   updatedAt: timestamptz
   userId: uuid
   workDate: date
@@ -19365,9 +21081,13 @@ input PayrollDateTimeEntriesSetInput {
 
 """aggregate stddev on columns"""
 type PayrollDateTimeEntriesStddevFields {
+  """Rate per unit that was effective when this time entry was created"""
+  effectiveRatePerUnit: Float
   """Hourly rate applied when this time entry was created"""
   hourlyRateUsed: Float
   timeSpentMinutes: Float
+  """6-minute units (1 hour = 10 units)"""
+  timeUnits: Float
   """Calculated internal cost (time * rate)"""
   totalCost: Float
 }
@@ -19376,18 +21096,26 @@ type PayrollDateTimeEntriesStddevFields {
 order by stddev() on columns of table "payroll_date_time_entries"
 """
 input PayrollDateTimeEntriesStddevOrderBy {
+  """Rate per unit that was effective when this time entry was created"""
+  effectiveRatePerUnit: OrderBy
   """Hourly rate applied when this time entry was created"""
   hourlyRateUsed: OrderBy
   timeSpentMinutes: OrderBy
+  """6-minute units (1 hour = 10 units)"""
+  timeUnits: OrderBy
   """Calculated internal cost (time * rate)"""
   totalCost: OrderBy
 }
 
 """aggregate stddevPop on columns"""
 type PayrollDateTimeEntriesStddevPopFields {
+  """Rate per unit that was effective when this time entry was created"""
+  effectiveRatePerUnit: Float
   """Hourly rate applied when this time entry was created"""
   hourlyRateUsed: Float
   timeSpentMinutes: Float
+  """6-minute units (1 hour = 10 units)"""
+  timeUnits: Float
   """Calculated internal cost (time * rate)"""
   totalCost: Float
 }
@@ -19396,18 +21124,26 @@ type PayrollDateTimeEntriesStddevPopFields {
 order by stddevPop() on columns of table "payroll_date_time_entries"
 """
 input PayrollDateTimeEntriesStddevPopOrderBy {
+  """Rate per unit that was effective when this time entry was created"""
+  effectiveRatePerUnit: OrderBy
   """Hourly rate applied when this time entry was created"""
   hourlyRateUsed: OrderBy
   timeSpentMinutes: OrderBy
+  """6-minute units (1 hour = 10 units)"""
+  timeUnits: OrderBy
   """Calculated internal cost (time * rate)"""
   totalCost: OrderBy
 }
 
 """aggregate stddevSamp on columns"""
 type PayrollDateTimeEntriesStddevSampFields {
+  """Rate per unit that was effective when this time entry was created"""
+  effectiveRatePerUnit: Float
   """Hourly rate applied when this time entry was created"""
   hourlyRateUsed: Float
   timeSpentMinutes: Float
+  """6-minute units (1 hour = 10 units)"""
+  timeUnits: Float
   """Calculated internal cost (time * rate)"""
   totalCost: Float
 }
@@ -19416,9 +21152,13 @@ type PayrollDateTimeEntriesStddevSampFields {
 order by stddevSamp() on columns of table "payroll_date_time_entries"
 """
 input PayrollDateTimeEntriesStddevSampOrderBy {
+  """Rate per unit that was effective when this time entry was created"""
+  effectiveRatePerUnit: OrderBy
   """Hourly rate applied when this time entry was created"""
   hourlyRateUsed: OrderBy
   timeSpentMinutes: OrderBy
+  """6-minute units (1 hour = 10 units)"""
+  timeUnits: OrderBy
   """Calculated internal cost (time * rate)"""
   totalCost: OrderBy
 }
@@ -19436,16 +21176,24 @@ input PayrollDateTimeEntriesStreamCursorInput {
 """Initial value of the column from where the streaming should start"""
 input PayrollDateTimeEntriesStreamCursorValueInput {
   billingNotes: String
+  billingUnitTypeId: uuid
   costCenter: String
   createdAt: timestamptz
   description: String
+  """Rate per unit that was effective when this time entry was created"""
+  effectiveRatePerUnit: numeric
   """Hourly rate applied when this time entry was created"""
   hourlyRateUsed: numeric
   id: uuid
   """Whether this time should be included in client billing"""
   isBillable: Boolean
+  isBillableToService: Boolean
   payrollDateId: uuid
+  serviceId: uuid
+  serviceNotes: String
   timeSpentMinutes: Int
+  """6-minute units (1 hour = 10 units)"""
+  timeUnits: Int
   """Calculated internal cost (time * rate)"""
   totalCost: numeric
   updatedAt: timestamptz
@@ -19455,9 +21203,13 @@ input PayrollDateTimeEntriesStreamCursorValueInput {
 
 """aggregate sum on columns"""
 type PayrollDateTimeEntriesSumFields {
+  """Rate per unit that was effective when this time entry was created"""
+  effectiveRatePerUnit: numeric
   """Hourly rate applied when this time entry was created"""
   hourlyRateUsed: numeric
   timeSpentMinutes: Int
+  """6-minute units (1 hour = 10 units)"""
+  timeUnits: Int
   """Calculated internal cost (time * rate)"""
   totalCost: numeric
 }
@@ -19466,9 +21218,13 @@ type PayrollDateTimeEntriesSumFields {
 order by sum() on columns of table "payroll_date_time_entries"
 """
 input PayrollDateTimeEntriesSumOrderBy {
+  """Rate per unit that was effective when this time entry was created"""
+  effectiveRatePerUnit: OrderBy
   """Hourly rate applied when this time entry was created"""
   hourlyRateUsed: OrderBy
   timeSpentMinutes: OrderBy
+  """6-minute units (1 hour = 10 units)"""
+  timeUnits: OrderBy
   """Calculated internal cost (time * rate)"""
   totalCost: OrderBy
 }
@@ -19480,11 +21236,15 @@ enum PayrollDateTimeEntriesUpdateColumn {
   """column name"""
   billingNotes
   """column name"""
+  billingUnitTypeId
+  """column name"""
   costCenter
   """column name"""
   createdAt
   """column name"""
   description
+  """column name"""
+  effectiveRatePerUnit
   """column name"""
   hourlyRateUsed
   """column name"""
@@ -19492,9 +21252,17 @@ enum PayrollDateTimeEntriesUpdateColumn {
   """column name"""
   isBillable
   """column name"""
+  isBillableToService
+  """column name"""
   payrollDateId
   """column name"""
+  serviceId
+  """column name"""
+  serviceNotes
+  """column name"""
   timeSpentMinutes
+  """column name"""
+  timeUnits
   """column name"""
   updatedAt
   """column name"""
@@ -19514,9 +21282,13 @@ input PayrollDateTimeEntriesUpdates {
 
 """aggregate varPop on columns"""
 type PayrollDateTimeEntriesVarPopFields {
+  """Rate per unit that was effective when this time entry was created"""
+  effectiveRatePerUnit: Float
   """Hourly rate applied when this time entry was created"""
   hourlyRateUsed: Float
   timeSpentMinutes: Float
+  """6-minute units (1 hour = 10 units)"""
+  timeUnits: Float
   """Calculated internal cost (time * rate)"""
   totalCost: Float
 }
@@ -19525,18 +21297,26 @@ type PayrollDateTimeEntriesVarPopFields {
 order by varPop() on columns of table "payroll_date_time_entries"
 """
 input PayrollDateTimeEntriesVarPopOrderBy {
+  """Rate per unit that was effective when this time entry was created"""
+  effectiveRatePerUnit: OrderBy
   """Hourly rate applied when this time entry was created"""
   hourlyRateUsed: OrderBy
   timeSpentMinutes: OrderBy
+  """6-minute units (1 hour = 10 units)"""
+  timeUnits: OrderBy
   """Calculated internal cost (time * rate)"""
   totalCost: OrderBy
 }
 
 """aggregate varSamp on columns"""
 type PayrollDateTimeEntriesVarSampFields {
+  """Rate per unit that was effective when this time entry was created"""
+  effectiveRatePerUnit: Float
   """Hourly rate applied when this time entry was created"""
   hourlyRateUsed: Float
   timeSpentMinutes: Float
+  """6-minute units (1 hour = 10 units)"""
+  timeUnits: Float
   """Calculated internal cost (time * rate)"""
   totalCost: Float
 }
@@ -19545,18 +21325,26 @@ type PayrollDateTimeEntriesVarSampFields {
 order by varSamp() on columns of table "payroll_date_time_entries"
 """
 input PayrollDateTimeEntriesVarSampOrderBy {
+  """Rate per unit that was effective when this time entry was created"""
+  effectiveRatePerUnit: OrderBy
   """Hourly rate applied when this time entry was created"""
   hourlyRateUsed: OrderBy
   timeSpentMinutes: OrderBy
+  """6-minute units (1 hour = 10 units)"""
+  timeUnits: OrderBy
   """Calculated internal cost (time * rate)"""
   totalCost: OrderBy
 }
 
 """aggregate variance on columns"""
 type PayrollDateTimeEntriesVarianceFields {
+  """Rate per unit that was effective when this time entry was created"""
+  effectiveRatePerUnit: Float
   """Hourly rate applied when this time entry was created"""
   hourlyRateUsed: Float
   timeSpentMinutes: Float
+  """6-minute units (1 hour = 10 units)"""
+  timeUnits: Float
   """Calculated internal cost (time * rate)"""
   totalCost: Float
 }
@@ -19565,9 +21353,13 @@ type PayrollDateTimeEntriesVarianceFields {
 order by variance() on columns of table "payroll_date_time_entries"
 """
 input PayrollDateTimeEntriesVarianceOrderBy {
+  """Rate per unit that was effective when this time entry was created"""
+  effectiveRatePerUnit: OrderBy
   """Hourly rate applied when this time entry was created"""
   hourlyRateUsed: OrderBy
   timeSpentMinutes: OrderBy
+  """6-minute units (1 hour = 10 units)"""
+  timeUnits: OrderBy
   """Calculated internal cost (time * rate)"""
   totalCost: OrderBy
 }
@@ -19912,6 +21704,8 @@ type PayrollDates {
   completedAt: timestamptz
   """User who marked the payroll date as completed"""
   completedBy: uuid
+  """An object relationship"""
+  completionContext: PayrollDateCompletionContext
   """Additional notes about the completion of this payroll date"""
   completionNotes: String
   """Timestamp when the date record was created"""
@@ -20126,6 +21920,7 @@ input PayrollDatesBoolExp {
   billingItemsAggregate: BillingItemsAggregateBoolExp
   completedAt: TimestamptzComparisonExp
   completedBy: UuidComparisonExp
+  completionContext: PayrollDateCompletionContextBoolExp
   completionNotes: StringComparisonExp
   createdAt: TimestamptzComparisonExp
   id: UuidComparisonExp
@@ -20182,6 +21977,7 @@ input PayrollDatesInsertInput {
   completedAt: timestamptz
   """User who marked the payroll date as completed"""
   completedBy: uuid
+  completionContext: PayrollDateCompletionContextObjRelInsertInput
   """Additional notes about the completion of this payroll date"""
   completionNotes: String
   """Timestamp when the date record was created"""
@@ -20379,6 +22175,7 @@ input PayrollDatesOrderBy {
   billingItemsAggregate: BillingItemsAggregateOrderBy
   completedAt: OrderBy
   completedBy: OrderBy
+  completionContext: PayrollDateCompletionContextOrderBy
   completionNotes: OrderBy
   createdAt: OrderBy
   id: OrderBy
@@ -26779,6 +28576,566 @@ type PositionAdminDefaultsVarianceFields {
   defaultAdminPercentage: Float
 }
 
+"""Audit log of all query executions for monitoring and history tracking"""
+type QueryExecutions {
+  """An object relationship"""
+  customQueryTemplate: CustomQueryTemplates
+  errorMessage: String
+  executedAt: timestamptz
+  """Query execution time in milliseconds for performance monitoring"""
+  executionTime: Int!
+  """Whether the result was served from cache rather than executed fresh"""
+  fromCache: Boolean
+  id: uuid!
+  parameters(
+    """JSON select path"""
+    path: String
+  ): jsonb
+  queryText: String!
+  queryType: String!
+  resultCount: Int
+  status: String!
+  templateId: uuid
+  """An object relationship"""
+  user: Users!
+  userId: uuid!
+}
+
+"""
+aggregated selection of "query_executions"
+"""
+type QueryExecutionsAggregate {
+  aggregate: QueryExecutionsAggregateFields
+  nodes: [QueryExecutions!]!
+}
+
+input QueryExecutionsAggregateBoolExp {
+  bool_and: queryExecutionsAggregateBoolExpBool_and
+  bool_or: queryExecutionsAggregateBoolExpBool_or
+  count: queryExecutionsAggregateBoolExpCount
+}
+
+"""
+aggregate fields of "query_executions"
+"""
+type QueryExecutionsAggregateFields {
+  avg: QueryExecutionsAvgFields
+  count(columns: [QueryExecutionsSelectColumn!], distinct: Boolean): Int!
+  max: QueryExecutionsMaxFields
+  min: QueryExecutionsMinFields
+  stddev: QueryExecutionsStddevFields
+  stddevPop: QueryExecutionsStddevPopFields
+  stddevSamp: QueryExecutionsStddevSampFields
+  sum: QueryExecutionsSumFields
+  varPop: QueryExecutionsVarPopFields
+  varSamp: QueryExecutionsVarSampFields
+  variance: QueryExecutionsVarianceFields
+}
+
+"""
+order by aggregate values of table "query_executions"
+"""
+input QueryExecutionsAggregateOrderBy {
+  avg: QueryExecutionsAvgOrderBy
+  count: OrderBy
+  max: QueryExecutionsMaxOrderBy
+  min: QueryExecutionsMinOrderBy
+  stddev: QueryExecutionsStddevOrderBy
+  stddevPop: QueryExecutionsStddevPopOrderBy
+  stddevSamp: QueryExecutionsStddevSampOrderBy
+  sum: QueryExecutionsSumOrderBy
+  varPop: QueryExecutionsVarPopOrderBy
+  varSamp: QueryExecutionsVarSampOrderBy
+  variance: QueryExecutionsVarianceOrderBy
+}
+
+"""append existing jsonb value of filtered columns with new jsonb value"""
+input QueryExecutionsAppendInput {
+  parameters: jsonb
+}
+
+"""
+input type for inserting array relation for remote table "query_executions"
+"""
+input QueryExecutionsArrRelInsertInput {
+  data: [QueryExecutionsInsertInput!]!
+  """upsert condition"""
+  onConflict: QueryExecutionsOnConflict
+}
+
+"""aggregate avg on columns"""
+type QueryExecutionsAvgFields {
+  """Query execution time in milliseconds for performance monitoring"""
+  executionTime: Float
+  resultCount: Float
+}
+
+"""
+order by avg() on columns of table "query_executions"
+"""
+input QueryExecutionsAvgOrderBy {
+  """Query execution time in milliseconds for performance monitoring"""
+  executionTime: OrderBy
+  resultCount: OrderBy
+}
+
+"""
+Boolean expression to filter rows from the table "query_executions". All fields are combined with a logical 'AND'.
+"""
+input QueryExecutionsBoolExp {
+  _and: [QueryExecutionsBoolExp!]
+  _not: QueryExecutionsBoolExp
+  _or: [QueryExecutionsBoolExp!]
+  customQueryTemplate: CustomQueryTemplatesBoolExp
+  errorMessage: StringComparisonExp
+  executedAt: TimestamptzComparisonExp
+  executionTime: IntComparisonExp
+  fromCache: BooleanComparisonExp
+  id: UuidComparisonExp
+  parameters: JsonbComparisonExp
+  queryText: StringComparisonExp
+  queryType: StringComparisonExp
+  resultCount: IntComparisonExp
+  status: StringComparisonExp
+  templateId: UuidComparisonExp
+  user: UsersBoolExp
+  userId: UuidComparisonExp
+}
+
+"""
+unique or primary key constraints on table "query_executions"
+"""
+enum QueryExecutionsConstraint {
+  """
+  unique or primary key constraint on columns "id"
+  """
+  query_executions_pkey
+}
+
+"""
+delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+"""
+input QueryExecutionsDeleteAtPathInput {
+  parameters: [String!]
+}
+
+"""
+delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+"""
+input QueryExecutionsDeleteElemInput {
+  parameters: Int
+}
+
+"""
+delete key/value pair or string element. key/value pairs are matched based on their key value
+"""
+input QueryExecutionsDeleteKeyInput {
+  parameters: String
+}
+
+"""
+input type for incrementing numeric columns in table "query_executions"
+"""
+input QueryExecutionsIncInput {
+  """Query execution time in milliseconds for performance monitoring"""
+  executionTime: Int
+  resultCount: Int
+}
+
+"""
+input type for inserting data into table "query_executions"
+"""
+input QueryExecutionsInsertInput {
+  customQueryTemplate: CustomQueryTemplatesObjRelInsertInput
+  errorMessage: String
+  executedAt: timestamptz
+  """Query execution time in milliseconds for performance monitoring"""
+  executionTime: Int
+  """Whether the result was served from cache rather than executed fresh"""
+  fromCache: Boolean
+  id: uuid
+  parameters: jsonb
+  queryText: String
+  queryType: String
+  resultCount: Int
+  status: String
+  templateId: uuid
+  user: UsersObjRelInsertInput
+  userId: uuid
+}
+
+"""aggregate max on columns"""
+type QueryExecutionsMaxFields {
+  errorMessage: String
+  executedAt: timestamptz
+  """Query execution time in milliseconds for performance monitoring"""
+  executionTime: Int
+  id: uuid
+  queryText: String
+  queryType: String
+  resultCount: Int
+  status: String
+  templateId: uuid
+  userId: uuid
+}
+
+"""
+order by max() on columns of table "query_executions"
+"""
+input QueryExecutionsMaxOrderBy {
+  errorMessage: OrderBy
+  executedAt: OrderBy
+  """Query execution time in milliseconds for performance monitoring"""
+  executionTime: OrderBy
+  id: OrderBy
+  queryText: OrderBy
+  queryType: OrderBy
+  resultCount: OrderBy
+  status: OrderBy
+  templateId: OrderBy
+  userId: OrderBy
+}
+
+"""aggregate min on columns"""
+type QueryExecutionsMinFields {
+  errorMessage: String
+  executedAt: timestamptz
+  """Query execution time in milliseconds for performance monitoring"""
+  executionTime: Int
+  id: uuid
+  queryText: String
+  queryType: String
+  resultCount: Int
+  status: String
+  templateId: uuid
+  userId: uuid
+}
+
+"""
+order by min() on columns of table "query_executions"
+"""
+input QueryExecutionsMinOrderBy {
+  errorMessage: OrderBy
+  executedAt: OrderBy
+  """Query execution time in milliseconds for performance monitoring"""
+  executionTime: OrderBy
+  id: OrderBy
+  queryText: OrderBy
+  queryType: OrderBy
+  resultCount: OrderBy
+  status: OrderBy
+  templateId: OrderBy
+  userId: OrderBy
+}
+
+"""
+response of any mutation on the table "query_executions"
+"""
+type QueryExecutionsMutationResponse {
+  """number of rows affected by the mutation"""
+  affectedRows: Int!
+  """data from the rows affected by the mutation"""
+  returning: [QueryExecutions!]!
+}
+
+"""
+on_conflict condition type for table "query_executions"
+"""
+input QueryExecutionsOnConflict {
+  constraint: QueryExecutionsConstraint!
+  updateColumns: [QueryExecutionsUpdateColumn!]! = []
+  where: QueryExecutionsBoolExp
+}
+
+"""Ordering options when selecting data from "query_executions"."""
+input QueryExecutionsOrderBy {
+  customQueryTemplate: CustomQueryTemplatesOrderBy
+  errorMessage: OrderBy
+  executedAt: OrderBy
+  executionTime: OrderBy
+  fromCache: OrderBy
+  id: OrderBy
+  parameters: OrderBy
+  queryText: OrderBy
+  queryType: OrderBy
+  resultCount: OrderBy
+  status: OrderBy
+  templateId: OrderBy
+  user: UsersOrderBy
+  userId: OrderBy
+}
+
+"""primary key columns input for table: query_executions"""
+input QueryExecutionsPkColumnsInput {
+  id: uuid!
+}
+
+"""prepend existing jsonb value of filtered columns with new jsonb value"""
+input QueryExecutionsPrependInput {
+  parameters: jsonb
+}
+
+"""
+select columns of table "query_executions"
+"""
+enum QueryExecutionsSelectColumn {
+  """column name"""
+  errorMessage
+  """column name"""
+  executedAt
+  """column name"""
+  executionTime
+  """column name"""
+  fromCache
+  """column name"""
+  id
+  """column name"""
+  parameters
+  """column name"""
+  queryText
+  """column name"""
+  queryType
+  """column name"""
+  resultCount
+  """column name"""
+  status
+  """column name"""
+  templateId
+  """column name"""
+  userId
+}
+
+"""
+select "queryExecutionsAggregateBoolExpBool_andArgumentsColumns" columns of table "query_executions"
+"""
+enum QueryExecutionsSelectColumnQueryExecutionsAggregateBoolExpBool_andArgumentsColumns {
+  """column name"""
+  fromCache
+}
+
+"""
+select "queryExecutionsAggregateBoolExpBool_orArgumentsColumns" columns of table "query_executions"
+"""
+enum QueryExecutionsSelectColumnQueryExecutionsAggregateBoolExpBool_orArgumentsColumns {
+  """column name"""
+  fromCache
+}
+
+"""
+input type for updating data in table "query_executions"
+"""
+input QueryExecutionsSetInput {
+  errorMessage: String
+  executedAt: timestamptz
+  """Query execution time in milliseconds for performance monitoring"""
+  executionTime: Int
+  """Whether the result was served from cache rather than executed fresh"""
+  fromCache: Boolean
+  id: uuid
+  parameters: jsonb
+  queryText: String
+  queryType: String
+  resultCount: Int
+  status: String
+  templateId: uuid
+  userId: uuid
+}
+
+"""aggregate stddev on columns"""
+type QueryExecutionsStddevFields {
+  """Query execution time in milliseconds for performance monitoring"""
+  executionTime: Float
+  resultCount: Float
+}
+
+"""
+order by stddev() on columns of table "query_executions"
+"""
+input QueryExecutionsStddevOrderBy {
+  """Query execution time in milliseconds for performance monitoring"""
+  executionTime: OrderBy
+  resultCount: OrderBy
+}
+
+"""aggregate stddevPop on columns"""
+type QueryExecutionsStddevPopFields {
+  """Query execution time in milliseconds for performance monitoring"""
+  executionTime: Float
+  resultCount: Float
+}
+
+"""
+order by stddevPop() on columns of table "query_executions"
+"""
+input QueryExecutionsStddevPopOrderBy {
+  """Query execution time in milliseconds for performance monitoring"""
+  executionTime: OrderBy
+  resultCount: OrderBy
+}
+
+"""aggregate stddevSamp on columns"""
+type QueryExecutionsStddevSampFields {
+  """Query execution time in milliseconds for performance monitoring"""
+  executionTime: Float
+  resultCount: Float
+}
+
+"""
+order by stddevSamp() on columns of table "query_executions"
+"""
+input QueryExecutionsStddevSampOrderBy {
+  """Query execution time in milliseconds for performance monitoring"""
+  executionTime: OrderBy
+  resultCount: OrderBy
+}
+
+"""
+Streaming cursor of the table "query_executions"
+"""
+input QueryExecutionsStreamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: QueryExecutionsStreamCursorValueInput!
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input QueryExecutionsStreamCursorValueInput {
+  errorMessage: String
+  executedAt: timestamptz
+  """Query execution time in milliseconds for performance monitoring"""
+  executionTime: Int
+  """Whether the result was served from cache rather than executed fresh"""
+  fromCache: Boolean
+  id: uuid
+  parameters: jsonb
+  queryText: String
+  queryType: String
+  resultCount: Int
+  status: String
+  templateId: uuid
+  userId: uuid
+}
+
+"""aggregate sum on columns"""
+type QueryExecutionsSumFields {
+  """Query execution time in milliseconds for performance monitoring"""
+  executionTime: Int
+  resultCount: Int
+}
+
+"""
+order by sum() on columns of table "query_executions"
+"""
+input QueryExecutionsSumOrderBy {
+  """Query execution time in milliseconds for performance monitoring"""
+  executionTime: OrderBy
+  resultCount: OrderBy
+}
+
+"""
+update columns of table "query_executions"
+"""
+enum QueryExecutionsUpdateColumn {
+  """column name"""
+  errorMessage
+  """column name"""
+  executedAt
+  """column name"""
+  executionTime
+  """column name"""
+  fromCache
+  """column name"""
+  id
+  """column name"""
+  parameters
+  """column name"""
+  queryText
+  """column name"""
+  queryType
+  """column name"""
+  resultCount
+  """column name"""
+  status
+  """column name"""
+  templateId
+  """column name"""
+  userId
+}
+
+input QueryExecutionsUpdates {
+  """append existing jsonb value of filtered columns with new jsonb value"""
+  _append: QueryExecutionsAppendInput
+  """
+  delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+  """
+  _deleteAtPath: QueryExecutionsDeleteAtPathInput
+  """
+  delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+  """
+  _deleteElem: QueryExecutionsDeleteElemInput
+  """
+  delete key/value pair or string element. key/value pairs are matched based on their key value
+  """
+  _deleteKey: QueryExecutionsDeleteKeyInput
+  """increments the numeric columns with given value of the filtered values"""
+  _inc: QueryExecutionsIncInput
+  """prepend existing jsonb value of filtered columns with new jsonb value"""
+  _prepend: QueryExecutionsPrependInput
+  """sets the columns of the filtered rows to the given values"""
+  _set: QueryExecutionsSetInput
+  """filter the rows which have to be updated"""
+  where: QueryExecutionsBoolExp!
+}
+
+"""aggregate varPop on columns"""
+type QueryExecutionsVarPopFields {
+  """Query execution time in milliseconds for performance monitoring"""
+  executionTime: Float
+  resultCount: Float
+}
+
+"""
+order by varPop() on columns of table "query_executions"
+"""
+input QueryExecutionsVarPopOrderBy {
+  """Query execution time in milliseconds for performance monitoring"""
+  executionTime: OrderBy
+  resultCount: OrderBy
+}
+
+"""aggregate varSamp on columns"""
+type QueryExecutionsVarSampFields {
+  """Query execution time in milliseconds for performance monitoring"""
+  executionTime: Float
+  resultCount: Float
+}
+
+"""
+order by varSamp() on columns of table "query_executions"
+"""
+input QueryExecutionsVarSampOrderBy {
+  """Query execution time in milliseconds for performance monitoring"""
+  executionTime: OrderBy
+  resultCount: OrderBy
+}
+
+"""aggregate variance on columns"""
+type QueryExecutionsVarianceFields {
+  """Query execution time in milliseconds for performance monitoring"""
+  executionTime: Float
+  resultCount: Float
+}
+
+"""
+order by variance() on columns of table "query_executions"
+"""
+input QueryExecutionsVarianceOrderBy {
+  """Query execution time in milliseconds for performance monitoring"""
+  executionTime: OrderBy
+  resultCount: OrderBy
+}
+
 """
 columns and relationships of "quote_analytics"
 """
@@ -31057,6 +33414,462 @@ input SeniorityLevelTypeComparisonExp {
   _nin: [seniority_level_type!]
 }
 
+"""Position-specific rates per service unit type"""
+type ServicePositionRates {
+  createdAt: timestamptz
+  createdBy: uuid
+  """An object relationship"""
+  createdByUser: Users
+  effectiveFrom: date!
+  effectiveTo: date
+  id: uuid!
+  position: user_position!
+  """Rate per unit of the services billing unit type"""
+  ratePerUnit: numeric!
+  """An object relationship"""
+  service: Services!
+  serviceId: uuid!
+  updatedAt: timestamptz
+  updatedBy: uuid
+  """An object relationship"""
+  updatedByUser: Users
+}
+
+"""
+aggregated selection of "service_position_rates"
+"""
+type ServicePositionRatesAggregate {
+  aggregate: ServicePositionRatesAggregateFields
+  nodes: [ServicePositionRates!]!
+}
+
+input ServicePositionRatesAggregateBoolExp {
+  count: servicePositionRatesAggregateBoolExpCount
+}
+
+"""
+aggregate fields of "service_position_rates"
+"""
+type ServicePositionRatesAggregateFields {
+  avg: ServicePositionRatesAvgFields
+  count(columns: [ServicePositionRatesSelectColumn!], distinct: Boolean): Int!
+  max: ServicePositionRatesMaxFields
+  min: ServicePositionRatesMinFields
+  stddev: ServicePositionRatesStddevFields
+  stddevPop: ServicePositionRatesStddevPopFields
+  stddevSamp: ServicePositionRatesStddevSampFields
+  sum: ServicePositionRatesSumFields
+  varPop: ServicePositionRatesVarPopFields
+  varSamp: ServicePositionRatesVarSampFields
+  variance: ServicePositionRatesVarianceFields
+}
+
+"""
+order by aggregate values of table "service_position_rates"
+"""
+input ServicePositionRatesAggregateOrderBy {
+  avg: ServicePositionRatesAvgOrderBy
+  count: OrderBy
+  max: ServicePositionRatesMaxOrderBy
+  min: ServicePositionRatesMinOrderBy
+  stddev: ServicePositionRatesStddevOrderBy
+  stddevPop: ServicePositionRatesStddevPopOrderBy
+  stddevSamp: ServicePositionRatesStddevSampOrderBy
+  sum: ServicePositionRatesSumOrderBy
+  varPop: ServicePositionRatesVarPopOrderBy
+  varSamp: ServicePositionRatesVarSampOrderBy
+  variance: ServicePositionRatesVarianceOrderBy
+}
+
+"""
+input type for inserting array relation for remote table "service_position_rates"
+"""
+input ServicePositionRatesArrRelInsertInput {
+  data: [ServicePositionRatesInsertInput!]!
+  """upsert condition"""
+  onConflict: ServicePositionRatesOnConflict
+}
+
+"""aggregate avg on columns"""
+type ServicePositionRatesAvgFields {
+  """Rate per unit of the services billing unit type"""
+  ratePerUnit: Float
+}
+
+"""
+order by avg() on columns of table "service_position_rates"
+"""
+input ServicePositionRatesAvgOrderBy {
+  """Rate per unit of the services billing unit type"""
+  ratePerUnit: OrderBy
+}
+
+"""
+Boolean expression to filter rows from the table "service_position_rates". All fields are combined with a logical 'AND'.
+"""
+input ServicePositionRatesBoolExp {
+  _and: [ServicePositionRatesBoolExp!]
+  _not: ServicePositionRatesBoolExp
+  _or: [ServicePositionRatesBoolExp!]
+  createdAt: TimestamptzComparisonExp
+  createdBy: UuidComparisonExp
+  createdByUser: UsersBoolExp
+  effectiveFrom: DateComparisonExp
+  effectiveTo: DateComparisonExp
+  id: UuidComparisonExp
+  position: UserPositionComparisonExp
+  ratePerUnit: NumericComparisonExp
+  service: ServicesBoolExp
+  serviceId: UuidComparisonExp
+  updatedAt: TimestamptzComparisonExp
+  updatedBy: UuidComparisonExp
+  updatedByUser: UsersBoolExp
+}
+
+"""
+unique or primary key constraints on table "service_position_rates"
+"""
+enum ServicePositionRatesConstraint {
+  """
+  unique or primary key constraint on columns "id"
+  """
+  service_position_rates_pkey
+}
+
+"""
+input type for incrementing numeric columns in table "service_position_rates"
+"""
+input ServicePositionRatesIncInput {
+  """Rate per unit of the services billing unit type"""
+  ratePerUnit: numeric
+}
+
+"""
+input type for inserting data into table "service_position_rates"
+"""
+input ServicePositionRatesInsertInput {
+  createdAt: timestamptz
+  createdBy: uuid
+  createdByUser: UsersObjRelInsertInput
+  effectiveFrom: date
+  effectiveTo: date
+  id: uuid
+  position: user_position
+  """Rate per unit of the services billing unit type"""
+  ratePerUnit: numeric
+  service: ServicesObjRelInsertInput
+  serviceId: uuid
+  updatedAt: timestamptz
+  updatedBy: uuid
+  updatedByUser: UsersObjRelInsertInput
+}
+
+"""aggregate max on columns"""
+type ServicePositionRatesMaxFields {
+  createdAt: timestamptz
+  createdBy: uuid
+  effectiveFrom: date
+  effectiveTo: date
+  id: uuid
+  position: user_position
+  """Rate per unit of the services billing unit type"""
+  ratePerUnit: numeric
+  serviceId: uuid
+  updatedAt: timestamptz
+  updatedBy: uuid
+}
+
+"""
+order by max() on columns of table "service_position_rates"
+"""
+input ServicePositionRatesMaxOrderBy {
+  createdAt: OrderBy
+  createdBy: OrderBy
+  effectiveFrom: OrderBy
+  effectiveTo: OrderBy
+  id: OrderBy
+  position: OrderBy
+  """Rate per unit of the services billing unit type"""
+  ratePerUnit: OrderBy
+  serviceId: OrderBy
+  updatedAt: OrderBy
+  updatedBy: OrderBy
+}
+
+"""aggregate min on columns"""
+type ServicePositionRatesMinFields {
+  createdAt: timestamptz
+  createdBy: uuid
+  effectiveFrom: date
+  effectiveTo: date
+  id: uuid
+  position: user_position
+  """Rate per unit of the services billing unit type"""
+  ratePerUnit: numeric
+  serviceId: uuid
+  updatedAt: timestamptz
+  updatedBy: uuid
+}
+
+"""
+order by min() on columns of table "service_position_rates"
+"""
+input ServicePositionRatesMinOrderBy {
+  createdAt: OrderBy
+  createdBy: OrderBy
+  effectiveFrom: OrderBy
+  effectiveTo: OrderBy
+  id: OrderBy
+  position: OrderBy
+  """Rate per unit of the services billing unit type"""
+  ratePerUnit: OrderBy
+  serviceId: OrderBy
+  updatedAt: OrderBy
+  updatedBy: OrderBy
+}
+
+"""
+response of any mutation on the table "service_position_rates"
+"""
+type ServicePositionRatesMutationResponse {
+  """number of rows affected by the mutation"""
+  affectedRows: Int!
+  """data from the rows affected by the mutation"""
+  returning: [ServicePositionRates!]!
+}
+
+"""
+on_conflict condition type for table "service_position_rates"
+"""
+input ServicePositionRatesOnConflict {
+  constraint: ServicePositionRatesConstraint!
+  updateColumns: [ServicePositionRatesUpdateColumn!]! = []
+  where: ServicePositionRatesBoolExp
+}
+
+"""Ordering options when selecting data from "service_position_rates"."""
+input ServicePositionRatesOrderBy {
+  createdAt: OrderBy
+  createdBy: OrderBy
+  createdByUser: UsersOrderBy
+  effectiveFrom: OrderBy
+  effectiveTo: OrderBy
+  id: OrderBy
+  position: OrderBy
+  ratePerUnit: OrderBy
+  service: ServicesOrderBy
+  serviceId: OrderBy
+  updatedAt: OrderBy
+  updatedBy: OrderBy
+  updatedByUser: UsersOrderBy
+}
+
+"""primary key columns input for table: service_position_rates"""
+input ServicePositionRatesPkColumnsInput {
+  id: uuid!
+}
+
+"""
+select columns of table "service_position_rates"
+"""
+enum ServicePositionRatesSelectColumn {
+  """column name"""
+  createdAt
+  """column name"""
+  createdBy
+  """column name"""
+  effectiveFrom
+  """column name"""
+  effectiveTo
+  """column name"""
+  id
+  """column name"""
+  position
+  """column name"""
+  ratePerUnit
+  """column name"""
+  serviceId
+  """column name"""
+  updatedAt
+  """column name"""
+  updatedBy
+}
+
+"""
+input type for updating data in table "service_position_rates"
+"""
+input ServicePositionRatesSetInput {
+  createdAt: timestamptz
+  createdBy: uuid
+  effectiveFrom: date
+  effectiveTo: date
+  id: uuid
+  position: user_position
+  """Rate per unit of the services billing unit type"""
+  ratePerUnit: numeric
+  serviceId: uuid
+  updatedAt: timestamptz
+  updatedBy: uuid
+}
+
+"""aggregate stddev on columns"""
+type ServicePositionRatesStddevFields {
+  """Rate per unit of the services billing unit type"""
+  ratePerUnit: Float
+}
+
+"""
+order by stddev() on columns of table "service_position_rates"
+"""
+input ServicePositionRatesStddevOrderBy {
+  """Rate per unit of the services billing unit type"""
+  ratePerUnit: OrderBy
+}
+
+"""aggregate stddevPop on columns"""
+type ServicePositionRatesStddevPopFields {
+  """Rate per unit of the services billing unit type"""
+  ratePerUnit: Float
+}
+
+"""
+order by stddevPop() on columns of table "service_position_rates"
+"""
+input ServicePositionRatesStddevPopOrderBy {
+  """Rate per unit of the services billing unit type"""
+  ratePerUnit: OrderBy
+}
+
+"""aggregate stddevSamp on columns"""
+type ServicePositionRatesStddevSampFields {
+  """Rate per unit of the services billing unit type"""
+  ratePerUnit: Float
+}
+
+"""
+order by stddevSamp() on columns of table "service_position_rates"
+"""
+input ServicePositionRatesStddevSampOrderBy {
+  """Rate per unit of the services billing unit type"""
+  ratePerUnit: OrderBy
+}
+
+"""
+Streaming cursor of the table "service_position_rates"
+"""
+input ServicePositionRatesStreamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: ServicePositionRatesStreamCursorValueInput!
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input ServicePositionRatesStreamCursorValueInput {
+  createdAt: timestamptz
+  createdBy: uuid
+  effectiveFrom: date
+  effectiveTo: date
+  id: uuid
+  position: user_position
+  """Rate per unit of the services billing unit type"""
+  ratePerUnit: numeric
+  serviceId: uuid
+  updatedAt: timestamptz
+  updatedBy: uuid
+}
+
+"""aggregate sum on columns"""
+type ServicePositionRatesSumFields {
+  """Rate per unit of the services billing unit type"""
+  ratePerUnit: numeric
+}
+
+"""
+order by sum() on columns of table "service_position_rates"
+"""
+input ServicePositionRatesSumOrderBy {
+  """Rate per unit of the services billing unit type"""
+  ratePerUnit: OrderBy
+}
+
+"""
+update columns of table "service_position_rates"
+"""
+enum ServicePositionRatesUpdateColumn {
+  """column name"""
+  createdAt
+  """column name"""
+  createdBy
+  """column name"""
+  effectiveFrom
+  """column name"""
+  effectiveTo
+  """column name"""
+  id
+  """column name"""
+  position
+  """column name"""
+  ratePerUnit
+  """column name"""
+  serviceId
+  """column name"""
+  updatedAt
+  """column name"""
+  updatedBy
+}
+
+input ServicePositionRatesUpdates {
+  """increments the numeric columns with given value of the filtered values"""
+  _inc: ServicePositionRatesIncInput
+  """sets the columns of the filtered rows to the given values"""
+  _set: ServicePositionRatesSetInput
+  """filter the rows which have to be updated"""
+  where: ServicePositionRatesBoolExp!
+}
+
+"""aggregate varPop on columns"""
+type ServicePositionRatesVarPopFields {
+  """Rate per unit of the services billing unit type"""
+  ratePerUnit: Float
+}
+
+"""
+order by varPop() on columns of table "service_position_rates"
+"""
+input ServicePositionRatesVarPopOrderBy {
+  """Rate per unit of the services billing unit type"""
+  ratePerUnit: OrderBy
+}
+
+"""aggregate varSamp on columns"""
+type ServicePositionRatesVarSampFields {
+  """Rate per unit of the services billing unit type"""
+  ratePerUnit: Float
+}
+
+"""
+order by varSamp() on columns of table "service_position_rates"
+"""
+input ServicePositionRatesVarSampOrderBy {
+  """Rate per unit of the services billing unit type"""
+  ratePerUnit: OrderBy
+}
+
+"""aggregate variance on columns"""
+type ServicePositionRatesVarianceFields {
+  """Rate per unit of the services billing unit type"""
+  ratePerUnit: Float
+}
+
+"""
+order by variance() on columns of table "service_position_rates"
+"""
+input ServicePositionRatesVarianceOrderBy {
+  """Rate per unit of the services billing unit type"""
+  ratePerUnit: OrderBy
+}
+
 """Dynamic pricing rules for services"""
 type ServicePricingRules {
   conditions(
@@ -32391,6 +35204,9 @@ type Services {
   billingTier: billing_tier_level
   """How this service is billed: Per Payroll, Per Employee, Per Hour, etc."""
   billingUnit: String!
+  """An object relationship"""
+  billingUnitType: BillingUnitTypes
+  billingUnitTypeId: uuid
   category: String!
   """
   Determines how this service is billed (per client, per payroll, by time, etc.)
@@ -32469,6 +35285,32 @@ type Services {
     path: String
   ): jsonb
   name: String!
+  """An array relationship"""
+  payrollDateTimeEntries(
+    """distinct select on columns"""
+    distinctOn: [PayrollDateTimeEntriesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollDateTimeEntriesOrderBy!]
+    """filter the rows returned"""
+    where: PayrollDateTimeEntriesBoolExp
+  ): [PayrollDateTimeEntries!]!
+  """An aggregate relationship"""
+  payrollDateTimeEntriesAggregate(
+    """distinct select on columns"""
+    distinctOn: [PayrollDateTimeEntriesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollDateTimeEntriesOrderBy!]
+    """filter the rows returned"""
+    where: PayrollDateTimeEntriesBoolExp
+  ): PayrollDateTimeEntriesAggregate!
   """An array relationship"""
   payrollServiceAgreementsForService(
     """distinct select on columns"""
@@ -32588,6 +35430,32 @@ type Services {
     path: String
   ): jsonb
   serviceCode: String
+  """An array relationship"""
+  servicePositionRates(
+    """distinct select on columns"""
+    distinctOn: [ServicePositionRatesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [ServicePositionRatesOrderBy!]
+    """filter the rows returned"""
+    where: ServicePositionRatesBoolExp
+  ): [ServicePositionRates!]!
+  """An aggregate relationship"""
+  servicePositionRatesAggregate(
+    """distinct select on columns"""
+    distinctOn: [ServicePositionRatesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [ServicePositionRatesOrderBy!]
+    """filter the rows returned"""
+    where: ServicePositionRatesBoolExp
+  ): ServicePositionRatesAggregate!
   """An array relationship"""
   servicePricingRules(
     """distinct select on columns"""
@@ -32750,6 +35618,8 @@ input ServicesBoolExp {
   billingItemsAggregate: BillingItemsAggregateBoolExp
   billingTier: BillingTierLevelComparisonExp
   billingUnit: StringComparisonExp
+  billingUnitType: BillingUnitTypesBoolExp
+  billingUnitTypeId: UuidComparisonExp
   category: StringComparisonExp
   chargeBasis: ChargeBasisTypeComparisonExp
   clientAgreements: ClientServiceAgreementsBoolExp
@@ -32769,6 +35639,8 @@ input ServicesBoolExp {
   isTimeBased: BooleanComparisonExp
   metadata: JsonbComparisonExp
   name: StringComparisonExp
+  payrollDateTimeEntries: PayrollDateTimeEntriesBoolExp
+  payrollDateTimeEntriesAggregate: PayrollDateTimeEntriesAggregateBoolExp
   payrollServiceAgreementsForService: PayrollServiceAgreementsBoolExp
   payrollServiceAgreementsForServiceAggregate: PayrollServiceAgreementsAggregateBoolExp
   payrollServiceOverrides: PayrollServiceOverridesBoolExp
@@ -32784,6 +35656,8 @@ input ServicesBoolExp {
   requiresQuantityInput: BooleanComparisonExp
   seniorityMultipliers: JsonbComparisonExp
   serviceCode: StringComparisonExp
+  servicePositionRates: ServicePositionRatesBoolExp
+  servicePositionRatesAggregate: ServicePositionRatesAggregateBoolExp
   servicePricingRules: ServicePricingRulesBoolExp
   servicePricingRulesAggregate: ServicePricingRulesAggregateBoolExp
   serviceType: StringComparisonExp
@@ -32870,6 +35744,8 @@ input ServicesInsertInput {
   billingTier: billing_tier_level
   """How this service is billed: Per Payroll, Per Employee, Per Hour, etc."""
   billingUnit: String
+  billingUnitType: BillingUnitTypesObjRelInsertInput
+  billingUnitTypeId: uuid
   category: String
   """
   Determines how this service is billed (per client, per payroll, by time, etc.)
@@ -32891,6 +35767,7 @@ input ServicesInsertInput {
   isTimeBased: Boolean
   metadata: jsonb
   name: String
+  payrollDateTimeEntries: PayrollDateTimeEntriesArrRelInsertInput
   payrollServiceAgreementsForService: PayrollServiceAgreementsArrRelInsertInput
   payrollServiceOverrides: PayrollServiceOverridesArrRelInsertInput
   payrollServiceQuantities: PayrollServiceQuantitiesArrRelInsertInput
@@ -32904,6 +35781,7 @@ input ServicesInsertInput {
   """JSON object with multipliers for each seniority level"""
   seniorityMultipliers: jsonb
   serviceCode: String
+  servicePositionRates: ServicePositionRatesArrRelInsertInput
   servicePricingRules: ServicePricingRulesArrRelInsertInput
   """
   standard: regular service, template: reusable template, custom: client-specific
@@ -32925,6 +35803,7 @@ type ServicesMaxFields {
   billingTier: billing_tier_level
   """How this service is billed: Per Payroll, Per Employee, Per Hour, etc."""
   billingUnit: String
+  billingUnitTypeId: uuid
   category: String
   """
   Determines how this service is billed (per client, per payroll, by time, etc.)
@@ -32959,6 +35838,7 @@ input ServicesMaxOrderBy {
   billingTier: OrderBy
   """How this service is billed: Per Payroll, Per Employee, Per Hour, etc."""
   billingUnit: OrderBy
+  billingUnitTypeId: OrderBy
   category: OrderBy
   """
   Determines how this service is billed (per client, per payroll, by time, etc.)
@@ -32991,6 +35871,7 @@ type ServicesMinFields {
   billingTier: billing_tier_level
   """How this service is billed: Per Payroll, Per Employee, Per Hour, etc."""
   billingUnit: String
+  billingUnitTypeId: uuid
   category: String
   """
   Determines how this service is billed (per client, per payroll, by time, etc.)
@@ -33025,6 +35906,7 @@ input ServicesMinOrderBy {
   billingTier: OrderBy
   """How this service is billed: Per Payroll, Per Employee, Per Hour, etc."""
   billingUnit: OrderBy
+  billingUnitTypeId: OrderBy
   category: OrderBy
   """
   Determines how this service is billed (per client, per payroll, by time, etc.)
@@ -33084,6 +35966,8 @@ input ServicesOrderBy {
   billingItemsAggregate: BillingItemsAggregateOrderBy
   billingTier: OrderBy
   billingUnit: OrderBy
+  billingUnitType: BillingUnitTypesOrderBy
+  billingUnitTypeId: OrderBy
   category: OrderBy
   chargeBasis: OrderBy
   clientAgreementsAggregate: ClientServiceAgreementsAggregateOrderBy
@@ -33101,6 +35985,7 @@ input ServicesOrderBy {
   isTimeBased: OrderBy
   metadata: OrderBy
   name: OrderBy
+  payrollDateTimeEntriesAggregate: PayrollDateTimeEntriesAggregateOrderBy
   payrollServiceAgreementsForServiceAggregate: PayrollServiceAgreementsAggregateOrderBy
   payrollServiceOverridesAggregate: PayrollServiceOverridesAggregateOrderBy
   payrollServiceQuantitiesAggregate: PayrollServiceQuantitiesAggregateOrderBy
@@ -33112,6 +35997,7 @@ input ServicesOrderBy {
   requiresQuantityInput: OrderBy
   seniorityMultipliers: OrderBy
   serviceCode: OrderBy
+  servicePositionRatesAggregate: ServicePositionRatesAggregateOrderBy
   servicePricingRulesAggregate: ServicePricingRulesAggregateOrderBy
   serviceType: OrderBy
   tierPriority: OrderBy
@@ -33148,6 +36034,8 @@ enum ServicesSelectColumn {
   billingTier
   """column name"""
   billingUnit
+  """column name"""
+  billingUnitTypeId
   """column name"""
   category
   """column name"""
@@ -33246,6 +36134,7 @@ input ServicesSetInput {
   billingTier: billing_tier_level
   """How this service is billed: Per Payroll, Per Employee, Per Hour, etc."""
   billingUnit: String
+  billingUnitTypeId: uuid
   category: String
   """
   Determines how this service is billed (per client, per payroll, by time, etc.)
@@ -33355,6 +36244,7 @@ input ServicesStreamCursorValueInput {
   billingTier: billing_tier_level
   """How this service is billed: Per Payroll, Per Employee, Per Hour, etc."""
   billingUnit: String
+  billingUnitTypeId: uuid
   category: String
   """
   Determines how this service is billed (per client, per payroll, by time, etc.)
@@ -33422,6 +36312,8 @@ enum ServicesUpdateColumn {
   billingTier
   """column name"""
   billingUnit
+  """column name"""
+  billingUnitTypeId
   """column name"""
   category
   """column name"""
@@ -35834,6 +38726,96 @@ input TimestamptzComparisonExp {
   _lte: timestamptz
   _neq: timestamptz
   _nin: [timestamptz!]
+}
+
+"""
+Provides table access permissions for the current user based on their roles
+"""
+type UserAccessibleTables {
+  deletePermission: Boolean
+  insertPermission: Boolean
+  selectPermission: Boolean
+  tableName: name
+  tableSchema: name
+  updatePermission: Boolean
+}
+
+"""
+aggregated selection of "user_accessible_tables"
+"""
+type UserAccessibleTablesAggregate {
+  aggregate: UserAccessibleTablesAggregateFields
+  nodes: [UserAccessibleTables!]!
+}
+
+"""
+aggregate fields of "user_accessible_tables"
+"""
+type UserAccessibleTablesAggregateFields {
+  count(columns: [UserAccessibleTablesSelectColumn!], distinct: Boolean): Int!
+}
+
+"""
+Boolean expression to filter rows from the table "user_accessible_tables". All fields are combined with a logical 'AND'.
+"""
+input UserAccessibleTablesBoolExp {
+  _and: [UserAccessibleTablesBoolExp!]
+  _not: UserAccessibleTablesBoolExp
+  _or: [UserAccessibleTablesBoolExp!]
+  deletePermission: BooleanComparisonExp
+  insertPermission: BooleanComparisonExp
+  selectPermission: BooleanComparisonExp
+  tableName: NameComparisonExp
+  tableSchema: NameComparisonExp
+  updatePermission: BooleanComparisonExp
+}
+
+"""Ordering options when selecting data from "user_accessible_tables"."""
+input UserAccessibleTablesOrderBy {
+  deletePermission: OrderBy
+  insertPermission: OrderBy
+  selectPermission: OrderBy
+  tableName: OrderBy
+  tableSchema: OrderBy
+  updatePermission: OrderBy
+}
+
+"""
+select columns of table "user_accessible_tables"
+"""
+enum UserAccessibleTablesSelectColumn {
+  """column name"""
+  deletePermission
+  """column name"""
+  insertPermission
+  """column name"""
+  selectPermission
+  """column name"""
+  tableName
+  """column name"""
+  tableSchema
+  """column name"""
+  updatePermission
+}
+
+"""
+Streaming cursor of the table "user_accessible_tables"
+"""
+input UserAccessibleTablesStreamCursorInput {
+  """Stream column input with initial value"""
+  initialValue: UserAccessibleTablesStreamCursorValueInput!
+  """cursor ordering"""
+  ordering: CursorOrdering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input UserAccessibleTablesStreamCursorValueInput {
+  deletePermission: Boolean
+  insertPermission: Boolean
+  selectPermission: Boolean
+  tableName: name
+  tableSchema: name
+  updatePermission: Boolean
 }
 
 """
@@ -38779,6 +41761,84 @@ type Users {
   ): PayrollsAggregate!
   """Category for billing purposes (consultant, manager, etc.)"""
   billingCategory: String
+  """An array relationship"""
+  billingUnitTypes(
+    """distinct select on columns"""
+    distinctOn: [BillingUnitTypesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [BillingUnitTypesOrderBy!]
+    """filter the rows returned"""
+    where: BillingUnitTypesBoolExp
+  ): [BillingUnitTypes!]!
+  """An aggregate relationship"""
+  billingUnitTypesAggregate(
+    """distinct select on columns"""
+    distinctOn: [BillingUnitTypesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [BillingUnitTypesOrderBy!]
+    """filter the rows returned"""
+    where: BillingUnitTypesBoolExp
+  ): BillingUnitTypesAggregate!
+  """An array relationship"""
+  billingUnitTypesCreated(
+    """distinct select on columns"""
+    distinctOn: [BillingUnitTypesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [BillingUnitTypesOrderBy!]
+    """filter the rows returned"""
+    where: BillingUnitTypesBoolExp
+  ): [BillingUnitTypes!]!
+  """An aggregate relationship"""
+  billingUnitTypesCreatedAggregate(
+    """distinct select on columns"""
+    distinctOn: [BillingUnitTypesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [BillingUnitTypesOrderBy!]
+    """filter the rows returned"""
+    where: BillingUnitTypesBoolExp
+  ): BillingUnitTypesAggregate!
+  """An array relationship"""
+  billingUnitTypesUpdated(
+    """distinct select on columns"""
+    distinctOn: [BillingUnitTypesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [BillingUnitTypesOrderBy!]
+    """filter the rows returned"""
+    where: BillingUnitTypesBoolExp
+  ): [BillingUnitTypes!]!
+  """An aggregate relationship"""
+  billingUnitTypesUpdatedAggregate(
+    """distinct select on columns"""
+    distinctOn: [BillingUnitTypesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [BillingUnitTypesOrderBy!]
+    """filter the rows returned"""
+    where: BillingUnitTypesBoolExp
+  ): BillingUnitTypesAggregate!
   """User biography or description"""
   bio: String
   """External identifier from Clerk authentication service"""
@@ -39101,6 +42161,32 @@ type Users {
     where: ServicesBoolExp
   ): ServicesAggregate!
   currentHourlyRate: numeric
+  """An array relationship"""
+  customQueryTemplates(
+    """distinct select on columns"""
+    distinctOn: [CustomQueryTemplatesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [CustomQueryTemplatesOrderBy!]
+    """filter the rows returned"""
+    where: CustomQueryTemplatesBoolExp
+  ): [CustomQueryTemplates!]!
+  """An aggregate relationship"""
+  customQueryTemplatesAggregate(
+    """distinct select on columns"""
+    distinctOn: [CustomQueryTemplatesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [CustomQueryTemplatesOrderBy!]
+    """filter the rows returned"""
+    where: CustomQueryTemplatesBoolExp
+  ): CustomQueryTemplatesAggregate!
   """An array relationship"""
   dataBackups(
     """distinct select on columns"""
@@ -39461,6 +42547,32 @@ type Users {
     where: PayrollAssignmentsBoolExp
   ): PayrollAssignmentsAggregate!
   """An array relationship"""
+  payrollDateCompletionContexts(
+    """distinct select on columns"""
+    distinctOn: [PayrollDateCompletionContextSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollDateCompletionContextOrderBy!]
+    """filter the rows returned"""
+    where: PayrollDateCompletionContextBoolExp
+  ): [PayrollDateCompletionContext!]!
+  """An aggregate relationship"""
+  payrollDateCompletionContextsAggregate(
+    """distinct select on columns"""
+    distinctOn: [PayrollDateCompletionContextSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollDateCompletionContextOrderBy!]
+    """filter the rows returned"""
+    where: PayrollDateCompletionContextBoolExp
+  ): PayrollDateCompletionContextAggregate!
+  """An array relationship"""
   payrollDateTimeEntries(
     """distinct select on columns"""
     distinctOn: [PayrollDateTimeEntriesSelectColumn!]
@@ -39725,6 +42837,32 @@ type Users {
     where: PayrollsBoolExp
   ): PayrollsAggregate!
   """An array relationship"""
+  queryExecutions(
+    """distinct select on columns"""
+    distinctOn: [QueryExecutionsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [QueryExecutionsOrderBy!]
+    """filter the rows returned"""
+    where: QueryExecutionsBoolExp
+  ): [QueryExecutions!]!
+  """An aggregate relationship"""
+  queryExecutionsAggregate(
+    """distinct select on columns"""
+    distinctOn: [QueryExecutionsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [QueryExecutionsOrderBy!]
+    """filter the rows returned"""
+    where: QueryExecutionsBoolExp
+  ): QueryExecutionsAggregate!
+  """An array relationship"""
   quoteConversions(
     """distinct select on columns"""
     distinctOn: [QuoteConversionsSelectColumn!]
@@ -39988,6 +43126,58 @@ type Users {
     """filter the rows returned"""
     where: UserInvitationsBoolExp
   ): UserInvitationsAggregate!
+  """An array relationship"""
+  servicePositionRatesCreated(
+    """distinct select on columns"""
+    distinctOn: [ServicePositionRatesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [ServicePositionRatesOrderBy!]
+    """filter the rows returned"""
+    where: ServicePositionRatesBoolExp
+  ): [ServicePositionRates!]!
+  """An aggregate relationship"""
+  servicePositionRatesCreatedAggregate(
+    """distinct select on columns"""
+    distinctOn: [ServicePositionRatesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [ServicePositionRatesOrderBy!]
+    """filter the rows returned"""
+    where: ServicePositionRatesBoolExp
+  ): ServicePositionRatesAggregate!
+  """An array relationship"""
+  servicePositionRatesUpdated(
+    """distinct select on columns"""
+    distinctOn: [ServicePositionRatesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [ServicePositionRatesOrderBy!]
+    """filter the rows returned"""
+    where: ServicePositionRatesBoolExp
+  ): [ServicePositionRates!]!
+  """An aggregate relationship"""
+  servicePositionRatesUpdatedAggregate(
+    """distinct select on columns"""
+    distinctOn: [ServicePositionRatesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [ServicePositionRatesOrderBy!]
+    """filter the rows returned"""
+    where: ServicePositionRatesBoolExp
+  ): ServicePositionRatesAggregate!
   """An array relationship"""
   skills(
     """distinct select on columns"""
@@ -40546,6 +43736,12 @@ input UsersBoolExp {
   backupPayrollAssignments: PayrollsBoolExp
   backupPayrollAssignmentsAggregate: PayrollsAggregateBoolExp
   billingCategory: StringComparisonExp
+  billingUnitTypes: BillingUnitTypesBoolExp
+  billingUnitTypesAggregate: BillingUnitTypesAggregateBoolExp
+  billingUnitTypesCreated: BillingUnitTypesBoolExp
+  billingUnitTypesCreatedAggregate: BillingUnitTypesAggregateBoolExp
+  billingUnitTypesUpdated: BillingUnitTypesBoolExp
+  billingUnitTypesUpdatedAggregate: BillingUnitTypesAggregateBoolExp
   bio: StringComparisonExp
   clerkUserId: StringComparisonExp
   clientServiceAssignmentsCreated: ClientServiceAssignmentsBoolExp
@@ -40576,6 +43772,8 @@ input UsersBoolExp {
   createdServices: ServicesBoolExp
   createdServicesAggregate: ServicesAggregateBoolExp
   currentHourlyRate: NumericComparisonExp
+  customQueryTemplates: CustomQueryTemplatesBoolExp
+  customQueryTemplatesAggregate: CustomQueryTemplatesAggregateBoolExp
   dataBackups: DataBackupsBoolExp
   dataBackupsAggregate: DataBackupsAggregateBoolExp
   deactivatedAt: TimestamptzComparisonExp
@@ -40615,6 +43813,8 @@ input UsersBoolExp {
   managerId: UuidComparisonExp
   originalConsultantAssignments: PayrollAssignmentsBoolExp
   originalConsultantAssignmentsAggregate: PayrollAssignmentsAggregateBoolExp
+  payrollDateCompletionContexts: PayrollDateCompletionContextBoolExp
+  payrollDateCompletionContextsAggregate: PayrollDateCompletionContextAggregateBoolExp
   payrollDateTimeEntries: PayrollDateTimeEntriesBoolExp
   payrollDateTimeEntriesAggregate: PayrollDateTimeEntriesAggregateBoolExp
   payrollDates: PayrollDatesBoolExp
@@ -40637,6 +43837,8 @@ input UsersBoolExp {
   position: UserPositionComparisonExp
   primaryPayrollAssignments: PayrollsBoolExp
   primaryPayrollAssignmentsAggregate: PayrollsAggregateBoolExp
+  queryExecutions: QueryExecutionsBoolExp
+  queryExecutionsAggregate: QueryExecutionsAggregateBoolExp
   quoteConversions: QuoteConversionsBoolExp
   quoteConversionsAggregate: QuoteConversionsAggregateBoolExp
   quoteTemplates: QuoteTemplatesBoolExp
@@ -40660,6 +43862,10 @@ input UsersBoolExp {
   sentEmailsAggregate: EmailSendLogsAggregateBoolExp
   sentInvitations: UserInvitationsBoolExp
   sentInvitationsAggregate: UserInvitationsAggregateBoolExp
+  servicePositionRatesCreated: ServicePositionRatesBoolExp
+  servicePositionRatesCreatedAggregate: ServicePositionRatesAggregateBoolExp
+  servicePositionRatesUpdated: ServicePositionRatesBoolExp
+  servicePositionRatesUpdatedAggregate: ServicePositionRatesAggregateBoolExp
   skills: UserSkillsBoolExp
   skillsAggregate: UserSkillsAggregateBoolExp
   staffBillingItems: BillingItemsBoolExp
@@ -40751,6 +43957,9 @@ input UsersInsertInput {
   backupPayrollAssignments: PayrollsArrRelInsertInput
   """Category for billing purposes (consultant, manager, etc.)"""
   billingCategory: String
+  billingUnitTypes: BillingUnitTypesArrRelInsertInput
+  billingUnitTypesCreated: BillingUnitTypesArrRelInsertInput
+  billingUnitTypesUpdated: BillingUnitTypesArrRelInsertInput
   """User biography or description"""
   bio: String
   """External identifier from Clerk authentication service"""
@@ -40772,6 +43981,7 @@ input UsersInsertInput {
   createdServiceTemplates: ServiceTemplatesArrRelInsertInput
   createdServices: ServicesArrRelInsertInput
   currentHourlyRate: numeric
+  customQueryTemplates: CustomQueryTemplatesArrRelInsertInput
   dataBackups: DataBackupsArrRelInsertInput
   deactivatedAt: timestamptz
   deactivatedBy: String
@@ -40805,6 +44015,7 @@ input UsersInsertInput {
   """Reference to the user's manager"""
   managerId: uuid
   originalConsultantAssignments: PayrollAssignmentsArrRelInsertInput
+  payrollDateCompletionContexts: PayrollDateCompletionContextArrRelInsertInput
   payrollDateTimeEntries: PayrollDateTimeEntriesArrRelInsertInput
   payrollDates: PayrollDatesArrRelInsertInput
   payrollServiceAgreementsCreatedBy: PayrollServiceAgreementsArrRelInsertInput
@@ -40819,6 +44030,7 @@ input UsersInsertInput {
   """Organizational position affecting admin time allocation"""
   position: user_position
   primaryPayrollAssignments: PayrollsArrRelInsertInput
+  queryExecutions: QueryExecutionsArrRelInsertInput
   quoteConversions: QuoteConversionsArrRelInsertInput
   quoteTemplates: QuoteTemplatesArrRelInsertInput
   quotes: QuotesArrRelInsertInput
@@ -40833,6 +44045,8 @@ input UsersInsertInput {
   seniorityLevel: seniority_level_type
   sentEmails: EmailSendLogsArrRelInsertInput
   sentInvitations: UserInvitationsArrRelInsertInput
+  servicePositionRatesCreated: ServicePositionRatesArrRelInsertInput
+  servicePositionRatesUpdated: ServicePositionRatesArrRelInsertInput
   skills: UserSkillsArrRelInsertInput
   staffBillingItems: BillingItemsArrRelInsertInput
   """Current user status - must be consistent with isActive field"""
@@ -41124,6 +44338,9 @@ input UsersOrderBy {
   authoredNotesAggregate: NotesAggregateOrderBy
   backupPayrollAssignmentsAggregate: PayrollsAggregateOrderBy
   billingCategory: OrderBy
+  billingUnitTypesAggregate: BillingUnitTypesAggregateOrderBy
+  billingUnitTypesCreatedAggregate: BillingUnitTypesAggregateOrderBy
+  billingUnitTypesUpdatedAggregate: BillingUnitTypesAggregateOrderBy
   bio: OrderBy
   clerkUserId: OrderBy
   clientServiceAssignmentsCreatedAggregate: ClientServiceAssignmentsAggregateOrderBy
@@ -41142,6 +44359,7 @@ input UsersOrderBy {
   createdServiceTemplatesAggregate: ServiceTemplatesAggregateOrderBy
   createdServicesAggregate: ServicesAggregateOrderBy
   currentHourlyRate: OrderBy
+  customQueryTemplatesAggregate: CustomQueryTemplatesAggregateOrderBy
   dataBackupsAggregate: DataBackupsAggregateOrderBy
   deactivatedAt: OrderBy
   deactivatedBy: OrderBy
@@ -41168,6 +44386,7 @@ input UsersOrderBy {
   manager: UsersOrderBy
   managerId: OrderBy
   originalConsultantAssignmentsAggregate: PayrollAssignmentsAggregateOrderBy
+  payrollDateCompletionContextsAggregate: PayrollDateCompletionContextAggregateOrderBy
   payrollDateTimeEntriesAggregate: PayrollDateTimeEntriesAggregateOrderBy
   payrollDatesAggregate: PayrollDatesAggregateOrderBy
   payrollServiceAgreementsCreatedByAggregate: PayrollServiceAgreementsAggregateOrderBy
@@ -41180,6 +44399,7 @@ input UsersOrderBy {
   phone: OrderBy
   position: OrderBy
   primaryPayrollAssignmentsAggregate: PayrollsAggregateOrderBy
+  queryExecutionsAggregate: QueryExecutionsAggregateOrderBy
   quoteConversionsAggregate: QuoteConversionsAggregateOrderBy
   quoteTemplatesAggregate: QuoteTemplatesAggregateOrderBy
   quotesAggregate: QuotesAggregateOrderBy
@@ -41193,6 +44413,8 @@ input UsersOrderBy {
   seniorityLevel: OrderBy
   sentEmailsAggregate: EmailSendLogsAggregateOrderBy
   sentInvitationsAggregate: UserInvitationsAggregateOrderBy
+  servicePositionRatesCreatedAggregate: ServicePositionRatesAggregateOrderBy
+  servicePositionRatesUpdatedAggregate: ServicePositionRatesAggregateOrderBy
   skillsAggregate: UserSkillsAggregateOrderBy
   staffBillingItemsAggregate: BillingItemsAggregateOrderBy
   status: OrderBy
@@ -42478,6 +45700,27 @@ input billingPeriodsAggregateBoolExpCount {
   predicate: IntComparisonExp!
 }
 
+input billingUnitTypesAggregateBoolExpBool_and {
+  arguments: BillingUnitTypesSelectColumnBillingUnitTypesAggregateBoolExpBool_andArgumentsColumns!
+  distinct: Boolean
+  filter: BillingUnitTypesBoolExp
+  predicate: BooleanComparisonExp!
+}
+
+input billingUnitTypesAggregateBoolExpBool_or {
+  arguments: BillingUnitTypesSelectColumnBillingUnitTypesAggregateBoolExpBool_orArgumentsColumns!
+  distinct: Boolean
+  filter: BillingUnitTypesBoolExp
+  predicate: BooleanComparisonExp!
+}
+
+input billingUnitTypesAggregateBoolExpCount {
+  arguments: [BillingUnitTypesSelectColumn!]
+  distinct: Boolean
+  filter: BillingUnitTypesBoolExp
+  predicate: IntComparisonExp!
+}
+
 scalar billing_tier_level
 
 scalar bpchar
@@ -42551,6 +45794,27 @@ input createPayrollVersionArgs {
 input createPayrollVersionSimpleArgs {
   payroll_id: uuid
   version_reason: String
+}
+
+input customQueryTemplatesAggregateBoolExpBool_and {
+  arguments: CustomQueryTemplatesSelectColumnCustomQueryTemplatesAggregateBoolExpBool_andArgumentsColumns!
+  distinct: Boolean
+  filter: CustomQueryTemplatesBoolExp
+  predicate: BooleanComparisonExp!
+}
+
+input customQueryTemplatesAggregateBoolExpBool_or {
+  arguments: CustomQueryTemplatesSelectColumnCustomQueryTemplatesAggregateBoolExpBool_orArgumentsColumns!
+  distinct: Boolean
+  filter: CustomQueryTemplatesBoolExp
+  predicate: BooleanComparisonExp!
+}
+
+input customQueryTemplatesAggregateBoolExpCount {
+  arguments: [CustomQueryTemplatesSelectColumn!]
+  distinct: Boolean
+  filter: CustomQueryTemplatesBoolExp
+  predicate: IntComparisonExp!
 }
 
 input dataBackupsAggregateBoolExpCount {
@@ -42913,6 +46177,17 @@ type mutation_root {
   """
   deleteBillingPeriodsByPk(id: uuid!): BillingPeriods
   """
+  delete data from the table: "billing_unit_types"
+  """
+  deleteBillingUnitTypes(
+    """filter the rows which have to be deleted"""
+    where: BillingUnitTypesBoolExp!
+  ): BillingUnitTypesMutationResponse
+  """
+  delete single row from the table: "billing_unit_types"
+  """
+  deleteBillingUnitTypesByPk(id: uuid!): BillingUnitTypes
+  """
   delete data from the table: "client_external_systems"
   """
   deleteClientExternalSystems(
@@ -42962,6 +46237,17 @@ type mutation_root {
     """Unique identifier for the client"""
     id: uuid!
   ): Clients
+  """
+  delete data from the table: "custom_query_templates"
+  """
+  deleteCustomQueryTemplates(
+    """filter the rows which have to be deleted"""
+    where: CustomQueryTemplatesBoolExp!
+  ): CustomQueryTemplatesMutationResponse
+  """
+  delete single row from the table: "custom_query_templates"
+  """
+  deleteCustomQueryTemplatesByPk(id: uuid!): CustomQueryTemplates
   """
   delete data from the table: "data_backups"
   """
@@ -43190,6 +46476,17 @@ type mutation_root {
     id: uuid!
   ): PayrollCycles
   """
+  delete data from the table: "payroll_date_completion_context"
+  """
+  deletePayrollDateCompletionContext(
+    """filter the rows which have to be deleted"""
+    where: PayrollDateCompletionContextBoolExp!
+  ): PayrollDateCompletionContextMutationResponse
+  """
+  delete single row from the table: "payroll_date_completion_context"
+  """
+  deletePayrollDateCompletionContextByPk(id: uuid!): PayrollDateCompletionContext
+  """
   delete data from the table: "payroll_date_time_entries"
   """
   deletePayrollDateTimeEntries(
@@ -43349,6 +46646,17 @@ type mutation_root {
   """
   deletePositionAdminDefaultsByPk(position: user_position!): PositionAdminDefaults
   """
+  delete data from the table: "query_executions"
+  """
+  deleteQueryExecutions(
+    """filter the rows which have to be deleted"""
+    where: QueryExecutionsBoolExp!
+  ): QueryExecutionsMutationResponse
+  """
+  delete single row from the table: "query_executions"
+  """
+  deleteQueryExecutionsByPk(id: uuid!): QueryExecutions
+  """
   delete data from the table: "quote_conversions"
   """
   deleteQuoteConversions(
@@ -43458,6 +46766,17 @@ type mutation_root {
   delete single row from the table: "security_settings"
   """
   deleteSecuritySettingsByPk(id: uuid!): SecuritySettings
+  """
+  delete data from the table: "service_position_rates"
+  """
+  deleteServicePositionRates(
+    """filter the rows which have to be deleted"""
+    where: ServicePositionRatesBoolExp!
+  ): ServicePositionRatesMutationResponse
+  """
+  delete single row from the table: "service_position_rates"
+  """
+  deleteServicePositionRatesByPk(id: uuid!): ServicePositionRates
   """
   delete data from the table: "service_pricing_rules"
   """
@@ -43882,6 +47201,24 @@ type mutation_root {
     onConflict: BillingPeriodsOnConflict
   ): BillingPeriods
   """
+  insert data into the table: "billing_unit_types"
+  """
+  insertBillingUnitTypes(
+    """the rows to be inserted"""
+    objects: [BillingUnitTypesInsertInput!]!
+    """upsert condition"""
+    onConflict: BillingUnitTypesOnConflict
+  ): BillingUnitTypesMutationResponse
+  """
+  insert a single row into the table: "billing_unit_types"
+  """
+  insertBillingUnitTypesOne(
+    """the row to be inserted"""
+    object: BillingUnitTypesInsertInput!
+    """upsert condition"""
+    onConflict: BillingUnitTypesOnConflict
+  ): BillingUnitTypes
+  """
   insert data into the table: "client_external_systems"
   """
   insertClientExternalSystems(
@@ -43953,6 +47290,24 @@ type mutation_root {
     """upsert condition"""
     onConflict: ClientsOnConflict
   ): Clients
+  """
+  insert data into the table: "custom_query_templates"
+  """
+  insertCustomQueryTemplates(
+    """the rows to be inserted"""
+    objects: [CustomQueryTemplatesInsertInput!]!
+    """upsert condition"""
+    onConflict: CustomQueryTemplatesOnConflict
+  ): CustomQueryTemplatesMutationResponse
+  """
+  insert a single row into the table: "custom_query_templates"
+  """
+  insertCustomQueryTemplatesOne(
+    """the row to be inserted"""
+    object: CustomQueryTemplatesInsertInput!
+    """upsert condition"""
+    onConflict: CustomQueryTemplatesOnConflict
+  ): CustomQueryTemplates
   """
   insert data into the table: "data_backups"
   """
@@ -44296,6 +47651,24 @@ type mutation_root {
     onConflict: PayrollCyclesOnConflict
   ): PayrollCycles
   """
+  insert data into the table: "payroll_date_completion_context"
+  """
+  insertPayrollDateCompletionContext(
+    """the rows to be inserted"""
+    objects: [PayrollDateCompletionContextInsertInput!]!
+    """upsert condition"""
+    onConflict: PayrollDateCompletionContextOnConflict
+  ): PayrollDateCompletionContextMutationResponse
+  """
+  insert a single row into the table: "payroll_date_completion_context"
+  """
+  insertPayrollDateCompletionContextOne(
+    """the row to be inserted"""
+    object: PayrollDateCompletionContextInsertInput!
+    """upsert condition"""
+    onConflict: PayrollDateCompletionContextOnConflict
+  ): PayrollDateCompletionContext
+  """
   insert data into the table: "payroll_date_time_entries"
   """
   insertPayrollDateTimeEntries(
@@ -44544,6 +47917,24 @@ type mutation_root {
     onConflict: PositionAdminDefaultsOnConflict
   ): PositionAdminDefaults
   """
+  insert data into the table: "query_executions"
+  """
+  insertQueryExecutions(
+    """the rows to be inserted"""
+    objects: [QueryExecutionsInsertInput!]!
+    """upsert condition"""
+    onConflict: QueryExecutionsOnConflict
+  ): QueryExecutionsMutationResponse
+  """
+  insert a single row into the table: "query_executions"
+  """
+  insertQueryExecutionsOne(
+    """the row to be inserted"""
+    object: QueryExecutionsInsertInput!
+    """upsert condition"""
+    onConflict: QueryExecutionsOnConflict
+  ): QueryExecutions
+  """
   insert data into the table: "quote_conversions"
   """
   insertQuoteConversions(
@@ -44723,6 +48114,24 @@ type mutation_root {
     """upsert condition"""
     onConflict: SecuritySettingsOnConflict
   ): SecuritySettings
+  """
+  insert data into the table: "service_position_rates"
+  """
+  insertServicePositionRates(
+    """the rows to be inserted"""
+    objects: [ServicePositionRatesInsertInput!]!
+    """upsert condition"""
+    onConflict: ServicePositionRatesOnConflict
+  ): ServicePositionRatesMutationResponse
+  """
+  insert a single row into the table: "service_position_rates"
+  """
+  insertServicePositionRatesOne(
+    """the row to be inserted"""
+    object: ServicePositionRatesInsertInput!
+    """upsert condition"""
+    onConflict: ServicePositionRatesOnConflict
+  ): ServicePositionRates
   """
   insert data into the table: "service_pricing_rules"
   """
@@ -45435,8 +48844,24 @@ type mutation_root {
   update data of the table: "billing_items"
   """
   updateBillingItems(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: BillingItemsAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: BillingItemsDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: BillingItemsDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: BillingItemsDeleteKeyInput
     """increments the numeric columns with given value of the filtered values"""
     _inc: BillingItemsIncInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: BillingItemsPrependInput
     """sets the columns of the filtered rows to the given values"""
     _set: BillingItemsSetInput
     """filter the rows which have to be updated"""
@@ -45446,8 +48871,24 @@ type mutation_root {
   update single row of the table: "billing_items"
   """
   updateBillingItemsByPk(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: BillingItemsAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: BillingItemsDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: BillingItemsDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: BillingItemsDeleteKeyInput
     """increments the numeric columns with given value of the filtered values"""
     _inc: BillingItemsIncInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: BillingItemsPrependInput
     """sets the columns of the filtered rows to the given values"""
     _set: BillingItemsSetInput
     pkColumns: BillingItemsPkColumnsInput!
@@ -45519,6 +48960,30 @@ type mutation_root {
     """updates to execute, in order"""
     updates: [BillingPeriodsUpdates!]!
   ): [BillingPeriodsMutationResponse]
+  """
+  update data of the table: "billing_unit_types"
+  """
+  updateBillingUnitTypes(
+    """sets the columns of the filtered rows to the given values"""
+    _set: BillingUnitTypesSetInput
+    """filter the rows which have to be updated"""
+    where: BillingUnitTypesBoolExp!
+  ): BillingUnitTypesMutationResponse
+  """
+  update single row of the table: "billing_unit_types"
+  """
+  updateBillingUnitTypesByPk(
+    """sets the columns of the filtered rows to the given values"""
+    _set: BillingUnitTypesSetInput
+    pkColumns: BillingUnitTypesPkColumnsInput!
+  ): BillingUnitTypes
+  """
+  update multiples rows of table: "billing_unit_types"
+  """
+  updateBillingUnitTypesMany(
+    """updates to execute, in order"""
+    updates: [BillingUnitTypesUpdates!]!
+  ): [BillingUnitTypesMutationResponse]
   """
   update data of the table: "client_external_systems"
   """
@@ -45687,6 +49152,62 @@ type mutation_root {
     """updates to execute, in order"""
     updates: [ClientsUpdates!]!
   ): [ClientsMutationResponse]
+  """
+  update data of the table: "custom_query_templates"
+  """
+  updateCustomQueryTemplates(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: CustomQueryTemplatesAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: CustomQueryTemplatesDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: CustomQueryTemplatesDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: CustomQueryTemplatesDeleteKeyInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: CustomQueryTemplatesPrependInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: CustomQueryTemplatesSetInput
+    """filter the rows which have to be updated"""
+    where: CustomQueryTemplatesBoolExp!
+  ): CustomQueryTemplatesMutationResponse
+  """
+  update single row of the table: "custom_query_templates"
+  """
+  updateCustomQueryTemplatesByPk(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: CustomQueryTemplatesAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: CustomQueryTemplatesDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: CustomQueryTemplatesDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: CustomQueryTemplatesDeleteKeyInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: CustomQueryTemplatesPrependInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: CustomQueryTemplatesSetInput
+    pkColumns: CustomQueryTemplatesPkColumnsInput!
+  ): CustomQueryTemplates
+  """
+  update multiples rows of table: "custom_query_templates"
+  """
+  updateCustomQueryTemplatesMany(
+    """updates to execute, in order"""
+    updates: [CustomQueryTemplatesUpdates!]!
+  ): [CustomQueryTemplatesMutationResponse]
   """
   update data of the table: "data_backups"
   """
@@ -46372,6 +49893,66 @@ type mutation_root {
     updates: [PayrollCyclesUpdates!]!
   ): [PayrollCyclesMutationResponse]
   """
+  update data of the table: "payroll_date_completion_context"
+  """
+  updatePayrollDateCompletionContext(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: PayrollDateCompletionContextAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: PayrollDateCompletionContextDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: PayrollDateCompletionContextDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: PayrollDateCompletionContextDeleteKeyInput
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: PayrollDateCompletionContextIncInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: PayrollDateCompletionContextPrependInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: PayrollDateCompletionContextSetInput
+    """filter the rows which have to be updated"""
+    where: PayrollDateCompletionContextBoolExp!
+  ): PayrollDateCompletionContextMutationResponse
+  """
+  update single row of the table: "payroll_date_completion_context"
+  """
+  updatePayrollDateCompletionContextByPk(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: PayrollDateCompletionContextAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: PayrollDateCompletionContextDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: PayrollDateCompletionContextDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: PayrollDateCompletionContextDeleteKeyInput
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: PayrollDateCompletionContextIncInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: PayrollDateCompletionContextPrependInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: PayrollDateCompletionContextSetInput
+    pkColumns: PayrollDateCompletionContextPkColumnsInput!
+  ): PayrollDateCompletionContext
+  """
+  update multiples rows of table: "payroll_date_completion_context"
+  """
+  updatePayrollDateCompletionContextMany(
+    """updates to execute, in order"""
+    updates: [PayrollDateCompletionContextUpdates!]!
+  ): [PayrollDateCompletionContextMutationResponse]
+  """
   update data of the table: "payroll_date_time_entries"
   """
   updatePayrollDateTimeEntries(
@@ -46864,6 +50445,66 @@ type mutation_root {
     updates: [PositionAdminDefaultsUpdates!]!
   ): [PositionAdminDefaultsMutationResponse]
   """
+  update data of the table: "query_executions"
+  """
+  updateQueryExecutions(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: QueryExecutionsAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: QueryExecutionsDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: QueryExecutionsDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: QueryExecutionsDeleteKeyInput
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: QueryExecutionsIncInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: QueryExecutionsPrependInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: QueryExecutionsSetInput
+    """filter the rows which have to be updated"""
+    where: QueryExecutionsBoolExp!
+  ): QueryExecutionsMutationResponse
+  """
+  update single row of the table: "query_executions"
+  """
+  updateQueryExecutionsByPk(
+    """append existing jsonb value of filtered columns with new jsonb value"""
+    _append: QueryExecutionsAppendInput
+    """
+    delete the field or element with specified path (for JSON arrays, negative integers count from the end)
+    """
+    _deleteAtPath: QueryExecutionsDeleteAtPathInput
+    """
+    delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
+    """
+    _deleteElem: QueryExecutionsDeleteElemInput
+    """
+    delete key/value pair or string element. key/value pairs are matched based on their key value
+    """
+    _deleteKey: QueryExecutionsDeleteKeyInput
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: QueryExecutionsIncInput
+    """prepend existing jsonb value of filtered columns with new jsonb value"""
+    _prepend: QueryExecutionsPrependInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: QueryExecutionsSetInput
+    pkColumns: QueryExecutionsPkColumnsInput!
+  ): QueryExecutions
+  """
+  update multiples rows of table: "query_executions"
+  """
+  updateQueryExecutionsMany(
+    """updates to execute, in order"""
+    updates: [QueryExecutionsUpdates!]!
+  ): [QueryExecutionsMutationResponse]
+  """
   update data of the table: "quote_conversions"
   """
   updateQuoteConversions(
@@ -47287,6 +50928,34 @@ type mutation_root {
     """updates to execute, in order"""
     updates: [SecuritySettingsUpdates!]!
   ): [SecuritySettingsMutationResponse]
+  """
+  update data of the table: "service_position_rates"
+  """
+  updateServicePositionRates(
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: ServicePositionRatesIncInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: ServicePositionRatesSetInput
+    """filter the rows which have to be updated"""
+    where: ServicePositionRatesBoolExp!
+  ): ServicePositionRatesMutationResponse
+  """
+  update single row of the table: "service_position_rates"
+  """
+  updateServicePositionRatesByPk(
+    """increments the numeric columns with given value of the filtered values"""
+    _inc: ServicePositionRatesIncInput
+    """sets the columns of the filtered rows to the given values"""
+    _set: ServicePositionRatesSetInput
+    pkColumns: ServicePositionRatesPkColumnsInput!
+  ): ServicePositionRates
+  """
+  update multiples rows of table: "service_position_rates"
+  """
+  updateServicePositionRatesMany(
+    """updates to execute, in order"""
+    updates: [ServicePositionRatesUpdates!]!
+  ): [ServicePositionRatesMutationResponse]
   """
   update data of the table: "service_pricing_rules"
   """
@@ -47970,6 +51639,13 @@ input payrollAssignmentsAggregateBoolExpCount {
   predicate: IntComparisonExp!
 }
 
+input payrollDateCompletionContextAggregateBoolExpCount {
+  arguments: [PayrollDateCompletionContextSelectColumn!]
+  distinct: Boolean
+  filter: PayrollDateCompletionContextBoolExp
+  predicate: IntComparisonExp!
+}
+
 input payrollDateTimeEntriesAggregateBoolExpBool_and {
   arguments: PayrollDateTimeEntriesSelectColumnPayrollDateTimeEntriesAggregateBoolExpBool_andArgumentsColumns!
   distinct: Boolean
@@ -48087,6 +51763,27 @@ input permissionsAggregateBoolExpCount {
   arguments: [PermissionsSelectColumn!]
   distinct: Boolean
   filter: PermissionsBoolExp
+  predicate: IntComparisonExp!
+}
+
+input queryExecutionsAggregateBoolExpBool_and {
+  arguments: QueryExecutionsSelectColumnQueryExecutionsAggregateBoolExpBool_andArgumentsColumns!
+  distinct: Boolean
+  filter: QueryExecutionsBoolExp
+  predicate: BooleanComparisonExp!
+}
+
+input queryExecutionsAggregateBoolExpBool_or {
+  arguments: QueryExecutionsSelectColumnQueryExecutionsAggregateBoolExpBool_orArgumentsColumns!
+  distinct: Boolean
+  filter: QueryExecutionsBoolExp
+  predicate: BooleanComparisonExp!
+}
+
+input queryExecutionsAggregateBoolExpCount {
+  arguments: [QueryExecutionsSelectColumn!]
+  distinct: Boolean
+  filter: QueryExecutionsBoolExp
   predicate: IntComparisonExp!
 }
 
@@ -48605,6 +52302,36 @@ type query_root {
   """fetch data from the table: "billing_periods" using primary key columns"""
   billingPeriodsByPk(id: uuid!): BillingPeriods
   """An array relationship"""
+  billingUnitTypes(
+    """distinct select on columns"""
+    distinctOn: [BillingUnitTypesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [BillingUnitTypesOrderBy!]
+    """filter the rows returned"""
+    where: BillingUnitTypesBoolExp
+  ): [BillingUnitTypes!]!
+  """An aggregate relationship"""
+  billingUnitTypesAggregate(
+    """distinct select on columns"""
+    distinctOn: [BillingUnitTypesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [BillingUnitTypesOrderBy!]
+    """filter the rows returned"""
+    where: BillingUnitTypesBoolExp
+  ): BillingUnitTypesAggregate!
+  """
+  fetch data from the table: "billing_unit_types" using primary key columns
+  """
+  billingUnitTypesByPk(id: uuid!): BillingUnitTypes
+  """An array relationship"""
   clientExternalSystems(
     """distinct select on columns"""
     distinctOn: [ClientExternalSystemsSelectColumn!]
@@ -48856,6 +52583,36 @@ type query_root {
     """filter the rows returned"""
     where: CurrentUserRatesBoolExp
   ): CurrentUserRatesAggregate!
+  """An array relationship"""
+  customQueryTemplates(
+    """distinct select on columns"""
+    distinctOn: [CustomQueryTemplatesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [CustomQueryTemplatesOrderBy!]
+    """filter the rows returned"""
+    where: CustomQueryTemplatesBoolExp
+  ): [CustomQueryTemplates!]!
+  """An aggregate relationship"""
+  customQueryTemplatesAggregate(
+    """distinct select on columns"""
+    distinctOn: [CustomQueryTemplatesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [CustomQueryTemplatesOrderBy!]
+    """filter the rows returned"""
+    where: CustomQueryTemplatesBoolExp
+  ): CustomQueryTemplatesAggregate!
+  """
+  fetch data from the table: "custom_query_templates" using primary key columns
+  """
+  customQueryTemplatesByPk(id: uuid!): CustomQueryTemplates
   """An array relationship"""
   dataBackups(
     """distinct select on columns"""
@@ -49666,6 +53423,40 @@ type query_root {
     """filter the rows returned"""
     where: PayrollDateCompletionAnalyticsBoolExp
   ): PayrollDateCompletionAnalyticsAggregate!
+  """
+  fetch data from the table: "payroll_date_completion_context"
+  """
+  payrollDateCompletionContext(
+    """distinct select on columns"""
+    distinctOn: [PayrollDateCompletionContextSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollDateCompletionContextOrderBy!]
+    """filter the rows returned"""
+    where: PayrollDateCompletionContextBoolExp
+  ): [PayrollDateCompletionContext!]!
+  """
+  fetch aggregated fields from the table: "payroll_date_completion_context"
+  """
+  payrollDateCompletionContextAggregate(
+    """distinct select on columns"""
+    distinctOn: [PayrollDateCompletionContextSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollDateCompletionContextOrderBy!]
+    """filter the rows returned"""
+    where: PayrollDateCompletionContextBoolExp
+  ): PayrollDateCompletionContextAggregate!
+  """
+  fetch data from the table: "payroll_date_completion_context" using primary key columns
+  """
+  payrollDateCompletionContextByPk(id: uuid!): PayrollDateCompletionContext
   """An array relationship"""
   payrollDateTimeEntries(
     """distinct select on columns"""
@@ -50229,6 +54020,36 @@ type query_root {
   fetch data from the table: "position_admin_defaults" using primary key columns
   """
   positionAdminDefaultsByPk(position: user_position!): PositionAdminDefaults
+  """An array relationship"""
+  queryExecutions(
+    """distinct select on columns"""
+    distinctOn: [QueryExecutionsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [QueryExecutionsOrderBy!]
+    """filter the rows returned"""
+    where: QueryExecutionsBoolExp
+  ): [QueryExecutions!]!
+  """An aggregate relationship"""
+  queryExecutionsAggregate(
+    """distinct select on columns"""
+    distinctOn: [QueryExecutionsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [QueryExecutionsOrderBy!]
+    """filter the rows returned"""
+    where: QueryExecutionsBoolExp
+  ): QueryExecutionsAggregate!
+  """
+  fetch data from the table: "query_executions" using primary key columns
+  """
+  queryExecutionsByPk(id: uuid!): QueryExecutions
   """
   fetch data from the table: "quote_analytics"
   """
@@ -50560,6 +54381,36 @@ type query_root {
   """
   securitySettingsByPk(id: uuid!): SecuritySettings
   """An array relationship"""
+  servicePositionRates(
+    """distinct select on columns"""
+    distinctOn: [ServicePositionRatesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [ServicePositionRatesOrderBy!]
+    """filter the rows returned"""
+    where: ServicePositionRatesBoolExp
+  ): [ServicePositionRates!]!
+  """An aggregate relationship"""
+  servicePositionRatesAggregate(
+    """distinct select on columns"""
+    distinctOn: [ServicePositionRatesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [ServicePositionRatesOrderBy!]
+    """filter the rows returned"""
+    where: ServicePositionRatesBoolExp
+  ): ServicePositionRatesAggregate!
+  """
+  fetch data from the table: "service_position_rates" using primary key columns
+  """
+  servicePositionRatesByPk(id: uuid!): ServicePositionRates
+  """An array relationship"""
   servicePricingRules(
     """distinct select on columns"""
     distinctOn: [ServicePricingRulesSelectColumn!]
@@ -50869,6 +54720,36 @@ type query_root {
     """filter the rows returned"""
     where: TimeTrackingSummaryBoolExp
   ): TimeTrackingSummaryAggregate!
+  """
+  fetch data from the table: "user_accessible_tables"
+  """
+  userAccessibleTables(
+    """distinct select on columns"""
+    distinctOn: [UserAccessibleTablesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [UserAccessibleTablesOrderBy!]
+    """filter the rows returned"""
+    where: UserAccessibleTablesBoolExp
+  ): [UserAccessibleTables!]!
+  """
+  fetch aggregated fields from the table: "user_accessible_tables"
+  """
+  userAccessibleTablesAggregate(
+    """distinct select on columns"""
+    distinctOn: [UserAccessibleTablesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [UserAccessibleTablesOrderBy!]
+    """filter the rows returned"""
+    where: UserAccessibleTablesBoolExp
+  ): UserAccessibleTablesAggregate!
   """An array relationship"""
   userBillingRates(
     """distinct select on columns"""
@@ -51311,6 +55192,13 @@ input securitySettingsAggregateBoolExpCount {
 }
 
 scalar seniority_level_type
+
+input servicePositionRatesAggregateBoolExpCount {
+  arguments: [ServicePositionRatesSelectColumn!]
+  distinct: Boolean
+  filter: ServicePositionRatesBoolExp
+  predicate: IntComparisonExp!
+}
 
 input servicePricingRulesAggregateBoolExpBool_and {
   arguments: ServicePricingRulesSelectColumnServicePricingRulesAggregateBoolExpBool_andArgumentsColumns!
@@ -52065,6 +55953,47 @@ type subscription_root {
     where: BillingPeriodsBoolExp
   ): [BillingPeriods!]!
   """An array relationship"""
+  billingUnitTypes(
+    """distinct select on columns"""
+    distinctOn: [BillingUnitTypesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [BillingUnitTypesOrderBy!]
+    """filter the rows returned"""
+    where: BillingUnitTypesBoolExp
+  ): [BillingUnitTypes!]!
+  """An aggregate relationship"""
+  billingUnitTypesAggregate(
+    """distinct select on columns"""
+    distinctOn: [BillingUnitTypesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [BillingUnitTypesOrderBy!]
+    """filter the rows returned"""
+    where: BillingUnitTypesBoolExp
+  ): BillingUnitTypesAggregate!
+  """
+  fetch data from the table: "billing_unit_types" using primary key columns
+  """
+  billingUnitTypesByPk(id: uuid!): BillingUnitTypes
+  """
+  fetch data from the table in a streaming manner: "billing_unit_types"
+  """
+  billingUnitTypesStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+    """cursor to stream the results returned by the query"""
+    cursor: [BillingUnitTypesStreamCursorInput]!
+    """filter the rows returned"""
+    where: BillingUnitTypesBoolExp
+  ): [BillingUnitTypes!]!
+  """An array relationship"""
   clientExternalSystems(
     """distinct select on columns"""
     distinctOn: [ClientExternalSystemsSelectColumn!]
@@ -52404,6 +56333,47 @@ type subscription_root {
     """filter the rows returned"""
     where: CurrentUserRatesBoolExp
   ): [CurrentUserRates!]!
+  """An array relationship"""
+  customQueryTemplates(
+    """distinct select on columns"""
+    distinctOn: [CustomQueryTemplatesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [CustomQueryTemplatesOrderBy!]
+    """filter the rows returned"""
+    where: CustomQueryTemplatesBoolExp
+  ): [CustomQueryTemplates!]!
+  """An aggregate relationship"""
+  customQueryTemplatesAggregate(
+    """distinct select on columns"""
+    distinctOn: [CustomQueryTemplatesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [CustomQueryTemplatesOrderBy!]
+    """filter the rows returned"""
+    where: CustomQueryTemplatesBoolExp
+  ): CustomQueryTemplatesAggregate!
+  """
+  fetch data from the table: "custom_query_templates" using primary key columns
+  """
+  customQueryTemplatesByPk(id: uuid!): CustomQueryTemplates
+  """
+  fetch data from the table in a streaming manner: "custom_query_templates"
+  """
+  customQueryTemplatesStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+    """cursor to stream the results returned by the query"""
+    cursor: [CustomQueryTemplatesStreamCursorInput]!
+    """filter the rows returned"""
+    where: CustomQueryTemplatesBoolExp
+  ): [CustomQueryTemplates!]!
   """An array relationship"""
   dataBackups(
     """distinct select on columns"""
@@ -53467,6 +57437,51 @@ type subscription_root {
     """filter the rows returned"""
     where: PayrollDateCompletionAnalyticsBoolExp
   ): [PayrollDateCompletionAnalytics!]!
+  """
+  fetch data from the table: "payroll_date_completion_context"
+  """
+  payrollDateCompletionContext(
+    """distinct select on columns"""
+    distinctOn: [PayrollDateCompletionContextSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollDateCompletionContextOrderBy!]
+    """filter the rows returned"""
+    where: PayrollDateCompletionContextBoolExp
+  ): [PayrollDateCompletionContext!]!
+  """
+  fetch aggregated fields from the table: "payroll_date_completion_context"
+  """
+  payrollDateCompletionContextAggregate(
+    """distinct select on columns"""
+    distinctOn: [PayrollDateCompletionContextSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [PayrollDateCompletionContextOrderBy!]
+    """filter the rows returned"""
+    where: PayrollDateCompletionContextBoolExp
+  ): PayrollDateCompletionContextAggregate!
+  """
+  fetch data from the table: "payroll_date_completion_context" using primary key columns
+  """
+  payrollDateCompletionContextByPk(id: uuid!): PayrollDateCompletionContext
+  """
+  fetch data from the table in a streaming manner: "payroll_date_completion_context"
+  """
+  payrollDateCompletionContextStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+    """cursor to stream the results returned by the query"""
+    cursor: [PayrollDateCompletionContextStreamCursorInput]!
+    """filter the rows returned"""
+    where: PayrollDateCompletionContextBoolExp
+  ): [PayrollDateCompletionContext!]!
   """An array relationship"""
   payrollDateTimeEntries(
     """distinct select on columns"""
@@ -54228,6 +58243,47 @@ type subscription_root {
     """filter the rows returned"""
     where: PositionAdminDefaultsBoolExp
   ): [PositionAdminDefaults!]!
+  """An array relationship"""
+  queryExecutions(
+    """distinct select on columns"""
+    distinctOn: [QueryExecutionsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [QueryExecutionsOrderBy!]
+    """filter the rows returned"""
+    where: QueryExecutionsBoolExp
+  ): [QueryExecutions!]!
+  """An aggregate relationship"""
+  queryExecutionsAggregate(
+    """distinct select on columns"""
+    distinctOn: [QueryExecutionsSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [QueryExecutionsOrderBy!]
+    """filter the rows returned"""
+    where: QueryExecutionsBoolExp
+  ): QueryExecutionsAggregate!
+  """
+  fetch data from the table: "query_executions" using primary key columns
+  """
+  queryExecutionsByPk(id: uuid!): QueryExecutions
+  """
+  fetch data from the table in a streaming manner: "query_executions"
+  """
+  queryExecutionsStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+    """cursor to stream the results returned by the query"""
+    cursor: [QueryExecutionsStreamCursorInput]!
+    """filter the rows returned"""
+    where: QueryExecutionsBoolExp
+  ): [QueryExecutions!]!
   """
   fetch data from the table: "quote_analytics"
   """
@@ -54680,6 +58736,47 @@ type subscription_root {
     where: SecuritySettingsBoolExp
   ): [SecuritySettings!]!
   """An array relationship"""
+  servicePositionRates(
+    """distinct select on columns"""
+    distinctOn: [ServicePositionRatesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [ServicePositionRatesOrderBy!]
+    """filter the rows returned"""
+    where: ServicePositionRatesBoolExp
+  ): [ServicePositionRates!]!
+  """An aggregate relationship"""
+  servicePositionRatesAggregate(
+    """distinct select on columns"""
+    distinctOn: [ServicePositionRatesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [ServicePositionRatesOrderBy!]
+    """filter the rows returned"""
+    where: ServicePositionRatesBoolExp
+  ): ServicePositionRatesAggregate!
+  """
+  fetch data from the table: "service_position_rates" using primary key columns
+  """
+  servicePositionRatesByPk(id: uuid!): ServicePositionRates
+  """
+  fetch data from the table in a streaming manner: "service_position_rates"
+  """
+  servicePositionRatesStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+    """cursor to stream the results returned by the query"""
+    cursor: [ServicePositionRatesStreamCursorInput]!
+    """filter the rows returned"""
+    where: ServicePositionRatesBoolExp
+  ): [ServicePositionRates!]!
+  """An array relationship"""
   servicePricingRules(
     """distinct select on columns"""
     distinctOn: [ServicePricingRulesSelectColumn!]
@@ -55099,6 +59196,47 @@ type subscription_root {
     """filter the rows returned"""
     where: TimeTrackingSummaryBoolExp
   ): [TimeTrackingSummary!]!
+  """
+  fetch data from the table: "user_accessible_tables"
+  """
+  userAccessibleTables(
+    """distinct select on columns"""
+    distinctOn: [UserAccessibleTablesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [UserAccessibleTablesOrderBy!]
+    """filter the rows returned"""
+    where: UserAccessibleTablesBoolExp
+  ): [UserAccessibleTables!]!
+  """
+  fetch aggregated fields from the table: "user_accessible_tables"
+  """
+  userAccessibleTablesAggregate(
+    """distinct select on columns"""
+    distinctOn: [UserAccessibleTablesSelectColumn!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    orderBy: [UserAccessibleTablesOrderBy!]
+    """filter the rows returned"""
+    where: UserAccessibleTablesBoolExp
+  ): UserAccessibleTablesAggregate!
+  """
+  fetch data from the table in a streaming manner: "user_accessible_tables"
+  """
+  userAccessibleTablesStream(
+    """maximum number of rows returned in a single batch"""
+    batchSize: Int!
+    """cursor to stream the results returned by the query"""
+    cursor: [UserAccessibleTablesStreamCursorInput]!
+    """filter the rows returned"""
+    where: UserAccessibleTablesBoolExp
+  ): [UserAccessibleTables!]!
   """An array relationship"""
   userBillingRates(
     """distinct select on columns"""

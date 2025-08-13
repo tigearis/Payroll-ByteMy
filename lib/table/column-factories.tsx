@@ -1,5 +1,5 @@
-import { Badge } from "@/components/ui/badge";
 import { ColumnDef } from "@/components/data";
+import { Badge } from "@/components/ui/badge";
 
 // Common column factory functions for consistent table columns
 export const ColumnFactories = {
@@ -37,7 +37,7 @@ export function createStatusColumn<T>(
 ): ColumnDef<T> {
   return {
     id: accessor,
-    key: accessor,
+    key: accessor as keyof T,
     label: "Status",
     essential: true,
     sortable: true,
@@ -58,7 +58,7 @@ export function createDateColumn<T>(
 ): ColumnDef<T> {
   return {
     id: accessor,
-    key: accessor,
+    key: accessor as keyof T,
     label,
     essential: true,
     sortable: true,
@@ -83,7 +83,7 @@ export function createTextColumn<T>(
   
   return {
     id: accessor,
-    key: accessor,
+    key: accessor as keyof T,
     label,
     essential,
     sortable,
@@ -105,7 +105,7 @@ export function createNumberColumn<T>(
 ): ColumnDef<T> {
   return {
     id: accessor,
-    key: accessor,
+    key: accessor as keyof T,
     label,
     essential: true,
     sortable: true,

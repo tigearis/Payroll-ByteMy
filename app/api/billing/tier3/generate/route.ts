@@ -1,8 +1,33 @@
-import { gql } from '@apollo/client';
 import { NextRequest, NextResponse } from 'next/server';
 import { serverApolloClient } from '@/lib/apollo/unified-client';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger, DataClassification } from "@/lib/logging/enterprise-logger";
+import {
+  CheckClientApiTier3Document,
+  CheckMonthlyCompletionApiTier3Document,
+  GetTier3ServicesForApiDocument,
+  CheckExistingTier3BillingApiDocument,
+  CreateBillingItemApiDocument,
+  GetEmployeeCountApiTier3Document,
+  LogBillingEventApiDocument,
+  UpdateMonthlyCompletionApiTier3Document,
+  type CheckClientApiTier3Query,
+  type CheckClientApiTier3QueryVariables,
+  type CheckMonthlyCompletionApiTier3Query,
+  type CheckMonthlyCompletionApiTier3QueryVariables,
+  type GetTier3ServicesForApiQuery,
+  type GetTier3ServicesForApiQueryVariables,
+  type CheckExistingTier3BillingApiQuery,
+  type CheckExistingTier3BillingApiQueryVariables,
+  type CreateBillingItemApiMutation,
+  type CreateBillingItemApiMutationVariables,
+  type GetEmployeeCountApiTier3Query,
+  type GetEmployeeCountApiTier3QueryVariables,
+  type LogBillingEventApiMutation,
+  type LogBillingEventApiMutationVariables,
+  type UpdateMonthlyCompletionApiTier3Mutation,
+  type UpdateMonthlyCompletionApiTier3MutationVariables,
+} from '@/domains/billing/graphql/generated/graphql';
 
 interface GenerateTier3BillingRequest {
   clientId: string;
@@ -54,18 +79,11 @@ async function POST(request: NextRequest) {
     const client = serverApolloClient;
 
     // First, verify the client exists
-    const CHECK_CLIENT = gql`
-      query CheckClient($id: uuid!) {
-        clientsByPk(id: $id) {
-          id
-          name
-          active
-        }
-      }
-    `;
-
-    const { data: clientData } = await client.query({
-      query: CHECK_CLIENT,
+    const { data: clientData } = await client.query<
+      CheckClientApiTier3Query,
+      CheckClientApiTier3QueryVariables
+    >({
+      query: CheckClientApiTier3Document,
       variables: { id: clientId },
       fetchPolicy: 'network-only'
     });
@@ -80,28 +98,11 @@ async function POST(request: NextRequest) {
     const clientInfo = clientData.clientsByPk;
 
     // Check monthly billing completion status
-    const CHECK_MONTHLY_COMPLETION = gql`
-      query CheckMonthlyCompletion($clientId: uuid!, $billingMonth: date!) {
-        monthlyBillingCompletion(
-          where: {
-            clientId: { _eq: $clientId }
-            billingMonth: { _eq: $billingMonth }
-          }
-        ) {
-          id
-          status
-          tier3BillingGenerated
-          autoBillingEnabled
-          completedPayrolls
-          totalPayrolls
-          completedPayrollDates
-          totalPayrollDates
-        }
-      }
-    `;
-
-    const { data: completionData } = await client.query({
-      query: CHECK_MONTHLY_COMPLETION,
+    const { data: completionData } = await client.query<
+      CheckMonthlyCompletionApiTier3Query,
+      CheckMonthlyCompletionApiTier3QueryVariables
+    >({
+      query: CheckMonthlyCompletionApiTier3Document,
       variables: { clientId, billingMonth },
       fetchPolicy: 'network-only'
     });
@@ -116,40 +117,11 @@ async function POST(request: NextRequest) {
     }
 
     // Get tier 3 services (monthly client services)
-    const GET_TIER3_SERVICES = gql`
-      query GetTier3Services($clientId: uuid!) {
-        clientServiceAgreements(
-          where: {
-            clientId: { _eq: $clientId }
-            isActive: { _eq: true }
-            isEnabled: { _eq: true }
-            service: { 
-              billingTier: { _eq: "client_monthly" }
-              isActive: { _eq: true }
-            }
-            billingFrequency: { _eq: "monthly" }
-          }
-        ) {
-          id
-          serviceId
-          customRate
-          billingFrequency
-          serviceConfiguration
-          service {
-            id
-            name
-            description
-            billingUnit
-            defaultRate
-            billingTier
-            tierPriority
-          }
-        }
-      }
-    `;
-
-    const { data: servicesData } = await client.query({
-      query: GET_TIER3_SERVICES,
+    const { data: servicesData } = await client.query<
+      GetTier3ServicesForApiQuery,
+      GetTier3ServicesForApiQueryVariables
+    >({
+      query: GetTier3ServicesForApiDocument,
       variables: { clientId },
       fetchPolicy: 'network-only'
     });
@@ -164,25 +136,11 @@ async function POST(request: NextRequest) {
       const billingMonthStart = new Date(billingMonth);
       const billingMonthEnd = new Date(billingMonthStart.getFullYear(), billingMonthStart.getMonth() + 1, 0);
 
-      const CHECK_EXISTING_BILLING = gql`
-        query CheckExistingBilling($clientId: uuid!, $serviceId: uuid!, $monthStart: timestamptz!, $monthEnd: timestamptz!) {
-          billingItems(
-            where: {
-              clientId: { _eq: $clientId }
-              serviceId: { _eq: $serviceId }
-              payrollId: { _is_null: true }
-              payrollDateId: { _is_null: true }
-              createdAt: { _gte: $monthStart, _lte: $monthEnd }
-              status: { _neq: "draft" }
-            }
-          ) {
-            id
-          }
-        }
-      `;
-
-      const { data: existingData } = await client.query({
-        query: CHECK_EXISTING_BILLING,
+      const { data: existingData } = await client.query<
+        CheckExistingTier3BillingApiQuery,
+        CheckExistingTier3BillingApiQueryVariables
+      >({
+        query: CheckExistingTier3BillingApiDocument,
         variables: { 
           clientId,
           serviceId: agreement.serviceId,
@@ -205,23 +163,11 @@ async function POST(request: NextRequest) {
         quantity = billingCompletion.completedPayrolls || 1;
       } else if (agreement.service.billingUnit === 'Per Employee') {
         // Get average employee count for this month
-        const GET_EMPLOYEE_COUNT = gql`
-          query GetEmployeeCount($clientId: uuid!, $billingMonth: date!) {
-            payrolls(
-              where: {
-                clientId: { _eq: $clientId }
-                payrollDates: {
-                  adjustedEftDate: { _gte: $billingMonth }
-                }
-              }
-            ) {
-              employeeCount
-            }
-          }
-        `;
-
-        const { data: employeeData } = await client.query({
-          query: GET_EMPLOYEE_COUNT,
+        const { data: employeeData } = await client.query<
+          GetEmployeeCountApiTier3Query,
+          GetEmployeeCountApiTier3QueryVariables
+        >({
+          query: GetEmployeeCountApiTier3Document,
           variables: { clientId, billingMonth },
           fetchPolicy: 'network-only'
         });
@@ -235,22 +181,15 @@ async function POST(request: NextRequest) {
       const itemAmount = quantity * effectiveRate;
 
       // Create billing item
-      const CREATE_BILLING_ITEM = gql`
-        mutation CreateBillingItem($input: BillingItemsInsertInput!) {
-          insertBillingItemsOne(object: $input) {
-            id
-            description
-            totalAmount
-          }
-        }
-      `;
-
       const monthYear = new Date(billingMonth).toLocaleDateString('en-AU', { month: 'short', year: 'numeric' });
       const description = `${agreement.service.name} - ${clientInfo.name} (${monthYear})`;
 
       try {
-        await client.mutate({
-          mutation: CREATE_BILLING_ITEM,
+        await client.mutate<
+          CreateBillingItemApiMutation,
+          CreateBillingItemApiMutationVariables
+        >({
+          mutation: CreateBillingItemApiDocument,
           variables: {
             input: {
               clientId,
@@ -260,7 +199,6 @@ async function POST(request: NextRequest) {
               quantity,
               unitPrice: effectiveRate,
               totalAmount: itemAmount,
-              amount: itemAmount,
               staffUserId: generatedBy,
               status: 'confirmed'
             }
@@ -287,40 +225,20 @@ async function POST(request: NextRequest) {
     }
 
     // Update monthly billing completion status to billed
-    const UPDATE_MONTHLY_COMPLETION = gql`
-      mutation UpdateMonthlyCompletion($clientId: uuid!, $billingMonth: date!) {
-        updateMonthlyBillingCompletion(
-          where: {
-            clientId: { _eq: $clientId }
-            billingMonth: { _eq: $billingMonth }
-          }
-          _set: {
-            status: "billed"
-            tier3BillingGenerated: true
-            billingGeneratedAt: "now()"
-          }
-        ) {
-          affectedRows
-        }
-      }
-    `;
-
-    await client.mutate({
-      mutation: UPDATE_MONTHLY_COMPLETION,
+    await client.mutate<
+      UpdateMonthlyCompletionApiTier3Mutation,
+      UpdateMonthlyCompletionApiTier3MutationVariables
+    >({
+      mutation: UpdateMonthlyCompletionApiTier3Document,
       variables: { clientId, billingMonth }
     });
 
     // Log the billing generation event
-    const LOG_EVENT = gql`
-      mutation LogBillingEvent($input: BillingEventLogInsertInput!) {
-        insertBillingEventLogOne(object: $input) {
-          id
-        }
-      }
-    `;
-
-    await client.mutate({
-      mutation: LOG_EVENT,
+    await client.mutate<
+      LogBillingEventApiMutation,
+      LogBillingEventApiMutationVariables
+    >({
+      mutation: LogBillingEventApiDocument,
       variables: {
         input: {
           eventType: 'tier3_billing_generated',

@@ -45,8 +45,6 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -57,12 +55,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
+import { DynamicPayrollCompletionForm } from "@/domains/billing/components/payroll-completion/dynamic-payroll-completion-form";
 import {
   GetPayrollFamilyDatesDocument,
   GetPayrollDatesDocument,
-  CompletePayrollDateWithTimeDocument,
-  AddPayrollDateTimeEntryDocument,
 } from "@/domains/payrolls/graphql/generated/graphql";
 import { useDatabaseUserId } from "@/hooks/use-database-user-id";
 import { safeFormatDate } from "@/lib/utils/date-utils";
@@ -103,13 +99,13 @@ function PayrollDatesTable({
   title,
   emptyMessage,
   refetch,
-  openCompletionModal,
+  openAdvancedCompletion,
 }: {
   dates: PayrollDate[];
   title: string;
   emptyMessage: string;
   refetch: () => void;
-  openCompletionModal: (payrollDateId: string) => void;
+  openAdvancedCompletion: (payrollDateId: string) => void;
 }) {
   const { user } = useUser();
   const { databaseUserId, isReady } = useDatabaseUserId();
@@ -285,7 +281,7 @@ function PayrollDatesTable({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => openCompletionModal(row.original.id)}
+                  onClick={() => openAdvancedCompletion(row.original.id)}
                   className="h-6 px-2 text-xs"
                 >
                   Complete
@@ -454,91 +450,35 @@ export function PayrollDatesView({
   const { user } = useUser();
   const { databaseUserId, isReady } = useDatabaseUserId();
 
-  // Completion modal state - moved to parent component scope
-  const [showCompletionModal, setShowCompletionModal] = React.useState(false);
+  // Advanced completion form state
+  const [showAdvancedCompletion, setShowAdvancedCompletion] = React.useState(false);
   const [selectedPayrollDateId, setSelectedPayrollDateId] = React.useState<
     string | null
   >(null);
-  const [timeSpentHours, setTimeSpentHours] = React.useState<number>(0);
-  const [timeSpentMinutes, setTimeSpentMinutes] = React.useState<number>(0);
-  const [completionNotes, setCompletionNotes] = React.useState<string>("");
 
   // Show all family versions or just current one
   const showFamilyDates = showAllVersions;
 
-  // Mutations for completing payroll dates - moved to parent component scope
-  const [completePayrollDateWithTime] = useMutation(
-    CompletePayrollDateWithTimeDocument,
-    {
-      onCompleted: () => {
-        toast.success("Payroll date completed with time tracking");
-        // Refetch the appropriate query
-        if (showFamilyDates) {
-          refetchSplit();
-        } else {
-          refetchSingle();
-        }
-        setShowCompletionModal(false);
-        resetCompletionForm();
-      },
-      onError: error => {
-        toast.error(`Failed to complete payroll date: ${error.message}`);
-      },
+  const openAdvancedCompletion = (payrollDateId: string) => {
+    setSelectedPayrollDateId(payrollDateId);
+    setShowAdvancedCompletion(true);
+  };
+
+  const handleAdvancedCompletionComplete = (data: any) => {
+    toast.success("Payroll completion process finished successfully");
+    // Refetch the appropriate query
+    if (showFamilyDates) {
+      refetchSplit();
+    } else {
+      refetchSingle();
     }
-  );
-
-  const [addTimeEntry] = useMutation(AddPayrollDateTimeEntryDocument, {
-    onError: error => {
-      console.error("Failed to add time entry:", error);
-    },
-  });
-
-  const resetCompletionForm = () => {
-    setTimeSpentHours(0);
-    setTimeSpentMinutes(0);
-    setCompletionNotes("");
+    setShowAdvancedCompletion(false);
     setSelectedPayrollDateId(null);
   };
 
-  const openCompletionModal = (payrollDateId: string) => {
-    setSelectedPayrollDateId(payrollDateId);
-    setShowCompletionModal(true);
-  };
-
-  const handleCompleteWithTimeTracking = async () => {
-    if (!selectedPayrollDateId || !user?.id || !databaseUserId || !isReady) {
-      toast.error("User authentication error - please try again");
-      return;
-    }
-
-    try {
-      const totalMinutes = timeSpentHours * 60 + timeSpentMinutes;
-
-      // Complete the payroll date with completion notes
-      await completePayrollDateWithTime({
-        variables: {
-          id: selectedPayrollDateId,
-          completedBy: databaseUserId,
-          timeSpentMinutes: totalMinutes,
-          completionNotes: completionNotes || null,
-        },
-      });
-
-      // Add time entry if time was tracked
-      if (totalMinutes > 0) {
-        await addTimeEntry({
-          variables: {
-            payrollDateId: selectedPayrollDateId,
-            userId: databaseUserId,
-            timeSpentMinutes: totalMinutes,
-            description: `Payroll completion work${completionNotes ? `: ${completionNotes}` : ""}`,
-            workDate: new Date().toISOString().split("T")[0], // Today's date
-          },
-        });
-      }
-    } catch (error) {
-      console.error("Error completing payroll date with time tracking:", error);
-    }
+  const handleAdvancedCompletionCancel = () => {
+    setShowAdvancedCompletion(false);
+    setSelectedPayrollDateId(null);
   };
 
   // Get the family root ID for efficient querying
@@ -825,7 +765,7 @@ export function PayrollDatesView({
               title="Upcoming Payroll Dates (All Versions)"
               emptyMessage="No upcoming payroll dates found in any version."
               refetch={refetch}
-              openCompletionModal={openCompletionModal}
+              openAdvancedCompletion={openAdvancedCompletion}
             />
           </TabsContent>
 
@@ -835,98 +775,28 @@ export function PayrollDatesView({
               title="Past Payroll Dates (All Versions)"
               emptyMessage="No past payroll dates found in any version."
               refetch={refetch}
-              openCompletionModal={openCompletionModal}
+              openAdvancedCompletion={openAdvancedCompletion}
             />
           </TabsContent>
         </Tabs>
 
-        {/* Payroll Date Completion Modal */}
-        <Dialog
-          open={showCompletionModal}
-          onOpenChange={setShowCompletionModal}
-        >
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Complete Payroll Date</DialogTitle>
-              <DialogDescription>
-                Mark this payroll date as completed and optionally track time
-                spent.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="hours">Hours Spent</Label>
-                  <Input
-                    id="hours"
-                    type="number"
-                    min="0"
-                    max="24"
-                    value={timeSpentHours}
-                    onChange={e =>
-                      setTimeSpentHours(parseInt(e.target.value) || 0)
-                    }
-                    placeholder="0"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="minutes">Minutes Spent</Label>
-                  <Input
-                    id="minutes"
-                    type="number"
-                    min="0"
-                    max="59"
-                    value={timeSpentMinutes}
-                    onChange={e =>
-                      setTimeSpentMinutes(parseInt(e.target.value) || 0)
-                    }
-                    placeholder="0"
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="notes">Completion Notes (Optional)</Label>
-                <Textarea
-                  id="notes"
-                  placeholder="Add any notes about the work completed..."
-                  value={completionNotes}
-                  onChange={e => setCompletionNotes(e.target.value)}
-                  rows={3}
+        {/* Advanced Payroll Completion Form */}
+        {showAdvancedCompletion && selectedPayrollDateId && (
+          <Dialog open={showAdvancedCompletion} onOpenChange={setShowAdvancedCompletion}>
+            <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden">
+              <DialogHeader>
+                <DialogTitle>Complete Payroll Date - Advanced Billing</DialogTitle>
+              </DialogHeader>
+              <div className="max-h-[80vh] overflow-y-auto">
+                <DynamicPayrollCompletionForm
+                  payrollDateId={selectedPayrollDateId}
+                  onComplete={handleAdvancedCompletionComplete}
+                  onCancel={handleAdvancedCompletionCancel}
                 />
               </div>
-              {(timeSpentHours > 0 || timeSpentMinutes > 0) && (
-                <div className="rounded-md bg-blue-50 p-3">
-                  <div className="flex">
-                    <Clock className="h-5 w-5 text-blue-400" />
-                    <div className="ml-3">
-                      <h3 className="text-sm font-medium text-blue-800">
-                        Time Tracking Enabled
-                      </h3>
-                      <div className="mt-2 text-sm text-blue-700">
-                        <p>
-                          Total time: {timeSpentHours}h {timeSpentMinutes}m will
-                          be recorded for cost analysis.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setShowCompletionModal(false)}
-              >
-                Cancel
-              </Button>
-              <Button onClick={handleCompleteWithTimeTracking}>
-                <CheckCircle className="mr-2 h-4 w-4" />
-                Complete Payroll Date
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     </PermissionGuard>
   );

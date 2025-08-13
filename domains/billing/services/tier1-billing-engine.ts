@@ -1,6 +1,22 @@
-import { gql } from '@apollo/client';
 import { serverApolloClient } from '@/lib/apollo/unified-client';
 import { logger } from '@/lib/logging/enterprise-logger';
+import {
+  GetPayrollInfoForTier1BillingDocument,
+  GetClientServiceAgreementsForTier1BillingDocument,
+  GetPayrollServiceAgreementsForTier1BillingEngineDocument,
+  InsertTier1BillingItemsDocument,
+  UpdateTier1CompletionMetricsDocument,
+  type GetPayrollInfoForTier1BillingQuery,
+  type GetPayrollInfoForTier1BillingQueryVariables,
+  type GetClientServiceAgreementsForTier1BillingQuery,
+  type GetClientServiceAgreementsForTier1BillingQueryVariables,
+  type GetPayrollServiceAgreementsForTier1BillingEngineQuery,
+  type GetPayrollServiceAgreementsForTier1BillingEngineQueryVariables,
+  type InsertTier1BillingItemsMutation,
+  type InsertTier1BillingItemsMutationVariables,
+  type UpdateTier1CompletionMetricsMutation,
+  type UpdateTier1CompletionMetricsMutationVariables,
+} from '@/domains/billing/graphql/generated/graphql';
 
 /**
  * Tier 1 Immediate Billing Engine
@@ -338,10 +354,10 @@ export class Tier1BillingEngine {
       }
 
       // 5. Process additional services from payroll overrides
-      if (payrollOverrides?.additionalServices) {
+      if (payrollOverrides?.serviceConfiguration) {
         try {
           const additionalItems = await this.generateAdditionalServiceBilling(
-            payrollOverrides.additionalServices,
+            payrollOverrides.serviceConfiguration,
             payrollInfo,
             completedBy
           );
@@ -441,15 +457,15 @@ export class Tier1BillingEngine {
     let rateSource = 'default';
 
     // Check client agreement for custom rate
-    const clientAgreement = clientAgreements?.find(a => a.serviceCode === serviceCode);
+    const clientAgreement = clientAgreements?.find(a => a.service.serviceCode === serviceCode);
     if (clientAgreement?.customRate && clientAgreement.customRate > 0) {
-      effectiveRate = parseFloat(clientAgreement.customRate);
+      effectiveRate = parseFloat(clientAgreement.customRate.toString());
       rateSource = 'client_agreement';
     }
 
-    // Check payroll override
-    if (payrollOverrides?.serviceOverrides?.[serviceCode]?.customRate) {
-      effectiveRate = parseFloat(payrollOverrides.serviceOverrides[serviceCode].customRate);
+    // Check payroll override for custom rate
+    if (payrollOverrides?.customRate && payrollOverrides.customRate > 0) {
+      effectiveRate = parseFloat(payrollOverrides.customRate.toString());
       rateSource = 'payroll_override';
     }
 
@@ -467,7 +483,7 @@ export class Tier1BillingEngine {
     const approvalLevel = this.determineApprovalLevel(
       serviceCode,
       totalAmount,
-      clientAgreement?.autoApprovalThresholds
+      clientAgreement?.autoBillingTriggers
     );
 
     // Generate unique ID
@@ -612,30 +628,12 @@ export class Tier1BillingEngine {
 
   // Database interaction methods
   private async getPayrollInfo(payrollDateId: string) {
-    const GET_PAYROLL_INFO = gql`
-      query GetPayrollInfo($payrollDateId: uuid!) {
-        payrollDates(where: { id: { _eq: $payrollDateId } }) {
-          id
-          payrollId
-          originalEftDate
-          adjustedEftDate
-          status
-          payroll {
-            id
-            name
-            clientId
-            client {
-              id
-              name
-            }
-          }
-        }
-      }
-    `;
-
     try {
-      const { data } = await serverApolloClient.query({
-        query: GET_PAYROLL_INFO,
+      const { data } = await serverApolloClient.query<
+        GetPayrollInfoForTier1BillingQuery,
+        GetPayrollInfoForTier1BillingQueryVariables
+      >({
+        query: GetPayrollInfoForTier1BillingDocument,
         variables: { payrollDateId },
         fetchPolicy: 'network-only'
       });
@@ -669,32 +667,12 @@ export class Tier1BillingEngine {
   }
 
   private async getClientServiceAgreements(clientId: string) {
-    const GET_CLIENT_AGREEMENTS = gql`
-      query GetClientServiceAgreements($clientId: uuid!) {
-        clientServiceAgreements(
-          where: { 
-            clientId: { _eq: $clientId }
-            isActive: { _eq: true }
-          }
-        ) {
-          id
-          serviceId
-          customRate
-          billingFrequency
-          autoApprovalThresholds
-          service {
-            id
-            name
-            serviceCode
-            defaultRate
-          }
-        }
-      }
-    `;
-
     try {
-      const { data } = await serverApolloClient.query({
-        query: GET_CLIENT_AGREEMENTS,
+      const { data } = await serverApolloClient.query<
+        GetClientServiceAgreementsForTier1BillingQuery,
+        GetClientServiceAgreementsForTier1BillingQueryVariables
+      >({
+        query: GetClientServiceAgreementsForTier1BillingDocument,
         variables: { clientId },
         fetchPolicy: 'network-only'
       });
@@ -716,21 +694,12 @@ export class Tier1BillingEngine {
   }
 
   private async getPayrollServiceAgreements(payrollId: string) {
-    const GET_PAYROLL_AGREEMENTS = gql`
-      query GetPayrollServiceAgreements($payrollId: uuid!) {
-        payrollServiceAgreements(where: { payrollId: { _eq: $payrollId } }) {
-          id
-          serviceOverrides
-          additionalServices
-          overrideReason
-          approvedBy
-        }
-      }
-    `;
-
     try {
-      const { data } = await serverApolloClient.query({
-        query: GET_PAYROLL_AGREEMENTS,
+      const { data } = await serverApolloClient.query<
+        GetPayrollServiceAgreementsForTier1BillingEngineQuery,
+        GetPayrollServiceAgreementsForTier1BillingEngineQueryVariables
+      >({
+        query: GetPayrollServiceAgreementsForTier1BillingEngineDocument,
         variables: { payrollId },
         fetchPolicy: 'network-only'
       });
@@ -818,24 +787,6 @@ export class Tier1BillingEngine {
   ): Promise<GeneratedBillingItem[]> {
     if (billingItems.length === 0) return [];
 
-    const INSERT_BILLING_ITEMS = gql`
-      mutation InsertBillingItems($items: [BillingItemsInsertInput!]!) {
-        insertBillingItems(objects: $items) {
-          returning {
-            id
-            serviceCode
-            serviceName
-            quantity
-            unitPrice
-            totalAmount
-            status
-            autoGenerated
-            createdAt
-          }
-        }
-      }
-    `;
-
     try {
       const insertData = billingItems.map(item => ({
         payrollId: item.payrollId,
@@ -857,8 +808,11 @@ export class Tier1BillingEngine {
         staffUserId: item.generatedBy
       }));
 
-      const { data } = await serverApolloClient.mutate({
-        mutation: INSERT_BILLING_ITEMS,
+      const { data } = await serverApolloClient.mutate<
+        InsertTier1BillingItemsMutation,
+        InsertTier1BillingItemsMutationVariables
+      >({
+        mutation: InsertTier1BillingItemsDocument,
         variables: { items: insertData }
       });
 
@@ -890,23 +844,12 @@ export class Tier1BillingEngine {
   }
 
   private async markBillingGenerated(payrollDateId: string, itemCount: number): Promise<void> {
-    const UPDATE_METRICS = gql`
-      mutation UpdateCompletionMetrics($payrollDateId: uuid!) {
-        updatePayrollCompletionMetrics(
-          where: { payrollDateId: { _eq: $payrollDateId } }
-          _set: { 
-            billingGenerated: true, 
-            billingGeneratedAt: "now()" 
-          }
-        ) {
-          affectedRows
-        }
-      }
-    `;
-
     try {
-      await serverApolloClient.mutate({
-        mutation: UPDATE_METRICS,
+      await serverApolloClient.mutate<
+        UpdateTier1CompletionMetricsMutation,
+        UpdateTier1CompletionMetricsMutationVariables
+      >({
+        mutation: UpdateTier1CompletionMetricsDocument,
         variables: { payrollDateId }
       });
       logger.info('Payroll date marked as billing generated', {

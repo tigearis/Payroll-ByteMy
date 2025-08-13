@@ -15,7 +15,7 @@
   --color-gray-800: hsl(217.2, 32.6%, 17.5%);
   --color-gray-900: hsl(222, 47%, 11%);
   --color-gray-950: hsl(222.2, 84%, 4.9%);
-  
+
   /* Neutral colors (alias for gray) */
   --color-neutral-50: hsl(210, 40%, 98%);
   --color-neutral-100: hsl(210, 40%, 96.1%);
@@ -50,7 +50,7 @@
   --color-success-500: hsl(142, 76%, 36%);
   --color-success-600: hsl(142, 76%, 30%);
   --color-success-700: hsl(142, 76%, 25%);
-  
+
   --color-green-50: hsl(138, 76%, 97%);
   --color-green-100: hsl(141, 84%, 93%);
   --color-green-200: hsl(141, 79%, 85%);
@@ -145,8 +145,12 @@
   --color-secondary-foreground: hsl(222.2, 84%, 4.9%);
 
   /* Font families */
-  --font-family-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-family-mono: "JetBrains Mono Variable", "Fira Code", ui-monospace, "Cascadia Code", "Roboto Mono", monospace;
+  --font-family-sans:
+    "Inter Variable", ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, sans-serif;
+  --font-family-mono:
+    "JetBrains Mono Variable", "Fira Code", ui-monospace, "Cascadia Code",
+    "Roboto Mono", monospace;
 }
 
 /* Dark mode overrides using CSS selectors */
@@ -181,7 +185,9 @@ body {
   background-color: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-family-sans);
-  font-feature-settings: "rlig" 1, "calt" 1;
+  font-feature-settings:
+    "rlig" 1,
+    "calt" 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -235,9 +241,95 @@ body {
 }
 
 /* Utility classes */
-.text-fluid-xs { font-size: clamp(0.75rem, 0.7rem + 0.125vw, 0.8125rem); }
-.text-fluid-sm { font-size: clamp(0.875rem, 0.8rem + 0.25vw, 1rem); }
-.text-fluid-base { font-size: clamp(1rem, 0.95rem + 0.25vw, 1.125rem); }
-.text-fluid-lg { font-size: clamp(1.125rem, 1rem + 0.5vw, 1.375rem); }
-.text-fluid-xl { font-size: clamp(1.25rem, 1.1rem + 0.75vw, 1.75rem); }
-.text-fluid-2xl { font-size: clamp(1.5rem, 1.3rem + 1vw, 2.25rem); }
+.text-fluid-xs {
+  font-size: clamp(0.75rem, 0.7rem + 0.125vw, 0.8125rem);
+}
+.text-fluid-sm {
+  font-size: clamp(0.875rem, 0.8rem + 0.25vw, 1rem);
+}
+.text-fluid-base {
+  font-size: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+}
+.text-fluid-lg {
+  font-size: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+}
+.text-fluid-xl {
+  font-size: clamp(1.25rem, 1.1rem + 0.75vw, 1.75rem);
+}
+.text-fluid-2xl {
+  font-size: clamp(1.5rem, 1.3rem + 1vw, 2.25rem);
+}
+
+/* Fix for Select component dropdown visibility */
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes exit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+}
+
+.SelectContent {
+  position: relative;
+  z-index: 50;
+  max-height: 16rem;
+  min-width: 8rem;
+  overflow: hidden;
+  background-color: var(--color-popover);
+  color: var(--color-popover-foreground);
+  border-radius: 0.375rem;
+  border: 1px solid var(--color-border);
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.SelectContent[data-state="open"] {
+  animation: enter 0.2s ease-out;
+}
+
+.SelectContent[data-state="closed"] {
+  animation: exit 0.2s ease-in;
+}
+
+/* Ensure proper z-index for all popover content */
+[data-radix-popper-content-wrapper] {
+  z-index: 50 !important;
+}
+
+/* Animation for popover content */
+@keyframes in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}

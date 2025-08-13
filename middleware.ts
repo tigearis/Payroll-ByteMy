@@ -19,6 +19,7 @@ const SYSTEM_ROUTES = [
   "/api/cron",
   "/api/debug-auth",
   "/api/debug-clerk-auth",
+  "/api/debug/jwt-claims",
 ];
 const OAUTH_CALLBACK_PREFIXES = [
   "/sso-callback",
