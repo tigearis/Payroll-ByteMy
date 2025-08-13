@@ -500,7 +500,8 @@ function ModernPayrollDatesTable({
                 })}
                 refetchNotes={() => {
                   // TODO: Add refetch functionality
-                  console.log("Refetch notes");
+                  // Trigger a synthetic event others can listen to
+                  window.dispatchEvent(new CustomEvent("payroll:notes:refetch", { detail: { payrollId } }));
                 }}
               />
             </div>
