@@ -2,35 +2,66 @@
 
 /**
  * Permission Manager Component
- * 
+ *
  * Provides UI for managing user permissions including:
  * - Viewing current permissions
  * - Adding/removing permission overrides
  * - Setting expiry dates for temporary permissions
  */
 
-import { Trash2, Plus, Clock, Shield, User } from 'lucide-react';
-import { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useHierarchicalPermissions } from '@/hooks/use-hierarchical-permissions';
-import { usePermissions } from '@/hooks/use-permissions';
-import { type UserRole } from '@/lib/permissions/hierarchical-permissions';
+import { Trash2, Plus, Clock, Shield, User } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useHierarchicalPermissions } from "@/hooks/use-hierarchical-permissions";
+import { usePermissions } from "@/hooks/use-permissions";
+import { type UserRole } from "@/lib/permissions/hierarchical-permissions";
 
 // Define resources and actions for permission management
 const RESOURCES = [
-  'dashboard', 'clients', 'payrolls', 'schedule', 'workschedule',
-  'staff', 'leave', 'ai', 'bulkupload', 'reports', 'billing',
-  'email', 'invitations', 'settings', 'security', 'developer'
+  "dashboard",
+  "clients",
+  "payrolls",
+  "schedule",
+  "workschedule",
+  "staff",
+  "leave",
+  "ai",
+  "bulkupload",
+  "reports",
+  "billing",
+  "email",
+  "invitations",
+  "settings",
+  "security",
+  "developer",
 ] as const;
 
 const ACTIONS = [
-  'read', 'create', 'update', 'delete', 'archive', 
-  'approve', 'export', 'list', 'manage', 'process',
-  'assign', 'configure', 'audit', 'override', 'execute'
+  "read",
+  "create",
+  "update",
+  "delete",
+  "archive",
+  "approve",
+  "export",
+  "list",
+  "manage",
+  "process",
+  "assign",
+  "configure",
+  "audit",
+  "override",
+  "execute",
 ] as const;
 
 // Helper function to format permission string
@@ -45,91 +76,164 @@ interface PermissionManagerProps {
   onPermissionChange?: () => void;
 }
 
-export function PermissionManager({ 
-  userId, 
-  userRole = 'viewer',
-  userName = 'Current User',
-  onPermissionChange 
+export function PermissionManager({
+  userId,
+  userRole = "viewer",
+  userName = "Current User",
+  onPermissionChange,
 }: PermissionManagerProps) {
-  const { permissions, role, refreshPermissions, isRefreshing } = usePermissions();
+  const { permissions, role, refreshPermissions, isRefreshing } =
+    usePermissions();
   const { effectivePermissions } = useHierarchicalPermissions();
-  const [selectedResource, setSelectedResource] = useState<string>('');
-  const [selectedAction, setSelectedAction] = useState<string>('');
-  const [grantType, setGrantType] = useState<'grant' | 'revoke'>('grant');
-  const [reason, setReason] = useState('');
-  const [expiryDays, setExpiryDays] = useState<number | ''>('');
+  const [selectedResource, setSelectedResource] = useState<string>("");
+  const [selectedAction, setSelectedAction] = useState<string>("");
+  const [grantType, setGrantType] = useState<"grant" | "revoke">("grant");
+  const [reason, setReason] = useState("");
+  const [expiryDays, setExpiryDays] = useState<number | "">("");
+  const [overrides, setOverrides] = useState<
+    Array<{
+      id: string;
+      resource: string;
+      operation: string;
+      granted: boolean;
+      reason?: string | null;
+      expiresAt?: string | null;
+      createdAt?: string | null;
+    }>
+  >([]);
+  const [loadingOverrides, setLoadingOverrides] = useState(false);
+  const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
 
   // Use current user's permissions if no userId provided
-  const displayPermissions = userId ? [] : permissions; // TODO: Fetch user permissions from API
+  const displayPermissions = userId ? permissions : permissions;
   const displayRole = userId ? userRole : role;
   const basePermissions = userId ? [] : effectivePermissions;
 
+  // Fetch existing overrides for a specific user (if provided)
+  useEffect(() => {
+    const fetchOverrides = async () => {
+      if (!userId) return; // Only fetch when a specific user is targeted
+      try {
+        setLoadingOverrides(true);
+        const res = await fetch(`/api/permissions/overrides?userId=${userId}`);
+        const json = await res.json();
+        if (res.ok && json?.success) {
+          setOverrides(json.overrides || []);
+        } else {
+          setOverrides([]);
+        }
+      } finally {
+        setLoadingOverrides(false);
+      }
+    };
+    fetchOverrides();
+  }, [userId]);
+
   const handleAddOverride = async () => {
     if (!selectedResource || !selectedAction || !reason.trim()) {
-      alert('Please fill in all required fields');
+      alert("Please fill in all required fields");
       return;
     }
 
     const permission = `${selectedResource}.${selectedAction}`;
-    const expiryDate = expiryDays ? new Date(Date.now() + (Number(expiryDays) * 24 * 60 * 60 * 1000)) : null;
+    const expiryDate = expiryDays
+      ? new Date(Date.now() + Number(expiryDays) * 24 * 60 * 60 * 1000)
+      : null;
 
     try {
-      // TODO: Implement API call to add permission override
-      const response = await fetch('/api/permissions/overrides', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/permissions/overrides", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: userId || 'current',
+          userId: userId || "current",
           resource: selectedResource,
           action: selectedAction,
-          granted: grantType === 'grant',
+          granted: grantType === "grant",
           reason,
-          expiresAt: expiryDate?.toISOString()
-        })
+          expiresAt: expiryDate?.toISOString(),
+        }),
       });
 
       if (response.ok) {
         // Reset form
-        setSelectedResource('');
-        setSelectedAction('');
-        setReason('');
-        setExpiryDays('');
-        
+        setSelectedResource("");
+        setSelectedAction("");
+        setReason("");
+        setExpiryDays("");
+
         // Refresh permissions
         if (!userId) {
           await refreshPermissions();
         }
-        
+
         onPermissionChange?.();
+        // Refresh overrides list
+        if (userId) {
+          try {
+            const res = await fetch(
+              `/api/permissions/overrides?userId=${userId}`
+            );
+            const json = await res.json();
+            if (res.ok && json?.success) setOverrides(json.overrides || []);
+          } catch {}
+        }
       } else {
         const error = await response.json();
         alert(`Failed to ${grantType} permission: ${error.message}`);
       }
     } catch (error) {
-      alert('An error occurred while managing permissions');
+      alert("An error occurred while managing permissions");
+    }
+  };
+
+  const handleDeleteOverride = async (overrideId: string) => {
+    try {
+      setDeletingIds(prev => new Set(prev).add(overrideId));
+      const res = await fetch(`/api/permissions/overrides?id=${overrideId}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        setOverrides(prev => prev.filter(o => o.id !== overrideId));
+        if (!userId) {
+          await refreshPermissions();
+        }
+        onPermissionChange?.();
+      } else {
+        const err = await res.json().catch(() => ({}));
+        alert(`Failed to delete override: ${err?.error || "Unknown error"}`);
+      }
+    } finally {
+      setDeletingIds(prev => {
+        const next = new Set(prev);
+        next.delete(overrideId);
+        return next;
+      });
     }
   };
 
   const getPermissionStatus = (permission: string) => {
     const hasBase = basePermissions.includes(permission);
     const hasCurrent = displayPermissions.includes(permission);
-    
-    if (hasBase && hasCurrent) return 'role';
-    if (!hasBase && hasCurrent) return 'granted';
-    if (hasBase && !hasCurrent) return 'revoked';
-    return 'none';
+
+    if (hasBase && hasCurrent) return "role";
+    if (!hasBase && hasCurrent) return "granted";
+    if (hasBase && !hasCurrent) return "revoked";
+    return "none";
   };
 
   const groupPermissionsByResource = () => {
-    const grouped: Record<string, Array<{ action: string; status: string }>> = {};
-    
+    const grouped: Record<
+      string,
+      Array<{ action: string; status: string }>
+    > = {};
+
     RESOURCES.forEach(resource => {
       grouped[resource] = ACTIONS.map(action => ({
         action,
-        status: getPermissionStatus(`${resource}.${action}`)
-      })).filter(item => item.status !== 'none');
+        status: getPermissionStatus(`${resource}.${action}`),
+      })).filter(item => item.status !== "none");
     });
-    
+
     return grouped;
   };
 
@@ -165,31 +269,43 @@ export function PermissionManager({
           <CardHeader>
             <CardTitle>Current Permissions</CardTitle>
             <CardDescription>
-              Permissions from role and overrides ({displayPermissions.length} total)
+              Permissions from role and overrides ({displayPermissions.length}{" "}
+              total)
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4 max-h-96 overflow-y-auto">
-              {Object.entries(groupPermissionsByResource()).map(([resource, actions]) => (
-                actions.length > 0 && (
-                  <div key={resource} className="space-y-2">
-                    <h4 className="font-medium capitalize">{resource}</h4>
-                    <div className="flex flex-wrap gap-1">
-                      {actions.map(({ action, status }) => (
-                        <Badge 
-                          key={action}
-                          variant={status === 'role' ? 'default' : status === 'granted' ? 'secondary' : 'destructive'}
-                          className="text-xs"
-                        >
-                          {action}
-                          {status === 'granted' && <Plus className="h-3 w-3 ml-1" />}
-                          {status === 'revoked' && <Trash2 className="h-3 w-3 ml-1" />}
-                        </Badge>
-                      ))}
+              {Object.entries(groupPermissionsByResource()).map(
+                ([resource, actions]) =>
+                  actions.length > 0 && (
+                    <div key={resource} className="space-y-2">
+                      <h4 className="font-medium capitalize">{resource}</h4>
+                      <div className="flex flex-wrap gap-1">
+                        {actions.map(({ action, status }) => (
+                          <Badge
+                            key={action}
+                            variant={
+                              status === "role"
+                                ? "default"
+                                : status === "granted"
+                                  ? "secondary"
+                                  : "destructive"
+                            }
+                            className="text-xs"
+                          >
+                            {action}
+                            {status === "granted" && (
+                              <Plus className="h-3 w-3 ml-1" />
+                            )}
+                            {status === "revoked" && (
+                              <Trash2 className="h-3 w-3 ml-1" />
+                            )}
+                          </Badge>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )
-              ))}
+                  )
+              )}
             </div>
           </CardContent>
         </Card>
@@ -210,7 +326,7 @@ export function PermissionManager({
                   id="resource"
                   className="w-full p-2 border rounded-md"
                   value={selectedResource}
-                  onChange={(e) => setSelectedResource(e.target.value)}
+                  onChange={e => setSelectedResource(e.target.value)}
                 >
                   <option value="">Select Resource</option>
                   {RESOURCES.map(resource => (
@@ -227,7 +343,7 @@ export function PermissionManager({
                   id="action"
                   className="w-full p-2 border rounded-md"
                   value={selectedAction}
-                  onChange={(e) => setSelectedAction(e.target.value)}
+                  onChange={e => setSelectedAction(e.target.value)}
                 >
                   <option value="">Select Action</option>
                   {ACTIONS.map(action => (
@@ -245,7 +361,9 @@ export function PermissionManager({
                 id="grant-type"
                 className="w-full p-2 border rounded-md"
                 value={grantType}
-                onChange={(e) => setGrantType(e.target.value as 'grant' | 'revoke')}
+                onChange={e =>
+                  setGrantType(e.target.value as "grant" | "revoke")
+                }
               >
                 <option value="grant">Grant (Add Permission)</option>
                 <option value="revoke">Revoke (Remove Permission)</option>
@@ -261,7 +379,9 @@ export function PermissionManager({
                   type="number"
                   placeholder="Days until expiry"
                   value={expiryDays}
-                  onChange={(e) => setExpiryDays(e.target.value ? Number(e.target.value) : '')}
+                  onChange={e =>
+                    setExpiryDays(e.target.value ? Number(e.target.value) : "")
+                  }
                   min="1"
                   max="365"
                 />
@@ -278,23 +398,33 @@ export function PermissionManager({
                 id="reason"
                 placeholder="Reason for this permission change"
                 value={reason}
-                onChange={(e) => setReason(e.target.value)}
+                onChange={e => setReason(e.target.value)}
               />
             </div>
 
-            <Button 
+            <Button
               onClick={handleAddOverride}
-              disabled={!selectedResource || !selectedAction || !reason.trim() || isRefreshing}
+              disabled={
+                !selectedResource ||
+                !selectedAction ||
+                !reason.trim() ||
+                isRefreshing
+              }
               className="w-full"
             >
-              {isRefreshing ? 'Processing...' : `${grantType === 'grant' ? 'Grant' : 'Revoke'} Permission`}
+              {isRefreshing
+                ? "Processing..."
+                : `${grantType === "grant" ? "Grant" : "Revoke"} Permission`}
             </Button>
 
             {selectedResource && selectedAction && (
               <div className="p-3 bg-muted rounded-md">
                 <p className="text-sm">
-                  <strong>Preview:</strong> {grantType === 'grant' ? 'Grant' : 'Revoke'} 
-                  {' '}<code>{selectedResource}.{selectedAction}</code>
+                  <strong>Preview:</strong>{" "}
+                  {grantType === "grant" ? "Grant" : "Revoke"}{" "}
+                  <code>
+                    {selectedResource}.{selectedAction}
+                  </code>
                   {expiryDays && ` for ${expiryDays} days`}
                 </p>
               </div>
@@ -302,6 +432,63 @@ export function PermissionManager({
           </CardContent>
         </Card>
       </div>
+
+      {/* Existing Overrides (when managing a specific user) */}
+      {userId && (
+        <Card>
+          <CardHeader>
+            <CardTitle>User-specific Overrides</CardTitle>
+            <CardDescription>
+              {loadingOverrides
+                ? "Loading overrides..."
+                : `${overrides.length} override${overrides.length === 1 ? "" : "s"} found`}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {overrides.length === 0 && !loadingOverrides ? (
+              <div className="text-sm text-muted-foreground">
+                No overrides set for this user.
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {overrides.map(ovr => (
+                  <div
+                    key={ovr.id}
+                    className="flex items-center justify-between p-2 border rounded-md"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Badge
+                        variant={ovr.granted ? "secondary" : "destructive"}
+                      >
+                        {ovr.resource}.{ovr.operation}{" "}
+                        {ovr.granted ? "granted" : "revoked"}
+                      </Badge>
+                      {ovr.expiresAt && (
+                        <span className="text-xs text-muted-foreground">
+                          expires {new Date(ovr.expiresAt).toLocaleDateString()}
+                        </span>
+                      )}
+                      {ovr.reason && (
+                        <span className="text-xs text-muted-foreground">
+                          — {ovr.reason}
+                        </span>
+                      )}
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteOverride(ovr.id)}
+                      disabled={deletingIds.has(ovr.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Permissions Legend */}
       <Card>
@@ -315,11 +502,15 @@ export function PermissionManager({
               <span className="text-sm">From user's role</span>
             </div>
             <div className="flex items-center gap-2">
-              <Badge variant="secondary">granted <Plus className="h-3 w-3" /></Badge>
+              <Badge variant="secondary">
+                granted <Plus className="h-3 w-3" />
+              </Badge>
               <span className="text-sm">Explicitly granted</span>
             </div>
             <div className="flex items-center gap-2">
-              <Badge variant="destructive">revoked <Trash2 className="h-3 w-3" /></Badge>
+              <Badge variant="destructive">
+                revoked <Trash2 className="h-3 w-3" />
+              </Badge>
               <span className="text-sm">Explicitly revoked</span>
             </div>
           </div>

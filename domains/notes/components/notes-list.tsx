@@ -1,7 +1,7 @@
 // components/notes-list.tsx
 "use client";
 
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation, useSubscription } from "@apollo/client";
 import { Edit, AlertTriangle, Save, X, PlusCircle } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -65,6 +65,44 @@ export function NotesList({
       fetchPolicy: "cache-and-network",
     }
   );
+
+  // Live subscription for the entity
+  const { data: subData } = useSubscription(
+    entityType === "payroll"
+      ? (require("@/domains/notes/graphql/generated/graphql")
+          .PayrollNotesUpdatesDocument as any)
+      : entityType === "client"
+        ? (require("@/domains/notes/graphql/generated/graphql")
+            .ClientNotesUpdatesDocument as any)
+        : (require("@/domains/notes/graphql/generated/graphql")
+            .NotesByEntityUpdatesDocument as any),
+    {
+      variables:
+        entityType === "payroll"
+          ? { payrollId: entityId }
+          : entityType === "client"
+            ? { clientId: entityId }
+            : { entityType, entityId },
+      fetchPolicy: "no-cache",
+      skip: !entityId,
+    }
+  );
+
+  // Listen for external refetch events (e.g., from payroll detail page)
+  React.useEffect(() => {
+    const handler = (e: any) => {
+      if (
+        e?.detail?.payrollId &&
+        entityType === "payroll" &&
+        String(entityId) === String(e.detail.payrollId)
+      ) {
+        refetch();
+      }
+    };
+    window.addEventListener("payroll:notes:refetch", handler as any);
+    return () =>
+      window.removeEventListener("payroll:notes:refetch", handler as any);
+  }, [entityType, entityId, refetch]);
 
   const [updateNote] = useMutation(UpdateNoteExtractedDocument, {
     onCompleted: () => {
@@ -188,7 +226,7 @@ export function NotesList({
     );
   }
 
-  const notes = data?.notes || [];
+  const notes = (subData?.notes as any) || data?.notes || [];
 
   return (
     <>
@@ -292,7 +330,11 @@ export function NotesList({
                   </div>
                   <div className="mt-2 flex justify-between items-center text-xs text-muted-foreground">
                     <div className="flex items-center gap-2">
-                      <span>{note.authorUser?.computedName || `${note.authorUser?.firstName || ''} ${note.authorUser?.lastName || ''}`.trim() || "Anonymous"}</span>
+                      <span>
+                        {note.authorUser?.computedName ||
+                          `${note.authorUser?.firstName || ""} ${note.authorUser?.lastName || ""}`.trim() ||
+                          "Anonymous"}
+                      </span>
                       {note.isImportant && (
                         <div className="flex items-center gap-1 text-red-600">
                           <AlertTriangle className="w-3 h-3" />
@@ -341,7 +383,12 @@ export function NotesList({
 
             {editingNote && (
               <div className="text-xs text-muted-foreground border-t pt-2">
-                <p>Created by: {editingNote.authorUser?.computedName || `${editingNote.authorUser?.firstName || ''} ${editingNote.authorUser?.lastName || ''}`.trim() || "Anonymous"}</p>
+                <p>
+                  Created by:{" "}
+                  {editingNote.authorUser?.computedName ||
+                    `${editingNote.authorUser?.firstName || ""} ${editingNote.authorUser?.lastName || ""}`.trim() ||
+                    "Anonymous"}
+                </p>
                 <p>Created: {safeFormatDateTime(editingNote.createdAt)}</p>
                 {editingNote.updatedAt !== editingNote.createdAt && (
                   <p>

@@ -301,8 +301,104 @@ export function SecurityRulesManager({
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            {/* Field Rule Form */}
-            {/* TODO: Implement field rule form */}
+            {/* Minimal Field Rule Form */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium">Field</label>
+                <input
+                  className="w-full p-2 border rounded-md"
+                  value={editingRule?.field || ""}
+                  onChange={e =>
+                    setEditingRule({
+                      ...(editingRule || ({} as any)),
+                      field: e.target.value,
+                    })
+                  }
+                  placeholder="e.g. salary"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Operation</label>
+                <select
+                  className="w-full p-2 border rounded-md"
+                  value={editingRule?.operation || "read"}
+                  onChange={e =>
+                    setEditingRule({
+                      ...(editingRule || ({} as any)),
+                      operation: e.target.value,
+                    })
+                  }
+                >
+                  <option value="read">read</option>
+                  <option value="update">update</option>
+                  <option value="delete">delete</option>
+                </select>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium">
+                  Allowed Roles (comma-separated)
+                </label>
+                <input
+                  className="w-full p-2 border rounded-md"
+                  value={(editingRule?.allowedRoles || []).join(", ")}
+                  onChange={e =>
+                    setEditingRule({
+                      ...(editingRule || ({} as any)),
+                      allowedRoles: e.target.value
+                        .split(",")
+                        .map(s => s.trim())
+                        .filter(Boolean),
+                    })
+                  }
+                  placeholder="manager, org_admin"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Audit Level</label>
+                <select
+                  className="w-full p-2 border rounded-md"
+                  value={editingRule?.auditLevel || "LOW"}
+                  onChange={e =>
+                    setEditingRule({
+                      ...(editingRule || ({} as any)),
+                      auditLevel: e.target.value,
+                    })
+                  }
+                >
+                  <option value="LOW">LOW</option>
+                  <option value="MEDIUM">MEDIUM</option>
+                  <option value="HIGH">HIGH</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label className="text-sm font-medium">Conditions (JSON)</label>
+              <textarea
+                className="w-full p-2 border rounded-md"
+                rows={3}
+                value={
+                  editingRule?.conditions
+                    ? JSON.stringify(editingRule.conditions)
+                    : ""
+                }
+                onChange={e => {
+                  try {
+                    const parsed = e.target.value
+                      ? JSON.parse(e.target.value)
+                      : undefined;
+                    setEditingRule({
+                      ...(editingRule || ({} as any)),
+                      conditions: parsed,
+                    });
+                  } catch {
+                    // ignore parse errors in UI; parent validate on save
+                  }
+                }}
+                placeholder='{"clientId": "uuid-of-client"}'
+              />
+            </div>
           </div>
           <DialogFooter>
             <Button

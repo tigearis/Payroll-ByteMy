@@ -80,7 +80,8 @@ interface DeleteOverrideRequest {
   userRole: UserRole;
 }
 
-export const POST = withAuth(async (req: NextRequest, session) => {
+// Consolidated management handler (create/delete via action)
+export const PUT = withAuth(async (req: NextRequest, session) => {
   try {
     // Debug environment variable availability
     console.log("🔍 Environment check in API route:");
@@ -220,6 +221,80 @@ export const POST = withAuth(async (req: NextRequest, session) => {
         details:
           process.env.NODE_ENV === "development" ? error.stack : undefined,
       },
+      { status: 500 }
+    );
+  }
+});
+
+// List overrides for a user
+export const GET = withAuth(async (req: NextRequest) => {
+  try {
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get("userId");
+    if (!userId)
+      return NextResponse.json(
+        { error: "userId is required" },
+        { status: 400 }
+      );
+
+    const { data } = await adminApolloClient.query({
+      query: gql`
+        query ListOverrides($where: permission_overrides_bool_exp) {
+          permissionOverrides(where: $where, orderBy: { createdAt: DESC }) {
+            id
+            userId
+            resource
+            operation
+            granted
+            reason
+            expiresAt
+            createdAt
+            createdBy
+          }
+        }
+      `,
+      variables: { where: { userId: { _eq: userId } } },
+      fetchPolicy: "no-cache",
+    });
+
+    return NextResponse.json({
+      success: true,
+      overrides: data.permissionOverrides,
+    });
+  } catch (error: any) {
+    return NextResponse.json(
+      { error: error?.message || "Failed" },
+      { status: 500 }
+    );
+  }
+});
+
+// Delete single override by id
+export const DELETE = withAuth(async (req: NextRequest) => {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+    if (!id)
+      return NextResponse.json({ error: "id is required" }, { status: 400 });
+
+    const { data } = await adminApolloClient.mutate({
+      mutation: gql`
+        mutation DeleteOverride($id: uuid!) {
+          deletePermissionOverridesByPk(id: $id) {
+            id
+          }
+        }
+      `,
+      variables: { id },
+    });
+
+    if (!data?.deletePermissionOverridesByPk?.id) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    return NextResponse.json(
+      { error: error?.message || "Failed" },
       { status: 500 }
     );
   }

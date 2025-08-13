@@ -501,7 +501,11 @@ function ModernPayrollDatesTable({
                 refetchNotes={() => {
                   // TODO: Add refetch functionality
                   // Trigger a synthetic event others can listen to
-                  window.dispatchEvent(new CustomEvent("payroll:notes:refetch", { detail: { payrollId } }));
+                  window.dispatchEvent(
+                    new CustomEvent("payroll:notes:refetch", {
+                      detail: { payrollId },
+                    })
+                  );
                 }}
               />
             </div>
@@ -733,6 +737,25 @@ export default function PayrollDetailPage() {
   });
 
   const { data, loading, error, refetch } = usePayrollData(payrollId);
+
+  // Wire assignment updates to API and refetch
+  const handleUpdateAssignments = async (assignments: {
+    primaryConsultantUserId?: string | null;
+    backupConsultantUserId?: string | null;
+    managerUserId?: string | null;
+  }) => {
+    try {
+      const res = await fetch(`/api/payrolls/${payrollId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(assignments),
+      });
+      if (!res.ok) throw new Error("Failed to update assignments");
+      await refetch();
+    } catch (e) {
+      console.error("Update assignments failed:", e);
+    }
+  };
 
   if (loading) {
     return <PayrollDetailLoading />;
