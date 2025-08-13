@@ -108,8 +108,25 @@ export const POST = withAuthParams(async (req, { params }, session) => {
       );
     }
 
-    // TODO: Send notification to employee about approval/rejection
-    // This could be implemented later with email service
+    // Send notification to employee about approval/rejection
+    try {
+      const employeeEmail = leave.employee?.email;
+      if (employeeEmail) {
+        await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/email/send`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              recipientEmails: [employeeEmail],
+              subject: `Your leave request was ${action}d`,
+              htmlContent: `<p>Your leave request from ${leave.startDate} to ${leave.endDate} was ${action}d.</p>`,
+              businessContext: { category: "leave", leaveId: id },
+            }),
+          }
+        );
+      }
+    } catch {}
 
     return NextResponse.json({
       success: true,
